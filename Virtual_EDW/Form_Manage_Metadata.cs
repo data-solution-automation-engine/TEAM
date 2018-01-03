@@ -85,10 +85,11 @@ namespace TEAM
             sqlStatementForLatestVersion.AppendLine(" [TABLE_MAPPING_HASH],");
             sqlStatementForLatestVersion.AppendLine(" [VERSION_ID],");
             sqlStatementForLatestVersion.AppendLine(" [STAGING_AREA_TABLE],");
-            sqlStatementForLatestVersion.AppendLine(" INTEGRATION_AREA_TABLE,");
+            sqlStatementForLatestVersion.AppendLine(" [INTEGRATION_AREA_TABLE],");
             sqlStatementForLatestVersion.AppendLine(" [BUSINESS_KEY_ATTRIBUTE],");
             sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_ATTRIBUTE],");
-            sqlStatementForLatestVersion.AppendLine(" FILTER_CRITERIA");
+            sqlStatementForLatestVersion.AppendLine(" [FILTER_CRITERIA],");
+            sqlStatementForLatestVersion.AppendLine(" [GENERATE_INDICATOR]");
             sqlStatementForLatestVersion.AppendLine("FROM [MD_TABLE_MAPPING]");
             sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
 
@@ -110,6 +111,7 @@ namespace TEAM
                 dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                 dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                 dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
+                dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
             }
         }
 
@@ -564,6 +566,7 @@ namespace TEAM
                         var businessKeyDefinition = "";
                         var drivingKeyDefinition = "";
                         var filterCriterion = "";
+                        var generateIndicator = "";
 
                         if (row.Cells[2].Value != DBNull.Value)
                         {
@@ -594,11 +597,15 @@ namespace TEAM
                             filterCriterion = filterCriterion.Replace("'", "''");
                         }
 
+                        if (row.Cells[7].Value != DBNull.Value)
+                        {
+                            generateIndicator = (string)row.Cells[7].Value;
+                            generateIndicator = generateIndicator.Replace("'", "''");
+                        }
+
                         insertQueryTables.AppendLine("INSERT INTO MD_TABLE_MAPPING");
-                        insertQueryTables.AppendLine("([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA])");
-                        insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
-                                                     businessKeyDefinition + "','" + integrationTable + "','" + drivingKeyDefinition + "','" +
-                                                     filterCriterion + "')");
+                        insertQueryTables.AppendLine("([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
+                        insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +businessKeyDefinition + "','" + integrationTable + "','" + drivingKeyDefinition + "','" + filterCriterion + "','" + generateIndicator + "')");
                     }
                 }
             }
@@ -617,6 +624,7 @@ namespace TEAM
                             var businessKeyDefinition = "";
                             var drivingKeyDefinition = "";
                             var filterCriterion = "";
+                            var generateIndicator = "";
 
                             if (row["STAGING_AREA_TABLE"] != DBNull.Value)
                             {
@@ -643,17 +651,24 @@ namespace TEAM
                                 filterCriterion= (string)row["FILTER_CRITERIA"];
                             }
 
+                            if (row["GENERATE_INDICATOR"] != DBNull.Value)
+                            {
+                                generateIndicator = (string)row["GENERATE_INDICATOR"];
+                            }
+
                             //Double quotes for composites
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
                             drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
                             filterCriterion = filterCriterion.Replace("'", "''");
+                            generateIndicator = generateIndicator.Replace("'", "''");
 
                             insertQueryTables.AppendLine("UPDATE MD_TABLE_MAPPING");
                             insertQueryTables.AppendLine("SET [STAGING_AREA_TABLE] = '" + stagingTable +
                                                          "',[BUSINESS_KEY_ATTRIBUTE] = '" + businessKeyDefinition +
                                                          "',[INTEGRATION_AREA_TABLE] = '" + integrationTable +
                                                          "',[DRIVING_KEY_ATTRIBUTE] = '" + drivingKeyDefinition +
-                                                         "',[FILTER_CRITERIA] = '" + filterCriterion + "'");
+                                                         "',[FILTER_CRITERIA] = '" + filterCriterion +
+                                                         "',[GENERATE_INDICATOR] = '" + generateIndicator + "'");
                             insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey +
                                                          "' AND [VERSION_ID] = " + versionKey);
                         }
@@ -665,6 +680,7 @@ namespace TEAM
                             var businessKeyDefinition = "";
                             var drivingKeyDefinition = "";
                             var filterCriterion = "";
+                            var generateIndicator = "";
 
                             if (row[2] != DBNull.Value)
                             {
@@ -695,12 +711,15 @@ namespace TEAM
                                 filterCriterion = filterCriterion.Replace("'", "''");
                             }
 
+                            if (row[7] != DBNull.Value)
+                            {
+                                generateIndicator = (string)row[7];
+                                generateIndicator = generateIndicator.Replace("'", "''");
+                            }
+
                             insertQueryTables.AppendLine("INSERT INTO MD_TABLE_MAPPING");
-                            insertQueryTables.AppendLine(
-                                "([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA])");
-                            insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
-                                                         businessKeyDefinition + "','" + integrationTable + "','" + drivingKeyDefinition + "','" +
-                                                         filterCriterion + "')");
+                            insertQueryTables.AppendLine("([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
+                            insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" + businessKeyDefinition + "','" + integrationTable + "','" + drivingKeyDefinition + "','" + filterCriterion + "','" + generateIndicator + "')");
                         }
 
                         if ((row.RowState & DataRowState.Deleted) != 0)
@@ -1329,7 +1348,8 @@ namespace TEAM
                     prepareStgStatement.AppendLine("SELECT DISTINCT STAGING_AREA_TABLE");
                     prepareStgStatement.AppendLine("FROM MD_TABLE_MAPPING");
                     prepareStgStatement.AppendLine("WHERE STAGING_AREA_TABLE LIKE '"+stagingPrefix+"'");
-                    prepareStgStatement.AppendLine("AND VERSION_ID = " + versionId);
+                    prepareStgStatement.AppendLine("AND [VERSION_ID] = " + versionId);
+                    prepareStgStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
                     prepareStgStatement.AppendLine("ORDER BY STAGING_AREA_TABLE");
 
                     var listStaging = GetDataTable(ref connOmd, prepareStgStatement.ToString());
@@ -1390,7 +1410,8 @@ namespace TEAM
                     prepareHubStatement.AppendLine("SELECT DISTINCT INTEGRATION_AREA_TABLE AS HUB_TABLE_NAME");
                     prepareHubStatement.AppendLine("FROM MD_TABLE_MAPPING");
                     prepareHubStatement.AppendLine("WHERE INTEGRATION_AREA_TABLE LIKE '"+hubTablePrefix+"'");
-                    prepareHubStatement.AppendLine("AND VERSION_ID = " + versionId);
+                    prepareHubStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
+                    prepareHubStatement.AppendLine("AND [VERSION_ID] = " + versionId);
 
                     var listHub = GetDataTable(ref connOmd, prepareHubStatement.ToString());
 
@@ -1451,7 +1472,8 @@ namespace TEAM
                     prepareLinkStatement.AppendLine("SELECT DISTINCT INTEGRATION_AREA_TABLE AS LINK_TABLE_NAME");
                     prepareLinkStatement.AppendLine("FROM MD_TABLE_MAPPING");
                     prepareLinkStatement.AppendLine("WHERE INTEGRATION_AREA_TABLE LIKE '"+lnkTablePrefix+"'");
-                    prepareLinkStatement.AppendLine("AND VERSION_ID = " + versionId);
+                    prepareLinkStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
+                    prepareLinkStatement.AppendLine("AND [VERSION_ID] = " + versionId);
 
                     var listLink = GetDataTable(ref connOmd, prepareLinkStatement.ToString());
 
@@ -1520,11 +1542,13 @@ namespace TEAM
                     prepareSatStatement.AppendLine("       LEFT OUTER JOIN -- Join in the Hub ID from the MD table ");
                     prepareSatStatement.AppendLine("             MD_HUB hub ON hub.HUB_TABLE_NAME=spec2.INTEGRATION_AREA_TABLE ");
                     prepareSatStatement.AppendLine("    WHERE INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix + "'");
+                    prepareSatStatement.AppendLine("    AND [GENERATE_INDICATOR] = 'Y'");
                     prepareSatStatement.AppendLine("    AND VERSION_ID = " + versionId);
                     prepareSatStatement.AppendLine(") hubkeysub ");
                     prepareSatStatement.AppendLine("       ON spec.STAGING_AREA_TABLE=hubkeysub.STAGING_AREA_TABLE ");
                     prepareSatStatement.AppendLine("       AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') ");
                     prepareSatStatement.AppendLine("WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + satTablePrefix + "'");
+                    prepareSatStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
                     prepareSatStatement.AppendLine("AND VERSION_ID = " + versionId);
 
                     var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
@@ -1597,6 +1621,7 @@ namespace TEAM
                     prepareSatStatement.AppendLine("       LEFT OUTER JOIN -- Join in the Link ID from the MD table");
                     prepareSatStatement.AppendLine("             MD_LINK lnk ON lnk.LINK_TABLE_NAME=spec2.INTEGRATION_AREA_TABLE");
                     prepareSatStatement.AppendLine("       WHERE INTEGRATION_AREA_TABLE LIKE '"+lnkTablePrefix+"' ");
+                    prepareSatStatement.AppendLine("       AND [GENERATE_INDICATOR] = 'Y'");
                     prepareSatStatement.AppendLine("       AND VERSION_ID = " + versionId);
                     prepareSatStatement.AppendLine(") lnkkeysub");
                     prepareSatStatement.AppendLine("    ON spec.STAGING_AREA_TABLE=lnkkeysub.STAGING_AREA_TABLE -- Only the combination of Link table and Business key can belong to the LSAT");
@@ -1604,6 +1629,7 @@ namespace TEAM
                     prepareSatStatement.AppendLine("");
                     prepareSatStatement.AppendLine("-- Only select Link Satellites as the base / driving table (spec alias)");
                     prepareSatStatement.AppendLine("WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix + "'");
+                    prepareSatStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
                     prepareSatStatement.AppendLine("AND VERSION_ID = " + versionId);
 
                     var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
@@ -1673,6 +1699,7 @@ namespace TEAM
                     prepareSatXrefStatement.AppendLine("LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SAT table");
                     prepareSatXrefStatement.AppendLine("       MD_SAT sat ON sat.SATELLITE_TABLE_NAME=spec.INTEGRATION_AREA_TABLE");
                     prepareSatXrefStatement.AppendLine("WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + satTablePrefix + "' ");
+                    prepareSatXrefStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
                     prepareSatXrefStatement.AppendLine("AND VERSION_ID = " + versionId);
                     prepareSatXrefStatement.AppendLine("UNION");
                     prepareSatXrefStatement.AppendLine("SELECT");
@@ -1688,6 +1715,7 @@ namespace TEAM
                     prepareSatXrefStatement.AppendLine("LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SAT table");
                     prepareSatXrefStatement.AppendLine("       MD_SAT sat ON sat.SATELLITE_TABLE_NAME=spec.INTEGRATION_AREA_TABLE");
                     prepareSatXrefStatement.AppendLine("WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix + "' ");
+                    prepareSatXrefStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
                     prepareSatXrefStatement.AppendLine("AND VERSION_ID = " + versionId);
 
 
@@ -1768,6 +1796,7 @@ namespace TEAM
                     prepareStgHubXrefStatement.AppendLine("              WHERE ");
                     prepareStgHubXrefStatement.AppendLine("                     INTEGRATION_AREA_TABLE LIKE '"+hubTablePrefix+"'");
                     prepareStgHubXrefStatement.AppendLine("              AND VERSION_ID = " + versionId);
+                    prepareStgHubXrefStatement.AppendLine("              AND [GENERATE_INDICATOR] = 'Y'");
                     prepareStgHubXrefStatement.AppendLine("       ) hub");
                     prepareStgHubXrefStatement.AppendLine("LEFT OUTER JOIN");
                     prepareStgHubXrefStatement.AppendLine("       ( ");
@@ -1981,6 +2010,7 @@ namespace TEAM
                     prepareKeyStatement.AppendLine("            SELECT DISTINCT STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
                     prepareKeyStatement.AppendLine("            FROM MD_TABLE_MAPPING");
                     prepareKeyStatement.AppendLine("            WHERE INTEGRATION_AREA_TABLE LIKE '"+hubTablePrefix+"'");
+                    prepareKeyStatement.AppendLine("              AND [GENERATE_INDICATOR] = 'Y'");
                     prepareKeyStatement.AppendLine("              AND VERSION_ID = " + versionId);
                     prepareKeyStatement.AppendLine("        ) TableName");
                     prepareKeyStatement.AppendLine("    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
@@ -2201,6 +2231,8 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine("WHERE lnk.INTEGRATION_AREA_TABLE LIKE '"+lnkTablePrefix+"' and hub.INTEGRATION_AREA_TABLE LIKE '"+hubTablePrefix+"'");
                     prepareHubLnkXrefStatement.AppendLine("AND hub.VERSION_ID = " + versionId);
                     prepareHubLnkXrefStatement.AppendLine("AND lnk.VERSION_ID = " + versionId);
+                    prepareHubLnkXrefStatement.AppendLine("AND lnk.[GENERATE_INDICATOR] = 'Y'");
+                    prepareHubLnkXrefStatement.AppendLine("AND hub.[GENERATE_INDICATOR] = 'Y'");
 
                     var listHlXref = GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
@@ -2269,6 +2301,7 @@ namespace TEAM
                     preparestgLnkXrefStatement.AppendLine("JOIN dbo.MD_STG stg_tbl ON lnk.STAGING_AREA_TABLE = stg_tbl.STAGING_AREA_TABLE_NAME");
                     preparestgLnkXrefStatement.AppendLine("WHERE lnk.INTEGRATION_AREA_TABLE like '"+lnkTablePrefix+"'");
                     preparestgLnkXrefStatement.AppendLine("AND lnk.VERSION_ID = " + versionId);
+                    preparestgLnkXrefStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
 
                     var listHlXref = GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
 
@@ -2344,16 +2377,17 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
                         prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
                         prepareMappingStatement.AppendLine("FROM dbo.MD_ATTRIBUTE_MAPPING mapping");
-                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat");
-                        prepareMappingStatement.AppendLine("	     on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr");
-                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg");
-                        prepareMappingStatement.AppendLine("	     on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr");
-                        prepareMappingStatement.AppendLine("	     on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("WHERE TARGET_TABLE NOT LIKE '"+ dwhKeyIdentifier + "' AND TARGET_TABLE NOT LIKE '"+lnkTablePrefix+"'");
-                        prepareMappingStatement.AppendLine("      AND VERSION_ID = " + versionId);
+                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_TABLE_MAPPING table_mapping");
+                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.INTEGRATION_AREA_TABLE");
+                        prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.STAGING_AREA_TABLE");
+                        prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '"+ dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '"+lnkTablePrefix+"'");
+                        prepareMappingStatement.AppendLine("      AND mapping.VERSION_ID = " + versionId);
+                        prepareMappingStatement.AppendLine("      AND table_mapping.VERSION_ID = " + versionId);
+                        prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareMappingStatement.AppendLine("(");
@@ -2440,16 +2474,17 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
                         prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
                         prepareMappingStatement.AppendLine("FROM dbo.MD_ATTRIBUTE_MAPPING mapping");
-                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat");
-                        prepareMappingStatement.AppendLine("	     on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr");
-                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg");
-                        prepareMappingStatement.AppendLine("	     on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr");
-                        prepareMappingStatement.AppendLine("	     on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("WHERE TARGET_TABLE NOT LIKE '"+ dwhKeyIdentifier + "' AND TARGET_TABLE NOT LIKE '"+lnkTablePrefix+"'");
-                        prepareMappingStatement.AppendLine("      AND VERSION_ID = " + versionId);
+                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_TABLE_MAPPING table_mapping");
+                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.INTEGRATION_AREA_TABLE");
+                        prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.STAGING_AREA_TABLE");
+                        prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '" + lnkTablePrefix + "'");
+                        prepareMappingStatement.AppendLine("      AND mapping.VERSION_ID = " + versionId);
+                        prepareMappingStatement.AppendLine("      AND table_mapping.VERSION_ID = " + versionId);
+                        prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareMappingStatement.AppendLine("(");
@@ -2973,6 +3008,7 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("                     FROM MD_TABLE_MAPPING");
                         prepareDrivingKeyStatement.AppendLine("                     WHERE INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix +"' AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
                         prepareDrivingKeyStatement.AppendLine("                     AND VERSION_ID =" + versionId);
+                        prepareDrivingKeyStatement.AppendLine("                     AND [GENERATE_INDICATOR] = 'Y'");
                         prepareDrivingKeyStatement.AppendLine("              ) TableName");
                         prepareDrivingKeyStatement.AppendLine("       ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
                         prepareDrivingKeyStatement.AppendLine(")  base");
@@ -2988,6 +3024,7 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("WHERE base.VERSION_ID = " + versionId);
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE!=''");
+                        prepareDrivingKeyStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
 
 
                     var listDrivingKeys = GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
