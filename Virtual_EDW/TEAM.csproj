@@ -68,7 +68,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Ravos-logo-small.ico</ApplicationIcon>
@@ -113,6 +113,18 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="yWorks.yFilesNET.Adapter, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Files\yworks_libs\lib\yWorks.yFilesNET.Adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="yWorks.yFilesNET.Algorithms, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Files\yworks_libs\lib\yWorks.yFilesNET.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="yWorks.yFilesNET.Viewer, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Files\yworks_libs\lib\yWorks.yFilesNET.Viewer.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomDataGridViewAttribute.cs">
@@ -135,6 +147,12 @@
     </Compile>
     <Compile Include="Form_Alert.Designer.cs">
       <DependentUpon>Form_Alert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_Graph.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Graph.Designer.cs">
+      <DependentUpon>Form_Graph.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_Model_Metadata.cs">
       <SubType>Form</SubType>
@@ -186,6 +204,9 @@
     <EmbeddedResource Include="Form_Base.resx">
       <DependentUpon>Form_Base.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_Graph.resx">
+      <DependentUpon>Form_Graph.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_Main.resx">
       <DependentUpon>Form_Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -204,6 +225,7 @@
     <EmbeddedResource Include="Form_Validation.resx">
       <DependentUpon>Form_Validation.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
@@ -216,7 +238,6 @@
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="TEAM_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -243,6 +264,7 @@
     <None Include="Resources\Time.png" />
     <None Include="Resources\ghost-icon.png" />
     <None Include="Resources\database_icon.png" />
+    <None Include="Resources\fit-16.png" />
     <Content Include="Resources\transparent-green-checkmark-hi.png" />
     <None Include="Resources\DocumentationIcon.ico" />
     <None Include="Resources\CubeIcon.ico" />

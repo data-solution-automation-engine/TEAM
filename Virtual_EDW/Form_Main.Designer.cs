@@ -155,6 +155,9 @@
             this.label4 = new System.Windows.Forms.Label();
             this.backgroundWorkerActivateMetadata = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.maintainMetadataGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainTabControl.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
             this.tabControlDefaultDetails.SuspendLayout();
@@ -1184,6 +1187,7 @@
             this.fileToolStripMenuItem,
             this.metadataToolStripMenuItem,
             this.testingToolStripMenuItem,
+            this.configurationToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
             this.menuStripMainMenu.Name = "menuStripMainMenu";
@@ -1237,6 +1241,7 @@
             // metadataToolStripMenuItem
             // 
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.maintainMetadataGraphToolStripMenuItem,
             this.openMetadataFormToolStripMenuItem,
             this.manageModelMetadataToolStripMenuItem,
             this.sourceSystemRegistryToolStripMenuItem,
@@ -1357,6 +1362,29 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
+            // 
+            // configurationToolStripMenuItem
+            // 
+            this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.generalSettingsToolStripMenuItem});
+            this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
+            this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
+            this.configurationToolStripMenuItem.Text = "Configuration";
+            // 
+            // generalSettingsToolStripMenuItem
+            // 
+            this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
+            this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
+            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.generalSettingsToolStripMenuItem.Text = "General Settings";
+            // 
+            // maintainMetadataGraphToolStripMenuItem
+            // 
+            this.maintainMetadataGraphToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("maintainMetadataGraphToolStripMenuItem.Image")));
+            this.maintainMetadataGraphToolStripMenuItem.Name = "maintainMetadataGraphToolStripMenuItem";
+            this.maintainMetadataGraphToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.maintainMetadataGraphToolStripMenuItem.Text = "Maintain Metadata Graph";
+            this.maintainMetadataGraphToolStripMenuItem.Click += new System.EventHandler(this.maintainMetadataGraphToolStripMenuItem_Click);
             // 
             // FormMain
             // 
@@ -1529,6 +1557,9 @@
         private System.Windows.Forms.Label label49;
         internal System.Windows.Forms.TextBox textBoxLinkedServer;
         internal System.Windows.Forms.CheckBox checkBoxUnicode;
+        private System.Windows.Forms.ToolStripMenuItem maintainMetadataGraphToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
     }
 }
 

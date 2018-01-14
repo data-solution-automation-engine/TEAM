@@ -12,6 +12,7 @@ using System.Threading;
 using System.Drawing;
 using static TEAM.Form_Base;
 
+
 namespace TEAM
 {
     public partial class FormMain : Form
@@ -477,8 +478,11 @@ namespace TEAM
             _myAboutForm = null;
         }
 
+        private void CloseGraphForm(object sender, FormClosedEventArgs e)
+        {
+            _myGraphForm = null;
+        }
 
-        
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
         {         
             var t = new Thread(ThreadProcMetadata);
@@ -580,10 +584,39 @@ namespace TEAM
         }
 
 
+        private FormManageGraph _myGraphForm;
+        [STAThread]
+        public void ThreadProcGraph()
+        {
+            if (_myGraphForm == null)
+            {
+                _myGraphForm = new FormManageGraph(this);
+                Application.Run(_myGraphForm);
+            }
+            else
+            {
+                if (_myGraphForm.InvokeRequired)
+                {
+                    // Thread Error
+                    _myGraphForm.Invoke((MethodInvoker)delegate { _myGraphForm.Close(); });
+                    _myGraphForm.FormClosed += CloseGraphForm;
+
+                    _myGraphForm = new FormManageGraph(this);
+                    Application.Run(_myGraphForm);
+                }
+                else
+                {
+                    // No invoke required - same thread
+                    _myGraphForm.FormClosed += CloseGraphForm;
+                    _myGraphForm = new FormManageGraph(this);
+
+                    Application.Run(_myGraphForm);
+                }
+            }
+        }
 
 
-  
- 
+
 
         private FormManageMetadata _myMetadataForm;
         [STAThread]
@@ -870,6 +903,14 @@ namespace TEAM
         private void tabPageDefaultSettings_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void maintainMetadataGraphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcGraph);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            
         }
     }
 }
