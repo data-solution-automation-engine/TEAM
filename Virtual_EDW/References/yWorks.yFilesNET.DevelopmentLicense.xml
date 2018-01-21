@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<license>
+  <licensefileversion>1.1</licensefileversion>
+  <product>yFiles.NET</product>
+  <package>complete</package>
+  <type>eval</type>
+  <distribution>false</distribution>
+  <watermark><![CDATA[yFiles.NET Evaluation License (expires in ${license-days-remaining} days)]]></watermark>
+  <version>5.0</version>
+  <date>01/15/2018</date>
+  <expires>03/17/2018</expires>
+  <key>58ce926836b8c61ca952e431f4b04832c40a46ad293f031c4d9916312482022128bfb923b6d04ab5bf86f5feb701ae18ec5cdffe8b3bcec6aa686b4ed288fe2e</key>
+</license>

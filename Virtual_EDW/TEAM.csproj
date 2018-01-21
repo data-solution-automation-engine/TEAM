@@ -115,15 +115,15 @@
     <Reference Include="System.Xml" />
     <Reference Include="yWorks.yFilesNET.Adapter, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Files\yworks_libs\lib\yWorks.yFilesNET.Adapter.dll</HintPath>
+      <HintPath>References\yWorks.yFilesNET.Adapter.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesNET.Algorithms, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Files\yworks_libs\lib\yWorks.yFilesNET.Algorithms.dll</HintPath>
+      <HintPath>References\yWorks.yFilesNET.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="yWorks.yFilesNET.Viewer, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Files\yworks_libs\lib\yWorks.yFilesNET.Viewer.dll</HintPath>
+      <HintPath>References\yWorks.yFilesNET.Viewer.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +265,7 @@
     <None Include="Resources\ghost-icon.png" />
     <None Include="Resources\database_icon.png" />
     <None Include="Resources\fit-16.png" />
+    <None Include="Resources\plus-16.png" />
     <Content Include="Resources\transparent-green-checkmark-hi.png" />
     <None Include="Resources\DocumentationIcon.ico" />
     <None Include="Resources\CubeIcon.ico" />

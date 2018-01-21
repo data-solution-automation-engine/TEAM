@@ -20,7 +20,11 @@ using yWorks.Graph;
 using yWorks.Graph.PortLocationModels;
 using yWorks.Layout.Hierarchic;
 using yWorks.Layout.Orthogonal;
-
+using yWorks.Graph.Styles;
+using yWorks.Layout.Organic;
+using yWorks.Layout.Radial;
+using yWorks.Layout.Tree;
+using yWorks.Graph.LabelModels;
 
 namespace TEAM
 {
@@ -31,15 +35,27 @@ namespace TEAM
             InitializeComponent();
             RegisterToolStripButtonCommands();
 
+            // Configures default styles for newly created graph elements
+            SetDefaultStyles();
+
+            // Enables and configures
+            EnableFolding();
+
             // Configures interaction
             ConfigureInteraction();
 
+            // Set form controls (zoom in, out etc.)
             UpdateViewport();
 
+
+
+            SetDefaultLabelParameters();
+
+            // Generate Graph
             MetadataGraph();
 
             // Make sure the layout is handled
-            morphLayout();
+            MorphLayout("Organic");
         }
 
         public IGraph Graph
@@ -47,6 +63,110 @@ namespace TEAM
             get { return graphControl.Graph; }
         }
 
+        public INode CreateGroupNodes(string groupNodeLabel, INode[] childNodes)
+        {
+            //Creates a group node that encloses the given child nodes
+            INode groupNode = Graph.GroupNodes(childNodes);
+
+            // Creates a label for the group node
+            Graph.AddLabel(groupNode, groupNodeLabel);
+
+            // Adjusts the layout of the group nodes
+            Graph.AdjustGroupNodeLayout(groupNode);
+            return groupNode;
+        }
+
+        private void SetDefaultStyles()
+        {
+            // Sets the default style for nodes
+            INodeStyle defaultNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidBrush(Color.LightGray) };
+
+            // Sets this style as the default for all nodes that don't have another
+            // style assigned explicitly
+            Graph.NodeDefaults.Style = defaultNodeStyle;
+
+            // Sets the default style for edges:
+            // Creates an edge style that will apply a gray pen with thickness 1
+            // to the entire line using PolyLineEdgeStyle,
+            // which draws a polyline determined by the edge's control points (bends)
+            var defaultEdgeStyle = new PolylineEdgeStyle { Pen = Pens.Gray };
+
+            // Sets the source and target arrows on the edge style instance
+            // (Actually: no source arrow)
+            // Note that IEdgeStyle itself does not have these properties
+            // Also note that by default there are no arrows
+            defaultEdgeStyle.TargetArrow = Arrows.Default;
+
+
+            // Sets the defined edge style as the default for all edges that don't have
+            Graph.EdgeDefaults.Style = defaultEdgeStyle;    
+
+            // Sets the default style for labels
+            ILabelStyle defaultEdgeLabelStyle = new DefaultLabelStyle { Font = new Font("Segoe UI", 9), TextBrush = Brushes.Black };
+            ILabelStyle defaultNodeLabelStyle = new DefaultLabelStyle { Font = new Font("Segoe UI", 9, FontStyle.Bold), TextBrush = Brushes.Black };
+
+            // Sets the defined style as the default for both edge and node labels:
+            Graph.EdgeDefaults.Labels.Style = defaultEdgeLabelStyle;
+            Graph.NodeDefaults.Labels.Style = defaultNodeLabelStyle;
+
+            // Sets the default size explicitly (Width, Height) 
+            Graph.NodeDefaults.Size = new SizeD(400, 40);
+
+
+            // GROUP NODES
+            // PanelNodeStyle is a style especially suited to group nodes
+            // Creates a panel with a light blue background
+            Color groupNodeColor = Color.FromArgb(255, 214, 229, 248);
+            var groupNodeDefaults = Graph.GroupNodeDefaults;
+            groupNodeDefaults.Style = new PanelNodeStyle
+            {
+                Color = groupNodeColor,
+                // Specifies insets that provide space for a label at the top
+                // For a solution how to determine these insets automatically, please
+                // see the yEd.NET demo application.
+                Insets = new InsetsD(5, 18, 5, 5),
+                LabelInsetsColor = groupNodeColor,
+            };
+
+            // Sets a label style with right-aligned text
+            groupNodeDefaults.Labels.Style = new DefaultLabelStyle
+            {
+                StringFormat = { Alignment = StringAlignment.Far }
+            };
+
+            // Places the label at the top inside of the panel.
+            // For PanelNodeStyle, InteriorStretchLabelModel is usually the most appropriate label model
+            groupNodeDefaults.Labels.LayoutParameter = InteriorStretchLabelModel.North;
+
+            // Sets the default size explicitly (Width, Height) 
+            Graph.GroupNodeDefaults.Size = new SizeD(100, 100);
+        }
+
+
+        private FoldingManager manager;
+
+        // Enables folding - changes the GraphControl's graph to a managed view that provides the actual collapse/expand state.
+        private void EnableFolding()
+        {
+            // Creates the folding manager and sets its master graph to the single graph there is now
+            manager = new FoldingManager(Graph);
+
+            // Creates a managed view from the master graph and replaces the existing graph view with a managed view
+            graphControl.Graph = manager.CreateFoldingView().Graph;
+            WrapGroupNodeStyles();
+        }
+
+        // Changes the default style for group nodes (the ones that can be folded)
+        private void WrapGroupNodeStyles()
+        {
+            IFoldingView foldingView = Graph.GetFoldingView();
+            if (foldingView != null)
+            {
+                //Wrap the style with CollapsibleNodeStyleDecorator
+                foldingView.Graph.GroupNodeDefaults.Style =
+                  new CollapsibleNodeStyleDecorator(foldingView.Graph.GroupNodeDefaults.Style);
+            }
+        }
 
         private void ConfigureInteraction()
         {
@@ -55,45 +175,69 @@ namespace TEAM
             graphControl.InputMode = new GraphEditorInputMode();
         }
 
-        private void morphLayout()
+        private void MorphLayout(string layoutParameter)
         {
-            graphControl.MorphLayout(new HierarchicLayout(), TimeSpan.FromSeconds(1), null);
+            if (layoutParameter == "Radial")
+            {
+                graphControl.MorphLayout(new RadialLayout(), TimeSpan.FromSeconds(1), null);
+            }
+            else if (layoutParameter == "Orthogonal")
+            {
+                graphControl.MorphLayout(new OrthogonalLayout(), TimeSpan.FromSeconds(1), null);
+            }
+            else if (layoutParameter == "Hierarchic")
+            {
+                graphControl.MorphLayout(new HierarchicLayout(), TimeSpan.FromSeconds(1), null);
+            }
+            else if (layoutParameter == "Organic")
+            {
+                graphControl.MorphLayout(new OrganicLayout(), TimeSpan.FromSeconds(1), null);
+            }
+            else if (layoutParameter == "Tree")
+            {
+                graphControl.MorphLayout(new TreeLayout(), TimeSpan.FromSeconds(1), null);
+            }
+            else // Default
+            {
+                //No layout
+            }
         }
 
         class EdgeCollection
         {
             public string SourceNode { get; set; }
             public string TargetNode { get; set; }
+            public string BusinessKeyDefinition { get; set;}
         }
 
         private void UpdateViewport()
-        {
-            // Uncomment the following line to update the content rectangle 
-            // to include all graph elements
-            // This should result in correct scrolling behavior:
-
-            //graphControl.UpdateContentRect();
-
-            // Additionally, we can also set the zoom level so that the
-            // content rectangle fits exactly into the viewport area:
-            // Uncomment this line in addition to UpdateContentRect:
-            // Note that this changes the zoom level (i.e. the graph elements will look smaller)
-
-            //graphControl.FitContent();
-
-            // The sequence above is equivalent to just calling:
+        {            
             graphControl.FitGraphBounds();
         }
 
+        private void SetDefaultLabelParameters()
+        {
+            // For node labels, the default is a label position at the node center. This code below sets the default explicitly.
+            Graph.NodeDefaults.Labels.LayoutParameter = InteriorLabelModel.Center;
+
+            // For edge labels, the default is a label that is rotated to match the associated edge segment
+            // We'll start by creating a model that is similar to the default:
+            EdgeSegmentLabelModel edgeSegmentLabelModel = new EdgeSegmentLabelModel();
+            // However, by default, the rotated label is centered on the edge path.
+            // Let's move the label off of the path:
+            edgeSegmentLabelModel.Distance = 5;
+            // Finally, we can set this label model as the default for edge labels using a location at the center of the first segment
+            Graph.EdgeDefaults.Labels.LayoutParameter = edgeSegmentLabelModel.CreateParameterFromSource(0, 0.5, EdgeSides.RightOfEdge);
+
+        }
 
         private void MetadataGraph()
         {
             var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
 
-            //Build up the list of nodes
-            var nodeList = new List<string>();
-            var systemList = new List<string>();
-            var edgeList = new Dictionary<string, EdgeCollection>();
+            var systemList = new List<string>(); // To create the groups (per system)
+            var nodeDictionary = new Dictionary<string, string>(); // To create the nodes and add them to a parent node (group)
+            var edgeDictionary = new Dictionary<string, EdgeCollection>(); // To create the edges / mappings from source to target
 
             //Get the core list of nodes
             var sqlStatementForTableMetadata = new StringBuilder();
@@ -110,90 +254,118 @@ namespace TEAM
             var tableMetadataDataTable = GetDataTable(ref connOmd, sqlStatementForTableMetadata.ToString());
 
 
-            // Make sure the metadata is loaded into the 'nodes' and 'edges' dictionaries
+            // Make sure the metadata is loaded into the 'systems', 'nodes' and 'edges' dictionaries
             foreach (DataRow row in tableMetadataDataTable.Rows)
             {
-                // Add the Integration Layer nodes
-                if (!nodeList.Contains((string)row["INTEGRATION_AREA_TABLE"]))
+                //Create the list of systems (containers)
+                var systemName = (string)row["STAGING_AREA_TABLE"].ToString().Split('_')[1];
+                if (!systemList.Contains(systemName))
                 {
-                    nodeList.Add((string)row["INTEGRATION_AREA_TABLE"]);
+                    systemList.Add(systemName);
                 }
 
-                // Add the Staging Layer nodes
-                if (!nodeList.Contains((string)row["STAGING_AREA_TABLE"]))
+
+                // Add the Integration Layer nodes
+                if (!nodeDictionary.ContainsKey((string)row["INTEGRATION_AREA_TABLE"]))
                 {
-                    nodeList.Add((string)row["STAGING_AREA_TABLE"]);
+                    nodeDictionary.Add((string)row["INTEGRATION_AREA_TABLE"], systemName);
+                }
+
+                //Add the Staging Layer nodes
+                if (!nodeDictionary.ContainsKey((string)row["STAGING_AREA_TABLE"]))
+                {
+                    nodeDictionary.Add((string)row["STAGING_AREA_TABLE"], systemName);
                 }
 
                 // Add the edge to the custom dictionary
-                edgeList.Add((string)row["TABLE_MAPPING_HASH"], new EdgeCollection { SourceNode = (string)row["STAGING_AREA_TABLE"], TargetNode = (string)row["INTEGRATION_AREA_TABLE"] });
-            }
-
-
-
-            // Add the nodes to the graph
-            foreach (string node in nodeList)
-            {
-                // Creates a node in the graph
-                var tempNode = Graph.CreateNode(new PointD(50, 50));
-                Graph.AddLabel(tempNode, node);
-
-                // Creates a port in the center of the node layout
-                Graph.AddPort(tempNode, FreeNodePortLocationModel.NodeCenterAnchored);
-            }
-
-            // Create a dictionary of all the nodes in the graph
-            var nodeDictionary = new Dictionary<string, INode>();
-            foreach (INode i in Graph.Nodes)
-            {
-                if (!nodeDictionary.ContainsKey(i.Labels[0].Text))
+                //if (edgeDictionary.All((e => e.Value.TargetNode != "")))
+                if (!edgeDictionary.ContainsKey((string)row["TABLE_MAPPING_HASH"]))
                 {
-                    nodeDictionary.Add(i.Labels[0].Text, i);
+                    edgeDictionary.Add((string)row["TABLE_MAPPING_HASH"], new EdgeCollection { SourceNode = (string)row["STAGING_AREA_TABLE"], TargetNode = (string)row["INTEGRATION_AREA_TABLE"], BusinessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"] });
                 }
             }
 
+            // Create the group nodes (systems)
+            foreach (string system in systemList)
+            {
+                INode groupNode = Graph.GroupNodes();
+
+                // Creates a label for the group node
+                Graph.AddLabel(groupNode, system);
+                Graph.AdjustGroupNodeLayout(groupNode);
+            }
+
+            // Add the nodes to the graph
+            foreach (var nodeDict in nodeDictionary)
+            {
+                // Creates a node in the graph
+                var tempNode = Graph.CreateNode(new PointD(50, 50));
+
+                // Add the label (name) to the node
+                Graph.AddLabel(tempNode, nodeDict.Key);
+
+                // Creates a port in the center of the node layout
+                Graph.AddPort(tempNode, FreeNodePortLocationModel.NodeCenterAnchored);
+
+                // Override the default style
+                INodeStyle hubNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidBrush(Color.LightBlue) };
+                INodeStyle satNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidBrush(Color.LightYellow) };
+                INodeStyle lnkNodeStyle = new ShinyPlateNodeStyle { Brush = new SolidBrush(Color.Red) };
+                if (nodeDict.Key.StartsWith("HUB_"))
+                {
+                    Graph.SetStyle(tempNode, hubNodeStyle);
+                }
+                if (nodeDict.Key.StartsWith("SAT_") || nodeDict.Key.StartsWith("LSAT_"))
+                {
+                    Graph.SetStyle(tempNode, satNodeStyle);
+                }
+                if (nodeDict.Key.StartsWith("LNK_"))
+                {
+                    Graph.SetStyle(tempNode, lnkNodeStyle);
+                }
+            }
+
+            // Create a dictionary of all the nodes in the graph
+            var graphNodeDictionary = new Dictionary<string, INode>();
+            foreach (INode i in Graph.Nodes)
+            {
+                if (!graphNodeDictionary.ContainsKey(i.Labels[0].Text))
+                {
+                    graphNodeDictionary.Add(i.Labels[0].Text, i);
+                }
+            }
+
+            // Make sure the nodes are placed in the appropriate group nodes (system nodes)
+            foreach (var node in graphNodeDictionary)
+            {
+                if (!Graph.IsGroupNode(node.Value))
+                {
+                    var systemName = node.Key.ToString().Split('_')[1];
+
+                    // Retrieve the parent for the given Node
+                    INode parentNode;
+                    graphNodeDictionary.TryGetValue(systemName, out parentNode);
+
+                   // Graph.SetParent(node.Value, parentNode);
+                }             
+            }
+
             // Add the edges to the graph
-            foreach (var edgeValue in edgeList.Values)
+            foreach (var edgeValue in edgeDictionary.Values)
             {
                 INode sourceValue;
                 INode targetValue;
 
-                nodeDictionary.TryGetValue(edgeValue.SourceNode, out sourceValue);
-                nodeDictionary.TryGetValue(edgeValue.TargetNode, out targetValue);
+                graphNodeDictionary.TryGetValue(edgeValue.SourceNode, out sourceValue);
+                graphNodeDictionary.TryGetValue(edgeValue.TargetNode, out targetValue);
 
-                Graph.CreateEdge(sourceValue, targetValue);
+                var newEdge = Graph.CreateEdge(sourceValue, targetValue);
+                // Add the label to the Edge
+                Graph.AddLabel(newEdge, edgeValue.BusinessKeyDefinition);
             }
 
 
 
-
-
-
-            //for (int i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-            //{
-            //    DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
-            //    string sourceNode = row.Cells[2].Value.ToString();
-            //    var systemName = sourceNode.Split('_')[1];
-            //    string targetNode = row.Cells[3].Value.ToString();
-
-            //    // Add source tables to Node List
-            //    if (!nodeList.Contains(sourceNode))
-            //    {
-            //        nodeList.Add(sourceNode);
-            //    }
-
-            //    // Add target tables to Node List
-            //    if (!nodeList.Contains(targetNode))
-            //    {
-            //        nodeList.Add(targetNode);
-            //    }
-
-            //    // Create a system list
-            //    if (!systemList.Contains(systemName))
-            //    {
-            //        systemList.Add(systemName);
-            //    }
-            //}
 
 
             //For later, get the source/target model relationships for Hubs/Sats
@@ -313,61 +485,7 @@ namespace TEAM
                 }
             }
 
-            foreach (string node in segmentNodeList)
-            {
-                //if (node.Contains("STG_"))
-                //{
-                //    dgmlExtract.AppendLine("    <Node Id=\"" + node + "\"  Category=\"Source System\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                //}
-                //else if (node.Contains("HUB_"))
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
-                //}
-                //else if (node.Contains("LNK_"))
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" + node + "\" />");
-                //}
-                //else if (node.Contains("SAT_") || node.Contains("LSAT_"))
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                //}
-                //else // The others
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Unknown\" Label=\"" + node + "\" />");
-                //}
-            }
 
-
-
-            //Write the nodes to DGML
-            var dgmlExtract = new StringBuilder();
-
-
-            foreach (string node in nodeList)
-            {
-               // var tempNode = Graph.CreateNode(new PointD(50, 50));
-               // Graph.AddLabel(tempNode, node);
-                //if (node.Contains("STG_"))
-                //{
-                //    dgmlExtract.AppendLine("    <Node Id=\"" + node + "\"  Category=\"Source System\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                //}
-                //else if (node.Contains("HUB_"))
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
-                //}
-                //else if (node.Contains("LNK_"))
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" + node + "\" />");
-                //}
-                //else if (node.Contains("SAT_") || node.Contains("LSAT_"))
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                //}
-                //else // The others
-                //{
-                //    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Unknown\" Label=\"" + node + "\" />");
-                //}
-            }
 
             // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
             foreach (DataRow row in satelliteAttributes.Rows)
@@ -377,33 +495,18 @@ namespace TEAM
                 var targetNodeLabel = (string)row["ATTRIBUTE_NAME_TO"];
                 var targetNode = "dwh_" + targetNodeLabel;
 
-                // Add source tables to Node List
-                if (!nodeList.Contains(sourceNode))
-                {
-                    nodeList.Add(sourceNode);
-                }
+                //// Add source tables to Node List
+                //if (!nodeList.Contains(sourceNode))
+                //{
+                //    nodeList.Add(sourceNode);
+                //}
 
-                // Add target tables to Node List
-                if (!nodeList.Contains(targetNode))
-                {
-                    nodeList.Add(targetNode);
-                }
+                //// Add target tables to Node List
+                //if (!nodeList.Contains(targetNode))
+                //{
+                //    nodeList.Add(targetNode);
+                //}
 
-                dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode + "\"  Category=\"Unknown\" Label=\"" + sourceNodeLabel + "\" />");
-                dgmlExtract.AppendLine("     <Node Id=\"" + targetNode + "\"  Category=\"Unknown\" Label=\"" + targetNodeLabel + "\" />");
-            }
-
-
-
-
-            //Adding the category nodes
-            dgmlExtract.AppendLine("    <Node Id=\"Staging Area\" Group=\"Expanded\" Label=\"Staging Area\"/>");
-            dgmlExtract.AppendLine("    <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
-
-            //Adding the source system containers as nodes
-            foreach (var node in systemList)
-            {
-                dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Group=\"Expanded\" Category=\"Source System\" Label=\"" + node + "\" />");
             }
 
             //Adding the CBC nodes (Hubs and Links)
@@ -413,43 +516,10 @@ namespace TEAM
                 TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
                 segmentName = textInfo.ToTitleCase(segmentName);
 
-                dgmlExtract.AppendLine("    <Node Id=\"" + segmentName + "\" Group=\"Expanded\" Label=\"" + segmentName + "\" IsHubContainer=\"True\" />");
-            }
+          }
 
-            dgmlExtract.AppendLine("  </Nodes>");
-            //End of Nodes
+   
 
-            //Edges and containers
-            dgmlExtract.AppendLine("  <Links>");
-
-            //for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-            //{
-            //    var row = dataGridViewTableMetadata.Rows[i];
-            //    var sourceNode = row.Cells[2].Value.ToString();
-            //    var targetNode = row.Cells[3].Value.ToString();
-            //    var businessKey = row.Cells[4].Value.ToString();
-
-            //    dgmlExtract.AppendLine("    <Link Source=\"" + sourceNode + "\" Target=\"" + targetNode + "\" BusinessKeyDefintion=\"" + businessKey + "\"/>");
-            //}
-
-            //Add container groupings (node-based) - adding source system containers to 'staging area'
-            foreach (var node in systemList)
-            {
-                dgmlExtract.AppendLine("     <Link Source=\"Staging Area\" Target=\"" + node + "\" Category=\"Contains\" />");
-            }
-
-            //// Adding the staging area table to the source system container
-            //for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-            //{
-            //    var row = dataGridViewTableMetadata.Rows[i];
-            //    var node = row.Cells[2].Value.ToString();
-            //    var systemName = node.Split('_')[1];
-
-            //    if (node.Contains("STG_"))
-            //    {
-            //        dgmlExtract.AppendLine("    <Link Source=\"" + systemName + "\" Target=\"" + node + "\" Category=\"Contains\" />");
-            //    }
-            //}
 
             // Separate routine to create STG/ATT and SAT/ATT relationships
             foreach (DataRow row in satelliteAttributes.Rows)
@@ -460,11 +530,7 @@ namespace TEAM
                 var targetNodeStg = "staging_" + (string)row["ATTRIBUTE_NAME_FROM"];
 
                 // This is adding the attributes to the tables
-                dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeSat + "\" Target=\"" + targetNodeSat + "\" Category=\"Contains\" />");
-                dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeStg + "\" Target=\"" + targetNodeStg + "\" Category=\"Contains\" />");
 
-                // This is adding the edge between the attributes
-                dgmlExtract.AppendLine("    <Link Source=\"" + targetNodeStg + "\" Target=\"" + targetNodeSat + "\" />");
             }
 
             //Add Data Vault objects to segment
@@ -474,8 +540,6 @@ namespace TEAM
                 var textInfo = new CultureInfo("en-US", false).TextInfo;
                 segmentName = textInfo.ToTitleCase(segmentName);
                 // <Link Source="Renewal_Membership" Target="LNK_RENEWAL_MEMBERSHIP" Category="Contains" />
-                dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + node + "\" Category=\"Contains\" />");
-                dgmlExtract.AppendLine("    <Link Source=\"Data Vault\" Target=\"" + segmentName + "\" Category=\"Contains\" />");
             }
 
             //Add groupings to a Hub (CBC), if there is a Satellite
@@ -491,10 +555,7 @@ namespace TEAM
                 segmentName = textInfo.ToTitleCase(segmentName);
 
                 //Map the Satellite to the Hub and CBC
-                dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" +
-                                       modelRelationshipsSat + "\" Category=\"Contains\" />");
-                dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsHub +
-                                       "\" Target=\"" + modelRelationshipsSat + "\" />");
+
             }
 
             //Add groupings per Link (CBC), if there is a Satellite
@@ -510,8 +571,6 @@ namespace TEAM
                 segmentName = textInfo.ToTitleCase(segmentName);
 
                 //Map the Satellite to the Link and CBC
-                dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + modelRelationshipsSat + "\" Category=\"Contains\" />");
-                dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsLink + "\" Target=\"" + modelRelationshipsSat + "\" />");
             }
 
 
@@ -532,57 +591,9 @@ namespace TEAM
                 var textInfoTo = new CultureInfo("en-US", false).TextInfo;
                 segmentNameTo = textInfoTo.ToTitleCase(segmentNameTo);
 
-                dgmlExtract.AppendLine("    <Link Source=\"" + segmentNameFrom + "\" Target=\"" + segmentNameTo + "\" />");
             }
-
-            dgmlExtract.AppendLine("  </Links>");
-
-            //Add containers
-            dgmlExtract.AppendLine("  <Categories>");
-            dgmlExtract.AppendLine("    <Category Id = \"Source System\" Label = \"Source System\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
-            dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
-            dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
-            dgmlExtract.AppendLine("    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
-            dgmlExtract.AppendLine("  </Categories>");
-
-            //Add styles 
-            dgmlExtract.AppendLine("  <Styles >");
-
-            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Source System\" ValueLabel = \"Has category\" >");
-            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Source System')\" />");
-            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6E6A69\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-            dgmlExtract.AppendLine("    </Style >");
-
-            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
-            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Hub')\" />");
-            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6495ED\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-            dgmlExtract.AppendLine("    </Style >");
-
-            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
-            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Link')\" />");
-            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFB22222\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-            dgmlExtract.AppendLine("    </Style >");
-
-            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
-            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Satellite')\" />");
-            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFC0A000\" />");
-            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-            dgmlExtract.AppendLine("    </Style >");
-
-            dgmlExtract.AppendLine("  </Styles >");
-
-
-
-            dgmlExtract.AppendLine("</DirectedGraph>");
-
         }
+
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -596,15 +607,29 @@ namespace TEAM
             fitContentButton.SetCommand(Commands.FitContent, graphControl);
         }
 
-
-        private void closeToolStripMenuItem_Click_2(object sender, EventArgs e)
+        private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void graphControl_Click(object sender, EventArgs e)
+        private void radialToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            MorphLayout("Radial");
+        }
 
+        private void orthogonalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MorphLayout("Orthogonal");
+        }
+
+        private void organicToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MorphLayout("Organic");
+        }
+
+        private void hierarchicToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MorphLayout("Hierarchic");
         }
     }
 }

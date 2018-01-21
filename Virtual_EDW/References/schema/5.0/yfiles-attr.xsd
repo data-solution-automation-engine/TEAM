@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!-- Header -->
+<xs:schema 
+             targetNamespace="http://www.yworks.com/xml/yfiles-common/3.0"
+             xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             elementFormDefault="qualified"
+             attributeFormDefault="unqualified"
+>
+
+<xs:attribute name="attr.uri" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Custom yfiles specific attribute that allows to specify a URI as unique identifier for an attribute name.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+</xs:schema>
+
+
