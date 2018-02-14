@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class Form_Alert : Form_Base
+    public partial class FormAlert : FormBase
     {
         //Make the label and progressbar accessbile from the main form for updates
         public string Message
@@ -22,7 +21,7 @@ namespace TEAM
             set { progressBar1.Value = value; }
         }
 
-        public Form_Alert()
+        public FormAlert()
         {
             InitializeComponent();
         }
@@ -40,6 +39,7 @@ namespace TEAM
                 }
                 catch
                 {
+                    // ignored
                 }
             }
         else
@@ -50,6 +50,7 @@ namespace TEAM
                 }
                 catch
                 {
+                    // ignored
                 }
             }           
         }

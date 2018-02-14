@@ -130,11 +130,11 @@
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Form_Base.cs">
+    <Compile Include="FormBase.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form_Base.Designer.cs">
-      <DependentUpon>Form_Base.cs</DependentUpon>
+    <Compile Include="FormBase.Designer.cs">
+      <DependentUpon>FormBase.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_About.cs">
       <SubType>Form</SubType>
@@ -142,11 +142,11 @@
     <Compile Include="Form_About.Designer.cs">
       <DependentUpon>Form_About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form_Alert.cs">
+    <Compile Include="FormAlert.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form_Alert.Designer.cs">
-      <DependentUpon>Form_Alert.cs</DependentUpon>
+    <Compile Include="FormAlert.Designer.cs">
+      <DependentUpon>FormAlert.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_Graph.cs">
       <SubType>Form</SubType>
@@ -198,11 +198,11 @@
     <EmbeddedResource Include="Form_About.resx">
       <DependentUpon>Form_About.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form_Alert.resx">
-      <DependentUpon>Form_Alert.cs</DependentUpon>
+    <EmbeddedResource Include="FormAlert.resx">
+      <DependentUpon>FormAlert.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form_Base.resx">
-      <DependentUpon>Form_Base.cs</DependentUpon>
+    <EmbeddedResource Include="FormBase.resx">
+      <DependentUpon>FormBase.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Graph.resx">
       <DependentUpon>Form_Graph.cs</DependentUpon>

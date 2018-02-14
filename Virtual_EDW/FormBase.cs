@@ -7,25 +7,22 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class Form_Base : Form
+    public partial class FormBase : Form
     {
-        protected FormMain _myParent;
+        protected FormMain MyParent;
 
-        public Form_Base()
+        public FormBase()
         {
             InitializeComponent();
         }
 
-        public Form_Base(FormMain _myParent)
+        public FormBase(FormMain myParent)
         {
-            this._myParent = _myParent;
+            MyParent = myParent;
             InitializeComponent();
         }
 
-
-
-
-
+        
         public DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
         {
             // Pass the connection to a command object
@@ -77,23 +74,11 @@ namespace TEAM
 
         }
 
-        public KeyValuePair<int, int> GetVersion(int selectedVersion)
+        public KeyValuePair<int, int> GetVersion(int selectedVersion, SqlConnection sqlConnection)
         {
-
-            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
-
             var currentVersion = selectedVersion;
             var majorRelease = new int();
             var minorRelease = new int();
-
-            try
-            {
-                connOmd.Open();
-            }
-            catch (Exception)
-            {
-                //richTextBoxInformation.Text += exception.Message;
-            }
 
             var sqlStatementForVersion = new StringBuilder();
 
@@ -101,7 +86,7 @@ namespace TEAM
             sqlStatementForVersion.AppendLine("FROM MD_VERSION");
             sqlStatementForVersion.AppendLine("WHERE VERSION_ID = " + currentVersion);
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForVersion.ToString());
+            var versionList = GetDataTable(ref sqlConnection, sqlStatementForVersion.ToString());
 
             if (versionList != null)
             {
@@ -129,14 +114,13 @@ namespace TEAM
             }
         }
 
-        protected int GetMaxVersionId()
+        protected int GetMaxVersionId(SqlConnection sqlConnection)
         {
-            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
             var versionId = new int();
 
             try
             {
-                connOmd.Open();
+                sqlConnection.Open();
             }
             catch (Exception)
             {
@@ -148,7 +132,7 @@ namespace TEAM
             sqlStatementForVersion.AppendLine("SELECT COALESCE(MAX(VERSION_ID),0) AS VERSION_ID");
             sqlStatementForVersion.AppendLine("FROM MD_VERSION");
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForVersion.ToString());
+            var versionList = GetDataTable(ref sqlConnection, sqlStatementForVersion.ToString());
 
             if (versionList!= null)
             {
@@ -166,7 +150,7 @@ namespace TEAM
         }
         protected int GetVersionCount()
         {
-            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
             var versionCount = new int();
 
             try

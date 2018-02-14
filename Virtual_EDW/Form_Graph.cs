@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Mime;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using yWorks.Algorithms;
-using static TEAM.Form_Base;
 using yWorks.Controls;
 using yWorks.Controls.Input;
 using yWorks.Geometry;
@@ -28,7 +20,7 @@ using yWorks.Graph.LabelModels;
 
 namespace TEAM
 {
-    public partial class FormManageGraph : Form_Base
+    public partial class FormManageGraph : FormBase
     {
         public FormManageGraph(FormMain parent) : base(parent)
         {
@@ -143,16 +135,16 @@ namespace TEAM
         }
 
 
-        private FoldingManager manager;
+        private FoldingManager _manager;
 
         // Enables folding - changes the GraphControl's graph to a managed view that provides the actual collapse/expand state.
         private void EnableFolding()
         {
             // Creates the folding manager and sets its master graph to the single graph there is now
-            manager = new FoldingManager(Graph);
+            _manager = new FoldingManager(Graph);
 
             // Creates a managed view from the master graph and replaces the existing graph view with a managed view
-            graphControl.Graph = manager.CreateFoldingView().Graph;
+            graphControl.Graph = _manager.CreateFoldingView().Graph;
             WrapGroupNodeStyles();
         }
 
@@ -233,7 +225,7 @@ namespace TEAM
 
         private void MetadataGraph()
         {
-            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
 
             var systemList = new List<string>(); // To create the groups (per system)
             var nodeDictionary = new Dictionary<string, string>(); // To create the nodes and add them to a parent node (group)
@@ -258,7 +250,7 @@ namespace TEAM
             foreach (DataRow row in tableMetadataDataTable.Rows)
             {
                 //Create the list of systems (containers)
-                var systemName = (string)row["STAGING_AREA_TABLE"].ToString().Split('_')[1];
+                var systemName = row["STAGING_AREA_TABLE"].ToString().Split('_')[1];
                 if (!systemList.Contains(systemName))
                 {
                     systemList.Add(systemName);
@@ -340,7 +332,7 @@ namespace TEAM
             {
                 if (!Graph.IsGroupNode(node.Value))
                 {
-                    var systemName = node.Key.ToString().Split('_')[1];
+                    var systemName = node.Key.Split('_')[1];
 
                     // Retrieve the parent for the given Node
                     INode parentNode;
@@ -514,7 +506,7 @@ namespace TEAM
             {
                 string segmentName = node.Remove(0, 4).ToLower();
                 TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-                segmentName = textInfo.ToTitleCase(segmentName);
+                textInfo.ToTitleCase(segmentName);
 
           }
 
@@ -538,7 +530,7 @@ namespace TEAM
             {
                 var segmentName = node.Remove(0, 4).ToLower();
                 var textInfo = new CultureInfo("en-US", false).TextInfo;
-                segmentName = textInfo.ToTitleCase(segmentName);
+                textInfo.ToTitleCase(segmentName);
                 // <Link Source="Renewal_Membership" Target="LNK_RENEWAL_MEMBERSHIP" Category="Contains" />
             }
 
@@ -552,7 +544,7 @@ namespace TEAM
 
                 var segmentName = modelRelationshipsHub.Remove(0, 4).ToLower();
                 var textInfo = new CultureInfo("en-US", false).TextInfo;
-                segmentName = textInfo.ToTitleCase(segmentName);
+                textInfo.ToTitleCase(segmentName);
 
                 //Map the Satellite to the Hub and CBC
 
@@ -568,7 +560,7 @@ namespace TEAM
 
                 var segmentName = modelRelationshipsLink.Remove(0, 4).ToLower();
                 var textInfo = new CultureInfo("en-US", false).TextInfo;
-                segmentName = textInfo.ToTitleCase(segmentName);
+                textInfo.ToTitleCase(segmentName);
 
                 //Map the Satellite to the Link and CBC
             }
@@ -585,20 +577,16 @@ namespace TEAM
 
                 var segmentNameFrom = modelRelationshipsHub.Remove(0, 4).ToLower();
                 var textInfoFrom = new CultureInfo("en-US", false).TextInfo;
-                segmentNameFrom = textInfoFrom.ToTitleCase(segmentNameFrom);
+                textInfoFrom.ToTitleCase(segmentNameFrom);
 
                 var segmentNameTo = modelRelationshipsLink.Remove(0, 4).ToLower();
                 var textInfoTo = new CultureInfo("en-US", false).TextInfo;
-                segmentNameTo = textInfoTo.ToTitleCase(segmentNameTo);
+                textInfoTo.ToTitleCase(segmentNameTo);
 
             }
         }
 
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
         private void RegisterToolStripButtonCommands()
         {
             // Register commands to buttons using the convinence extension method

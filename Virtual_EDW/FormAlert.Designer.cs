@@ -1,6 +1,6 @@
 ﻿namespace TEAM
 {
-    partial class Form_Alert
+    partial class FormAlert
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Alert));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAlert));
             this.labelMessage = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.buttonCancel = new System.Windows.Forms.Button();
@@ -115,7 +115,7 @@
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.labelMessage);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form_Alert";
+            this.Name = "FormAlert";
             this.Text = "Processing Metadata";
             this.ResumeLayout(false);
             this.PerformLayout();

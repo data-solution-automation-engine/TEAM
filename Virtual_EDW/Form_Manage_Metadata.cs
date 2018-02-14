@@ -12,13 +12,12 @@ using System.Windows.Forms;
 namespace TEAM
 {
 
-    public partial class FormManageMetadata : Form_Base
+    public partial class FormManageMetadata : FormBase
     {
-        //private readonly FormMain _myParent;
-        Form_Alert _alert;
+        FormAlert _alert;
 
-        private BindingSource bindingSourceTableMetadata = new BindingSource();
-        private BindingSource bindingSourceAttributeMetadata = new BindingSource();
+        private BindingSource _bindingSourceTableMetadata = new BindingSource();
+        private BindingSource _bindingSourceAttributeMetadata = new BindingSource();
 
         public FormManageMetadata()
         {
@@ -40,7 +39,8 @@ namespace TEAM
 
             radiobuttonNoVersionChange.Checked = true;
 
-            var selectedVersion = GetMaxVersionId();
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var selectedVersion = GetMaxVersionId(connOmd);
 
             trackBarVersioning.Maximum = selectedVersion;
             // trackBarVersioning.Maximum = GetVersionCount();
@@ -51,7 +51,7 @@ namespace TEAM
             PopulateAttributeGridWithVersion(selectedVersion);
 
             //Make sure the version is displayed
-            var versionMajorMinor = GetVersion(selectedVersion);
+            var versionMajorMinor = GetVersion(selectedVersion, connOmd);
             var majorVersion = versionMajorMinor.Key;
             var minorVersion = versionMajorMinor.Value;
 
@@ -67,7 +67,7 @@ namespace TEAM
         private void PopulateTableGridWithVersion(int versionId)
         {
             // open latest version
-            var connOmd = new SqlConnection {ConnectionString = _myParent.textBoxMetadataConnection.Text};
+            var connOmd = new SqlConnection {ConnectionString = MyParent.textBoxMetadataConnection.Text};
 
             int selectedVersion = versionId;
 
@@ -94,12 +94,12 @@ namespace TEAM
             sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
 
             var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-            bindingSourceTableMetadata.DataSource = versionList;
+            _bindingSourceTableMetadata.DataSource = versionList;
 
             if (versionList != null)
             {
                 // Set the column header names.
-                dataGridViewTableMetadata.DataSource = bindingSourceTableMetadata;
+                dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
                 dataGridViewTableMetadata.ColumnHeadersVisible = true;
                 dataGridViewTableMetadata.Columns[0].Visible = false;
                 dataGridViewTableMetadata.Columns[1].Visible = false;
@@ -118,7 +118,7 @@ namespace TEAM
         private void PopulateAttributeGridWithVersion(int versionId)
         {
             // open latest version
-            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
 
             int selectedVersion = versionId;
 
@@ -144,12 +144,12 @@ namespace TEAM
             sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
 
             var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-            bindingSourceAttributeMetadata.DataSource = versionList;
+            _bindingSourceAttributeMetadata.DataSource = versionList;
 
             if (versionList != null)
             {
                 // Set the column header names.
-                dataGridViewAttributeMetadata.DataSource = bindingSourceAttributeMetadata;
+                dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
                 dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
                 dataGridViewAttributeMetadata.Columns[0].Visible = false;
                 dataGridViewAttributeMetadata.Columns[1].Visible = false;
@@ -339,53 +339,53 @@ namespace TEAM
         private void ManageModelMetadataVersion()
         {
             // Synchronise the model version with the automation metadata version
-            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
             try
             {
                 connOmd.Open();
+
+                //Retrieve the version key after version handling
+                var versionId = GetMaxVersionId(connOmd);
+                var previousVersionId = trackBarVersioning.Value;
+
+                //Create insert statement
+                var insertQueryTables = new StringBuilder();
+
+                insertQueryTables.AppendLine("INSERT INTO MD_VERSION_ATTRIBUTE");
+                insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [DRIVING_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
+                insertQueryTables.AppendLine("SELECT ");
+                insertQueryTables.AppendLine(" " + versionId + ",");
+                insertQueryTables.AppendLine(" [TABLE_NAME], ");
+                insertQueryTables.AppendLine(" [COLUMN_NAME], ");
+                insertQueryTables.AppendLine(" [DATA_TYPE], ");
+                insertQueryTables.AppendLine(" [CHARACTER_MAXIMUM_LENGTH], ");
+                insertQueryTables.AppendLine(" [NUMERIC_PRECISION], ");
+                insertQueryTables.AppendLine(" [ORDINAL_POSITION], ");
+                insertQueryTables.AppendLine(" [PRIMARY_KEY_INDICATOR], ");
+                insertQueryTables.AppendLine(" [DRIVING_KEY_INDICATOR], ");
+                insertQueryTables.AppendLine(" [MULTI_ACTIVE_INDICATOR] ");
+                insertQueryTables.AppendLine("FROM MD_VERSION_ATTRIBUTE");
+                insertQueryTables.AppendLine("WHERE VERSION_ID = " + previousVersionId + "");
+
+                //Execute the insert statement
+                using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
+                {
+                    var command = new SqlCommand(insertQueryTables.ToString(), connection);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBoxInformation.Text += "An issue has occurred: " + ex;
+                    }
+                }
             }
             catch
             {
                 richTextBoxInformation.Text += "An error has occurred synchronising the model and metadata versions: the database connection could not be established. The connection string used was " + connOmd.ConnectionString + ".\r\n";
-            }
-
-            //Retrieve the version key after version handling
-            var versionId = GetMaxVersionId();
-            var previousVersionId = trackBarVersioning.Value;
-
-            //Create insert statement
-            var insertQueryTables = new StringBuilder();
-
-            insertQueryTables.AppendLine("INSERT INTO MD_VERSION_ATTRIBUTE");
-            insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [DRIVING_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
-            insertQueryTables.AppendLine("SELECT ");
-            insertQueryTables.AppendLine(" "+versionId+",");
-            insertQueryTables.AppendLine(" [TABLE_NAME], ");
-            insertQueryTables.AppendLine(" [COLUMN_NAME], ");
-            insertQueryTables.AppendLine(" [DATA_TYPE], ");
-            insertQueryTables.AppendLine(" [CHARACTER_MAXIMUM_LENGTH], ");
-            insertQueryTables.AppendLine(" [NUMERIC_PRECISION], ");
-            insertQueryTables.AppendLine(" [ORDINAL_POSITION], ");
-            insertQueryTables.AppendLine(" [PRIMARY_KEY_INDICATOR], ");
-            insertQueryTables.AppendLine(" [DRIVING_KEY_INDICATOR], ");
-            insertQueryTables.AppendLine(" [MULTI_ACTIVE_INDICATOR] ");
-            insertQueryTables.AppendLine("FROM MD_VERSION_ATTRIBUTE");
-            insertQueryTables.AppendLine("WHERE VERSION_ID = " + previousVersionId + "");
-
-            //Execute the insert statement
-            using (var connection = new SqlConnection(_myParent.textBoxMetadataConnection.Text))
-            {
-                var command = new SqlCommand(insertQueryTables.ToString(), connection);
-
-                try
-                {
-                    connection.Open();
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    richTextBoxInformation.Text += "An issue has occurred: " + ex;
-                }
             }
         }        
 
@@ -399,7 +399,7 @@ namespace TEAM
             insertStatement.AppendLine("VALUES ");
             insertStatement.AppendLine("('N/A', 'N/A', " + majorVersion + "," + minorVersion + ")");
 
-            using (var connectionVersion = new SqlConnection(_myParent.textBoxMetadataConnection.Text))
+            using (var connectionVersion = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
             {
                 var commandVersion = new SqlCommand(insertStatement.ToString(), connectionVersion);
 
@@ -425,7 +425,7 @@ namespace TEAM
                                        "TRUNCATE TABLE [MD_VERSION_ATTRIBUTE]; " + //This is the model metadata
                                        "TRUNCATE TABLE [MD_VERSION];";
 
-            using (var connection = new SqlConnection(_myParent.textBoxMetadataConnection.Text))
+            using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
             {
                 var command = new SqlCommand(commandText, connection);
 
@@ -448,7 +448,8 @@ namespace TEAM
             PopulateTableGridWithVersion(trackBarVersioning.Value);
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
 
-            var versionMajorMinor = GetVersion(trackBarVersioning.Value);
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
             var majorVersion = versionMajorMinor.Key;
             var minorVersion = versionMajorMinor.Value;
 
@@ -470,14 +471,15 @@ namespace TEAM
             if (dataGridViewTableMetadata.RowCount > 0 || dataGridViewAttributeMetadata.RowCount > 0) //Check if there are rows available in the grid view
             {
                 //Create a datatable containing the changes, to check if there are ones to begin with
-                DataTable dataTableKeyChanges = ((DataTable)bindingSourceTableMetadata.DataSource).GetChanges();
-                DataTable dataTableAttributeChanges = ((DataTable)bindingSourceAttributeMetadata.DataSource).GetChanges();
+                DataTable dataTableKeyChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
+                DataTable dataTableAttributeChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
 
                 if ( (dataTableKeyChanges != null && (dataTableKeyChanges.Rows.Count > 0)) || (dataTableAttributeChanges != null && (dataTableAttributeChanges.Rows.Count > 0))) //Check if there are any changes made at all
                 {
                     //Retrieve the current version
-                    var maxVersion = GetMaxVersionId();
-                    var versionKeyValuePair = GetVersion(maxVersion);
+                    var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+                    var maxVersion = GetMaxVersionId(connOmd);
+                    var versionKeyValuePair = GetVersion(maxVersion, connOmd);
                     var majorVersion = versionKeyValuePair.Key;
                     var minorVersion = versionKeyValuePair.Value;
 
@@ -492,15 +494,16 @@ namespace TEAM
                             ManageModelMetadataVersion(); //Keep the model metadata in sync when model version changes
 
                             //Commit the save of the metadata
-                            var versionId = GetMaxVersionId();
+                            var versionId = GetMaxVersionId(connOmd);
                             SaveTableMappingMetadata(versionId, dataTableKeyChanges);
                             SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges);
 
                             //Refresh the UI to display the newly created version
-                            trackBarVersioning.Maximum = GetMaxVersionId();
+                            trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
                             trackBarVersioning.TickFrequency = GetVersionCount();
-                            trackBarVersioning.Value = GetMaxVersionId();
-                        //    _myParent.SetVersion(GetMaxVersionId());
+                            trackBarVersioning.Value = GetMaxVersionId(connOmd);
+
+                            //MyParent.DisplayMaxVersion(connOmd); disabled due to multithreading issue
                         }
                         catch (Exception ex)
                         {
@@ -517,15 +520,17 @@ namespace TEAM
                             ManageModelMetadataVersion(); //Keep the model metadata in sync when model version changes
 
                             //Commit the save of the metadata
-                            var versionId = GetMaxVersionId();
+                            var versionId = GetMaxVersionId(connOmd);
                             SaveTableMappingMetadata(versionId, dataTableKeyChanges);
                             SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges);
 
                             //Refresh the UI to display the newly created version
-                            trackBarVersioning.Maximum = GetMaxVersionId();
+                            trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
                             trackBarVersioning.TickFrequency = GetVersionCount();
-                            trackBarVersioning.Value = GetMaxVersionId();
-                         //   _myParent.SetVersion(GetMaxVersionId());
+                            trackBarVersioning.Value = GetMaxVersionId(connOmd);
+
+                            //MyParent.DisplayMaxVersion(connOmd); disabled due to multithreading issue
+
                         }
                         catch (Exception ex)
                         {
@@ -535,7 +540,7 @@ namespace TEAM
 
                     if (radiobuttonNoVersionChange.Checked)
                     {
-                        var versionId = GetMaxVersionId();
+                        var versionId = GetMaxVersionId(connOmd);
                         SaveTableMappingMetadata(versionId, dataTableKeyChanges);
                         SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges);
                     }
@@ -742,7 +747,7 @@ namespace TEAM
             }
             else
             {
-                using (var connection = new SqlConnection(_myParent.textBoxMetadataConnection.Text))
+                using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -752,7 +757,7 @@ namespace TEAM
                         command.ExecuteNonQuery();
                         richTextBoxInformation.Text += "The Business Key / Table Mapping metadata has been saved.\r\n";
                         dataTableChanges.AcceptChanges();
-                        ((DataTable) bindingSourceTableMetadata.DataSource).AcceptChanges();
+                        ((DataTable) _bindingSourceTableMetadata.DataSource).AcceptChanges();
                     }
                     catch (Exception ex)
                     {
@@ -902,7 +907,7 @@ namespace TEAM
             }
             else
             {
-                using (var connection = new SqlConnection(_myParent.textBoxMetadataConnection.Text))
+                using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -914,10 +919,10 @@ namespace TEAM
                         if (dataTableChanges != null)
                         {
                             dataTableChanges.AcceptChanges();
-                            ((DataTable) bindingSourceTableMetadata.DataSource).AcceptChanges();
+                            ((DataTable) _bindingSourceTableMetadata.DataSource).AcceptChanges();
                             dataTableChanges.AcceptChanges();
                         }
-                        ((DataTable) bindingSourceAttributeMetadata.DataSource).AcceptChanges();
+                        ((DataTable) _bindingSourceAttributeMetadata.DataSource).AcceptChanges();
                     }
                     catch (Exception ex)
                     {
@@ -948,7 +953,7 @@ namespace TEAM
                     dataSet.ReadXml(chosenFile);
 
                     dataGridViewTableMetadata.DataSource = dataSet.Tables[0];
-                    bindingSourceTableMetadata.DataSource = dataGridViewTableMetadata.DataSource;
+                    _bindingSourceTableMetadata.DataSource = dataGridViewTableMetadata.DataSource;
 
                     GridAutoLayout();
                     richTextBoxInformation.Text = "The Business Key metadata has been loaded from file.\r\n";
@@ -980,7 +985,7 @@ namespace TEAM
                     {
                         var chosenFile = theDialog.FileName;
                       
-                        DataTable gridDataTable = (DataTable) bindingSourceTableMetadata.DataSource;
+                        DataTable gridDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
 
                         gridDataTable.TableName = "TableMappingMetadata";
 
@@ -1019,7 +1024,7 @@ namespace TEAM
                     {
                         var chosenFile = theDialog.FileName;
 
-                        DataTable gridDataTable = (DataTable)bindingSourceAttributeMetadata.DataSource;
+                        DataTable gridDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
 
                         gridDataTable.TableName = "AttributeMappingMetadata";
 
@@ -1060,7 +1065,7 @@ namespace TEAM
                     dataSet.ReadXml(chosenFile);
 
                     dataGridViewAttributeMetadata.DataSource = dataSet.Tables[0];
-                    bindingSourceAttributeMetadata.DataSource = dataGridViewAttributeMetadata.DataSource;
+                    _bindingSourceAttributeMetadata.DataSource = dataGridViewAttributeMetadata.DataSource;
 
                     GridAutoLayout();
                     richTextBoxInformation.Text = "The metadata has been loaded from file.\r\n";
@@ -1084,8 +1089,11 @@ namespace TEAM
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+
             richTextBoxInformation.Clear();
-            var versionMajorMinor = GetVersion(trackBarVersioning.Value);
+
+            var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
             var majorVersion = versionMajorMinor.Key;
             var minorVersion = versionMajorMinor.Value;
             richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." +minorVersion + ".\r\n";
@@ -1098,15 +1106,13 @@ namespace TEAM
                 
                 versionExistenceCheck.AppendLine("SELECT * FROM MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
 
-                var connOmd = new SqlConnection(_myParent.textBoxMetadataConnection.Text);
-
                 var versionExistenceCheckDataTable = GetDataTable(ref connOmd, versionExistenceCheck.ToString());
 
                 if (versionExistenceCheckDataTable != null && versionExistenceCheckDataTable.Rows.Count > 0)
                 {
                     if (backgroundWorker1.IsBusy) return;
                     // create a new instance of the alert form
-                    _alert = new Form_Alert();
+                    _alert = new FormAlert();
                     // event handler for the Cancel button in AlertForm
                     _alert.Canceled += buttonCancel_Click;
                     _alert.Show();
@@ -1121,9 +1127,9 @@ namespace TEAM
             }
             else
             {
-                if (backgroundWorker1.IsBusy == true) return;
+                if (backgroundWorker1.IsBusy) return;
                 // create a new instance of the alert form
-                _alert = new Form_Alert();
+                _alert = new FormAlert();
                 // event handler for the Cancel button in AlertForm
                 _alert.Canceled += buttonCancel_Click;
                 _alert.Show();
@@ -1177,7 +1183,6 @@ namespace TEAM
             {
                 labelResult.Text = "Done!";
                 richTextBoxInformation.Text += "The metadata was processed succesfully!\r\n";
-               // _myParent.SetVersion(trackBarVersioning.Value); This is to update the main screen - removed
             }
             // Close the AlertForm
             //alert.Close();
@@ -1206,38 +1211,38 @@ namespace TEAM
             var errorLog = new StringBuilder();
             var errorCounter = new int();
 
-            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
-            var metaDataConnection = _myParent.textBoxMetadataConnection.Text;
+            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var metaDataConnection = MyParent.textBoxMetadataConnection.Text;
 
             // Get everything as local variables to reduce multithreading issues
-            var stagingDatabase = '[' + _myParent.textBoxStagingDatabase.Text + ']';
-            var integrationDatabase = '['+_myParent.textBoxIntegrationDatabase.Text+']';            
+            var stagingDatabase = '[' + MyParent.textBoxStagingDatabase.Text + ']';
+            var integrationDatabase = '['+MyParent.textBoxIntegrationDatabase.Text+']';            
 
-            var linkedServer = _myParent.textBoxLinkedServer.Text;
+            var linkedServer = MyParent.textBoxLinkedServer.Text;
             if (linkedServer != "")
             {
                 linkedServer = '['+linkedServer + "].";
             }
 
-            var effectiveDateTimeAttribute = _myParent.checkBoxAlternativeSatLDTS.Checked ? _myParent.textBoxSatelliteAlternativeLDTSAttribute.Text : _myParent.textBoxLDST.Text;
-            var currentRecordAttribute = _myParent.textBoxCurrentRecordAttributeName.Text;
-            var eventDateTimeAtttribute = _myParent.textBoxEventDateTime.Text;
-            var recordSource = _myParent.textBoxRecordSource.Text;
-            var alternativeRecordSource = _myParent.textBoxAlternativeRecordSource.Text;
-            var sourceRowId = _myParent.textBoxSourceRowId.Text;
-            var recordChecksum = _myParent.textBoxRecordChecksum.Text;
-            var changeDataCaptureIndicator = _myParent.textBoxChangeDataCaptureIndicator.Text;
-            var hubAlternativeLdts = _myParent.textBoxHubAlternativeLDTSAttribute.Text;
-            var etlProcessId = _myParent.textBoxETLProcessID.Text;
-            var loadDateTimeStamp = _myParent.textBoxLDST.Text;
+            var effectiveDateTimeAttribute = MyParent.checkBoxAlternativeSatLDTS.Checked ? MyParent.textBoxSatelliteAlternativeLDTSAttribute.Text : MyParent.textBoxLDST.Text;
+            var currentRecordAttribute = MyParent.textBoxCurrentRecordAttributeName.Text;
+            var eventDateTimeAtttribute = MyParent.textBoxEventDateTime.Text;
+            var recordSource = MyParent.textBoxRecordSource.Text;
+            var alternativeRecordSource = MyParent.textBoxAlternativeRecordSource.Text;
+            var sourceRowId = MyParent.textBoxSourceRowId.Text;
+            var recordChecksum = MyParent.textBoxRecordChecksum.Text;
+            var changeDataCaptureIndicator = MyParent.textBoxChangeDataCaptureIndicator.Text;
+            var hubAlternativeLdts = MyParent.textBoxHubAlternativeLDTSAttribute.Text;
+            var etlProcessId = MyParent.textBoxETLProcessID.Text;
+            var loadDateTimeStamp = MyParent.textBoxLDST.Text;
 
-            var stagingPrefix = _myParent.textBoxStagingAreaPrefix.Text;
-            var hubTablePrefix = _myParent.textBoxHubTablePrefix.Text;
-            var lnkTablePrefix = _myParent.textBoxLinkTablePrefix.Text;
-            var satTablePrefix = _myParent.textBoxSatPrefix.Text;
-            var lsatTablePrefix = _myParent.textBoxLinkSatPrefix.Text;
+            var stagingPrefix = MyParent.textBoxStagingAreaPrefix.Text;
+            var hubTablePrefix = MyParent.textBoxHubTablePrefix.Text;
+            var lnkTablePrefix = MyParent.textBoxLinkTablePrefix.Text;
+            var satTablePrefix = MyParent.textBoxSatPrefix.Text;
+            var lsatTablePrefix = MyParent.textBoxLinkSatPrefix.Text;
 
-            var tablePrefixLocation = _myParent.tablePrefixRadiobutton.Checked;
+            var tablePrefixLocation = MyParent.tablePrefixRadiobutton.Checked;
 
             if (tablePrefixLocation)
             {
@@ -1256,8 +1261,8 @@ namespace TEAM
                 lsatTablePrefix = '%' + lsatTablePrefix;
             }
 
-            var dwhKeyIdentifier = _myParent.textBoxDWHKeyIdentifier.Text;
-            var keyPrefixLocation = _myParent.keyPrefixRadiobutton.Checked;
+            var dwhKeyIdentifier = MyParent.textBoxDWHKeyIdentifier.Text;
+            var keyPrefixLocation = MyParent.keyPrefixRadiobutton.Checked;
             if (keyPrefixLocation)
             {
                 dwhKeyIdentifier = dwhKeyIdentifier + '%';
@@ -1280,7 +1285,7 @@ namespace TEAM
                 // Determine the version
                 var versionId = GetVersionFromTrackBar();
 
-                var versionMajorMinor = GetVersion(versionId);
+                var versionMajorMinor = GetVersion(versionId, connOmd);
                 var majorVersion = versionMajorMinor.Key;
                 var minorVersion = versionMajorMinor.Value;
 
@@ -3287,7 +3292,7 @@ namespace TEAM
         {
             // Validate the data entry on the Table Mapping datagrid
 
-            var stagingPrefix = _myParent.textBoxStagingAreaPrefix.Text;
+            var stagingPrefix = MyParent.textBoxStagingAreaPrefix.Text;
             var cellValue = e.FormattedValue.ToString();
             var valueLength = e.FormattedValue.ToString().Length;
 
@@ -3397,7 +3402,7 @@ namespace TEAM
 
                         if (dataGridViewTableMetadata != null) // There needs to be metadata available
                         {
-                            var connOmd = new SqlConnection { ConnectionString = _myParent.textBoxMetadataConnection.Text };
+                            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
 
 
                             //For later, get the source/target model relationships for Hubs/Sats

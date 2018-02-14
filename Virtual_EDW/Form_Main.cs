@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
@@ -10,27 +9,21 @@ using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Common;
 using System.Threading;
 using System.Drawing;
-using static TEAM.Form_Base;
-
 
 namespace TEAM
 {
-    public partial class FormMain : Form
+    public partial class FormMain : FormBase
     {
-        Form_Alert _alert;
-        private StringBuilder errorMessage;
-        private StringBuilder errorDetails;
-        private int _errorCounter;
-
         public FormMain()
         {
-            errorMessage = new StringBuilder();
+            var errorMessage = new StringBuilder();
             errorMessage.AppendLine("Error were detected:");
             errorMessage.AppendLine();
            
-            errorDetails = new StringBuilder();
+            var errorDetails = new StringBuilder();
             errorDetails.AppendLine();
-            _errorCounter = 0;
+
+            var errorCounter = 0;
 
             InitializeComponent();
             InitializePath();
@@ -46,9 +39,6 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
 
-            //checkBoxIgnoreVersion.Checked = true;
-
-
             var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
             var connStg = new SqlConnection { ConnectionString = textBoxStagingConnection.Text };
             var connPsa = new SqlConnection { ConnectionString = textBoxPSAConnection.Text };
@@ -56,6 +46,8 @@ namespace TEAM
             try
             {
                 connOmd.Open();
+
+                DisplayMaxVersion(connOmd);
             }
             catch
             {
@@ -80,11 +72,24 @@ namespace TEAM
                 richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Persistent Staging Area (PSA) Database. Can you verify the connection information in the 'settings' tab? \r\n");
             }
 
-            if (_errorCounter > 0)
+            if (errorCounter > 0)
             {
                 richTextBoxInformation.AppendText(errorMessage.ToString());
             }
 
+
+
+        }
+
+        internal void DisplayMaxVersion(SqlConnection connOmd)
+        {
+            var selectedVersion = GetMaxVersionId(connOmd);
+
+            var versionMajorMinor = GetVersion(selectedVersion, connOmd);
+            var majorVersion = versionMajorMinor.Key;
+            var minorVersion = versionMajorMinor.Value;
+
+            labelVersion.Text = majorVersion + "." + minorVersion;
         }
 
         private static void InitializePath()
@@ -389,29 +394,6 @@ namespace TEAM
             }               
         }
 
-        public DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
-        {
-            // Pass the connection to a command object
-            var sqlCommand = new SqlCommand(sql, sqlConnection);
-            var sqlDataAdapter = new SqlDataAdapter {SelectCommand = sqlCommand};
-
-            var dataTable = new DataTable();
-
-            // Adds or refreshes rows in the DataSet to match those in the data source
-
-            try
-            {
-                sqlDataAdapter.Fill(dataTable);
-            }
-
-            catch (Exception exception)
-            {
-                SetTextDebug(@"SQL error: " + exception.Message + "\r\n\r\nThe executed query was: " + sql + "\r\n\r\nThe connection used was " + sqlConnection.ConnectionString);
-              //  errorDetails.AppendLine(@"SQL error: " + exception.Message + "\r\n\r\nThe executed query was: " + sql + "\r\n\r\nThe connection used was " + sqlConnection.ConnectionString);
-                return null;
-            }
-            return dataTable;
-        }
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -910,7 +892,7 @@ namespace TEAM
             var t = new Thread(ThreadProcGraph);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
-            
         }
+
     }
 }
