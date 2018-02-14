@@ -259,6 +259,22 @@ namespace TEAM
                 createStatement.Clear();
 
 
+                // Metadata, well, metadata
+                createStatement.AppendLine();
+                createStatement.AppendLine("--Model metadata");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_MODEL_METADATA]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_MODEL_METADATA]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE [MD_MODEL_METADATA]");
+                createStatement.AppendLine("(");
+                createStatement.AppendLine("    [VERSION_NAME]       varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("    [ACTIVATION_DATETIME]     datetime2(7) NOT NULL,");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_MODEL_METADATA] PRIMARY KEY CLUSTERED ( [VERSION_NAME] ASC)");
+                createStatement.AppendLine(")");
+
+                RunSqlCommand(connOmdString, createStatement, worker, 5);
+                createStatement.Clear();
+
                 // Attribute 
                 createStatement.AppendLine();
                 createStatement.AppendLine("--Attribute");

@@ -1272,9 +1272,6 @@ namespace TEAM
                 dwhKeyIdentifier = '%' + dwhKeyIdentifier;
             }
 
-
-
-
             // Handling multithreading
             if (worker != null && worker.CancellationPending)
             {
@@ -1316,6 +1313,7 @@ namespace TEAM
                 deleteStatement.AppendLine("DELETE FROM dbo.MD_STG;");
                 deleteStatement.AppendLine("DELETE FROM dbo.MD_HUB;");
                 deleteStatement.AppendLine("DELETE FROM dbo.MD_LINK;");
+                deleteStatement.AppendLine("DELETE FROM dbo.MD_MODEL_METADATA;");
 
                 using (var connectionVersion = new SqlConnection(metaDataConnection))
                 {
@@ -1337,6 +1335,55 @@ namespace TEAM
                     }
                 }
                 # endregion
+
+
+                # region Prepare Version Information - 7%
+                // 2. Prepare Version
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the version metadata.\r\n");
+
+                try
+                {
+
+                    var stgCounter = 1;
+
+                    var versionName = string.Concat(majorVersion, '.', minorVersion);
+
+                    using (var connection = new SqlConnection(metaDataConnection))
+                    {
+                        _alert.SetTextLogging("-->  Working on committing version " + versionName + " to the metadata repository.\r\n");
+
+                        var insertVersionStatement = new StringBuilder();
+                        insertVersionStatement.AppendLine("INSERT INTO [MD_MODEL_METADATA]");
+                        insertVersionStatement.AppendLine("([VERSION_NAME],[ACTIVATION_DATETIME])");
+                        insertVersionStatement.AppendLine("VALUES ('" + versionName + "','" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz") + "')");
+
+                        var command = new SqlCommand(insertVersionStatement.ToString(), connection);
+
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the version information. Please check the Error Log for more details.\r\n");
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the version information: \r\n\r\n" + ex);
+                        }
+                    }
+
+                    if (worker != null) worker.ReportProgress(10);
+                    _alert.SetTextLogging("Preparation of the version details completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the version details. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the version: \r\n\r\n" + ex);
+                }
+
+                #endregion
 
 
 
