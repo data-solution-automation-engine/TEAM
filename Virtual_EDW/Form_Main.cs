@@ -9,6 +9,7 @@ using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Common;
 using System.Threading;
 using System.Drawing;
+using System.Data;
 
 namespace TEAM
 {
@@ -48,6 +49,7 @@ namespace TEAM
                 connOmd.Open();
 
                 DisplayMaxVersion(connOmd);
+                DisplayCurrentVersion(connOmd);
             }
             catch
             {
@@ -90,6 +92,22 @@ namespace TEAM
             var minorVersion = versionMajorMinor.Value;
 
             labelVersion.Text = majorVersion + "." + minorVersion;
+        }
+
+        internal void DisplayCurrentVersion(SqlConnection connOmd)
+        {
+            var sqlStatementForCurrentVersion = new StringBuilder();
+            sqlStatementForCurrentVersion.AppendLine("SELECT VERSION_NAME FROM MD_MODEL_METADATA");
+
+            var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+
+            var versionName = "0.0";
+            foreach (DataRow versionNameRow in versionList.Rows)
+            {
+                versionName = (string) versionNameRow["VERSION_NAME"];
+            }
+
+            labelActiveVersion.Text = versionName;
         }
 
         private static void InitializePath()
@@ -894,5 +912,9 @@ namespace TEAM
             t.Start();
         }
 
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

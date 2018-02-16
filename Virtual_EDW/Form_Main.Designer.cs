@@ -31,11 +31,48 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
-            this.MainTabControl = new System.Windows.Forms.TabControl();
-            this.tabPageSettings = new System.Windows.Forms.TabPage();
-            this.label31 = new System.Windows.Forms.Label();
+            this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.maintainMetadataGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageModelMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sourceSystemRegistryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createRebuildRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateTestDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.linksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label4 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.groupBoxVersionSelection = new System.Windows.Forms.GroupBox();
+            this.labelActiveVersion = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.labelDocumentationVersion = new System.Windows.Forms.Label();
+            this.labelVersion = new System.Windows.Forms.Label();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
             this.tabPageDataVaultSpecific = new System.Windows.Forms.TabPage();
+            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
+            this.label36 = new System.Windows.Forms.Label();
+            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
             this.label35 = new System.Windows.Forms.Label();
             this.textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -51,8 +88,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.textBoxLinkSatPrefix = new System.Windows.Forms.TextBox();
             this.tabPageETLFrameworkSpecific = new System.Windows.Forms.TabPage();
-            this.label47 = new System.Windows.Forms.Label();
-            this.checkBoxUnicode = new System.Windows.Forms.CheckBox();
             this.label46 = new System.Windows.Forms.Label();
             this.textBoxLogicalDeleteAttributeName = new System.Windows.Forms.TextBox();
             this.label43 = new System.Windows.Forms.Label();
@@ -121,48 +156,9 @@
             this.textBoxStagingConnection = new System.Windows.Forms.TextBox();
             this.textBoxIntegrationConnection = new System.Windows.Forms.TextBox();
             this.textBoxOutputPath = new System.Windows.Forms.TextBox();
-            this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.maintainMetadataGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.manageModelMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sourceSystemRegistryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createRebuildRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generateTestDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.linksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label4 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.groupBoxVersionSelection = new System.Windows.Forms.GroupBox();
-            this.labelDocumentationVersion = new System.Windows.Forms.Label();
-            this.labelVersion = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
-            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
-            this.label39 = new System.Windows.Forms.Label();
-            this.label40 = new System.Windows.Forms.Label();
-            this.label38 = new System.Windows.Forms.Label();
-            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
-            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.label37 = new System.Windows.Forms.Label();
-            this.label36 = new System.Windows.Forms.Label();
-            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
-            this.label41 = new System.Windows.Forms.Label();
-            this.MainTabControl.SuspendLayout();
-            this.tabPageSettings.SuspendLayout();
+            this.menuStripMainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBoxVersionSelection.SuspendLayout();
             this.tabControlDefaultDetails.SuspendLayout();
             this.tabPageDataVaultSpecific.SuspendLayout();
             this.tabPageETLFrameworkSpecific.SuspendLayout();
@@ -172,55 +168,269 @@
             this.grpTableName.SuspendLayout();
             this.tabPageDatabase.SuspendLayout();
             this.tabPageConnections.SuspendLayout();
-            this.menuStripMainMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupBoxVersionSelection.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
             // 
-            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxInformation.Location = new System.Drawing.Point(585, 66);
+            this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxInformation.Location = new System.Drawing.Point(581, 72);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.Size = new System.Drawing.Size(765, 716);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(555, 462);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
             this.richTextBoxInformation.TextChanged += new System.EventHandler(this.richTextBoxInformation_TextChanged);
             // 
-            // MainTabControl
+            // menuStripMainMenu
             // 
-            this.MainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.MainTabControl.Controls.Add(this.tabPageSettings);
-            this.MainTabControl.Location = new System.Drawing.Point(12, 44);
-            this.MainTabControl.Name = "MainTabControl";
-            this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(566, 517);
-            this.MainTabControl.TabIndex = 3;
+            this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.metadataToolStripMenuItem,
+            this.testingToolStripMenuItem,
+            this.configurationToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
+            this.menuStripMainMenu.Name = "menuStripMainMenu";
+            this.menuStripMainMenu.Size = new System.Drawing.Size(1148, 24);
+            this.menuStripMainMenu.TabIndex = 4;
+            this.menuStripMainMenu.Text = "menuStrip1";
             // 
-            // tabPageSettings
+            // fileToolStripMenuItem
             // 
-            this.tabPageSettings.Controls.Add(this.label31);
-            this.tabPageSettings.Controls.Add(this.tabControlDefaultDetails);
-            this.tabPageSettings.Location = new System.Drawing.Point(4, 22);
-            this.tabPageSettings.Name = "tabPageSettings";
-            this.tabPageSettings.Size = new System.Drawing.Size(558, 491);
-            this.tabPageSettings.TabIndex = 8;
-            this.tabPageSettings.Text = "Settings";
-            this.tabPageSettings.UseVisualStyleBackColor = true;
-            this.tabPageSettings.Click += new System.EventHandler(this.tabPageDefaultSettings_Click);
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openConfigurationFileToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.openOutputDirectoryToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
             // 
-            // label31
+            // openConfigurationFileToolStripMenuItem
             // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(14, 12);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(410, 13);
-            this.label31.TabIndex = 53;
-            this.label31.Text = "Default values for Data Vault, generic Data Warehouse and ETL framework attribute" +
-    "s\r\n";
+            this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
+            this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
+            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.openConfigurationFileToolStripMenuItem.Text = "Open Configuration File";
+            this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(201, 22);
+            this.toolStripMenuItem2.Text = "Save Configuration File";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.saveConfigurationFileToolStripMenuItem_Click);
+            // 
+            // openOutputDirectoryToolStripMenuItem
+            // 
+            this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
+            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
+            this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // metadataToolStripMenuItem
+            // 
+            this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.maintainMetadataGraphToolStripMenuItem,
+            this.openMetadataFormToolStripMenuItem,
+            this.manageModelMetadataToolStripMenuItem,
+            this.sourceSystemRegistryToolStripMenuItem,
+            this.createRebuildRepositoryToolStripMenuItem});
+            this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
+            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.metadataToolStripMenuItem.Text = "Metadata";
+            // 
+            // maintainMetadataGraphToolStripMenuItem
+            // 
+            this.maintainMetadataGraphToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("maintainMetadataGraphToolStripMenuItem.Image")));
+            this.maintainMetadataGraphToolStripMenuItem.Name = "maintainMetadataGraphToolStripMenuItem";
+            this.maintainMetadataGraphToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.maintainMetadataGraphToolStripMenuItem.Text = "Maintain Metadata Graph";
+            this.maintainMetadataGraphToolStripMenuItem.Click += new System.EventHandler(this.maintainMetadataGraphToolStripMenuItem_Click);
+            // 
+            // openMetadataFormToolStripMenuItem
+            // 
+            this.openMetadataFormToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
+            this.openMetadataFormToolStripMenuItem.Name = "openMetadataFormToolStripMenuItem";
+            this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.openMetadataFormToolStripMenuItem.Text = "Manage Automation Metadata";
+            this.openMetadataFormToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFormToolStripMenuItem_Click);
+            // 
+            // manageModelMetadataToolStripMenuItem
+            // 
+            this.manageModelMetadataToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
+            this.manageModelMetadataToolStripMenuItem.Name = "manageModelMetadataToolStripMenuItem";
+            this.manageModelMetadataToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.manageModelMetadataToolStripMenuItem.Text = "Manage Model Metadata";
+            this.manageModelMetadataToolStripMenuItem.Click += new System.EventHandler(this.manageModelMetadataToolStripMenuItem_Click);
+            // 
+            // sourceSystemRegistryToolStripMenuItem
+            // 
+            this.sourceSystemRegistryToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
+            this.sourceSystemRegistryToolStripMenuItem.Name = "sourceSystemRegistryToolStripMenuItem";
+            this.sourceSystemRegistryToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.sourceSystemRegistryToolStripMenuItem.Text = "Source System Registry";
+            this.sourceSystemRegistryToolStripMenuItem.Click += new System.EventHandler(this.sourceSystemRegistryToolStripMenuItem_Click);
+            // 
+            // createRebuildRepositoryToolStripMenuItem
+            // 
+            this.createRebuildRepositoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
+            this.createRebuildRepositoryToolStripMenuItem.Name = "createRebuildRepositoryToolStripMenuItem";
+            this.createRebuildRepositoryToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.createRebuildRepositoryToolStripMenuItem.Text = "Create / Rebuild Repository";
+            this.createRebuildRepositoryToolStripMenuItem.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem_Click);
+            // 
+            // testingToolStripMenuItem
+            // 
+            this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.generateTestDataToolStripMenuItem});
+            this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.testingToolStripMenuItem.Text = "Testing";
+            // 
+            // generateTestDataToolStripMenuItem
+            // 
+            this.generateTestDataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generateTestDataToolStripMenuItem.Image")));
+            this.generateTestDataToolStripMenuItem.Name = "generateTestDataToolStripMenuItem";
+            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.generateTestDataToolStripMenuItem.Text = "Generate Test Data";
+            this.generateTestDataToolStripMenuItem.Click += new System.EventHandler(this.generateTestDataToolStripMenuItem_Click);
+            // 
+            // configurationToolStripMenuItem
+            // 
+            this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.generalSettingsToolStripMenuItem});
+            this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
+            this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
+            this.configurationToolStripMenuItem.Text = "Configuration";
+            // 
+            // generalSettingsToolStripMenuItem
+            // 
+            this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
+            this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
+            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.generalSettingsToolStripMenuItem.Text = "General Settings";
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.helpToolStripMenuItem1,
+            this.linksToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // helpToolStripMenuItem1
+            // 
+            this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
+            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
+            this.helpToolStripMenuItem1.Text = "Help";
+            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
+            // 
+            // linksToolStripMenuItem
+            // 
+            this.linksToolStripMenuItem.Image = global::TEAM.Properties.Resources.LinkIcon;
+            this.linksToolStripMenuItem.Name = "linksToolStripMenuItem";
+            this.linksToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.linksToolStripMenuItem.Text = "Links";
+            this.linksToolStripMenuItem.Click += new System.EventHandler(this.linksToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(104, 6);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(584, 55);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(39, 13);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "Output";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.pictureBox1.Image = global::TEAM.Properties.Resources.RavosLogo;
+            this.pictureBox1.Location = new System.Drawing.Point(33, 683);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(109, 100);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 15;
+            this.pictureBox1.TabStop = false;
+            // 
+            // groupBoxVersionSelection
+            // 
+            this.groupBoxVersionSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBoxVersionSelection.Controls.Add(this.labelActiveVersion);
+            this.groupBoxVersionSelection.Controls.Add(this.label1);
+            this.groupBoxVersionSelection.Controls.Add(this.labelDocumentationVersion);
+            this.groupBoxVersionSelection.Controls.Add(this.labelVersion);
+            this.groupBoxVersionSelection.Location = new System.Drawing.Point(148, 679);
+            this.groupBoxVersionSelection.Name = "groupBoxVersionSelection";
+            this.groupBoxVersionSelection.Size = new System.Drawing.Size(217, 104);
+            this.groupBoxVersionSelection.TabIndex = 20;
+            this.groupBoxVersionSelection.TabStop = false;
+            this.groupBoxVersionSelection.Text = "Version Selection";
+            // 
+            // labelActiveVersion
+            // 
+            this.labelActiveVersion.AutoSize = true;
+            this.labelActiveVersion.Location = new System.Drawing.Point(187, 41);
+            this.labelActiveVersion.Name = "labelActiveVersion";
+            this.labelActiveVersion.Size = new System.Drawing.Size(42, 13);
+            this.labelActiveVersion.TabIndex = 21;
+            this.labelActiveVersion.Text = "Version";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 41);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(183, 13);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "Currently activated Metadata version:";
+            // 
+            // labelDocumentationVersion
+            // 
+            this.labelDocumentationVersion.AutoSize = true;
+            this.labelDocumentationVersion.Location = new System.Drawing.Point(6, 25);
+            this.labelDocumentationVersion.Name = "labelDocumentationVersion";
+            this.labelDocumentationVersion.Size = new System.Drawing.Size(151, 13);
+            this.labelDocumentationVersion.TabIndex = 19;
+            this.labelDocumentationVersion.Text = "Most recent Metadata version:";
+            // 
+            // labelVersion
+            // 
+            this.labelVersion.AutoSize = true;
+            this.labelVersion.Location = new System.Drawing.Point(187, 25);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(42, 13);
+            this.labelVersion.TabIndex = 18;
+            this.labelVersion.Text = "Version";
             // 
             // tabControlDefaultDetails
             // 
@@ -229,12 +439,12 @@
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePrefixesSuffixex);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageDatabase);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageConnections);
-            this.tabControlDefaultDetails.Location = new System.Drawing.Point(17, 30);
+            this.tabControlDefaultDetails.Location = new System.Drawing.Point(12, 51);
             this.tabControlDefaultDetails.Multiline = true;
             this.tabControlDefaultDetails.Name = "tabControlDefaultDetails";
             this.tabControlDefaultDetails.SelectedIndex = 0;
-            this.tabControlDefaultDetails.Size = new System.Drawing.Size(523, 435);
-            this.tabControlDefaultDetails.TabIndex = 42;
+            this.tabControlDefaultDetails.Size = new System.Drawing.Size(560, 484);
+            this.tabControlDefaultDetails.TabIndex = 43;
             // 
             // tabPageDataVaultSpecific
             // 
@@ -267,10 +477,117 @@
             this.tabPageDataVaultSpecific.Location = new System.Drawing.Point(4, 22);
             this.tabPageDataVaultSpecific.Name = "tabPageDataVaultSpecific";
             this.tabPageDataVaultSpecific.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataVaultSpecific.Size = new System.Drawing.Size(515, 409);
+            this.tabPageDataVaultSpecific.Size = new System.Drawing.Size(552, 458);
             this.tabPageDataVaultSpecific.TabIndex = 0;
             this.tabPageDataVaultSpecific.Text = "Data Vault specific";
             this.tabPageDataVaultSpecific.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxAlternativeSatLDTS
+            // 
+            this.checkBoxAlternativeSatLDTS.AutoSize = true;
+            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(406, 298);
+            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
+            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeSatLDTS.TabIndex = 70;
+            this.checkBoxAlternativeSatLDTS.Text = "Enable";
+            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(5, 299);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(198, 13);
+            this.label41.TabIndex = 69;
+            this.label41.Text = "Alternative Satellite LDTS attribute name";
+            // 
+            // textBoxSatelliteAlternativeLDTSAttribute
+            // 
+            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 296);
+            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
+            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
+            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 68;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label40.Location = new System.Drawing.Point(5, 202);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(138, 13);
+            this.label40.TabIndex = 67;
+            this.label40.Text = "(Integration Layer only)";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(6, 228);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(367, 13);
+            this.label39.TabIndex = 66;
+            this.label39.Text = "If diabled the default conventions as entered in the above fields will be used.";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(5, 215);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(448, 13);
+            this.label38.TabIndex = 65;
+            this.label38.Text = "In some models you may want to use specific alternative names depending on the en" +
+    "tity type. ";
+            // 
+            // checkBoxAlternativeHubLDTS
+            // 
+            this.checkBoxAlternativeHubLDTS.AutoSize = true;
+            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(406, 272);
+            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
+            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeHubLDTS.TabIndex = 63;
+            this.checkBoxAlternativeHubLDTS.Text = "Enable";
+            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(5, 273);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(181, 13);
+            this.label37.TabIndex = 62;
+            this.label37.Text = "Alternative Hub LDTS attribute name";
+            // 
+            // textBoxHubAlternativeLDTSAttribute
+            // 
+            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 270);
+            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
+            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
+            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 61;
+            // 
+            // checkBoxAlternativeRecordSource
+            // 
+            this.checkBoxAlternativeRecordSource.AutoSize = true;
+            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(406, 246);
+            this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
+            this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeRecordSource.TabIndex = 60;
+            this.checkBoxAlternativeRecordSource.Text = "Enable";
+            this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(5, 247);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(187, 13);
+            this.label36.TabIndex = 59;
+            this.label36.Text = "Alternative Record Source ID or name";
+            // 
+            // textBoxAlternativeRecordSource
+            // 
+            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(234, 244);
+            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
+            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(166, 20);
+            this.textBoxAlternativeRecordSource.TabIndex = 58;
             // 
             // label35
             // 
@@ -386,8 +703,6 @@
             // 
             // tabPageETLFrameworkSpecific
             // 
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label47);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.checkBoxUnicode);
             this.tabPageETLFrameworkSpecific.Controls.Add(this.label46);
             this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxLogicalDeleteAttributeName);
             this.tabPageETLFrameworkSpecific.Controls.Add(this.label43);
@@ -409,30 +724,10 @@
             this.tabPageETLFrameworkSpecific.Location = new System.Drawing.Point(4, 22);
             this.tabPageETLFrameworkSpecific.Name = "tabPageETLFrameworkSpecific";
             this.tabPageETLFrameworkSpecific.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageETLFrameworkSpecific.Size = new System.Drawing.Size(515, 409);
+            this.tabPageETLFrameworkSpecific.Size = new System.Drawing.Size(552, 458);
             this.tabPageETLFrameworkSpecific.TabIndex = 1;
             this.tabPageETLFrameworkSpecific.Text = "Data Warehouse & ETL generic";
             this.tabPageETLFrameworkSpecific.UseVisualStyleBackColor = true;
-            // 
-            // label47
-            // 
-            this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(6, 241);
-            this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(80, 13);
-            this.label47.TabIndex = 68;
-            this.label47.Text = "Unicode output";
-            // 
-            // checkBoxUnicode
-            // 
-            this.checkBoxUnicode.AutoSize = true;
-            this.checkBoxUnicode.Checked = true;
-            this.checkBoxUnicode.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxUnicode.Location = new System.Drawing.Point(233, 241);
-            this.checkBoxUnicode.Name = "checkBoxUnicode";
-            this.checkBoxUnicode.Size = new System.Drawing.Size(15, 14);
-            this.checkBoxUnicode.TabIndex = 67;
-            this.checkBoxUnicode.UseVisualStyleBackColor = true;
             // 
             // label46
             // 
@@ -594,7 +889,7 @@
             this.tabPagePrefixesSuffixex.Location = new System.Drawing.Point(4, 22);
             this.tabPagePrefixesSuffixex.Name = "tabPagePrefixesSuffixex";
             this.tabPagePrefixesSuffixex.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePrefixesSuffixex.Size = new System.Drawing.Size(515, 409);
+            this.tabPagePrefixesSuffixex.Size = new System.Drawing.Size(552, 458);
             this.tabPagePrefixesSuffixex.TabIndex = 2;
             this.tabPagePrefixesSuffixex.Text = "Prefixes & Suffixes";
             this.tabPagePrefixesSuffixex.UseVisualStyleBackColor = true;
@@ -779,7 +1074,7 @@
             this.tabPageDatabase.Controls.Add(this.textBoxSchemaName);
             this.tabPageDatabase.Location = new System.Drawing.Point(4, 22);
             this.tabPageDatabase.Name = "tabPageDatabase";
-            this.tabPageDatabase.Size = new System.Drawing.Size(515, 409);
+            this.tabPageDatabase.Size = new System.Drawing.Size(552, 458);
             this.tabPageDatabase.TabIndex = 3;
             this.tabPageDatabase.Text = "Databases";
             this.tabPageDatabase.UseVisualStyleBackColor = true;
@@ -787,7 +1082,7 @@
             // label49
             // 
             this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(5, 167);
+            this.label49.Location = new System.Drawing.Point(5, 215);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(190, 13);
             this.label49.TabIndex = 69;
@@ -795,7 +1090,7 @@
             // 
             // textBoxLinkedServer
             // 
-            this.textBoxLinkedServer.Location = new System.Drawing.Point(233, 164);
+            this.textBoxLinkedServer.Location = new System.Drawing.Point(233, 212);
             this.textBoxLinkedServer.Name = "textBoxLinkedServer";
             this.textBoxLinkedServer.Size = new System.Drawing.Size(276, 20);
             this.textBoxLinkedServer.TabIndex = 68;
@@ -803,7 +1098,7 @@
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(7, 196);
+            this.label44.Location = new System.Drawing.Point(3, 20);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(291, 13);
             this.label44.TabIndex = 67;
@@ -812,7 +1107,7 @@
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(5, 11);
+            this.label27.Location = new System.Drawing.Point(5, 59);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(117, 13);
             this.label27.TabIndex = 66;
@@ -820,7 +1115,7 @@
             // 
             // textBoxSourceDatabase
             // 
-            this.textBoxSourceDatabase.Location = new System.Drawing.Point(233, 8);
+            this.textBoxSourceDatabase.Location = new System.Drawing.Point(233, 56);
             this.textBoxSourceDatabase.Name = "textBoxSourceDatabase";
             this.textBoxSourceDatabase.Size = new System.Drawing.Size(276, 20);
             this.textBoxSourceDatabase.TabIndex = 65;
@@ -828,7 +1123,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(5, 115);
+            this.label25.Location = new System.Drawing.Point(5, 163);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(171, 13);
             this.label25.TabIndex = 64;
@@ -836,7 +1131,7 @@
             // 
             // textBoxPresentationDatabase
             // 
-            this.textBoxPresentationDatabase.Location = new System.Drawing.Point(233, 112);
+            this.textBoxPresentationDatabase.Location = new System.Drawing.Point(233, 160);
             this.textBoxPresentationDatabase.Name = "textBoxPresentationDatabase";
             this.textBoxPresentationDatabase.Size = new System.Drawing.Size(276, 20);
             this.textBoxPresentationDatabase.TabIndex = 63;
@@ -844,7 +1139,7 @@
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(5, 37);
+            this.label24.Location = new System.Drawing.Point(5, 85);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(144, 13);
             this.label24.TabIndex = 62;
@@ -852,7 +1147,7 @@
             // 
             // textBoxStagingDatabase
             // 
-            this.textBoxStagingDatabase.Location = new System.Drawing.Point(233, 34);
+            this.textBoxStagingDatabase.Location = new System.Drawing.Point(233, 82);
             this.textBoxStagingDatabase.Name = "textBoxStagingDatabase";
             this.textBoxStagingDatabase.Size = new System.Drawing.Size(276, 20);
             this.textBoxStagingDatabase.TabIndex = 61;
@@ -860,7 +1155,7 @@
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(5, 63);
+            this.label23.Location = new System.Drawing.Point(5, 111);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(193, 13);
             this.label23.TabIndex = 60;
@@ -868,7 +1163,7 @@
             // 
             // textBoxPSADatabase
             // 
-            this.textBoxPSADatabase.Location = new System.Drawing.Point(233, 60);
+            this.textBoxPSADatabase.Location = new System.Drawing.Point(233, 108);
             this.textBoxPSADatabase.Name = "textBoxPSADatabase";
             this.textBoxPSADatabase.Size = new System.Drawing.Size(276, 20);
             this.textBoxPSADatabase.TabIndex = 59;
@@ -876,7 +1171,7 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(5, 89);
+            this.label22.Location = new System.Drawing.Point(5, 137);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(162, 13);
             this.label22.TabIndex = 58;
@@ -884,7 +1179,7 @@
             // 
             // textBoxIntegrationDatabase
             // 
-            this.textBoxIntegrationDatabase.Location = new System.Drawing.Point(233, 86);
+            this.textBoxIntegrationDatabase.Location = new System.Drawing.Point(233, 134);
             this.textBoxIntegrationDatabase.Name = "textBoxIntegrationDatabase";
             this.textBoxIntegrationDatabase.Size = new System.Drawing.Size(276, 20);
             this.textBoxIntegrationDatabase.TabIndex = 57;
@@ -892,7 +1187,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(5, 141);
+            this.label12.Location = new System.Drawing.Point(5, 189);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(75, 13);
             this.label12.TabIndex = 56;
@@ -900,7 +1195,7 @@
             // 
             // textBoxSchemaName
             // 
-            this.textBoxSchemaName.Location = new System.Drawing.Point(233, 138);
+            this.textBoxSchemaName.Location = new System.Drawing.Point(233, 186);
             this.textBoxSchemaName.Name = "textBoxSchemaName";
             this.textBoxSchemaName.Size = new System.Drawing.Size(276, 20);
             this.textBoxSchemaName.TabIndex = 55;
@@ -924,7 +1219,7 @@
             this.tabPageConnections.Controls.Add(this.textBoxOutputPath);
             this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnections.Name = "tabPageConnections";
-            this.tabPageConnections.Size = new System.Drawing.Size(515, 409);
+            this.tabPageConnections.Size = new System.Drawing.Size(552, 458);
             this.tabPageConnections.TabIndex = 4;
             this.tabPageConnections.Text = "Connectivity";
             this.tabPageConnections.UseVisualStyleBackColor = true;
@@ -1064,387 +1359,31 @@
             this.textBoxOutputPath.Size = new System.Drawing.Size(493, 53);
             this.textBoxOutputPath.TabIndex = 56;
             // 
-            // menuStripMainMenu
-            // 
-            this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.metadataToolStripMenuItem,
-            this.testingToolStripMenuItem,
-            this.configurationToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
-            this.menuStripMainMenu.Name = "menuStripMainMenu";
-            this.menuStripMainMenu.Size = new System.Drawing.Size(1362, 24);
-            this.menuStripMainMenu.TabIndex = 4;
-            this.menuStripMainMenu.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openConfigurationFileToolStripMenuItem,
-            this.toolStripMenuItem2,
-            this.openOutputDirectoryToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // openConfigurationFileToolStripMenuItem
-            // 
-            this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
-            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.openConfigurationFileToolStripMenuItem.Text = "Open Configuration File";
-            this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(201, 22);
-            this.toolStripMenuItem2.Text = "Save Configuration File";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.saveConfigurationFileToolStripMenuItem_Click);
-            // 
-            // openOutputDirectoryToolStripMenuItem
-            // 
-            this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
-            this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // metadataToolStripMenuItem
-            // 
-            this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.maintainMetadataGraphToolStripMenuItem,
-            this.openMetadataFormToolStripMenuItem,
-            this.manageModelMetadataToolStripMenuItem,
-            this.sourceSystemRegistryToolStripMenuItem,
-            this.createRebuildRepositoryToolStripMenuItem});
-            this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
-            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
-            this.metadataToolStripMenuItem.Text = "Metadata";
-            // 
-            // maintainMetadataGraphToolStripMenuItem
-            // 
-            this.maintainMetadataGraphToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("maintainMetadataGraphToolStripMenuItem.Image")));
-            this.maintainMetadataGraphToolStripMenuItem.Name = "maintainMetadataGraphToolStripMenuItem";
-            this.maintainMetadataGraphToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.maintainMetadataGraphToolStripMenuItem.Text = "Maintain Metadata Graph";
-            this.maintainMetadataGraphToolStripMenuItem.Click += new System.EventHandler(this.maintainMetadataGraphToolStripMenuItem_Click);
-            // 
-            // openMetadataFormToolStripMenuItem
-            // 
-            this.openMetadataFormToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
-            this.openMetadataFormToolStripMenuItem.Name = "openMetadataFormToolStripMenuItem";
-            this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.openMetadataFormToolStripMenuItem.Text = "Manage Automation Metadata";
-            this.openMetadataFormToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFormToolStripMenuItem_Click);
-            // 
-            // manageModelMetadataToolStripMenuItem
-            // 
-            this.manageModelMetadataToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
-            this.manageModelMetadataToolStripMenuItem.Name = "manageModelMetadataToolStripMenuItem";
-            this.manageModelMetadataToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.manageModelMetadataToolStripMenuItem.Text = "Manage Model Metadata";
-            this.manageModelMetadataToolStripMenuItem.Click += new System.EventHandler(this.manageModelMetadataToolStripMenuItem_Click);
-            // 
-            // sourceSystemRegistryToolStripMenuItem
-            // 
-            this.sourceSystemRegistryToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
-            this.sourceSystemRegistryToolStripMenuItem.Name = "sourceSystemRegistryToolStripMenuItem";
-            this.sourceSystemRegistryToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.sourceSystemRegistryToolStripMenuItem.Text = "Source System Registry";
-            this.sourceSystemRegistryToolStripMenuItem.Click += new System.EventHandler(this.sourceSystemRegistryToolStripMenuItem_Click);
-            // 
-            // createRebuildRepositoryToolStripMenuItem
-            // 
-            this.createRebuildRepositoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
-            this.createRebuildRepositoryToolStripMenuItem.Name = "createRebuildRepositoryToolStripMenuItem";
-            this.createRebuildRepositoryToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.createRebuildRepositoryToolStripMenuItem.Text = "Create / Rebuild Repository";
-            this.createRebuildRepositoryToolStripMenuItem.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem_Click);
-            // 
-            // testingToolStripMenuItem
-            // 
-            this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.generateTestDataToolStripMenuItem});
-            this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
-            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.testingToolStripMenuItem.Text = "Testing";
-            // 
-            // generateTestDataToolStripMenuItem
-            // 
-            this.generateTestDataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generateTestDataToolStripMenuItem.Image")));
-            this.generateTestDataToolStripMenuItem.Name = "generateTestDataToolStripMenuItem";
-            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.generateTestDataToolStripMenuItem.Text = "Generate Test Data";
-            this.generateTestDataToolStripMenuItem.Click += new System.EventHandler(this.generateTestDataToolStripMenuItem_Click);
-            // 
-            // configurationToolStripMenuItem
-            // 
-            this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.generalSettingsToolStripMenuItem});
-            this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
-            this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
-            this.configurationToolStripMenuItem.Text = "Configuration";
-            // 
-            // generalSettingsToolStripMenuItem
-            // 
-            this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
-            this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
-            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.generalSettingsToolStripMenuItem.Text = "General Settings";
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helpToolStripMenuItem1,
-            this.linksToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // helpToolStripMenuItem1
-            // 
-            this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
-            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
-            this.helpToolStripMenuItem1.Text = "Help";
-            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
-            // 
-            // linksToolStripMenuItem
-            // 
-            this.linksToolStripMenuItem.Image = global::TEAM.Properties.Resources.LinkIcon;
-            this.linksToolStripMenuItem.Name = "linksToolStripMenuItem";
-            this.linksToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.linksToolStripMenuItem.Text = "Links";
-            this.linksToolStripMenuItem.Click += new System.EventHandler(this.linksToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(104, 6);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(584, 50);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(39, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Output";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.pictureBox1.Image = global::TEAM.Properties.Resources.RavosLogo;
-            this.pictureBox1.Location = new System.Drawing.Point(33, 683);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(109, 100);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 15;
-            this.pictureBox1.TabStop = false;
-            // 
-            // groupBoxVersionSelection
-            // 
-            this.groupBoxVersionSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBoxVersionSelection.Controls.Add(this.label2);
-            this.groupBoxVersionSelection.Controls.Add(this.label1);
-            this.groupBoxVersionSelection.Controls.Add(this.labelDocumentationVersion);
-            this.groupBoxVersionSelection.Controls.Add(this.labelVersion);
-            this.groupBoxVersionSelection.Location = new System.Drawing.Point(148, 679);
-            this.groupBoxVersionSelection.Name = "groupBoxVersionSelection";
-            this.groupBoxVersionSelection.Size = new System.Drawing.Size(324, 104);
-            this.groupBoxVersionSelection.TabIndex = 20;
-            this.groupBoxVersionSelection.TabStop = false;
-            this.groupBoxVersionSelection.Text = "Version Selection";
-            // 
-            // labelDocumentationVersion
-            // 
-            this.labelDocumentationVersion.AutoSize = true;
-            this.labelDocumentationVersion.Location = new System.Drawing.Point(6, 25);
-            this.labelDocumentationVersion.Name = "labelDocumentationVersion";
-            this.labelDocumentationVersion.Size = new System.Drawing.Size(151, 13);
-            this.labelDocumentationVersion.TabIndex = 19;
-            this.labelDocumentationVersion.Text = "Most recent Metadata version:";
-            // 
-            // labelVersion
-            // 
-            this.labelVersion.AutoSize = true;
-            this.labelVersion.Location = new System.Drawing.Point(187, 25);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(42, 13);
-            this.labelVersion.TabIndex = 18;
-            this.labelVersion.Text = "Version";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 41);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(183, 13);
-            this.label1.TabIndex = 20;
-            this.label1.Text = "Currently activated Metadata version:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(187, 41);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(42, 13);
-            this.label2.TabIndex = 21;
-            this.label2.Text = "Version";
-            // 
-            // checkBoxAlternativeHubLDTS
-            // 
-            this.checkBoxAlternativeHubLDTS.AutoSize = true;
-            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(406, 272);
-            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
-            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeHubLDTS.TabIndex = 63;
-            this.checkBoxAlternativeHubLDTS.Text = "Enable";
-            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeHubLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeHubLDTS_CheckedChanged);
-            // 
-            // checkBoxAlternativeRecordSource
-            // 
-            this.checkBoxAlternativeRecordSource.AutoSize = true;
-            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(406, 246);
-            this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
-            this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeRecordSource.TabIndex = 60;
-            this.checkBoxAlternativeRecordSource.Text = "Enable";
-            this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeRecordSource.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeRecordSource_CheckedChanged);
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(6, 228);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(367, 13);
-            this.label39.TabIndex = 66;
-            this.label39.Text = "If diabled the default conventions as entered in the above fields will be used.";
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label40.Location = new System.Drawing.Point(5, 202);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(138, 13);
-            this.label40.TabIndex = 67;
-            this.label40.Text = "(Integration Layer only)";
-            // 
-            // label38
-            // 
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(5, 215);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(448, 13);
-            this.label38.TabIndex = 65;
-            this.label38.Text = "In some models you may want to use specific alternative names depending on the en" +
-    "tity type. ";
-            // 
-            // textBoxAlternativeRecordSource
-            // 
-            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(234, 244);
-            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
-            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(166, 20);
-            this.textBoxAlternativeRecordSource.TabIndex = 58;
-            // 
-            // textBoxHubAlternativeLDTSAttribute
-            // 
-            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 270);
-            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
-            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 61;
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(5, 273);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(181, 13);
-            this.label37.TabIndex = 62;
-            this.label37.Text = "Alternative Hub LDTS attribute name";
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(5, 247);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(187, 13);
-            this.label36.TabIndex = 59;
-            this.label36.Text = "Alternative Record Source ID or name";
-            // 
-            // textBoxSatelliteAlternativeLDTSAttribute
-            // 
-            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 296);
-            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
-            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 68;
-            // 
-            // checkBoxAlternativeSatLDTS
-            // 
-            this.checkBoxAlternativeSatLDTS.AutoSize = true;
-            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(406, 298);
-            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
-            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeSatLDTS.TabIndex = 70;
-            this.checkBoxAlternativeSatLDTS.Text = "Enable";
-            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeSatLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeSatLDTS_CheckedChanged);
-            // 
-            // label41
-            // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(5, 299);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(198, 13);
-            this.label41.TabIndex = 69;
-            this.label41.Text = "Alternative Satellite LDTS attribute name";
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1362, 796);
+            this.ClientSize = new System.Drawing.Size(1148, 796);
+            this.Controls.Add(this.tabControlDefaultDetails);
             this.Controls.Add(this.groupBoxVersionSelection);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.MainTabControl);
             this.Controls.Add(this.richTextBoxInformation);
             this.Controls.Add(this.menuStripMainMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMainMenu;
-            this.MinimumSize = new System.Drawing.Size(1378, 835);
+            this.MinimumSize = new System.Drawing.Size(1164, 835);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TEAM - Taxonomy for ETL Automation Metadata";
-            this.MainTabControl.ResumeLayout(false);
-            this.tabPageSettings.ResumeLayout(false);
-            this.tabPageSettings.PerformLayout();
+            this.Load += new System.EventHandler(this.FormMain_Load);
+            this.menuStripMainMenu.ResumeLayout(false);
+            this.menuStripMainMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBoxVersionSelection.ResumeLayout(false);
+            this.groupBoxVersionSelection.PerformLayout();
             this.tabControlDefaultDetails.ResumeLayout(false);
             this.tabPageDataVaultSpecific.ResumeLayout(false);
             this.tabPageDataVaultSpecific.PerformLayout();
@@ -1462,29 +1401,18 @@
             this.tabPageDatabase.PerformLayout();
             this.tabPageConnections.ResumeLayout(false);
             this.tabPageConnections.PerformLayout();
-            this.menuStripMainMenu.ResumeLayout(false);
-            this.menuStripMainMenu.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupBoxVersionSelection.ResumeLayout(false);
-            this.groupBoxVersionSelection.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.TabControl MainTabControl;
         private System.Windows.Forms.MenuStrip menuStripMainMenu;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.TabPage tabPageSettings;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ToolStripMenuItem metadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openMetadataFormToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
@@ -1494,57 +1422,88 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.TabControl tabControlDefaultDetails;
-        private System.Windows.Forms.TabPage tabPageDataVaultSpecific;
-        private System.Windows.Forms.TabPage tabPageETLFrameworkSpecific;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.Label label35;
-        private System.Windows.Forms.Label label42;
-        private System.Windows.Forms.TabPage tabPagePrefixesSuffixex;
-        private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ToolStripMenuItem testingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generateTestDataToolStripMenuItem;
-        private System.Windows.Forms.Label label43;
-        internal System.Windows.Forms.TextBox textBoxHubTablePrefix;
-        internal System.Windows.Forms.TextBox textBoxDWHKeyIdentifier;
-        internal System.Windows.Forms.TextBox textBoxETLProcessID;
-        internal System.Windows.Forms.TextBox textBoxChangeDataCaptureIndicator;
-        internal System.Windows.Forms.TextBox textBoxSourceRowId;
-        internal System.Windows.Forms.TextBox textBoxEventDateTime;
-        internal System.Windows.Forms.TextBox textBoxRecordChecksum;
-        internal System.Windows.Forms.TextBox textBoxCurrentRecordAttributeName;
-        internal System.Windows.Forms.TextBox textBoxETLUpdateProcessID;
-        internal System.Windows.Forms.TextBox textBoxRecordSource;
-        internal System.Windows.Forms.TextBox textBoxLinkSatPrefix;
-        internal System.Windows.Forms.TextBox textBoxLinkTablePrefix;
-        internal System.Windows.Forms.TextBox textBoxSatPrefix;
-        internal System.Windows.Forms.TextBox textBoxLDST;
+        private System.Windows.Forms.ToolStripMenuItem manageModelMetadataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sourceSystemRegistryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem maintainMetadataGraphToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBoxVersionSelection;
+        private System.Windows.Forms.Label labelDocumentationVersion;
+        private System.Windows.Forms.Label labelVersion;
+        internal System.Windows.Forms.RichTextBox richTextBoxInformation;
+        private System.Windows.Forms.Label labelActiveVersion;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TabControl tabControlDefaultDetails;
+        private System.Windows.Forms.TabPage tabPageDataVaultSpecific;
+        internal System.Windows.Forms.CheckBox checkBoxAlternativeSatLDTS;
+        private System.Windows.Forms.Label label41;
+        internal System.Windows.Forms.TextBox textBoxSatelliteAlternativeLDTSAttribute;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.Label label38;
+        internal System.Windows.Forms.CheckBox checkBoxAlternativeHubLDTS;
+        private System.Windows.Forms.Label label37;
+        internal System.Windows.Forms.TextBox textBoxHubAlternativeLDTSAttribute;
+        internal System.Windows.Forms.CheckBox checkBoxAlternativeRecordSource;
+        private System.Windows.Forms.Label label36;
+        internal System.Windows.Forms.TextBox textBoxAlternativeRecordSource;
+        private System.Windows.Forms.Label label35;
         internal System.Windows.Forms.TextBox textBoxExpiryDateTimeName;
+        private System.Windows.Forms.Label label11;
+        internal System.Windows.Forms.TextBox textBoxRecordSource;
+        private System.Windows.Forms.Label label18;
+        internal System.Windows.Forms.TextBox textBoxLDST;
+        private System.Windows.Forms.Label label14;
+        internal System.Windows.Forms.TextBox textBoxHubTablePrefix;
+        private System.Windows.Forms.Label label17;
+        internal System.Windows.Forms.TextBox textBoxSatPrefix;
+        private System.Windows.Forms.Label label16;
+        internal System.Windows.Forms.TextBox textBoxLinkTablePrefix;
+        private System.Windows.Forms.Label label15;
+        internal System.Windows.Forms.TextBox textBoxLinkSatPrefix;
+        private System.Windows.Forms.TabPage tabPageETLFrameworkSpecific;
+        private System.Windows.Forms.Label label46;
+        internal System.Windows.Forms.TextBox textBoxLogicalDeleteAttributeName;
+        private System.Windows.Forms.Label label43;
+        internal System.Windows.Forms.TextBox textBoxETLUpdateProcessID;
+        private System.Windows.Forms.Label label42;
+        internal System.Windows.Forms.TextBox textBoxCurrentRecordAttributeName;
+        private System.Windows.Forms.Label label32;
+        internal System.Windows.Forms.TextBox textBoxRecordChecksum;
+        private System.Windows.Forms.Label label30;
+        internal System.Windows.Forms.TextBox textBoxSourceRowId;
+        private System.Windows.Forms.Label label29;
+        internal System.Windows.Forms.TextBox textBoxEventDateTime;
+        private System.Windows.Forms.Label label21;
+        internal System.Windows.Forms.TextBox textBoxETLProcessID;
+        private System.Windows.Forms.Label label10;
+        internal System.Windows.Forms.TextBox textBoxChangeDataCaptureIndicator;
+        private System.Windows.Forms.Label label13;
+        internal System.Windows.Forms.TextBox textBoxDWHKeyIdentifier;
+        private System.Windows.Forms.TabPage tabPagePrefixesSuffixex;
+        private System.Windows.Forms.Label label48;
+        internal System.Windows.Forms.GroupBox groupBox8;
+        internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyPK;
+        internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyIndex;
+        private System.Windows.Forms.Label label28;
+        internal System.Windows.Forms.TextBox textBoxSourcePrefix;
+        private System.Windows.Forms.Label label34;
         internal System.Windows.Forms.TextBox textBoxPSAPrefix;
+        private System.Windows.Forms.Label label33;
         internal System.Windows.Forms.TextBox textBoxStagingAreaPrefix;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.GroupBox groupBox1;
         internal System.Windows.Forms.RadioButton keySuffixRadiobutton;
         internal System.Windows.Forms.RadioButton keyPrefixRadiobutton;
         internal System.Windows.Forms.GroupBox grpTableName;
         internal System.Windows.Forms.RadioButton tableSuffixRadiobutton;
         internal System.Windows.Forms.RadioButton tablePrefixRadiobutton;
-        private System.Windows.Forms.ToolStripMenuItem manageModelMetadataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sourceSystemRegistryToolStripMenuItem;
-        private System.Windows.Forms.Label label46;
-        internal System.Windows.Forms.TextBox textBoxLogicalDeleteAttributeName;
-        private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem;
-        private System.Windows.Forms.Label label47;
         private System.Windows.Forms.TabPage tabPageDatabase;
+        private System.Windows.Forms.Label label49;
+        internal System.Windows.Forms.TextBox textBoxLinkedServer;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.TextBox textBoxSourceDatabase;
@@ -1574,36 +1533,6 @@
         internal System.Windows.Forms.TextBox textBoxStagingConnection;
         internal System.Windows.Forms.TextBox textBoxIntegrationConnection;
         internal System.Windows.Forms.TextBox textBoxOutputPath;
-        private System.Windows.Forms.Label label28;
-        internal System.Windows.Forms.TextBox textBoxSourcePrefix;
-        private System.Windows.Forms.Label label48;
-        internal System.Windows.Forms.GroupBox groupBox8;
-        internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyPK;
-        internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyIndex;
-        private System.Windows.Forms.Label label49;
-        internal System.Windows.Forms.TextBox textBoxLinkedServer;
-        internal System.Windows.Forms.CheckBox checkBoxUnicode;
-        private System.Windows.Forms.ToolStripMenuItem maintainMetadataGraphToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
-        private System.Windows.Forms.GroupBox groupBoxVersionSelection;
-        private System.Windows.Forms.Label labelDocumentationVersion;
-        private System.Windows.Forms.Label labelVersion;
-        internal System.Windows.Forms.RichTextBox richTextBoxInformation;
-        internal System.Windows.Forms.CheckBox checkBoxAlternativeSatLDTS;
-        private System.Windows.Forms.Label label41;
-        internal System.Windows.Forms.TextBox textBoxSatelliteAlternativeLDTSAttribute;
-        private System.Windows.Forms.Label label40;
-        private System.Windows.Forms.Label label39;
-        private System.Windows.Forms.Label label38;
-        internal System.Windows.Forms.CheckBox checkBoxAlternativeHubLDTS;
-        private System.Windows.Forms.Label label37;
-        internal System.Windows.Forms.TextBox textBoxHubAlternativeLDTSAttribute;
-        internal System.Windows.Forms.CheckBox checkBoxAlternativeRecordSource;
-        private System.Windows.Forms.Label label36;
-        internal System.Windows.Forms.TextBox textBoxAlternativeRecordSource;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
     }
 }
 

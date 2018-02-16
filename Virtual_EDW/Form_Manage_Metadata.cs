@@ -455,7 +455,7 @@ namespace TEAM
 
             labelVersion.Text = majorVersion + "." + minorVersion;
 
-            richTextBoxInformation.Text += "The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
+            richTextBoxInformation.Text = "The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
             ContentCounter();
         }
 
@@ -3896,6 +3896,11 @@ namespace TEAM
                     }
                 }
             }
+
+        }
+
+        private void trackBarVersioning_Scroll(object sender, EventArgs e)
+        {
 
         }
     }
