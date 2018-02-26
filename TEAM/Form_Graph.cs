@@ -212,7 +212,7 @@ namespace TEAM
             // For node labels, the default is a label position at the node center. This code below sets the default explicitly.
             Graph.NodeDefaults.Labels.LayoutParameter = InteriorLabelModel.Center;
 
-            // For edge labels, the default is a label that is rotated to match the associated edge segment
+            // For edge labels the default is a label that is rotated to match the associated edge segment
             // We'll start by creating a model that is similar to the default:
             EdgeSegmentLabelModel edgeSegmentLabelModel = new EdgeSegmentLabelModel();
             // However, by default, the rotated label is centered on the edge path.

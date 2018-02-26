@@ -71,7 +71,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Ravos-logo-small.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Ravos-logo-small.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -236,7 +236,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
@@ -260,7 +259,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Ravos-logo-small.ico" />
+    <Content Include="Resources\Ravos-logo-small.ico" />
     <None Include="Resources\Time.png" />
     <None Include="Resources\ghost-icon.png" />
     <None Include="Resources\database_icon.png" />
