@@ -99,17 +99,17 @@ namespace TEAM
         internal void DisplayCurrentVersion(SqlConnection connOmd)
         {
             var sqlStatementForCurrentVersion = new StringBuilder();
-            sqlStatementForCurrentVersion.AppendLine("SELECT VERSION_NAME FROM MD_MODEL_METADATA");
+            sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME] FROM [MD_MODEL_METADATA]");
 
             var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
 
-            var versionName = "0.0";
             foreach (DataRow versionNameRow in versionList.Rows)
             {
-                versionName = (string) versionNameRow["VERSION_NAME"];
+                var versionName = (string) versionNameRow["VERSION_NAME"];
+                labelActiveVersion.Text = versionName;
             }
 
-            labelActiveVersion.Text = versionName;
+
         }
 
 
