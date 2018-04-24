@@ -90,7 +90,7 @@ namespace TEAM
             }
             else
             {
-                // Determine the version
+                // Create the repository
                 _alert.SetTextLogging("Commencing metadata repository creation.\r\n\r\n");
 
                 var createStatement = new StringBuilder();
@@ -258,7 +258,6 @@ namespace TEAM
                 RunSqlCommand(connOmdString, createStatement, worker, 4);
                 createStatement.Clear();
 
-
                 // Metadata, well, metadata
                 createStatement.AppendLine();
                 createStatement.AppendLine("--Model metadata");
@@ -275,6 +274,44 @@ namespace TEAM
                 RunSqlCommand(connOmdString, createStatement, worker, 5);
                 createStatement.Clear();
 
+                // Repository version
+                createStatement.AppendLine();
+                createStatement.AppendLine("--Repository version");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_REPOSITORY_VERSION]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_REPOSITORY_VERSION]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE [MD_REPOSITORY_VERSION]");
+                createStatement.AppendLine("(");
+                createStatement.AppendLine("    [REPOSITORY_VERSION]       varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("    [REPOSITORY_VERSION_NOTES]       varchar(4000)  NOT NULL ,");
+                createStatement.AppendLine("    [REPOSITORY_CREATION_DATETIME]     datetime2(7) NOT NULL,");
+                createStatement.AppendLine("    [REPOSITORY_UPDATE_DATETIME]     datetime2(7) NOT NULL,");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_REPOSITORY_VERSION] PRIMARY KEY CLUSTERED ( [REPOSITORY_VERSION] ASC)");
+                createStatement.AppendLine(")");
+
+                RunSqlCommand(connOmdString, createStatement, worker, 5);
+                createStatement.Clear();
+
+                createStatement.AppendLine();
+                createStatement.AppendLine("--Repository version insert");
+                createStatement.AppendLine("INSERT INTO [MD_REPOSITORY_VERSION]");
+                createStatement.AppendLine("(");
+                createStatement.AppendLine("    [REPOSITORY_VERSION],");
+                createStatement.AppendLine("    [REPOSITORY_VERSION_NOTES],");
+                createStatement.AppendLine("    [REPOSITORY_CREATION_DATETIME],");
+                createStatement.AppendLine("    [REPOSITORY_UPDATE_DATETIME]");
+                createStatement.AppendLine(")");
+                createStatement.AppendLine("VALUES");
+                createStatement.AppendLine("(");
+                createStatement.AppendLine("'1.4',");
+                createStatement.AppendLine("'Maintenance release to facilitatie synchronisiation across multiple sites.',");
+                createStatement.AppendLine("SYSDATETIME(),");
+                createStatement.AppendLine("SYSDATETIME()");
+                createStatement.AppendLine(")");
+
+                RunSqlCommand(connOmdString, createStatement, worker, 5);
+                createStatement.Clear();
+
                 // Attribute 
                 createStatement.AppendLine();
                 createStatement.AppendLine("--Attribute");
@@ -285,7 +322,7 @@ namespace TEAM
                 createStatement.AppendLine("(");
                 createStatement.AppendLine("    [ATTRIBUTE_ID]       integer NOT NULL ,");
                 createStatement.AppendLine("    [ATTRIBUTE_NAME]     varchar(100) NOT NULL,"); 
-                createStatement.AppendLine("    CONSTRAINT[PK_MD_ATT] PRIMARY KEY CLUSTERED ( [ATTRIBUTE_ID] ASC)");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_ATT] PRIMARY KEY CLUSTERED ( [ATTRIBUTE_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_ATT] ON [MD_ATT]");

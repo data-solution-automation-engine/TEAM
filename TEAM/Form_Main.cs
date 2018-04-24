@@ -10,6 +10,7 @@ using Microsoft.SqlServer.Management.Common;
 using System.Threading;
 using System.Drawing;
 using System.Data;
+using System.Globalization;
 
 namespace TEAM
 {
@@ -50,6 +51,7 @@ namespace TEAM
 
                 DisplayMaxVersion(connOmd);
                 DisplayCurrentVersion(connOmd);
+                DisplayRepositoryVersion(connOmd);
             }
             catch
             {
@@ -108,6 +110,25 @@ namespace TEAM
             }
 
             labelActiveVersion.Text = versionName;
+        }
+
+
+        internal void DisplayRepositoryVersion(SqlConnection connOmd)
+        {
+            var sqlStatementForCurrentVersion = new StringBuilder();
+            sqlStatementForCurrentVersion.AppendLine("SELECT [REPOSITORY_VERSION],[REPOSITORY_UPDATE_DATETIME] FROM [MD_REPOSITORY_VERSION]");
+
+            var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+
+            foreach (DataRow versionNameRow in versionList.Rows)
+            {
+                var versionName = (string)versionNameRow["REPOSITORY_VERSION"];
+                var versionDate = (DateTime)versionNameRow["REPOSITORY_UPDATE_DATETIME"];
+                labelRepositoryVersion.Text = versionName;
+                labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
+            }
+
+
         }
 
         private static void InitializePath()

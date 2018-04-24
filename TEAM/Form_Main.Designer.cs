@@ -156,6 +156,11 @@
             this.textBoxStagingConnection = new System.Windows.Forms.TextBox();
             this.textBoxIntegrationConnection = new System.Windows.Forms.TextBox();
             this.textBoxOutputPath = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.labelRepositoryDate = new System.Windows.Forms.Label();
+            this.labelRepositoryUpdateDateTime = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.labelRepositoryVersion = new System.Windows.Forms.Label();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBoxVersionSelection.SuspendLayout();
@@ -168,6 +173,7 @@
             this.grpTableName.SuspendLayout();
             this.tabPageDatabase.SuspendLayout();
             this.tabPageConnections.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
@@ -401,36 +407,36 @@
             this.labelActiveVersion.AutoSize = true;
             this.labelActiveVersion.Location = new System.Drawing.Point(187, 41);
             this.labelActiveVersion.Name = "labelActiveVersion";
-            this.labelActiveVersion.Size = new System.Drawing.Size(42, 13);
+            this.labelActiveVersion.Size = new System.Drawing.Size(27, 13);
             this.labelActiveVersion.TabIndex = 21;
-            this.labelActiveVersion.Text = "Version";
+            this.labelActiveVersion.Text = "N/A";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 41);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(183, 13);
+            this.label1.Size = new System.Drawing.Size(182, 13);
             this.label1.TabIndex = 20;
-            this.label1.Text = "Currently activated Metadata version:";
+            this.label1.Text = "Currently activated metadata version:";
             // 
             // labelDocumentationVersion
             // 
             this.labelDocumentationVersion.AutoSize = true;
             this.labelDocumentationVersion.Location = new System.Drawing.Point(6, 25);
             this.labelDocumentationVersion.Name = "labelDocumentationVersion";
-            this.labelDocumentationVersion.Size = new System.Drawing.Size(151, 13);
+            this.labelDocumentationVersion.Size = new System.Drawing.Size(150, 13);
             this.labelDocumentationVersion.TabIndex = 19;
-            this.labelDocumentationVersion.Text = "Most recent Metadata version:";
+            this.labelDocumentationVersion.Text = "Most recent metadata version:";
             // 
             // labelVersion
             // 
             this.labelVersion.AutoSize = true;
             this.labelVersion.Location = new System.Drawing.Point(187, 25);
             this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(42, 13);
+            this.labelVersion.Size = new System.Drawing.Size(27, 13);
             this.labelVersion.TabIndex = 18;
-            this.labelVersion.Text = "Version";
+            this.labelVersion.Text = "N/A";
             // 
             // tabControlDefaultDetails
             // 
@@ -1359,6 +1365,56 @@
             this.textBoxOutputPath.Size = new System.Drawing.Size(493, 53);
             this.textBoxOutputPath.TabIndex = 56;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.labelRepositoryDate);
+            this.groupBox2.Controls.Add(this.labelRepositoryUpdateDateTime);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.labelRepositoryVersion);
+            this.groupBox2.Location = new System.Drawing.Point(919, 679);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(217, 104);
+            this.groupBox2.TabIndex = 22;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Repository Version";
+            // 
+            // labelRepositoryDate
+            // 
+            this.labelRepositoryDate.AutoSize = true;
+            this.labelRepositoryDate.Location = new System.Drawing.Point(105, 41);
+            this.labelRepositoryDate.Name = "labelRepositoryDate";
+            this.labelRepositoryDate.Size = new System.Drawing.Size(27, 13);
+            this.labelRepositoryDate.TabIndex = 21;
+            this.labelRepositoryDate.Text = "N/A";
+            // 
+            // labelRepositoryUpdateDateTime
+            // 
+            this.labelRepositoryUpdateDateTime.AutoSize = true;
+            this.labelRepositoryUpdateDateTime.Location = new System.Drawing.Point(6, 41);
+            this.labelRepositoryUpdateDateTime.Name = "labelRepositoryUpdateDateTime";
+            this.labelRepositoryUpdateDateTime.Size = new System.Drawing.Size(75, 13);
+            this.labelRepositoryUpdateDateTime.TabIndex = 20;
+            this.labelRepositoryUpdateDateTime.Text = "Latest update:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 25);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(97, 13);
+            this.label5.TabIndex = 19;
+            this.label5.Text = "Repository version:";
+            // 
+            // labelRepositoryVersion
+            // 
+            this.labelRepositoryVersion.AutoSize = true;
+            this.labelRepositoryVersion.Location = new System.Drawing.Point(105, 25);
+            this.labelRepositoryVersion.Name = "labelRepositoryVersion";
+            this.labelRepositoryVersion.Size = new System.Drawing.Size(27, 13);
+            this.labelRepositoryVersion.TabIndex = 18;
+            this.labelRepositoryVersion.Text = "N/A";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1366,6 +1422,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1148, 796);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.tabControlDefaultDetails);
             this.Controls.Add(this.groupBoxVersionSelection);
             this.Controls.Add(this.pictureBox1);
@@ -1401,6 +1458,8 @@
             this.tabPageDatabase.PerformLayout();
             this.tabPageConnections.ResumeLayout(false);
             this.tabPageConnections.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1533,6 +1592,11 @@
         internal System.Windows.Forms.TextBox textBoxStagingConnection;
         internal System.Windows.Forms.TextBox textBoxIntegrationConnection;
         internal System.Windows.Forms.TextBox textBoxOutputPath;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label labelRepositoryDate;
+        private System.Windows.Forms.Label labelRepositoryUpdateDateTime;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label labelRepositoryVersion;
     }
 }
 
