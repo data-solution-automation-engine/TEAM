@@ -1,3 +1,11 @@
+# IMPORTANT NOTE
+The recent version v1.4 has some underlying repository changes;
+- Addition of HUB_ORDER and HUB_TARGET_NAME_IN_LINK in MD_HUB_LINK_XREF
+- Addition of BUSINESS_KEY_DEFINITION in MD_STG_LINK_XREF
+- New view definition for INTERFACE_HUB_LINK_XREF
+
+If possible, please re-generate the repository to get the latest version (menu -> repository)
+
 # TEAM
 Taxonomy for ETL Automation Metadata. A collaboration project to work on the managing (creating, updating, deleting) and validating ETL generation metadata.
 
