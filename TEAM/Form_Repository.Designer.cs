@@ -38,12 +38,13 @@
             this.labelResult = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.checkBoxRetainManualMapping = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonTruncate
             // 
             this.buttonTruncate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonTruncate.Location = new System.Drawing.Point(15, 148);
+            this.buttonTruncate.Location = new System.Drawing.Point(39, 148);
             this.buttonTruncate.Name = "buttonTruncate";
             this.buttonTruncate.Size = new System.Drawing.Size(168, 51);
             this.buttonTruncate.TabIndex = 20;
@@ -54,7 +55,7 @@
             // buttonDeploy
             // 
             this.buttonDeploy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDeploy.Location = new System.Drawing.Point(15, 28);
+            this.buttonDeploy.Location = new System.Drawing.Point(39, 28);
             this.buttonDeploy.Name = "buttonDeploy";
             this.buttonDeploy.Size = new System.Drawing.Size(168, 51);
             this.buttonDeploy.TabIndex = 21;
@@ -101,7 +102,7 @@
             // 
             this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(192, 47);
+            this.labelResult.Location = new System.Drawing.Point(434, 340);
             this.labelResult.Name = "labelResult";
             this.labelResult.Size = new System.Drawing.Size(38, 13);
             this.labelResult.TabIndex = 30;
@@ -110,7 +111,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 315);
+            this.label3.Location = new System.Drawing.Point(24, 315);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(200, 13);
             this.label3.TabIndex = 32;
@@ -119,7 +120,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(15, 261);
+            this.button1.Location = new System.Drawing.Point(39, 261);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(168, 51);
             this.button1.TabIndex = 31;
@@ -127,11 +128,24 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // checkBoxRetainManualMapping
+            // 
+            this.checkBoxRetainManualMapping.AutoSize = true;
+            this.checkBoxRetainManualMapping.Checked = true;
+            this.checkBoxRetainManualMapping.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxRetainManualMapping.Location = new System.Drawing.Point(262, 28);
+            this.checkBoxRetainManualMapping.Name = "checkBoxRetainManualMapping";
+            this.checkBoxRetainManualMapping.Size = new System.Drawing.Size(168, 17);
+            this.checkBoxRetainManualMapping.TabIndex = 61;
+            this.checkBoxRetainManualMapping.Text = "Retain manual mapping tables";
+            this.checkBoxRetainManualMapping.UseVisualStyleBackColor = true;
+            // 
             // FormManageRepository
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 361);
+            this.ClientSize = new System.Drawing.Size(484, 362);
+            this.Controls.Add(this.checkBoxRetainManualMapping);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.labelResult);
@@ -141,8 +155,8 @@
             this.Controls.Add(this.buttonDeploy);
             this.Controls.Add(this.buttonTruncate);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(400, 400);
-            this.MinimumSize = new System.Drawing.Size(400, 400);
+            this.MaximumSize = new System.Drawing.Size(500, 400);
+            this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "FormManageRepository";
             this.Text = "Create / Rebuild Repository";
             this.ResumeLayout(false);
@@ -161,5 +175,6 @@
         private System.Windows.Forms.Label labelResult;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
+        internal System.Windows.Forms.CheckBox checkBoxRetainManualMapping;
     }
 }

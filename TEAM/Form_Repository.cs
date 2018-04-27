@@ -332,35 +332,38 @@ namespace TEAM
                 RunSqlCommand(connOmdString, createStatement, worker, 5);
                 createStatement.Clear();
 
-                // Attribute Mapping 
-                createStatement.AppendLine();
-                createStatement.AppendLine("-- Attribute mapping");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_ATTRIBUTE_MAPPING]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_ATTRIBUTE_MAPPING]");
-                createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_ATTRIBUTE_MAPPING]");
-                createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [ATTRIBUTE_MAPPING_HASH] AS(");
-                createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_COLUMN])),'NA')+'|'+");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_COLUMN])),'NA')+'|' +");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TRANSFORMATION_RULE])),'NA')+'|'");
-                createStatement.AppendLine("			),(2)");
-                createStatement.AppendLine("			)");
-                createStatement.AppendLine("		) PERSISTED NOT NULL,");
-                createStatement.AppendLine("	[VERSION_ID]          integer NOT NULL,");
-                createStatement.AppendLine("	[SOURCE_TABLE]        varchar(100)  NULL,");
-                createStatement.AppendLine("	[SOURCE_COLUMN]       varchar(100)  NULL,");
-                createStatement.AppendLine("	[TARGET_TABLE]        varchar(100)  NULL,");
-                createStatement.AppendLine("	[TARGET_COLUMN]       varchar(100)  NULL,");
-                createStatement.AppendLine("	[TRANSFORMATION_RULE] varchar(4000)  NULL,");
-                createStatement.AppendLine("    CONSTRAINT[PK_MD_ATTRIBUTE_MAPPING] PRIMARY KEY CLUSTERED ([ATTRIBUTE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
-                createStatement.AppendLine(")");
+                if (!checkBoxRetainManualMapping.Checked)
+                {
+                    // Attribute Mapping 
+                    createStatement.AppendLine();
+                    createStatement.AppendLine("-- Attribute mapping");
+                    createStatement.AppendLine("IF OBJECT_ID('[MD_ATTRIBUTE_MAPPING]', 'U') IS NOT NULL");
+                    createStatement.AppendLine(" DROP TABLE [MD_ATTRIBUTE_MAPPING]");
+                    createStatement.AppendLine("");
+                    createStatement.AppendLine("CREATE TABLE [MD_ATTRIBUTE_MAPPING]");
+                    createStatement.AppendLine("( ");
+                    createStatement.AppendLine("    [ATTRIBUTE_MAPPING_HASH] AS(");
+                    createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_COLUMN])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_COLUMN])),'NA')+'|' +");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TRANSFORMATION_RULE])),'NA')+'|'");
+                    createStatement.AppendLine("			),(2)");
+                    createStatement.AppendLine("			)");
+                    createStatement.AppendLine("		) PERSISTED NOT NULL,");
+                    createStatement.AppendLine("	[VERSION_ID]          integer NOT NULL,");
+                    createStatement.AppendLine("	[SOURCE_TABLE]        varchar(100)  NULL,");
+                    createStatement.AppendLine("	[SOURCE_COLUMN]       varchar(100)  NULL,");
+                    createStatement.AppendLine("	[TARGET_TABLE]        varchar(100)  NULL,");
+                    createStatement.AppendLine("	[TARGET_COLUMN]       varchar(100)  NULL,");
+                    createStatement.AppendLine("	[TRANSFORMATION_RULE] varchar(4000)  NULL,");
+                    createStatement.AppendLine("    CONSTRAINT[PK_MD_ATTRIBUTE_MAPPING] PRIMARY KEY CLUSTERED ([ATTRIBUTE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
+                    createStatement.AppendLine(")");
 
-                RunSqlCommand(connOmdString, createStatement, worker, 10);
-                createStatement.Clear();
+                    RunSqlCommand(connOmdString, createStatement, worker, 10);
+                    createStatement.Clear();
+                }
 
                 // Business Key Component
                 createStatement.AppendLine();
@@ -459,10 +462,10 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE[MD_HUB_LINK_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [HUB_TABLE_ID]       integer NOT NULL,");
-                createStatement.AppendLine("	[LINK_TABLE_ID]      integer NOT NULL,");
-                createStatement.AppendLine("	[HUB_ORDER]      integer NOT NULL,");
-                createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION]      varchar(4000) NOT NULL,");
+                createStatement.AppendLine("    [HUB_TABLE_ID]          integer NOT NULL,");
+                createStatement.AppendLine("	[LINK_TABLE_ID]         integer NOT NULL,");
+                createStatement.AppendLine("	[HUB_ORDER]             integer NOT NULL,");
+                createStatement.AppendLine("	[HUB_TARGET_KEY_NAME_IN_LINK]  varchar(4000) NOT NULL,");
                 createStatement.AppendLine("    CONSTRAINT[PK_MD_HUB_LINK_XREF] PRIMARY KEY CLUSTERED ( [LINK_TABLE_ID] ASC, [HUB_TABLE_ID] ASC, [HUB_ORDER] ASC)");
                 createStatement.AppendLine(")");
 
@@ -674,6 +677,7 @@ namespace TEAM
                 createStatement.AppendLine("    [STAGING_AREA_TABLE_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[LINK_TABLE_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000) NULL,");
+                createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] varchar(4000) NOT NULL,");
                 createStatement.AppendLine("    CONSTRAINT[PK_MD_STG_LINK_XREF] PRIMARY KEY CLUSTERED([STAGING_AREA_TABLE_ID] ASC, [LINK_TABLE_ID] ASC)");
                 createStatement.AppendLine(")");
 
@@ -717,36 +721,39 @@ namespace TEAM
                 RunSqlCommand(connOmdString, createStatement, worker, 50);
                 createStatement.Clear();
 
-                // Table Mapping
-                createStatement.AppendLine();
-                createStatement.AppendLine("-- Table Mapping");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_TABLE_MAPPING]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_TABLE_MAPPING]");
-                createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_TABLE_MAPPING]");
-                createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [TABLE_MAPPING_HASH] AS(");
-                createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[INTEGRATION_AREA_TABLE])),'NA')+'|'+");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[STAGING_AREA_TABLE])),'NA')+'|'+");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[BUSINESS_KEY_ATTRIBUTE])),'NA')+'|'+");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DRIVING_KEY_ATTRIBUTE])),'NA')+'|'+");
-                createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[FILTER_CRITERIA])),'NA')+'|'");
-                createStatement.AppendLine("			),(2)");
-                createStatement.AppendLine("			)");
-                createStatement.AppendLine("		) PERSISTED NOT NULL ,");
-                createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
-                createStatement.AppendLine("	[STAGING_AREA_TABLE] varchar(100)  NULL,");
-                createStatement.AppendLine("	[BUSINESS_KEY_ATTRIBUTE] varchar(4000)  NULL,");
-                createStatement.AppendLine("	[DRIVING_KEY_ATTRIBUTE] varchar(4000)  NULL,");
-                createStatement.AppendLine("	[INTEGRATION_AREA_TABLE] varchar(100)  NULL,");
-                createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
-                createStatement.AppendLine("	[GENERATE_INDICATOR] varchar(1)  NULL,");
-                createStatement.AppendLine("    CONSTRAINT[PK_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
-                createStatement.AppendLine(")");
+                if (!checkBoxRetainManualMapping.Checked)
+                {
+                    // Table Mapping
+                    createStatement.AppendLine();
+                    createStatement.AppendLine("-- Table Mapping");
+                    createStatement.AppendLine("IF OBJECT_ID('[MD_TABLE_MAPPING]', 'U') IS NOT NULL");
+                    createStatement.AppendLine(" DROP TABLE[MD_TABLE_MAPPING]");
+                    createStatement.AppendLine("");
+                    createStatement.AppendLine("CREATE TABLE[MD_TABLE_MAPPING]");
+                    createStatement.AppendLine("( ");
+                    createStatement.AppendLine("    [TABLE_MAPPING_HASH] AS(");
+                    createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[INTEGRATION_AREA_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[STAGING_AREA_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[BUSINESS_KEY_ATTRIBUTE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DRIVING_KEY_ATTRIBUTE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[FILTER_CRITERIA])),'NA')+'|'");
+                    createStatement.AppendLine("			),(2)");
+                    createStatement.AppendLine("			)");
+                    createStatement.AppendLine("		) PERSISTED NOT NULL ,");
+                    createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
+                    createStatement.AppendLine("	[STAGING_AREA_TABLE] varchar(100)  NULL,");
+                    createStatement.AppendLine("	[BUSINESS_KEY_ATTRIBUTE] varchar(4000)  NULL,");
+                    createStatement.AppendLine("	[DRIVING_KEY_ATTRIBUTE] varchar(4000)  NULL,");
+                    createStatement.AppendLine("	[INTEGRATION_AREA_TABLE] varchar(100)  NULL,");
+                    createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
+                    createStatement.AppendLine("	[GENERATE_INDICATOR] varchar(1)  NULL,");
+                    createStatement.AppendLine("    CONSTRAINT[PK_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
+                    createStatement.AppendLine(")");
 
-                RunSqlCommand(connOmdString, createStatement, worker, 55);
-                createStatement.Clear();
+                    RunSqlCommand(connOmdString, createStatement, worker, 55);
+                    createStatement.Clear();
+                }
 
                 // Version
                 createStatement.AppendLine();
@@ -1109,7 +1116,7 @@ namespace TEAM
 
                 createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_HUB_LINK_XREF]");
                 createStatement.AppendLine("AS");
-                createStatement.AppendLine("SELECT");
+                createStatement.AppendLine("SELECT"); 
                 createStatement.AppendLine(" slxref.LINK_TABLE_ID,");
                 createStatement.AppendLine(" lnk.LINK_TABLE_NAME,");
                 createStatement.AppendLine(" slxref.STAGING_AREA_TABLE_ID,");
@@ -1118,16 +1125,32 @@ namespace TEAM
                 createStatement.AppendLine(" hub.HUB_TABLE_ID,");
                 createStatement.AppendLine(" hub.HUB_TABLE_NAME,");
                 createStatement.AppendLine(" hlxref.HUB_ORDER,");
-                createStatement.AppendLine(" shxref.BUSINESS_KEY_DEFINITION --The Business Key Definition specifically for this Staging / Hub combination(shared by the Link)");
-                createStatement.AppendLine("FROM MD_STG_LINK_XREF slxref");
-                createStatement.AppendLine("JOIN MD_HUB_LINK_XREF hlxref ON slxref.LINK_TABLE_ID = hlxref.LINK_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_HUB hub ON hlxref.HUB_TABLE_ID = hub.HUB_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_STG stg ON slxref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_LINK lnk ON slxref.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_STG_HUB_XREF shxref");
-                createStatement.AppendLine("    ON slxref.STAGING_AREA_TABLE_ID = shxref.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("    AND hub.HUB_TABLE_ID = shxref.HUB_TABLE_ID");
-                createStatement.AppendLine("    AND shxref.BUSINESS_KEY_DEFINITION = hlxref.BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine(" BUSINESS_KEY_PART_SOURCE AS BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine("FROM --Base table that selects the Links to generate. This is the basis for the Link generation");
+                createStatement.AppendLine("(");
+                createStatement.AppendLine("	SELECT");
+                createStatement.AppendLine("	  LINK_TABLE_ID,");
+                createStatement.AppendLine("	  STAGING_AREA_TABLE_ID,");
+                createStatement.AppendLine("	  LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART_SOURCE,");
+                createStatement.AppendLine("	  ROW_NUMBER() OVER(PARTITION BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID ORDER BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID) AS HUB_ORDER");
+                createStatement.AppendLine("	FROM");
+                createStatement.AppendLine("	(");
+                createStatement.AppendLine("	  SELECT");
+                createStatement.AppendLine("		LINK_TABLE_ID,");
+                createStatement.AppendLine("		STAGING_AREA_TABLE_ID,");
+                createStatement.AppendLine("		CAST('<M>' + REPLACE(BUSINESS_KEY_DEFINITION, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
+                createStatement.AppendLine("		FROM [MD_STG_LINK_XREF]");
+                createStatement.AppendLine("	) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
+                createStatement.AppendLine(") slxref");
+                createStatement.AppendLine("JOIN MD_STG stg ");
+                createStatement.AppendLine("	ON slxref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID -- Adding the Staging Area table name and schema");
+                createStatement.AppendLine("JOIN MD_LINK lnk ");
+                createStatement.AppendLine("	ON slxref.LINK_TABLE_ID = lnk.LINK_TABLE_ID -- Adding the Link table name");
+                createStatement.AppendLine("JOIN MD_HUB_LINK_XREF hlxref ");
+                createStatement.AppendLine("	ON slxref.LINK_TABLE_ID = hlxref.LINK_TABLE_ID -- Adding the Hubs that relate to the Link, from a target perspective");
+                createStatement.AppendLine("  AND slxref.HUB_ORDER = hlxref.HUB_ORDER");
+                createStatement.AppendLine("JOIN MD_HUB hub");
+                createStatement.AppendLine("    ON hlxref.HUB_TABLE_ID = hub.HUB_TABLE_ID -- Adding the Hub name");
                 createStatement.AppendLine();
                 RunSqlCommand(connOmdString, createStatement, worker, 91);
                 createStatement.Clear();
