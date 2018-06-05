@@ -1336,7 +1336,6 @@ namespace TEAM
                 }
                 # endregion
 
-
                 # region Prepare Version Information - 7%
                 // 2. Prepare Version
                 _alert.SetTextLogging("\r\n");
@@ -1384,8 +1383,6 @@ namespace TEAM
                 }
 
                 #endregion
-
-
 
                 # region Prepare Staging Area - 10%
                 // 2. Prepare STG
@@ -1507,8 +1504,6 @@ namespace TEAM
                 }
                 #endregion
 
-
-
                 #region Prepare Links - 20%
                 //4. Prepare links
                 _alert.SetTextLogging("\r\n");
@@ -1568,8 +1563,6 @@ namespace TEAM
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the Links: \r\n\r\n" + ex);
                 }
                 #endregion
-
-
 
                 #region Prepare Satellites - 24%
                 //5.1 Prepare Satellites
@@ -1644,7 +1637,6 @@ namespace TEAM
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
                 }
                 #endregion
-
 
                 #region Prepare Link Satellites - 28%
                 //5.2 Prepare Satellites
@@ -1725,8 +1717,6 @@ namespace TEAM
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link Satellites: \r\n\r\n" + ex);
                 }
                 #endregion
-
-
 
                 #region Prepare STG / SAT Xref - 28%
                 //5.3 Prepare STG / Sat XREF
@@ -1819,8 +1809,6 @@ namespace TEAM
 
                 #endregion
 
-
-
                 #region Staging / Hub relationship - 30%
                 //6. Prepare STG / HUB xref
                 _alert.SetTextLogging("\r\n");
@@ -1909,8 +1897,6 @@ namespace TEAM
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
                 }
                 #endregion
-
-
 
                 #region Prepare attributes - 40%
                 //7. Prepare Attributes
@@ -2355,8 +2341,6 @@ namespace TEAM
                 }
 
                 #endregion
-
-
 
                 #region Stg / Link relationship - 80%
 
@@ -3932,6 +3916,15 @@ namespace TEAM
         private void trackBarVersioning_Scroll(object sender, EventArgs e)
         {
 
+        }
+
+        private void saveTableMappingAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            private void button1_Click(object sender, EventArgs e)
+            {
+                string output = JsonConvert.SerializeObject(_data);
+                System.IO.File.WriteAllText("json.json", output);
+            }
         }
     }
 }
