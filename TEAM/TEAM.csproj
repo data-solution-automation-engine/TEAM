@@ -157,6 +157,12 @@
     <Compile Include="Form_Graph.Designer.cs">
       <DependentUpon>Form_Graph.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_Manage_Configuration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Manage_Configuration.Designer.cs">
+      <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Model_Metadata.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -209,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Graph.resx">
       <DependentUpon>Form_Graph.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Manage_Configuration.resx">
+      <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Main.resx">
       <DependentUpon>Form_Main.cs</DependentUpon>

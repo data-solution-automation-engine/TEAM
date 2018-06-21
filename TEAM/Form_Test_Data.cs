@@ -56,11 +56,13 @@ namespace TEAM
 
         private void buttonGenerateTestcases_Click(object sender, EventArgs e)
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             var connStg = new SqlConnection();
             var connVariable = new SqlConnection();
 
             // Assign database connection string
-            connStg.ConnectionString = _myParent.textBoxStagingConnection.Text;
+            connStg.ConnectionString = configurationSettings.ConnectionStringStg;
 
             try
             {
@@ -99,25 +101,25 @@ namespace TEAM
                         testCaseQuery.AppendLine("-- Creating testcases for " + stgTableName);
                         testCaseQuery.AppendLine();
 
-                        var localkeyLength = _myParent.textBoxDWHKeyIdentifier.TextLength;
-                        var localkeySubstring = _myParent.textBoxDWHKeyIdentifier.TextLength + 1;
+                        var localkeyLength = configurationSettings.DwhKeyIdentifier.Length;
+                        var localkeySubstring = configurationSettings.DwhKeyIdentifier.Length + 1;
 
                         var queryAttributeArray =
                             "SELECT COLUMN_NAME, DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION " +
                             "FROM INFORMATION_SCHEMA.COLUMNS " +
                             "WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," +
-                            localkeySubstring + ")!='_" + _myParent.textBoxDWHKeyIdentifier.Text + "'" +
+                            localkeySubstring + ")!='_" + configurationSettings.DwhKeyIdentifier + "'" +
                             " AND TABLE_NAME= '" + stgTableName + "'" +
-                            " AND COLUMN_NAME NOT IN ('" + _myParent.textBoxRecordSource.Text + "','" +
-                            _myParent.textBoxAlternativeRecordSource.Text + "','" +
-                            _myParent.textBoxHubAlternativeLDTSAttribute.Text + "','" +
-                            _myParent.textBoxSatelliteAlternativeLDTSAttribute.Text + "','" +
-                            _myParent.textBoxETLProcessID.Text + "','" +
-                            _myParent.textBoxEventDateTime.Text + "','" +
-                            _myParent.textBoxChangeDataCaptureIndicator.Text + "','" +
-                            _myParent.textBoxRecordChecksum.Text + "','" +
-                            _myParent.textBoxSourceRowId.Text + "','" +
-                            _myParent.textBoxLDST.Text + "')";
+                            " AND COLUMN_NAME NOT IN ('" + configurationSettings.RecordSourceAttribute + "','" +
+                            configurationSettings.AlternativeRecordSourceAttribute + "','" +
+                            configurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                            configurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                            configurationSettings.EtlProcessAttribute + "','" +
+                            configurationSettings.EventDateTimeAttribute + "','" +
+                            configurationSettings.ChangeDataCaptureAttribute + "','" +
+                            configurationSettings.RecordChecksumAttribute + "','" +
+                            configurationSettings.RowIdAttribute + "','" +
+                            configurationSettings.LoadDateTimeAttribute + "')";
 
                         var attributeArray = _myParent.GetDataTable(ref connStg, queryAttributeArray);
 
@@ -126,11 +128,11 @@ namespace TEAM
                             testCaseQuery.AppendLine("-- Testcase " + intCounter);
                             testCaseQuery.AppendLine("INSERT INTO [dbo].[" + stgTableName + "]");
                             testCaseQuery.AppendLine("(");
-                            testCaseQuery.AppendLine("[" + _myParent.textBoxETLProcessID.Text + "],");
-                            testCaseQuery.AppendLine("[" + _myParent.textBoxEventDateTime.Text + "],");
-                            testCaseQuery.AppendLine("[" + _myParent.textBoxRecordSource.Text + "],");
-                            testCaseQuery.AppendLine("[" + _myParent.textBoxChangeDataCaptureIndicator.Text + "],");
-                            testCaseQuery.AppendLine("[" + _myParent.textBoxRecordChecksum.Text + "],");
+                            testCaseQuery.AppendLine("[" + configurationSettings.EtlProcessAttribute + "],");
+                            testCaseQuery.AppendLine("[" + configurationSettings.EventDateTimeAttribute + "],");
+                            testCaseQuery.AppendLine("[" + configurationSettings.RecordSourceAttribute + "],");
+                            testCaseQuery.AppendLine("[" + configurationSettings.ChangeDataCaptureAttribute + "],");
+                            testCaseQuery.AppendLine("[" + configurationSettings.RecordChecksumAttribute + "],");
 
                             foreach (DataRow attributeRow in attributeArray.Rows)
                             {
@@ -186,15 +188,15 @@ namespace TEAM
                         {
                             if (radioButtonStagingArea.Checked)
                             {
-                                connVariable.ConnectionString = _myParent.textBoxStagingConnection.Text;
+                                connVariable.ConnectionString = configurationSettings.ConnectionStringStg;
                             }
                             if (radioButtonPSA.Checked)
                             {
-                                connVariable.ConnectionString = _myParent.textBoxPSAConnection.Text;
+                                connVariable.ConnectionString = configurationSettings.ConnectionStringHstg;
                             }
                             if (radiobuttonSource.Checked)
                             {
-                                connVariable.ConnectionString = _myParent.textBoxSourceConnection.Text;
+                                connVariable.ConnectionString = configurationSettings.ConnectionStringSource;
                             }
 
                             try

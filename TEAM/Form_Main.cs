@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
@@ -19,6 +18,7 @@ namespace TEAM
         public FormMain()
         {
             var errorMessage = new StringBuilder();
+
             errorMessage.AppendLine("Error were detected:");
             errorMessage.AppendLine();
            
@@ -30,20 +30,26 @@ namespace TEAM
             InitializeComponent();
             InitializePath();
 
-            richTextBoxInformation.Text = "Application initialised - Enterprise Data Warehouse Virtualisation. \r\n\r\n";
+            InitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName);
 
-            try
-            {
-                InitialiseConnections(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName);
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
-            }
+            //Startup information
+            richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
+            richTextBoxInformation.AppendText("Version 1.5 \r\n\r\n");
 
-            var connOmd = new SqlConnection { ConnectionString = textBoxMetadataConnection.Text };
-            var connStg = new SqlConnection { ConnectionString = textBoxStagingConnection.Text };
-            var connPsa = new SqlConnection { ConnectionString = textBoxPSAConnection.Text };
+            richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
+
+            richTextBoxInformation.AppendText("Changes for this version: \r\n");
+            richTextBoxInformation.AppendText("- Enabled JSON storage format for core mapping data sets (MD_TABLE_MAPPING and MD_ATTRIBUTE_MAPPING)\r\n");
+            richTextBoxInformation.AppendText("- This means that, at this stage, the new JSON repository type only applies to the above tables and still needs a SQL Server repository for the other tabels!\r\n");
+            richTextBoxInformation.AppendText("- Created new configuration screen\r\n");
+            richTextBoxInformation.AppendText("- Minor bug fixes (see Github)\r\n\r\n");
+
+            //Retrieving the configuration strings from the global variables (configuration settings)
+            var configurationSettings = new ConfigurationSettings();
+
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var connStg = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringStg };
+            var connPsa = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringHstg };
 
             try
             {
@@ -109,7 +115,8 @@ namespace TEAM
                 labelActiveVersion.Text = versionName;
             }
 
-
+            var configurationSettings = new ConfigurationSettings();
+            labelMetadataRepository.Text = "Repository type in configuration is set to " + configurationSettings.metadataRepositoryType;
         }
 
 
@@ -127,6 +134,9 @@ namespace TEAM
                 labelRepositoryVersion.Text = versionName;
                 labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
             }
+
+
+
 
 
         }
@@ -162,7 +172,7 @@ namespace TEAM
 
             try
             {
-                if (!File.Exists(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName))
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName))
                 {
                     var initialConfigurationFile = new StringBuilder();
 
@@ -212,7 +222,7 @@ namespace TEAM
                     
                     initialConfigurationFile.AppendLine("/* End of file */");
 
-                    using (var outfile = new StreamWriter(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName))
+                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName))
                     {
                         outfile.Write(initialConfigurationFile.ToString());
                         outfile.Close();
@@ -227,174 +237,174 @@ namespace TEAM
 
         }
 
-        private void InitialiseConnections(string chosenFile)
-        {
-            var configList = new Dictionary<string, string>();
-            var fs = new FileStream(chosenFile, FileMode.Open, FileAccess.Read);
-            var sr = new StreamReader(fs);
+        //private void InitialiseConnections(string chosenFile)
+        //{
+        //    var configList = new Dictionary<string, string>();
+        //    var fs = new FileStream(chosenFile, FileMode.Open, FileAccess.Read);
+        //    var sr = new StreamReader(fs);
 
-            try
-            {
-                string textline;
-                while ((textline = sr.ReadLine()) != null)
-                {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
-                    {
-                        var line = textline.Split('|');
-                        configList.Add(line[0], line[1]);
-                    }
-                }
+        //    try
+        //    {
+        //        string textline;
+        //        while ((textline = sr.ReadLine()) != null)
+        //        {
+        //            if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
+        //            {
+        //                var line = textline.Split('|');
+        //                configList.Add(line[0], line[1]);
+        //            }
+        //        }
 
-                sr.Close();
-                fs.Close();
+        //        sr.Close();
+        //        fs.Close();
 
-                var connectionStringOmd = configList["connectionStringMetadata"];
-                connectionStringOmd = connectionStringOmd.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+        //        var connectionStringOmd = configList["connectionStringMetadata"];
+        //        connectionStringOmd = connectionStringOmd.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringSource = configList["connectionStringSource"];
-                connectionStringSource = connectionStringSource.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+        //        var connectionStringSource = configList["connectionStringSource"];
+        //        connectionStringSource = connectionStringSource.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringStg = configList["connectionStringStaging"];
-                connectionStringStg = connectionStringStg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+        //        var connectionStringStg = configList["connectionStringStaging"];
+        //        connectionStringStg = connectionStringStg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringHstg = configList["connectionStringPersistentStaging"];
-                connectionStringHstg = connectionStringHstg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+        //        var connectionStringHstg = configList["connectionStringPersistentStaging"];
+        //        connectionStringHstg = connectionStringHstg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringInt = configList["connectionStringIntegration"];
-                connectionStringInt = connectionStringInt.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+        //        var connectionStringInt = configList["connectionStringIntegration"];
+        //        connectionStringInt = connectionStringInt.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringPres = configList["connectionStringPresentation"];
-                connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+        //        var connectionStringPres = configList["connectionStringPresentation"];
+        //        connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                textBoxOutputPath.Text = GlobalVariables.OutputPath;
-                textBoxIntegrationConnection.Text = connectionStringInt;
-                textBoxPSAConnection.Text = connectionStringHstg;
-                textBoxSourceConnection.Text = connectionStringSource;
-                textBoxStagingConnection.Text = connectionStringStg;
-                textBoxMetadataConnection.Text = connectionStringOmd;
-                textBoxPresentationConnection.Text = connectionStringPres;
+        //        textBoxOutputPath.Text = GlobalVariables.OutputPath;
+        //        textBoxIntegrationConnection.Text = connectionStringInt;
+        //        textBoxPSAConnection.Text = connectionStringHstg;
+        //        textBoxSourceConnection.Text = connectionStringSource;
+        //        textBoxStagingConnection.Text = connectionStringStg;
+        //       // textBoxMetadataConnection.Text = connectionStringOmd;
+        //        textBoxPresentationConnection.Text = connectionStringPres;
 
-                textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
-                textBoxSatPrefix.Text = configList["SatTablePrefix"];
-                textBoxLinkTablePrefix.Text = configList["LinkTablePrefix"];
-                textBoxLinkSatPrefix.Text = configList["LinkSatTablePrefix"];
-                textBoxDWHKeyIdentifier.Text = configList["KeyIdentifier"];
-                textBoxSchemaName.Text = configList["SchemaName"];
-                textBoxEventDateTime.Text = configList["EventDateTimeStamp"];
-                textBoxLDST.Text = configList["LoadDateTimeStamp"];
-                textBoxExpiryDateTimeName.Text = configList["ExpiryDateTimeStamp"];
-                textBoxChangeDataCaptureIndicator.Text = configList["ChangeDataIndicator"];
-                textBoxRecordSource.Text = configList["RecordSourceAttribute"];
-                textBoxETLProcessID.Text = configList["ETLProcessID"];
-                textBoxETLUpdateProcessID.Text = configList["ETLUpdateProcessID"];
-                textBoxSourcePrefix.Text = configList["SourceSystemPrefix"];
-                textBoxStagingAreaPrefix.Text = configList["StagingAreaPrefix"];
-                textBoxPSAPrefix.Text = configList["PersistentStagingAreaPrefix"];
-                textBoxSourceRowId.Text = configList["RowID"];
-                textBoxSourceDatabase.Text = configList["SourceDatabase"];
-                textBoxStagingDatabase.Text = configList["StagingDatabase"];
-                textBoxPSADatabase.Text = configList["PersistentStagingDatabase"];
-                textBoxIntegrationDatabase.Text = configList["IntegrationDatabase"];
-                textBoxPresentationDatabase.Text = configList["PresentationDatabase"];
-                textBoxRecordChecksum.Text = configList["RecordChecksum"];
-                textBoxCurrentRecordAttributeName.Text = configList["CurrentRecordAttribute"];
-                textBoxAlternativeRecordSource.Text = configList["AlternativeRecordSource"];
-                textBoxHubAlternativeLDTSAttribute.Text = configList["AlternativeHubLDTS"];
-                textBoxSatelliteAlternativeLDTSAttribute.Text = configList["AlternativeSatelliteLDTS"];
-                textBoxLogicalDeleteAttributeName.Text = configList["LogicalDeleteAttribute"];
-                textBoxLinkedServer.Text = configList["LinkedServerName"];
+        //        textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
+        //        textBoxSatPrefix.Text = configList["SatTablePrefix"];
+        //        textBoxLinkTablePrefix.Text = configList["LinkTablePrefix"];
+        //        textBoxLinkSatPrefix.Text = configList["LinkSatTablePrefix"];
+        //        textBoxDWHKeyIdentifier.Text = configList["KeyIdentifier"];
+        //        textBoxSchemaName.Text = configList["SchemaName"];
+        //        textBoxEventDateTime.Text = configList["EventDateTimeStamp"];
+        //        textBoxLDST.Text = configList["LoadDateTimeStamp"];
+        //        textBoxExpiryDateTimeName.Text = configList["ExpiryDateTimeStamp"];
+        //        textBoxChangeDataCaptureIndicator.Text = configList["ChangeDataIndicator"];
+        //        textBoxRecordSource.Text = configList["RecordSourceAttribute"];
+        //        textBoxETLProcessID.Text = configList["ETLProcessID"];
+        //        textBoxETLUpdateProcessID.Text = configList["ETLUpdateProcessID"];
+        //        textBoxSourcePrefix.Text = configList["SourceSystemPrefix"];
+        //        textBoxStagingAreaPrefix.Text = configList["StagingAreaPrefix"];
+        //        textBoxPSAPrefix.Text = configList["PersistentStagingAreaPrefix"];
+        //        textBoxSourceRowId.Text = configList["RowID"];
+        //        textBoxSourceDatabase.Text = configList["SourceDatabase"];
+        //        textBoxStagingDatabase.Text = configList["StagingDatabase"];
+        //        textBoxPSADatabase.Text = configList["PersistentStagingDatabase"];
+        //        textBoxIntegrationDatabase.Text = configList["IntegrationDatabase"];
+        //        textBoxPresentationDatabase.Text = configList["PresentationDatabase"];
+        //        textBoxRecordChecksum.Text = configList["RecordChecksum"];
+        //        textBoxCurrentRecordAttributeName.Text = configList["CurrentRecordAttribute"];
+        //        textBoxAlternativeRecordSource.Text = configList["AlternativeRecordSource"];
+        //        textBoxHubAlternativeLDTSAttribute.Text = configList["AlternativeHubLDTS"];
+        //        textBoxSatelliteAlternativeLDTSAttribute.Text = configList["AlternativeSatelliteLDTS"];
+        //        textBoxLogicalDeleteAttributeName.Text = configList["LogicalDeleteAttribute"];
+        //        textBoxLinkedServer.Text = configList["LinkedServerName"];
 
-                //Checkbox setting based on loaded configuration
-                CheckBox myConfigurationCheckBox;
+        //        //Checkbox setting based on loaded configuration
+        //        CheckBox myConfigurationCheckBox;
 
-                if (configList["AlternativeRecordSourceFunction"] == "False")
-                {
-                    myConfigurationCheckBox = checkBoxAlternativeRecordSource;
-                    myConfigurationCheckBox.Checked = false;
-                    textBoxAlternativeRecordSource.Enabled = false;
-                }
-                else
-                {
-                    myConfigurationCheckBox = checkBoxAlternativeRecordSource;
-                    myConfigurationCheckBox.Checked = true; 
-                }
+        //        if (configList["AlternativeRecordSourceFunction"] == "False")
+        //        {
+        //            myConfigurationCheckBox = checkBoxAlternativeRecordSource;
+        //            myConfigurationCheckBox.Checked = false;
+        //            textBoxAlternativeRecordSource.Enabled = false;
+        //        }
+        //        else
+        //        {
+        //            myConfigurationCheckBox = checkBoxAlternativeRecordSource;
+        //            myConfigurationCheckBox.Checked = true; 
+        //        }
 
-                if (configList["AlternativeHubLDTSFunction"] == "False")
-                {
-                    myConfigurationCheckBox = checkBoxAlternativeHubLDTS;
-                    myConfigurationCheckBox.Checked = false;
-                    textBoxHubAlternativeLDTSAttribute.Enabled = false;
-                }
-                else
-                {
-                    myConfigurationCheckBox = checkBoxAlternativeHubLDTS;
-                    myConfigurationCheckBox.Checked = true;
-                }
+        //        if (configList["AlternativeHubLDTSFunction"] == "False")
+        //        {
+        //            myConfigurationCheckBox = checkBoxAlternativeHubLDTS;
+        //            myConfigurationCheckBox.Checked = false;
+        //            textBoxHubAlternativeLDTSAttribute.Enabled = false;
+        //        }
+        //        else
+        //        {
+        //            myConfigurationCheckBox = checkBoxAlternativeHubLDTS;
+        //            myConfigurationCheckBox.Checked = true;
+        //        }
 
-                if (configList["AlternativeSatelliteLDTSFunction"] == "False")
-                {
-                    myConfigurationCheckBox = checkBoxAlternativeSatLDTS;
-                    myConfigurationCheckBox.Checked = false;
-                    textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
-                }
-                else
-                {
-                    myConfigurationCheckBox = checkBoxAlternativeSatLDTS;
-                    myConfigurationCheckBox.Checked = true;
-                }
+        //        if (configList["AlternativeSatelliteLDTSFunction"] == "False")
+        //        {
+        //            myConfigurationCheckBox = checkBoxAlternativeSatLDTS;
+        //            myConfigurationCheckBox.Checked = false;
+        //            textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
+        //        }
+        //        else
+        //        {
+        //            myConfigurationCheckBox = checkBoxAlternativeSatLDTS;
+        //            myConfigurationCheckBox.Checked = true;
+        //        }
                 
 
-                //Radiobutton setting for prefix / suffix 
-                RadioButton myTableRadioButton;
+        //        //Radiobutton setting for prefix / suffix 
+        //        RadioButton myTableRadioButton;
 
-                if (configList["TableNamingLocation"] == "Prefix")
-                {
-                    myTableRadioButton = tablePrefixRadiobutton;
-                    myTableRadioButton.Checked = true;
-                }
-                else
-                {
-                    myTableRadioButton = tableSuffixRadiobutton;
-                    myTableRadioButton.Checked = true;
-                }
+        //        if (configList["TableNamingLocation"] == "Prefix")
+        //        {
+        //            myTableRadioButton = tablePrefixRadiobutton;
+        //            myTableRadioButton.Checked = true;
+        //        }
+        //        else
+        //        {
+        //            myTableRadioButton = tableSuffixRadiobutton;
+        //            myTableRadioButton.Checked = true;
+        //        }
 
-                //Radiobutton settings for on key location
-                RadioButton myKeyRadioButton;
+        //        //Radiobutton settings for on key location
+        //        RadioButton myKeyRadioButton;
 
-                if (configList["KeyNamingLocation"] == "Prefix")
-                {
-                    myKeyRadioButton = keyPrefixRadiobutton;
-                    myKeyRadioButton.Checked = true;
-                }
-                else
-                {
-                    myKeyRadioButton = keySuffixRadiobutton;
-                    myKeyRadioButton.Checked = true;
-                }
+        //        if (configList["KeyNamingLocation"] == "Prefix")
+        //        {
+        //            myKeyRadioButton = keyPrefixRadiobutton;
+        //            myKeyRadioButton.Checked = true;
+        //        }
+        //        else
+        //        {
+        //            myKeyRadioButton = keySuffixRadiobutton;
+        //            myKeyRadioButton.Checked = true;
+        //        }
 
-                //Radiobutton settings for PSA Natural Key determination
-                RadioButton myPsaBusinessKeyLocation;
+        //        //Radiobutton settings for PSA Natural Key determination
+        //        RadioButton myPsaBusinessKeyLocation;
 
-                if (configList["PSAKeyLocation"] == "PrimaryKey")
-                {
-                    myPsaBusinessKeyLocation = radioButtonPSABusinessKeyPK;
-                    myPsaBusinessKeyLocation.Checked = true;
-                }
-                else
-                {
-                    myPsaBusinessKeyLocation = radioButtonPSABusinessKeyIndex;
-                    myPsaBusinessKeyLocation.Checked = true;
-                } 
+        //        if (configList["PSAKeyLocation"] == "PrimaryKey")
+        //        {
+        //            myPsaBusinessKeyLocation = radioButtonPSABusinessKeyPK;
+        //            myPsaBusinessKeyLocation.Checked = true;
+        //        }
+        //        else
+        //        {
+        //            myPsaBusinessKeyLocation = radioButtonPSABusinessKeyIndex;
+        //            myPsaBusinessKeyLocation.Checked = true;
+        //        } 
 
-                richTextBoxInformation.AppendText("The default values were loaded. \r\n\r\n");
-                richTextBoxInformation.AppendText(@"The file " + chosenFile + " was uploaded successfully. \r\n\r\n");
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
-            }
+        //        richTextBoxInformation.AppendText("The default values were loaded. \r\n\r\n");
+        //        richTextBoxInformation.AppendText(@"The file " + chosenFile + " was uploaded successfully. \r\n\r\n");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+        //    }
 
-        }
+        //}
 
         private void CheckKeyword(string word, Color color, int startIndex)
         {
@@ -436,9 +446,11 @@ namespace TEAM
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var configurationSettings = new ConfigurationSettings();
+
             try
             {
-                Process.Start(textBoxOutputPath.Text);
+                Process.Start(configurationSettings.OutputPath);
             }
             catch (Exception ex)
             {
@@ -446,39 +458,10 @@ namespace TEAM
             }
         }
 
-        private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var configurationPath = Application.StartupPath + @"\Configuration\";
-            var theDialog = new OpenFileDialog
-            {
-                Title = @"Open Configuration File",
-                Filter = @"Text files|*.txt",
-                InitialDirectory = @""+configurationPath+""
-            };
-
-            if (theDialog.ShowDialog() != DialogResult.OK) return;
-            try
-            {
-                var myStream = theDialog.OpenFile();
-
-                using (myStream)
-                {
-                    richTextBoxInformation.Clear();
-                    var chosenFile = theDialog.FileName;
-                    InitialiseConnections(chosenFile);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
-
 
         private void CloseTestDataForm(object sender, FormClosedEventArgs e)
         {
@@ -502,6 +485,11 @@ namespace TEAM
         private void CloseGraphForm(object sender, FormClosedEventArgs e)
         {
             _myGraphForm = null;
+        }
+
+        private void CloseConfigurationForm(object sender, FormClosedEventArgs e)
+        {
+            _myConfigurationForm = null;
         }
 
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
@@ -637,6 +625,39 @@ namespace TEAM
         }
 
 
+        private FormManageConfiguration _myConfigurationForm;
+        /// <summary>
+        /// 
+        /// </summary>
+        [STAThread]
+        public void ThreadProcConfiguration()
+        {
+            if (_myConfigurationForm == null)
+            {
+                _myConfigurationForm = new FormManageConfiguration(this);
+                Application.Run(_myConfigurationForm);
+            }
+            else
+            {
+                if (_myConfigurationForm.InvokeRequired)
+                {
+                    // Thread Error
+                    _myConfigurationForm.Invoke((MethodInvoker)delegate { _myConfigurationForm.Close(); });
+                    _myConfigurationForm.FormClosed += CloseConfigurationForm;
+
+                    _myConfigurationForm = new FormManageConfiguration(this);
+                    Application.Run(_myConfigurationForm);
+                }
+                else
+                {
+                    // No invoke required - same thread
+                    _myConfigurationForm.FormClosed += CloseConfigurationForm;
+                    _myConfigurationForm = new FormManageConfiguration(this);
+
+                    Application.Run(_myConfigurationForm);
+                }
+            }
+        }
 
 
         private FormManageMetadata _myMetadataForm;
@@ -737,136 +758,7 @@ namespace TEAM
                     _myAboutForm.Show();
                     Application.Run();
                 }
-
             }
-        }
-
-        private void saveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // Create a file backup
-            try
-            {
-                if (File.Exists(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName))
-                {
-                    var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
-                    var targetFilePathName = GlobalVariables.ConfigurationPath +
-                                             string.Concat("Backup_"+shortDatetime+"_",GlobalVariables.ConfigfileName);
-
-                    File.Copy(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName,targetFilePathName);
-                    richTextBoxInformation.Text="A backup of the current configuration was made at "+targetFilePathName;
-                }
-                else
-                {
-                    InitializePath();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error has occured while creating a file backup. The error message is " + ex, "An issue has been encountered",MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Update the configuration file
-            try
-            {
-                var configurationFile = new StringBuilder();
-
-                configurationFile.AppendLine("/* Virtual EDW Configuration Settings */");
-                configurationFile.AppendLine("/* Saved at "+DateTime.Now+" */");
-                configurationFile.AppendLine("SourceDatabase|"+textBoxSourceDatabase.Text+"");
-                configurationFile.AppendLine("StagingDatabase|"+textBoxStagingDatabase.Text+"");
-                configurationFile.AppendLine("PersistentStagingDatabase|"+textBoxPSADatabase.Text+"");
-                configurationFile.AppendLine("IntegrationDatabase|"+textBoxIntegrationDatabase.Text+"");
-                configurationFile.AppendLine("PresentationDatabase|"+textBoxPresentationDatabase.Text+"");
-                configurationFile.AppendLine(@"connectionStringSource|"+textBoxSourceConnection.Text+"");
-                configurationFile.AppendLine(@"connectionStringStaging|" + textBoxStagingConnection.Text + "");
-                configurationFile.AppendLine(@"connectionStringPersistentStaging|" + textBoxPSAConnection.Text + "");
-                configurationFile.AppendLine(@"connectionStringMetadata|"+textBoxMetadataConnection.Text+"");
-                configurationFile.AppendLine(@"connectionStringIntegration|"+textBoxIntegrationConnection.Text+"");
-                configurationFile.AppendLine(@"connectionStringPresentation|"+textBoxPresentationConnection.Text+"");
-                configurationFile.AppendLine("SourceSystemPrefix|"+textBoxSourcePrefix.Text+"");
-                configurationFile.AppendLine("StagingAreaPrefix|" + textBoxStagingAreaPrefix.Text + "");
-                configurationFile.AppendLine("PersistentStagingAreaPrefix|" + textBoxPSAPrefix.Text + "");
-                configurationFile.AppendLine("HubTablePrefix|"+textBoxHubTablePrefix.Text+"");
-                configurationFile.AppendLine("SatTablePrefix|"+textBoxSatPrefix.Text+"");
-                configurationFile.AppendLine("LinkTablePrefix|"+textBoxLinkTablePrefix.Text+"");
-                configurationFile.AppendLine("LinkSatTablePrefix|"+textBoxLinkSatPrefix.Text+"");
-                configurationFile.AppendLine("KeyIdentifier|"+textBoxDWHKeyIdentifier.Text+"");
-                configurationFile.AppendLine("SchemaName|"+textBoxSchemaName.Text+"");
-                configurationFile.AppendLine("RowID|"+textBoxSourceRowId.Text+"");
-                configurationFile.AppendLine("EventDateTimeStamp|"+textBoxEventDateTime.Text+"");
-                configurationFile.AppendLine("LoadDateTimeStamp|"+textBoxLDST.Text+"");
-                configurationFile.AppendLine("ExpiryDateTimeStamp|" + textBoxExpiryDateTimeName.Text + "");
-                configurationFile.AppendLine("ChangeDataIndicator|"+textBoxChangeDataCaptureIndicator.Text+"");
-                configurationFile.AppendLine("RecordSourceAttribute|"+textBoxRecordSource.Text+"");
-                configurationFile.AppendLine("ETLProcessID|"+textBoxETLProcessID.Text+"");
-                configurationFile.AppendLine("ETLUpdateProcessID|"+textBoxETLUpdateProcessID.Text+"");
-                configurationFile.AppendLine("LogicalDeleteAttribute|" + textBoxLogicalDeleteAttributeName.Text + "");
-                configurationFile.AppendLine("LinkedServerName|" + textBoxLinkedServer.Text + "");
-
-                if (tablePrefixRadiobutton.Checked)
-                {
-                    configurationFile.AppendLine("TableNamingLocation|Prefix");
-                }
-                if (tableSuffixRadiobutton.Checked)
-                {
-                    configurationFile.AppendLine("TableNamingLocation|Suffix");
-                }
-
-                if (keyPrefixRadiobutton.Checked)
-                {
-                    configurationFile.AppendLine("KeyNamingLocation|Prefix");
-                }
-                if (keySuffixRadiobutton.Checked)
-                {
-                    configurationFile.AppendLine("KeyNamingLocation|Suffix");
-                }
-
-                configurationFile.AppendLine("RecordChecksum|"+textBoxRecordChecksum.Text+"");
-                configurationFile.AppendLine("CurrentRecordAttribute|" + textBoxCurrentRecordAttributeName.Text+"");
-
-                configurationFile.AppendLine("AlternativeRecordSource|" + textBoxAlternativeRecordSource.Text + "");
-                configurationFile.AppendLine("AlternativeHubLDTS|" + textBoxHubAlternativeLDTSAttribute.Text + "");
-                configurationFile.AppendLine("AlternativeSatelliteLDTS|" + textBoxSatelliteAlternativeLDTSAttribute.Text + "");
-                configurationFile.AppendLine("AlternativeRecordSourceFunction|" + checkBoxAlternativeRecordSource.Checked + "");
-                configurationFile.AppendLine("AlternativeHubLDTSFunction|" + checkBoxAlternativeHubLDTS.Checked + "");
-                configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" + checkBoxAlternativeSatLDTS.Checked + "");
-
-                if (radioButtonPSABusinessKeyIndex.Checked)
-                {
-                    configurationFile.AppendLine("PSAKeyLocation|UniqueIndex");
-                }
-                if (radioButtonPSABusinessKeyPK.Checked)
-                {
-                    configurationFile.AppendLine("PSAKeyLocation|PrimaryKey");
-                }
-                
-                configurationFile.AppendLine("/* End of file */");
-
-                using (var outfile = new StreamWriter(GlobalVariables.ConfigurationPath + GlobalVariables.ConfigfileName))
-                {
-                    outfile.Write(configurationFile.ToString());
-                    outfile.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occured saving the Configuration File. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void checkBoxAlternativeRecordSource_CheckedChanged(object sender, EventArgs e)
-        {
-            textBoxAlternativeRecordSource.Enabled = checkBoxAlternativeRecordSource.Checked;
-        }
-
-        private void checkBoxAlternativeHubLDTS_CheckedChanged(object sender, EventArgs e)
-        {
-            textBoxHubAlternativeLDTSAttribute.Enabled = checkBoxAlternativeHubLDTS.Checked;
-        }
-
-        private void checkBoxAlternativeSatLDTS_CheckedChanged(object sender, EventArgs e)
-        {
-            textBoxSatelliteAlternativeLDTSAttribute.Enabled = checkBoxAlternativeSatLDTS.Checked;
         }
 
         private void generateTestDataToolStripMenuItem_Click(object sender, EventArgs e)
@@ -921,11 +813,6 @@ namespace TEAM
             MessageBox.Show("This feature is yet to be implemented.", "Upcoming!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
-        private void tabPageDefaultSettings_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void maintainMetadataGraphToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var t = new Thread(ThreadProcGraph);
@@ -933,9 +820,16 @@ namespace TEAM
             t.Start();
         }
 
-        private void FormMain_Load(object sender, EventArgs e)
+        private void generalSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var t = new Thread(ThreadProcConfiguration);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
 
+        private void richTextBoxInformation_Enter(object sender, EventArgs e)
+        {
+            ActiveControl = null;
         }
     }
 }

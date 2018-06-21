@@ -15,6 +15,10 @@ namespace TEAM
         {
             _myParent = parent;
             InitializeComponent();
+            var configurationSettings = new ConfigurationSettings();
+
+            labelMetadataRepository.Text = "Repository type in configuration is set to " +
+                                           configurationSettings.metadataRepositoryType;
         }
 
         private void buttonDeploy_Click(object sender, EventArgs e)
@@ -80,7 +84,8 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var connOmdString = _myParent.textBoxMetadataConnection.Text;
+            var configurationSettings = new ConfigurationSettings();
+            var connOmdString = configurationSettings.ConnectionStringOmd;
 
             // Handle multithreading
             if (worker != null && worker.CancellationPending)
@@ -1297,6 +1302,9 @@ namespace TEAM
 
         private void buttonTruncate_Click(object sender, EventArgs e)
         {
+            // Retrieving the required parameters
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             // Truncating the entire repository
             const string commandText = "DELETE FROM [MD_STG_LINK_ATT_XREF]; " +
                                        "DELETE FROM [MD_STG_SAT_ATT_XREF]; " +
@@ -1318,7 +1326,7 @@ namespace TEAM
                                        "TRUNCATE TABLE [MD_VERSION];";
 
 
-            using (var connection = new SqlConnection(_myParent.textBoxMetadataConnection.Text))
+            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
             {
                 var command = new SqlCommand(commandText, connection);
 
@@ -1337,6 +1345,8 @@ namespace TEAM
 
         private void button1_Click(object sender, EventArgs e)
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             // Create sample data
             const string commandText = "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'12=12', NULL, 'Y');" +
                                        "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'14=14', NULL, 'Y');" +
@@ -1384,7 +1394,7 @@ namespace TEAM
                                        "INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'Status', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_STATUS', N'');" +
                                        "INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'Postcode', N'SAT_CUSTOMER', N'POSTCODE', N'');"; 
 
-            using (var connection = new SqlConnection(_myParent.textBoxMetadataConnection.Text))
+            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
             {
                 var command = new SqlCommand(commandText, connection);
 

@@ -39,14 +39,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.checkBoxRetainManualMapping = new System.Windows.Forms.CheckBox();
+            this.labelMetadataRepository = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonTruncate
             // 
             this.buttonTruncate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonTruncate.Location = new System.Drawing.Point(39, 148);
+            this.buttonTruncate.Location = new System.Drawing.Point(12, 117);
             this.buttonTruncate.Name = "buttonTruncate";
-            this.buttonTruncate.Size = new System.Drawing.Size(168, 51);
+            this.buttonTruncate.Size = new System.Drawing.Size(139, 42);
             this.buttonTruncate.TabIndex = 20;
             this.buttonTruncate.Text = "Truncate All Metadata";
             this.buttonTruncate.UseVisualStyleBackColor = true;
@@ -55,9 +57,9 @@
             // buttonDeploy
             // 
             this.buttonDeploy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDeploy.Location = new System.Drawing.Point(39, 28);
+            this.buttonDeploy.Location = new System.Drawing.Point(12, 14);
             this.buttonDeploy.Name = "buttonDeploy";
-            this.buttonDeploy.Size = new System.Drawing.Size(168, 51);
+            this.buttonDeploy.Size = new System.Drawing.Size(139, 42);
             this.buttonDeploy.TabIndex = 21;
             this.buttonDeploy.Text = "Deploy Metadata Repository";
             this.buttonDeploy.UseVisualStyleBackColor = true;
@@ -66,7 +68,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 82);
+            this.label1.Location = new System.Drawing.Point(12, 59);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(240, 13);
             this.label1.TabIndex = 22;
@@ -75,7 +77,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 202);
+            this.label2.Location = new System.Drawing.Point(12, 162);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(244, 13);
             this.label2.TabIndex = 23;
@@ -84,7 +86,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 99);
+            this.label4.Location = new System.Drawing.Point(12, 76);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(212, 13);
             this.label4.TabIndex = 25;
@@ -111,7 +113,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(24, 315);
+            this.label3.Location = new System.Drawing.Point(12, 262);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(200, 13);
             this.label3.TabIndex = 32;
@@ -120,9 +122,9 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(39, 261);
+            this.button1.Location = new System.Drawing.Point(12, 217);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(168, 51);
+            this.button1.Size = new System.Drawing.Size(139, 42);
             this.button1.TabIndex = 31;
             this.button1.Text = "Generate Sample Metadata";
             this.button1.UseVisualStyleBackColor = true;
@@ -135,16 +137,38 @@
             this.checkBoxRetainManualMapping.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxRetainManualMapping.Location = new System.Drawing.Point(262, 28);
             this.checkBoxRetainManualMapping.Name = "checkBoxRetainManualMapping";
-            this.checkBoxRetainManualMapping.Size = new System.Drawing.Size(168, 17);
+            this.checkBoxRetainManualMapping.Size = new System.Drawing.Size(197, 17);
             this.checkBoxRetainManualMapping.TabIndex = 61;
-            this.checkBoxRetainManualMapping.Text = "Retain manual mapping tables";
+            this.checkBoxRetainManualMapping.Text = "Retain manual mapping tables / files";
             this.checkBoxRetainManualMapping.UseVisualStyleBackColor = true;
+            // 
+            // labelMetadataRepository
+            // 
+            this.labelMetadataRepository.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelMetadataRepository.AutoSize = true;
+            this.labelMetadataRepository.Location = new System.Drawing.Point(15, 339);
+            this.labelMetadataRepository.Name = "labelMetadataRepository";
+            this.labelMetadataRepository.Size = new System.Drawing.Size(197, 13);
+            this.labelMetadataRepository.TabIndex = 62;
+            this.labelMetadataRepository.Text = "Repository type in configuration is set to ";
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(278, 48);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(152, 26);
+            this.label5.TabIndex = 63;
+            this.label5.Text = "- MD_TABLE_MAPPING\r\n- MD_ATTRIBUTE_MAPPING";
             // 
             // FormManageRepository
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 362);
+            this.ClientSize = new System.Drawing.Size(484, 361);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.labelMetadataRepository);
             this.Controls.Add(this.checkBoxRetainManualMapping);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.button1);
@@ -176,5 +200,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
         internal System.Windows.Forms.CheckBox checkBoxRetainManualMapping;
+        private System.Windows.Forms.Label labelMetadataRepository;
+        private System.Windows.Forms.Label label5;
     }
 }

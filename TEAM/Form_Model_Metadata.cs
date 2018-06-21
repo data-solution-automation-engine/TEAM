@@ -29,7 +29,9 @@ namespace TEAM
 
             InitialiseVersionTrackbar();
 
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
             var selectedVersion = GetMaxVersionId(connOmd);
 
             // Populate datagrids
@@ -41,8 +43,10 @@ namespace TEAM
         [STAThread]
         private void PopulateTableGridWithVersion(int versionId)
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             // open latest version
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
             int selectedVersion = versionId;
 
@@ -95,8 +99,10 @@ namespace TEAM
 
         private void PopulateAttributeGridWithVersion(int versionId)
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             // open latest version
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
             var selectedVersion = versionId;
 
@@ -144,8 +150,10 @@ namespace TEAM
 
         private void PopulateKeyGridWithVersion(int versionId)
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             // open latest version
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
             int selectedVersion = versionId;
 
@@ -336,8 +344,10 @@ namespace TEAM
     
         private void InitialiseVersionTrackbar()
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             //Initialise the versioning
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
             var selectedVersion = GetMaxVersionId(connOmd);
 
             trackBarVersioning.Maximum = selectedVersion;
@@ -360,6 +370,8 @@ namespace TEAM
 
         private void buttonReverseEngineer_Click(object sender, EventArgs e)
         {
+            var configurationSettings = new ConfigurationSettings();
+
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text += "Commencing reverse-engineering the model metadata from the database.\r\n";
   
@@ -370,11 +382,12 @@ namespace TEAM
             }
 
             //Populate table / attribute version table
-            var intDatabase = MyParent.textBoxIntegrationDatabase.Text;
-            var stgDatabase = MyParent.textBoxStagingDatabase.Text;
-            var connStg= new SqlConnection { ConnectionString = MyParent.textBoxStagingConnection.Text };
-            var connInt = new SqlConnection {ConnectionString = MyParent.textBoxIntegrationConnection.Text};
-            var stgPrefix = MyParent.textBoxStagingAreaPrefix.Text;
+            var intDatabase = configurationSettings.IntegrationDatabaseName;
+            var stgDatabase = configurationSettings.StagingDatabaseName;
+
+            var connStg= new SqlConnection { ConnectionString = configurationSettings.ConnectionStringStg };
+            var connInt = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringInt };
+            var stgPrefix = configurationSettings.StgTablePrefixValue;
 
             // Process changes
             if (radioButtonStagingLayer.Checked)
@@ -389,8 +402,10 @@ namespace TEAM
 
         private void ManageTableMappingVersion()
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             //This method makes sure the generation metadata (MD_TABLE_MAPPING) keeps up to date
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
             try
             {
@@ -434,7 +449,7 @@ namespace TEAM
             //Execute the insert statement
             if (versionTableMapping.Rows.Count > 0)
             {
-                using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
+                using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -453,8 +468,10 @@ namespace TEAM
 
         private void ManageAttributeMappingVersion()
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             //This method makes sure the generation metadata (MD_ATTRIBUTE_MAPPING) keeps up to date
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
             try
             {
                 connOmd.Open();
@@ -497,7 +514,7 @@ namespace TEAM
             //Execute the insert statement
             if (versionTableMapping.Rows.Count > 0)
             {
-                using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
+                using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -516,6 +533,8 @@ namespace TEAM
 
         private void ReverseEngineerModelMetadata(SqlConnection conn, string prefix, string databaseName)
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             // This method is called when the reverse-engineer button is clicked.
             try
             {
@@ -527,24 +546,19 @@ namespace TEAM
             }
 
             //Retrieve the version key after version handling
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
             var versionId = GetMaxVersionId(connOmd);
 
             // Get everything as local variables to reduce multithreading issues
-            var effectiveDateTimeAttribute = MyParent.checkBoxAlternativeSatLDTS.Checked ? MyParent.textBoxSatelliteAlternativeLDTSAttribute.Text : MyParent.textBoxLDST.Text;
+            var effectiveDateTimeAttribute = configurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute=="True" ? configurationSettings.AlternativeSatelliteLoadDateTimeAttribute : configurationSettings.LoadDateTimeAttribute;
 
-            var dwhKeyIdentifier = MyParent.textBoxDWHKeyIdentifier.Text; //Indicates _HSH, _SK etc.
+            var dwhKeyIdentifier = configurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
 
             string keyIdentifierLocation;
 
-            if (MyParent.keyPrefixRadiobutton.Checked)
-            {
-                keyIdentifierLocation = "Prefix";
-            }
-            else
-            {
-                keyIdentifierLocation = "Suffix";
-            }
+
+            keyIdentifierLocation = configurationSettings.KeyNamingLocation;
+
 
             conn = ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
             conn = ReverseEngineerMultiActiveDataGrid(conn, prefix, databaseName, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
@@ -773,13 +787,15 @@ namespace TEAM
 
         private void TruncateMetadata()
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             //Truncate tables
             const string commandText = //"TRUNCATE TABLE [MD_TABLE_MAPPING]; " +
                                        //"TRUNCATE TABLE [MD_ATTRIBUTE_MAPPING]; " +
                                        "TRUNCATE TABLE [MD_VERSION_ATTRIBUTE];";
                                        //"TRUNCATE TABLE [MD_VERSION];";
 
-            using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
+            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
             {
                 var command = new SqlCommand(commandText, connection);
 
@@ -798,6 +814,8 @@ namespace TEAM
 
         private void SaveVersion(int majorVersion, int minorVersion)
         {
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             //Insert or create version
             var insertStatement = new StringBuilder();
 
@@ -806,7 +824,7 @@ namespace TEAM
             insertStatement.AppendLine("VALUES ");
             insertStatement.AppendLine("('N/A', 'N/A', " + majorVersion + "," + minorVersion + ")");
 
-            using (var connectionVersion = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
+            using (var connectionVersion = new SqlConnection(configurationSettings.ConnectionStringOmd))
             {
                 var commandVersion = new SqlCommand(insertStatement.ToString(), connectionVersion);
 
@@ -826,7 +844,9 @@ namespace TEAM
 
         private void trackBarVersioning_ValueChanged(object sender, EventArgs e)
         {
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
             PopulateTableGridWithVersion(trackBarVersioning.Value);
             var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
             var majorVersion = versionMajorMinor.Key;
@@ -848,7 +868,9 @@ namespace TEAM
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
             richTextBoxInformation.Clear();
             var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
@@ -966,43 +988,43 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             var errorLog = new StringBuilder();
             var errorCounter = new int();
 
-            var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
-            var metaDataConnection = MyParent.textBoxMetadataConnection.Text;
+            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var metaDataConnection = configurationSettings.ConnectionStringOmd;
 
             // Get everything as local variables to reduce multithreading issues
-            var stagingDatabase = '[' + MyParent.textBoxStagingDatabase.Text + ']';
-            var integrationDatabase = '[' + MyParent.textBoxIntegrationDatabase.Text + ']';
+            var stagingDatabase = '[' + configurationSettings.StagingDatabaseName + ']';
+            var integrationDatabase = '[' + configurationSettings.IntegrationDatabaseName + ']';
 
-            var linkedServer = MyParent.textBoxLinkedServer.Text;
+            var linkedServer = configurationSettings.LinkedServer;
             if (linkedServer != "")
             {
                 linkedServer = '[' + linkedServer + "].";
             }
 
-            var effectiveDateTimeAttribute = MyParent.checkBoxAlternativeSatLDTS.Checked ? MyParent.textBoxSatelliteAlternativeLDTSAttribute.Text : MyParent.textBoxLDST.Text;
-            var currentRecordAttribute = MyParent.textBoxCurrentRecordAttributeName.Text;
-            var eventDateTimeAtttribute = MyParent.textBoxEventDateTime.Text;
-            var recordSource = MyParent.textBoxRecordSource.Text;
-            var alternativeRecordSource = MyParent.textBoxAlternativeRecordSource.Text;
-            var sourceRowId = MyParent.textBoxSourceRowId.Text;
-            var recordChecksum = MyParent.textBoxRecordChecksum.Text;
-            var changeDataCaptureIndicator = MyParent.textBoxChangeDataCaptureIndicator.Text;
-            var hubAlternativeLdts = MyParent.textBoxHubAlternativeLDTSAttribute.Text;
-            var etlProcessId = MyParent.textBoxETLProcessID.Text;
-            var loadDateTimeStamp = MyParent.textBoxLDST.Text;
+            var effectiveDateTimeAttribute = configurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute=="True" ? configurationSettings.AlternativeSatelliteLoadDateTimeAttribute : configurationSettings.LoadDateTimeAttribute;
+            var currentRecordAttribute = configurationSettings.CurrentRowAttribute;
+            var eventDateTimeAtttribute = configurationSettings.EventDateTimeAttribute;
+            var recordSource = configurationSettings.RecordSourceAttribute;
+            var alternativeRecordSource = configurationSettings.AlternativeRecordSourceAttribute;
+            var sourceRowId = configurationSettings.RowIdAttribute;
+            var recordChecksum = configurationSettings.RecordChecksumAttribute;
+            var changeDataCaptureIndicator = configurationSettings.ChangeDataCaptureAttribute;
+            var hubAlternativeLdts = configurationSettings.AlternativeLoadDateTimeAttribute;
+            var etlProcessId = configurationSettings.EtlProcessAttribute;
+            var loadDateTimeStamp = configurationSettings.LoadDateTimeAttribute;
 
-            var stagingPrefix = MyParent.textBoxStagingAreaPrefix.Text;
-            var hubTablePrefix = MyParent.textBoxHubTablePrefix.Text;
-            var lnkTablePrefix = MyParent.textBoxLinkTablePrefix.Text;
-            var satTablePrefix = MyParent.textBoxSatPrefix.Text;
-            var lsatTablePrefix = MyParent.textBoxLinkSatPrefix.Text;
+            var stagingPrefix = configurationSettings.StgTablePrefixValue;
+            var hubTablePrefix = configurationSettings.HubTablePrefixValue;
+            var lnkTablePrefix = configurationSettings.LinkTablePrefixValue;
+            var satTablePrefix = configurationSettings.SatTablePrefixValue;
+            var lsatTablePrefix = configurationSettings.LsatPrefixValue;
 
-            var tablePrefixLocation = MyParent.tablePrefixRadiobutton.Checked;
-
-            if (tablePrefixLocation)
+            if (configurationSettings.TableNamingLocation=="Prefix")
             {
                 stagingPrefix = stagingPrefix + '%';
                 hubTablePrefix = hubTablePrefix + '%';
@@ -1019,9 +1041,9 @@ namespace TEAM
                 lsatTablePrefix = '%' + lsatTablePrefix;
             }
 
-            var dwhKeyIdentifier = MyParent.textBoxDWHKeyIdentifier.Text;
-            var keyPrefixLocation = MyParent.keyPrefixRadiobutton.Checked;
-            if (keyPrefixLocation)
+            var dwhKeyIdentifier = configurationSettings.DwhKeyIdentifier;
+
+            if (configurationSettings.KeyNamingLocation=="Prefix")
             {
                 dwhKeyIdentifier = dwhKeyIdentifier + '%';
             }
@@ -1029,9 +1051,6 @@ namespace TEAM
             {
                 dwhKeyIdentifier = '%' + dwhKeyIdentifier;
             }
-
-
-
 
             // Handling multithreading
             if (worker != null && worker.CancellationPending)
@@ -2882,7 +2901,7 @@ namespace TEAM
                     _alert.SetTextLogging("Please check the Error Log for details \r\n");
                     _alert.SetTextLogging("\r\n");
                     //_alert.SetTextLogging(errorLog.ToString());
-                    using (var outfile = new StreamWriter(GlobalVariables.ConfigurationPath + @"\Error_Log.txt"))
+                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
                     {
                         outfile.Write(errorLog.ToString());
                         outfile.Close();
@@ -2902,6 +2921,8 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
 
+            var configurationSettings = new FormBase.ConfigurationSettings();
+
             if (checkBoxClearMetadata.Checked)
             {
                 TruncateMetadata();
@@ -2918,7 +2939,7 @@ namespace TEAM
                 if ((dataTableKeyChanges != null && (dataTableKeyChanges.Rows.Count > 0)) || (dataTableMultiActiveChanges != null && (dataTableMultiActiveChanges.Rows.Count > 0)) || (dataTableDrivingKeyChanges != null && (dataTableDrivingKeyChanges.Rows.Count > 0))) //Check if there are any changes made at all
                 {
                     //Retrieve the current version
-                    var connOmd = new SqlConnection { ConnectionString = MyParent.textBoxMetadataConnection.Text };
+                    var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
                     var maxVersion = GetMaxVersionId(connOmd);
                     var versionKeyValuePair = GetVersion(maxVersion, connOmd);
                     var majorVersion = versionKeyValuePair.Key;
@@ -3006,6 +3027,8 @@ namespace TEAM
         private void SaveModelTableMetadata(int versionId, DataTable dataTableChanges)
         {
             var insertQueryTables = new StringBuilder();
+
+            var configurationSettings = new FormBase.ConfigurationSettings();
 
             if (!radiobuttonNoVersionChange.Checked) //This means either minor or major version is checked and a full new snapshot is created
             {
@@ -3189,7 +3212,7 @@ namespace TEAM
             }
             else
             {
-                using (var connection = new SqlConnection(MyParent.textBoxMetadataConnection.Text))
+                using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
