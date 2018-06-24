@@ -37,11 +37,6 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.linksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
@@ -110,6 +105,9 @@
             this.tableSuffixRadiobutton = new System.Windows.Forms.RadioButton();
             this.tablePrefixRadiobutton = new System.Windows.Forms.RadioButton();
             this.tabPageDatabase = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.radioButtonSQLServer = new System.Windows.Forms.RadioButton();
+            this.radioButtonJSON = new System.Windows.Forms.RadioButton();
             this.label49 = new System.Windows.Forms.Label();
             this.textBoxLinkedServer = new System.Windows.Forms.TextBox();
             this.label44 = new System.Windows.Forms.Label();
@@ -141,9 +139,6 @@
             this.textBoxStagingConnection = new System.Windows.Forms.TextBox();
             this.textBoxIntegrationConnection = new System.Windows.Forms.TextBox();
             this.textBoxOutputPath = new System.Windows.Forms.TextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.radioButtonSQLServer = new System.Windows.Forms.RadioButton();
-            this.radioButtonJSON = new System.Windows.Forms.RadioButton();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControlDefaultDetails.SuspendLayout();
@@ -154,8 +149,8 @@
             this.groupBox1.SuspendLayout();
             this.grpTableName.SuspendLayout();
             this.tabPageDatabase.SuspendLayout();
-            this.tabPageConnections.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.tabPageConnections.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
@@ -173,8 +168,7 @@
             // menuStripMainMenu
             // 
             this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.fileToolStripMenuItem});
             this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
             this.menuStripMainMenu.Name = "menuStripMainMenu";
             this.menuStripMainMenu.Size = new System.Drawing.Size(1148, 24);
@@ -223,45 +217,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helpToolStripMenuItem1,
-            this.linksToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // helpToolStripMenuItem1
-            // 
-            this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
-            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
-            this.helpToolStripMenuItem1.Text = "Help";
-            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
-            // 
-            // linksToolStripMenuItem
-            // 
-            this.linksToolStripMenuItem.Image = global::TEAM.Properties.Resources.LinkIcon;
-            this.linksToolStripMenuItem.Name = "linksToolStripMenuItem";
-            this.linksToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.linksToolStripMenuItem.Text = "Links";
-            this.linksToolStripMenuItem.Click += new System.EventHandler(this.linksToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(104, 6);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             // 
             // label4
             // 
@@ -931,6 +886,37 @@
             this.tabPageDatabase.Text = "Databases";
             this.tabPageDatabase.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.radioButtonSQLServer);
+            this.groupBox2.Controls.Add(this.radioButtonJSON);
+            this.groupBox2.Location = new System.Drawing.Point(8, 261);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(140, 70);
+            this.groupBox2.TabIndex = 71;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Metadata repository type";
+            // 
+            // radioButtonSQLServer
+            // 
+            this.radioButtonSQLServer.AutoSize = true;
+            this.radioButtonSQLServer.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonSQLServer.Name = "radioButtonSQLServer";
+            this.radioButtonSQLServer.Size = new System.Drawing.Size(80, 17);
+            this.radioButtonSQLServer.TabIndex = 1;
+            this.radioButtonSQLServer.Text = "SQL Server";
+            this.radioButtonSQLServer.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonJSON
+            // 
+            this.radioButtonJSON.AutoSize = true;
+            this.radioButtonJSON.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonJSON.Name = "radioButtonJSON";
+            this.radioButtonJSON.Size = new System.Drawing.Size(53, 17);
+            this.radioButtonJSON.TabIndex = 0;
+            this.radioButtonJSON.Text = "JSON";
+            this.radioButtonJSON.UseVisualStyleBackColor = true;
+            // 
             // label49
             // 
             this.label49.AutoSize = true;
@@ -1211,37 +1197,6 @@
             this.textBoxOutputPath.Size = new System.Drawing.Size(493, 53);
             this.textBoxOutputPath.TabIndex = 56;
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.radioButtonSQLServer);
-            this.groupBox2.Controls.Add(this.radioButtonJSON);
-            this.groupBox2.Location = new System.Drawing.Point(8, 261);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(140, 70);
-            this.groupBox2.TabIndex = 71;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Metadata repository type";
-            // 
-            // radioButtonSQLServer
-            // 
-            this.radioButtonSQLServer.AutoSize = true;
-            this.radioButtonSQLServer.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonSQLServer.Name = "radioButtonSQLServer";
-            this.radioButtonSQLServer.Size = new System.Drawing.Size(80, 17);
-            this.radioButtonSQLServer.TabIndex = 1;
-            this.radioButtonSQLServer.Text = "SQL Server";
-            this.radioButtonSQLServer.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonJSON
-            // 
-            this.radioButtonJSON.AutoSize = true;
-            this.radioButtonJSON.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonJSON.Name = "radioButtonJSON";
-            this.radioButtonJSON.Size = new System.Drawing.Size(53, 17);
-            this.radioButtonJSON.TabIndex = 0;
-            this.radioButtonJSON.Text = "JSON";
-            this.radioButtonJSON.UseVisualStyleBackColor = true;
-            // 
             // FormManageConfiguration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1278,10 +1233,10 @@
             this.grpTableName.PerformLayout();
             this.tabPageDatabase.ResumeLayout(false);
             this.tabPageDatabase.PerformLayout();
-            this.tabPageConnections.ResumeLayout(false);
-            this.tabPageConnections.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.tabPageConnections.ResumeLayout(false);
+            this.tabPageConnections.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1294,11 +1249,6 @@
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem linksToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         internal System.Windows.Forms.RichTextBox richTextBoxInformation;

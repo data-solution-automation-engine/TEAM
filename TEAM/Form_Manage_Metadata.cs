@@ -37,8 +37,18 @@ namespace TEAM
             public string generationIndicator { get; set; }
         }
 
+        public class AttributeMappingJson
+        {
+            public string attributeMappingHash { get; set; }
+            public string versionId { get; set; }
+            public string sourceTable { get; set; }
+            public string sourceAttribute { get; set; }
+            public string targetTable { get; set; }
+            public string targetAttribute { get; set; }
+            public string transformationRule { get; set; }
+        }
 
-        public static string CreateMD5(string input)
+        public static string CreateMd5(string input)
         {
             // Use input string to calculate MD5 hash
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
@@ -55,9 +65,9 @@ namespace TEAM
                 return sb.ToString();
             }
         }
+
         public FormManageMetadata(FormMain parent) : base(parent)
         {
-           // _myParent = parent;
             InitializeComponent();
 
             var configurationSettings = new ConfigurationSettings();
@@ -78,7 +88,7 @@ namespace TEAM
             // trackBarVersioning.Maximum = GetVersionCount();
             trackBarVersioning.TickFrequency = GetVersionCount();
 
-            //Load the grids from the database
+            //Load the grids from the repository
             PopulateTableMappingGridWithVersion(selectedVersion);
             PopulateAttributeGridWithVersion(selectedVersion);
 
@@ -232,56 +242,120 @@ namespace TEAM
         private void PopulateAttributeGridWithVersion(int versionId)
         {
             var configurationSettings = new ConfigurationSettings();
+            var selectedVersion = versionId;
+            var repositoryTarget = configurationSettings.metadataRepositoryType;
 
             // open latest version
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd};
 
-            int selectedVersion = versionId;
-
-            try
+            if (repositoryTarget == "SQLServer")
             {
-                connOmd.Open();
+                try
+                {
+                    connOmd.Open();
+                }
+                catch (Exception exception)
+                {
+                    richTextBoxInformation.Text += exception.Message;
+                }
+
+                var sqlStatementForLatestVersion = new StringBuilder();
+                sqlStatementForLatestVersion.AppendLine("SELECT ");
+                sqlStatementForLatestVersion.AppendLine(" [ATTRIBUTE_MAPPING_HASH],");
+                sqlStatementForLatestVersion.AppendLine(" [VERSION_ID],");
+                sqlStatementForLatestVersion.AppendLine(" [SOURCE_TABLE],");
+                sqlStatementForLatestVersion.AppendLine(" [SOURCE_COLUMN],");
+                sqlStatementForLatestVersion.AppendLine(" [TARGET_TABLE],");
+                sqlStatementForLatestVersion.AppendLine(" [TARGET_COLUMN],");
+                sqlStatementForLatestVersion.AppendLine(" [TRANSFORMATION_RULE]");
+                sqlStatementForLatestVersion.AppendLine("FROM [MD_ATTRIBUTE_MAPPING]");
+                sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
+
+                var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+                _bindingSourceAttributeMetadata.DataSource = versionList;
+
+                if (versionList != null)
+                {
+                    // Set the column header names.
+                    dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
+                    dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
+                    dataGridViewAttributeMetadata.Columns[0].Visible = false;
+                    dataGridViewAttributeMetadata.Columns[1].Visible = false;
+                    dataGridViewAttributeMetadata.Columns[6].ReadOnly = true;
+                    //dataGridViewAttributeMetadata.Columns[6].DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+
+                    dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
+                    dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
+                    dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
+                    dataGridViewAttributeMetadata.Columns[3].HeaderText = "Staging Area Column";
+                    dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
+                    dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
+                    dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
+
+                    GridAutoLayout();
+                }
             }
-            catch (Exception exception)
+            else if (repositoryTarget == "JSON") //Update the JSON
             {
-                richTextBoxInformation.Text += exception.Message;
+                //Check if the file exists, otherwise create a dummy / empty file   
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName))
+                {
+                    richTextBoxInformation.AppendText("No attribute mapping JSON file was found, so a new empty one was created");
+
+                    JArray outputFileArray = new JArray();
+
+                    JObject dummyJsonAttributeMappingFile = new JObject(
+                        new JProperty("attributeMappingHash", "NewHash"),
+                        new JProperty("sourceTable", "SOURCE_TABLE"),
+                        new JProperty("sourceAttribute", "EXAMPLE_FROM_ATTRIBUTE"),
+                        new JProperty("TargetTable", "TARGET_TABLE"),
+                        new JProperty("TargetAttribute", "EXAMPLE_TO_ATTRIBUTE"),
+                        new JProperty("transformationRule", "")
+                        );
+
+                    outputFileArray.Add(dummyJsonAttributeMappingFile);
+
+                    string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName, json);
+
+                }
+
+                // Load the file, convert it to a DataTable and bind it to the source
+                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName));
+                DataTable dt = ConvertToDataTable(jsonArray);
+                dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
+                dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
+                dt.Columns[1].ColumnName = "VERSION_ID";
+                dt.Columns[2].ColumnName = "SOURCE_TABLE";
+                dt.Columns[3].ColumnName = "SOURCE_COLUMN";
+                dt.Columns[4].ColumnName = "TARGET_TABLE";
+                dt.Columns[5].ColumnName = "TARGET_COLUMN";
+                dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
+
+                _bindingSourceAttributeMetadata.DataSource = dt;
+
+                if (jsonArray != null)
+                {
+                    // Set the column header names.
+                    dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
+                    dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
+                    dataGridViewAttributeMetadata.Columns[0].Visible = false;
+                    dataGridViewAttributeMetadata.Columns[1].Visible = false;
+                    dataGridViewAttributeMetadata.Columns[6].ReadOnly = true;
+
+                    dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
+                    dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
+                    dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
+                    dataGridViewAttributeMetadata.Columns[3].HeaderText = "Staging Area Column";
+                    dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
+                    dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
+                    dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
+                }
+
+                richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName + " was loaded.");
             }
 
-            var sqlStatementForLatestVersion = new StringBuilder();
-            sqlStatementForLatestVersion.AppendLine("SELECT ");
-            sqlStatementForLatestVersion.AppendLine(" [ATTRIBUTE_MAPPING_HASH],");
-            sqlStatementForLatestVersion.AppendLine(" [VERSION_ID],");
-            sqlStatementForLatestVersion.AppendLine(" [SOURCE_TABLE],");
-            sqlStatementForLatestVersion.AppendLine(" [SOURCE_COLUMN],");
-            sqlStatementForLatestVersion.AppendLine(" [TARGET_TABLE],");
-            sqlStatementForLatestVersion.AppendLine(" [TARGET_COLUMN],");
-            sqlStatementForLatestVersion.AppendLine(" [TRANSFORMATION_RULE]");
-            sqlStatementForLatestVersion.AppendLine("FROM [MD_ATTRIBUTE_MAPPING]");
-            sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
-
-            var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-            _bindingSourceAttributeMetadata.DataSource = versionList;
-
-            if (versionList != null)
-            {
-                // Set the column header names.
-                dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
-                dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
-                dataGridViewAttributeMetadata.Columns[0].Visible = false;
-                dataGridViewAttributeMetadata.Columns[1].Visible = false;
-                dataGridViewAttributeMetadata.Columns[6].ReadOnly = true;
-                //dataGridViewAttributeMetadata.Columns[6].DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-
-                dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
-                dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
-                dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
-                dataGridViewAttributeMetadata.Columns[3].HeaderText = "Staging Area Column";
-                dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
-                dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
-                dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
-
-                GridAutoLayout();
-            }
         }
 
         private DialogResult STAShowDialog(FileDialog dialog)
@@ -625,7 +699,7 @@ namespace TEAM
                             //Commit the save of the metadata
                             var versionId = GetMaxVersionId(connOmd);
                             SaveTableMappingMetadata(versionId, dataTableKeyChanges, repositoryTarget);
-                            SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges);
+                            SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges ,repositoryTarget);
 
                             //Refresh the UI to display the newly created version
                             trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
@@ -651,7 +725,7 @@ namespace TEAM
                             //Commit the save of the metadata
                             var versionId = GetMaxVersionId(connOmd);
                             SaveTableMappingMetadata(versionId, dataTableKeyChanges, repositoryTarget);
-                            SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges);
+                            SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges, repositoryTarget);
 
                             //Refresh the UI to display the newly created version
                             trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
@@ -671,7 +745,7 @@ namespace TEAM
                     {
                         var versionId = GetMaxVersionId(connOmd);
                         SaveTableMappingMetadata(versionId, dataTableKeyChanges, repositoryTarget);
-                        SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges);
+                        SaveAttributeMappingMetadata(versionId, dataTableAttributeChanges, repositoryTarget);
                     }
                 }
                 else
@@ -923,7 +997,7 @@ namespace TEAM
                                 {
                                     //Generate a unique key using a hash
                                     var hashKey =
-                                        CreateMD5(stagingTable + '|' + integrationTable + '|' + businessKeyDefinition +
+                                        CreateMd5(stagingTable + '|' + integrationTable + '|' + businessKeyDefinition +
                                                   '|' + drivingKeyDefinition + '|' + filterCriterion);
                                    
                                     // Load the file
@@ -934,6 +1008,7 @@ namespace TEAM
 
                                     JObject newJsonSegment = new JObject(
                                         new JProperty("tableMappingHash", hashKey),
+                                        new JProperty("versionId", versionId),
                                         new JProperty("stagingAreaTable", stagingTable),
                                         new JProperty("integrationAreaTable", integrationTable),
                                         new JProperty("businessKeyDefinition", businessKeyDefinition),
@@ -1007,19 +1082,18 @@ namespace TEAM
                                 }
                                 catch (JsonReaderException ex)
                                 {
-                                    richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" +
-                                                                   ex;
+                                    richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" +ex;
                                 }
                             }
                             else
                             {
-                                richTextBoxInformation.Text +=
-                                    "There were issues identifying the repository type to apply changes.\r\n";
+                                richTextBoxInformation.Text +="There were issues identifying the repository type to apply changes.\r\n";
                             }
                         }
                     }
                 }
             } // End of constructing the statements for insert / update / delete
+
 
             #region Statement execution
             // Execute the statement, if the repository is SQL Server
@@ -1048,8 +1122,6 @@ namespace TEAM
                     }
                 }
             }
-
-
             #endregion
 
             //Committing the changes to the datatable
@@ -1060,17 +1132,15 @@ namespace TEAM
             //The JSON needs to be re-bound to the datatable / datagrid after being updated to allow all values to be present
             if (repositoryTarget == "JSON")
             {
-                BindJsonToDataTable();
+                BindTableMappingJsonToDataTable();
             }
 
         }
 
-        private void BindJsonToDataTable()
+        private void BindTableMappingJsonToDataTable()
         {
-            // Load the file, convert it to a DataTable and bind it to the source
-            List<TableMappingJson> jsonArray =
-                JsonConvert.DeserializeObject<List<TableMappingJson>>(
-                    File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName));
+            // Load the table mapping file, convert it to a DataTable and bind it to the source
+            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
@@ -1084,16 +1154,31 @@ namespace TEAM
             _bindingSourceTableMetadata.DataSource = dt;
         }
 
-//End of method SaveTableMappingMetadata
+        private void BindAttributeMappingJsonToDataTable()
+        {
+            // Load the attribute mapping file, convert it to a DataTable and bind it to the source
+            List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName));
+            DataTable dt = ConvertToDataTable(jsonArray);
+            dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
+            dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
+            dt.Columns[1].ColumnName = "VERSION_ID";
+            dt.Columns[2].ColumnName = "SOURCE_TABLE";
+            dt.Columns[3].ColumnName = "SOURCE_COLUMN";
+            dt.Columns[4].ColumnName = "TARGET_TABLE";
+            dt.Columns[5].ColumnName = "TARGET_COLUMN";
+            dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
+            _bindingSourceAttributeMetadata.DataSource = dt;
+        }
 
-        private void SaveAttributeMappingMetadata(int versionId, DataTable dataTableChanges)
+        //End of method SaveTableMappingMetadata
+
+        private void SaveAttributeMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
             var configurationSettings = new ConfigurationSettings();
 
             var insertQueryTables = new StringBuilder();
 
-            if (!radiobuttonNoVersionChange.Checked)
-                //This means either minor or major version is checked and a full new snapshot is created
+            if (!radiobuttonNoVersionChange.Checked) //This means either minor or major version is checked and a full new snapshot is created
             {
                 foreach (DataGridViewRow row in dataGridViewAttributeMetadata.Rows)
                 {
@@ -1131,8 +1216,7 @@ namespace TEAM
                         }
 
                         insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
-                        insertQueryTables.AppendLine(
-                            "([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[TRANSFORMATION_RULE])");
+                        insertQueryTables.AppendLine("([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[TRANSFORMATION_RULE])");
                         insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                      stagingColumn +
                                                      "','" + integrationTable + "','" + integrationColumn + "','" +
@@ -1140,14 +1224,18 @@ namespace TEAM
                     }
                 }
             }
-            else //An update (no change) to the existing version is done
-            {
-                if ((dataTableChanges != null && (dataTableChanges.Rows.Count > 0)))
-                    //Check if there are any changes made at all
-                {
 
+            #region In-version change
+            else //An update (no change) to the existing version is done with regular inserts, updates and deletes
+            {
+
+                if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0)) //Check if there are any changes made at all
+                {
+                    // Loop through the changes captured in the data table
                     foreach (DataRow row in dataTableChanges.Rows)
                     {
+                        #region Updates in Attribute Mapping
+                        // Updates
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
                             var hashKey = (string) row["ATTRIBUTE_MAPPING_HASH"];
@@ -1158,16 +1246,57 @@ namespace TEAM
                             var integrationColumn = (string) row["TARGET_COLUMN"];
                             var transformationRule = (string) row["TRANSFORMATION_RULE"];
 
-                            insertQueryTables.AppendLine("UPDATE MD_ATTRIBUTE_MAPPING");
-                            insertQueryTables.AppendLine("SET [SOURCE_TABLE] = '" + stagingTable +
-                                                         "',[SOURCE_COLUMN] = '" + stagingColumn +
-                                                         "', [TARGET_TABLE] = '" + integrationTable +
-                                                         "', [TARGET_COLUMN] = '" + integrationColumn +
-                                                         "',[TRANSFORMATION_RULE] = '" + transformationRule + "'");
-                            insertQueryTables.AppendLine("WHERE [ATTRIBUTE_MAPPING_HASH] = '" + hashKey +
-                                                         "' AND [VERSION_ID] = " + versionKey);
-                        }
+                            if (repositoryTarget == "SQLServer")
+                            {
+                                insertQueryTables.AppendLine("UPDATE MD_ATTRIBUTE_MAPPING");
+                                insertQueryTables.AppendLine("SET [SOURCE_TABLE] = '" + stagingTable +
+                                                             "',[SOURCE_COLUMN] = '" + stagingColumn +
+                                                             "', [TARGET_TABLE] = '" + integrationTable +
+                                                             "', [TARGET_COLUMN] = '" + integrationColumn +
+                                                             "',[TRANSFORMATION_RULE] = '" + transformationRule + "'");
+                                insertQueryTables.AppendLine("WHERE [ATTRIBUTE_MAPPING_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
+                            }
 
+                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                            {
+
+                                try
+                                {
+                                    AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.jsonAttributeMappingFileName));
+
+                                    var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
+
+                                    if (jsonHash.attributeMappingHash == "")
+                                    {
+                                        richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                                    }
+                                    else
+                                    {
+                                        // Update the values in the JSON segment
+                                        jsonHash.sourceTable = stagingTable;
+                                        jsonHash.sourceAttribute = stagingColumn;
+                                        jsonHash.targetTable = integrationTable;
+                                        jsonHash.targetAttribute = integrationColumn;
+                                        jsonHash.transformationRule = transformationRule;
+                                    }
+
+                                    string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName,output);
+                                }
+                                catch (JsonReaderException ex)
+                                {
+                                    richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
+                                }
+                            }
+                            else
+                            {
+                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                            }
+                        }
+                        #endregion
+
+                        #region Inserts in Attribute Mapping
+                        // Inserts
                         if ((row.RowState & DataRowState.Added) != 0)
                         {
                             var stagingTable = "";
@@ -1201,56 +1330,154 @@ namespace TEAM
                                 transformationRule = (string) row[6];
                             }
 
-                            insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
-                            insertQueryTables.AppendLine(
-                                "([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[TRANSFORMATION_RULE])");
-                            insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
-                                                         stagingColumn + "','" + integrationTable + "','" +
-                                                         integrationColumn + "','" + transformationRule + "')");
-                        }
+                            if (repositoryTarget == "SQLServer")
+                            {
+                                insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
+                                insertQueryTables.AppendLine("([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[TRANSFORMATION_RULE])");
+                                insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
+                                                             stagingColumn + "','" + integrationTable + "','" +
+                                                             integrationColumn + "','" + transformationRule + "')");
+                            }
+                            else if (repositoryTarget == "JSON") //Update the JSON
+                            {
+                                try
+                                {
+                                    //Generate a unique key using a hash
+                                    var hashKey = CreateMd5(stagingTable + '|' + stagingColumn + '|' + integrationTable + '|' + integrationColumn + '|' + transformationRule);
 
+                                    // Load the file
+                                    AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName));
+
+                                    // Conver it into a JArray so segments can be added easily
+                                    var jsonAttributeMappingFull = JArray.FromObject(jsonArray);
+
+                                    JObject newJsonSegment = new JObject(
+                                        new JProperty("attributeMappingHash", hashKey),
+                                        new JProperty("versionId", versionId),
+                                        new JProperty("sourceTable", stagingTable),
+                                        new JProperty("sourceAttribute", stagingColumn),
+                                        new JProperty("targetTable", integrationTable),
+                                        new JProperty("targetAttribute", integrationColumn),
+                                        new JProperty("transformationRule", transformationRule)
+                                        );
+
+
+                                    jsonAttributeMappingFull.Add(newJsonSegment);
+
+                                    string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName, output);
+
+                                    //Making sure the hash key value is added to the datatable as well
+                                    row[0] = hashKey;
+
+                                }
+                                catch (JsonReaderException ex)
+                                {
+                                    richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
+                                }
+                            }
+                            else
+                            {
+                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                            }
+                        }
+                        #endregion
+
+                        #region Deletes in Attribute Mapping
+                        // Deletes
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
                             var hashKey = row["ATTRIBUTE_MAPPING_HASH", DataRowVersion.Original].ToString();
                             var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
 
-                            insertQueryTables.AppendLine("DELETE FROM MD_ATTRIBUTE_MAPPING");
-                            insertQueryTables.AppendLine("WHERE [ATTRIBUTE_MAPPING_HASH] = '" + hashKey +
-                                                         "' AND [VERSION_ID] = " + versionKey);
-                        }
-                    }
-                }
-            }
-            // Execute the statement
-            if (insertQueryTables.ToString() == "")
-            {
-                richTextBoxInformation.Text += "No Attribute Mapping metadata changes were saved.";
-            }
-            else
-            {
-                using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
-                {
-                    var command = new SqlCommand(insertQueryTables.ToString(), connection);
+                            if (repositoryTarget == "SQLServer")
+                            {
+                                insertQueryTables.AppendLine("DELETE FROM MD_ATTRIBUTE_MAPPING");
+                                insertQueryTables.AppendLine("WHERE [ATTRIBUTE_MAPPING_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
+                            }
+                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                            {
+                                try
+                                {
+                                    var jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName)).ToList();
 
-                    try
-                    {
-                        connection.Open();
-                        command.ExecuteNonQuery();
-                        richTextBoxInformation.Text += "The Attribute Mapping metadata has been saved.\r\n";
-                        if (dataTableChanges != null)
-                        {
-                            dataTableChanges.AcceptChanges();
-                            ((DataTable) _bindingSourceTableMetadata.DataSource).AcceptChanges();
-                            dataTableChanges.AcceptChanges();
+                                    //Retrieves the json segment in the file for the given hash returns value or NULL
+                                    var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
+
+                                    jsonArray.Remove(jsonSegment);
+
+                                    if (jsonSegment.attributeMappingHash == "")
+                                    {
+                                        richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                                    }
+                                    else
+                                    {
+                                        //Remove the segment from the JSON
+                                        jsonArray.Remove(jsonSegment);
+                                    }
+
+                                    string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName,output);
+
+                                }
+                                catch (JsonReaderException ex)
+                                {
+                                    richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" +ex;
+                                }
+                            }
+                            else
+                            {
+                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                            }
                         }
-                        ((DataTable) _bindingSourceAttributeMetadata.DataSource).AcceptChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        richTextBoxInformation.Text += "An issue has occurred: " + ex;
+                        #endregion  
                     }
                 }
             }
+            #endregion
+
+
+            #region Statement execution
+            // Execute the statement, if the repository is SQL Server
+            // If the source is JSON this is done in separate calls for now
+            if (repositoryTarget == "SQLServer")
+            {
+                if (insertQueryTables.ToString() == "")
+                {
+                    richTextBoxInformation.Text += "No Business Key / Table mapping metadata changes were saved.\r\n";
+                }
+                else
+                {
+                    using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                    {
+                        var command = new SqlCommand(insertQueryTables.ToString(), connection);
+
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            richTextBoxInformation.Text += "An issue has occurred: " + ex;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            //Committing the changes to the datatable
+            richTextBoxInformation.Text += "The Attribute Mapping metadata has been saved.\r\n";
+            dataTableChanges.AcceptChanges();
+            ((DataTable)_bindingSourceAttributeMetadata.DataSource).AcceptChanges();
+
+            //The JSON needs to be re-bound to the datatable / datagrid after being updated to allow all values to be present
+            if (repositoryTarget == "JSON")
+            {
+                BindAttributeMappingJsonToDataTable();
+            }
+
+
         }
     
         private void openMetadataFileToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -1258,7 +1485,7 @@ namespace TEAM
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Business Key Metadata File",
-                Filter = @"XML files|*.xml",
+                Filter = @"Business Key files|*.xml;*.json",
                 InitialDirectory = Application.StartupPath + @"\Configuration\"
             };
 
@@ -1271,14 +1498,59 @@ namespace TEAM
                     var chosenFile = theDialog.FileName;
                     var dataSet = new DataSet();
 
-                    dataSet.ReadXml(chosenFile);
+                    string fileExtension = Path.GetExtension(theDialog.FileName);
 
-                    dataGridViewTableMetadata.DataSource = dataSet.Tables[0];
-                    _bindingSourceTableMetadata.DataSource = dataGridViewTableMetadata.DataSource;
+                    if (fileExtension == "xml")
+                    {
+
+                        dataSet.ReadXml(chosenFile);
+
+                        dataGridViewTableMetadata.DataSource = dataSet.Tables[0];
+                        _bindingSourceTableMetadata.DataSource = dataGridViewTableMetadata.DataSource;
+
+                    }
+                    else if (fileExtension == "json")
+                    {
+                        //MessageBox.Show("Work in progress!");
+
+                        // Load the file, convert it to a DataTable and bind it to the source
+                        List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
+                        DataTable dt = ConvertToDataTable(jsonArray);
+                        dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
+                        dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
+                        dt.Columns[1].ColumnName = "VERSION_ID";
+                        dt.Columns[2].ColumnName = "STAGING_AREA_TABLE";
+                        dt.Columns[3].ColumnName = "INTEGRATION_AREA_TABLE";
+                        dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
+                        dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
+                        dt.Columns[6].ColumnName = "FILTER_CRITERIA";
+                        dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
+                        _bindingSourceTableMetadata.DataSource = dt;
+
+                        if (jsonArray != null)
+                        {
+                            // Set the column header names.
+                            dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
+                            dataGridViewTableMetadata.ColumnHeadersVisible = true;
+                            dataGridViewTableMetadata.Columns[0].Visible = false;
+                            dataGridViewTableMetadata.Columns[1].Visible = false;
+
+                            dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
+                            dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
+                            dataGridViewTableMetadata.Columns[2].HeaderText = "Staging Area Table";
+                            dataGridViewTableMetadata.Columns[3].HeaderText = "Integration Area Table";
+                            dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
+                            dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
+                            dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
+                            dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
+                        }
+
+
+                    }
 
                     GridAutoLayout();
-                    richTextBoxInformation.Text = "The Business Key metadata has been loaded from file.\r\n";
                     ContentCounter();
+                    richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + " was loaded.");
                 }
                 catch (Exception ex)
                 {
@@ -1369,7 +1641,7 @@ namespace TEAM
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Attribute Mapping Metadata File",
-                Filter = @"XML files|*.xml",
+                Filter = @"Attribute Mapping files|*.xml;*.json",
                 InitialDirectory = Application.StartupPath + @"\Configuration\"
             };
 
@@ -1383,10 +1655,50 @@ namespace TEAM
                     var chosenFile = theDialog.FileName;
                     var dataSet = new DataSet();
 
-                    dataSet.ReadXml(chosenFile);
+                    string fileExtension = Path.GetExtension(theDialog.FileName);
 
-                    dataGridViewAttributeMetadata.DataSource = dataSet.Tables[0];
-                    _bindingSourceAttributeMetadata.DataSource = dataGridViewAttributeMetadata.DataSource;
+                    if (fileExtension == "xml")
+                    {
+                        dataSet.ReadXml(chosenFile);
+
+                        dataGridViewAttributeMetadata.DataSource = dataSet.Tables[0];
+                        _bindingSourceAttributeMetadata.DataSource = dataGridViewAttributeMetadata.DataSource;
+                    }
+                    else if (fileExtension == "json")
+                    {
+                        //MessageBox.Show("Work in progress!");
+
+                        // Load the file, convert it to a DataTable and bind it to the source
+                        List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
+                        DataTable dt = ConvertToDataTable(jsonArray);
+                        dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
+                        dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
+                        dt.Columns[1].ColumnName = "VERSION_ID";
+                        dt.Columns[2].ColumnName = "SOURCE_TABLE";
+                        dt.Columns[3].ColumnName = "SOURCE_COLUMN";
+                        dt.Columns[4].ColumnName = "TARGET_TABLE";
+                        dt.Columns[5].ColumnName = "TARGET_COLUMN";
+                        dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
+                        _bindingSourceAttributeMetadata.DataSource = dt;
+
+                        if (jsonArray != null)
+                        {
+                            // Set the column header names.
+                            dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
+                            dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
+                            dataGridViewAttributeMetadata.Columns[0].Visible = false;
+                            dataGridViewAttributeMetadata.Columns[1].Visible = false;
+
+                            dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
+                            dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
+                            dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
+                            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Integration Area Table";
+                            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Business Key Definition";
+                            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Driving Key Definition";
+                            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Filter Criteria";
+                            dataGridViewAttributeMetadata.Columns[7].HeaderText = "Generation Indicator";
+                        }
+                    }
 
                     GridAutoLayout();
                     richTextBoxInformation.Text = "The metadata has been loaded from file.\r\n";
@@ -4317,6 +4629,63 @@ namespace TEAM
             catch (Exception ex)
             {
                 richTextBoxInformation.Text = "An error has occured while attempting to open the output directory. The error message is: " + ex;
+            }
+        }
+
+        private void saveAttributeMappingAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var theDialog = new SaveFileDialog
+                {
+                    Title = @"Save Attribute Mapping Metadata File",
+                    Filter = @"JSON files|*.json",
+                    InitialDirectory = Application.StartupPath + @"\Configuration\"
+                };
+
+                var ret = STAShowDialog(theDialog);
+
+                if (ret == DialogResult.OK)
+                {
+                    try
+                    {
+                        var chosenFile = theDialog.FileName;
+
+                        DataTable gridDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
+
+                        gridDataTable.TableName = "AttributeMappingMetadata";
+
+                        JArray outputFileArray = new JArray();
+                        foreach (DataRow singleRow in gridDataTable.Rows)
+                        {
+                            JObject individualRow = JObject.FromObject(new
+                            {
+                                attributeMappingHash = singleRow[0].ToString(),
+                                versionId = singleRow[1].ToString(),
+                                sourceTable = singleRow[2].ToString(),
+                                sourceAttribute = singleRow[3].ToString(),
+                                targetTable = singleRow[4].ToString(),
+                                targetAttribute = singleRow[5].ToString(),
+                                transformationRule = singleRow[6].ToString()
+                            });
+                            outputFileArray.Add(individualRow);
+                        }
+
+                        string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+                        File.WriteAllText(chosenFile, json);
+
+                        richTextBoxInformation.Text = "The Attribute Mapping metadata file " + chosenFile + " saved successfully.";
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
             }
         }
     }
