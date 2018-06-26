@@ -29,12 +29,22 @@ namespace TEAM
 
             var errorCounter = 0;
 
+
+
             InitializeComponent();
-            InitializePath();
+
+            //Make sure the root directories exist, based on hard-coded (tool) parameters
+            //Also create the initial file with the configuration if it doesn't exist already
+            InitialisePath();
+
+            //Set the root path, to be able to locate the configuration file and load it
+            InitialiseRootPath();
+
+            var configurationSettings = new ConfigurationSettings();
 
             try
             {
-                LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName);
+                LocalInitialiseConnections(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName);
             }
             catch (Exception ex)
             {
@@ -78,7 +88,8 @@ namespace TEAM
             }
         }
 
-        private static void InitializePath()
+
+        private static void InitialisePath()
         {
             var configurationPath = Application.StartupPath + @"\Configuration\";
             var outputPath = Application.StartupPath + @"\Output\";
@@ -213,7 +224,12 @@ namespace TEAM
                 var connectionStringPres = configList["connectionStringPresentation"];
                 connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                textBoxOutputPath.Text = GlobalParameters.OutputPath;
+                //Paths
+                //textBoxOutputPath.Text = GlobalParameters.OutputPath;
+                textBoxOutputPath.Text = configList["OutputPath"];
+                textBoxConfigurationPath.Text = configList["ConfigurationPath"];
+
+                //Connections
                 textBoxIntegrationConnection.Text = connectionStringInt;
                 textBoxPSAConnection.Text = connectionStringHstg;
                 textBoxSourceConnection.Text = connectionStringSource;
@@ -221,6 +237,7 @@ namespace TEAM
                 textBoxMetadataConnection.Text = connectionStringOmd;
                 textBoxPresentationConnection.Text = connectionStringPres;
 
+                //DWH settings
                 textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
                 textBoxSatPrefix.Text = configList["SatTablePrefix"];
                 textBoxLinkTablePrefix.Text = configList["LinkTablePrefix"];
@@ -407,7 +424,8 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var configurationPath = Application.StartupPath + @"\Configuration\";
+            var configurationSettings = new ConfigurationSettings();
+            var configurationPath = configurationSettings.ConfigurationPath; //Application.StartupPath + @"\Configuration\";
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Configuration File",
@@ -437,41 +455,48 @@ namespace TEAM
         {
             Close();
         }
- 
-        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("This feature is yet to be implemented.", "Upcoming!", MessageBoxButtons.OK,
-                MessageBoxIcon.Exclamation);
-        }
-
-        private void linksToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("This feature is yet to be implemented.", "Upcoming!", MessageBoxButtons.OK,
-                MessageBoxIcon.Exclamation);
-        }
 
         private void saveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Create a file backup
+            // Update the root path file
+            var rootPathConfigurationFile = new StringBuilder();
+
+            // Setup an object to retrieve the configuration
+            var configurationSettings = new ConfigurationSettings();
+
+            rootPathConfigurationFile.AppendLine("/* TEAM File Path Settings */");
+            rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
+            rootPathConfigurationFile.AppendLine("ConfigurationPath|" + textBoxConfigurationPath.Text + "");
+            rootPathConfigurationFile.AppendLine("OutputPath|" + textBoxOutputPath.Text + "");
+            rootPathConfigurationFile.AppendLine("/* End of file */");
+
+            using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName))
+            {
+                outfile.Write(rootPathConfigurationFile.ToString());
+                outfile.Close();
+            }
+
+
+            // Create a file backup for the config file
             try
             {
                 if (File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName))
                 {
                     var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
                     var targetFilePathName = GlobalParameters.ConfigurationPath +
-                                             string.Concat("Backup_"+shortDatetime+"_",GlobalParameters.ConfigfileName);
+                                             string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.ConfigfileName);
 
-                    File.Copy(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName,targetFilePathName);
-                    richTextBoxInformation.Text="A backup of the current configuration was made at "+targetFilePathName;
+                    File.Copy(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName, targetFilePathName);
+                    richTextBoxInformation.Text = "A backup of the current configuration was made at " + targetFilePathName;
                 }
                 else
                 {
-                    InitializePath();
+                    InitialisePath();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error has occured while creating a file backup. The error message is " + ex, "An issue has been encountered",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("An error has occured while creating a file backup. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             // Update the configuration file
@@ -479,7 +504,8 @@ namespace TEAM
             {
                 var configurationFile = new StringBuilder();
 
-                configurationFile.AppendLine("/* Virtual EDW Configuration Settings */");
+
+                configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at "+DateTime.Now+" */");
                 configurationFile.AppendLine("SourceDatabase|"+textBoxSourceDatabase.Text+"");
                 configurationFile.AppendLine("StagingDatabase|"+textBoxStagingDatabase.Text+"");
@@ -487,6 +513,7 @@ namespace TEAM
                 configurationFile.AppendLine("IntegrationDatabase|"+textBoxIntegrationDatabase.Text+"");
                 configurationFile.AppendLine("PresentationDatabase|"+textBoxPresentationDatabase.Text+"");
                 configurationFile.AppendLine("OutputPath|" + textBoxOutputPath.Text + "");
+                configurationFile.AppendLine("ConfigurationPath|" + textBoxConfigurationPath.Text + "");
                 configurationFile.AppendLine(@"connectionStringSource|"+textBoxSourceConnection.Text+"");
                 configurationFile.AppendLine(@"connectionStringStaging|" + textBoxStagingConnection.Text + "");
                 configurationFile.AppendLine(@"connectionStringPersistentStaging|" + textBoxPSAConnection.Text + "");
@@ -512,6 +539,7 @@ namespace TEAM
                 configurationFile.AppendLine("ETLUpdateProcessID|"+textBoxETLUpdateProcessID.Text+"");
                 configurationFile.AppendLine("LogicalDeleteAttribute|" + textBoxLogicalDeleteAttributeName.Text + "");
                 configurationFile.AppendLine("LinkedServerName|" + textBoxLinkedServer.Text + "");
+
 
                 // Evaluate the prefix position for the table
                 if (tablePrefixRadiobutton.Checked)
@@ -566,7 +594,7 @@ namespace TEAM
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
 
-                using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName))
+                using (var outfile = new StreamWriter(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName))
                 {
                     outfile.Write(configurationFile.ToString());
                     outfile.Close();
@@ -577,29 +605,30 @@ namespace TEAM
                 MessageBox.Show("An error occured saving the Configuration File. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            //Set the global configuration variables so other forms can pick up the values
-            var configurationSettingObject = new ConfigurationSettings();
 
-            configurationSettingObject.SourceDatabaseName = textBoxSourceDatabase.Text;
-            configurationSettingObject.StagingDatabaseName = textBoxStagingDatabase.Text;
-            configurationSettingObject.PsaDatabaseName = textBoxPSADatabase.Text;
-            configurationSettingObject.IntegrationDatabaseName = textBoxIntegrationDatabase.Text;
-            configurationSettingObject.PresentationDatabaseName = textBoxPresentationDatabase.Text;
 
-            configurationSettingObject.ConnectionStringSource = textBoxSourceConnection.Text;
-            configurationSettingObject.ConnectionStringStg = textBoxStagingConnection.Text;
-            configurationSettingObject.ConnectionStringHstg = textBoxPSAConnection.Text;
-            configurationSettingObject.ConnectionStringInt = textBoxIntegrationConnection.Text;
-            configurationSettingObject.ConnectionStringOmd = textBoxMetadataConnection.Text;
-            configurationSettingObject.ConnectionStringPres = textBoxPresentationConnection.Text;
+
+            //Make sure the variables in memory are updated as well
+            configurationSettings.SourceDatabaseName = textBoxSourceDatabase.Text;
+            configurationSettings.StagingDatabaseName = textBoxStagingDatabase.Text;
+            configurationSettings.PsaDatabaseName = textBoxPSADatabase.Text;
+            configurationSettings.IntegrationDatabaseName = textBoxIntegrationDatabase.Text;
+            configurationSettings.PresentationDatabaseName = textBoxPresentationDatabase.Text;
+
+            configurationSettings.ConnectionStringSource = textBoxSourceConnection.Text;
+            configurationSettings.ConnectionStringStg = textBoxStagingConnection.Text;
+            configurationSettings.ConnectionStringHstg = textBoxPSAConnection.Text;
+            configurationSettings.ConnectionStringInt = textBoxIntegrationConnection.Text;
+            configurationSettings.ConnectionStringOmd = textBoxMetadataConnection.Text;
+            configurationSettings.ConnectionStringPres = textBoxPresentationConnection.Text;
 
             if (radioButtonJSON.Checked)
             {
-                configurationSettingObject.metadataRepositoryType = "JSON";
+                configurationSettings.metadataRepositoryType = "JSON";
             }
             else if (radioButtonSQLServer.Checked)
             {
-                configurationSettingObject.metadataRepositoryType = "SQLServer";
+                configurationSettings.metadataRepositoryType = "SQLServer";
             }
             else
             {
@@ -607,40 +636,41 @@ namespace TEAM
             }
 
 
-            configurationSettingObject.OutputPath = textBoxOutputPath.Text;
+            configurationSettings.OutputPath = textBoxOutputPath.Text;
+            configurationSettings.ConfigurationPath = textBoxConfigurationPath.Text;
 
-            configurationSettingObject.SourceSystemPrefix = textBoxSourcePrefix.Text;
-            configurationSettingObject.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
-            configurationSettingObject.PsaTablePrefixValue = textBoxPSAPrefix.Text;
-            configurationSettingObject.HubTablePrefixValue = textBoxHubTablePrefix.Text;
-            configurationSettingObject.SatTablePrefixValue = textBoxSatPrefix.Text;
-            configurationSettingObject.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
-            configurationSettingObject.LsatPrefixValue = textBoxLinkSatPrefix.Text;
+            configurationSettings.SourceSystemPrefix = textBoxSourcePrefix.Text;
+            configurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
+            configurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
+            configurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
+            configurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
+            configurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
+            configurationSettings.LsatPrefixValue = textBoxLinkSatPrefix.Text;
 
             if (keyPrefixRadiobutton.Checked)
             {
-                configurationSettingObject.DwhKeyIdentifier = "Prefix";
+                configurationSettings.DwhKeyIdentifier = "Prefix";
             }
             else if (keySuffixRadiobutton.Checked)
             {
-                configurationSettingObject.DwhKeyIdentifier = "Suffix";
+                configurationSettings.DwhKeyIdentifier = "Suffix";
             }
             else
             {
                 richTextBoxInformation.AppendText("Issues storing the key location (prefix/suffix). Is one of the radio buttons checked?");
             }
 
-            configurationSettingObject.SchemaName = textBoxSchemaName.Text;
-            configurationSettingObject.RowIdAttribute = textBoxSourceRowId.Text;
-            configurationSettingObject.EventDateTimeAttribute = textBoxEventDateTime.Text;
-            configurationSettingObject.LoadDateTimeAttribute = textBoxLDST.Text;
-            configurationSettingObject.ExpiryDateTimeAttribute = textBoxExpiryDateTimeName.Text;
-            configurationSettingObject.ChangeDataCaptureAttribute = textBoxChangeDataCaptureIndicator.Text;
-            configurationSettingObject.RecordSourceAttribute = textBoxRecordSource.Text;
-            configurationSettingObject.EtlProcessAttribute = textBoxETLProcessID.Text;
-            configurationSettingObject.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
-            configurationSettingObject.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
-            configurationSettingObject.LinkedServer = textBoxLinkedServer.Text;
+            configurationSettings.SchemaName = textBoxSchemaName.Text;
+            configurationSettings.RowIdAttribute = textBoxSourceRowId.Text;
+            configurationSettings.EventDateTimeAttribute = textBoxEventDateTime.Text;
+            configurationSettings.LoadDateTimeAttribute = textBoxLDST.Text;
+            configurationSettings.ExpiryDateTimeAttribute = textBoxExpiryDateTimeName.Text;
+            configurationSettings.ChangeDataCaptureAttribute = textBoxChangeDataCaptureIndicator.Text;
+            configurationSettings.RecordSourceAttribute = textBoxRecordSource.Text;
+            configurationSettings.EtlProcessAttribute = textBoxETLProcessID.Text;
+            configurationSettings.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
+            configurationSettings.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
+            configurationSettings.LinkedServer = textBoxLinkedServer.Text;
 
         }
 
@@ -665,6 +695,5 @@ namespace TEAM
             CheckKeyword("The statement was executed succesfully.", Color.GreenYellow, 0);
             // this.CheckKeyword("if", Color.Green, 0);
         }
-
     }
 }

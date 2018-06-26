@@ -139,6 +139,8 @@
             this.textBoxStagingConnection = new System.Windows.Forms.TextBox();
             this.textBoxIntegrationConnection = new System.Windows.Forms.TextBox();
             this.textBoxOutputPath = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControlDefaultDetails.SuspendLayout();
@@ -1040,6 +1042,8 @@
             // 
             // tabPageConnections
             // 
+            this.tabPageConnections.Controls.Add(this.label1);
+            this.tabPageConnections.Controls.Add(this.textBoxConfigurationPath);
             this.tabPageConnections.Controls.Add(this.label45);
             this.tabPageConnections.Controls.Add(this.labelSourceConnection);
             this.tabPageConnections.Controls.Add(this.textBoxSourceConnection);
@@ -1074,7 +1078,7 @@
             // labelSourceConnection
             // 
             this.labelSourceConnection.AutoSize = true;
-            this.labelSourceConnection.Location = new System.Drawing.Point(5, 91);
+            this.labelSourceConnection.Location = new System.Drawing.Point(5, 119);
             this.labelSourceConnection.Name = "labelSourceConnection";
             this.labelSourceConnection.Size = new System.Drawing.Size(270, 13);
             this.labelSourceConnection.TabIndex = 69;
@@ -1083,7 +1087,7 @@
             // textBoxSourceConnection
             // 
             this.textBoxSourceConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxSourceConnection.Location = new System.Drawing.Point(8, 107);
+            this.textBoxSourceConnection.Location = new System.Drawing.Point(8, 135);
             this.textBoxSourceConnection.Multiline = true;
             this.textBoxSourceConnection.Name = "textBoxSourceConnection";
             this.textBoxSourceConnection.Size = new System.Drawing.Size(493, 27);
@@ -1092,7 +1096,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(5, 360);
+            this.label9.Location = new System.Drawing.Point(5, 388);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(198, 13);
             this.label9.TabIndex = 67;
@@ -1101,7 +1105,7 @@
             // textBoxPresentationConnection
             // 
             this.textBoxPresentationConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxPresentationConnection.Location = new System.Drawing.Point(8, 376);
+            this.textBoxPresentationConnection.Location = new System.Drawing.Point(8, 404);
             this.textBoxPresentationConnection.Multiline = true;
             this.textBoxPresentationConnection.Name = "textBoxPresentationConnection";
             this.textBoxPresentationConnection.Size = new System.Drawing.Size(493, 27);
@@ -1119,7 +1123,7 @@
             // MetadataConnectionLabel
             // 
             this.MetadataConnectionLabel.AutoSize = true;
-            this.MetadataConnectionLabel.Location = new System.Drawing.Point(5, 144);
+            this.MetadataConnectionLabel.Location = new System.Drawing.Point(5, 172);
             this.MetadataConnectionLabel.Name = "MetadataConnectionLabel";
             this.MetadataConnectionLabel.Size = new System.Drawing.Size(155, 13);
             this.MetadataConnectionLabel.TabIndex = 64;
@@ -1128,7 +1132,7 @@
             // textBoxMetadataConnection
             // 
             this.textBoxMetadataConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxMetadataConnection.Location = new System.Drawing.Point(8, 160);
+            this.textBoxMetadataConnection.Location = new System.Drawing.Point(8, 188);
             this.textBoxMetadataConnection.Multiline = true;
             this.textBoxMetadataConnection.Name = "textBoxMetadataConnection";
             this.textBoxMetadataConnection.Size = new System.Drawing.Size(493, 27);
@@ -1137,7 +1141,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(5, 199);
+            this.label8.Location = new System.Drawing.Point(5, 227);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(202, 13);
             this.label8.TabIndex = 62;
@@ -1146,7 +1150,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(5, 255);
+            this.label7.Location = new System.Drawing.Point(5, 283);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(250, 13);
             this.label7.TabIndex = 61;
@@ -1155,7 +1159,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(5, 311);
+            this.label6.Location = new System.Drawing.Point(5, 339);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(189, 13);
             this.label6.TabIndex = 60;
@@ -1164,7 +1168,7 @@
             // textBoxPSAConnection
             // 
             this.textBoxPSAConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxPSAConnection.Location = new System.Drawing.Point(8, 271);
+            this.textBoxPSAConnection.Location = new System.Drawing.Point(8, 299);
             this.textBoxPSAConnection.Multiline = true;
             this.textBoxPSAConnection.Name = "textBoxPSAConnection";
             this.textBoxPSAConnection.Size = new System.Drawing.Size(493, 27);
@@ -1173,7 +1177,7 @@
             // textBoxStagingConnection
             // 
             this.textBoxStagingConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxStagingConnection.Location = new System.Drawing.Point(8, 215);
+            this.textBoxStagingConnection.Location = new System.Drawing.Point(8, 243);
             this.textBoxStagingConnection.Multiline = true;
             this.textBoxStagingConnection.Name = "textBoxStagingConnection";
             this.textBoxStagingConnection.Size = new System.Drawing.Size(493, 27);
@@ -1182,7 +1186,7 @@
             // textBoxIntegrationConnection
             // 
             this.textBoxIntegrationConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxIntegrationConnection.Location = new System.Drawing.Point(8, 327);
+            this.textBoxIntegrationConnection.Location = new System.Drawing.Point(8, 355);
             this.textBoxIntegrationConnection.Multiline = true;
             this.textBoxIntegrationConnection.Name = "textBoxIntegrationConnection";
             this.textBoxIntegrationConnection.Size = new System.Drawing.Size(493, 27);
@@ -1194,8 +1198,26 @@
             this.textBoxOutputPath.Location = new System.Drawing.Point(8, 29);
             this.textBoxOutputPath.Multiline = true;
             this.textBoxOutputPath.Name = "textBoxOutputPath";
-            this.textBoxOutputPath.Size = new System.Drawing.Size(493, 53);
+            this.textBoxOutputPath.Size = new System.Drawing.Size(493, 27);
             this.textBoxOutputPath.TabIndex = 56;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(5, 63);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.TabIndex = 74;
+            this.label1.Text = "Configuration path";
+            // 
+            // textBoxConfigurationPath
+            // 
+            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxConfigurationPath.Location = new System.Drawing.Point(8, 81);
+            this.textBoxConfigurationPath.Multiline = true;
+            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
+            this.textBoxConfigurationPath.Size = new System.Drawing.Size(493, 27);
+            this.textBoxConfigurationPath.TabIndex = 73;
             // 
             // FormManageConfiguration
             // 
@@ -1352,6 +1374,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         internal System.Windows.Forms.RadioButton radioButtonSQLServer;
         internal System.Windows.Forms.RadioButton radioButtonJSON;
+        private System.Windows.Forms.Label label1;
+        internal System.Windows.Forms.TextBox textBoxConfigurationPath;
     }
 }
 

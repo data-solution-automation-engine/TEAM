@@ -22,9 +22,11 @@ namespace TEAM
             MyParent = myParent;
             InitializeComponent();
 
+            var configurationSettings = new ConfigurationSettings();
+
             try
             {
-                InitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName);
+                InitialiseConfiguration(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName);
             }
             catch (Exception)
             {
@@ -33,14 +35,49 @@ namespace TEAM
 
         }
 
-        public static void InitialiseConnections(string chosenFile)
+        public static void InitialiseRootPath()
         {
+            // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
             var configList = new Dictionary<string, string>();
-            var fs = new FileStream(chosenFile, FileMode.Open, FileAccess.Read);
+            var fs = new FileStream(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
             try
             {
+                string textline;
+                while ((textline = sr.ReadLine()) != null)
+                {
+                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
+                    {
+                        var line = textline.Split('|');
+                        configList.Add(line[0], line[1]);
+                    }
+                }
+
+                sr.Close();
+                fs.Close();
+
+                // These variables are used as global vairables throughout the application
+                var configurationSettingObject = new ConfigurationSettings();
+
+                configurationSettingObject.ConfigurationPath = configList["ConfigurationPath"];
+                configurationSettingObject.OutputPath = configList["OutputPath"];
+
+            }
+            catch (Exception)
+            {
+                // richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+            }
+        }
+
+        public static void InitialiseConfiguration(string chosenFile)
+        {
+            try
+            {
+                var configList = new Dictionary<string, string>();
+                var fs = new FileStream(chosenFile, FileMode.Open, FileAccess.Read);
+                var sr = new StreamReader(fs);
+
                 string textline;
                 while ((textline = sr.ReadLine()) != null)
                 {
@@ -129,6 +166,8 @@ namespace TEAM
                 configurationSettingObject.PresentationDatabaseName = configList["PresentationDatabase"];
 
                 configurationSettingObject.OutputPath = configList["OutputPath"];
+                configurationSettingObject.ConfigurationPath = configList["ConfigurationPath"];
+
                 configurationSettingObject.LinkedServer = configList["LinkedServerName"];
 
 
@@ -402,6 +441,13 @@ namespace TEAM
                 set { _OutputPath = value; }
             }
 
+            private static string _ConfigurationPath;
+            public string ConfigurationPath
+            {
+                get { return _ConfigurationPath; }
+                set { _ConfigurationPath = value; }
+            }
+
             private static string _LinkedServer;
             public string LinkedServer
             {
@@ -455,35 +501,15 @@ namespace TEAM
             }
         }
 
-        public DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
-        {
-            // Pass the connection to a command object
-            var sqlCommand = new SqlCommand(sql, sqlConnection);
-            var sqlDataAdapter = new SqlDataAdapter { SelectCommand = sqlCommand };
-
-            var dataTable = new DataTable();
-
-            // Adds or refreshes rows in the DataSet to match those in the data source
-            try
-            {
-                sqlDataAdapter.Fill(dataTable);
-            }
-
-            catch (Exception)
-            {
-              //  MessageBox.Show(@"SQL error: " + exception.Message + "\r\n\r\n The executed query was: " + sql + "\r\n\r\n The connection used was " + sqlConnection.ConnectionString, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            return dataTable;
-
-        }
-
         public class GlobalParameters
         {
             // These variables are used as global vairables throughout the applicatoin
             private static string _configurationLocalPath = Application.StartupPath + @"\Configuration\";
             private static string _outputLocalPath = Application.StartupPath + @"\Output\";
-            private static string _fileLocalName = "Virtual_EDW_configuration.txt";
+
+            private static string _fileConfigLocalName = "TEAM_configuration.txt";
+            private static string _filePathLocalName = "TEAM_Path_configuration.txt";
+
             private static string _jsonTableMappingFileName = "TEAM_Table_Mapping.json";
             private static string _jsonAttributeMappingFileName = "TEAM_Attribute_Mapping.json";
 
@@ -501,8 +527,14 @@ namespace TEAM
 
             public static string ConfigfileName
             {
-                get { return _fileLocalName; }
-                set { _fileLocalName = value; }
+                get { return _fileConfigLocalName; }
+                set { _fileConfigLocalName = value; }
+            }
+
+            public static string PathfileName
+            {
+                get { return _filePathLocalName; }
+                set { _filePathLocalName = value; }
             }
 
             public static string jsonTableMappingFileName
@@ -517,6 +549,28 @@ namespace TEAM
             }
         }
 
+        public DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
+        {
+            // Pass the connection to a command object
+            var sqlCommand = new SqlCommand(sql, sqlConnection);
+            var sqlDataAdapter = new SqlDataAdapter { SelectCommand = sqlCommand };
+
+            var dataTable = new DataTable();
+
+            // Adds or refreshes rows in the DataSet to match those in the data source
+            try
+            {
+                sqlDataAdapter.Fill(dataTable);
+            }
+
+            catch (Exception)
+            {
+                //  MessageBox.Show(@"SQL error: " + exception.Message + "\r\n\r\n The executed query was: " + sql + "\r\n\r\n The connection used was " + sqlConnection.ConnectionString, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            return dataTable;
+
+        }
         public KeyValuePair<int, int> GetVersion(int selectedVersion, SqlConnection sqlConnection)
         {
             var currentVersion = selectedVersion;
