@@ -62,6 +62,8 @@ namespace TEAM
             this.grpTableName = new System.Windows.Forms.GroupBox();
             this.radioButtonIntegrationLayer = new System.Windows.Forms.RadioButton();
             this.radioButtonStagingLayer = new System.Windows.Forms.RadioButton();
+            this.openModelMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveModelMetadataFileAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -100,6 +102,8 @@ namespace TEAM
             // metadataToolStripMenuItem
             // 
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openModelMetadataFileToolStripMenuItem,
+            this.saveModelMetadataFileAsJSONToolStripMenuItem,
             this.closeToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
             this.metadataToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -109,7 +113,7 @@ namespace TEAM
             // 
             this.closeToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
             this.closeToolStripMenuItem.Text = "Close Window";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -419,6 +423,21 @@ namespace TEAM
             this.radioButtonStagingLayer.Text = "Staging Layer";
             this.radioButtonStagingLayer.UseVisualStyleBackColor = true;
             // 
+            // openModelMetadataFileToolStripMenuItem
+            // 
+            this.openModelMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
+            this.openModelMetadataFileToolStripMenuItem.Name = "openModelMetadataFileToolStripMenuItem";
+            this.openModelMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.openModelMetadataFileToolStripMenuItem.Text = "Open Model Metadata file";
+            // 
+            // saveModelMetadataFileAsJSONToolStripMenuItem
+            // 
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Name = "saveModelMetadataFileAsJSONToolStripMenuItem";
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Text = "Save Model Metadata file as JSON";
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveModelMetadataFileAsJSONToolStripMenuItem_Click);
+            // 
             // FormModelMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -501,5 +520,7 @@ namespace TEAM
         internal System.Windows.Forms.RadioButton radioButtonIntegrationLayer;
         internal System.Windows.Forms.RadioButton radioButtonStagingLayer;
         private System.Windows.Forms.CheckBox checkBoxIgnoreVersion;
+        private System.Windows.Forms.ToolStripMenuItem openModelMetadataFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveModelMetadataFileAsJSONToolStripMenuItem;
     }
 }

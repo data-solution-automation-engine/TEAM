@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TEAM
 {
@@ -3235,6 +3237,79 @@ namespace TEAM
         private void FormModelMetadata_SizeChanged(object sender, EventArgs e)
         {
             GridAutoLayout();
+        }
+        private DialogResult STAShowDialog(FileDialog dialog)
+        {
+            var state = new FormManageMetadata.DialogState { FileDialog = dialog };
+            var t = new System.Threading.Thread(state.ThreadProcShowDialog);
+            t.SetApartmentState(System.Threading.ApartmentState.STA);
+
+            t.Start();
+            t.Join();
+
+            return state.DialogResult;
+        }
+
+        private void saveModelMetadataFileAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var configurationSettings = new ConfigurationSettings();
+
+                var theDialog = new SaveFileDialog
+                {
+                    Title = @"Save Model Metadata File",
+                    Filter = @"JSON files|*.json",
+                    InitialDirectory = configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                };
+
+                var ret = STAShowDialog(theDialog);
+
+                if (ret == DialogResult.OK)
+                {
+                    try
+                    {
+                        var chosenFile = theDialog.FileName;
+
+                        DataTable gridDataTable = (DataTable)bindingSourceTableMetadata.DataSource;
+
+                        gridDataTable.TableName = "ModelMetadata";
+
+                        JArray outputFileArray = new JArray();
+                        foreach (DataRow singleRow in gridDataTable.Rows)
+                        {
+                            JObject individualRow = JObject.FromObject(new
+                            {
+                                versionAttributeHash = singleRow[0].ToString(),
+                                versionId = singleRow[1].ToString(),
+                                tableName = singleRow[2].ToString(),
+                                columnName = singleRow[3].ToString(),
+                                dataType = singleRow[4].ToString(),
+                                characterMaximumLength = singleRow[5].ToString(),
+                                numericPrecision = singleRow[6].ToString(),
+                                ordinalPosition = singleRow[7].ToString(),
+                                primaryKeyIndicator = singleRow[8].ToString(),
+                                multiActiveIndicator = singleRow[9].ToString()
+                            });
+                            outputFileArray.Add(individualRow);
+                        }
+
+                        string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+                        File.WriteAllText(chosenFile, json);
+
+                        richTextBoxInformation.Text = "The model metadata file " + chosenFile + " saved successfully.";
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
+            }
         }
     }
 }
