@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TEAM
 {
@@ -16,11 +18,24 @@ namespace TEAM
         FormAlert _alert;
         private BindingSource bindingSourceTableMetadata = new BindingSource();
         private BindingSource bindingSourceMultiActiveMetadata = new BindingSource();
-        private BindingSource bindingSourceDrivingKeyMetadata = new BindingSource();
 
         public FormModelMetadata()
         {
             InitializeComponent();
+        }
+
+        public class ModelMetadataJson
+        {
+            public string versionAttributeHash { get; set; }
+            public string versionId { get; set; }
+            public string tableName { get; set; }
+            public string columnName { get; set; }
+            public string dataType { get; set; }
+            public string characterMaximumLength { get; set; }
+            public string numericPrecision { get; set; }
+            public string ordinalPosition { get; set; }
+            public string primaryKeyIndicator { get; set; }
+            public string multiActiveIndicator { get; set; }
         }
 
         public FormModelMetadata(FormMain parent): base(parent)
@@ -31,174 +46,203 @@ namespace TEAM
 
             InitialiseVersionTrackbar();
 
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
+            // Get the latest version
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
             var selectedVersion = GetMaxVersionId(connOmd);
 
-            // Populate datagrids
+            // Populate datagrid
             PopulateTableGridWithVersion(selectedVersion);
-            PopulateAttributeGridWithVersion(selectedVersion);
-            PopulateKeyGridWithVersion(selectedVersion);
         }
 
         [STAThread]
         private void PopulateTableGridWithVersion(int versionId)
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
-            // open latest version
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var repositoryTarget = configurationSettings.metadataRepositoryType;
 
-            int selectedVersion = versionId;
-
-            try
+            if (repositoryTarget == "SQLServer") //Queries the tables in SQL Server
             {
-                connOmd.Open();
+                // open latest version
+                var connOmd = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringOmd};
+
+                int selectedVersion = versionId;
+
+                try
+                {
+                    connOmd.Open();
+                }
+                catch (Exception exception)
+                {
+                    richTextBoxInformation.Text += exception.Message;
+                }
+
+                var sqlStatementForLatestVersion = new StringBuilder();
+
+                sqlStatementForLatestVersion.AppendLine("SELECT ");
+                sqlStatementForLatestVersion.AppendLine(" [VERSION_ATTRIBUTE_HASH],");
+                sqlStatementForLatestVersion.AppendLine(" CAST([VERSION_ID] AS VARCHAR(100)) AS VERSION_ID,");
+                sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
+                sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
+                sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
+                sqlStatementForLatestVersion.AppendLine(" [CHARACTER_MAXIMUM_LENGTH],");
+                sqlStatementForLatestVersion.AppendLine(" [NUMERIC_PRECISION],");
+                sqlStatementForLatestVersion.AppendLine(" [ORDINAL_POSITION],");
+                sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
+                sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
+                sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
+                sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
+
+                var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+                bindingSourceTableMetadata.DataSource = versionList;
+
+                // Set the column header names.
+                dataGridViewTableMetadata.DataSource = bindingSourceTableMetadata;
+                dataGridViewTableMetadata.ColumnHeadersVisible = true;
+                dataGridViewTableMetadata.Columns[0].Visible = false;
+                dataGridViewTableMetadata.Columns[1].Visible = false;
+
+                dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
+                dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID"; //Key column
+                dataGridViewTableMetadata.Columns[2].HeaderText = "Table Name"; //Key column
+                dataGridViewTableMetadata.Columns[3].HeaderText = "Column Name"; //Key column
+                dataGridViewTableMetadata.Columns[4].HeaderText = "Data Type";
+                dataGridViewTableMetadata.Columns[5].HeaderText = "Length";
+                dataGridViewTableMetadata.Columns[6].HeaderText = "Precision";
+                dataGridViewTableMetadata.Columns[7].HeaderText = "Position";
+                dataGridViewTableMetadata.Columns[8].HeaderText = "Primary Key";
+                dataGridViewTableMetadata.Columns[9].HeaderText = "Multi-Active";
+
             }
-            catch (Exception exception)
+            else if (repositoryTarget == "JSON") //Update the JSON
             {
-                richTextBoxInformation.Text += exception.Message;
+                //Check if the file exists, otherwise create a dummy / empty file   
+                if (!File.Exists(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName))
+                {
+                    richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created");
+
+                    JArray outputFileArray = new JArray();
+
+                    JObject dummyJsonTableMappingFile = new JObject(
+                        new JProperty("versionAttributeHash", "NewHash"),
+                        new JProperty("tableName", "Sample Table"),
+                        new JProperty("columnName", "Sample Column"),
+                        new JProperty("dataType", "nvarchar"),
+                        new JProperty("characterMaximumLength", "100"),
+                        new JProperty("numericPrecision", "0"),
+                        new JProperty("ordinalPosition", "1"),
+                        new JProperty("primaryKeyIndicator", "N"),
+                        new JProperty("multiActiveIndicator", "N")
+                        );
+
+                    outputFileArray.Add(dummyJsonTableMappingFile);
+
+                    string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName, json);
+
+                }
+
+                // Load the file, convert it to a DataTable and bind it to the source
+                List<ModelMetadataJson> jsonArray =
+                    JsonConvert.DeserializeObject<List<ModelMetadataJson>>(
+                        File.ReadAllText(configurationSettings.ConfigurationPath +
+                                         GlobalParameters.jsonModelMetadataFileName));
+                DataTable dt = ConvertToDataTable(jsonArray);
+                dt.AcceptChanges();
+                    //Make sure the changes are seen as committed, so that changes can be detected later on
+                dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
+                dt.Columns[1].ColumnName = "VERSION_ID";
+                dt.Columns[2].ColumnName = "TABLE_NAME";
+                dt.Columns[3].ColumnName = "COLUMN_NAME";
+                dt.Columns[4].ColumnName = "DATA_TYPE";
+                dt.Columns[5].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
+                dt.Columns[6].ColumnName = "NUMERIC_PRECISION";
+                dt.Columns[7].ColumnName = "ORDINAL_POSITION";
+                dt.Columns[8].ColumnName = "PRIMARY_KEY_INDICATOR";
+                dt.Columns[9].ColumnName = "MULTI_ACTIVE_INDICATOR";
+
+                bindingSourceTableMetadata.DataSource = dt;
+
+                if (jsonArray != null)
+                {
+                    // Set the column header names.
+                    dataGridViewTableMetadata.DataSource = bindingSourceTableMetadata;
+                    dataGridViewTableMetadata.ColumnHeadersVisible = true;
+                    dataGridViewTableMetadata.Columns[0].Visible = false;
+                    dataGridViewTableMetadata.Columns[1].Visible = false;
+
+                    dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
+                    dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID"; //Key column
+                    dataGridViewTableMetadata.Columns[2].HeaderText = "Table Name"; //Key column
+                    dataGridViewTableMetadata.Columns[3].HeaderText = "Column Name"; //Key column
+                    dataGridViewTableMetadata.Columns[4].HeaderText = "Data Type";
+                    dataGridViewTableMetadata.Columns[5].HeaderText = "Length";
+                    dataGridViewTableMetadata.Columns[6].HeaderText = "Precision";
+                    dataGridViewTableMetadata.Columns[7].HeaderText = "Position";
+                    dataGridViewTableMetadata.Columns[8].HeaderText = "Primary Key";
+                    dataGridViewTableMetadata.Columns[9].HeaderText = "Multi-Active";
+                }
+
+                richTextBoxInformation.AppendText("The file " + configurationSettings.ConfigurationPath +
+                                                  GlobalParameters.jsonTableMappingFileName + " was loaded.");
             }
-
-            var sqlStatementForLatestVersion = new StringBuilder();
-
-            sqlStatementForLatestVersion.AppendLine("SELECT ");
-            sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
-            sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
-            sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
-            sqlStatementForLatestVersion.AppendLine(" [CHARACTER_MAXIMUM_LENGTH],");
-            sqlStatementForLatestVersion.AppendLine(" [NUMERIC_PRECISION],");
-            sqlStatementForLatestVersion.AppendLine(" [ORDINAL_POSITION],");
-            sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
-            sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_INDICATOR],");
-            sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR],");
-            sqlStatementForLatestVersion.AppendLine(" [VERSION_ID]");
-            sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
-            sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
-
-            var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-            bindingSourceTableMetadata.DataSource = versionList;
-
-            // Set the column header names.
-            dataGridViewTableMetadata.DataSource = bindingSourceTableMetadata;
-            dataGridViewTableMetadata.ColumnHeadersVisible = true;
-            dataGridViewTableMetadata.Columns[9].Visible = false;
-
-            dataGridViewTableMetadata.Columns[0].HeaderText = "Table Name"; //Key column
-            dataGridViewTableMetadata.Columns[1].HeaderText = "Column Name"; // Key column
-            dataGridViewTableMetadata.Columns[2].HeaderText = "Data Type";
-            dataGridViewTableMetadata.Columns[3].HeaderText = "Length";
-            dataGridViewTableMetadata.Columns[4].HeaderText = "Precision";
-            dataGridViewTableMetadata.Columns[5].HeaderText = "Position";
-            dataGridViewTableMetadata.Columns[6].HeaderText = "Primary Key";
-            dataGridViewTableMetadata.Columns[7].HeaderText = "Driving Key";
-            dataGridViewTableMetadata.Columns[8].HeaderText = "Multi-Active";
-            dataGridViewTableMetadata.Columns[9].HeaderText = "Version ID"; // Key column
-
             GridAutoLayout();
         }
 
-        private void PopulateAttributeGridWithVersion(int versionId)
-        {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+        //  private void PopulateAttributeGridWithVersion(int versionId)
+        //{
+        //    var configurationSettings = new ConfigurationSettings();
 
-            // open latest version
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+        //    // open latest version
+        //    var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
-            var selectedVersion = versionId;
+        //    var selectedVersion = versionId;
 
-            try
-            {
-                connOmd.Open();
-            }
-            catch (Exception exception)
-            {
-                richTextBoxInformation.Text += exception.Message;
-            }
+        //    try
+        //    {
+        //        connOmd.Open();
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        richTextBoxInformation.Text += exception.Message;
+        //    }
 
-            var sqlStatementForLatestVersion = new StringBuilder();
+        //    var sqlStatementForLatestVersion = new StringBuilder();
 
-            sqlStatementForLatestVersion.AppendLine("SELECT ");
-            sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
-            sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
-            sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
-            sqlStatementForLatestVersion.AppendLine(" [CHARACTER_MAXIMUM_LENGTH],");
-            sqlStatementForLatestVersion.AppendLine(" [NUMERIC_PRECISION],");
-            sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR],");
-            sqlStatementForLatestVersion.AppendLine(" [VERSION_ID]");
-            sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
-            sqlStatementForLatestVersion.AppendLine("WHERE [MULTI_ACTIVE_INDICATOR]='Y' AND [VERSION_ID] = " + selectedVersion);
+        //    sqlStatementForLatestVersion.AppendLine("SELECT ");
+        //    sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
+        //    sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
+        //    sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
+        //    sqlStatementForLatestVersion.AppendLine(" [CHARACTER_MAXIMUM_LENGTH],");
+        //    sqlStatementForLatestVersion.AppendLine(" [NUMERIC_PRECISION],");
+        //    sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR],");
+        //    sqlStatementForLatestVersion.AppendLine(" [VERSION_ID]");
+        //    sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
+        //    sqlStatementForLatestVersion.AppendLine("WHERE [MULTI_ACTIVE_INDICATOR]='Y' AND [VERSION_ID] = " + selectedVersion);
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-            bindingSourceMultiActiveMetadata.DataSource = versionList;
+        //    var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+        //    bindingSourceMultiActiveMetadata.DataSource = versionList;
 
-            // Set the column header names.
+        //    // Set the column header names.
 
-            dataGridViewAttributeMetadata.DataSource = bindingSourceMultiActiveMetadata;
-            dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
-            dataGridViewAttributeMetadata.Columns[6].Visible = false;
+        //    dataGridViewAttributeMetadata.DataSource = bindingSourceMultiActiveMetadata;
+        //    dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
+        //    dataGridViewAttributeMetadata.Columns[6].Visible = false;
 
-            dataGridViewAttributeMetadata.Columns[0].HeaderText = "Table Name";
-            dataGridViewAttributeMetadata.Columns[1].HeaderText = "Column Name";
-            dataGridViewAttributeMetadata.Columns[2].HeaderText = "Data Type";
-            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Length";
-            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Precision";
-            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Multi-Active";
-            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Version ID";
+        //    dataGridViewAttributeMetadata.Columns[0].HeaderText = "Table Name";
+        //    dataGridViewAttributeMetadata.Columns[1].HeaderText = "Column Name";
+        //    dataGridViewAttributeMetadata.Columns[2].HeaderText = "Data Type";
+        //    dataGridViewAttributeMetadata.Columns[3].HeaderText = "Length";
+        //    dataGridViewAttributeMetadata.Columns[4].HeaderText = "Precision";
+        //    dataGridViewAttributeMetadata.Columns[5].HeaderText = "Multi-Active";
+        //    dataGridViewAttributeMetadata.Columns[6].HeaderText = "Version ID";
 
-            GridAutoLayout();
-        }
+        //    GridAutoLayout();
+        //}
 
-        private void PopulateKeyGridWithVersion(int versionId)
-        {
-            var configurationSettings = new FormBase.ConfigurationSettings();
-
-            // open latest version
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
-
-            int selectedVersion = versionId;
-
-            try
-            {
-                connOmd.Open();
-            }
-            catch (Exception exception)
-            {
-                richTextBoxInformation.Text += exception.Message;
-            }
-
-            var sqlStatementForLatestVersion = new StringBuilder();
-
-            sqlStatementForLatestVersion.AppendLine("SELECT ");
-            sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
-            sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
-            sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
-            sqlStatementForLatestVersion.AppendLine(" [CHARACTER_MAXIMUM_LENGTH],");
-            sqlStatementForLatestVersion.AppendLine(" [NUMERIC_PRECISION],");
-            sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_INDICATOR],");
-            sqlStatementForLatestVersion.AppendLine(" [VERSION_ID]");
-            sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
-            sqlStatementForLatestVersion.AppendLine("WHERE  [DRIVING_KEY_INDICATOR]='Y' AND [VERSION_ID] = " + selectedVersion);
-
-            var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-            bindingSourceDrivingKeyMetadata.DataSource = versionList;
-
-            // Set the column header names.
-            dataGridViewDrivingKeyMetadata.DataSource = bindingSourceDrivingKeyMetadata;
-            dataGridViewDrivingKeyMetadata.Columns[6].Visible = false;
-            dataGridViewDrivingKeyMetadata.ColumnHeadersVisible = true;
-
-            dataGridViewDrivingKeyMetadata.Columns[0].HeaderText = "Table Name";
-            dataGridViewDrivingKeyMetadata.Columns[1].HeaderText = "Column Name";
-            dataGridViewDrivingKeyMetadata.Columns[2].HeaderText = "Data Type";
-            dataGridViewDrivingKeyMetadata.Columns[3].HeaderText = "Length";
-            dataGridViewDrivingKeyMetadata.Columns[4].HeaderText = "Precision";
-            dataGridViewDrivingKeyMetadata.Columns[5].HeaderText = "Driving Key";
-            dataGridViewDrivingKeyMetadata.Columns[6].HeaderText = "Version ID";
-
-            GridAutoLayout();
-        }
 
         private void DataGridViewTableMetadataKeyDown(object sender, KeyEventArgs e)
         {
@@ -322,31 +366,11 @@ namespace TEAM
                 dataGridViewAttributeMetadata.Columns[i].Width = columnWidth;
             }
 
-            //Driving Key metadata
-            //Set the autosize based on all cells for each column
-            for (var i = 0; i < dataGridViewDrivingKeyMetadata.Columns.Count - 1; i++)
-            {
-                dataGridViewDrivingKeyMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            }
-            if (dataGridViewDrivingKeyMetadata.Columns.Count > 0)
-            {
-                dataGridViewDrivingKeyMetadata.Columns[dataGridViewDrivingKeyMetadata.Columns.Count - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            }
-           
-
-            // Disable the auto size again (to enable manual resizing)
-            for (var i = 0; i < dataGridViewDrivingKeyMetadata.Columns.Count - 1; i++)
-            {
-                int columnWidth = dataGridViewDrivingKeyMetadata.Columns[i].Width;
-                dataGridViewDrivingKeyMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dataGridViewDrivingKeyMetadata.Columns[i].Width = columnWidth;
-            }
-
         }
     
         private void InitialiseVersionTrackbar()
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             //Initialise the versioning
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
@@ -404,7 +428,7 @@ namespace TEAM
 
         private void ManageTableMappingVersion()
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             //This method makes sure the generation metadata (MD_TABLE_MAPPING) keeps up to date
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
@@ -470,7 +494,7 @@ namespace TEAM
 
         private void ManageAttributeMappingVersion()
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             //This method makes sure the generation metadata (MD_ATTRIBUTE_MAPPING) keeps up to date
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
@@ -535,7 +559,7 @@ namespace TEAM
 
         private void ReverseEngineerModelMetadata(SqlConnection conn, string prefix, string databaseName)
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             // This method is called when the reverse-engineer button is clicked.
             try
@@ -564,7 +588,7 @@ namespace TEAM
 
             conn = ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
             conn = ReverseEngineerMultiActiveDataGrid(conn, prefix, databaseName, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
-            ReverseEngineerDrivingKeyDataGrid(conn, prefix, databaseName);
+
         }
 
         private SqlConnection ReverseEngineerMainDataGrid(SqlConnection conn, string prefix, string databaseName, int versionId, string effectiveDateTimeAttribute, string dwhKeyIdentifier, string keyIdentifierLocation)
@@ -585,11 +609,6 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
             sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
             sqlStatementForAttributeVersion.AppendLine("  END AS PRIMARY_KEY_INDICATOR, ");
-
-            sqlStatementForAttributeVersion.AppendLine("  CASE");
-            sqlStatementForAttributeVersion.AppendLine("	WHEN extprop.Value='True' THEN 'Y'");
-            sqlStatementForAttributeVersion.AppendLine("	ELSE 'N'");
-            sqlStatementForAttributeVersion.AppendLine("  END AS DRIVING_KEY_INDICATOR,");
 
             sqlStatementForAttributeVersion.AppendLine("  CASE ");
             sqlStatementForAttributeVersion.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
@@ -614,20 +633,20 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1) keysub");
             sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = keysub.TABLE_NAME");
             sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = keysub.COLUMN_NAME");
-            sqlStatementForAttributeVersion.AppendLine("-- Driving Key");
-            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForAttributeVersion.AppendLine("		SELECT");
-            sqlStatementForAttributeVersion.AppendLine("		 st.name LINK_TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		 sc.name HASH_KEY_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		 sep.value [Value]");
-            sqlStatementForAttributeVersion.AppendLine("		 FROM [" + databaseName + "].sys.tables st");
-            sqlStatementForAttributeVersion.AppendLine("		 INNER JOIN [" + databaseName + "].sys.columns sc on st.object_id = sc.object_id");
-            sqlStatementForAttributeVersion.AppendLine("		 LEFT JOIN [" + databaseName + "].sys.extended_properties sep on st.object_id = sep.major_id");
-            sqlStatementForAttributeVersion.AppendLine("		 AND sc.column_id = sep.minor_id");
-            sqlStatementForAttributeVersion.AppendLine("		 AND sep.name = 'Driving_Key_Indicator'");
-            sqlStatementForAttributeVersion.AppendLine("	) extprop");
-            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME=extprop.LINK_TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME=extprop.HASH_KEY_NAME");
+            //sqlStatementForAttributeVersion.AppendLine("-- Driving Key");
+            //sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
+            //sqlStatementForAttributeVersion.AppendLine("		SELECT");
+            //sqlStatementForAttributeVersion.AppendLine("		 st.name LINK_TABLE_NAME,");
+            //sqlStatementForAttributeVersion.AppendLine("		 sc.name HASH_KEY_NAME,");
+            //sqlStatementForAttributeVersion.AppendLine("		 sep.value [Value]");
+            //sqlStatementForAttributeVersion.AppendLine("		 FROM [" + databaseName + "].sys.tables st");
+            //sqlStatementForAttributeVersion.AppendLine("		 INNER JOIN [" + databaseName + "].sys.columns sc on st.object_id = sc.object_id");
+            //sqlStatementForAttributeVersion.AppendLine("		 LEFT JOIN [" + databaseName + "].sys.extended_properties sep on st.object_id = sep.major_id");
+            //sqlStatementForAttributeVersion.AppendLine("		 AND sc.column_id = sep.minor_id");
+            //sqlStatementForAttributeVersion.AppendLine("		 AND sep.name = 'Driving_Key_Indicator'");
+            //sqlStatementForAttributeVersion.AppendLine("	) extprop");
+            //sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME=extprop.LINK_TABLE_NAME");
+            //sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME=extprop.HASH_KEY_NAME");
 
             //Multi-active
             sqlStatementForAttributeVersion.AppendLine("-- Multi-Active");
@@ -671,54 +690,6 @@ namespace TEAM
             return conn;
         }
 
-        private void ReverseEngineerDrivingKeyDataGrid(SqlConnection conn, string prefix, string databaseName)
-        {
-            //Create the attribute selection statement for the array
-            var sqlStatementForAttributeVersion = new StringBuilder();
-
-            sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  main.TABLE_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.COLUMN_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.DATA_TYPE, ");
-            sqlStatementForAttributeVersion.AppendLine("  COALESCE(main.CHARACTER_MAXIMUM_LENGTH,0) AS CHARACTER_MAXIMUM_LENGTH,");
-            sqlStatementForAttributeVersion.AppendLine("  COALESCE(main.NUMERIC_PRECISION,0) AS NUMERIC_PRECISION, ");
-
-            sqlStatementForAttributeVersion.AppendLine("  CASE");
-            sqlStatementForAttributeVersion.AppendLine("	WHEN extprop.Value='True' THEN 'Y'");
-            sqlStatementForAttributeVersion.AppendLine("	ELSE 'N'");
-            sqlStatementForAttributeVersion.AppendLine("  END AS DRIVING_KEY_INDICATOR");     
-
-            sqlStatementForAttributeVersion.AppendLine("FROM [" + databaseName + "].INFORMATION_SCHEMA.COLUMNS main");
-            sqlStatementForAttributeVersion.AppendLine("-- Driving Key");
-            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForAttributeVersion.AppendLine("		SELECT");
-            sqlStatementForAttributeVersion.AppendLine("		 st.name LINK_TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		 sc.name HASH_KEY_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		 sep.value [Value]");
-            sqlStatementForAttributeVersion.AppendLine("		 FROM [" + databaseName + "].sys.tables st");
-            sqlStatementForAttributeVersion.AppendLine("		 INNER JOIN [" + databaseName + "].sys.columns sc on st.object_id = sc.object_id");
-            sqlStatementForAttributeVersion.AppendLine("		 LEFT JOIN [" + databaseName + "].sys.extended_properties sep on st.object_id = sep.major_id");
-            sqlStatementForAttributeVersion.AppendLine("		 AND sc.column_id = sep.minor_id");
-            sqlStatementForAttributeVersion.AppendLine("		 AND sep.name = 'Driving_Key_Indicator'");
-            sqlStatementForAttributeVersion.AppendLine("	) extprop");
-            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME=extprop.LINK_TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME=extprop.HASH_KEY_NAME");
-
-            sqlStatementForAttributeVersion.AppendLine("WHERE main.TABLE_NAME LIKE '" + prefix + "_%'");
-            sqlStatementForAttributeVersion.AppendLine("AND (CASE");
-            sqlStatementForAttributeVersion.AppendLine("    WHEN extprop.Value = 'True' THEN 'Y'");
-            sqlStatementForAttributeVersion.AppendLine("    ELSE 'N'");
-            sqlStatementForAttributeVersion.AppendLine("  END) = 'Y'");
-
-            var reverseEngineerResults = GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
-
-            bindingSourceDrivingKeyMetadata.DataSource = reverseEngineerResults;
-
-            foreach (DataRow row in reverseEngineerResults.Rows) //Flag as new row so it's detected by the save button
-            {
-                row.SetAdded();
-            }
-        }
 
         private SqlConnection ReverseEngineerMultiActiveDataGrid(SqlConnection conn, string prefix, string databaseName, string effectiveDateTimeAttribute, string dwhKeyIdentifier, string keyIdentifierLocation)
         {
@@ -789,7 +760,7 @@ namespace TEAM
 
         private void TruncateMetadata()
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             //Truncate tables
             const string commandText = //"TRUNCATE TABLE [MD_TABLE_MAPPING]; " +
@@ -816,7 +787,7 @@ namespace TEAM
 
         private void SaveVersion(int majorVersion, int minorVersion)
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             //Insert or create version
             var insertStatement = new StringBuilder();
@@ -846,7 +817,7 @@ namespace TEAM
 
         private void trackBarVersioning_ValueChanged(object sender, EventArgs e)
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
             PopulateTableGridWithVersion(trackBarVersioning.Value);
@@ -870,7 +841,7 @@ namespace TEAM
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
@@ -990,7 +961,7 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             var errorLog = new StringBuilder();
             var errorCounter = new int();
@@ -1290,7 +1261,7 @@ namespace TEAM
                         }
                     }
 
-                    worker.ReportProgress(20);
+                    if (worker != null) worker.ReportProgress(20);
                     _alert.SetTextLogging("Preparation of the Link metadata completed.\r\n");
                 }
                 catch (Exception ex)
@@ -1366,7 +1337,7 @@ namespace TEAM
                         }
                     }
 
-                    worker.ReportProgress(24);
+                    if (worker != null) worker.ReportProgress(24);
                     _alert.SetTextLogging("Preparation of the Satellite metadata completed.\r\n");
                 }
                 catch (Exception ex)
@@ -2923,97 +2894,27 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
 
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
 
             if (checkBoxClearMetadata.Checked)
             {
                 TruncateMetadata();
             }
 
-            if (dataGridViewTableMetadata.RowCount > 0 || dataGridViewAttributeMetadata.RowCount > 0 || dataGridViewDrivingKeyMetadata.RowCount > 0) //Check if there are rows available in the grid view
+            if (dataGridViewTableMetadata.RowCount > 0) //Check if there are rows available in the grid view
             {
                 //Create a datatable containing the changes, to check if there are ones to begin with
-
                 DataTable dataTableKeyChanges = ((DataTable)bindingSourceTableMetadata.DataSource).GetChanges();
-                DataTable dataTableMultiActiveChanges = ((DataTable)bindingSourceMultiActiveMetadata.DataSource).GetChanges();
-                DataTable dataTableDrivingKeyChanges = ((DataTable)bindingSourceDrivingKeyMetadata.DataSource).GetChanges();
 
-                if ((dataTableKeyChanges != null && (dataTableKeyChanges.Rows.Count > 0)) || (dataTableMultiActiveChanges != null && (dataTableMultiActiveChanges.Rows.Count > 0)) || (dataTableDrivingKeyChanges != null && (dataTableDrivingKeyChanges.Rows.Count > 0))) //Check if there are any changes made at all
+                if (dataTableKeyChanges != null && (dataTableKeyChanges.Rows.Count > 0)) //Check if there are any changes made at all
                 {
-                    //Retrieve the current version
+                    //Create a new version, if required
+                    CreateNewEmptyModelMetadataVersion();
+
+                    //Commit the save of the metadata in whatever is the right version after the version handling
                     var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
-                    var maxVersion = GetMaxVersionId(connOmd);
-                    var versionKeyValuePair = GetVersion(maxVersion, connOmd);
-                    var majorVersion = versionKeyValuePair.Key;
-                    var minorVersion = versionKeyValuePair.Value;
-
-                    if (radiobuttonMajorRelease.Checked)
-                    {
-                        try
-                        {
-                            majorVersion++;
-                            minorVersion = 0;
-
-                            //Creates a new version
-                            SaveVersion(majorVersion, minorVersion);
-
-                            // Ensure the mapping metadata is updated to the newly created version
-                            ManageTableMappingVersion();
-                            ManageAttributeMappingVersion();
-
-                            //Commit the save of the metadata
-                            var versionId = GetMaxVersionId(connOmd);
-                            SaveModelTableMetadata(versionId, dataTableKeyChanges);
-
-                            //Refresh the UI to display the newly created version
-                            trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
-                            trackBarVersioning.TickFrequency = GetVersionCount();
-                            trackBarVersioning.Value = GetMaxVersionId(connOmd);
-
-                        }
-                        catch (Exception ex)
-                        {
-                            richTextBoxInformation.Text += "An issue occured when saving a new version: " + ex;
-                        }
-                    }
-
-                    if (radioButtonMinorRelease.Checked)
-                    {
-                        try
-                        {
-                            minorVersion++;
-
-                            //Creates a new version
-                            SaveVersion(majorVersion, minorVersion);
-
-                            // Ensure the mapping metadata is updated to the newly created version
-                            ManageTableMappingVersion();
-                            ManageAttributeMappingVersion();
-
-                            //Commit the save of the metadata
-                            var versionId = GetMaxVersionId(connOmd);
-                            SaveModelTableMetadata(versionId, dataTableKeyChanges);
-                            //SaveModelDrivingKeyMetadata(versionId, dataTableDrivingKeyChanges);
-                            //SaveModelMultiActiveMetadata(versionId, dataTableMultiActiveChanges);
-
-                            //Refresh the UI to display the newly created version
-                            trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
-                            trackBarVersioning.TickFrequency = GetVersionCount();
-                            trackBarVersioning.Value = GetMaxVersionId(connOmd);
-                        }
-                        catch (Exception ex)
-                        {
-                            richTextBoxInformation.Text += "An issue occured when saving a new version: " + ex;
-                        }
-                    }
-
-                    if (radiobuttonNoVersionChange.Checked) //Update only
-                    {
-                        var versionId = GetMaxVersionId(connOmd);
-                        SaveModelTableMetadata(versionId, dataTableKeyChanges);
-                        //SaveModelDrivingKeyMetadata(versionId, dataTableDrivingKeyChanges);
-                        //SaveModelMultiActiveMetadata(versionId, dataTableMultiActiveChanges);
-                    }
+                    var versionId = GetMaxVersionId(connOmd);
+                    SaveModelTableMetadata(versionId, dataTableKeyChanges);
                 }
                 else
                 {
@@ -3026,217 +2927,503 @@ namespace TEAM
             }
         }
 
-        private void SaveModelTableMetadata(int versionId, DataTable dataTableChanges)
+        private void CreateNewEmptyModelMetadataVersion()
         {
+            //This method creates a new version ID including a snapshot of the other two metadata tables (MD_TABLE_MAPPING and MD_ATTRIBUTE_MAPPING).
+
+            var configurationSettings = new ConfigurationSettings();
+
+            // Handle the version changes
+            var versionSelection = "None";
+            if (radiobuttonMajorRelease.Checked)
+            {
+                versionSelection = "Major";
+            }
+            if (radioButtonMinorRelease.Checked)
+            {
+                versionSelection = "Minor";
+            }
+
+            var connOmd = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringOmd};
+            var maxVersion = GetMaxVersionId(connOmd);
+            var versionKeyValuePair = GetVersion(maxVersion, connOmd);
+            var majorVersion = versionKeyValuePair.Key;
+            var minorVersion = versionKeyValuePair.Value;
+
+            if (versionSelection == "Major")
+            {
+                try
+                {
+                    majorVersion++;
+                    minorVersion = 0;
+
+                    //Creates a new version
+                    SaveVersion(majorVersion, minorVersion);
+
+                    // Ensure the mapping metadata is updated to the newly created version
+                    ManageTableMappingVersion();
+                    ManageAttributeMappingVersion();
+
+                    //Refresh the UI to display the newly created version
+                    trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
+                    trackBarVersioning.TickFrequency = GetVersionCount();
+                    trackBarVersioning.Value = GetMaxVersionId(connOmd);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text += "An issue occured when saving a new version: " + ex;
+                }
+            }
+
+            if (versionSelection == "Minor")
+            {
+                try
+                {
+                    minorVersion++;
+
+                    //Creates a new version
+                    SaveVersion(majorVersion, minorVersion);
+
+                    // Ensure the mapping metadata is updated to the newly created version
+                    ManageTableMappingVersion();
+                    ManageAttributeMappingVersion();
+
+                    //Refresh the UI to display the newly created version
+                    trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
+                    trackBarVersioning.TickFrequency = GetVersionCount();
+                    trackBarVersioning.Value = GetMaxVersionId(connOmd);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text += "An issue occured when saving a new version: " + ex;
+                }
+            }
+
+        }
+
+        internal void CreateNewModelMetadataVersion(int versionId)
+        {
+            var configurationSettings = new ConfigurationSettings();
+            var repositoryTarget = configurationSettings.metadataRepositoryType;
+
             var insertQueryTables = new StringBuilder();
 
-            var configurationSettings = new FormBase.ConfigurationSettings();
-
-            if (!radiobuttonNoVersionChange.Checked) //This means either minor or major version is checked and a full new snapshot is created
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                if (!row.IsNewRow)
                 {
-                    if (!row.IsNewRow)
+                    var tableName = "";
+                    var columnName = "";
+                    var dataType = "";
+                    var maxLength = 0;
+                    var numericPrecision = 0;
+                    var ordinalPosition = 0;
+                    var primaryKeyIndicator = "";
+                    var multiActiveIndicator = "";
+
+                    if (row.Cells[0].Value != DBNull.Value)
                     {
-                        var tableName = "";
-                        var columnName = "";
-                        var dataType = "";
-                        var maxLength = 0;
-                        var numericPrecision = 0;
-                        var ordinalPosition = 0;
-                        var primaryKeyIndicator = "";
-                        var drivingKeyIndicator = "";
-                        var multiActiveIndicator = "";
-
-                        if (row.Cells[0].Value != DBNull.Value)
-                        {
-                            tableName = (string)row.Cells[0].Value;
-                        }
-
-                        if (row.Cells[1].Value != DBNull.Value)
-                        {
-                            columnName = (string)row.Cells[1].Value;
-                        }
-
-                        if (row.Cells[2].Value != DBNull.Value)
-                        {
-                            dataType = (string)row.Cells[2].Value;
-                        }
-
-                        if (row.Cells[3].Value != DBNull.Value)
-                        {
-                            maxLength = (int)row.Cells[3].Value;
-                        }
-
-                        if (row.Cells[4].Value != DBNull.Value)
-                        {
-                            numericPrecision = (int)row.Cells[4].Value;
-                        }
-
-                        if (row.Cells[5].Value != DBNull.Value)
-                        {
-                            ordinalPosition = (int)row.Cells[5].Value;
-                        }
-
-                        if (row.Cells[6].Value != DBNull.Value)
-                        {
-                            primaryKeyIndicator = (string)row.Cells[6].Value;
-                        }
-
-                        if (row.Cells[7].Value != DBNull.Value)
-                        {
-                            drivingKeyIndicator = (string)row.Cells[7].Value;
-                        }
-
-                        if (row.Cells[8].Value != DBNull.Value)
-                        {
-                            multiActiveIndicator = (string)row.Cells[8].Value;
-                        }
-
-                        insertQueryTables.AppendLine("INSERT INTO MD_VERSION_ATTRIBUTE");
-                        insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [DRIVING_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
-                        insertQueryTables.AppendLine("VALUES");
-                        insertQueryTables.AppendLine("(" + versionId + ",'" +tableName + "','" + columnName + "','" + dataType + "','" + maxLength + "','" + numericPrecision + "','" + ordinalPosition + "','" + primaryKeyIndicator + "','" + drivingKeyIndicator + "','" + multiActiveIndicator + "')");
+                        tableName = (string) row.Cells[0].Value;
                     }
-                }
-            }
-            else //An in-place update (no change) to the existing version is done
-            {
-                if ((dataTableChanges != null && (dataTableChanges.Rows.Count > 0))) //Check if there are any changes made at all
-                {
-                    foreach (DataRow row in dataTableChanges.Rows)
+
+                    if (row.Cells[1].Value != DBNull.Value)
                     {
-                        if ((row.RowState & DataRowState.Modified) != 0)
-                        {
-                            var tableName = (string)row["TABLE_NAME"];
-                            var columnName = (string)row["COLUMN_NAME"];
-                            var dataType = (string)row["DATA_TYPE"];
-                            var maxLength = (int)row["CHARACTER_MAXIMUM_LENGTH"];
-                            var numericPrecision = (int)row["NUMERIC_PRECISION"];
-                            var ordinalPosition = (int)row["ORDINAL_POSITION"];
-                            var primaryKeyIndicator = (string)row["PRIMARY_KEY_INDICATOR"];
-                            var drivingKeyIndicator = (string)row["DRIVING_KEY_INDICATOR"];
-                            var multiActiveIndicator = (string)row["MULTI_ACTIVE_INDICATOR"];
-                            var versionKey = (int)row["VERSION_ID"];
-
-                            insertQueryTables.AppendLine("UPDATE MD_VERSION_ATTRIBUTE");
-                            insertQueryTables.AppendLine("SET [DATA_TYPE] = '" + dataType +
-                                                         "',[CHARACTER_MAXIMUM_LENGTH] = '" + maxLength +
-                                                         "',[NUMERIC_PRECISION] = '" + numericPrecision +
-                                                         "',[ORDINAL_POSITION] = '" + ordinalPosition +
-                                                         "',[PRIMARY_KEY_INDICATOR] = '" + primaryKeyIndicator +
-                                                         "',[DRIVING_KEY_INDICATOR] = '" + drivingKeyIndicator +
-                                                         "',[MULTI_ACTIVE_INDICATOR] = '" + multiActiveIndicator + "'");
-                            insertQueryTables.AppendLine("WHERE [TABLE_NAME] = '" + tableName + "' AND [COLUMN_NAME] = '" + columnName + "' AND [VERSION_ID] = " + versionKey);
-                        }
-
-                        if ((row.RowState & DataRowState.Added) != 0) // Insert new rows
-                        {
-
-                            var tableName = "";
-                            var columnName = "";
-                            var dataType = "";
-                            var maxLength = 0;
-                            var numericPrecision = 0;
-                            var ordinalPosition = 0;
-                            var primaryKeyIndicator = "";
-                            var drivingKeyIndicator = "";
-                            var multiActiveIndicator = "";
-
-                            if (row[0] != DBNull.Value)
-                            {
-                                tableName = (string)row[0];
-                            }
-
-                            if (row[1] != DBNull.Value)
-                            {
-                                columnName = (string)row[1];
-                            }
-
-                            if (row[2] != DBNull.Value)
-                            {
-                                dataType = (string)row[2];
-                            }
-
-                            if (row[3] != DBNull.Value)
-                            {
-                                maxLength = (int)row[3];
-                            }
-
-                            if (row[4] != DBNull.Value)
-                            {
-                                numericPrecision = (int)row[4];
-                            }
-
-                            if (row[5] != DBNull.Value)
-                            {
-                                ordinalPosition = (int)row[5];
-                            }
-
-                            if (row[6] != DBNull.Value)
-                            {
-                                primaryKeyIndicator = (string)row[6];
-                            }
-
-                            if (row[7] != DBNull.Value)
-                            {
-                                drivingKeyIndicator = (string)row[7];
-                            }
-
-                            if (row[8] != DBNull.Value)
-                            {
-                                multiActiveIndicator = (string)row[8];
-                            }
-                            insertQueryTables.AppendLine("IF NOT EXISTS (SELECT * FROM [MD_VERSION_ATTRIBUTE] WHERE [VERSION_ID]= "+versionId+" AND [TABLE_NAME]='"+tableName+"' AND [COLUMN_NAME]='"+columnName+"')");
-                            insertQueryTables.AppendLine("INSERT INTO [MD_VERSION_ATTRIBUTE]");
-                            insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [DRIVING_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
-                            insertQueryTables.AppendLine("VALUES");
-                            insertQueryTables.AppendLine("(" + versionId + ",'" + tableName + "','" + columnName + "','" + dataType + "','" + maxLength + "','" + numericPrecision + "','" + ordinalPosition + "','" + primaryKeyIndicator + "','" + drivingKeyIndicator + "','" + multiActiveIndicator + "')");
-                        }
-
-                        if ((row.RowState & DataRowState.Deleted) != 0) //Deleted rows
-                        {
-                            var tableName = row["TABLE_NAME", DataRowVersion.Original].ToString();
-                            var columnName = row["COLUMN_NAME", DataRowVersion.Original].ToString();
-                            var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
-
-                            insertQueryTables.AppendLine("DELETE FROM MD_VERSION_ATTRIBUTE");
-                            insertQueryTables.AppendLine("WHERE [TABLE_NAME] = '" + tableName + "' AND [COLUMN_NAME] = '" + columnName + "' AND [VERSION_ID] = " + versionKey);
-                        }
+                        columnName = (string) row.Cells[1].Value;
                     }
+
+                    if (row.Cells[2].Value != DBNull.Value)
+                    {
+                        dataType = (string) row.Cells[2].Value;
+                    }
+
+                    if (row.Cells[3].Value != DBNull.Value)
+                    {
+                        maxLength = (int) row.Cells[3].Value;
+                    }
+
+                    if (row.Cells[4].Value != DBNull.Value)
+                    {
+                        numericPrecision = (int) row.Cells[4].Value;
+                    }
+
+                    if (row.Cells[5].Value != DBNull.Value)
+                    {
+                        ordinalPosition = (int) row.Cells[5].Value;
+                    }
+
+                    if (row.Cells[6].Value != DBNull.Value)
+                    {
+                        primaryKeyIndicator = (string) row.Cells[6].Value;
+                    }
+
+                    if (row.Cells[7].Value != DBNull.Value)
+                    {
+                        multiActiveIndicator = (string) row.Cells[8].Value;
+                    }
+
+                    insertQueryTables.AppendLine("INSERT INTO MD_VERSION_ATTRIBUTE");
+                    insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
+                    insertQueryTables.AppendLine("VALUES");
+                    insertQueryTables.AppendLine("(" + versionId + ",'" + tableName + "','" + columnName + "','" +
+                                                 dataType + "','" + maxLength + "','" + numericPrecision + "','" +
+                                                 ordinalPosition + "','" + primaryKeyIndicator + "','" +
+                                                 multiActiveIndicator + "')");
+
                 }
             }
 
-            // Execute the statement
-            if (insertQueryTables.ToString() == null || insertQueryTables.ToString() == "")
+            // Execute the statement, if the repository is SQL Server
+            // If the source is JSON this is done in separate calls for now
+            if (repositoryTarget == "SQLServer")
             {
-                richTextBoxInformation.Text += "No model metadata changes were saved.\r\n";
-            }
-            else
-            {
-                using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                if (insertQueryTables.ToString() == "")
                 {
-                    var command = new SqlCommand(insertQueryTables.ToString(), connection);
+                    richTextBoxInformation.Text += "No new version was saved.\r\n";
+                }
+                else
+                {
+                    using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                    {
+                        var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
-                    try
-                    {
-                        connection.Open();
-                        command.ExecuteNonQuery();
-                        richTextBoxInformation.Text += "The model metadata has been saved.\r\n";
-                        dataTableChanges.AcceptChanges();
-                        ((DataTable)bindingSourceTableMetadata.DataSource).AcceptChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        richTextBoxInformation.Text += "An issue has occurred: " + ex;
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            richTextBoxInformation.Text += "An issue has occurred: " + ex;
+                        }
                     }
                 }
             }
         }
 
+        private void SaveModelTableMetadata(int versionId, DataTable dataTableChanges)
+        {
+            //Grabbing the generic settings from the main forms
+            var configurationSettings = new ConfigurationSettings();
+            var repositoryTarget = configurationSettings.metadataRepositoryType;
+
+            var insertQueryTables = new StringBuilder();
+
+            //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
+            if (!radiobuttonNoVersionChange.Checked) 
+            {
+                CreateNewModelMetadataVersion(versionId);
+            }
+            //An in-place update (no change) to the existing version is done
+            else
+            {
+                if ((dataTableChanges != null && (dataTableChanges.Rows.Count > 0))) //Check if there are any changes made at all
+                {
+                    foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes
+                    {
+
+                        //Changed rows
+                        if ((row.RowState & DataRowState.Modified) != 0) 
+                        {
+                            var hashKey = (string) row["VERSION_ATTRIBUTE_HASH"];
+                            var tableName = (string)row["TABLE_NAME"];
+                            var columnName = (string)row["COLUMN_NAME"];
+                            var dataType = (string)row["DATA_TYPE"];
+                            var maxLength = (string)row["CHARACTER_MAXIMUM_LENGTH"];
+                            var numericPrecision = (string)row["NUMERIC_PRECISION"];
+                            var ordinalPosition = (string)row["ORDINAL_POSITION"];
+                            var primaryKeyIndicator = (string)row["PRIMARY_KEY_INDICATOR"];
+                            var multiActiveIndicator = (string)row["MULTI_ACTIVE_INDICATOR"];
+                            var versionKey = (string)row["VERSION_ID"];
+
+                            if (repositoryTarget == "SQLServer")
+                            {
+                                insertQueryTables.AppendLine("UPDATE MD_VERSION_ATTRIBUTE");
+                                insertQueryTables.AppendLine("SET "+
+                                                             "' [TABLE_NAME] = '" + dataType +
+                                                             "' [COLUMN_NAME] = '" + dataType +
+                                                             "' [DATA_TYPE] = '" + dataType +
+                                                             "',[CHARACTER_MAXIMUM_LENGTH] = '" + maxLength +
+                                                             "',[NUMERIC_PRECISION] = '" + numericPrecision +
+                                                             "',[ORDINAL_POSITION] = '" + ordinalPosition +
+                                                             "',[PRIMARY_KEY_INDICATOR] = '" + primaryKeyIndicator +
+                                                             "',[MULTI_ACTIVE_INDICATOR] = '" + multiActiveIndicator +
+                                                             "'");
+                                insertQueryTables.AppendLine("WHERE [VERSION_ATTRIBUTE_HASH] = '" + hashKey +
+                                                             "' AND [VERSION_ID] = " + versionKey);
+                            }
+                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                            {
+
+                                try
+                                {
+                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName));
+
+                                    var jsonHash = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
+
+                                    if (jsonHash.versionAttributeHash == "")
+                                    {
+                                        richTextBoxInformation.Text +=
+                                            "The correct segment in the JSON file was not found.\r\n";
+                                    }
+                                    else
+                                    {
+                                        // Update the values in the JSON segment
+                                        jsonHash.tableName = tableName;
+                                        jsonHash.columnName = columnName;
+                                        jsonHash.dataType = dataType;
+                                        jsonHash.characterMaximumLength = maxLength;
+                                        jsonHash.numericPrecision = numericPrecision;
+                                        jsonHash.ordinalPosition = ordinalPosition;
+                                        jsonHash.primaryKeyIndicator = primaryKeyIndicator;
+                                        jsonHash.multiActiveIndicator = multiActiveIndicator;
+                                    }
+
+                                    string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName, output);
+                                 }
+                                catch (JsonReaderException ex)
+                                {
+                                    richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
+                                }
+                            }
+                            else
+                            {
+                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                            }
+                        }
+
+                        // Insert new rows
+                        if ((row.RowState & DataRowState.Added) != 0)
+                        {
+                            var tableName = "";
+                            var columnName = "";
+                            var dataType = "";
+                            var maxLength = "0";
+                            var numericPrecision = "0";
+                            var ordinalPosition = "0";
+                            var primaryKeyIndicator = "";
+                            var multiActiveIndicator = "";
+
+                            if (row[2] != DBNull.Value)
+                            {
+                                tableName = (string)row[2];
+                            }
+
+                            if (row[3] != DBNull.Value)
+                            {
+                                columnName = (string)row[3];
+                            }
+
+                            if (row[4] != DBNull.Value)
+                            {
+                                dataType = (string)row[4];
+                            }
+
+                            if (row[5] != DBNull.Value)
+                            {
+                                maxLength = (string)row[5];
+                            }
+
+                            if (row[6] != DBNull.Value)
+                            {
+                                numericPrecision = (string)row[6];
+                            }
+
+                            if (row[7] != DBNull.Value)
+                            {
+                                ordinalPosition = (string)row[7];
+                            }
+
+                            if (row[8] != DBNull.Value)
+                            {
+                                primaryKeyIndicator = (string)row[8];
+                            }
+
+                            if (row[9] != DBNull.Value)
+                            {
+                                multiActiveIndicator = (string)row[9];
+                            }
+
+                            if (repositoryTarget == "SQLServer")
+                            {
+                                insertQueryTables.AppendLine("IF NOT EXISTS (SELECT * FROM [MD_VERSION_ATTRIBUTE] WHERE [VERSION_ID]= " +versionId + " AND [TABLE_NAME]='" + tableName + "' AND [COLUMN_NAME]='" + columnName +"')");
+                                insertQueryTables.AppendLine("INSERT INTO [MD_VERSION_ATTRIBUTE]");
+                                insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
+                                insertQueryTables.AppendLine("VALUES");
+                                insertQueryTables.AppendLine("(" + versionId + ",'" + tableName + "','" + columnName +
+                                                             "','" + dataType + "','" + maxLength + "','" +
+                                                             numericPrecision + "','" + ordinalPosition + "','" +
+                                                             primaryKeyIndicator + "','" + multiActiveIndicator + "')");
+                            }
+                            else if (repositoryTarget == "JSON") //Update the JSON
+                            {
+                                try
+                                {
+                                    //Generate a unique key using a hash
+                                    var hashKey = CreateMd5(tableName + '|' + columnName + '|' + versionId);
+
+                                    // Load the file
+                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName));
+
+                                    // Conver it into a JArray so segments can be added easily
+                                    var jsonTableMappingFull = JArray.FromObject(jsonArray);
+
+                                    JObject newJsonSegment = new JObject(
+                                            new JProperty("versionAttributeHash", hashKey),
+                                            new JProperty("tableName", tableName),
+                                            new JProperty("columnName", columnName),
+                                            new JProperty("dataType", dataType),
+                                            new JProperty("characterMaximumLength", maxLength),
+                                            new JProperty("numericPrecision", numericPrecision),
+                                            new JProperty("ordinalPosition", ordinalPosition),
+                                            new JProperty("primaryKeyIndicator", primaryKeyIndicator),
+                                            new JProperty("multiActiveIndicator", multiActiveIndicator)
+                                        );
+
+                                    jsonTableMappingFull.Add(newJsonSegment);
+
+                                    string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
+                                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName, output);
+
+                                    //Making sure the hash key value is added to the datatable as well
+                                    row[0] = hashKey;
+
+                                }
+                                catch (JsonReaderException ex)
+                                {
+                                    richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
+                                }
+                            }
+                            else
+                            {
+                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                            }
+                        }
+
+
+                        //Deleted rows
+                        if ((row.RowState & DataRowState.Deleted) != 0) 
+                        {
+                            var hashKey = row["VERSION_ATTRIBUTE_HASH", DataRowVersion.Original].ToString();
+                            var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
+
+                            if (repositoryTarget == "SQLServer")
+                            {
+                                insertQueryTables.AppendLine("DELETE FROM MD_VERSION_ATTRIBUTE");
+                                insertQueryTables.AppendLine("WHERE [VERSION_ATTRIBUTE_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
+                            }
+                            else if (repositoryTarget == "JSON") //Remove a segment (row) from the JSON
+                            {
+                                try
+                                {
+                                    var jsonArray =
+                                        JsonConvert.DeserializeObject<ModelMetadataJson[]>(
+                                            File.ReadAllText(configurationSettings.ConfigurationPath +
+                                                             GlobalParameters.jsonModelMetadataFileName)).ToList();
+
+                                    //Retrieves the json segment in the file for the given hash returns value or NULL
+                                    var jsonSegment = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey);
+
+                                    jsonArray.Remove(jsonSegment);
+
+                                    if (jsonSegment.versionAttributeHash == "")
+                                    {
+                                        richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                                    }
+                                    else
+                                    {
+                                        //Remove the segment from the JSON
+                                        jsonArray.Remove(jsonSegment);
+                                    }
+
+                                    string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName,output);
+
+                                }
+                                catch (JsonReaderException ex)
+                                {
+                                    richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
+                                }
+                            }
+                            else
+                            {
+                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                            }
+                        }
+                    } // All changes have been processed.
+
+                    #region Statement execution
+                    // Execute the statement, if the repository is SQL Server
+                    // If the source is JSON this is done in separate calls for now
+                    if (repositoryTarget == "SQLServer")
+                    {
+                        if (insertQueryTables.ToString() == null || insertQueryTables.ToString() == "")
+                        {
+                            richTextBoxInformation.Text += "No model metadata changes were saved.\r\n";
+                        }
+                        else
+                        {
+                            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                            {
+                                var command = new SqlCommand(insertQueryTables.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                    richTextBoxInformation.Text += "The model metadata has been saved.\r\n";
+                                    dataTableChanges.AcceptChanges();
+                                    ((DataTable)bindingSourceTableMetadata.DataSource).AcceptChanges();
+                                }
+                                catch (Exception ex)
+                                {
+                                    richTextBoxInformation.Text += "An issue has occurred: " + ex;
+                                }
+                            }
+                        }
+                    }
+
+                    //Committing the changes to the datatable
+                    dataTableChanges.AcceptChanges();
+                    ((DataTable)bindingSourceTableMetadata.DataSource).AcceptChanges();
+
+                    //The JSON needs to be re-bound to the datatable / datagrid after being updated to allow all values to be present
+                    if (repositoryTarget == "JSON")
+                    {
+                        BindModelMetadataJsonToDataTable();
+                    }
+                    #endregion
+                }
+            }
+
+
+            richTextBoxInformation.Text += "The (physical) model metadata has been saved.\r\n";
+        }
+
+        private void BindModelMetadataJsonToDataTable()
+        {
+            var configurationSettings = new ConfigurationSettings();
+
+            // Load the table mapping file, convert it to a DataTable and bind it to the source
+            List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName));
+            DataTable dt = ConvertToDataTable(jsonArray);
+            dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
+            dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
+            dt.Columns[1].ColumnName = "VERSION_ID";
+            dt.Columns[2].ColumnName = "TABLE_NAME";
+            dt.Columns[3].ColumnName = "COLUMN_NAME";
+            dt.Columns[4].ColumnName = "DATA_TYPE";
+            dt.Columns[5].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
+            dt.Columns[6].ColumnName = "NUMERIC_PRECISION";
+            dt.Columns[7].ColumnName = "ORDINAL_POSITION";
+            dt.Columns[8].ColumnName = "PRIMARY_KEY_INDICATOR";
+            dt.Columns[9].ColumnName = "MULTI_ACTIVE_INDICATOR";
+            bindingSourceTableMetadata.DataSource = dt;
+        }
+
         private void FormModelMetadata_SizeChanged(object sender, EventArgs e)
         {
-            GridAutoLayout();
+           // GridAutoLayout();
         }
         private DialogResult STAShowDialog(FileDialog dialog)
         {
@@ -3310,6 +3497,17 @@ namespace TEAM
             {
                 MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
             }
+        }
+
+        private void FormModelMetadata_ResizeEnd(object sender, EventArgs e)
+        {
+
+    
+        }
+
+        private void FormModelMetadata_Resize(object sender, EventArgs e)
+        {
+            GridAutoLayout();
         }
     }
 }

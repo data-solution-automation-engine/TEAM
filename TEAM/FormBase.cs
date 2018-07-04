@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -175,6 +176,24 @@ namespace TEAM
             catch (Exception)
             {
                 // richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+            }
+        }
+
+        public static string CreateMd5(string input)
+        {
+            // Use input string to calculate MD5 hash
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                // Convert the byte array to hexadecimal string
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+                return sb.ToString();
             }
         }
 
@@ -512,6 +531,7 @@ namespace TEAM
 
             private static string _jsonTableMappingFileName = "TEAM_Table_Mapping.json";
             private static string _jsonAttributeMappingFileName = "TEAM_Attribute_Mapping.json";
+            private static string _jsonModelMetadataFileName = "TEAM_Model_Metadata.json";
 
             public static string ConfigurationPath
             {
@@ -542,10 +562,17 @@ namespace TEAM
                 get { return _jsonTableMappingFileName; }
                 set { _jsonTableMappingFileName = value; }
             }
+
             public static string jsonAttributeMappingFileName
             {
                 get { return _jsonAttributeMappingFileName; }
                 set { _jsonAttributeMappingFileName = value; }
+            }
+
+            public static string jsonModelMetadataFileName
+            {
+                get { return _jsonModelMetadataFileName; }
+                set { _jsonModelMetadataFileName = value; }
             }
         }
 
@@ -609,6 +636,22 @@ namespace TEAM
             {
                 return new KeyValuePair<int, int>(0, 0);
             }
+        }
+
+        public DataTable ConvertToDataTable<T>(IList<T> data)
+        {
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
+            DataTable table = new DataTable();
+            foreach (PropertyDescriptor prop in properties)
+                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+            foreach (T item in data)
+            {
+                DataRow row = table.NewRow();
+                foreach (PropertyDescriptor prop in properties)
+                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+                table.Rows.Add(row);
+            }
+            return table;
         }
 
         protected int GetMaxVersionId(SqlConnection sqlConnection)

@@ -307,8 +307,8 @@ namespace TEAM
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("VALUES");
                 createStatement.AppendLine("(");
-                createStatement.AppendLine("'1.4',");
-                createStatement.AppendLine("'Maintenance release to facilitatie synchronisiation across multiple sites.',");
+                createStatement.AppendLine("'1.4.1',");
+                createStatement.AppendLine("'Removed Driving Key indicator from physical model metadata.',");
                 createStatement.AppendLine("SYSDATETIME(),");
                 createStatement.AppendLine("SYSDATETIME()");
                 createStatement.AppendLine(")");
@@ -814,7 +814,6 @@ namespace TEAM
                 createStatement.AppendLine("    [NUMERIC_PRECISION]  integer NULL,");
                 createStatement.AppendLine("    [ORDINAL_POSITION]   integer NULL,");
                 createStatement.AppendLine("    [PRIMARY_KEY_INDICATOR] varchar(1)  NULL ,");
-                createStatement.AppendLine("	[DRIVING_KEY_INDICATOR] varchar(1)  NULL ,");
                 createStatement.AppendLine("	[MULTI_ACTIVE_INDICATOR] varchar(1)  NULL ");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
