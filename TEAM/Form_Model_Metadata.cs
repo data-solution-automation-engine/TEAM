@@ -350,21 +350,21 @@ namespace TEAM
 
             //Attribute metadata
             //Set the autosize based on all cells for each column
-            for (var i = 0; i < dataGridViewAttributeMetadata.Columns.Count - 1; i++)
-            {
-                dataGridViewAttributeMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            }
-            if (dataGridViewAttributeMetadata.Columns.Count > 0)
-            {
-                dataGridViewAttributeMetadata.Columns[dataGridViewAttributeMetadata.Columns.Count - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            }
-            // Disable the auto size again (to enable manual resizing)
-            for (var i = 0; i < dataGridViewAttributeMetadata.Columns.Count - 1; i++)
-            {
-                int columnWidth = dataGridViewAttributeMetadata.Columns[i].Width;
-                dataGridViewAttributeMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dataGridViewAttributeMetadata.Columns[i].Width = columnWidth;
-            }
+            //for (var i = 0; i < dataGridViewAttributeMetadata.Columns.Count - 1; i++)
+            //{
+            //    dataGridViewAttributeMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            //}
+            //if (dataGridViewAttributeMetadata.Columns.Count > 0)
+            //{
+            //    dataGridViewAttributeMetadata.Columns[dataGridViewAttributeMetadata.Columns.Count - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            //}
+            //// Disable the auto size again (to enable manual resizing)
+            //for (var i = 0; i < dataGridViewAttributeMetadata.Columns.Count - 1; i++)
+            //{
+            //    int columnWidth = dataGridViewAttributeMetadata.Columns[i].Width;
+            //    dataGridViewAttributeMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            //    dataGridViewAttributeMetadata.Columns[i].Width = columnWidth;
+            //}
 
         }
     
@@ -580,15 +580,8 @@ namespace TEAM
 
             var dwhKeyIdentifier = configurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
 
-            string keyIdentifierLocation;
-
-
-            keyIdentifierLocation = configurationSettings.KeyNamingLocation;
-
-
-            conn = ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
-            conn = ReverseEngineerMultiActiveDataGrid(conn, prefix, databaseName, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
-
+            var keyIdentifierLocation = configurationSettings.KeyNamingLocation;
+            ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
         }
 
         private SqlConnection ReverseEngineerMainDataGrid(SqlConnection conn, string prefix, string databaseName, int versionId, string effectiveDateTimeAttribute, string dwhKeyIdentifier, string keyIdentifierLocation)

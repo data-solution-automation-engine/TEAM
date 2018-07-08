@@ -57,8 +57,6 @@ namespace TEAM
             this.grpTableName = new System.Windows.Forms.GroupBox();
             this.radioButtonIntegrationLayer = new System.Windows.Forms.RadioButton();
             this.radioButtonStagingLayer = new System.Windows.Forms.RadioButton();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.dataGridViewAttributeMetadata = new System.Windows.Forms.DataGridView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -68,8 +66,6 @@ namespace TEAM
             this.outputGroupBoxVersioning.SuspendLayout();
             this.MetadataGenerationGroupBox.SuspendLayout();
             this.grpTableName.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).BeginInit();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTableMetadata)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -345,33 +341,6 @@ namespace TEAM
             this.radioButtonStagingLayer.Text = "Staging Layer";
             this.radioButtonStagingLayer.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.dataGridViewAttributeMetadata);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(993, 576);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Multi-Active Attributes (read-only)";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // dataGridViewAttributeMetadata
-            // 
-            this.dataGridViewAttributeMetadata.AllowUserToAddRows = false;
-            this.dataGridViewAttributeMetadata.AllowUserToDeleteRows = false;
-            this.dataGridViewAttributeMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridViewAttributeMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewAttributeMetadata.ImeMode = System.Windows.Forms.ImeMode.On;
-            this.dataGridViewAttributeMetadata.Location = new System.Drawing.Point(2, 3);
-            this.dataGridViewAttributeMetadata.MultiSelect = false;
-            this.dataGridViewAttributeMetadata.Name = "dataGridViewAttributeMetadata";
-            this.dataGridViewAttributeMetadata.ReadOnly = true;
-            this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(964, 570);
-            this.dataGridViewAttributeMetadata.TabIndex = 1;
-            // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.dataGridViewTableMetadata);
@@ -401,7 +370,6 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Location = new System.Drawing.Point(16, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -447,8 +415,6 @@ namespace TEAM
             this.MetadataGenerationGroupBox.PerformLayout();
             this.grpTableName.ResumeLayout(false);
             this.grpTableName.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).EndInit();
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTableMetadata)).EndInit();
             this.tabControl1.ResumeLayout(false);
@@ -485,8 +451,6 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxIgnoreVersion;
         private System.Windows.Forms.ToolStripMenuItem openModelMetadataFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveModelMetadataFileAsJSONToolStripMenuItem;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.DataGridView dataGridViewAttributeMetadata;
         private System.Windows.Forms.TabPage tabPage1;
         private CustomDataGridViewTable dataGridViewTableMetadata;
         private System.Windows.Forms.TabControl tabControl1;
