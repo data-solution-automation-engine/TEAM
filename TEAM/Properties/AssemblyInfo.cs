@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Virtual EDW")]
+[assembly: AssemblyTitle("TEAM")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Virtual EDW")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("TEAM")]
+[assembly: AssemblyCopyright("Open Source - Roelant Vos")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

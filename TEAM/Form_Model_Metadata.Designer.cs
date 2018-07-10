@@ -34,6 +34,8 @@ namespace TEAM
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openModelMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveModelMetadataFileAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.labelInformation = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -48,13 +50,6 @@ namespace TEAM
             this.checkBoxIgnoreVersion = new System.Windows.Forms.CheckBox();
             this.checkBoxClearMetadata = new System.Windows.Forms.CheckBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.dataGridViewAttributeMetadata = new System.Windows.Forms.DataGridView();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.dataGridViewDrivingKeyMetadata = new TEAM.CustomDataGridViewTable();
             this.button2 = new System.Windows.Forms.Button();
             this.labelResult = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
@@ -62,21 +57,18 @@ namespace TEAM
             this.grpTableName = new System.Windows.Forms.GroupBox();
             this.radioButtonIntegrationLayer = new System.Windows.Forms.RadioButton();
             this.radioButtonStagingLayer = new System.Windows.Forms.RadioButton();
-            this.openModelMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveModelMetadataFileAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
             this.outputGroupBoxVersioning.SuspendLayout();
             this.MetadataGenerationGroupBox.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.grpTableName.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTableMetadata)).BeginInit();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).BeginInit();
-            this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDrivingKeyMetadata)).BeginInit();
-            this.grpTableName.SuspendLayout();
+            this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
@@ -108,6 +100,21 @@ namespace TEAM
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
             this.metadataToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.metadataToolStripMenuItem.Text = "File";
+            // 
+            // openModelMetadataFileToolStripMenuItem
+            // 
+            this.openModelMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
+            this.openModelMetadataFileToolStripMenuItem.Name = "openModelMetadataFileToolStripMenuItem";
+            this.openModelMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.openModelMetadataFileToolStripMenuItem.Text = "Open Model Metadata file";
+            // 
+            // saveModelMetadataFileAsJSONToolStripMenuItem
+            // 
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Name = "saveModelMetadataFileAsJSONToolStripMenuItem";
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Text = "Save Model Metadata file as JSON";
+            this.saveModelMetadataFileAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveModelMetadataFileAsJSONToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
@@ -260,95 +267,6 @@ namespace TEAM
     "tive tool (similar to the slides on the main screen). \n\nThis allows for testing " +
     "and troubleshooting.";
             // 
-            // tabControl1
-            // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(16, 27);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1001, 602);
-            this.tabControl1.TabIndex = 25;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.dataGridViewTableMetadata);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(993, 576);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Model Metadata";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // dataGridViewTableMetadata
-            // 
-            this.dataGridViewTableMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridViewTableMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewTableMetadata.Location = new System.Drawing.Point(2, 3);
-            this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
-            this.dataGridViewTableMetadata.Size = new System.Drawing.Size(988, 570);
-            this.dataGridViewTableMetadata.TabIndex = 1;
-            this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.dataGridViewAttributeMetadata);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(993, 576);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Multi-Active Attributes (read-only)";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // dataGridViewAttributeMetadata
-            // 
-            this.dataGridViewAttributeMetadata.AllowUserToAddRows = false;
-            this.dataGridViewAttributeMetadata.AllowUserToDeleteRows = false;
-            this.dataGridViewAttributeMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridViewAttributeMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewAttributeMetadata.ImeMode = System.Windows.Forms.ImeMode.On;
-            this.dataGridViewAttributeMetadata.Location = new System.Drawing.Point(2, 3);
-            this.dataGridViewAttributeMetadata.MultiSelect = false;
-            this.dataGridViewAttributeMetadata.Name = "dataGridViewAttributeMetadata";
-            this.dataGridViewAttributeMetadata.ReadOnly = true;
-            this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(964, 570);
-            this.dataGridViewAttributeMetadata.TabIndex = 1;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.dataGridViewDrivingKeyMetadata);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(993, 576);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Driving Key Attributes (read-only)";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // dataGridViewDrivingKeyMetadata
-            // 
-            this.dataGridViewDrivingKeyMetadata.AllowUserToAddRows = false;
-            this.dataGridViewDrivingKeyMetadata.AllowUserToDeleteRows = false;
-            this.dataGridViewDrivingKeyMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridViewDrivingKeyMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewDrivingKeyMetadata.Location = new System.Drawing.Point(2, 3);
-            this.dataGridViewDrivingKeyMetadata.MultiSelect = false;
-            this.dataGridViewDrivingKeyMetadata.Name = "dataGridViewDrivingKeyMetadata";
-            this.dataGridViewDrivingKeyMetadata.ReadOnly = true;
-            this.dataGridViewDrivingKeyMetadata.Size = new System.Drawing.Size(964, 570);
-            this.dataGridViewDrivingKeyMetadata.TabIndex = 2;
-            // 
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -423,20 +341,40 @@ namespace TEAM
             this.radioButtonStagingLayer.Text = "Staging Layer";
             this.radioButtonStagingLayer.UseVisualStyleBackColor = true;
             // 
-            // openModelMetadataFileToolStripMenuItem
+            // tabPage1
             // 
-            this.openModelMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openModelMetadataFileToolStripMenuItem.Name = "openModelMetadataFileToolStripMenuItem";
-            this.openModelMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
-            this.openModelMetadataFileToolStripMenuItem.Text = "Open Model Metadata file";
+            this.tabPage1.Controls.Add(this.dataGridViewTableMetadata);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(993, 576);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Model Metadata";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // saveModelMetadataFileAsJSONToolStripMenuItem
+            // dataGridViewTableMetadata
             // 
-            this.saveModelMetadataFileAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.saveModelMetadataFileAsJSONToolStripMenuItem.Name = "saveModelMetadataFileAsJSONToolStripMenuItem";
-            this.saveModelMetadataFileAsJSONToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
-            this.saveModelMetadataFileAsJSONToolStripMenuItem.Text = "Save Model Metadata file as JSON";
-            this.saveModelMetadataFileAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveModelMetadataFileAsJSONToolStripMenuItem_Click);
+            this.dataGridViewTableMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewTableMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewTableMetadata.Location = new System.Drawing.Point(2, 3);
+            this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
+            this.dataGridViewTableMetadata.Size = new System.Drawing.Size(988, 570);
+            this.dataGridViewTableMetadata.TabIndex = 1;
+            this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Location = new System.Drawing.Point(16, 27);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(1001, 602);
+            this.tabControl1.TabIndex = 25;
             // 
             // FormModelMetadata
             // 
@@ -463,7 +401,9 @@ namespace TEAM
             this.Name = "FormModelMetadata";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the model metadata";
+            this.ResizeEnd += new System.EventHandler(this.FormModelMetadata_ResizeEnd);
             this.SizeChanged += new System.EventHandler(this.FormModelMetadata_SizeChanged);
+            this.Resize += new System.EventHandler(this.FormModelMetadata_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -473,15 +413,11 @@ namespace TEAM
             this.outputGroupBoxVersioning.PerformLayout();
             this.MetadataGenerationGroupBox.ResumeLayout(false);
             this.MetadataGenerationGroupBox.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTableMetadata)).EndInit();
-            this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).EndInit();
-            this.tabPage3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDrivingKeyMetadata)).EndInit();
             this.grpTableName.ResumeLayout(false);
             this.grpTableName.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTableMetadata)).EndInit();
+            this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -505,13 +441,6 @@ namespace TEAM
         private System.Windows.Forms.GroupBox MetadataGenerationGroupBox;
         private System.Windows.Forms.CheckBox checkBoxClearMetadata;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private CustomDataGridViewTable dataGridViewTableMetadata;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.DataGridView dataGridViewAttributeMetadata;
-        private System.Windows.Forms.TabPage tabPage3;
-        private CustomDataGridViewTable dataGridViewDrivingKeyMetadata;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label labelResult;
         private System.Windows.Forms.Button buttonStart;
@@ -522,5 +451,8 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxIgnoreVersion;
         private System.Windows.Forms.ToolStripMenuItem openModelMetadataFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveModelMetadataFileAsJSONToolStripMenuItem;
+        private System.Windows.Forms.TabPage tabPage1;
+        private CustomDataGridViewTable dataGridViewTableMetadata;
+        private System.Windows.Forms.TabControl tabControl1;
     }
 }

@@ -48,24 +48,6 @@ namespace TEAM
             public string transformationRule { get; set; }
         }
 
-        public static string CreateMd5(string input)
-        {
-            // Use input string to calculate MD5 hash
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-                // Convert the byte array to hexadecimal string
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2"));
-                }
-                return sb.ToString();
-            }
-        }
-
         public FormManageMetadata(FormMain parent) : base(parent)
         {
             InitializeComponent();
@@ -108,21 +90,21 @@ namespace TEAM
 
 
 
-        public DataTable ConvertToDataTable<T>(IList<T> data)
-        {
-            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
-            DataTable table = new DataTable();
-            foreach (PropertyDescriptor prop in properties)
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-            foreach (T item in data)
-            {
-                DataRow row = table.NewRow();
-                foreach (PropertyDescriptor prop in properties)
-                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
-                table.Rows.Add(row);
-            }
-            return table;
-        }
+        //public DataTable ConvertToDataTable<T>(IList<T> data)
+        //{
+        //    PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
+        //    DataTable table = new DataTable();
+        //    foreach (PropertyDescriptor prop in properties)
+        //        table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+        //    foreach (T item in data)
+        //    {
+        //        DataRow row = table.NewRow();
+        //        foreach (PropertyDescriptor prop in properties)
+        //            row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+        //        table.Rows.Add(row);
+        //    }
+        //    return table;
+        //}
 
         private void PopulateTableMappingGridWithVersion(int versionId)
         {
@@ -177,6 +159,7 @@ namespace TEAM
                     dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
                     dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
                 }
+
             }
             else if (repositoryTarget == "JSON") //Update the JSON
             {
@@ -239,6 +222,7 @@ namespace TEAM
 
                 richTextBoxInformation.AppendText("The file "+ configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + " was loaded.");
             }
+            GridAutoLayout();
         }
 
         private void PopulateAttributeGridWithVersion(int versionId)
@@ -293,8 +277,6 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
                     dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
-
-                    GridAutoLayout();
                 }
             }
             else if (repositoryTarget == "JSON") //Update the JSON
@@ -357,7 +339,7 @@ namespace TEAM
 
                 richTextBoxInformation.AppendText("The file " + configurationSettings.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName + " was loaded.");
             }
-
+            GridAutoLayout();
         }
 
         private DialogResult STAShowDialog(FileDialog dialog)
@@ -544,8 +526,8 @@ namespace TEAM
                 //Create insert statement
                 var insertQueryTables = new StringBuilder();
 
-                insertQueryTables.AppendLine("INSERT INTO MD_VERSION_ATTRIBUTE");
-                insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [DRIVING_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
+                insertQueryTables.AppendLine("INSERT INTO [MD_VERSION_ATTRIBUTE]");
+                insertQueryTables.AppendLine("([VERSION_ID], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
                 insertQueryTables.AppendLine("SELECT ");
                 insertQueryTables.AppendLine(" " + versionId + ",");
                 insertQueryTables.AppendLine(" [TABLE_NAME], ");
@@ -555,10 +537,9 @@ namespace TEAM
                 insertQueryTables.AppendLine(" [NUMERIC_PRECISION], ");
                 insertQueryTables.AppendLine(" [ORDINAL_POSITION], ");
                 insertQueryTables.AppendLine(" [PRIMARY_KEY_INDICATOR], ");
-                insertQueryTables.AppendLine(" [DRIVING_KEY_INDICATOR], ");
                 insertQueryTables.AppendLine(" [MULTI_ACTIVE_INDICATOR] ");
-                insertQueryTables.AppendLine("FROM MD_VERSION_ATTRIBUTE");
-                insertQueryTables.AppendLine("WHERE VERSION_ID = " + previousVersionId + "");
+                insertQueryTables.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
+                insertQueryTables.AppendLine("WHERE [VERSION_ID] = " + previousVersionId + "");
 
                 //Execute the insert statement
                 using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
