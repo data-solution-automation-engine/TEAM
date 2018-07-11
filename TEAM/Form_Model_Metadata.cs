@@ -17,7 +17,6 @@ namespace TEAM
     {
         FormAlert _alert;
         private BindingSource bindingSourceTableMetadata = new BindingSource();
-        private BindingSource bindingSourceMultiActiveMetadata = new BindingSource();
 
         public FormModelMetadata()
         {
@@ -87,9 +86,9 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
                 sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
                 sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
-                sqlStatementForLatestVersion.AppendLine(" [CHARACTER_MAXIMUM_LENGTH],");
-                sqlStatementForLatestVersion.AppendLine(" [NUMERIC_PRECISION],");
-                sqlStatementForLatestVersion.AppendLine(" [ORDINAL_POSITION],");
+                sqlStatementForLatestVersion.AppendLine(" CAST([CHARACTER_MAXIMUM_LENGTH] AS VARCHAR(100)) AS CHARACTER_MAXIMUM_LENGTH,");
+                sqlStatementForLatestVersion.AppendLine(" CAST([NUMERIC_PRECISION] AS VARCHAR(100)) AS NUMERIC_PRECISION,");
+                sqlStatementForLatestVersion.AppendLine(" CAST([ORDINAL_POSITION] AS VARCHAR(100)) AS ORDINAL_POSITION,");
                 sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
                 sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
                 sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
@@ -581,11 +580,8 @@ namespace TEAM
             var dwhKeyIdentifier = configurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
 
             var keyIdentifierLocation = configurationSettings.KeyNamingLocation;
-            ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
-        }
+           // ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
 
-        private SqlConnection ReverseEngineerMainDataGrid(SqlConnection conn, string prefix, string databaseName, int versionId, string effectiveDateTimeAttribute, string dwhKeyIdentifier, string keyIdentifierLocation)
-        {
             //Create the attribute selection statement for the array
             var sqlStatementForAttributeVersion = new StringBuilder();
 
@@ -593,9 +589,9 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("  main.TABLE_NAME, ");
             sqlStatementForAttributeVersion.AppendLine("  main.COLUMN_NAME, ");
             sqlStatementForAttributeVersion.AppendLine("  main.DATA_TYPE, ");
-            sqlStatementForAttributeVersion.AppendLine("  COALESCE(main.CHARACTER_MAXIMUM_LENGTH,0) AS CHARACTER_MAXIMUM_LENGTH,");
-            sqlStatementForAttributeVersion.AppendLine("  COALESCE(main.NUMERIC_PRECISION,0) AS NUMERIC_PRECISION, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.ORDINAL_POSITION, ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.CHARACTER_MAXIMUM_LENGTH,0) AS VARCHAR(100)) AS CHARACTER_MAXIMUM_LENGTH,");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.NUMERIC_PRECISION,0) AS VARCHAR(100)) AS NUMERIC_PRECISION, ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(main.ORDINAL_POSITION AS VARCHAR(100)) AS ORDINAL_POSITION, ");
 
             sqlStatementForAttributeVersion.AppendLine("  CASE ");
             sqlStatementForAttributeVersion.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
@@ -680,76 +676,8 @@ namespace TEAM
                 row.SetAdded();
             }
 
-            return conn;
-        }
+    }
 
-
-        private SqlConnection ReverseEngineerMultiActiveDataGrid(SqlConnection conn, string prefix, string databaseName, string effectiveDateTimeAttribute, string dwhKeyIdentifier, string keyIdentifierLocation)
-        {
-            //Create the attribute selection statement for the array
-            var sqlStatementForAttributeVersion = new StringBuilder();
-
-            sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  main.TABLE_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.COLUMN_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.DATA_TYPE, ");
-            sqlStatementForAttributeVersion.AppendLine("  COALESCE(main.CHARACTER_MAXIMUM_LENGTH,0) AS CHARACTER_MAXIMUM_LENGTH,");
-            sqlStatementForAttributeVersion.AppendLine("  COALESCE(main.NUMERIC_PRECISION,0) AS NUMERIC_PRECISION, ");
-
-            sqlStatementForAttributeVersion.AppendLine("  CASE ");
-            sqlStatementForAttributeVersion.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
-            sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
-            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
-            sqlStatementForAttributeVersion.AppendLine("  END AS MULTI_ACTIVE_INDICATOR");
-
-            sqlStatementForAttributeVersion.AppendLine("FROM [" + databaseName + "].INFORMATION_SCHEMA.COLUMNS main");
-
-            //Multi-active
-            sqlStatementForAttributeVersion.AppendLine("-- Multi-Active");
-            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForAttributeVersion.AppendLine("	SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("		sc.name AS TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1");
-            sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN('" + effectiveDateTimeAttribute + "')");
-            if (keyIdentifierLocation == "Prefix")
-            {
-                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
-            }
-            else
-            {
-                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
-            }
-
-            sqlStatementForAttributeVersion.AppendLine("	) ma");
-            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = ma.TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = ma.COLUMN_NAME");
-
-            sqlStatementForAttributeVersion.AppendLine("WHERE main.TABLE_NAME LIKE '" + prefix + "_%'");
-
-            sqlStatementForAttributeVersion.AppendLine("AND");
-            sqlStatementForAttributeVersion.AppendLine(" (CASE");
-            sqlStatementForAttributeVersion.AppendLine("    WHEN  ma.COLUMN_NAME IS NULL THEN 'N'");
-            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y'");
-            sqlStatementForAttributeVersion.AppendLine("  END) = 'Y'");
-
-            var reverseEngineerResults = GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
-
-            bindingSourceMultiActiveMetadata.DataSource = reverseEngineerResults;
-
-            foreach (DataRow row in reverseEngineerResults.Rows) //Flag as new row so it's detected by the save button
-            {
-                row.SetAdded();
-            }
-
-            return conn;
-        }
 
         private void TruncateMetadata()
         {
@@ -3132,9 +3060,9 @@ namespace TEAM
                             {
                                 insertQueryTables.AppendLine("UPDATE MD_VERSION_ATTRIBUTE");
                                 insertQueryTables.AppendLine("SET "+
-                                                             "' [TABLE_NAME] = '" + dataType +
-                                                             "' [COLUMN_NAME] = '" + dataType +
-                                                             "' [DATA_TYPE] = '" + dataType +
+                                                             "  [TABLE_NAME] = '" + tableName +
+                                                             "',[COLUMN_NAME] = '" + columnName +
+                                                             "',[DATA_TYPE] = '" + dataType +
                                                              "',[CHARACTER_MAXIMUM_LENGTH] = '" + maxLength +
                                                              "',[NUMERIC_PRECISION] = '" + numericPrecision +
                                                              "',[ORDINAL_POSITION] = '" + ordinalPosition +
@@ -3188,53 +3116,53 @@ namespace TEAM
                         // Insert new rows
                         if ((row.RowState & DataRowState.Added) != 0)
                         {
-                            var tableName = "";
-                            var columnName = "";
-                            var dataType = "";
-                            var maxLength = "0";
-                            var numericPrecision = "0";
-                            var ordinalPosition = "0";
-                            var primaryKeyIndicator = "";
-                            var multiActiveIndicator = "";
+                            string tableName = "";
+                            string columnName = "";
+                            string dataType = "";
+                            string maxLength = "0";
+                            string numericPrecision = "0";
+                            string ordinalPosition = "0";
+                            string primaryKeyIndicator = "";
+                            string multiActiveIndicator = "";
+                       
+                            if (row[0] != DBNull.Value)
+                            {
+                                tableName = (string)row[0];
+                            }
+
+                            if (row[1] != DBNull.Value)
+                            {
+                                columnName = (string)row[1];
+                            }
 
                             if (row[2] != DBNull.Value)
                             {
-                                tableName = (string)row[2];
+                                dataType = (string)row[2];
                             }
 
                             if (row[3] != DBNull.Value)
                             {
-                                columnName = (string)row[3];
+                                maxLength = (string)row[3];
                             }
 
                             if (row[4] != DBNull.Value)
                             {
-                                dataType = (string)row[4];
+                                numericPrecision = (string)row[4];
                             }
 
                             if (row[5] != DBNull.Value)
                             {
-                                maxLength = (string)row[5];
+                                ordinalPosition = (string)row[5];
                             }
 
                             if (row[6] != DBNull.Value)
                             {
-                                numericPrecision = (string)row[6];
+                                primaryKeyIndicator = (string)row[6];
                             }
 
                             if (row[7] != DBNull.Value)
                             {
-                                ordinalPosition = (string)row[7];
-                            }
-
-                            if (row[8] != DBNull.Value)
-                            {
-                                primaryKeyIndicator = (string)row[8];
-                            }
-
-                            if (row[9] != DBNull.Value)
-                            {
-                                multiActiveIndicator = (string)row[9];
+                                multiActiveIndicator = (string)row[7];
                             }
 
                             if (repositoryTarget == "SQLServer")
