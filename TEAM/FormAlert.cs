@@ -73,7 +73,9 @@ namespace TEAM
 
         private void buttonShowLog_Click(object sender, EventArgs e)
         {
-            Process.Start(GlobalParameters.ConfigurationPath + @"\Error_Log.txt");
+            var configurationSettings = new ConfigurationSettings();
+
+            Process.Start(configurationSettings.ConfigurationPath + @"\Error_Log.txt");
         }
     }
 }

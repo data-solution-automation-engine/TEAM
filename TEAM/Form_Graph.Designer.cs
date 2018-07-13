@@ -99,7 +99,7 @@
             // 
             this.statusStrip1.Location = new System.Drawing.Point(0, 691);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1377, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1362, 22);
             this.statusStrip1.TabIndex = 12;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -109,11 +109,11 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.graphControl);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1377, 642);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1362, 642);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(1377, 691);
+            this.toolStripContainer1.Size = new System.Drawing.Size(1362, 691);
             this.toolStripContainer1.TabIndex = 13;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -132,7 +132,7 @@
             this.graphControl.DragSize = new yWorks.Geometry.SizeD(4D, 4D);
             this.graphControl.Location = new System.Drawing.Point(0, 0);
             this.graphControl.Name = "graphControl";
-            this.graphControl.Size = new System.Drawing.Size(1377, 642);
+            this.graphControl.Size = new System.Drawing.Size(1362, 642);
             this.graphControl.TabIndex = 1;
             // 
             // menuStrip1
@@ -142,7 +142,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1377, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1362, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -228,28 +228,28 @@
             // radialToolStripMenuItem
             // 
             this.radialToolStripMenuItem.Name = "radialToolStripMenuItem";
-            this.radialToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.radialToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.radialToolStripMenuItem.Text = "Radial";
             this.radialToolStripMenuItem.Click += new System.EventHandler(this.radialToolStripMenuItem_Click);
             // 
             // organicToolStripMenuItem
             // 
             this.organicToolStripMenuItem.Name = "organicToolStripMenuItem";
-            this.organicToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.organicToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.organicToolStripMenuItem.Text = "Organic";
             this.organicToolStripMenuItem.Click += new System.EventHandler(this.organicToolStripMenuItem_Click);
             // 
             // orthogonalToolStripMenuItem
             // 
             this.orthogonalToolStripMenuItem.Name = "orthogonalToolStripMenuItem";
-            this.orthogonalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.orthogonalToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.orthogonalToolStripMenuItem.Text = "Orthogonal";
             this.orthogonalToolStripMenuItem.Click += new System.EventHandler(this.orthogonalToolStripMenuItem_Click);
             // 
             // hierarchicToolStripMenuItem
             // 
             this.hierarchicToolStripMenuItem.Name = "hierarchicToolStripMenuItem";
-            this.hierarchicToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.hierarchicToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.hierarchicToolStripMenuItem.Text = "Hierarchic";
             this.hierarchicToolStripMenuItem.Click += new System.EventHandler(this.hierarchicToolStripMenuItem_Click);
             // 
@@ -257,7 +257,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1377, 713);
+            this.ClientSize = new System.Drawing.Size(1362, 713);
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

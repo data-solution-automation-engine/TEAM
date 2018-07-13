@@ -461,23 +461,29 @@ namespace TEAM
                 }
             }
 
-            // ... and for any orphan Hubs or Links (without Satellites)
-            foreach (DataRow row in businessConceptsRelationships.Rows)
+            if (businessConceptsRelationships.Rows.Count == 0)
             {
-                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
-                var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
-
-                if (!segmentNodeList.Contains(modelRelationshipsLink))
+                System.Windows.Forms.MessageBox.Show("In development - businessConceptsRelationships datatable is empty.");
+            }
+            else
+            {
+                // ... and for any orphan Hubs or Links (without Satellites)
+                foreach (DataRow row in businessConceptsRelationships.Rows)
                 {
-                    segmentNodeList.Add(modelRelationshipsLink);
-                }
+                    var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
+                    var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
 
-                if (!segmentNodeList.Contains(modelRelationshipsHub))
-                {
-                    segmentNodeList.Add(modelRelationshipsHub);
+                    if (!segmentNodeList.Contains(modelRelationshipsLink))
+                    {
+                        segmentNodeList.Add(modelRelationshipsLink);
+                    }
+
+                    if (!segmentNodeList.Contains(modelRelationshipsHub))
+                    {
+                        segmentNodeList.Add(modelRelationshipsHub);
+                    }
                 }
             }
-
 
 
             // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
