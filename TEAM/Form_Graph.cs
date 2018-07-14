@@ -50,12 +50,12 @@ namespace TEAM
             MorphLayout("Organic");
         }
 
-        public IGraph Graph
+        private IGraph Graph
         {
             get { return graphControl.Graph; }
         }
 
-        public INode CreateGroupNodes(string groupNodeLabel, INode[] childNodes)
+        private INode CreateGroupNodes(string groupNodeLabel, INode[] childNodes)
         {
             //Creates a group node that encloses the given child nodes
             INode groupNode = Graph.GroupNodes(childNodes);
@@ -225,7 +225,7 @@ namespace TEAM
 
         private void MetadataGraph()
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
+            var configurationSettings = new ConfigurationSettings();
             var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
 
             var systemList = new List<string>(); // To create the groups (per system)

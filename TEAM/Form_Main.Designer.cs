@@ -384,7 +384,7 @@
             this.MinimumSize = new System.Drawing.Size(1164, 835);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TEAM - Taxonomy for ETL Automation Metadata - v1.5";
+            this.Text = "TEAM - Taxonomy for ETL Automation Metadata - v1.5.1";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBoxVersionSelection.ResumeLayout(false);
