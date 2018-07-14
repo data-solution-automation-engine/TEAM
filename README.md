@@ -1,7 +1,9 @@
 # TEAM
 Taxonomy for ETL Automation Metadata. A collaboration project to work on the managing (creating, updating, deleting) and validating ETL generation metadata.
 
-The TEAM application ties in to the Data Vault tooling ecosystem (see overview here: http://roelantvos.com/blog/?page_id=1919)
+The TEAM application ties in to the Data Vault tooling ecosystem (see overview here: http://roelantvos.com/blog/?page_id=1919).
+
+Project documentation and WIP is kept up to date on the Github wiki pages: https://github.com/RoelantVos/TEAM/wiki.
 
 ## Notes on obfuscation of libraries
 
