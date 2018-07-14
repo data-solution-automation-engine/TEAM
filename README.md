@@ -3,6 +3,14 @@ Taxonomy for ETL Automation Metadata. A collaboration project to work on the man
 
 The TEAM application ties in to the Data Vault tooling ecosystem (see overview here: http://roelantvos.com/blog/?page_id=1919)
 
+## Notes on obfuscation of libraries
+
+The yWorks agreement requires us to obfuscate the yFiles libraries. To this extent I've used Dotfuscator Community Edition for Visual Studio 2017. The project / mapping files have been added to the TEAM solution. This will not trigger when running in the debug configuration (default), but only for the 'release' configuration the following command line post-build trigger has been added:
+
+if $(ConfigurationName) == Release "D:\Microsoft Visual Studio 2017 Enterprise\Common7\IDE\Extensions\PreEmptiveSolutions\DotfuscatorCE\DotfuscatorCLI.exe" "D:\Git_Repositories\TEAM\TEAM\Dotfuscator\DotfuscatorTEAM.xml"
+
+This will call the Dotfuscator CLI and prepare the yWorks libraries for packaging in the release / setup.
+
 ## Notes regarding use, specifically around the yFiles graph librarires
 * yWorks has been generous enough to grant us a free full and perpetual yFiles .Net (WinForms / WPF) project license for the TEAM initiative. This TEAM-specific license has one floating seat for developers that are actively working on the yFiles part of TEAM. In addition it grants the team of collaborators - and build servers - the right to build the application. 
 * The library comes with a watermark 'powered by yFiles'.
