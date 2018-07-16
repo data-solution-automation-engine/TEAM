@@ -7,23 +7,27 @@
       <inputassembly refid="d89ae974-9f4c-4ab0-9611-123172603af8">
         <option>honoroas</option>
         <option>stripoa</option>
-        <option>library</option>
         <option>transformxaml</option>
         <file dir="D:\Git_Repositories\TEAM\TEAM\References" name="yWorks.yFilesNET.Adapter.dll" />
       </inputassembly>
       <inputassembly refid="b0c33270-cc28-4615-b453-00b18adb31ca">
         <option>honoroas</option>
         <option>stripoa</option>
-        <option>library</option>
         <option>transformxaml</option>
         <file dir="D:\Git_Repositories\TEAM\TEAM\References" name="yWorks.yFilesNET.Algorithms.dll" />
       </inputassembly>
       <inputassembly refid="afe0de2d-e4b3-4283-8f82-9e3b4262e454">
         <option>honoroas</option>
         <option>stripoa</option>
-        <option>library</option>
         <option>transformxaml</option>
         <file dir="D:\Git_Repositories\TEAM\TEAM\References" name="yWorks.yFilesNET.Viewer.dll" />
+      </inputassembly>
+      <inputassembly refid="d5e632ab-6633-4ed5-9c12-b1bfcd573487">
+        <option>honoroas</option>
+        <option>stripoa</option>
+        <option>library</option>
+        <option>transformxaml</option>
+        <file dir="D:\Git_Repositories\TEAM\TEAM\bin\Release" name="TEAM.exe" />
       </inputassembly>
     </asmlist>
   </input>
