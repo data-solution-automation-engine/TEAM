@@ -1890,6 +1890,7 @@ namespace TEAM
 
             // Get everything as local variables to reduce multithreading issues
             var stagingDatabase = '[' + configurationSettings.StagingDatabaseName + ']';
+            var psaDatabase = '[' + configurationSettings.PsaDatabaseName+ ']';
             var integrationDatabase = '['+ configurationSettings.IntegrationDatabaseName + ']';            
 
             var linkedServer = configurationSettings.LinkedServer;
@@ -3140,7 +3141,16 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME,");
                         prepareMappingStatement.AppendLine("    'N' as MULTI_ACTIVE_KEY_INDICATOR,");
                         prepareMappingStatement.AppendLine("    'automatically_mapped' AS VERIFICATION");
-                        prepareMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS mapping");
+                        //prepareMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS mapping");
+                        /*LBM 17-04-2018 - Temporary fix to allow mapping when the View comes from a HSTG*/
+                        prepareMappingStatement.AppendLine("    FROM ("); 
+		                prepareMappingStatement.AppendLine("        SELECT COALESCE(A.TABLE_NAME,SUBSTRING (B.TABLE_NAME,2,LEN(B.TABLE_NAME))) TABLE_NAME, COALESCE(A.COLUMN_NAME, B.COLUMN_NAME) COLUMN_NAME");
+                        prepareMappingStatement.AppendLine("        FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS A");
+                        prepareMappingStatement.AppendLine("        FULL OUTER JOIN " + linkedServer + psaDatabase + ".INFORMATION_SCHEMA.COLUMNS B");
+		                prepareMappingStatement.AppendLine("        ON A.TABLE_NAME = SUBSTRING (B.TABLE_NAME,2,LEN(B.TABLE_NAME))");
+		                prepareMappingStatement.AppendLine("        AND A.COLUMN_NAME = B.COLUMN_NAME");
+		                prepareMappingStatement.AppendLine("        AND  B.TABLE_NAME LIKE '%_VW'");
+                        prepareMappingStatement.AppendLine("    ) mapping");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
                         prepareMappingStatement.AppendLine("JOIN MD_STG_SAT_XREF xref ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
