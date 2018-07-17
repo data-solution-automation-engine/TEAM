@@ -2813,10 +2813,13 @@ namespace TEAM
         }
         private void buttonSave_Click(object sender, EventArgs e)
         {
+            //Clear the information textbox
             richTextBoxInformation.Clear();
 
+            //Instantiate the global configuration settings
             var configurationSettings = new ConfigurationSettings();
 
+            //Clear out metadata, if selected
             if (checkBoxClearMetadata.Checked)
             {
                 TruncateMetadata();
@@ -3429,6 +3432,11 @@ namespace TEAM
         private void FormModelMetadata_Resize(object sender, EventArgs e)
         {
             GridAutoLayout();
+        }
+
+        private void openModelMetadataFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

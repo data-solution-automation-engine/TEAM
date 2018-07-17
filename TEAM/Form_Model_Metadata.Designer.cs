@@ -107,6 +107,7 @@ namespace TEAM
             this.openModelMetadataFileToolStripMenuItem.Name = "openModelMetadataFileToolStripMenuItem";
             this.openModelMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
             this.openModelMetadataFileToolStripMenuItem.Text = "Open Model Metadata file";
+            this.openModelMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openModelMetadataFileToolStripMenuItem_Click);
             // 
             // saveModelMetadataFileAsJSONToolStripMenuItem
             // 
@@ -312,7 +313,7 @@ namespace TEAM
             this.grpTableName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.grpTableName.Controls.Add(this.radioButtonIntegrationLayer);
             this.grpTableName.Controls.Add(this.radioButtonStagingLayer);
-            this.grpTableName.Location = new System.Drawing.Point(1154, 51);
+            this.grpTableName.Location = new System.Drawing.Point(1154, 52);
             this.grpTableName.Name = "grpTableName";
             this.grpTableName.Size = new System.Drawing.Size(178, 70);
             this.grpTableName.TabIndex = 66;

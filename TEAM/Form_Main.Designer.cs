@@ -50,7 +50,6 @@
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maintainMetadataGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.manageModelMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sourceSystemRegistryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createRebuildRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -248,7 +247,6 @@
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.maintainMetadataGraphToolStripMenuItem,
             this.openMetadataFormToolStripMenuItem,
-            this.manageModelMetadataToolStripMenuItem,
             this.sourceSystemRegistryToolStripMenuItem,
             this.createRebuildRepositoryToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
@@ -259,31 +257,23 @@
             // 
             this.maintainMetadataGraphToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("maintainMetadataGraphToolStripMenuItem.Image")));
             this.maintainMetadataGraphToolStripMenuItem.Name = "maintainMetadataGraphToolStripMenuItem";
-            this.maintainMetadataGraphToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.maintainMetadataGraphToolStripMenuItem.Text = "Maintain Metadata Graph";
+            this.maintainMetadataGraphToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.maintainMetadataGraphToolStripMenuItem.Text = "Metadata Graph";
             this.maintainMetadataGraphToolStripMenuItem.Click += new System.EventHandler(this.maintainMetadataGraphToolStripMenuItem_Click);
             // 
             // openMetadataFormToolStripMenuItem
             // 
             this.openMetadataFormToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
             this.openMetadataFormToolStripMenuItem.Name = "openMetadataFormToolStripMenuItem";
-            this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.openMetadataFormToolStripMenuItem.Text = "Manage Automation Metadata";
+            this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.openMetadataFormToolStripMenuItem.Text = "Manage Metadata";
             this.openMetadataFormToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFormToolStripMenuItem_Click);
-            // 
-            // manageModelMetadataToolStripMenuItem
-            // 
-            this.manageModelMetadataToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
-            this.manageModelMetadataToolStripMenuItem.Name = "manageModelMetadataToolStripMenuItem";
-            this.manageModelMetadataToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.manageModelMetadataToolStripMenuItem.Text = "Manage Model Metadata";
-            this.manageModelMetadataToolStripMenuItem.Click += new System.EventHandler(this.manageModelMetadataToolStripMenuItem_Click);
             // 
             // sourceSystemRegistryToolStripMenuItem
             // 
             this.sourceSystemRegistryToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.sourceSystemRegistryToolStripMenuItem.Name = "sourceSystemRegistryToolStripMenuItem";
-            this.sourceSystemRegistryToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.sourceSystemRegistryToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.sourceSystemRegistryToolStripMenuItem.Text = "Source System Registry";
             this.sourceSystemRegistryToolStripMenuItem.Click += new System.EventHandler(this.sourceSystemRegistryToolStripMenuItem_Click);
             // 
@@ -291,7 +281,7 @@
             // 
             this.createRebuildRepositoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
             this.createRebuildRepositoryToolStripMenuItem.Name = "createRebuildRepositoryToolStripMenuItem";
-            this.createRebuildRepositoryToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.createRebuildRepositoryToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.createRebuildRepositoryToolStripMenuItem.Text = "Create / Rebuild Repository";
             this.createRebuildRepositoryToolStripMenuItem.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem_Click);
             // 
@@ -412,7 +402,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem testingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generateTestDataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem manageModelMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sourceSystemRegistryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem maintainMetadataGraphToolStripMenuItem;
