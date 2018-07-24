@@ -30,6 +30,7 @@ namespace TEAM
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageMetadata));
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -50,6 +51,8 @@ namespace TEAM
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
+            this.contextMenuStripTableMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -93,6 +96,7 @@ namespace TEAM
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTableMetadata)).BeginInit();
+            this.contextMenuStripTableMapping.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).BeginInit();
             this.tabPage3.SuspendLayout();
@@ -299,6 +303,7 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewTableMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewTableMetadata.ContextMenuStrip = this.contextMenuStripTableMapping;
             this.dataGridViewTableMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewTableMetadata.MinimumSize = new System.Drawing.Size(964, 511);
             this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
@@ -306,6 +311,20 @@ namespace TEAM
             this.dataGridViewTableMetadata.TabIndex = 1;
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
+            // 
+            // contextMenuStripTableMapping
+            // 
+            this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem});
+            this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
+            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 48);
+            // 
+            // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
+            // 
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = "Export this row as Source-to-Target interface JSON";
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click);
             // 
             // tabPage2
             // 
@@ -705,6 +724,7 @@ namespace TEAM
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTableMetadata)).EndInit();
+            this.contextMenuStripTableMapping.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).EndInit();
             this.tabPage3.ResumeLayout(false);
@@ -779,5 +799,7 @@ namespace TEAM
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox checkBoxIntegrationLayer;
         private System.Windows.Forms.CheckBox checkBoxStagingLayer;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripTableMapping;
+        private System.Windows.Forms.ToolStripMenuItem exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem;
     }
 }

@@ -46,6 +46,7 @@ namespace TEAM
 
         public class TableMappingJson
         {
+            //JSON represenation of the table mapping metadata
             public string tableMappingHash { get; set; }
             public string versionId { get; set; }
             public string stagingAreaTable { get; set; }
@@ -58,6 +59,7 @@ namespace TEAM
 
         public class AttributeMappingJson
         {
+            //JSON represenation of the attribute mapping metadata
             public string attributeMappingHash { get; set; }
             public string versionId { get; set; }
             public string sourceTable { get; set; }
@@ -72,8 +74,6 @@ namespace TEAM
             InitializeComponent();
 
             var configurationSettings = new ConfigurationSettings();
-
-            //MessageBox.Show(configurationSettings.metadataRepositoryType);
 
             radiobuttonNoVersionChange.Checked = true;
 
@@ -94,7 +94,6 @@ namespace TEAM
             //Load the grids from the repository
             PopulateTableMappingGridWithVersion(selectedVersion);
             PopulateAttributeGridWithVersion(selectedVersion);
-            // Populate datagrid
             PopulatePhysicalModelGridWithVersion(selectedVersion);
 
             //Make sure the version is displayed
@@ -979,18 +978,35 @@ namespace TEAM
                 (dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
                 ) 
             {
-                //Create new version, or retain the old one, depending on selection (version radiobuttons)
-                var versionId = CreateOrRetrieveVersion();
 
-                //Commit the save of the metadata
-                SaveTableMappingMetadata(versionId, dataTableTableMappingChanges, repositoryTarget);
-                SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges, repositoryTarget);
-                SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges, repositoryTarget);
+                //Create new version, or retain the old one, depending on selection (version radiobuttons)
+                try
+                {
+                    //Retrieve the current version, or create a new one
+                    int versionId = CreateOrRetrieveVersion();
+
+                    //Commit the save of the metadata
+                    SaveTableMappingMetadata(versionId, dataTableTableMappingChanges, repositoryTarget);
+                    SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges, repositoryTarget);
+                    SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges, repositoryTarget);
+
+                    //Load the grids from the repository
+                    PopulateTableMappingGridWithVersion(versionId);
+                    PopulateAttributeGridWithVersion(versionId);
+                    PopulatePhysicalModelGridWithVersion(versionId);
+                }
+                catch
+                {
+                    richTextBoxInformation.Text += "The metadata wasn't saved. There are errors saving the metadata version.";
+                }
+
             }
             else
             {
                 richTextBoxInformation.Text += "There is no metadata to save!";
             }
+
+
         }
 
 
@@ -1001,14 +1017,13 @@ namespace TEAM
 
             if (!radiobuttonNoVersionChange.Checked)
             {
-                //Retrieve the current version
+                //If nothing is checked, just retrieve and return the current version
                 var maxVersion = GetMaxVersionId(connOmd);
                 var versionKeyValuePair = GetVersion(maxVersion, connOmd);
                 var majorVersion = versionKeyValuePair.Key;
                 var minorVersion = versionKeyValuePair.Value;
 
-
-                //Increase the version (major or minor)
+                //Increase the major version, if required
                 if (radiobuttonMajorRelease.Checked)
                 {
                     try
@@ -1029,6 +1044,7 @@ namespace TEAM
                     }
                 }
 
+                //Increase the minor version, if required
                 if (radioButtonMinorRelease.Checked)
                 {
                     try
@@ -1187,7 +1203,7 @@ namespace TEAM
                             var ordinalPosition = (string)row["ORDINAL_POSITION"];
                             var primaryKeyIndicator = (string)row["PRIMARY_KEY_INDICATOR"];
                             var multiActiveIndicator = (string)row["MULTI_ACTIVE_INDICATOR"];
-                            var versionKey = (string)row["VERSION_ID"];
+                            var versionKey = row["VERSION_ID"].ToString();
 
                             if (repositoryTarget == "SQLServer")
                             {
@@ -1258,44 +1274,44 @@ namespace TEAM
                             string primaryKeyIndicator = "";
                             string multiActiveIndicator = "";
 
-                            if (row[0] != DBNull.Value)
-                            {
-                                tableName = (string)row[0];
-                            }
-
-                            if (row[1] != DBNull.Value)
-                            {
-                                columnName = (string)row[1];
-                            }
-
                             if (row[2] != DBNull.Value)
                             {
-                                dataType = (string)row[2];
+                                tableName = (string)row[2];
                             }
 
                             if (row[3] != DBNull.Value)
                             {
-                                maxLength = (string)row[3];
+                                columnName = (string)row[3];
                             }
 
                             if (row[4] != DBNull.Value)
                             {
-                                numericPrecision = (string)row[4];
+                                dataType = (string)row[4];
                             }
 
                             if (row[5] != DBNull.Value)
                             {
-                                ordinalPosition = (string)row[5];
+                                maxLength = (string)row[5];
                             }
 
                             if (row[6] != DBNull.Value)
                             {
-                                primaryKeyIndicator = (string)row[6];
+                                numericPrecision = (string)row[6];
                             }
 
                             if (row[7] != DBNull.Value)
                             {
-                                multiActiveIndicator = (string)row[7];
+                                ordinalPosition = (string)row[7];
+                            }
+
+                            if (row[8] != DBNull.Value)
+                            {
+                                primaryKeyIndicator = (string)row[8];
+                            }
+
+                            if (row[9] != DBNull.Value)
+                            {
+                                multiActiveIndicator = (string)row[9];
                             }
 
                             if (repositoryTarget == "SQLServer")
@@ -1425,7 +1441,6 @@ namespace TEAM
                                 {
                                     connection.Open();
                                     command.ExecuteNonQuery();
-                                    richTextBoxInformation.Text += "The model metadata has been saved.\r\n";
                                     dataTableChanges.AcceptChanges();
                                     ((DataTable)_bindingSourcePhyicalModelMetadata.DataSource).AcceptChanges();
                                 }
@@ -1446,12 +1461,11 @@ namespace TEAM
                     {
                         BindModelMetadataJsonToDataTable();
                     }
+
+                    richTextBoxInformation.Text += "The (physical) model metadata has been saved.\r\n";
                     #endregion
                 }
             }
-
-
-            richTextBoxInformation.Text += "The (physical) model metadata has been saved.\r\n";
         }
 
         private void BindModelMetadataJsonToDataTable()
@@ -1786,7 +1800,7 @@ namespace TEAM
                                 richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
                             }
                         }
-
+                        #region deleted rows
                         //Deleted rows
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
@@ -1799,6 +1813,7 @@ namespace TEAM
                                 insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey +
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
+
                             else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
                             {
 
@@ -1840,6 +1855,7 @@ namespace TEAM
                                 richTextBoxInformation.Text +="There were issues identifying the repository type to apply changes.\r\n";
                             }
                         }
+                        #endregion
                     }
 
                     #region Statement execution
@@ -1882,10 +1898,11 @@ namespace TEAM
                     }
                     #endregion
 
+                    richTextBoxInformation.Text += "The Business Key / Table Mapping metadata has been saved.\r\n";
+
                 }
             } // End of constructing the statements for insert / update / delete
 
-            richTextBoxInformation.Text += "The Business Key / Table Mapping metadata has been saved.\r\n";
         }
 
         internal void CreateNewAttributeMappingMetadataVersion(int versionId)
@@ -1991,13 +2008,47 @@ namespace TEAM
                         // Updates
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
+                            //Grab the attributes into local variables
                             var hashKey = (string)row["ATTRIBUTE_MAPPING_HASH"];
-                            var versionKey = (string)row["VERSION_ID"];
-                            var stagingTable = (string)row["SOURCE_TABLE"];
-                            var stagingColumn = (string)row["SOURCE_COLUMN"];
-                            var integrationTable = (string)row["TARGET_TABLE"];
-                            var integrationColumn = (string)row["TARGET_COLUMN"];
-                            var transformationRule = (string)row["TRANSFORMATION_RULE"];
+                            var versionKey = row["VERSION_ID"].ToString();
+                            var stagingTable = "";
+                            var stagingColumn = "";
+                            var integrationTable = "";
+                            var integrationColumn = "";
+                            var transformationRule = "";
+
+                            if (row["SOURCE_TABLE"] != DBNull.Value)
+                            {
+                                stagingTable = (string)row["SOURCE_TABLE"];
+                            }
+
+                            if (row["SOURCE_COLUMN"] != DBNull.Value)
+                            {
+                                stagingColumn = (string)row["SOURCE_COLUMN"];
+                            }
+
+                            if (row["TARGET_TABLE"] != DBNull.Value)
+                            {
+                                integrationTable = (string)row["TARGET_TABLE"];
+                            }
+
+                            if (row["TARGET_COLUMN"] != DBNull.Value)
+                            {
+                                integrationColumn = (string)row["TARGET_COLUMN"];
+                            }
+
+                            if (row["TRANSFORMATION_RULE"] != DBNull.Value)
+                            {
+                                transformationRule = (string)row["TRANSFORMATION_RULE"];
+                            }
+
+                            //Double quotes for composites, but only if things are written to the database otherwise it's already OK
+                            if (repositoryTarget == "SQLServer") //Update the tables in SQL Server
+                            {
+                                transformationRule = transformationRule.Replace("'", "''");
+                            }
+
+
 
                             if (repositoryTarget == "SQLServer")
                             {
@@ -2262,13 +2313,14 @@ namespace TEAM
                         BindAttributeMappingJsonToDataTable();
                     }
 
+                    richTextBoxInformation.Text += "The Attribute Mapping metadata has been saved.\r\n";
+
                     #endregion
                 }
 
             }
             #endregion
-
-            richTextBoxInformation.Text += "The Attribute Mapping metadata has been saved.\r\n";
+            
         }
 
         private void BindTableMappingJsonToDataTable()
@@ -4667,7 +4719,6 @@ namespace TEAM
                     {
                         case Keys.V:
                             PasteClipboardTableMetadata();
-                           // MessageBox.Show("!");
                             break;
                     }
                 }
@@ -4688,7 +4739,6 @@ namespace TEAM
                     {
                         case Keys.V:
                             PasteClipboardAttributeMetadata();
-                            // MessageBox.Show("!");
                             break;
                     }
                 }
@@ -5636,6 +5686,60 @@ namespace TEAM
                 ReverseEngineerModelMetadata(connInt, @"", intDatabase);
             }
 
+        }
+
+        public void exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Check if any cells were clicked / selected
+            Int32 selectedCellCount = dataGridViewTableMetadata.SelectedCells.Count;
+
+            if (selectedCellCount > 0)
+            {
+                //For every cell, get the row and the rest of the row values
+                for (int i = 0; i < selectedCellCount; i++)
+                {
+                    var fullRow = dataGridViewTableMetadata.SelectedCells[i].OwningRow;
+
+                    var sourceTableName = fullRow.Cells[2].Value.ToString();
+                    var targetTableName = fullRow.Cells[3].Value.ToString();
+                    var businessKeyDefinition = fullRow.Cells[4].Value.ToString();
+
+                    CreateSourceToTargetMapping(sourceTableName, targetTableName, businessKeyDefinition);
+                }
+            }
+        }
+
+        public void CreateSourceToTargetMapping(string sourceTableName, string targetTableName,
+            string businesKeyDefinition)
+        {
+            try
+            {
+                var configurationSettings = new ConfigurationSettings();
+
+                var jsonTableMappingFull = new JArray();
+                var outputFileName = sourceTableName+"_"+targetTableName+".json";
+
+                //Create a segment to work with
+                JObject newJsonSegment = new JObject(
+                    new JProperty("sourceTableName", sourceTableName),
+                    //new JProperty("versionId", versionId),
+                    new JProperty("targetTableName", targetTableName),
+                    new JProperty("businesKeyDefinition", businesKeyDefinition)
+                    );
+
+                //Add the segment to the array
+                jsonTableMappingFull.Add(newJsonSegment);
+
+                //Spool to disk
+                string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
+                File.WriteAllText(configurationSettings.OutputPath + outputFileName, output);
+
+                richTextBoxInformation.Text = "File "+ outputFileName + " has been saved to "+ configurationSettings.OutputPath + ".";
+            }
+            catch (JsonReaderException ex)
+            {
+                richTextBoxInformation.Text += "There were issues saving the JSON file.\r\n" + ex;
+            }
         }
     }
 }
