@@ -4023,7 +4023,8 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("  '" + eventDateTimeAtttribute + "',");
                         prepareMappingStatement.AppendLine("  '" + effectiveDateTimeAttribute + "',");
                         prepareMappingStatement.AppendLine("  '" + etlProcessId + "',");
-                        prepareMappingStatement.AppendLine("  '" + loadDateTimeStamp + "'");
+                        prepareMappingStatement.AppendLine("  '" + loadDateTimeStamp + "',");
+                        prepareMappingStatement.AppendLine("  '" + currentRecordAttribute + "'");//LBM 2018-08-06 - CURRENT_ROW_INDICATOR should be excluded from the list as well
 
                         prepareMappingStatement.AppendLine("  ) ");
                         prepareMappingStatement.AppendLine(")");
@@ -4122,7 +4123,8 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("  '" + eventDateTimeAtttribute + "',");
                         prepareMappingStatement.AppendLine("  '" + effectiveDateTimeAttribute + "',");
                         prepareMappingStatement.AppendLine("  '" + etlProcessId + "',");
-                        prepareMappingStatement.AppendLine("  '" + loadDateTimeStamp + "'");
+                        prepareMappingStatement.AppendLine("  '" + loadDateTimeStamp + "',");
+                        prepareMappingStatement.AppendLine("  '" + currentRecordAttribute + "'");//LBM 2018-08-06 - CURRENT_ROW_INDICATOR should be excluded from the list as well
 
                         prepareMappingStatement.AppendLine("  ) ");
 
