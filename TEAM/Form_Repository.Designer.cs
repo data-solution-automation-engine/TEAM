@@ -41,6 +41,10 @@
             this.checkBoxRetainManualMapping = new System.Windows.Forms.CheckBox();
             this.labelMetadataRepository = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.checkBoxCreateSampleSourceDatabase = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonTruncate
@@ -70,9 +74,10 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 59);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(240, 13);
+            this.label1.Size = new System.Drawing.Size(240, 26);
             this.label1.TabIndex = 22;
-            this.label1.Text = "Create a new repository in the selected database.";
+            this.label1.Text = "Create a new repository in the selected database.\r\nWARNING - will remove existing" +
+    " tables first.";
             // 
             // label2
             // 
@@ -88,9 +93,8 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(12, 76);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(212, 13);
+            this.label4.Size = new System.Drawing.Size(0, 13);
             this.label4.TabIndex = 25;
-            this.label4.Text = "WARNING - will remove existing tables first.";
             // 
             // backgroundWorker1
             // 
@@ -115,9 +119,10 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(12, 262);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(200, 13);
+            this.label3.Size = new System.Drawing.Size(225, 39);
             this.label3.TabIndex = 32;
-            this.label3.Text = "Generates the sample mapping metadata";
+            this.label3.Text = "Generates the sample mapping metadata.\r\nWARNING - the databases must already exis" +
+    "t.\r\nAny existing information will be removed.";
             // 
             // button1
             // 
@@ -135,7 +140,7 @@
             this.checkBoxRetainManualMapping.AutoSize = true;
             this.checkBoxRetainManualMapping.Checked = true;
             this.checkBoxRetainManualMapping.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxRetainManualMapping.Location = new System.Drawing.Point(262, 28);
+            this.checkBoxRetainManualMapping.Location = new System.Drawing.Point(275, 117);
             this.checkBoxRetainManualMapping.Name = "checkBoxRetainManualMapping";
             this.checkBoxRetainManualMapping.Size = new System.Drawing.Size(197, 17);
             this.checkBoxRetainManualMapping.TabIndex = 61;
@@ -156,17 +161,65 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(278, 48);
+            this.label5.Location = new System.Drawing.Point(291, 137);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(152, 26);
             this.label5.TabIndex = 63;
             this.label5.Text = "- MD_TABLE_MAPPING\r\n- MD_ATTRIBUTE_MAPPING";
+            // 
+            // checkBoxCreateSampleSourceDatabase
+            // 
+            this.checkBoxCreateSampleSourceDatabase.AutoSize = true;
+            this.checkBoxCreateSampleSourceDatabase.Checked = true;
+            this.checkBoxCreateSampleSourceDatabase.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSampleSourceDatabase.Location = new System.Drawing.Point(275, 217);
+            this.checkBoxCreateSampleSourceDatabase.Name = "checkBoxCreateSampleSourceDatabase";
+            this.checkBoxCreateSampleSourceDatabase.Size = new System.Drawing.Size(169, 17);
+            this.checkBoxCreateSampleSourceDatabase.TabIndex = 64;
+            this.checkBoxCreateSampleSourceDatabase.Text = "Create sample Source content";
+            this.checkBoxCreateSampleSourceDatabase.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Checked = true;
+            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox2.Location = new System.Drawing.Point(275, 240);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(159, 17);
+            this.checkBox2.TabIndex = 65;
+            this.checkBox2.Text = "Create Sample Staging Area";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Checked = true;
+            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox3.Location = new System.Drawing.Point(275, 263);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(148, 17);
+            this.checkBox3.TabIndex = 66;
+            this.checkBox3.Text = "Create Sample Data Vault";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 278);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(0, 13);
+            this.label6.TabIndex = 67;
             // 
             // FormManageRepository
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(484, 361);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.checkBox3);
+            this.Controls.Add(this.checkBox2);
+            this.Controls.Add(this.checkBoxCreateSampleSourceDatabase);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.labelMetadataRepository);
             this.Controls.Add(this.checkBoxRetainManualMapping);
@@ -183,6 +236,7 @@
             this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "FormManageRepository";
             this.Text = "Create / Rebuild Repository";
+            this.Load += new System.EventHandler(this.FormManageRepository_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -202,5 +256,9 @@
         internal System.Windows.Forms.CheckBox checkBoxRetainManualMapping;
         private System.Windows.Forms.Label labelMetadataRepository;
         private System.Windows.Forms.Label label5;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSampleSourceDatabase;
+        internal System.Windows.Forms.CheckBox checkBox2;
+        internal System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.Label label6;
     }
 }
