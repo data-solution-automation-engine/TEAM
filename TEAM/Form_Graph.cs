@@ -331,16 +331,20 @@ namespace TEAM
             // Make sure the nodes are placed in the appropriate group nodes (system nodes)
             foreach (var node in graphNodeDictionary)
             {
+                //Check whether current node isn't a system node
                 if (!Graph.IsGroupNode(node.Value))
                 {
-                    var systemName = node.Key.Split('_')[1];
+                    //Check whether parent node is known
+                    if (nodeDictionary.ContainsKey(node.Key))
+                    {
+                        // Retrieve the parent for the given Node
+                        INode parentNode;
+                        graphNodeDictionary.TryGetValue(nodeDictionary[node.Key], out parentNode);
 
-                    // Retrieve the parent for the given Node
-                    INode parentNode;
-                    graphNodeDictionary.TryGetValue(systemName, out parentNode);
-
-                   // Graph.SetParent(node.Value, parentNode);
-                }             
+                        // Set parent node
+                        Graph.SetParent(node.Value, parentNode);
+                    }
+                }
             }
 
             // Add the edges to the graph
