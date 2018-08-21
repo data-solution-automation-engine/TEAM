@@ -141,7 +141,7 @@ namespace TEAM
             this.buttonValidation.Name = "buttonValidation";
             this.buttonValidation.Size = new System.Drawing.Size(120, 40);
             this.buttonValidation.TabIndex = 24;
-            this.buttonValidation.Text = "Validate Only";
+            this.buttonValidation.Text = "&Validate Only";
             this.buttonValidation.UseVisualStyleBackColor = true;
             this.buttonValidation.Click += new System.EventHandler(this.buttonValidation_Click);
             // 
@@ -162,7 +162,7 @@ namespace TEAM
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(120, 40);
             this.buttonStart.TabIndex = 22;
-            this.buttonStart.Text = "Activate Metadata";
+            this.buttonStart.Text = "&Activate Metadata";
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
@@ -187,7 +187,7 @@ namespace TEAM
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 40);
             this.button1.TabIndex = 1;
-            this.button1.Text = "Save Metadata Changes";
+            this.button1.Text = "&Save Metadata Changes";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.buttonSubmitVersion_Click);
             // 
@@ -317,12 +317,12 @@ namespace TEAM
             this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem});
             this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
-            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 48);
+            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(341, 26);
             // 
             // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
             // 
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = "Export this row as Source-to-Target interface JSON";
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click);
             // 
@@ -553,14 +553,14 @@ namespace TEAM
             this.closeToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
             this.metadataToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.metadataToolStripMenuItem.Text = "File";
+            this.metadataToolStripMenuItem.Text = "&File";
             // 
             // openOutputDirectoryToolStripMenuItem
             // 
             this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
             this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
             this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
+            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
             // 
             // saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem
@@ -568,7 +568,7 @@ namespace TEAM
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Name = "saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem";
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Text = "Save as Directional Graph Markup Language (DGML)";
+            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Text = "&Save as Directional Graph Markup Language (DGML)";
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Click += new System.EventHandler(this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
@@ -576,7 +576,7 @@ namespace TEAM
             this.closeToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.closeToolStripMenuItem.Text = "Close Window";
+            this.closeToolStripMenuItem.Text = "&Close Window";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // businessKeyMetadataToolStripMenuItem
@@ -586,14 +586,14 @@ namespace TEAM
             this.saveMetadataFileToolStripMenuItem,
             this.saveTableMappingAsJSONToolStripMenuItem});
             this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
-            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(151, 20);
-            this.businessKeyMetadataToolStripMenuItem.Text = "Table Mapping Metadata";
+            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(152, 20);
+            this.businessKeyMetadataToolStripMenuItem.Text = "Table &Mapping Metadata";
             // 
             // openMetadataFileToolStripMenuItem
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.openMetadataFileToolStripMenuItem.Text = "Open Table Mapping file";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
             // 
@@ -601,7 +601,7 @@ namespace TEAM
             // 
             this.saveMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveMetadataFileToolStripMenuItem.Name = "saveMetadataFileToolStripMenuItem";
-            this.saveMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.saveMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.saveMetadataFileToolStripMenuItem.Text = "Save Table Mapping as XML";
             this.saveMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.saveBusinessKeyMetadataFileToolStripMenuItem_Click);
             // 
@@ -609,7 +609,7 @@ namespace TEAM
             // 
             this.saveTableMappingAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveTableMappingAsJSONToolStripMenuItem.Name = "saveTableMappingAsJSONToolStripMenuItem";
-            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.saveTableMappingAsJSONToolStripMenuItem.Text = "Save Table Mapping as JSON";
             this.saveTableMappingAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveTableMappingAsJSONToolStripMenuItem_Click);
             // 
@@ -621,7 +621,7 @@ namespace TEAM
             this.saveAttributeMappingAsJSONToolStripMenuItem});
             this.attributeMappingMetadataToolStripMenuItem.Name = "attributeMappingMetadataToolStripMenuItem";
             this.attributeMappingMetadataToolStripMenuItem.Size = new System.Drawing.Size(170, 20);
-            this.attributeMappingMetadataToolStripMenuItem.Text = "Attribute Mapping Metadata";
+            this.attributeMappingMetadataToolStripMenuItem.Text = "&Attribute Mapping Metadata";
             // 
             // toolStripMenuItem1
             // 
@@ -654,7 +654,7 @@ namespace TEAM
             this.saveModelMetadataFileAsJSONToolStripMenuItem});
             this.physicalModelToolStripMenuItem.Name = "physicalModelToolStripMenuItem";
             this.physicalModelToolStripMenuItem.Size = new System.Drawing.Size(99, 20);
-            this.physicalModelToolStripMenuItem.Text = "Physical Model";
+            this.physicalModelToolStripMenuItem.Text = "&Physical Model";
             // 
             // openModelMetadataFileToolStripMenuItem
             // 
@@ -676,8 +676,8 @@ namespace TEAM
             this.validationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.manageValidationRulesToolStripMenuItem});
             this.validationToolStripMenuItem.Name = "validationToolStripMenuItem";
-            this.validationToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
-            this.validationToolStripMenuItem.Text = "Validation";
+            this.validationToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+            this.validationToolStripMenuItem.Text = "&Validation";
             // 
             // manageValidationRulesToolStripMenuItem
             // 

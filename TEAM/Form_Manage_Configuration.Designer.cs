@@ -124,6 +124,8 @@
             this.label12 = new System.Windows.Forms.Label();
             this.textBoxSchemaName = new System.Windows.Forms.TextBox();
             this.tabPageConnections = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
             this.label45 = new System.Windows.Forms.Label();
             this.labelSourceConnection = new System.Windows.Forms.Label();
             this.textBoxSourceConnection = new System.Windows.Forms.TextBox();
@@ -139,8 +141,6 @@
             this.textBoxStagingConnection = new System.Windows.Forms.TextBox();
             this.textBoxIntegrationConnection = new System.Windows.Forms.TextBox();
             this.textBoxOutputPath = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControlDefaultDetails.SuspendLayout();
@@ -186,38 +186,41 @@
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            this.fileToolStripMenuItem.Text = "&File";
             // 
             // openConfigurationFileToolStripMenuItem
             // 
             this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
-            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.openConfigurationFileToolStripMenuItem.Text = "Open Configuration File";
+            this.openConfigurationFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.openConfigurationFileToolStripMenuItem.Text = "&Open Configuration File";
             this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(201, 22);
-            this.toolStripMenuItem2.Text = "Save Configuration File";
+            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(244, 22);
+            this.toolStripMenuItem2.Text = "&Save Configuration File";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.saveConfigurationFileToolStripMenuItem_Click);
             // 
             // openOutputDirectoryToolStripMenuItem
             // 
             this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
             this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
+            this.openOutputDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // label4
@@ -252,7 +255,7 @@
             this.tabControlDefaultDetails.Name = "tabControlDefaultDetails";
             this.tabControlDefaultDetails.SelectedIndex = 0;
             this.tabControlDefaultDetails.Size = new System.Drawing.Size(560, 484);
-            this.tabControlDefaultDetails.TabIndex = 43;
+            this.tabControlDefaultDetails.TabIndex = 0;
             // 
             // tabPageDataVaultSpecific
             // 
@@ -296,7 +299,7 @@
             this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(406, 298);
             this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
             this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeSatLDTS.TabIndex = 70;
+            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
             this.checkBoxAlternativeSatLDTS.Text = "Enable";
             this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
             // 
@@ -314,7 +317,7 @@
             this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 296);
             this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
             this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 68;
+            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
             // 
             // label40
             // 
@@ -351,7 +354,7 @@
             this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(406, 272);
             this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
             this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeHubLDTS.TabIndex = 63;
+            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
             this.checkBoxAlternativeHubLDTS.Text = "Enable";
             this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
             // 
@@ -369,7 +372,7 @@
             this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 270);
             this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
             this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 61;
+            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
             // 
             // checkBoxAlternativeRecordSource
             // 
@@ -377,7 +380,7 @@
             this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(406, 246);
             this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
             this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeRecordSource.TabIndex = 60;
+            this.checkBoxAlternativeRecordSource.TabIndex = 8;
             this.checkBoxAlternativeRecordSource.Text = "Enable";
             this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
             // 
@@ -395,7 +398,7 @@
             this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(234, 244);
             this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
             this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(166, 20);
-            this.textBoxAlternativeRecordSource.TabIndex = 58;
+            this.textBoxAlternativeRecordSource.TabIndex = 7;
             // 
             // label35
             // 
@@ -411,7 +414,7 @@
             this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(233, 139);
             this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
             this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxExpiryDateTimeName.TabIndex = 56;
+            this.textBoxExpiryDateTimeName.TabIndex = 5;
             // 
             // label11
             // 
@@ -427,7 +430,7 @@
             this.textBoxRecordSource.Location = new System.Drawing.Point(233, 165);
             this.textBoxRecordSource.Name = "textBoxRecordSource";
             this.textBoxRecordSource.Size = new System.Drawing.Size(276, 20);
-            this.textBoxRecordSource.TabIndex = 54;
+            this.textBoxRecordSource.TabIndex = 6;
             // 
             // label18
             // 
@@ -443,7 +446,7 @@
             this.textBoxLDST.Location = new System.Drawing.Point(233, 113);
             this.textBoxLDST.Name = "textBoxLDST";
             this.textBoxLDST.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLDST.TabIndex = 52;
+            this.textBoxLDST.TabIndex = 4;
             // 
             // label14
             // 
@@ -459,7 +462,7 @@
             this.textBoxHubTablePrefix.Location = new System.Drawing.Point(233, 8);
             this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
             this.textBoxHubTablePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxHubTablePrefix.TabIndex = 18;
+            this.textBoxHubTablePrefix.TabIndex = 0;
             // 
             // label17
             // 
@@ -475,7 +478,7 @@
             this.textBoxSatPrefix.Location = new System.Drawing.Point(233, 34);
             this.textBoxSatPrefix.Name = "textBoxSatPrefix";
             this.textBoxSatPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSatPrefix.TabIndex = 21;
+            this.textBoxSatPrefix.TabIndex = 1;
             // 
             // label16
             // 
@@ -491,7 +494,7 @@
             this.textBoxLinkTablePrefix.Location = new System.Drawing.Point(233, 60);
             this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
             this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLinkTablePrefix.TabIndex = 23;
+            this.textBoxLinkTablePrefix.TabIndex = 2;
             // 
             // label15
             // 
@@ -507,7 +510,7 @@
             this.textBoxLinkSatPrefix.Location = new System.Drawing.Point(233, 86);
             this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
             this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLinkSatPrefix.TabIndex = 25;
+            this.textBoxLinkSatPrefix.TabIndex = 3;
             // 
             // tabPageETLFrameworkSpecific
             // 
@@ -551,7 +554,7 @@
             this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(233, 215);
             this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
             this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLogicalDeleteAttributeName.TabIndex = 65;
+            this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
             // 
             // label43
             // 
@@ -567,7 +570,7 @@
             this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(233, 85);
             this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
             this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(276, 20);
-            this.textBoxETLUpdateProcessID.TabIndex = 63;
+            this.textBoxETLUpdateProcessID.TabIndex = 16;
             // 
             // label42
             // 
@@ -583,7 +586,7 @@
             this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(233, 189);
             this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
             this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxCurrentRecordAttributeName.TabIndex = 61;
+            this.textBoxCurrentRecordAttributeName.TabIndex = 20;
             // 
             // label32
             // 
@@ -599,7 +602,7 @@
             this.textBoxRecordChecksum.Location = new System.Drawing.Point(233, 163);
             this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
             this.textBoxRecordChecksum.Size = new System.Drawing.Size(276, 20);
-            this.textBoxRecordChecksum.TabIndex = 59;
+            this.textBoxRecordChecksum.TabIndex = 19;
             // 
             // label30
             // 
@@ -615,7 +618,7 @@
             this.textBoxSourceRowId.Location = new System.Drawing.Point(233, 137);
             this.textBoxSourceRowId.Name = "textBoxSourceRowId";
             this.textBoxSourceRowId.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSourceRowId.TabIndex = 57;
+            this.textBoxSourceRowId.TabIndex = 18;
             // 
             // label29
             // 
@@ -631,7 +634,7 @@
             this.textBoxEventDateTime.Location = new System.Drawing.Point(233, 111);
             this.textBoxEventDateTime.Name = "textBoxEventDateTime";
             this.textBoxEventDateTime.Size = new System.Drawing.Size(276, 20);
-            this.textBoxEventDateTime.TabIndex = 55;
+            this.textBoxEventDateTime.TabIndex = 17;
             // 
             // label21
             // 
@@ -647,7 +650,7 @@
             this.textBoxETLProcessID.Location = new System.Drawing.Point(233, 59);
             this.textBoxETLProcessID.Name = "textBoxETLProcessID";
             this.textBoxETLProcessID.Size = new System.Drawing.Size(276, 20);
-            this.textBoxETLProcessID.TabIndex = 53;
+            this.textBoxETLProcessID.TabIndex = 15;
             // 
             // label10
             // 
@@ -663,7 +666,7 @@
             this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(233, 33);
             this.textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
             this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(276, 20);
-            this.textBoxChangeDataCaptureIndicator.TabIndex = 48;
+            this.textBoxChangeDataCaptureIndicator.TabIndex = 14;
             // 
             // label13
             // 
@@ -679,7 +682,7 @@
             this.textBoxDWHKeyIdentifier.Location = new System.Drawing.Point(233, 8);
             this.textBoxDWHKeyIdentifier.Name = "textBoxDWHKeyIdentifier";
             this.textBoxDWHKeyIdentifier.Size = new System.Drawing.Size(276, 20);
-            this.textBoxDWHKeyIdentifier.TabIndex = 43;
+            this.textBoxDWHKeyIdentifier.TabIndex = 13;
             // 
             // tabPagePrefixesSuffixex
             // 
@@ -728,7 +731,7 @@
             this.radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(6, 42);
             this.radioButtonPSABusinessKeyPK.Name = "radioButtonPSABusinessKeyPK";
             this.radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(167, 17);
-            this.radioButtonPSABusinessKeyPK.TabIndex = 1;
+            this.radioButtonPSABusinessKeyPK.TabIndex = 28;
             this.radioButtonPSABusinessKeyPK.Text = "Primary Key Constraint / Index";
             this.radioButtonPSABusinessKeyPK.UseVisualStyleBackColor = true;
             // 
@@ -738,7 +741,7 @@
             this.radioButtonPSABusinessKeyIndex.Location = new System.Drawing.Point(6, 19);
             this.radioButtonPSABusinessKeyIndex.Name = "radioButtonPSABusinessKeyIndex";
             this.radioButtonPSABusinessKeyIndex.Size = new System.Drawing.Size(88, 17);
-            this.radioButtonPSABusinessKeyIndex.TabIndex = 0;
+            this.radioButtonPSABusinessKeyIndex.TabIndex = 27;
             this.radioButtonPSABusinessKeyIndex.Text = "Unique Index";
             this.radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
             // 
@@ -758,7 +761,7 @@
             this.textBoxSourcePrefix.Multiline = true;
             this.textBoxSourcePrefix.Name = "textBoxSourcePrefix";
             this.textBoxSourcePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSourcePrefix.TabIndex = 72;
+            this.textBoxSourcePrefix.TabIndex = 24;
             // 
             // label34
             // 
@@ -774,7 +777,7 @@
             this.textBoxPSAPrefix.Location = new System.Drawing.Point(233, 34);
             this.textBoxPSAPrefix.Name = "textBoxPSAPrefix";
             this.textBoxPSAPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxPSAPrefix.TabIndex = 70;
+            this.textBoxPSAPrefix.TabIndex = 23;
             // 
             // label33
             // 
@@ -790,7 +793,7 @@
             this.textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 8);
             this.textBoxStagingAreaPrefix.Name = "textBoxStagingAreaPrefix";
             this.textBoxStagingAreaPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxStagingAreaPrefix.TabIndex = 68;
+            this.textBoxStagingAreaPrefix.TabIndex = 22;
             // 
             // label19
             // 
@@ -818,7 +821,7 @@
             this.keySuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
             this.keySuffixRadiobutton.Name = "keySuffixRadiobutton";
             this.keySuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.keySuffixRadiobutton.TabIndex = 1;
+            this.keySuffixRadiobutton.TabIndex = 30;
             this.keySuffixRadiobutton.Text = "Suffix";
             this.keySuffixRadiobutton.UseVisualStyleBackColor = true;
             // 
@@ -828,7 +831,7 @@
             this.keyPrefixRadiobutton.Location = new System.Drawing.Point(6, 19);
             this.keyPrefixRadiobutton.Name = "keyPrefixRadiobutton";
             this.keyPrefixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.keyPrefixRadiobutton.TabIndex = 0;
+            this.keyPrefixRadiobutton.TabIndex = 29;
             this.keyPrefixRadiobutton.Text = "Prefix";
             this.keyPrefixRadiobutton.UseVisualStyleBackColor = true;
             // 
@@ -849,7 +852,7 @@
             this.tableSuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
             this.tableSuffixRadiobutton.Name = "tableSuffixRadiobutton";
             this.tableSuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.tableSuffixRadiobutton.TabIndex = 1;
+            this.tableSuffixRadiobutton.TabIndex = 26;
             this.tableSuffixRadiobutton.Text = "Suffix";
             this.tableSuffixRadiobutton.UseVisualStyleBackColor = true;
             // 
@@ -859,7 +862,7 @@
             this.tablePrefixRadiobutton.Location = new System.Drawing.Point(6, 19);
             this.tablePrefixRadiobutton.Name = "tablePrefixRadiobutton";
             this.tablePrefixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.tablePrefixRadiobutton.TabIndex = 0;
+            this.tablePrefixRadiobutton.TabIndex = 25;
             this.tablePrefixRadiobutton.Text = "Prefix";
             this.tablePrefixRadiobutton.UseVisualStyleBackColor = true;
             // 
@@ -905,7 +908,7 @@
             this.radioButtonSQLServer.Location = new System.Drawing.Point(6, 42);
             this.radioButtonSQLServer.Name = "radioButtonSQLServer";
             this.radioButtonSQLServer.Size = new System.Drawing.Size(80, 17);
-            this.radioButtonSQLServer.TabIndex = 1;
+            this.radioButtonSQLServer.TabIndex = 39;
             this.radioButtonSQLServer.Text = "SQL Server";
             this.radioButtonSQLServer.UseVisualStyleBackColor = true;
             // 
@@ -915,7 +918,7 @@
             this.radioButtonJSON.Location = new System.Drawing.Point(6, 19);
             this.radioButtonJSON.Name = "radioButtonJSON";
             this.radioButtonJSON.Size = new System.Drawing.Size(53, 17);
-            this.radioButtonJSON.TabIndex = 0;
+            this.radioButtonJSON.TabIndex = 38;
             this.radioButtonJSON.Text = "JSON";
             this.radioButtonJSON.UseVisualStyleBackColor = true;
             // 
@@ -933,7 +936,7 @@
             this.textBoxLinkedServer.Location = new System.Drawing.Point(233, 212);
             this.textBoxLinkedServer.Name = "textBoxLinkedServer";
             this.textBoxLinkedServer.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLinkedServer.TabIndex = 68;
+            this.textBoxLinkedServer.TabIndex = 37;
             // 
             // label44
             // 
@@ -958,7 +961,7 @@
             this.textBoxSourceDatabase.Location = new System.Drawing.Point(233, 56);
             this.textBoxSourceDatabase.Name = "textBoxSourceDatabase";
             this.textBoxSourceDatabase.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSourceDatabase.TabIndex = 65;
+            this.textBoxSourceDatabase.TabIndex = 31;
             // 
             // label25
             // 
@@ -974,7 +977,7 @@
             this.textBoxPresentationDatabase.Location = new System.Drawing.Point(233, 160);
             this.textBoxPresentationDatabase.Name = "textBoxPresentationDatabase";
             this.textBoxPresentationDatabase.Size = new System.Drawing.Size(276, 20);
-            this.textBoxPresentationDatabase.TabIndex = 63;
+            this.textBoxPresentationDatabase.TabIndex = 35;
             // 
             // label24
             // 
@@ -990,7 +993,7 @@
             this.textBoxStagingDatabase.Location = new System.Drawing.Point(233, 82);
             this.textBoxStagingDatabase.Name = "textBoxStagingDatabase";
             this.textBoxStagingDatabase.Size = new System.Drawing.Size(276, 20);
-            this.textBoxStagingDatabase.TabIndex = 61;
+            this.textBoxStagingDatabase.TabIndex = 32;
             // 
             // label23
             // 
@@ -1006,7 +1009,7 @@
             this.textBoxPSADatabase.Location = new System.Drawing.Point(233, 108);
             this.textBoxPSADatabase.Name = "textBoxPSADatabase";
             this.textBoxPSADatabase.Size = new System.Drawing.Size(276, 20);
-            this.textBoxPSADatabase.TabIndex = 59;
+            this.textBoxPSADatabase.TabIndex = 33;
             // 
             // label22
             // 
@@ -1022,7 +1025,7 @@
             this.textBoxIntegrationDatabase.Location = new System.Drawing.Point(233, 134);
             this.textBoxIntegrationDatabase.Name = "textBoxIntegrationDatabase";
             this.textBoxIntegrationDatabase.Size = new System.Drawing.Size(276, 20);
-            this.textBoxIntegrationDatabase.TabIndex = 57;
+            this.textBoxIntegrationDatabase.TabIndex = 34;
             // 
             // label12
             // 
@@ -1038,7 +1041,7 @@
             this.textBoxSchemaName.Location = new System.Drawing.Point(233, 186);
             this.textBoxSchemaName.Name = "textBoxSchemaName";
             this.textBoxSchemaName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSchemaName.TabIndex = 55;
+            this.textBoxSchemaName.TabIndex = 36;
             // 
             // tabPageConnections
             // 
@@ -1066,6 +1069,24 @@
             this.tabPageConnections.Text = "Connectivity";
             this.tabPageConnections.UseVisualStyleBackColor = true;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(5, 63);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.TabIndex = 74;
+            this.label1.Text = "Configuration path";
+            // 
+            // textBoxConfigurationPath
+            // 
+            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxConfigurationPath.Location = new System.Drawing.Point(8, 81);
+            this.textBoxConfigurationPath.Multiline = true;
+            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
+            this.textBoxConfigurationPath.Size = new System.Drawing.Size(493, 27);
+            this.textBoxConfigurationPath.TabIndex = 41;
+            // 
             // label45
             // 
             this.label45.AutoSize = true;
@@ -1091,7 +1112,7 @@
             this.textBoxSourceConnection.Multiline = true;
             this.textBoxSourceConnection.Name = "textBoxSourceConnection";
             this.textBoxSourceConnection.Size = new System.Drawing.Size(493, 27);
-            this.textBoxSourceConnection.TabIndex = 68;
+            this.textBoxSourceConnection.TabIndex = 42;
             // 
             // label9
             // 
@@ -1109,7 +1130,7 @@
             this.textBoxPresentationConnection.Multiline = true;
             this.textBoxPresentationConnection.Name = "textBoxPresentationConnection";
             this.textBoxPresentationConnection.Size = new System.Drawing.Size(493, 27);
-            this.textBoxPresentationConnection.TabIndex = 66;
+            this.textBoxPresentationConnection.TabIndex = 47;
             // 
             // OutputPathLabel
             // 
@@ -1136,7 +1157,7 @@
             this.textBoxMetadataConnection.Multiline = true;
             this.textBoxMetadataConnection.Name = "textBoxMetadataConnection";
             this.textBoxMetadataConnection.Size = new System.Drawing.Size(493, 27);
-            this.textBoxMetadataConnection.TabIndex = 63;
+            this.textBoxMetadataConnection.TabIndex = 43;
             // 
             // label8
             // 
@@ -1172,7 +1193,7 @@
             this.textBoxPSAConnection.Multiline = true;
             this.textBoxPSAConnection.Name = "textBoxPSAConnection";
             this.textBoxPSAConnection.Size = new System.Drawing.Size(493, 27);
-            this.textBoxPSAConnection.TabIndex = 59;
+            this.textBoxPSAConnection.TabIndex = 45;
             // 
             // textBoxStagingConnection
             // 
@@ -1181,7 +1202,7 @@
             this.textBoxStagingConnection.Multiline = true;
             this.textBoxStagingConnection.Name = "textBoxStagingConnection";
             this.textBoxStagingConnection.Size = new System.Drawing.Size(493, 27);
-            this.textBoxStagingConnection.TabIndex = 58;
+            this.textBoxStagingConnection.TabIndex = 44;
             // 
             // textBoxIntegrationConnection
             // 
@@ -1190,7 +1211,7 @@
             this.textBoxIntegrationConnection.Multiline = true;
             this.textBoxIntegrationConnection.Name = "textBoxIntegrationConnection";
             this.textBoxIntegrationConnection.Size = new System.Drawing.Size(493, 27);
-            this.textBoxIntegrationConnection.TabIndex = 57;
+            this.textBoxIntegrationConnection.TabIndex = 46;
             // 
             // textBoxOutputPath
             // 
@@ -1199,25 +1220,7 @@
             this.textBoxOutputPath.Multiline = true;
             this.textBoxOutputPath.Name = "textBoxOutputPath";
             this.textBoxOutputPath.Size = new System.Drawing.Size(493, 27);
-            this.textBoxOutputPath.TabIndex = 56;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 63);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 13);
-            this.label1.TabIndex = 74;
-            this.label1.Text = "Configuration path";
-            // 
-            // textBoxConfigurationPath
-            // 
-            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxConfigurationPath.Location = new System.Drawing.Point(8, 81);
-            this.textBoxConfigurationPath.Multiline = true;
-            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
-            this.textBoxConfigurationPath.Size = new System.Drawing.Size(493, 27);
-            this.textBoxConfigurationPath.TabIndex = 73;
+            this.textBoxOutputPath.TabIndex = 40;
             // 
             // FormManageConfiguration
             // 
@@ -1225,7 +1228,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1148, 796);
+            this.ClientSize = new System.Drawing.Size(1148, 797);
             this.Controls.Add(this.tabControlDefaultDetails);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label4);

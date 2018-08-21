@@ -4906,13 +4906,13 @@ namespace TEAM
 
                 if (valueLength > 0)
                 {
-                    if (!cellValue.StartsWith(stagingPrefix))
-                    {
-                        //dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = System.Drawing.Color.Red;
+                    //if (!cellValue.StartsWith(stagingPrefix))
+                    //{
+                    //    //dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = System.Drawing.Color.Red;
 
-                        e.Cancel = true;
-                        dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Staging Area) name is not conform with the Staging Area prefix ('" + stagingPrefix + "').";
-                    }
+                    //    e.Cancel = true;
+                    //    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Staging Area) name is not conform with the Staging Area prefix ('" + stagingPrefix + "').";
+                    //}
 
                     //if (!e.FormattedValue.ToString().Contains(stagingPrefix))
                     //{
