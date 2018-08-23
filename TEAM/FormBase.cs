@@ -529,9 +529,9 @@ namespace TEAM
             private static string _fileConfigLocalName = "TEAM_configuration.txt";
             private static string _filePathLocalName = "TEAM_Path_configuration.txt";
 
-            private static string _jsonTableMappingFileName = "TEAM_Table_Mapping.json";
-            private static string _jsonAttributeMappingFileName = "TEAM_Attribute_Mapping.json";
-            private static string _jsonModelMetadataFileName = "TEAM_Model_Metadata.json";
+            private static string _jsonTableMappingFileName = "TEAM_Table_Mapping";
+            private static string _jsonAttributeMappingFileName = "TEAM_Attribute_Mapping";
+            private static string _jsonModelMetadataFileName = "TEAM_Model_Metadata";
 
             public static string ConfigurationPath
             {

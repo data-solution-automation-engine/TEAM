@@ -219,7 +219,6 @@ namespace TEAM
             this.trackBarVersioning.Name = "trackBarVersioning";
             this.trackBarVersioning.Size = new System.Drawing.Size(163, 45);
             this.trackBarVersioning.TabIndex = 4;
-            this.trackBarVersioning.Scroll += new System.EventHandler(this.trackBarVersioning_Scroll);
             this.trackBarVersioning.ValueChanged += new System.EventHandler(this.trackBarVersioning_ValueChanged);
             // 
             // groupBoxMetadataCounts
