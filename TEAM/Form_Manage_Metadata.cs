@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace TEAM
@@ -1162,7 +1163,7 @@ namespace TEAM
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
 
@@ -1282,9 +1283,8 @@ namespace TEAM
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
             }
 
             // Execute the statement, if the repository is JSON
@@ -1777,6 +1777,9 @@ namespace TEAM
 
                                     // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
                                     File.WriteAllText(configurationSettings.ConfigurationPath +GlobalParameters.jsonTableMappingFileName + JsonVersionExtension, output);
+
+                                    // Wait for half a second for I/O operations to complete
+                                    // Thread.Sleep(500);
                                 }
                                 catch (JsonReaderException ex)
                                 {

@@ -403,9 +403,10 @@ namespace TEAM
         {
             _myTestDataForm = null;
         } 
+
         private void CloseMetadataForm(object sender, FormClosedEventArgs e)
         {
-            _myModelMetadataForm = null;
+            _myMetadataForm = null;
         }
 
         private void CloseRepositoryForm(object sender, FormClosedEventArgs e)
@@ -492,41 +493,7 @@ namespace TEAM
             }
         }
 
-        private FormModelMetadata _myModelMetadataForm;
-        public void ThreadProcModelMetadata()
-        {
-            if (_myModelMetadataForm == null)
-            {
-                _myModelMetadataForm = new FormModelMetadata(this);
-                _myModelMetadataForm.Show();
-
-                Application.Run();
-            }
-
-            else
-            {
-                if (_myModelMetadataForm.InvokeRequired)
-                {
-                    // Thread Error
-                    _myModelMetadataForm.Invoke((MethodInvoker)delegate { _myModelMetadataForm.Close(); });
-                    _myModelMetadataForm.FormClosed += CloseMetadataForm;
-
-                    _myModelMetadataForm = new FormModelMetadata(this);
-                    _myModelMetadataForm.Show();
-                    Application.Run();
-                }
-                else
-                {
-                    // No invoke required - same thread
-                    _myModelMetadataForm.FormClosed += CloseMetadataForm;
-
-                    _myModelMetadataForm = new FormModelMetadata(this);
-                    _myModelMetadataForm.Show();
-                    Application.Run();
-                }
-
-            }
-        }
+ 
 
 
         private FormManageGraph _myGraphForm;
@@ -595,7 +562,7 @@ namespace TEAM
             }
         }
 
-
+        // Form_Manage_Metadata form
         private FormManageMetadata _myMetadataForm;
         [STAThread]
         public void ThreadProcMetadata()
@@ -704,13 +671,6 @@ namespace TEAM
             t.Start();
         }
 
-        private void manageModelMetadataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcModelMetadata);
-            t.SetApartmentState(ApartmentState.STA);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
 
         // Multithreading for updating the user (debugging form)
         delegate void SetTextCallBackDebug(string text);

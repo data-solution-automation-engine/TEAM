@@ -50,7 +50,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -164,12 +164,6 @@
     <Compile Include="Form_Manage_Configuration.Designer.cs">
       <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form_Model_Metadata.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Model_Metadata.Designer.cs">
-      <DependentUpon>Form_Model_Metadata.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form_Manage_Metadata.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,9 +216,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Main.resx">
       <DependentUpon>Form_Main.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Model_Metadata.resx">
-      <DependentUpon>Form_Model_Metadata.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Metadata.resx">
       <DependentUpon>Form_Manage_Metadata.cs</DependentUpon>
