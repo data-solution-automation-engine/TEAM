@@ -1409,5 +1409,10 @@ namespace TEAM
                 }
             }
         }
+
+        private void FormManageRepository_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

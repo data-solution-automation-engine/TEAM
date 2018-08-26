@@ -470,7 +470,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release "D:\Microsoft Visual Studio 2017 Enterprise\Common7\IDE\Extensions\PreEmptiveSolutions\DotfuscatorCE\DotfuscatorCLI.exe" "D:\Git_Repositories\TEAM\TEAM\Dotfuscator\DotfuscatorTEAM.xml"</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Release "D:\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\PreEmptiveSolutions\DotfuscatorCE\DotfuscatorCLI.exe" "D:\Git_Repositories\TEAM\TEAM\Dotfuscator\DotfuscatorTEAM.xml"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

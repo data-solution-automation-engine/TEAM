@@ -224,7 +224,7 @@
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            this.fileToolStripMenuItem.Text = "&File";
             // 
             // openOutputDirectoryToolStripMenuItem
             // 
@@ -251,22 +251,24 @@
             this.createRebuildRepositoryToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
             this.metadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
-            this.metadataToolStripMenuItem.Text = "Metadata";
+            this.metadataToolStripMenuItem.Text = "&Metadata";
             // 
             // maintainMetadataGraphToolStripMenuItem
             // 
             this.maintainMetadataGraphToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("maintainMetadataGraphToolStripMenuItem.Image")));
             this.maintainMetadataGraphToolStripMenuItem.Name = "maintainMetadataGraphToolStripMenuItem";
+            this.maintainMetadataGraphToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
             this.maintainMetadataGraphToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.maintainMetadataGraphToolStripMenuItem.Text = "Metadata Graph";
+            this.maintainMetadataGraphToolStripMenuItem.Text = "Metadata &Graph";
             this.maintainMetadataGraphToolStripMenuItem.Click += new System.EventHandler(this.maintainMetadataGraphToolStripMenuItem_Click);
             // 
             // openMetadataFormToolStripMenuItem
             // 
             this.openMetadataFormToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
             this.openMetadataFormToolStripMenuItem.Name = "openMetadataFormToolStripMenuItem";
+            this.openMetadataFormToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
             this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.openMetadataFormToolStripMenuItem.Text = "Manage Metadata";
+            this.openMetadataFormToolStripMenuItem.Text = "Manage &Metadata";
             this.openMetadataFormToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFormToolStripMenuItem_Click);
             // 
             // sourceSystemRegistryToolStripMenuItem
@@ -274,7 +276,7 @@
             this.sourceSystemRegistryToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.sourceSystemRegistryToolStripMenuItem.Name = "sourceSystemRegistryToolStripMenuItem";
             this.sourceSystemRegistryToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.sourceSystemRegistryToolStripMenuItem.Text = "Source System Registry";
+            this.sourceSystemRegistryToolStripMenuItem.Text = "&Source System Registry";
             this.sourceSystemRegistryToolStripMenuItem.Click += new System.EventHandler(this.sourceSystemRegistryToolStripMenuItem_Click);
             // 
             // createRebuildRepositoryToolStripMenuItem
@@ -282,7 +284,7 @@
             this.createRebuildRepositoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
             this.createRebuildRepositoryToolStripMenuItem.Name = "createRebuildRepositoryToolStripMenuItem";
             this.createRebuildRepositoryToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.createRebuildRepositoryToolStripMenuItem.Text = "Create / Rebuild Repository";
+            this.createRebuildRepositoryToolStripMenuItem.Text = "&Create / Rebuild Repository";
             this.createRebuildRepositoryToolStripMenuItem.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem_Click);
             // 
             // testingToolStripMenuItem
@@ -290,14 +292,14 @@
             this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generateTestDataToolStripMenuItem});
             this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
-            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.testingToolStripMenuItem.Text = "Testing";
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.testingToolStripMenuItem.Text = "&Testing";
             // 
             // generateTestDataToolStripMenuItem
             // 
             this.generateTestDataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generateTestDataToolStripMenuItem.Image")));
             this.generateTestDataToolStripMenuItem.Name = "generateTestDataToolStripMenuItem";
-            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.generateTestDataToolStripMenuItem.Text = "Generate Test Data";
             this.generateTestDataToolStripMenuItem.Click += new System.EventHandler(this.generateTestDataToolStripMenuItem_Click);
             // 
@@ -307,14 +309,15 @@
             this.generalSettingsToolStripMenuItem});
             this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
             this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
-            this.configurationToolStripMenuItem.Text = "Configuration";
+            this.configurationToolStripMenuItem.Text = "&Configuration";
             // 
             // generalSettingsToolStripMenuItem
             // 
             this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
             this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
-            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.generalSettingsToolStripMenuItem.Text = "General Settings";
+            this.generalSettingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.generalSettingsToolStripMenuItem.Text = "General &Settings";
             this.generalSettingsToolStripMenuItem.Click += new System.EventHandler(this.generalSettingsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -326,13 +329,14 @@
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Text = "&Help";
             // 
             // helpToolStripMenuItem1
             // 
             this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
             this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
+            this.helpToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.helpToolStripMenuItem1.Text = "Help";
             this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
             // 
@@ -340,19 +344,19 @@
             // 
             this.linksToolStripMenuItem.Image = global::TEAM.Properties.Resources.LinkIcon;
             this.linksToolStripMenuItem.Name = "linksToolStripMenuItem";
-            this.linksToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.linksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.linksToolStripMenuItem.Text = "Links";
             this.linksToolStripMenuItem.Click += new System.EventHandler(this.linksToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(104, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
@@ -363,7 +367,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1148, 796);
+            this.ClientSize = new System.Drawing.Size(1148, 797);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBoxVersionSelection);
             this.Controls.Add(this.pictureBox1);
@@ -374,7 +378,7 @@
             this.MinimumSize = new System.Drawing.Size(1164, 835);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TEAM - Taxonomy for ETL Automation Metadata - v1.5.1";
+            this.Text = "TEAM - Taxonomy for ETL Automation Metadata ";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBoxVersionSelection.ResumeLayout(false);

@@ -17,6 +17,9 @@ namespace TEAM
     {
         public FormMain()
         {
+            // Set the version of the build for everything
+            string versionNumberforTeamApplication = "v1.5.2.1";
+
             //Placeholder for the error handling
             var errorMessage = new StringBuilder();
             errorMessage.AppendLine("Error were detected:");
@@ -26,6 +29,7 @@ namespace TEAM
             var errorCounter = 0;
 
             InitializeComponent();
+            this.Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberforTeamApplication;
 
             //Retrieving the configuration strings from the global variables (configuration settings)
             var configurationSettings = new ConfigurationSettings();
@@ -42,7 +46,7 @@ namespace TEAM
 
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
-            richTextBoxInformation.AppendText("Version 1.5.1 \r\n\r\n");
+            richTextBoxInformation.AppendText("Version "+versionNumberforTeamApplication+"\r\n\r\n");
 
             richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
 
