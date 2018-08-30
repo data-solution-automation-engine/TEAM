@@ -134,6 +134,7 @@
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="EnvironmentConfiguration.cs" />
     <Compile Include="FormBase.cs">
       <SubType>Form</SubType>
     </Compile>

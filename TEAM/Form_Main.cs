@@ -18,7 +18,7 @@ namespace TEAM
         public FormMain()
         {
             // Set the version of the build for everything
-            string versionNumberforTeamApplication = "v1.5.2.1";
+            string versionNumberforTeamApplication = "v1.5.3.0";
 
             //Placeholder for the error handling
             var errorMessage = new StringBuilder();
@@ -29,7 +29,7 @@ namespace TEAM
             var errorCounter = 0;
 
             InitializeComponent();
-            this.Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberforTeamApplication;
+            Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberforTeamApplication;
 
             //Retrieving the configuration strings from the global variables (configuration settings)
             var configurationSettings = new ConfigurationSettings();
@@ -245,74 +245,74 @@ namespace TEAM
             }
 
 
-            // Create initial config file with dummy values
-            try
-            {
-                if (!File.Exists(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName))
-                {
-                    var initialConfigurationFile = new StringBuilder();
+            //// Create initial config file with dummy values
+            //try
+            //{
+            //    if (!File.Exists(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName))
+            //    {
+            //        var initialConfigurationFile = new StringBuilder();
 
-                    initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
-                    initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
-                    initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
-                    initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
-                    initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
-                    initialConfigurationFile.AppendLine("IntegrationDatabase|Data_Vault_Database");
-                    initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
-                    initialConfigurationFile.AppendLine("OutputPath|" + GlobalParameters.OutputPath);
-                    initialConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath);
-                    initialConfigurationFile.AppendLine(@"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
-                    initialConfigurationFile.AppendLine(@"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
-                    initialConfigurationFile.AppendLine(@"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
-                    initialConfigurationFile.AppendLine(@"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
-                    initialConfigurationFile.AppendLine(@"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
-                    initialConfigurationFile.AppendLine(@"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
-                    initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
-                    initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
-                    initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
-                    initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
-                    initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
-                    initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
-                    initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT");
-                    initialConfigurationFile.AppendLine("KeyIdentifier|HSH");
-                    initialConfigurationFile.AppendLine("SchemaName|dbo");
-                    initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
-                    initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");
-                    initialConfigurationFile.AppendLine("LoadDateTimeStamp|LOAD_DATETIME");
-                    initialConfigurationFile.AppendLine("ExpiryDateTimeStamp|LOAD_END_DATETIME");
-                    initialConfigurationFile.AppendLine("ChangeDataIndicator|CDC_OPERATION");
-                    initialConfigurationFile.AppendLine("RecordSourceAttribute|RECORD_SOURCE");
-                    initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
-                    initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
-                    initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
-                    initialConfigurationFile.AppendLine("LinkedServerName|");
-                    initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
-                    initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
-                    initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
-                    initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");
-                    initialConfigurationFile.AppendLine("AlternativeRecordSource|N/A");
-                    initialConfigurationFile.AppendLine("AlternativeHubLDTS|N/A");
-                    initialConfigurationFile.AppendLine("AlternativeSatelliteLDTS|N/A");
-                    initialConfigurationFile.AppendLine("AlternativeRecordSourceFunction|False");
-                    initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
-                    initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
-                    initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
-                    initialConfigurationFile.AppendLine("metadataRepositoryType|JSON");
+            //        initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
+            //        initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
+            //        initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
+            //        initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
+            //        initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
+            //        initialConfigurationFile.AppendLine("IntegrationDatabase|Data_Vault_Database");
+            //        initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
+            //        initialConfigurationFile.AppendLine("OutputPath|" + GlobalParameters.OutputPath);
+            //        initialConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath);
+            //        initialConfigurationFile.AppendLine(@"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
+            //        initialConfigurationFile.AppendLine(@"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
+            //        initialConfigurationFile.AppendLine(@"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
+            //        initialConfigurationFile.AppendLine(@"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
+            //        initialConfigurationFile.AppendLine(@"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
+            //        initialConfigurationFile.AppendLine(@"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
+            //        initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
+            //        initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
+            //        initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
+            //        initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
+            //        initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
+            //        initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
+            //        initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT");
+            //        initialConfigurationFile.AppendLine("KeyIdentifier|HSH");
+            //        initialConfigurationFile.AppendLine("SchemaName|dbo");
+            //        initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
+            //        initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");
+            //        initialConfigurationFile.AppendLine("LoadDateTimeStamp|LOAD_DATETIME");
+            //        initialConfigurationFile.AppendLine("ExpiryDateTimeStamp|LOAD_END_DATETIME");
+            //        initialConfigurationFile.AppendLine("ChangeDataIndicator|CDC_OPERATION");
+            //        initialConfigurationFile.AppendLine("RecordSourceAttribute|RECORD_SOURCE");
+            //        initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
+            //        initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
+            //        initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
+            //        initialConfigurationFile.AppendLine("LinkedServerName|");
+            //        initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
+            //        initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
+            //        initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
+            //        initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");
+            //        initialConfigurationFile.AppendLine("AlternativeRecordSource|N/A");
+            //        initialConfigurationFile.AppendLine("AlternativeHubLDTS|N/A");
+            //        initialConfigurationFile.AppendLine("AlternativeSatelliteLDTS|N/A");
+            //        initialConfigurationFile.AppendLine("AlternativeRecordSourceFunction|False");
+            //        initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
+            //        initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
+            //        initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
+            //        initialConfigurationFile.AppendLine("metadataRepositoryType|JSON");
 
-                    initialConfigurationFile.AppendLine("/* End of file */");
+            //        initialConfigurationFile.AppendLine("/* End of file */");
 
-                    using (var outfile = new StreamWriter(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName))
-                    {
-                        outfile.Write(initialConfigurationFile.ToString());
-                        outfile.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "An error occurred while creation the default Configuration File. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //        using (var outfile = new StreamWriter(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName))
+            //        {
+            //            outfile.Write(initialConfigurationFile.ToString());
+            //            outfile.Close();
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(
+            //        "An error occurred while creation the default Configuration File. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
 
 
             // Create root path file, with dummy values

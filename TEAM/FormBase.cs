@@ -36,6 +36,9 @@ namespace TEAM
 
         }
 
+        /// <summary>
+        /// Retrieve the values of the application root path (where the paths to the configuration file is maintained)
+        /// </summary>
         public static void InitialiseRootPath()
         {
             // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
@@ -179,6 +182,11 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// Generate a MD5 hash based on the string input
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static string CreateMd5(string input)
         {
             // Use input string to calculate MD5 hash
@@ -199,7 +207,6 @@ namespace TEAM
 
         public class ConfigurationSettings
         {
-
             //Prefixes
             private static string _localStgPrefix;
             public string StgTablePrefixValue
@@ -598,6 +605,8 @@ namespace TEAM
             return dataTable;
 
         }
+
+
         public KeyValuePair<int, int> GetVersion(int selectedVersion, SqlConnection sqlConnection)
         {
             var currentVersion = selectedVersion;
@@ -688,6 +697,7 @@ namespace TEAM
             }
          
         }
+
         protected int GetVersionCount()
         {
             var configurationSettings = new ConfigurationSettings();
