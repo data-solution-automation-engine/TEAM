@@ -56,13 +56,12 @@ namespace TEAM
 
         private void buttonGenerateTestcases_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new FormBase.ConfigurationSettings();
 
             var connStg = new SqlConnection();
             var connVariable = new SqlConnection();
 
             // Assign database connection string
-            connStg.ConnectionString = configurationSettings.ConnectionStringStg;
+            connStg.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringStg;
 
             try
             {
@@ -101,25 +100,25 @@ namespace TEAM
                         testCaseQuery.AppendLine("-- Creating testcases for " + stgTableName);
                         testCaseQuery.AppendLine();
 
-                        var localkeyLength = configurationSettings.DwhKeyIdentifier.Length;
-                        var localkeySubstring = configurationSettings.DwhKeyIdentifier.Length + 1;
+                        var localkeyLength = FormBase.ConfigurationSettings.DwhKeyIdentifier.Length;
+                        var localkeySubstring = FormBase.ConfigurationSettings.DwhKeyIdentifier.Length + 1;
 
                         var queryAttributeArray =
                             "SELECT COLUMN_NAME, DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION " +
                             "FROM INFORMATION_SCHEMA.COLUMNS " +
                             "WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," +
-                            localkeySubstring + ")!='_" + configurationSettings.DwhKeyIdentifier + "'" +
+                            localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'" +
                             " AND TABLE_NAME= '" + stgTableName + "'" +
-                            " AND COLUMN_NAME NOT IN ('" + configurationSettings.RecordSourceAttribute + "','" +
-                            configurationSettings.AlternativeRecordSourceAttribute + "','" +
-                            configurationSettings.AlternativeLoadDateTimeAttribute + "','" +
-                            configurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
-                            configurationSettings.EtlProcessAttribute + "','" +
-                            configurationSettings.EventDateTimeAttribute + "','" +
-                            configurationSettings.ChangeDataCaptureAttribute + "','" +
-                            configurationSettings.RecordChecksumAttribute + "','" +
-                            configurationSettings.RowIdAttribute + "','" +
-                            configurationSettings.LoadDateTimeAttribute + "')";
+                            " AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" +
+                            FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
+                            FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                            FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                            FormBase.ConfigurationSettings.EtlProcessAttribute + "','" +
+                            FormBase.ConfigurationSettings.EventDateTimeAttribute + "','" +
+                            FormBase.ConfigurationSettings.ChangeDataCaptureAttribute + "','" +
+                            FormBase.ConfigurationSettings.RecordChecksumAttribute + "','" +
+                            FormBase.ConfigurationSettings.RowIdAttribute + "','" +
+                            FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')";
 
                         var attributeArray = _myParent.GetDataTable(ref connStg, queryAttributeArray);
 
@@ -128,11 +127,11 @@ namespace TEAM
                             testCaseQuery.AppendLine("-- Testcase " + intCounter);
                             testCaseQuery.AppendLine("INSERT INTO [dbo].[" + stgTableName + "]");
                             testCaseQuery.AppendLine("(");
-                            testCaseQuery.AppendLine("[" + configurationSettings.EtlProcessAttribute + "],");
-                            testCaseQuery.AppendLine("[" + configurationSettings.EventDateTimeAttribute + "],");
-                            testCaseQuery.AppendLine("[" + configurationSettings.RecordSourceAttribute + "],");
-                            testCaseQuery.AppendLine("[" + configurationSettings.ChangeDataCaptureAttribute + "],");
-                            testCaseQuery.AppendLine("[" + configurationSettings.RecordChecksumAttribute + "],");
+                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.EtlProcessAttribute + "],");
+                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.EventDateTimeAttribute + "],");
+                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.RecordSourceAttribute + "],");
+                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.ChangeDataCaptureAttribute + "],");
+                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.RecordChecksumAttribute + "],");
 
                             foreach (DataRow attributeRow in attributeArray.Rows)
                             {
@@ -188,15 +187,15 @@ namespace TEAM
                         {
                             if (radioButtonStagingArea.Checked)
                             {
-                                connVariable.ConnectionString = configurationSettings.ConnectionStringStg;
+                                connVariable.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringStg;
                             }
                             if (radioButtonPSA.Checked)
                             {
-                                connVariable.ConnectionString = configurationSettings.ConnectionStringHstg;
+                                connVariable.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringHstg;
                             }
                             if (radiobuttonSource.Checked)
                             {
-                                connVariable.ConnectionString = configurationSettings.ConnectionStringSource;
+                                connVariable.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringSource;
                             }
 
                             try

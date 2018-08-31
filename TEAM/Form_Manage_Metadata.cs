@@ -76,8 +76,6 @@ namespace TEAM
         {
             InitializeComponent();
 
-            var configurationSettings = new ConfigurationSettings();
-
             radiobuttonNoVersionChange.Checked = true;
 
             labelHubCount.Text = "0 Hubs";
@@ -87,7 +85,7 @@ namespace TEAM
 
             radiobuttonNoVersionChange.Checked = true;
 
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
             var selectedVersion = GetMaxVersionId(connOmd);
 
             trackBarVersioning.Maximum = selectedVersion;
@@ -200,14 +198,12 @@ namespace TEAM
 
         private void PopulatePhysicalModelGridWithVersion(int versionId)
         {
-            var configurationSettings = new ConfigurationSettings();
-
-            var repositoryTarget = configurationSettings.metadataRepositoryType;
+            var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
             if (repositoryTarget == "SQLServer") //Queries the tables in SQL Server
             {
                 // open latest version
-                var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
                 int selectedVersion = versionId;
 
@@ -262,7 +258,7 @@ namespace TEAM
                 var JsonVersionExtension = @"_v" + versionId + ".json";
                 
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName+JsonVersionExtension))
+                if (!File.Exists(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
 
@@ -285,12 +281,12 @@ namespace TEAM
 
                     string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName+JsonVersionExtension, json);
+                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension, json);
 
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(configurationSettings.ConfigurationPath +GlobalParameters.jsonModelMetadataFileName+JsonVersionExtension));
+                List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension));
 
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges();
@@ -328,20 +324,19 @@ namespace TEAM
                     dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Multi-Active";
                 }
 
-                richTextBoxInformation.AppendText("The file " + configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file " + ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension + " was loaded.\r\n");
             }
             GridAutoLayout();
         }
 
         private void PopulateTableMappingGridWithVersion(int versionId)
         {
-            var configurationSettings = new ConfigurationSettings();
             var selectedVersion = versionId;
-            var repositoryTarget = configurationSettings.metadataRepositoryType;
+            var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
             if (repositoryTarget == "SQLServer") //Queries the tables in SQL Server
             {
-                var connOmd = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringOmd};
+                var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
 
                 try
                 {
@@ -392,7 +387,7 @@ namespace TEAM
                 var JsonVersionExtension = @"_v" + versionId +".json";
 
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension))
+                if (!File.Exists(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
 
@@ -413,11 +408,11 @@ namespace TEAM
 
                     string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, json);
+                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension, json);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension));
+                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
 
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
@@ -449,7 +444,7 @@ namespace TEAM
                     dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
                 }
 
-                richTextBoxInformation.AppendText("The file "+ configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file "+ ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension + " was loaded.\r\n");
             }
 
             // Resize the grid
@@ -458,14 +453,13 @@ namespace TEAM
 
         private void PopulateAttributeGridWithVersion(int versionId)
         {
-            var configurationSettings = new ConfigurationSettings();
             var selectedVersion = versionId;
-            var repositoryTarget = configurationSettings.metadataRepositoryType;
+            var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
 
             if (repositoryTarget == "SQLServer")
             {
-                var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
                 try
                 {
@@ -515,7 +509,7 @@ namespace TEAM
                 var JsonVersionExtension = @"_v" + versionId + ".json";
 
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(configurationSettings.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName+JsonVersionExtension))
+                if (!File.Exists(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No attribute mapping JSON file was found, so a new empty one was created.\r\n");
 
@@ -535,12 +529,12 @@ namespace TEAM
 
                     string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName+JsonVersionExtension, json);
+                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension, json);
 
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName+JsonVersionExtension));
+                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
                 dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
@@ -571,7 +565,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                 }
 
-                richTextBoxInformation.AppendText("The file " + configurationSettings.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file " + ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension + " was loaded.\r\n");
             }
 
             // Resize the grid
@@ -658,8 +652,6 @@ namespace TEAM
 
         private void ReverseEngineerModelMetadata(SqlConnection conn, string prefix, string databaseName)
         {
-            var configurationSettings = new ConfigurationSettings();
-
             // This method is called when the reverse-engineer button is clicked.
             try
             {
@@ -671,15 +663,15 @@ namespace TEAM
             }
 
             //Retrieve the version key after version handling
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
             var versionId = GetMaxVersionId(connOmd);
 
             // Get everything as local variables to reduce multithreading issues
-            var effectiveDateTimeAttribute = configurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute == "True" ? configurationSettings.AlternativeSatelliteLoadDateTimeAttribute : configurationSettings.LoadDateTimeAttribute;
+            var effectiveDateTimeAttribute = ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute == "True" ? ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute : ConfigurationSettings.LoadDateTimeAttribute;
 
-            var dwhKeyIdentifier = configurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
+            var dwhKeyIdentifier = ConfigurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
 
-            var keyIdentifierLocation = configurationSettings.KeyNamingLocation;
+            var keyIdentifierLocation = ConfigurationSettings.KeyNamingLocation;
             // ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
 
             //Create the attribute selection statement for the array
@@ -889,8 +881,6 @@ namespace TEAM
 
         private void SaveVersion(int majorVersion, int minorVersion)
         {
-            var configurationSettings = new ConfigurationSettings();
-
             //Insert or create version
             var insertStatement = new StringBuilder();
 
@@ -899,7 +889,7 @@ namespace TEAM
             insertStatement.AppendLine("VALUES ");
             insertStatement.AppendLine("('N/A', 'N/A', " + majorVersion + "," + minorVersion + ")");
 
-            using (var connectionVersion = new SqlConnection(configurationSettings.ConnectionStringOmd))
+            using (var connectionVersion = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
             {
                 var commandVersion = new SqlCommand(insertStatement.ToString(), connectionVersion);
 
@@ -919,15 +909,13 @@ namespace TEAM
 
         private void TruncateMetadata()
         {
-            var configurationSettings = new ConfigurationSettings();
-
             //Truncate tables
             const string commandText = "TRUNCATE TABLE [MD_TABLE_MAPPING]; " +
                                        "TRUNCATE TABLE [MD_ATTRIBUTE_MAPPING]; " +
                                        "TRUNCATE TABLE [MD_VERSION_ATTRIBUTE]; " + //This is the model metadata
                                        "TRUNCATE TABLE [MD_VERSION];";
 
-            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
             {
                 var command = new SqlCommand(commandText, connection);
 
@@ -946,15 +934,13 @@ namespace TEAM
 
         private void trackBarVersioning_ValueChanged(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-
             richTextBoxInformation.Clear();
 
             PopulateTableMappingGridWithVersion(trackBarVersioning.Value);
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
             PopulatePhysicalModelGridWithVersion(trackBarVersioning.Value);
 
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
             var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
             var majorVersion = versionMajorMinor.Key;
             var minorVersion = versionMajorMinor.Value;
@@ -971,8 +957,7 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             //Instantiate the global configuration settings
-            var configurationSettings = new ConfigurationSettings();
-            var repositoryTarget = configurationSettings.metadataRepositoryType;
+            var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
             //Remove all metadata from repository
             if (checkBoxClearMetadata.Checked)
@@ -1014,7 +999,7 @@ namespace TEAM
                     //Refresh the UI to display the newly created version
                     if (oldVersionId != versionId)
                     {
-                        var connOmd = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringOmd};
+                        var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
                         trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
                         trackBarVersioning.TickFrequency = GetVersionCount();
                         trackBarVersioning.Value = GetMaxVersionId(connOmd);
@@ -1038,8 +1023,7 @@ namespace TEAM
         /// <returns></returns>
         private int CreateOrRetrieveVersion()
         {
-            ConfigurationSettings configurationSettings = new ConfigurationSettings();
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
             if (!radiobuttonNoVersionChange.Checked)
             {
@@ -1094,7 +1078,6 @@ namespace TEAM
         internal void CreateNewPhysicalModelMetadataVersionSqlServer(int versionId)
         {
             // This method creates a new version in the repository for the physical model (MD_VERSION_ATTRIBUTE table)
-            var configurationSettings = new ConfigurationSettings();
             var insertQueryTables = new StringBuilder();
 
             try
@@ -1176,7 +1159,7 @@ namespace TEAM
             }
             else
             {
-                using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -1200,9 +1183,7 @@ namespace TEAM
         /// <param name="versionId"></param>
         internal void CreateNewPhysicalModelMetadataVersionJson(int versionId)
         {
-            // This method creates a new version in the repository for the physical model (MD_VERSION_ATTRIBUTE table or TEAM_Model.json file)
-            var configurationSettings = new ConfigurationSettings();
-
+            // This method creates a new version in the repository for the physical model (MD_VERSION_ATTRIBUTE table or TEAM_Model.json file)    
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Create a JArray so segments can be added easily from the datatable
@@ -1292,7 +1273,7 @@ namespace TEAM
             {
                 //Generate a unique key using a hash
                 string output = JsonConvert.SerializeObject(jsonModelMappingFull, Formatting.Indented);
-                File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension, output);
+                File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
             }
             catch (JsonReaderException ex)
             {
@@ -1307,7 +1288,6 @@ namespace TEAM
         /// <param name="versionId"></param>
         internal void CreateNewTableMappingMetadataVersionSqlServer(int versionId)
         {
-            var configurationSettings = new ConfigurationSettings();
             var insertQueryTables = new StringBuilder();
 
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
@@ -1374,7 +1354,7 @@ namespace TEAM
             }
             else
             {
-                using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -1398,7 +1378,6 @@ namespace TEAM
         /// <param name="versionId"></param>
         internal void CreateNewTableMappingMetadataVersionJson(int versionId)
         {
-            var configurationSettings = new ConfigurationSettings();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Create a JArray so segments can be added easily from the datatable
@@ -1475,7 +1454,7 @@ namespace TEAM
             {
                 //Generate a unique key using a hash
                 string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + JsonVersionExtension, output);
+                File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
             }
             catch (JsonReaderException ex)
             {
@@ -1489,8 +1468,7 @@ namespace TEAM
         /// <param name="versionId"></param>
         internal void CreateNewAttributeMappingMetadataVersionSqlServer(int versionId)
         {
-            var configurationSettings = new ConfigurationSettings();
-            var repositoryTarget = configurationSettings.metadataRepositoryType;
+            var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
             var insertQueryTables = new StringBuilder();
 
@@ -1548,7 +1526,7 @@ namespace TEAM
                 }
                 else
                 {
-                    using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                    using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
                     {
                         var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -1572,7 +1550,6 @@ namespace TEAM
         /// <param name="versionId"></param>
         internal void CreateNewAttributeMappingMetadataVersionJson(int versionId)
         {
-            var configurationSettings = new ConfigurationSettings();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Create a JArray so segments can be added easily from the datatable
@@ -1635,7 +1612,7 @@ namespace TEAM
             {
                 //Generate a unique key using a hash
                 string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
-                File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName + JsonVersionExtension, output);
+                File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
             }
             catch (JsonReaderException ex)
             {
@@ -1647,17 +1624,16 @@ namespace TEAM
 
         private void SaveTableMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
-            var configurationSettings = new ConfigurationSettings();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (configurationSettings.metadataRepositoryType == "SQLServer")
+                if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
                 {
                     CreateNewTableMappingMetadataVersionSqlServer(versionId);
                 }
-                else if (configurationSettings.metadataRepositoryType == "JSON")
+                else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
                 {
                     CreateNewTableMappingMetadataVersionJson(versionId);
                 }
@@ -1743,7 +1719,7 @@ namespace TEAM
                             else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
                             {
                                 //Read the file in memory
-                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + JsonVersionExtension));
+                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
 
                                 //Retrieves the json segment in the file for the given hash returns value or NULL
                                 var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey); 
@@ -1769,14 +1745,14 @@ namespace TEAM
                                 {
                                     // The below is not really necessary and was added as an attempt to work around limitations in WriteAllText, but turns out to be handy nonetheless
                                     //var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
-                                    //var targetFilePathName = configurationSettings.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
+                                    //var targetFilePathName = ConfigurationSettings.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
 
-                                    //File.Copy(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, targetFilePathName);
-                                    //File.Delete(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
+                                    //File.Copy(ConfigurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, targetFilePathName);
+                                    //File.Delete(ConfigurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
 
 
                                     // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
-                                    File.WriteAllText(configurationSettings.ConfigurationPath +GlobalParameters.jsonTableMappingFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath +GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
 
                                     // Wait for half a second for I/O operations to complete
                                     // Thread.Sleep(500);
@@ -1854,7 +1830,7 @@ namespace TEAM
                                         CreateMd5(versionId + '|' + stagingTable + '|' + integrationTable + '|' + businessKeyDefinition + '|' + drivingKeyDefinition + '|' + filterCriterion);
 
                                     // Load the file
-                                    TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + JsonVersionExtension));
+                                    TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonTableMappingFull = JArray.FromObject(jsonArray);
@@ -1873,7 +1849,7 @@ namespace TEAM
                                     jsonTableMappingFull.Add(newJsonSegment);
 
                                     string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -1912,8 +1888,8 @@ namespace TEAM
                                 {
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<TableMappingJson[]>(
-                                            File.ReadAllText(configurationSettings.ConfigurationPath +
-                                                             GlobalParameters.jsonTableMappingFileName + JsonVersionExtension)).ToList();
+                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                                             GlobalParameters.JsonTableMappingFileName + JsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
                                     var jsonSegment = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
@@ -1932,7 +1908,7 @@ namespace TEAM
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
-                                        configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + JsonVersionExtension,
+                                        ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension,
                                         output);
 
                                 }
@@ -1960,7 +1936,7 @@ namespace TEAM
                         }
                         else
                         {
-                            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
                             {
                                 var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -1998,17 +1974,16 @@ namespace TEAM
 
         private void SaveModelPhysicalModelMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
-            var configurationSettings = new ConfigurationSettings();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (configurationSettings.metadataRepositoryType == "SQLServer")
+                if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
                 {
                     CreateNewPhysicalModelMetadataVersionSqlServer(versionId);
                 }
-                else if (configurationSettings.metadataRepositoryType == "JSON")
+                else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
                 {
                     CreateNewPhysicalModelMetadataVersionJson(versionId);
                 }
@@ -2060,7 +2035,7 @@ namespace TEAM
 
                                 try
                                 {
-                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension));
+                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
 
                                     var jsonHash = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
 
@@ -2083,7 +2058,7 @@ namespace TEAM
                                     }
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
                                 }
                                 catch (JsonReaderException ex)
                                 {
@@ -2167,7 +2142,7 @@ namespace TEAM
                                     var hashKey = CreateMd5(versionId +'|' + tableName + '|' + columnName);
 
                                     // Load the file
-                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension));
+                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonTableMappingFull = JArray.FromObject(jsonArray);
@@ -2188,7 +2163,7 @@ namespace TEAM
                                     jsonTableMappingFull.Add(newJsonSegment);
 
                                     string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -2223,8 +2198,8 @@ namespace TEAM
                                 {
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<ModelMetadataJson[]>(
-                                            File.ReadAllText(configurationSettings.ConfigurationPath +
-                                                             GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension)).ToList();
+                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                                             GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
                                     var jsonSegment = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey);
@@ -2242,7 +2217,7 @@ namespace TEAM
                                     }
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                    File.WriteAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
 
                                 }
                                 catch (JsonReaderException ex)
@@ -2268,7 +2243,7 @@ namespace TEAM
                         }
                         else
                         {
-                            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
                             {
                                 var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -2305,17 +2280,16 @@ namespace TEAM
 
         private void SaveAttributeMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
-            var configurationSettings = new ConfigurationSettings();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (configurationSettings.metadataRepositoryType == "SQLServer")
+                if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
                 {
                     CreateNewAttributeMappingMetadataVersionSqlServer(versionId);
                 }
-                else if (configurationSettings.metadataRepositoryType == "JSON")
+                else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
                 {
                     CreateNewAttributeMappingMetadataVersionJson(versionId);
                 }
@@ -2399,8 +2373,8 @@ namespace TEAM
                                 {
                                     AttributeMappingJson[] jsonArray =
                                         JsonConvert.DeserializeObject<AttributeMappingJson[]>(
-                                            File.ReadAllText(configurationSettings.ConfigurationPath +
-                                                             GlobalParameters.jsonAttributeMappingFileName + JsonVersionExtension));
+                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                                             GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
 
                                     var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
@@ -2422,8 +2396,8 @@ namespace TEAM
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
-                                        configurationSettings.ConfigurationPath +
-                                        GlobalParameters.jsonAttributeMappingFileName + JsonVersionExtension, output);
+                                        ConfigurationSettings.ConfigurationPath +
+                                        GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
                                 }
                                 catch (JsonReaderException ex)
                                 {
@@ -2493,7 +2467,7 @@ namespace TEAM
                                     var hashKey = CreateMd5(versionId +'|' + stagingTable + '|' + stagingColumn + '|' + integrationTable + '|' +integrationColumn + '|' + transformationRule);
 
                                     // Load the file
-                                    AttributeMappingJson[] jsonArray =JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(configurationSettings.ConfigurationPath +GlobalParameters.jsonAttributeMappingFileName+JsonVersionExtension));
+                                    AttributeMappingJson[] jsonArray =JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath +GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonAttributeMappingFull = JArray.FromObject(jsonArray);
@@ -2514,8 +2488,8 @@ namespace TEAM
                                     string output = JsonConvert.SerializeObject(jsonAttributeMappingFull,
                                         Formatting.Indented);
                                     File.WriteAllText(
-                                        configurationSettings.ConfigurationPath +
-                                        GlobalParameters.jsonAttributeMappingFileName + JsonVersionExtension, output);
+                                        ConfigurationSettings.ConfigurationPath +
+                                        GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -2556,8 +2530,8 @@ namespace TEAM
                                 {
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<AttributeMappingJson[]>(
-                                            File.ReadAllText(configurationSettings.ConfigurationPath +
-                                                             GlobalParameters.jsonAttributeMappingFileName + JsonVersionExtension)).ToList();
+                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                                             GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
                                     var jsonSegment =
@@ -2578,8 +2552,8 @@ namespace TEAM
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
-                                        configurationSettings.ConfigurationPath +
-                                        GlobalParameters.jsonAttributeMappingFileName + JsonVersionExtension, output);
+                                        ConfigurationSettings.ConfigurationPath +
+                                        GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
 
                                 }
                                 catch (JsonReaderException ex)
@@ -2611,7 +2585,7 @@ namespace TEAM
                         }
                         else
                         {
-                            using (var connection = new SqlConnection(configurationSettings.ConnectionStringOmd))
+                            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
                             {
                                 var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -2650,13 +2624,11 @@ namespace TEAM
 
         private void BindTableMappingJsonToDataTable()
         {
-            var configurationSettings = new ConfigurationSettings();
-
             var versionId = CreateOrRetrieveVersion();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + JsonVersionExtension));
+            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
@@ -2672,13 +2644,11 @@ namespace TEAM
 
         private void BindAttributeMappingJsonToDataTable()
         {
-            var configurationSettings = new ConfigurationSettings();
-
             var versionId = CreateOrRetrieveVersion();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the attribute mapping file, convert it to a DataTable and bind it to the source
-            List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonAttributeMappingFileName + JsonVersionExtension));
+            List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
@@ -2693,12 +2663,11 @@ namespace TEAM
 
         private void BindModelMetadataJsonToDataTable()
         {
-            var configurationSettings = new ConfigurationSettings();
             var versionId = CreateOrRetrieveVersion();
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(configurationSettings.ConfigurationPath + GlobalParameters.jsonModelMetadataFileName + JsonVersionExtension));
+            List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
@@ -2716,13 +2685,11 @@ namespace TEAM
 
         private void openMetadataFileToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Business Key Metadata File",
                 Filter = @"Business Key files|*.xml;*.json",
-                InitialDirectory = configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                InitialDirectory = ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
             };
 
             var ret = STAShowDialog(theDialog);
@@ -2786,7 +2753,7 @@ namespace TEAM
 
                     GridAutoLayout();
                     ContentCounter();
-                    richTextBoxInformation.AppendText("The file " + configurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName + " was loaded.\r\n");
+                    richTextBoxInformation.AppendText("The file " + ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + " was loaded.\r\n");
                 }
                 catch (Exception ex)
                 {
@@ -2799,13 +2766,11 @@ namespace TEAM
         {
             try
             {
-                var configurationSettings = new ConfigurationSettings();
-
                 var theDialog = new SaveFileDialog
                 {
                     Title = @"Save Business Key Metadata File",
                     Filter = @"XML files|*.xml",
-                    InitialDirectory =  configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -2839,13 +2804,11 @@ namespace TEAM
         {
             try
             {
-                var configurationSettings = new ConfigurationSettings();
-
                 var theDialog = new SaveFileDialog
                 {
                     Title = @"Save Attribute Mapping Metadata File",
                     Filter = @"XML files|*.xml",
-                    InitialDirectory = configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory = ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
 
@@ -2878,14 +2841,11 @@ namespace TEAM
 
         private void OpenAttributeFileMenuItem_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-
-
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Attribute Mapping Metadata File",
                 Filter = @"Attribute Mapping files|*.xml;*.json",
-                InitialDirectory =  configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
             };
 
 
@@ -2965,9 +2925,7 @@ namespace TEAM
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
             richTextBoxInformation.Clear();
 
@@ -3086,44 +3044,42 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var configurationSettings = new ConfigurationSettings();
-
             var errorLog = new StringBuilder();
             var errorCounter = new int();
 
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
-            var metaDataConnection = configurationSettings.ConnectionStringOmd;
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var metaDataConnection = ConfigurationSettings.ConnectionStringOmd;
 
             // Get everything as local variables to reduce multithreading issues
-            var stagingDatabase = '[' + configurationSettings.StagingDatabaseName + ']';
-            var psaDatabase = '[' + configurationSettings.PsaDatabaseName+ ']';
-            var integrationDatabase = '['+ configurationSettings.IntegrationDatabaseName + ']';            
+            var stagingDatabase = '[' + ConfigurationSettings.StagingDatabaseName + ']';
+            var psaDatabase = '[' + ConfigurationSettings.PsaDatabaseName+ ']';
+            var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';            
 
-            var linkedServer = configurationSettings.LinkedServer;
+            var linkedServer = ConfigurationSettings.LinkedServer;
             if (linkedServer != "")
             {
                 linkedServer = '['+linkedServer + "].";
             }
 
-            var effectiveDateTimeAttribute = configurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute=="True" ? configurationSettings.AlternativeSatelliteLoadDateTimeAttribute : configurationSettings.LoadDateTimeAttribute;
-            var currentRecordAttribute = configurationSettings.CurrentRowAttribute;
-            var eventDateTimeAtttribute = configurationSettings.EventDateTimeAttribute;
-            var recordSource = configurationSettings.RecordSourceAttribute;
-            var alternativeRecordSource = configurationSettings.AlternativeRecordSourceAttribute;
-            var sourceRowId = configurationSettings.RowIdAttribute;
-            var recordChecksum = configurationSettings.RecordChecksumAttribute;
-            var changeDataCaptureIndicator = configurationSettings.ChangeDataCaptureAttribute;
-            var hubAlternativeLdts = configurationSettings.AlternativeLoadDateTimeAttribute;
-            var etlProcessId = configurationSettings.EtlProcessAttribute;
-            var loadDateTimeStamp = configurationSettings.LoadDateTimeAttribute;
+            var effectiveDateTimeAttribute = ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute=="True" ? ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute : ConfigurationSettings.LoadDateTimeAttribute;
+            var currentRecordAttribute = ConfigurationSettings.CurrentRowAttribute;
+            var eventDateTimeAtttribute = ConfigurationSettings.EventDateTimeAttribute;
+            var recordSource = ConfigurationSettings.RecordSourceAttribute;
+            var alternativeRecordSource = ConfigurationSettings.AlternativeRecordSourceAttribute;
+            var sourceRowId = ConfigurationSettings.RowIdAttribute;
+            var recordChecksum = ConfigurationSettings.RecordChecksumAttribute;
+            var changeDataCaptureIndicator = ConfigurationSettings.ChangeDataCaptureAttribute;
+            var hubAlternativeLdts = ConfigurationSettings.AlternativeLoadDateTimeAttribute;
+            var etlProcessId = ConfigurationSettings.EtlProcessAttribute;
+            var loadDateTimeStamp = ConfigurationSettings.LoadDateTimeAttribute;
 
-            var stagingPrefix = configurationSettings.StgTablePrefixValue;
-            var hubTablePrefix = configurationSettings.HubTablePrefixValue;
-            var lnkTablePrefix = configurationSettings.LinkTablePrefixValue;
-            var satTablePrefix = configurationSettings.SatTablePrefixValue;
-            var lsatTablePrefix = configurationSettings.LsatPrefixValue;
+            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
+            var hubTablePrefix = ConfigurationSettings.HubTablePrefixValue;
+            var lnkTablePrefix = ConfigurationSettings.LinkTablePrefixValue;
+            var satTablePrefix = ConfigurationSettings.SatTablePrefixValue;
+            var lsatTablePrefix = ConfigurationSettings.LsatPrefixValue;
 
-            if (configurationSettings.TableNamingLocation=="Prefix")
+            if (ConfigurationSettings.TableNamingLocation=="Prefix")
             {
                 stagingPrefix = stagingPrefix + '%';
                 hubTablePrefix = hubTablePrefix + '%';
@@ -3140,9 +3096,9 @@ namespace TEAM
                 lsatTablePrefix = '%' + lsatTablePrefix;
             }
 
-            var dwhKeyIdentifier = configurationSettings.DwhKeyIdentifier;
+            var dwhKeyIdentifier = ConfigurationSettings.DwhKeyIdentifier;
 
-            if (configurationSettings.KeyNamingLocation=="Prefix")
+            if (ConfigurationSettings.KeyNamingLocation=="Prefix")
             {
                 dwhKeyIdentifier = dwhKeyIdentifier + '%';
             }
@@ -5047,7 +5003,7 @@ namespace TEAM
                     _alert.SetTextLogging("Please check the Error Log for details \r\n");
                     _alert.SetTextLogging("\r\n");
                     //_alert.SetTextLogging(errorLog.ToString());
-                    using (var outfile = new StreamWriter(configurationSettings.ConfigurationPath + @"\Error_Log.txt"))
+                    using (var outfile = new StreamWriter(ConfigurationSettings.ConfigurationPath + @"\Error_Log.txt"))
                     {
                         outfile.Write(errorLog.ToString());
                         outfile.Close();
@@ -5239,10 +5195,9 @@ namespace TEAM
 
         private void dataGridViewTableMetadata_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
             // Validate the data entry on the Table Mapping datagrid
 
-            var stagingPrefix = configurationSettings.StgTablePrefixValue;
+            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
             var cellValue = e.FormattedValue.ToString();
             var valueLength = e.FormattedValue.ToString().Length;
 
@@ -5333,8 +5288,6 @@ namespace TEAM
 
         private void saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-
             try
             {
                 var theDialog = new SaveFileDialog
@@ -5354,7 +5307,7 @@ namespace TEAM
 
                         if (dataGridViewTableMetadata != null) // There needs to be metadata available
                         {
-                            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+                            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
                             //For later, get the source/target model relationships for Hubs/Sats
                             var sqlStatementForHubCategories = new StringBuilder();
@@ -5807,13 +5760,11 @@ namespace TEAM
         {
             try
             {
-                var configurationSettings = new ConfigurationSettings();
-
                 var theDialog = new SaveFileDialog
                 {
                     Title = @"Save Business Key Metadata File",
                     Filter = @"JSON files|*.json",
-                    InitialDirectory =  configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -5866,16 +5817,14 @@ namespace TEAM
 
         private void buttonValidation_Click(object sender, EventArgs e)
         {
-          //  var configurationSettings  = new FormBase.ConfigurationSettings();
-          //  MessageBox.Show(configurationSettings.connectionStringOmd);
+          //  MessageBox.Show(ConfigurationSettings.connectionStringOmd);
         }
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                var configurationSettings = new ConfigurationSettings();
-                System.Diagnostics.Process.Start(configurationSettings.OutputPath);
+                System.Diagnostics.Process.Start(ConfigurationSettings.OutputPath);
             }
             catch (Exception ex)
             {
@@ -5887,13 +5836,11 @@ namespace TEAM
         {
             try
             {
-                var configurationSettings = new ConfigurationSettings();
-
                 var theDialog = new SaveFileDialog
                 {
                     Title = @"Save Attribute Mapping Metadata File",
                     Filter = @"JSON files|*.json",
-                    InitialDirectory =  configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -5946,13 +5893,11 @@ namespace TEAM
         {
             try
             {
-                var configurationSettings = new ConfigurationSettings();
-
                 var theDialog = new SaveFileDialog
                 {
                     Title = @"Save Model Metadata File",
                     Filter = @"JSON files|*.json",
-                    InitialDirectory = configurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory = ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -6008,8 +5953,6 @@ namespace TEAM
         {
             //Method called when clicking the Reverse Engieer button
 
-            var configurationSettings = new ConfigurationSettings();
-
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text += "Commencing reverse-engineering the model metadata from the database.\r\n";
 
@@ -6020,12 +5963,12 @@ namespace TEAM
             }
 
             //Populate table / attribute version table
-            var intDatabase = configurationSettings.IntegrationDatabaseName;
-            var stgDatabase = configurationSettings.StagingDatabaseName;
+            var intDatabase = ConfigurationSettings.IntegrationDatabaseName;
+            var stgDatabase = ConfigurationSettings.StagingDatabaseName;
 
-            var connStg = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringStg};
-            var connInt = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringInt};
-            var stgPrefix = configurationSettings.StgTablePrefixValue;
+            var connStg = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringStg};
+            var connInt = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringInt};
+            var stgPrefix = ConfigurationSettings.StgTablePrefixValue;
 
             // Process changes
             if (checkBoxStagingLayer.Checked)
@@ -6065,8 +6008,6 @@ namespace TEAM
         {
             try
             {
-                var configurationSettings = new ConfigurationSettings();
-
                 var jsonTableMappingFull = new JArray();
                 var outputFileName = sourceTableName+"_"+targetTableName+".json";
 
@@ -6083,9 +6024,9 @@ namespace TEAM
 
                 //Spool to disk
                 string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                File.WriteAllText(configurationSettings.OutputPath + outputFileName, output);
+                File.WriteAllText(ConfigurationSettings.OutputPath + outputFileName, output);
 
-                richTextBoxInformation.Text = "File "+ outputFileName + " has been saved to "+ configurationSettings.OutputPath + ".";
+                richTextBoxInformation.Text = "File "+ outputFileName + " has been saved to "+ ConfigurationSettings.OutputPath + ".";
             }
             catch (JsonReaderException ex)
             {

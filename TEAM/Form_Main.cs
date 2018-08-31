@@ -20,7 +20,7 @@ namespace TEAM
             // Set the version of the build for everything
             string versionNumberforTeamApplication = "v1.5.3.0";
 
-            //Placeholder for the error handling
+            // Placeholder for the error handling
             var errorMessage = new StringBuilder();
             errorMessage.AppendLine("Error were detected:");
             errorMessage.AppendLine();
@@ -31,25 +31,22 @@ namespace TEAM
             InitializeComponent();
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberforTeamApplication;
 
-            //Retrieving the configuration strings from the global variables (configuration settings)
-            var configurationSettings = new ConfigurationSettings();
+            // Make sure the application and custom location directories exist
+            EnvironmentConfiguration.InitialiseRootPath();
 
-            //Make sure the root directories exist, based on hard-coded (tool) parameters
-            InitialisePath();
+            // Set the root path, to be able to locate the customisable configuration file
+            EnvironmentConfiguration.LoadRootPathFile();
 
-            //Set the root path, to be able to locate the configuration file
-            InitialiseRootPath();
+            // Make sure the configuration file is in memory
+            EnvironmentConfiguration.InitialiseCustomPath();
 
-            //Grab the rest of the configurations
-            InitialiseConfigurationPath();
-            InitialiseConfiguration(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName);
+            // Load the available configuration file
+            EnvironmentConfiguration.LoadEnvironmentConfiguration(ConfigurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension);
 
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
             richTextBoxInformation.AppendText("Version "+versionNumberforTeamApplication+"\r\n\r\n");
-
             richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
-
             richTextBoxInformation.AppendText("Changes for this version: \r\n");
             richTextBoxInformation.AppendText("- Enabled JSON storage format for core mapping data sets (MD_ATTRIBUTE_VERSION, MD_TABLE_MAPPING and MD_ATTRIBUTE_MAPPING)\r\n");
             richTextBoxInformation.AppendText("- This means that, at this stage, the new JSON repository type only applies to the above tables and still needs a SQL Server repository for the other tabels!\r\n");
@@ -57,12 +54,10 @@ namespace TEAM
             richTextBoxInformation.AppendText("- Configurable paths for settings and output\r\n");
             richTextBoxInformation.AppendText("- Minor bug fixes (see Github)\r\n\r\n");
             richTextBoxInformation.AppendText("- Code cleanup and general obfuscation of libraries (see Github)\r\n\r\n");
-
-
-
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
-            var connStg = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringStg };
-            var connPsa = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringHstg };
+            
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
+            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg };
 
             try
             {
@@ -128,8 +123,8 @@ namespace TEAM
                 labelActiveVersion.Text = versionName;
             }
 
-            var configurationSettings = new ConfigurationSettings();
-            labelMetadataRepository.Text = "Repository type in configuration is set to " + configurationSettings.metadataRepositoryType;
+
+            labelMetadataRepository.Text = "Repository type in configuration is set to " + ConfigurationSettings.MetadataRepositoryType;
         }
 
 
@@ -153,194 +148,6 @@ namespace TEAM
 
 
         }
-
-        private static void InitialisePath()
-        {
-            // These are the standard software directories
-            var configurationPath = GlobalParameters.ConfigurationPath; //Application.StartupPath + @"\Configuration\";
-            var outputPath = GlobalParameters.OutputPath; //Application.StartupPath + @"\Output\";
-
-            // Create the directories if they don't exist yet
-            try
-            {
-                if (!Directory.Exists(configurationPath))
-                {
-                    Directory.CreateDirectory(configurationPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error creation default directory at " + configurationPath +" the message is "+ex, "An issue has been encountered", MessageBoxButtons.OK,MessageBoxIcon.Error);
-            }
-
-            try
-            {
-                if (!Directory.Exists(outputPath))
-                {
-                    Directory.CreateDirectory(outputPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error creation default directory at " + outputPath + " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Create root path file, with dummy values, if it doesn't exist already
-            try
-            {
-                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName))
-                {
-                    var initialConfigurationFile = new StringBuilder();
-
-                    initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
-                    initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
-                    initialConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath);
-                    initialConfigurationFile.AppendLine("OutputPath|" + GlobalParameters.OutputPath);
-                    initialConfigurationFile.AppendLine("/* End of file */");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName))
-                    {
-                        outfile.Write(initialConfigurationFile.ToString());
-                        outfile.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "An error occurred while creation the default path file. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private static void InitialiseConfigurationPath()
-        {
-            var configurationSettings = new ConfigurationSettings();
-
-            var configurationPath = configurationSettings.ConfigurationPath; //Application.StartupPath + @"\Configuration\";
-            var outputPath = configurationSettings.OutputPath; //Application.StartupPath + @"\Output\";
-
-            // Create the directories if they don't exist yet
-            try
-            {
-                if (!Directory.Exists(configurationPath))
-                {
-                    Directory.CreateDirectory(configurationPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error creation default directory at " + configurationPath + " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            try
-            {
-                if (!Directory.Exists(outputPath))
-                {
-                    Directory.CreateDirectory(outputPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error creation default directory at " + outputPath + " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-
-            //// Create initial config file with dummy values
-            //try
-            //{
-            //    if (!File.Exists(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName))
-            //    {
-            //        var initialConfigurationFile = new StringBuilder();
-
-            //        initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
-            //        initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
-            //        initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
-            //        initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
-            //        initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
-            //        initialConfigurationFile.AppendLine("IntegrationDatabase|Data_Vault_Database");
-            //        initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
-            //        initialConfigurationFile.AppendLine("OutputPath|" + GlobalParameters.OutputPath);
-            //        initialConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath);
-            //        initialConfigurationFile.AppendLine(@"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
-            //        initialConfigurationFile.AppendLine(@"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
-            //        initialConfigurationFile.AppendLine(@"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
-            //        initialConfigurationFile.AppendLine(@"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
-            //        initialConfigurationFile.AppendLine(@"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
-            //        initialConfigurationFile.AppendLine(@"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
-            //        initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
-            //        initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
-            //        initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
-            //        initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
-            //        initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
-            //        initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
-            //        initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT");
-            //        initialConfigurationFile.AppendLine("KeyIdentifier|HSH");
-            //        initialConfigurationFile.AppendLine("SchemaName|dbo");
-            //        initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
-            //        initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");
-            //        initialConfigurationFile.AppendLine("LoadDateTimeStamp|LOAD_DATETIME");
-            //        initialConfigurationFile.AppendLine("ExpiryDateTimeStamp|LOAD_END_DATETIME");
-            //        initialConfigurationFile.AppendLine("ChangeDataIndicator|CDC_OPERATION");
-            //        initialConfigurationFile.AppendLine("RecordSourceAttribute|RECORD_SOURCE");
-            //        initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
-            //        initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
-            //        initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
-            //        initialConfigurationFile.AppendLine("LinkedServerName|");
-            //        initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
-            //        initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
-            //        initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
-            //        initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");
-            //        initialConfigurationFile.AppendLine("AlternativeRecordSource|N/A");
-            //        initialConfigurationFile.AppendLine("AlternativeHubLDTS|N/A");
-            //        initialConfigurationFile.AppendLine("AlternativeSatelliteLDTS|N/A");
-            //        initialConfigurationFile.AppendLine("AlternativeRecordSourceFunction|False");
-            //        initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
-            //        initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
-            //        initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
-            //        initialConfigurationFile.AppendLine("metadataRepositoryType|JSON");
-
-            //        initialConfigurationFile.AppendLine("/* End of file */");
-
-            //        using (var outfile = new StreamWriter(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName))
-            //        {
-            //            outfile.Write(initialConfigurationFile.ToString());
-            //            outfile.Close();
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(
-            //        "An error occurred while creation the default Configuration File. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
-
-
-            // Create root path file, with dummy values
-            try
-            {
-                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName))
-                {
-                    var initialConfigurationFile = new StringBuilder();
-
-                    initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
-                    initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
-                    initialConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath);
-                    initialConfigurationFile.AppendLine("/* End of file */");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName))
-                    {
-                        outfile.Write(initialConfigurationFile.ToString());
-                        outfile.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "An error occurred while creation the default path file. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
 
         private void CheckKeyword(string word, Color color, int startIndex)
         {
@@ -382,11 +189,9 @@ namespace TEAM
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-
             try
             {
-                Process.Start(configurationSettings.OutputPath);
+                Process.Start(ConfigurationSettings.OutputPath);
             }
             catch (Exception ex)
             {

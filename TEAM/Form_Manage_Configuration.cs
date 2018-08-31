@@ -9,6 +9,8 @@ namespace TEAM
 {
     public partial class FormManageConfiguration : FormBase
     {
+        private bool FormLoading = true;
+
         public FormManageConfiguration()
         {
             InitializeComponent();
@@ -20,27 +22,24 @@ namespace TEAM
 
             //Make sure the root directories exist, based on hard-coded (tool) parameters
             //Also create the initial file with the configuration if it doesn't exist already
-            EnvironmentConfiguration.InitialisePath();
-
-            //Set the root path (in the base form), to make sure the application is able to locate the path file and load it
-            InitialiseRootPath();
-
-            var configurationSettings = new ConfigurationSettings();
+            EnvironmentConfiguration.InitialiseRootPath();
 
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
             {
-                LocalInitialiseConnections(configurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName);
+                LocalInitialiseConnections(ConfigurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
+
+            FormLoading = false;
         }
 
 
         /// <summary>
-        /// This method will load an existing configuration file and display the values on the form, or create a new dummy one if not available
+        ///    This method will load an existing configuration file and display the values on the form, or create a new dummy one if not available
         /// </summary>
         /// <param name="chosenFile"></param>
         private void LocalInitialiseConnections(string chosenFile)
@@ -49,7 +48,7 @@ namespace TEAM
             if (!File.Exists(chosenFile))
             {
                 var newEnvironmentConfiguration = new EnvironmentConfiguration();
-                newEnvironmentConfiguration.CreateNewEnvironmentConfiguration(chosenFile);
+                newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(chosenFile);
             }
 
 
@@ -233,6 +232,19 @@ namespace TEAM
                     myMetadatarepositoryType.Checked = true;
                 }
 
+                //Dev or prod environment (working environment)
+                RadioButton radioButtonWorkingEnvironment;
+                if (ConfigurationSettings.WorkingEnvironment == "Development")
+                {
+                    radioButtonWorkingEnvironment = radioButtonDevelopment;
+                    radioButtonWorkingEnvironment.Checked = true;
+                }
+                else if (ConfigurationSettings.WorkingEnvironment == "Production")
+                {
+                    radioButtonWorkingEnvironment = radioButtonProduction;
+                    radioButtonWorkingEnvironment.Checked = true;
+                }
+
 
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
@@ -271,13 +283,11 @@ namespace TEAM
         /// <param name="e"></param>
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-            var configurationPath = configurationSettings.ConfigurationPath; 
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Configuration File",
                 Filter = @"Text files|*.txt",
-                InitialDirectory = @""+configurationPath+""
+                InitialDirectory = @""+ConfigurationSettings.ConfigurationPath+""
             };
 
             if (theDialog.ShowDialog() != DialogResult.OK) return;
@@ -318,19 +328,43 @@ namespace TEAM
         private void saveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+            string workingEnvironment = "";
+
+            if (radioButtonDevelopment.Checked)
+            {
+                workingEnvironment = "Development";
+            }
+            else if (radioButtonProduction.Checked)
+            {
+                workingEnvironment = "Production";
+            }
+            else
+            {
+                MessageBox.Show("An error occurred: neither the Development or Production radiobutton was selected.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             // Update the root path file, part of the core solution to be able to store the config and output path
             var rootPathConfigurationFile = new StringBuilder();
             rootPathConfigurationFile.AppendLine("/* TEAM File Path Settings */");
             rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
             rootPathConfigurationFile.AppendLine("ConfigurationPath|" + textBoxConfigurationPath.Text + "");
             rootPathConfigurationFile.AppendLine("OutputPath|" + textBoxOutputPath.Text + "");
+            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + workingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
-            using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName))
+            using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName + GlobalParameters.FileExtension))
             {
                 outfile.Write(rootPathConfigurationFile.ToString());
                 outfile.Close();
             }
+
+            // Update the paths in memory
+            ConfigurationSettings.OutputPath = textBoxOutputPath.Text;
+            ConfigurationSettings.ConfigurationPath = textBoxConfigurationPath.Text;
+            ConfigurationSettings.WorkingEnvironment = workingEnvironment;
+
+            // Make sure the new paths as updated are available upon save for backup etc.
+            EnvironmentConfiguration.InitialiseCustomPath();
 
 
             // Create a file backup for the configuration file
@@ -360,79 +394,76 @@ namespace TEAM
         /// </summary>
         private void UpdateConfigurationInMemory()
         {
-            var configurationSettings = new ConfigurationSettings();
-
-            configurationSettings.SourceDatabaseName = textBoxSourceDatabase.Text;
-            configurationSettings.StagingDatabaseName = textBoxStagingDatabase.Text;
-            configurationSettings.PsaDatabaseName = textBoxPSADatabase.Text;
-            configurationSettings.IntegrationDatabaseName = textBoxIntegrationDatabase.Text;
-            configurationSettings.PresentationDatabaseName = textBoxPresentationDatabase.Text;
-
-            configurationSettings.ConnectionStringSource = textBoxSourceConnection.Text;
-            configurationSettings.ConnectionStringStg = textBoxStagingConnection.Text;
-            configurationSettings.ConnectionStringHstg = textBoxPSAConnection.Text;
-            configurationSettings.ConnectionStringInt = textBoxIntegrationConnection.Text;
-            configurationSettings.ConnectionStringOmd = textBoxMetadataConnection.Text;
-            configurationSettings.ConnectionStringPres = textBoxPresentationConnection.Text;
+            ConfigurationSettings.SourceDatabaseName = textBoxSourceDatabase.Text;
+            ConfigurationSettings.StagingDatabaseName = textBoxStagingDatabase.Text;
+            ConfigurationSettings.PsaDatabaseName = textBoxPSADatabase.Text;
+            ConfigurationSettings.IntegrationDatabaseName = textBoxIntegrationDatabase.Text;
+            ConfigurationSettings.PresentationDatabaseName = textBoxPresentationDatabase.Text;
+            
+            ConfigurationSettings.ConnectionStringSource = textBoxSourceConnection.Text;
+            ConfigurationSettings.ConnectionStringStg = textBoxStagingConnection.Text;
+            ConfigurationSettings.ConnectionStringHstg = textBoxPSAConnection.Text;
+            ConfigurationSettings.ConnectionStringInt = textBoxIntegrationConnection.Text;
+            ConfigurationSettings.ConnectionStringOmd = textBoxMetadataConnection.Text;
+            ConfigurationSettings.ConnectionStringPres = textBoxPresentationConnection.Text;
 
             if (radioButtonJSON.Checked)
             {
-                configurationSettings.metadataRepositoryType = "JSON";
+                ConfigurationSettings.MetadataRepositoryType = "JSON";
             }
             else if (radioButtonSQLServer.Checked)
             {
-                configurationSettings.metadataRepositoryType = "SQLServer";
+                ConfigurationSettings.MetadataRepositoryType = "SQLServer";
             }
             else
             {
                 richTextBoxInformation.AppendText("Issues storing the metadata repository type. Is one of the radio buttons checked?");
             }
 
-            configurationSettings.OutputPath = textBoxOutputPath.Text;
-            configurationSettings.ConfigurationPath = textBoxConfigurationPath.Text;
+            ConfigurationSettings.OutputPath = textBoxOutputPath.Text;
+            ConfigurationSettings.ConfigurationPath = textBoxConfigurationPath.Text;
 
-            configurationSettings.SourceSystemPrefix = textBoxSourcePrefix.Text;
-            configurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
-            configurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
-            configurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
-            configurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
-            configurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
-            configurationSettings.LsatPrefixValue = textBoxLinkSatPrefix.Text;
+            ConfigurationSettings.SourceSystemPrefix = textBoxSourcePrefix.Text;
+            ConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
+            ConfigurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
+            ConfigurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
+            ConfigurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
+            ConfigurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
+            ConfigurationSettings.LsatPrefixValue = textBoxLinkSatPrefix.Text;
 
             if (keyPrefixRadiobutton.Checked)
             {
-                configurationSettings.KeyNamingLocation = "Prefix";
+                ConfigurationSettings.KeyNamingLocation = "Prefix";
             }
             else if (keySuffixRadiobutton.Checked)
             {
-                configurationSettings.KeyNamingLocation = "Suffix";
+                ConfigurationSettings.KeyNamingLocation = "Suffix";
             }
             else
             {
                 richTextBoxInformation.AppendText("Issues storing the key location (prefix/suffix). Is one of the radio buttons checked?");
             }
 
-            configurationSettings.DwhKeyIdentifier = textBoxDWHKeyIdentifier.Text;
-
-            configurationSettings.SchemaName = textBoxSchemaName.Text;
-            configurationSettings.RowIdAttribute = textBoxSourceRowId.Text;
-            configurationSettings.EventDateTimeAttribute = textBoxEventDateTime.Text;
-            configurationSettings.LoadDateTimeAttribute = textBoxLDST.Text;
-            configurationSettings.ExpiryDateTimeAttribute = textBoxExpiryDateTimeName.Text;
-            configurationSettings.ChangeDataCaptureAttribute = textBoxChangeDataCaptureIndicator.Text;
-            configurationSettings.RecordSourceAttribute = textBoxRecordSource.Text;
-            configurationSettings.EtlProcessAttribute = textBoxETLProcessID.Text;
-            configurationSettings.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
-            configurationSettings.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
-            configurationSettings.LinkedServer = textBoxLinkedServer.Text;
+            ConfigurationSettings.DwhKeyIdentifier = textBoxDWHKeyIdentifier.Text;
+            ConfigurationSettings.SchemaName = textBoxSchemaName.Text;
+            ConfigurationSettings.RowIdAttribute = textBoxSourceRowId.Text;
+            ConfigurationSettings.EventDateTimeAttribute = textBoxEventDateTime.Text;
+            ConfigurationSettings.LoadDateTimeAttribute = textBoxLDST.Text;
+            ConfigurationSettings.ExpiryDateTimeAttribute = textBoxExpiryDateTimeName.Text;
+            ConfigurationSettings.ChangeDataCaptureAttribute = textBoxChangeDataCaptureIndicator.Text;
+            ConfigurationSettings.RecordSourceAttribute = textBoxRecordSource.Text;
+            ConfigurationSettings.EtlProcessAttribute = textBoxETLProcessID.Text;
+            ConfigurationSettings.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
+            ConfigurationSettings.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
+            ConfigurationSettings.LinkedServer = textBoxLinkedServer.Text;
 
             if (tablePrefixRadiobutton.Checked)
             {
-                configurationSettings.TableNamingLocation = "Prefix";
+                ConfigurationSettings.TableNamingLocation = "Prefix";
             }
             else if (tableSuffixRadiobutton.Checked)
             {
-                configurationSettings.TableNamingLocation = "Suffix";
+                ConfigurationSettings.TableNamingLocation = "Suffix";
             }
             else
             {
@@ -441,11 +472,11 @@ namespace TEAM
 
             if (radioButtonPSABusinessKeyIndex.Checked)
             {
-                configurationSettings.PsaKeyLocation = "UniqueIndex";
+                ConfigurationSettings.PsaKeyLocation = "UniqueIndex";
             }
             else if (radioButtonPSABusinessKeyPK.Checked)
             {
-                configurationSettings.PsaKeyLocation = "PrimaryKey";
+                ConfigurationSettings.PsaKeyLocation = "PrimaryKey";
             }
             else
             {
@@ -469,6 +500,98 @@ namespace TEAM
             catch (Exception ex)
             {
                 richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+            }
+        }
+
+        private void radioButtonDevelopment_CheckedChanged(object sender, EventArgs e)
+        {
+            richTextBoxInformation.Clear();
+            RadioButton rb = sender as RadioButton;
+            if (rb != null)
+            {
+                if (rb.Checked && FormLoading == false)
+                {
+                    ConfigurationSettings.WorkingEnvironment = "Development";
+                    //MessageBox.Show("Dev");
+                    try
+                    {
+                        LocalInitialiseConnections(ConfigurationSettings.ConfigurationPath +
+                                                   GlobalParameters.ConfigfileName + '_' +
+                                                   ConfigurationSettings.WorkingEnvironment +
+                                                   GlobalParameters.FileExtension);
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBoxInformation.AppendText(
+                            "Errors occured trying to load the configuration file, the message is " + ex +
+                            ". No default values were loaded. \r\n\r\n");
+                    }
+
+                }
+            }
+        }
+
+        private void radioButtonProduction_CheckedChanged(object sender, EventArgs e)
+        {
+            richTextBoxInformation.Clear();
+            RadioButton rb = sender as RadioButton;
+            if (rb != null)
+            {
+                if (rb.Checked && FormLoading == false)
+                {
+                    ConfigurationSettings.WorkingEnvironment = "Production";
+                    //MessageBox.Show("Prod");
+                    try
+                    {
+                        LocalInitialiseConnections(ConfigurationSettings.ConfigurationPath +
+                                                   GlobalParameters.ConfigfileName + '_' +
+                                                   ConfigurationSettings.WorkingEnvironment +
+                                                   GlobalParameters.FileExtension);
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBoxInformation.AppendText(
+                            "Errors occured trying to load the configuration file, the message is " + ex +
+                            ". No default values were loaded. \r\n\r\n");
+                    }
+                }
+            }
+        }
+
+        private void checkBoxAlternativeRecordSource_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeRecordSource.Checked)
+            {
+                textBoxAlternativeRecordSource.Enabled = true;
+            }
+            if (!checkBoxAlternativeRecordSource.Checked)
+            {
+                textBoxAlternativeRecordSource.Enabled = false;
+            }
+        }
+
+        private void checkBoxAlternativeHubLDTS_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeHubLDTS.Checked)
+            {
+                textBoxHubAlternativeLDTSAttribute.Enabled = true;
+            }
+            if (!checkBoxAlternativeHubLDTS.Checked)
+            {
+                textBoxHubAlternativeLDTSAttribute.Enabled = false;
+            }
+        }
+
+        private void checkBoxAlternativeSatLDTS_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeSatLDTS.Checked)
+            {
+                textBoxSatelliteAlternativeLDTSAttribute.Enabled = true;
+            }
+
+            if (!checkBoxAlternativeSatLDTS.Checked)
+            {
+                textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
             }
         }
     }
