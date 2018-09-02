@@ -149,6 +149,19 @@ namespace TEAM
         }
 
         /// <summary>
+        ///   Gets or sets the values for the validation of the metadata
+        /// </summary>
+        internal static class ValidationSettings
+        {
+            public static string SourceObjectExistence { get; set; }
+            public static string TargetObjectExistence { get; set; }
+            public static string BusinessKeyExistence { get; set; }
+
+            public static string LogicalGroup { get; set; }
+        }
+
+
+        /// <summary>
         ///    These variables are used as global vairables throughout the applicatoin
         /// </summary>
         internal static class GlobalParameters
@@ -159,6 +172,7 @@ namespace TEAM
 
             public static string ConfigfileName { get; set; } = "TEAM_configuration";
             public static string PathfileName { get; set; } = "TEAM_Path_configuration";
+            public static string ValidationFileName { get; set; } = "TEAM_validation";
             public static string FileExtension { get; set; } = ".txt";
 
             // Json file name parameters

@@ -38,10 +38,10 @@ namespace TEAM
             EnvironmentConfiguration.LoadRootPathFile();
 
             // Make sure the configuration file is in memory
-            EnvironmentConfiguration.InitialiseCustomPath();
+            EnvironmentConfiguration.InitialiseConfigurationPath();
 
             // Load the available configuration file
-            EnvironmentConfiguration.LoadEnvironmentConfiguration(ConfigurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension);
+            EnvironmentConfiguration.LoadConfigurationFile(ConfigurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension);
 
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";

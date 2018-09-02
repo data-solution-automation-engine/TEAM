@@ -364,7 +364,7 @@ namespace TEAM
             ConfigurationSettings.WorkingEnvironment = workingEnvironment;
 
             // Make sure the new paths as updated are available upon save for backup etc.
-            EnvironmentConfiguration.InitialiseCustomPath();
+            EnvironmentConfiguration.InitialiseConfigurationPath();
 
 
             // Create a file backup for the configuration file
@@ -385,7 +385,7 @@ namespace TEAM
 
 
             // Save the information 
-            EnvironmentConfiguration.SaveEnvironmentConfiguration();
+            EnvironmentConfiguration.SaveConfigurationFile();
         }
 
 

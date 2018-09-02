@@ -85,7 +85,7 @@ namespace TEAM
 
             radiobuttonNoVersionChange.Checked = true;
 
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
             var selectedVersion = GetMaxVersionId(connOmd);
 
             trackBarVersioning.Maximum = selectedVersion;
@@ -100,16 +100,42 @@ namespace TEAM
             trackBarVersioning.Value = selectedVersion;
             labelVersion.Text = majorVersion + "." + minorVersion;
 
-            //Load the grids from the repository
+            //  Load the grids from the repository
             richTextBoxInformation.Clear();
             PopulateTableMappingGridWithVersion(selectedVersion);
             PopulateAttributeGridWithVersion(selectedVersion);
             PopulatePhysicalModelGridWithVersion(selectedVersion);
 
-            richTextBoxInformation.Text += "The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
+            richTextBoxInformation.Text +=
+                "The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
             ContentCounter();
 
+            // Make sure the validation information is available in this form
+            try
+            {
+                var validationFile = ConfigurationSettings.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
+                                     ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension;
+
+                // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
+                if (!File.Exists(validationFile))
+                {
+                    var newEnvironmentConfiguration = new EnvironmentConfiguration();
+                    newEnvironmentConfiguration.CreateDummyValidationConfiguration(validationFile);
+                }
+
+                // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
+                EnvironmentConfiguration.LoadValidationFile(validationFile);
+
+                richTextBoxInformation.Text += "\r\nThe validation file " + validationFile + " has been loaded.";
+            }
+            catch (Exception)
+            {
+
+            }
+
         }
+
+
 
         private void DataGridViewPhysicalModelMetadataKeyDown(object sender, KeyEventArgs e)
         {
@@ -2946,14 +2972,14 @@ namespace TEAM
 
                 if (versionExistenceCheckDataTable != null && versionExistenceCheckDataTable.Rows.Count > 0)
                 {
-                    if (backgroundWorker1.IsBusy) return;
+                    if (backgroundWorkerMetadata.IsBusy) return;
                     // create a new instance of the alert form
                     _alert = new FormAlert();
                     // event handler for the Cancel button in AlertForm
                     _alert.Canceled += buttonCancel_Click;
                     _alert.Show();
                     // Start the asynchronous operation.
-                    backgroundWorker1.RunWorkerAsync();
+                    backgroundWorkerMetadata.RunWorkerAsync();
                 }
                 else
                 {
@@ -2963,14 +2989,14 @@ namespace TEAM
             }
             else
             {
-                if (backgroundWorker1.IsBusy) return;
+                if (backgroundWorkerMetadata.IsBusy) return;
                 // create a new instance of the alert form
                 _alert = new FormAlert();
                 // event handler for the Cancel button in AlertForm
                 _alert.Canceled += buttonCancel_Click;
                 _alert.Show();
                 // Start the asynchronous operation.
-                backgroundWorker1.RunWorkerAsync();
+                backgroundWorkerMetadata.RunWorkerAsync();
             }
 
 
@@ -2980,10 +3006,10 @@ namespace TEAM
         // This event handler cancels the backgroundworker, fired from Cancel button in AlertForm.
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            if (backgroundWorker1.WorkerSupportsCancellation)
+            if (backgroundWorkerMetadata.WorkerSupportsCancellation)
             {
                 // Cancel the asynchronous operation.
-                backgroundWorker1.CancelAsync();
+                backgroundWorkerMetadata.CancelAsync();
                 // Close the AlertForm
                 _alert.Close();
             }
