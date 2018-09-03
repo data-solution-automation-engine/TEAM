@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Windows.Forms;
 
 namespace TEAM
 {
@@ -73,7 +75,15 @@ namespace TEAM
 
         private void buttonShowLog_Click(object sender, EventArgs e)
         {
-            Process.Start(ConfigurationSettings.ConfigurationPath + @"\Error_Log.txt");
+            //Check if the file exists, otherwise create a dummy / empty file   
+            if (File.Exists(ConfigurationSettings.ConfigurationPath + @"\Error_Log.txt"))
+            {
+                Process.Start(ConfigurationSettings.ConfigurationPath + @"\Error_Log.txt");
+            }
+            else
+            {
+                MessageBox.Show("There is no error file. This is a good thing right?", "No error file found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

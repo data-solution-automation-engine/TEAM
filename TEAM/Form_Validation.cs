@@ -9,12 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace TEAM
 {
     public partial class FormManageValidation : FormBase
     {
         private readonly FormManageMetadata _myParent;
+
         public FormManageValidation(FormManageMetadata parent)
         {            
             _myParent = parent;
@@ -134,12 +136,11 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var configurationPath = ConfigurationSettings.ConfigurationPath;
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Validation File",
                 Filter = @"Text files|*.txt",
-                InitialDirectory = @"" + configurationPath + ""
+                InitialDirectory = @"" + ConfigurationSettings.ConfigurationPath + ""
             };
 
             if (theDialog.ShowDialog() != DialogResult.OK) return;
@@ -151,7 +152,12 @@ namespace TEAM
                 {
                     richTextBoxInformation.Clear();
                     var chosenFile = theDialog.FileName;
-                   // PUT LOGIC HERE
+                    
+                    // Load from disk into memory
+                    EnvironmentConfiguration.LoadValidationFile(chosenFile);
+
+                    // Update values on form
+                    LocalInitialiseValidationSettings();
                 }
             }
             catch (Exception ex)
@@ -162,7 +168,63 @@ namespace TEAM
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
+            try
+            {
+                // Save form values to memory
+                var stringSourceObjectExistence = "";
+                if (checkBoxSourceObjectExistence.Checked)
+                {
+                    stringSourceObjectExistence = "True";
+                }
+                else
+                {
+                    stringSourceObjectExistence = "False";
+                }
 
+                var stringtargetObjectExistence = "";
+                if (checkBoxTargetObjectExistence.Checked)
+                {
+                    stringtargetObjectExistence = "True";
+                }
+                else
+                {
+                    stringtargetObjectExistence = "False";
+                }
+
+                var stringBusinessKeyExistence = "";
+                if (checkBoxBusinessKeyExistence.Checked)
+                {
+                    stringBusinessKeyExistence = "True";
+                }
+                else
+                {
+                    stringBusinessKeyExistence = "False";
+                }
+
+                var stringLogicalGroup = "";
+                if (checkBoxLogicalGroup.Checked)
+                {
+                    stringLogicalGroup = "True";
+                }
+                else
+                {
+                    stringLogicalGroup = "False";
+                }
+
+                ValidationSettings.SourceObjectExistence = stringSourceObjectExistence;
+                ValidationSettings.TargetObjectExistence = stringtargetObjectExistence;
+                ValidationSettings.BusinessKeyExistence = stringBusinessKeyExistence;
+                ValidationSettings.LogicalGroup = stringLogicalGroup;
+
+                // Write to disk
+                EnvironmentConfiguration.SaveValidationFile();
+
+                richTextBoxInformation.Text = "The values have been succesfully saved.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: Could not write values to memory anbd disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void openConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs e)

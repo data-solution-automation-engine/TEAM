@@ -195,6 +195,7 @@
     <Compile Include="Form_Validation.Designer.cs">
       <DependentUpon>Form_Validation.cs</DependentUpon>
     </Compile>
+    <Compile Include="MetadataValidation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CustomDataGridViewTable.cs">

@@ -66,7 +66,7 @@ namespace TEAM
             this.radiobuttonNoVersionChange = new System.Windows.Forms.RadioButton();
             this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
             this.checkBoxIgnoreVersion = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBoxValidation = new System.Windows.Forms.CheckBox();
             this.checkBoxClearMetadata = new System.Windows.Forms.CheckBox();
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
@@ -89,6 +89,7 @@ namespace TEAM
             this.validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageValidationRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipMetadata = new System.Windows.Forms.ToolTip(this.components);
+            this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -111,9 +112,9 @@ namespace TEAM
             // 
             this.backgroundWorkerMetadata.WorkerReportsProgress = true;
             this.backgroundWorkerMetadata.WorkerSupportsCancellation = true;
-            this.backgroundWorkerMetadata.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWorkMetadataActivation);
-            this.backgroundWorkerMetadata.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
-            this.backgroundWorkerMetadata.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            this.backgroundWorkerMetadata.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerMetadata_DoWorkMetadataActivation);
+            this.backgroundWorkerMetadata.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerMetadata_ProgressChanged);
+            this.backgroundWorkerMetadata.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerMetadata_RunWorkerCompleted);
             // 
             // groupBox2
             // 
@@ -320,7 +321,7 @@ namespace TEAM
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1065, 525);
+            this.tabPage2.Size = new System.Drawing.Size(1051, 622);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Attribute Mappings";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -346,7 +347,7 @@ namespace TEAM
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1065, 525);
+            this.tabPage3.Size = new System.Drawing.Size(1051, 622);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Physical Model";
             // 
@@ -456,7 +457,7 @@ namespace TEAM
             // 
             this.MetadataGenerationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxIgnoreVersion);
-            this.MetadataGenerationGroupBox.Controls.Add(this.checkBox1);
+            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxClearMetadata);
             this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1207, 185);
             this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
@@ -477,17 +478,17 @@ namespace TEAM
             this.checkBoxIgnoreVersion.Text = "Use live database / ignore model version";
             this.checkBoxIgnoreVersion.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // checkBoxValidation
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(6, 42);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(164, 17);
-            this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "Validate generation metadata";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBoxValidation.AutoSize = true;
+            this.checkBoxValidation.Checked = true;
+            this.checkBoxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxValidation.Location = new System.Drawing.Point(6, 42);
+            this.checkBoxValidation.Name = "checkBoxValidation";
+            this.checkBoxValidation.Size = new System.Drawing.Size(164, 17);
+            this.checkBoxValidation.TabIndex = 10;
+            this.checkBoxValidation.Text = "Validate generation metadata";
+            this.checkBoxValidation.UseVisualStyleBackColor = true;
             // 
             // checkBoxClearMetadata
             // 
@@ -675,6 +676,14 @@ namespace TEAM
             this.manageValidationRulesToolStripMenuItem.Text = "Manage validation rules";
             this.manageValidationRulesToolStripMenuItem.Click += new System.EventHandler(this.manageValidationRulesToolStripMenuItem_Click);
             // 
+            // backgroundWorkerValidationOnly
+            // 
+            this.backgroundWorkerValidationOnly.WorkerReportsProgress = true;
+            this.backgroundWorkerValidationOnly.WorkerSupportsCancellation = true;
+            this.backgroundWorkerValidationOnly.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerValidation_DoWork);
+            this.backgroundWorkerValidationOnly.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerValidationOnly_ProgressChanged);
+            this.backgroundWorkerValidationOnly.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerValidationOnly_RunWorkerCompleted);
+            // 
             // FormManageMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -738,7 +747,7 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.GroupBox MetadataGenerationGroupBox;
         private System.Windows.Forms.CheckBox checkBoxClearMetadata;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBoxValidation;
         private System.Windows.Forms.ToolStripMenuItem validationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem manageValidationRulesToolStripMenuItem;
         private System.Windows.Forms.GroupBox outputGroupBoxVersioning;
@@ -788,5 +797,6 @@ namespace TEAM
         private System.Windows.Forms.ContextMenuStrip contextMenuStripTableMapping;
         private System.Windows.Forms.ToolStripMenuItem exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem;
         private System.Windows.Forms.ToolTip toolTipMetadata;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerValidationOnly;
     }
 }

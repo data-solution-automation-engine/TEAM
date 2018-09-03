@@ -47,13 +47,6 @@ namespace TEAM
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
             richTextBoxInformation.AppendText("Version "+versionNumberforTeamApplication+"\r\n\r\n");
             richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
-            richTextBoxInformation.AppendText("Changes for this version: \r\n");
-            richTextBoxInformation.AppendText("- Enabled JSON storage format for core mapping data sets (MD_ATTRIBUTE_VERSION, MD_TABLE_MAPPING and MD_ATTRIBUTE_MAPPING)\r\n");
-            richTextBoxInformation.AppendText("- This means that, at this stage, the new JSON repository type only applies to the above tables and still needs a SQL Server repository for the other tabels!\r\n");
-            richTextBoxInformation.AppendText("- Created new configuration screen\r\n");
-            richTextBoxInformation.AppendText("- Configurable paths for settings and output\r\n");
-            richTextBoxInformation.AppendText("- Minor bug fixes (see Github)\r\n\r\n");
-            richTextBoxInformation.AppendText("- Code cleanup and general obfuscation of libraries (see Github)\r\n\r\n");
             
             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
             var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };

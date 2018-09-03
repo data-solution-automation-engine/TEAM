@@ -859,7 +859,8 @@ namespace TEAM
 
         private void manageValidationRulesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var t = new System.Threading.Thread(ThreadProcValidation);
+            var t = new Thread(ThreadProcValidation);
+            t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }
 
@@ -3031,7 +3032,7 @@ namespace TEAM
         }
 
         // This event handler deals with the results of the background operation.
-        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void backgroundWorkerMetadata_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
@@ -3051,7 +3052,7 @@ namespace TEAM
         }
 
         // This event handler updates the progress.
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void backgroundWorkerMetadata_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form (GUI)
             labelResult.Text = (e.ProgressPercentage + "%");
@@ -3059,16 +3060,19 @@ namespace TEAM
             // Pass the progress to AlertForm label and progressbar
             _alert.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
             _alert.ProgressValue = e.ProgressPercentage;
-
-            // Manage the logging
         }
 
         # endregion
 
         // This event handler is where the time-consuming work is done.
-        private void backgroundWorker_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
+        private void backgroundWorkerMetadata_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
+
+            if (checkBoxValidation.Checked)
+            {
+                // DO VALIDATION
+            }
 
             var errorLog = new StringBuilder();
             var errorCounter = new int();
@@ -5843,7 +5847,14 @@ namespace TEAM
 
         private void buttonValidation_Click(object sender, EventArgs e)
         {
-          //  MessageBox.Show(ConfigurationSettings.connectionStringOmd);
+            if (backgroundWorkerValidationOnly.IsBusy) return;
+            // create a new instance of the alert form
+            _alert = new FormAlert();
+            // event handler for the Cancel button in AlertForm
+            _alert.Canceled += buttonCancel_Click;
+            _alert.Show();
+            // Start the asynchronous operation.
+            backgroundWorkerValidationOnly.RunWorkerAsync();
         }
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -6057,6 +6068,69 @@ namespace TEAM
             catch (JsonReaderException ex)
             {
                 richTextBoxInformation.Text += "There were issues saving the JSON file.\r\n" + ex;
+            }
+        }
+
+        private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (checkBoxValidation.Checked)
+            {
+                BackgroundWorker worker = sender as BackgroundWorker;
+
+                // Handling multithreading
+                if (worker != null && worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    _alert.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+
+                    if (ValidationSettings.SourceObjectExistence == "True")
+                    {
+                        foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                        {
+                            if (!row.IsNewRow)
+                            {
+                                var sourceObjectValidated =
+                                    MetadataValidation.ValidateSourceObjectExistence(row.Cells[2].Value.ToString());
+                                _alert.SetTextLogging(sourceObjectValidated + " tested\r\n");
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            // Show the progress in main form (GUI)
+            labelResult.Text = (e.ProgressPercentage + "%");
+
+            // Pass the progress to AlertForm label and progressbar
+            _alert.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alert.ProgressValue = e.ProgressPercentage;
+        }
+
+        private void backgroundWorkerValidationOnly_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                labelResult.Text = "Cancelled!";
+            }
+            else if (e.Error != null)
+            {
+                labelResult.Text = "Error: " + e.Error.Message;
+            }
+            else
+            {
+                labelResult.Text = "Done!";
+                richTextBoxInformation.Text += "The metadata was validated succesfully!\r\n";
             }
         }
     }
