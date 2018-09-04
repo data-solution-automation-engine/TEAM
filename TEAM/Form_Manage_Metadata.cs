@@ -6071,6 +6071,11 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        ///   Run the validation checks
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
             if (checkBoxValidation.Checked)
@@ -6086,18 +6091,9 @@ namespace TEAM
                 {
                     _alert.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
 
-                    if (ValidationSettings.SourceObjectExistence == "True")
-                    {
-                        foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
-                        {
-                            if (!row.IsNewRow)
-                            {
-                                var sourceObjectValidated =
-                                    MetadataValidation.ValidateSourceObjectExistence(row.Cells[2].Value.ToString());
-                                _alert.SetTextLogging(sourceObjectValidated + " tested\r\n");
-                            }
-                        }
-                    }
+                    validateSourceObject();
+
+                    validatetargetObject();
                 }
             }
             else
@@ -6105,6 +6101,110 @@ namespace TEAM
                 // Raise exception
                 MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void validateSourceObject()
+        {
+            #region Validation for Source Object Existence
+            if (ValidationSettings.SourceObjectExistence == "True")
+            {
+                var inputConnectionString = FormBase.ConfigurationSettings.ConnectionStringStg;
+
+                // Creating a list of unique table names from the data grid / data table
+                var objectList = new List<string>();
+                foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        if (!objectList.Contains(row.Cells[2].Value.ToString()))
+                        {
+                            objectList.Add(row.Cells[2].Value.ToString());
+                        }
+                    }
+                }
+
+
+                // Execute the validation check using the list of unique objects
+                var resultList = new Dictionary<string, string>();
+                foreach (string sourceObject in objectList)
+                {
+                    var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, inputConnectionString);
+
+                    if (sourceObjectValidated == "False")
+                    {
+                        resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                    }
+                }
+
+
+                // Return the results back to the user
+                if (resultList.Count > 0)
+                {
+                    foreach (var sourceObjectResult in resultList)
+                    {
+                        _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    }
+                }
+                else
+                {
+                    _alert.SetTextLogging("There were no validation issues related to the existence of the source table / object (Staging Area table).\r\n");
+                }
+
+
+            }
+            #endregion
+        }
+
+        private void validatetargetObject()
+        {
+            #region Validation for Source Object Existence
+            if (ValidationSettings.TargetObjectExistence == "True")
+            {
+                var inputConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt;
+
+                // Creating a list of unique table names from the data grid / data table
+                var objectList = new List<string>();
+                foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        if (!objectList.Contains(row.Cells[3].Value.ToString()))
+                        {
+                            objectList.Add(row.Cells[3].Value.ToString());
+                        }
+                    }
+                }
+
+
+                // Execute the validation check using the list of unique objects
+                var resultList = new Dictionary<string, string>();
+                foreach (string sourceObject in objectList)
+                {
+                    var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, inputConnectionString);
+
+                    if (sourceObjectValidated == "False")
+                    {
+                        resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                    }
+                }
+
+
+                // Return the results back to the user
+                if (resultList.Count > 0)
+                {
+                    foreach (var sourceObjectResult in resultList)
+                    {
+                        _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    }
+                }
+                else
+                {
+                    _alert.SetTextLogging("There were no validation issues related to the existence of the target table / object (Integration Layer table).\r\n");
+                }
+
+
+            }
+            #endregion
         }
 
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
