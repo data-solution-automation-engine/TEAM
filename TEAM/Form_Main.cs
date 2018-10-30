@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
 using System.Data.SqlClient;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Common;
