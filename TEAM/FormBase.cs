@@ -158,11 +158,12 @@ namespace TEAM
             public static string BusinessKeyExistence { get; set; }
 
             public static string LogicalGroup { get; set; }
+            public static string LinkKeyOrder { get; set; }
         }
 
 
         /// <summary>
-        ///    These variables are used as global vairables throughout the applicatoin
+        ///    These variables are used as global variables throughout the application
         /// </summary>
         internal static class GlobalParameters
         {
@@ -180,10 +181,13 @@ namespace TEAM
             public static string JsonAttributeMappingFileName { get; set; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; set; } = "TEAM_Model_Metadata";
             public static string JsonExtension { get; set; } = ".json";
+
+            // Version handling
+            public static int VersionId { get; set; } = 0;
         }
 
 
-        public DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
+        public static DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
         {
             // Pass the connection to a command object
             var sqlCommand = new SqlCommand(sql, sqlConnection);

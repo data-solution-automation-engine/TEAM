@@ -44,7 +44,7 @@
             this.checkBoxSourceObjectExistence = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.checkBoxLinkKeyOrder = new System.Windows.Forms.CheckBox();
             this.checkBoxLogicalGroup = new System.Windows.Forms.CheckBox();
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
@@ -182,7 +182,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.checkBox2);
-            this.groupBox1.Controls.Add(this.checkBox3);
+            this.groupBox1.Controls.Add(this.checkBoxLinkKeyOrder);
             this.groupBox1.Controls.Add(this.checkBoxLogicalGroup);
             this.groupBox1.Location = new System.Drawing.Point(12, 199);
             this.groupBox1.Name = "groupBox1";
@@ -203,17 +203,17 @@
             this.checkBox2.Text = "TBD";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // checkBoxLinkKeyOrder
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Checked = true;
-            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox3.Location = new System.Drawing.Point(6, 42);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(48, 17);
-            this.checkBox3.TabIndex = 10;
-            this.checkBox3.Text = "TBD";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBoxLinkKeyOrder.AutoSize = true;
+            this.checkBoxLinkKeyOrder.Checked = true;
+            this.checkBoxLinkKeyOrder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxLinkKeyOrder.Location = new System.Drawing.Point(6, 42);
+            this.checkBoxLinkKeyOrder.Name = "checkBoxLinkKeyOrder";
+            this.checkBoxLinkKeyOrder.Size = new System.Drawing.Size(206, 17);
+            this.checkBoxLinkKeyOrder.TabIndex = 10;
+            this.checkBoxLinkKeyOrder.Text = "Link Key Order (Metadata vs Physical)";
+            this.checkBoxLinkKeyOrder.UseVisualStyleBackColor = true;
             // 
             // checkBoxLogicalGroup
             // 
@@ -336,7 +336,7 @@
         private System.Windows.Forms.CheckBox checkBoxSourceObjectExistence;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.CheckBox checkBoxLinkKeyOrder;
         private System.Windows.Forms.CheckBox checkBoxLogicalGroup;
         private System.Windows.Forms.Label labelInformation;
         private System.Windows.Forms.RichTextBox richTextBoxInformation;

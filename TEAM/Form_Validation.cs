@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 
 namespace TEAM
 {
@@ -21,8 +13,6 @@ namespace TEAM
         {            
             _myParent = parent;
             InitializeComponent();
-
-
 
             // Make sure the validation information is available in this form
             try
@@ -53,7 +43,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///    This method will update the vaidation values on the form
+        ///    This method will update the validation values on the form
         /// </summary>
         /// <param name="chosenFile"></param>
         private void LocalInitialiseValidationSettings()
@@ -201,6 +191,7 @@ namespace TEAM
                     stringBusinessKeyExistence = "False";
                 }
 
+                // Logical Group Validation
                 var stringLogicalGroup = "";
                 if (checkBoxLogicalGroup.Checked)
                 {
@@ -211,19 +202,31 @@ namespace TEAM
                     stringLogicalGroup = "False";
                 }
 
+                // Link Key Order Validation
+                var stringLinkKeyOrder = "";
+                if (checkBoxLinkKeyOrder.Checked)
+                {
+                    stringLinkKeyOrder = "True";
+                }
+                else
+                {
+                    stringLinkKeyOrder = "False";
+                }
+
                 ValidationSettings.SourceObjectExistence = stringSourceObjectExistence;
                 ValidationSettings.TargetObjectExistence = stringtargetObjectExistence;
                 ValidationSettings.BusinessKeyExistence = stringBusinessKeyExistence;
                 ValidationSettings.LogicalGroup = stringLogicalGroup;
+                ValidationSettings.LinkKeyOrder = stringLinkKeyOrder;
 
                 // Write to disk
                 EnvironmentConfiguration.SaveValidationFile();
 
-                richTextBoxInformation.Text = "The values have been succesfully saved.";
+                richTextBoxInformation.Text = "The values have been successfully saved.";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: Could not write values to memory anbd disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error: Could not write values to memory and disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

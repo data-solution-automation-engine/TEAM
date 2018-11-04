@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormTestData : Form
+    public partial class FormTestData : FormBase
     {
         // Make parent form controls accessible (create instance of Form Main)
         private readonly FormMain _myParent;
@@ -79,7 +79,7 @@ namespace TEAM
                     "FROM INFORMATION_SCHEMA.TABLES " +
                     "WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME NOT LIKE '%_USERMANAGED_%'";
 
-                var tables = _myParent.GetDataTable(ref connStg, queryTableArray);
+                var tables = GetDataTable(ref connStg, queryTableArray);
 
                 if (tables != null)
                 {
@@ -110,17 +110,17 @@ namespace TEAM
                             localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'" +
                             " AND TABLE_NAME= '" + stgTableName + "'" +
                             " AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" +
-                            FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
-                            FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
-                            FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
-                            FormBase.ConfigurationSettings.EtlProcessAttribute + "','" +
-                            FormBase.ConfigurationSettings.EventDateTimeAttribute + "','" +
-                            FormBase.ConfigurationSettings.ChangeDataCaptureAttribute + "','" +
-                            FormBase.ConfigurationSettings.RecordChecksumAttribute + "','" +
-                            FormBase.ConfigurationSettings.RowIdAttribute + "','" +
-                            FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')";
+                            ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
+                            ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                            ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                            ConfigurationSettings.EtlProcessAttribute + "','" +
+                            ConfigurationSettings.EventDateTimeAttribute + "','" +
+                            ConfigurationSettings.ChangeDataCaptureAttribute + "','" +
+                            ConfigurationSettings.RecordChecksumAttribute + "','" +
+                            ConfigurationSettings.RowIdAttribute + "','" +
+                            ConfigurationSettings.LoadDateTimeAttribute + "')";
 
-                        var attributeArray = _myParent.GetDataTable(ref connStg, queryAttributeArray);
+                        var attributeArray = GetDataTable(ref connStg, queryAttributeArray);
 
                         for (var intCounter = 1; intCounter <= Convert.ToInt32(textBoxTestCaseAmount.Text); intCounter++)
                         {

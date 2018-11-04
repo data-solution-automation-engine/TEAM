@@ -98,6 +98,7 @@ namespace TEAM
 
             // Consistency validation
             validationFile.AppendLine("LogicalGroup|True");
+            validationFile.AppendLine("LinkKeyOrder|True");
 
             validationFile.AppendLine("/* End of file */");
 
@@ -606,6 +607,7 @@ namespace TEAM
                 FormBase.ValidationSettings.BusinessKeyExistence = configList["BusinessKeyExistence"];
 
                 FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
+                FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
             }
             catch (Exception)
             {
@@ -621,6 +623,7 @@ namespace TEAM
         {
             try
             {
+                // Creating the file
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM Validation Settings */");
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
@@ -628,6 +631,7 @@ namespace TEAM
                 validationFile.AppendLine("TargetObjectExistence|" + FormBase.ValidationSettings.TargetObjectExistence +"");
                 validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.BusinessKeyExistence + "");
                 validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
+                validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
 
 
                 // Closing off

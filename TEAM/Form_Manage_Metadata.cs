@@ -85,11 +85,14 @@ namespace TEAM
 
             radiobuttonNoVersionChange.Checked = true;
 
+            // Retrieve the version from the database
             var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
             var selectedVersion = GetMaxVersionId(connOmd);
+            
+            // Set the version in memory
+            GlobalParameters.VersionId = selectedVersion;
 
             trackBarVersioning.Maximum = selectedVersion;
-            // trackBarVersioning.Maximum = GetVersionCount();
             trackBarVersioning.TickFrequency = GetVersionCount();
 
             //Make sure the version is displayed
@@ -5845,6 +5848,11 @@ namespace TEAM
 
         }
 
+        /// <summary>
+        /// Run the validation based on the validation settings (in the validation form / file)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonValidation_Click(object sender, EventArgs e)
         {
             if (backgroundWorkerValidationOnly.IsBusy) return;
@@ -6082,7 +6090,7 @@ namespace TEAM
             {
                 BackgroundWorker worker = sender as BackgroundWorker;
 
-                // Handling multithreading
+                // Handling multi-threading
                 if (worker != null && worker.CancellationPending)
                 {
                     e.Cancel = true;
@@ -6091,9 +6099,20 @@ namespace TEAM
                 {
                     _alert.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
 
-                    validateSourceObject();
+                    if (ValidationSettings.SourceObjectExistence == "True")
+                    {
+                        ValidateSourceObject();
+                    }
 
-                    validatetargetObject();
+                    if (ValidationSettings.TargetObjectExistence == "True")
+                    {
+                        ValidateTargetObject();
+                    }
+
+                    if (ValidationSettings.LinkKeyOrder == "True")
+                    {
+                        ValidateLinkKeyOrder();
+                    }
                 }
             }
             else
@@ -6103,107 +6122,159 @@ namespace TEAM
             }
         }
 
-        private void validateSourceObject()
+        /// <summary>
+        /// This method will check if the order of the keys in the Link is consistent with the physical table structures
+        /// </summary>
+        internal void ValidateLinkKeyOrder()
+        {
+            #region Retrieving the Links
+            // Creating a list of unique Link business key combinations from the data grid / data table
+            var objectList = new List<Tuple<string, string, string>>();
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            {
+                if (!row.IsNewRow && row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // Only select the lines that relate to a Link target
+                {
+                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString())))
+                    {
+                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString()));
+                    }
+                }
+            }
+
+ 
+
+            // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<string, bool>();
+
+            foreach (var sourceObject in objectList)
+            {
+                // The validation check returns a Dictionary
+                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
+
+                // Looping through the dictionary
+                foreach (var pair in sourceObjectValidated)
+                {
+                    if (pair.Value == false)
+                    {
+                        resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                    }
+                }
+            }
+            #endregion
+
+
+
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var sourceObjectResult in resultList)
+                {
+                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                }
+            }
+            else
+            {
+                _alert.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
+            }
+
+
+
+        }
+
+
+        private void ValidateSourceObject()
         {
             #region Validation for Source Object Existence
-            if (ValidationSettings.SourceObjectExistence == "True")
+
+            // Creating a list of unique table names from the data grid / data table
+            var objectList = new List<string>();
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                var inputConnectionString = FormBase.ConfigurationSettings.ConnectionStringStg;
-
-                // Creating a list of unique table names from the data grid / data table
-                var objectList = new List<string>();
-                foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                if (!row.IsNewRow)
                 {
-                    if (!row.IsNewRow)
+                    if (!objectList.Contains(row.Cells[2].Value.ToString()))
                     {
-                        if (!objectList.Contains(row.Cells[2].Value.ToString()))
-                        {
-                            objectList.Add(row.Cells[2].Value.ToString());
-                        }
+                        objectList.Add(row.Cells[2].Value.ToString());
                     }
                 }
-
-
-                // Execute the validation check using the list of unique objects
-                var resultList = new Dictionary<string, string>();
-                foreach (string sourceObject in objectList)
-                {
-                    var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, inputConnectionString);
-
-                    if (sourceObjectValidated == "False")
-                    {
-                        resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
-                    }
-                }
-
-
-                // Return the results back to the user
-                if (resultList.Count > 0)
-                {
-                    foreach (var sourceObjectResult in resultList)
-                    {
-                        _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
-                    }
-                }
-                else
-                {
-                    _alert.SetTextLogging("There were no validation issues related to the existence of the source table / object (Staging Area table).\r\n");
-                }
-
-
             }
+
+
+            // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<string, string>();
+
+            foreach (string sourceObject in objectList)
+            {
+                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
+
+                if (sourceObjectValidated == "False")
+                {
+                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                }
+            }
+
+
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var sourceObjectResult in resultList)
+                {
+                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                }
+            }
+            else
+            {
+                _alert.SetTextLogging("There were no validation issues related to the existence of the source table / object (Staging Area table).\r\n");
+            }
+                
+            
             #endregion
         }
 
-        private void validatetargetObject()
+        private void ValidateTargetObject()
         {
             #region Validation for Source Object Existence
-            if (ValidationSettings.TargetObjectExistence == "True")
+
+            // Creating a list of unique table names from the data grid / data table
+            var objectList = new List<string>();
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                var inputConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt;
-
-                // Creating a list of unique table names from the data grid / data table
-                var objectList = new List<string>();
-                foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                if (!row.IsNewRow)
                 {
-                    if (!row.IsNewRow)
+                    if (!objectList.Contains(row.Cells[3].Value.ToString()))
                     {
-                        if (!objectList.Contains(row.Cells[3].Value.ToString()))
-                        {
-                            objectList.Add(row.Cells[3].Value.ToString());
-                        }
+                        objectList.Add(row.Cells[3].Value.ToString());
                     }
                 }
-
-
-                // Execute the validation check using the list of unique objects
-                var resultList = new Dictionary<string, string>();
-                foreach (string sourceObject in objectList)
-                {
-                    var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, inputConnectionString);
-
-                    if (sourceObjectValidated == "False")
-                    {
-                        resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
-                    }
-                }
-
-
-                // Return the results back to the user
-                if (resultList.Count > 0)
-                {
-                    foreach (var sourceObjectResult in resultList)
-                    {
-                        _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
-                    }
-                }
-                else
-                {
-                    _alert.SetTextLogging("There were no validation issues related to the existence of the target table / object (Integration Layer table).\r\n");
-                }
-
-
             }
+
+
+            // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<string, string>();
+            foreach (string sourceObject in objectList)
+            {
+                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringInt);
+
+                if (sourceObjectValidated == "False")
+                {
+                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                }
+            }
+
+
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var sourceObjectResult in resultList)
+                {
+                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                }
+            }
+            else
+            {
+                _alert.SetTextLogging("There were no validation issues related to the existence of the target table / object (Integration Layer table).\r\n");
+            }
+
             #endregion
         }
 
