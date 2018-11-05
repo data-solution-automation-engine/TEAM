@@ -6156,7 +6156,10 @@ namespace TEAM
                 {
                     if (pair.Value == false)
                     {
-                        resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
+                        {
+                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                        }
                     }
                 }
             }

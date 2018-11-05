@@ -36,10 +36,10 @@ namespace TEAM
 
             // Now iterate over each Hub, as identified by the business key.
             // Maintain the ordinal position of the business key
-            var conn = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = connectionString };
             conn.Open();
 
-            var hubKeyOrder = new Dictionary<string, int>();
+            var hubKeyOrder = new Dictionary<int, string>();
 
             int businessKeyOrder = 0;
 
@@ -61,6 +61,7 @@ namespace TEAM
                 sqlStatementForHub.AppendLine("AND [VERSION_ID] = " + versionId);
                 sqlStatementForHub.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
                 sqlStatementForHub.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '"+hubBusinessKey.Replace("'","''").Trim()+"'");
+                sqlStatementForHub.AppendLine("AND [INTEGRATION_AREA_TABLE] NOT LIKE '" + ConfigurationSettings.SatTablePrefixValue + "_%'");
 
                 var hubList = GetDataTable(ref conn, sqlStatementForHub.ToString());
 
@@ -72,12 +73,12 @@ namespace TEAM
                     hubSurrogateKeyName = hubTableName.Replace(ConfigurationSettings.HubTablePrefixValue+'_', "")+"_SK";
                 }
 
-                hubKeyOrder.Add(hubSurrogateKeyName, businessKeyOrder);
+                hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
             }
             conn.Close();
 
             // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
-            var connTarget = new SqlConnection { ConnectionString = connectionString };
+            var connTarget = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringInt };
             connTarget.Open();
 
             var sqlStatementForLink = new StringBuilder();
@@ -92,16 +93,16 @@ namespace TEAM
             sqlStatementForLink.AppendLine("AND ORDINAL_POSITION > 4");
             sqlStatementForLink.AppendLine("AND TABLE_NAME = '"+validationObject.Item2+"'");
 
-            var linkList = GetDataTable(ref conn, sqlStatementForLink.ToString());
+            var linkList = GetDataTable(ref connTarget, sqlStatementForLink.ToString());
             // Derive the Hub surrogate key name, as this can be compared against the Link
-            var linkKeyOrder = new Dictionary<string, int>();
+            var linkKeyOrder = new Dictionary<int, string>();
 
             foreach (DataRow row in linkList.Rows)
             {
                 var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
                 int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
 
-                linkKeyOrder.Add(linkHubSurrogateKeyName, linkHubSurrogateKeyPosition);
+                linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
             }
             connTarget.Close();
 
@@ -114,7 +115,7 @@ namespace TEAM
                 equal = true;
                 foreach (var pair in hubKeyOrder)
                 {
-                    int value;
+                    string value;
                     if (linkKeyOrder.TryGetValue(pair.Key, out value))
                     {
                         // Require value be equal.
