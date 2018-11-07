@@ -19,6 +19,7 @@ namespace TEAM
     public partial class FormManageMetadata : FormBase
     {
         FormAlert _alert;
+        FormAlert _alertValidation;
 
         //Getting the datatable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
@@ -77,6 +78,8 @@ namespace TEAM
             InitializeComponent();
 
             radiobuttonNoVersionChange.Checked = true;
+            MetadataParameters.ValidationIssues = 0;
+            MetadataParameters.ValidationRunning = false;
 
             labelHubCount.Text = "0 Hubs";
             labelSatCount.Text = "0 Satellites";
@@ -2955,26 +2958,73 @@ namespace TEAM
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-
-            richTextBoxInformation.Clear();
-
-            var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
-            var majorVersion = versionMajorMinor.Key;
-            var minorVersion = versionMajorMinor.Value;
-            richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." +minorVersion + ".\r\n";
-
-            //MessageBox.Show(trackBarVersioning.Value.ToString());
-
-            if (checkBoxIgnoreVersion.Checked==false)
+            #region Validation
+            // Start the validation
+            if (checkBoxValidation.Checked)
             {
-                var versionExistenceCheck = new StringBuilder();
-                
-                versionExistenceCheck.AppendLine("SELECT * FROM MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
+                if (backgroundWorkerValidationOnly.IsBusy) return;
+                // create a new instance of the alert form
+                _alertValidation = new FormAlert();
+                // event handler for the Cancel button in AlertForm
+                _alertValidation.Canceled += buttonCancel_Click;
+                _alertValidation.Show();
+                // Start the asynchronous operation.
+                backgroundWorkerValidationOnly.RunWorkerAsync();
+            }
+            #endregion
 
-                var versionExistenceCheckDataTable = GetDataTable(ref connOmd, versionExistenceCheck.ToString());
+            #region Activation
+            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0))
+            {
+                // Make sure the validation thread finishes
+                if (backgroundWorkerValidationOnly.IsBusy)
+                {
+                    while (MetadataParameters.ValidationRunning == true)
+                    {
+                        richTextBoxInformation.Text += "Waiting for the validation to finish...\r\n";
+                        Thread.Sleep(5000); //  5 second delay
+                    }
+                }
 
-                if (versionExistenceCheckDataTable != null && versionExistenceCheckDataTable.Rows.Count > 0)
+
+                // Commence the activation
+                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+
+                richTextBoxInformation.Clear();
+
+                var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
+                var majorVersion = versionMajorMinor.Key;
+                var minorVersion = versionMajorMinor.Value;
+                richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n";
+
+                //MessageBox.Show(trackBarVersioning.Value.ToString());
+
+                if (checkBoxIgnoreVersion.Checked == false)
+                {
+                    var versionExistenceCheck = new StringBuilder();
+
+                    versionExistenceCheck.AppendLine("SELECT * FROM MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
+
+                    var versionExistenceCheckDataTable = GetDataTable(ref connOmd, versionExistenceCheck.ToString());
+
+                    if (versionExistenceCheckDataTable != null && versionExistenceCheckDataTable.Rows.Count > 0)
+                    {
+                        if (backgroundWorkerMetadata.IsBusy) return;
+                        // create a new instance of the alert form
+                        _alert = new FormAlert();
+                        // event handler for the Cancel button in AlertForm
+                        _alert.Canceled += buttonCancel_Click;
+                        _alert.Show();
+                        // Start the asynchronous operation.
+                        backgroundWorkerMetadata.RunWorkerAsync();
+                    }
+                    else
+                    {
+                        richTextBoxInformation.Text +=
+                            "There is no model metadata available for this version, so the metadata can only be actived with the 'Ignore Version' enabled for this specific version.\r\n ";
+                    }
+                }
+                else
                 {
                     if (backgroundWorkerMetadata.IsBusy) return;
                     // create a new instance of the alert form
@@ -2985,29 +3035,21 @@ namespace TEAM
                     // Start the asynchronous operation.
                     backgroundWorkerMetadata.RunWorkerAsync();
                 }
-                else
-                {
-                    richTextBoxInformation.Text +=
-                        "There is no model metadata available for this version, so the metadata can only be actived with the 'Ignore Version' enabled for this specific version.\r\n ";
-                }
             }
             else
             {
-                if (backgroundWorkerMetadata.IsBusy) return;
-                // create a new instance of the alert form
-                _alert = new FormAlert();
-                // event handler for the Cancel button in AlertForm
-                _alert.Canceled += buttonCancel_Click;
-                _alert.Show();
-                // Start the asynchronous operation.
-                backgroundWorkerMetadata.RunWorkerAsync();
+                richTextBoxInformation.Text = "Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and activate the metadata again.\r\n ";
             }
-
+            #endregion
 
 
         }
 
-        // This event handler cancels the backgroundworker, fired from Cancel button in AlertForm.
+        /// <summary>
+        /// This event handler cancels the backgroundworker, fired from Cancel button in AlertForm.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>        
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             if (backgroundWorkerMetadata.WorkerSupportsCancellation)
@@ -3019,7 +3061,10 @@ namespace TEAM
             }
         }
 
-        // Multithreading for updating the user (Link Satellite form)
+        /// <summary>
+        /// Multithreading for informaing the user when version changes (to other forms)
+        /// </summary>
+        /// <returns></returns>
         delegate int GetVersionFromTrackBarCallBack();
         private int GetVersionFromTrackBar()
         {
@@ -5855,14 +5900,16 @@ namespace TEAM
         /// <param name="e"></param>
         private void buttonValidation_Click(object sender, EventArgs e)
         {
+
             if (backgroundWorkerValidationOnly.IsBusy) return;
             // create a new instance of the alert form
-            _alert = new FormAlert();
+            _alertValidation = new FormAlert();
             // event handler for the Cancel button in AlertForm
-            _alert.Canceled += buttonCancel_Click;
-            _alert.Show();
+            _alertValidation.Canceled += buttonCancel_Click;
+            _alertValidation.Show();
             // Start the asynchronous operation.
             backgroundWorkerValidationOnly.RunWorkerAsync();
+            
         }
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -6097,27 +6144,44 @@ namespace TEAM
                 }
                 else
                 {
-                    _alert.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+                    _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+                    MetadataParameters.ValidationIssues = 0;
+                    MetadataParameters.ValidationRunning = true;
 
                     if (ValidationSettings.SourceObjectExistence == "True")
                     {
                         ValidateSourceObject();
                     }
+                    if (worker != null) worker.ReportProgress(15);
 
                     if (ValidationSettings.TargetObjectExistence == "True")
                     {
                         ValidateTargetObject();
                     }
+                    if (worker != null) worker.ReportProgress(30);
 
                     if (ValidationSettings.SourceBusinessKeyExistence == "True")
                     {
                         ValidateBusinessKeyObject();
                     }
+                    if (worker != null) worker.ReportProgress(60);
+
+
+                    if (ValidationSettings.LogicalGroup == "True")
+                    {
+                        ValidateLogicalGroup();
+                    }
+                    if (worker != null) worker.ReportProgress(75);
 
                     if (ValidationSettings.LinkKeyOrder == "True")
                     {
                         ValidateLinkKeyOrder();
                     }
+                    if (worker != null) worker.ReportProgress(100);
+
+                    // Informing the user.
+                    _alertValidation.SetTextLogging("\r\nIn total "+ MetadataParameters.ValidationIssues + " validation issues have been found.");
+                    MetadataParameters.ValidationRunning = false;
                 }
             }
             else
@@ -6127,12 +6191,128 @@ namespace TEAM
             }
         }
 
+        internal static class MetadataParameters
+        {
+            // TEAM core path parameters
+            public static int ValidationIssues { get; set; }
+            public static bool ValidationRunning {get; set;}
+        }
+
+        private void ValidateSourceObject()
+        {
+            #region Validation for Source Object Existence
+            // Informing the user.
+            _alertValidation.SetTextLogging("Commencing the validation to determine if the Staging Area metadata exists in the physical model.\r\n\r\n");
+
+
+            // Creating a list of unique table names from the data grid / data table
+            var objectList = new List<string>();
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    if (!objectList.Contains(row.Cells[2].Value.ToString()))
+                    {
+                        objectList.Add(row.Cells[2].Value.ToString());
+                    }
+                }
+            }
+
+
+            // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<string, string>();
+
+            foreach (string sourceObject in objectList)
+            {
+                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
+
+                if (sourceObjectValidated == "False")
+                {
+                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                }
+            }
+
+
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var sourceObjectResult in resultList)
+                {
+                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                }
+
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
+            }
+            else
+            {
+                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the source table / object (Staging Area table).\r\n");
+            }
+
+
+            #endregion
+        }
+
+        private void ValidateTargetObject()
+        {
+            #region Validation for Source Object Existence
+            // Informing the user.
+            _alertValidation.SetTextLogging("\r\nCommencing the validation to determine if the Integration Layer metadata exists in the physical model.\r\n\r\n");
+
+            // Creating a list of unique table names from the data grid / data table
+            var objectList = new List<string>();
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    if (!objectList.Contains(row.Cells[3].Value.ToString()))
+                    {
+                        objectList.Add(row.Cells[3].Value.ToString());
+                    }
+                }
+            }
+
+
+            // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<string, string>();
+            foreach (string sourceObject in objectList)
+            {
+                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringInt);
+
+                if (sourceObjectValidated == "False")
+                {
+                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                }
+            }
+
+
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var sourceObjectResult in resultList)
+                {
+                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                }
+
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
+            }
+            else
+            {
+                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the target table / object (Integration Layer table).\r\n");
+            }
+
+            #endregion
+        }
+
         /// <summary>
         /// This method will check if the order of the keys in the Link is consistent with the physical table structures
         /// </summary>
         internal void ValidateLinkKeyOrder()
         {
             #region Retrieving the Links
+            // Informing the user.
+            _alertValidation.SetTextLogging("\r\nCommencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n\r\n");
+
+
             // Creating a list of unique Link business key combinations from the data grid / data table
             var objectList = new List<Tuple<string, string, string>>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
@@ -6177,49 +6357,61 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
+
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alert.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
+                _alertValidation.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
             }
 
 
 
         }
 
-
-        private void ValidateSourceObject()
+        internal void ValidateLogicalGroup()
         {
-            #region Validation for Source Object Existence
+            #region Retrieving the Integration Layer tables
+            // Informing the user.
+            _alertValidation.SetTextLogging("\r\nCommencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n\r\n");
 
-            // Creating a list of unique table names from the data grid / data table
-            var objectList = new List<string>();
+            // Creating a list of tables which are dependent on other tables being present
+            var objectList = new List<Tuple<string, string, string>>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow)
+                if (!row.IsNewRow && (row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LsatPrefixValue))  )
                 {
-                    if (!objectList.Contains(row.Cells[2].Value.ToString()))
+                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString())))
                     {
-                        objectList.Add(row.Cells[2].Value.ToString());
+                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString()));
                     }
                 }
             }
 
-
             // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, string>();
+            var resultList = new Dictionary<string, bool>();
 
-            foreach (string sourceObject in objectList)
+            foreach (var sourceObject in objectList)
             {
-                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
+                // The validation check returns a Dictionary
+                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
 
-                if (sourceObjectValidated == "False")
+                // Looping through the dictionary
+                foreach (var pair in sourceObjectValidated)
                 {
-                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                    if (pair.Value == false)
+                    {
+                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
+                        {
+                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                        }
+                    }
                 }
             }
+            #endregion
+
 
 
             // Return the results back to the user
@@ -6227,68 +6419,25 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
+
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alert.SetTextLogging("There were no validation issues related to the existence of the source table / object (Staging Area table).\r\n");
-            }
-                
-            
-            #endregion
-        }
-        
-        private void ValidateTargetObject()
-        {
-            #region Validation for Source Object Existence
-
-            // Creating a list of unique table names from the data grid / data table
-            var objectList = new List<string>();
-            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
-            {
-                if (!row.IsNewRow)
-                {
-                    if (!objectList.Contains(row.Cells[3].Value.ToString()))
-                    {
-                        objectList.Add(row.Cells[3].Value.ToString());
-                    }
-                }
+                _alertValidation.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
             }
 
 
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, string>();
-            foreach (string sourceObject in objectList)
-            {
-                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringInt);
 
-                if (sourceObjectValidated == "False")
-                {
-                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
-                }
-            }
-
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
-                }
-            }
-            else
-            {
-                _alert.SetTextLogging("There were no validation issues related to the existence of the target table / object (Integration Layer table).\r\n");
-            }
-
-            #endregion
         }
 
         private void ValidateBusinessKeyObject()
         {
             #region Validation for source Business Key attribute existence
+            // Informing the user.
+            _alertValidation.SetTextLogging("\r\nCommencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
 
             // Creating a list of (staging area) table names and business key (combinations) from the data grid / data table
             var objectList = new List<Tuple<string, string>>();
@@ -6331,12 +6480,14 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alert.SetTextLogging("Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + "\r\n");
+                    _alertValidation.SetTextLogging("Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + "\r\n");
                 }
+
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alert.SetTextLogging("There were no validation issues related to the existence of the business keys in the Staging Area tables.\r\n");
+                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the business keys in the Staging Area tables.\r\n");
             }
 
 
@@ -6349,8 +6500,8 @@ namespace TEAM
             labelResult.Text = (e.ProgressPercentage + "%");
 
             // Pass the progress to AlertForm label and progressbar
-            _alert.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alert.ProgressValue = e.ProgressPercentage;
+            _alertValidation.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertValidation.ProgressValue = e.ProgressPercentage;
         }
 
         private void backgroundWorkerValidationOnly_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -6366,7 +6517,7 @@ namespace TEAM
             else
             {
                 labelResult.Text = "Done!";
-                richTextBoxInformation.Text += "The metadata was validated succesfully!\r\n";
+                richTextBoxInformation.Text += "\r\nThe metadata was validated succesfully!\r\n";
             }
         }
     }

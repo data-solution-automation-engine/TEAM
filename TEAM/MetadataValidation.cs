@@ -28,6 +28,123 @@ namespace TEAM
             return exists.ToString();
         }
 
+        internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, string connectionString, int versionId)
+        {
+            // First, the Business Key need to be checked. This is to determine how many dependents are expected.
+            // For instance, if a Link has a three-part Business Key then three Hubs will be expected
+            List<string> hubBusinessKeys = validationObject.Item3.Split(',').ToList();
+            int businessKeyCount = hubBusinessKeys.Count;
+
+            // We need to manupulate the query to account for multiplicity in the model i.e. many Satellites linking to a single Hub.
+            // The only interest is whether the Hub is there...
+            var tableInclusionFilterCriterion = "";
+            var tableClassification = "";
+            if (validationObject.Item2.StartsWith(ConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
+            {
+                tableInclusionFilterCriterion = ConfigurationSettings.HubTablePrefixValue;
+                tableClassification = "SAT";
+            }
+            else if (validationObject.Item2.StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
+            {
+                tableInclusionFilterCriterion = ConfigurationSettings.HubTablePrefixValue;
+                tableClassification = "LNK";
+            }
+            else if (validationObject.Item2.StartsWith(ConfigurationSettings.LsatPrefixValue)) // If the table is a Link-Satellite, only the Link is required
+            {
+                tableInclusionFilterCriterion = ConfigurationSettings.LinkTablePrefixValue;
+                tableClassification = "LSAT";
+            }
+            else
+            {
+                tableInclusionFilterCriterion = "";
+            }
+
+
+            var conn = new SqlConnection { ConnectionString = connectionString };
+            conn.Open();
+
+
+            // Unfortunately, there is a separate process for Links and Sats
+            // Iterate through the various keys (mainly for the purpose of evaluating Links)
+            int numberOfDependents = 0;
+            if (tableClassification == "SAT" || tableClassification == "LNK")
+            {
+                foreach (string businessKeyComponent in hubBusinessKeys)
+                {
+                    // Query the dependent information
+                    var sqlStatementForDependent = new StringBuilder();
+
+                    sqlStatementForDependent.AppendLine("SELECT COUNT(*) AS NR_OF_DEPENDENTS");
+                    sqlStatementForDependent.AppendLine("FROM [MD_TABLE_MAPPING]");
+                    sqlStatementForDependent.AppendLine("WHERE");
+                    sqlStatementForDependent.AppendLine("    [GENERATE_INDICATOR] = 'Y'");
+                    sqlStatementForDependent.AppendLine("AND [VERSION_ID] = " + versionId);
+                    sqlStatementForDependent.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
+                    sqlStatementForDependent.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '" + businessKeyComponent.Replace("'", "''").Trim() + "'");
+                    sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
+                    sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
+
+                    var dependentsList = GetDataTable(ref conn, sqlStatementForDependent.ToString());
+
+                    // Derive the Hub surrogate key name, as this can be compared against the Link
+                    foreach (DataRow row in dependentsList.Rows)
+                    {
+                        numberOfDependents = numberOfDependents + Convert.ToInt32(row["NR_OF_DEPENDENTS"]);
+                    }
+                }
+            }
+            else // In the case of an LSAT, only join on the Link using the full business key
+            {
+                // Query the dependent information
+                var sqlStatementForDependent = new StringBuilder();
+
+                sqlStatementForDependent.AppendLine("SELECT COUNT(*) AS NR_OF_DEPENDENTS");
+                sqlStatementForDependent.AppendLine("FROM [MD_TABLE_MAPPING]");
+                sqlStatementForDependent.AppendLine("WHERE");
+                sqlStatementForDependent.AppendLine("    [GENERATE_INDICATOR] = 'Y'");
+                sqlStatementForDependent.AppendLine("AND [VERSION_ID] = " + versionId);
+                sqlStatementForDependent.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
+                sqlStatementForDependent.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '" + validationObject.Item3.Replace("'", "''").Trim() + "'");
+                sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
+                sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
+
+                var dependentsList = GetDataTable(ref conn, sqlStatementForDependent.ToString());
+
+                // Derive the Hub surrogate key name, as this can be compared against the Link
+                foreach (DataRow row in dependentsList.Rows)
+                {
+                    numberOfDependents = Convert.ToInt32(row["NR_OF_DEPENDENTS"]);
+                }
+            }
+
+            conn.Close();
+
+
+
+            // Run the comparison
+            // Test for equality.
+            bool equal = false;
+            if ((tableClassification == "SAT" || tableClassification == "LNK") && businessKeyCount == numberOfDependents) // For Sats and Links we can count the keys and rows
+            {
+                equal = true;
+            }
+            else if (tableClassification == "LSAT" && numberOfDependents == 1)
+            {
+                equal = true;
+            }
+            else
+            {
+                equal = false;
+            }
+        
+
+            // return the result of the test;
+            Dictionary<string, bool> result = new Dictionary<string, bool>();
+            result.Add(validationObject.Item2, equal);
+            return result;
+        }
+
+
         internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string> validationObject, string connectionString, int versionId)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
