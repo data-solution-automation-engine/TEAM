@@ -88,7 +88,7 @@ namespace TEAM
             sqlStatementForLink.AppendLine("  ,COLUMN_NAME");
             sqlStatementForLink.AppendLine("  ,ORDINAL_POSITION");
             sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY TABLE_NAME ORDER BY ORDINAL_POSITION) AS [HUB_KEY_POSITION]");
-            sqlStatementForLink.AppendLine("FROM EDW_200_Integration_Layer.INFORMATION_SCHEMA.COLUMNS");
+            sqlStatementForLink.AppendLine("FROM "+ConfigurationSettings.IntegrationDatabaseName+".INFORMATION_SCHEMA.COLUMNS");
             sqlStatementForLink.AppendLine("    WHERE TABLE_NAME LIKE '"+ConfigurationSettings.LinkTablePrefixValue+"_%'");
             sqlStatementForLink.AppendLine("AND ORDINAL_POSITION > 4");
             sqlStatementForLink.AppendLine("AND TABLE_NAME = '"+validationObject.Item2+"'");
