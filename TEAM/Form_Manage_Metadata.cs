@@ -6109,6 +6109,11 @@ namespace TEAM
                         ValidateTargetObject();
                     }
 
+                    if (ValidationSettings.SourceBusinessKeyExistence == "True")
+                    {
+                        ValidateBusinessKeyObject();
+                    }
+
                     if (ValidationSettings.LinkKeyOrder == "True")
                     {
                         ValidateLinkKeyOrder();
@@ -6233,7 +6238,7 @@ namespace TEAM
             
             #endregion
         }
-
+        
         private void ValidateTargetObject()
         {
             #region Validation for Source Object Existence
@@ -6279,6 +6284,63 @@ namespace TEAM
             }
 
             #endregion
+        }
+
+        private void ValidateBusinessKeyObject()
+        {
+            #region Validation for source Business Key attribute existence
+
+            // Creating a list of (staging area) table names and business key (combinations) from the data grid / data table
+            var objectList = new List<Tuple<string, string>>();
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    if (!objectList.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
+                    {
+                        objectList.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                    }
+                }
+            }
+
+
+            // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<Tuple<string,string>, bool>();
+
+            foreach (var sourceObject in objectList)
+            {
+                // The validation check returns a Dictionary
+                var sourceObjectValidated = MetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.VersionId);
+
+                // Looping through the dictionary
+                foreach (var pair in sourceObjectValidated)
+                {
+                    if (pair.Value == false)
+                    {
+                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
+                        {
+                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var sourceObjectResult in resultList)
+                {
+                    _alert.SetTextLogging("Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + "\r\n");
+                }
+            }
+            else
+            {
+                _alert.SetTextLogging("There were no validation issues related to the existence of the business keys in the Staging Area tables.\r\n");
+            }
+
+
+
         }
 
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)

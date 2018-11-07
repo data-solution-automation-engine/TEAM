@@ -139,5 +139,59 @@ namespace TEAM
             result.Add(validationObject.Item2,equal);
             return result;
         }
+
+        internal static Dictionary<Tuple<string,string>, bool> ValidateSourceBusinessKeyExistence(Tuple<string, string> validationObject, string connectionString, int versionId)
+        {
+            // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
+            // Every business key needs to be iterated over to validate if the attribute exists in that table.
+            List<string> businessKeys = validationObject.Item2.Split(',').ToList();
+
+            // Now iterate over each table, as identified by the business key.
+            var conn = new SqlConnection { ConnectionString = connectionString };
+            conn.Open();
+
+            Dictionary<Tuple<string, string>, bool> result = new Dictionary<Tuple<string, string>, bool>();
+
+            foreach (string businessKey in businessKeys)
+            {
+                // Handle concatenate and composite
+                List<string> subKeys = new List<string>();
+
+                if (businessKey.StartsWith("CONCATENATE"))
+                {
+                    var localBusinessKey = businessKey.Replace("CONCATENATE(", "").Replace(")", "");
+
+                    subKeys = localBusinessKey.Split(';').ToList();
+                }
+                else if (businessKey.StartsWith("COMPOSITE"))
+                {
+                    var localBusinessKey = businessKey.Replace("COMPOSITE(", "").Replace(")", "");
+
+                    subKeys = localBusinessKey.Split(';').ToList();
+                } else
+                {
+                    subKeys.Add(businessKey);
+                }
+
+                foreach (string businessKeyPart in subKeys)
+                {
+                    // Handle hard-coded business key values
+                    if (businessKeyPart.StartsWith("'") && businessKeyPart.EndsWith("'"))
+                    {
+                        // Do nothing
+                    }
+                    else
+                    {
+                        // Query the data dictionary to valdiate existence
+                        var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + validationObject.Item1 + "' AND COLUMN_NAME = '" + businessKeyPart.Trim() + "')) THEN 1 ELSE 0 END", conn);
+                        var exists = (int)cmd.ExecuteScalar() == 1;
+                        result.Add(Tuple.Create(validationObject.Item1, businessKeyPart.Trim()), exists);
+                    }
+                }
+            }
+            conn.Close();
+            // Return the result of the test;
+            return result;
+        }
     }
 }

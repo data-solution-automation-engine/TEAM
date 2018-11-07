@@ -39,19 +39,16 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxExistenceChecks = new System.Windows.Forms.GroupBox();
-            this.checkBoxBusinessKeyExistence = new System.Windows.Forms.CheckBox();
+            this.checkBoxSourceBusinessKeyExistence = new System.Windows.Forms.CheckBox();
             this.checkBoxTargetObjectExistence = new System.Windows.Forms.CheckBox();
             this.checkBoxSourceObjectExistence = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBoxLinkKeyOrder = new System.Windows.Forms.CheckBox();
             this.checkBoxLogicalGroup = new System.Windows.Forms.CheckBox();
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
+            this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxExistenceChecks.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -133,7 +130,7 @@
             // 
             // groupBoxExistenceChecks
             // 
-            this.groupBoxExistenceChecks.Controls.Add(this.checkBoxBusinessKeyExistence);
+            this.groupBoxExistenceChecks.Controls.Add(this.checkBoxSourceBusinessKeyExistence);
             this.groupBoxExistenceChecks.Controls.Add(this.checkBoxTargetObjectExistence);
             this.groupBoxExistenceChecks.Controls.Add(this.checkBoxSourceObjectExistence);
             this.groupBoxExistenceChecks.Location = new System.Drawing.Point(12, 42);
@@ -143,17 +140,17 @@
             this.groupBoxExistenceChecks.TabStop = false;
             this.groupBoxExistenceChecks.Text = "Object existence";
             // 
-            // checkBoxBusinessKeyExistence
+            // checkBoxSourceBusinessKeyExistence
             // 
-            this.checkBoxBusinessKeyExistence.AutoSize = true;
-            this.checkBoxBusinessKeyExistence.Checked = true;
-            this.checkBoxBusinessKeyExistence.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxBusinessKeyExistence.Location = new System.Drawing.Point(6, 65);
-            this.checkBoxBusinessKeyExistence.Name = "checkBoxBusinessKeyExistence";
-            this.checkBoxBusinessKeyExistence.Size = new System.Drawing.Size(165, 17);
-            this.checkBoxBusinessKeyExistence.TabIndex = 25;
-            this.checkBoxBusinessKeyExistence.Text = "Source business key attribute";
-            this.checkBoxBusinessKeyExistence.UseVisualStyleBackColor = true;
+            this.checkBoxSourceBusinessKeyExistence.AutoSize = true;
+            this.checkBoxSourceBusinessKeyExistence.Checked = true;
+            this.checkBoxSourceBusinessKeyExistence.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSourceBusinessKeyExistence.Location = new System.Drawing.Point(6, 65);
+            this.checkBoxSourceBusinessKeyExistence.Name = "checkBoxSourceBusinessKeyExistence";
+            this.checkBoxSourceBusinessKeyExistence.Size = new System.Drawing.Size(165, 17);
+            this.checkBoxSourceBusinessKeyExistence.TabIndex = 25;
+            this.checkBoxSourceBusinessKeyExistence.Text = "Source business key attribute";
+            this.checkBoxSourceBusinessKeyExistence.UseVisualStyleBackColor = true;
             // 
             // checkBoxTargetObjectExistence
             // 
@@ -181,7 +178,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkBox2);
             this.groupBox1.Controls.Add(this.checkBoxLinkKeyOrder);
             this.groupBox1.Controls.Add(this.checkBoxLogicalGroup);
             this.groupBox1.Location = new System.Drawing.Point(12, 199);
@@ -190,18 +186,6 @@
             this.groupBox1.TabIndex = 26;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Consistency";
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(6, 65);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(48, 17);
-            this.checkBox2.TabIndex = 25;
-            this.checkBox2.Text = "TBD";
-            this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // checkBoxLinkKeyOrder
             // 
@@ -250,9 +234,7 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.checkBox1);
-            this.groupBox2.Controls.Add(this.checkBox4);
-            this.groupBox2.Controls.Add(this.checkBox5);
+            this.groupBox2.Controls.Add(this.checkBoxBusinessKeySyntaxValidation);
             this.groupBox2.Location = new System.Drawing.Point(313, 42);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(226, 92);
@@ -260,41 +242,17 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Syntax";
             // 
-            // checkBox1
+            // checkBoxBusinessKeySyntaxValidation
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(6, 65);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(48, 17);
-            this.checkBox1.TabIndex = 25;
-            this.checkBox1.Text = "TBD";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // checkBox4
-            // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Checked = true;
-            this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox4.Location = new System.Drawing.Point(6, 42);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(48, 17);
-            this.checkBox4.TabIndex = 10;
-            this.checkBox4.Text = "TBD";
-            this.checkBox4.UseVisualStyleBackColor = true;
-            // 
-            // checkBox5
-            // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Checked = true;
-            this.checkBox5.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox5.Location = new System.Drawing.Point(6, 19);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(170, 17);
-            this.checkBox5.TabIndex = 9;
-            this.checkBox5.Text = "Business Key syntax validation";
-            this.checkBox5.UseVisualStyleBackColor = true;
+            this.checkBoxBusinessKeySyntaxValidation.AutoSize = true;
+            this.checkBoxBusinessKeySyntaxValidation.Checked = true;
+            this.checkBoxBusinessKeySyntaxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxBusinessKeySyntaxValidation.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxBusinessKeySyntaxValidation.Name = "checkBoxBusinessKeySyntaxValidation";
+            this.checkBoxBusinessKeySyntaxValidation.Size = new System.Drawing.Size(170, 17);
+            this.checkBoxBusinessKeySyntaxValidation.TabIndex = 9;
+            this.checkBoxBusinessKeySyntaxValidation.Text = "Business Key syntax validation";
+            this.checkBoxBusinessKeySyntaxValidation.UseVisualStyleBackColor = true;
             // 
             // FormManageValidation
             // 
@@ -331,11 +289,10 @@
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBoxExistenceChecks;
-        private System.Windows.Forms.CheckBox checkBoxBusinessKeyExistence;
+        private System.Windows.Forms.CheckBox checkBoxSourceBusinessKeyExistence;
         private System.Windows.Forms.CheckBox checkBoxTargetObjectExistence;
         private System.Windows.Forms.CheckBox checkBoxSourceObjectExistence;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.CheckBox checkBoxLinkKeyOrder;
         private System.Windows.Forms.CheckBox checkBoxLogicalGroup;
         private System.Windows.Forms.Label labelInformation;
@@ -344,8 +301,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox5;
+        private System.Windows.Forms.CheckBox checkBoxBusinessKeySyntaxValidation;
     }
 }

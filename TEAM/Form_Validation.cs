@@ -85,20 +85,20 @@ namespace TEAM
             }
 
 
-            if (ValidationSettings.BusinessKeyExistence == "True")
+            if (ValidationSettings.SourceBusinessKeyExistence == "True")
             {
-                checkBoxBusinessKeyExistence.Checked = true;
+                checkBoxSourceBusinessKeyExistence.Checked = true;
             }
-            else if (ValidationSettings.BusinessKeyExistence == "False")
+            else if (ValidationSettings.SourceBusinessKeyExistence == "False")
             {
-                checkBoxBusinessKeyExistence.Checked = false;
+                checkBoxSourceBusinessKeyExistence.Checked = false;
             }
             else
             {
                 // Raise exception
                 MessageBox.Show(
                     "There is something wrong with the validation values, only true and false are allowed but this was encountered: " +
-                    ValidationSettings.BusinessKeyExistence +
+                    ValidationSettings.SourceBusinessKeyExistence +
                     ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -161,6 +161,8 @@ namespace TEAM
             try
             {
                 // Save form values to memory
+
+                // Source object existence check
                 var stringSourceObjectExistence = "";
                 if (checkBoxSourceObjectExistence.Checked)
                 {
@@ -170,7 +172,10 @@ namespace TEAM
                 {
                     stringSourceObjectExistence = "False";
                 }
+                ValidationSettings.SourceObjectExistence = stringSourceObjectExistence;
 
+
+                // Target object existence check
                 var stringtargetObjectExistence = "";
                 if (checkBoxTargetObjectExistence.Checked)
                 {
@@ -180,9 +185,12 @@ namespace TEAM
                 {
                     stringtargetObjectExistence = "False";
                 }
+                ValidationSettings.TargetObjectExistence = stringtargetObjectExistence;
 
+
+                // Source business key existence check
                 var stringBusinessKeyExistence = "";
-                if (checkBoxBusinessKeyExistence.Checked)
+                if (checkBoxSourceBusinessKeyExistence.Checked)
                 {
                     stringBusinessKeyExistence = "True";
                 }
@@ -190,6 +198,8 @@ namespace TEAM
                 {
                     stringBusinessKeyExistence = "False";
                 }
+                ValidationSettings.SourceBusinessKeyExistence = stringBusinessKeyExistence;
+
 
                 // Logical Group Validation
                 var stringLogicalGroup = "";
@@ -201,6 +211,8 @@ namespace TEAM
                 {
                     stringLogicalGroup = "False";
                 }
+                ValidationSettings.LogicalGroup = stringLogicalGroup;
+
 
                 // Link Key Order Validation
                 var stringLinkKeyOrder = "";
@@ -212,12 +224,22 @@ namespace TEAM
                 {
                     stringLinkKeyOrder = "False";
                 }
-
-                ValidationSettings.SourceObjectExistence = stringSourceObjectExistence;
-                ValidationSettings.TargetObjectExistence = stringtargetObjectExistence;
-                ValidationSettings.BusinessKeyExistence = stringBusinessKeyExistence;
-                ValidationSettings.LogicalGroup = stringLogicalGroup;
                 ValidationSettings.LinkKeyOrder = stringLinkKeyOrder;
+
+
+                // Business key syntax check
+                var businessKeySyntax = "";
+                if (checkBoxBusinessKeySyntaxValidation.Checked)
+                {
+                    businessKeySyntax = "True";
+                }
+                else
+                {
+                    businessKeySyntax = "False";
+                }
+                ValidationSettings.BusinessKeySyntax = businessKeySyntax;
+
+
 
                 // Write to disk
                 EnvironmentConfiguration.SaveValidationFile();

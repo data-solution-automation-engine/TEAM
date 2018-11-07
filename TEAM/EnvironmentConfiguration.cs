@@ -604,10 +604,12 @@ namespace TEAM
 
                 FormBase.ValidationSettings.SourceObjectExistence = configList["SourceObjectExistence"];
                 FormBase.ValidationSettings.TargetObjectExistence = configList["TargetObjectExistence"];
-                FormBase.ValidationSettings.BusinessKeyExistence = configList["BusinessKeyExistence"];
+                FormBase.ValidationSettings.SourceBusinessKeyExistence = configList["BusinessKeyExistence"];
 
                 FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
                 FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
+
+                FormBase.ValidationSettings.LinkKeyOrder = configList["BusinessKeySyntax"];
             }
             catch (Exception)
             {
@@ -629,9 +631,10 @@ namespace TEAM
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
                 validationFile.AppendLine("SourceObjectExistence|" + FormBase.ValidationSettings.SourceObjectExistence +"");
                 validationFile.AppendLine("TargetObjectExistence|" + FormBase.ValidationSettings.TargetObjectExistence +"");
-                validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.BusinessKeyExistence + "");
+                validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.SourceBusinessKeyExistence + "");
                 validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
                 validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
+                validationFile.AppendLine("BusinessKeySyntax|" + FormBase.ValidationSettings.BusinessKeySyntax + "");
 
 
                 // Closing off

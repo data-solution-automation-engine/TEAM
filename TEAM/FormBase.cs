@@ -153,12 +153,17 @@ namespace TEAM
         /// </summary>
         internal static class ValidationSettings
         {
+            // Existence checks (in physical model or virtual representation of it)
             public static string SourceObjectExistence { get; set; }
             public static string TargetObjectExistence { get; set; }
-            public static string BusinessKeyExistence { get; set; }
+            public static string SourceBusinessKeyExistence { get; set; }
 
+            // Consistency of the unit of work
             public static string LogicalGroup { get; set; }
             public static string LinkKeyOrder { get; set; }
+
+            // Syntax validation
+            public static string BusinessKeySyntax { get; set; }
         }
 
 
