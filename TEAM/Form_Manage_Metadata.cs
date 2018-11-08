@@ -2974,10 +2974,8 @@ namespace TEAM
                 // Start the asynchronous operation.
                 backgroundWorkerValidationOnly.RunWorkerAsync();
                 while (backgroundWorkerValidationOnly.IsBusy)
-                {
-                    //richTextBoxInformation.Text += "Waiting for the validation to finish...\r\n";
+                {                 
                     Application.DoEvents();
-                    Thread.Sleep(5000); //  5 second delay   
                 }
             }
             #endregion
