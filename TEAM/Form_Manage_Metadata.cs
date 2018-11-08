@@ -26,8 +26,6 @@ namespace TEAM
         private BindingSource _bindingSourceAttributeMetadata = new BindingSource();
         private BindingSource _bindingSourcePhyicalModelMetadata = new BindingSource();
 
-        public TextBox status;
-
         public FormManageMetadata()
         {
             InitializeComponent();
@@ -78,9 +76,6 @@ namespace TEAM
         public FormManageMetadata(FormMain parent) : base(parent)
         {
             InitializeComponent();
-
-            status = new TextBox();
-            status.Text = "True";
 
             radiobuttonNoVersionChange.Checked = true;
             MetadataParameters.ValidationIssues = 0;
@@ -2963,23 +2958,6 @@ namespace TEAM
         //public TextBox status = new TextBox();
         //status.Name = "true";
 
-
-        delegate void delegate_set_status(string text);
-        private void set_status(string text)
-        {
-            if (status.InvokeRequired)
-            {
-                delegate_set_status d = new delegate_set_status(set_status);
-                Invoke(d, text);
-            }
-            else
-            {
-                status.Text = text;
-            }
-        }
-
-
-
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
@@ -2994,24 +2972,15 @@ namespace TEAM
                 _alertValidation.Canceled += buttonCancel_Click;
                 _alertValidation.Show();
                 // Start the asynchronous operation.
-                backgroundWorkerValidationOnly.RunWorkerAsync();                
-            }
-            #endregion
-
-
-
-            // Make sure the validation thread finishes before continuing
-            if (checkBoxValidation.Checked)
-            {
-                while (status.Text == "True")
+                backgroundWorkerValidationOnly.RunWorkerAsync();
+                while (backgroundWorkerValidationOnly.IsBusy)
                 {
-                        richTextBoxInformation.Text += "Waiting for the validation to finish...\r\n";
-                        //Thread.Sleep(5000); //  5 second delay   
-                        
+                    //richTextBoxInformation.Text += "Waiting for the validation to finish...\r\n";
+                    Application.DoEvents();
+                    Thread.Sleep(5000); //  5 second delay   
                 }
             }
-
-
+            #endregion
 
             // After validation finishes, the activtation thread / process should start.
             // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
@@ -6180,17 +6149,12 @@ namespace TEAM
                 {
                     _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
                     MetadataParameters.ValidationIssues = 0;
-                    set_status("True");
-
-                    System.Diagnostics.Debug.WriteLine("1--------------------");
                     if (ValidationSettings.SourceObjectExistence == "True")
                     {
                         ValidateSourceObject();
                     }
                     if (worker != null) worker.ReportProgress(15);
 
-
-                    System.Diagnostics.Debug.WriteLine("2--------------------");
                     if (ValidationSettings.TargetObjectExistence == "True")
                     {
                         ValidateTargetObject();
@@ -6202,9 +6166,6 @@ namespace TEAM
                         ValidateBusinessKeyObject();
                     }
                     if (worker != null) worker.ReportProgress(60);
-
-                    System.Diagnostics.Debug.WriteLine("3--------------------");
-
 
                     if (ValidationSettings.LogicalGroup == "True")
                     {
@@ -6220,9 +6181,6 @@ namespace TEAM
 
                     // Informing the user.
                     _alertValidation.SetTextLogging("\r\nIn total "+ MetadataParameters.ValidationIssues + " validation issues have been found.");
-
-                    set_status("False");
-
                 }
             }
             else
