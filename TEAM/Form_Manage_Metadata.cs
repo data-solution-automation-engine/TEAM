@@ -6287,7 +6287,7 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alert.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();

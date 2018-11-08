@@ -41,16 +41,19 @@
             this.checkBoxRetainManualMapping = new System.Windows.Forms.CheckBox();
             this.labelMetadataRepository = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.checkBoxCreateSampleSourceDatabase = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateSampleSource = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateSampleStaging = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateSampleDV = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.checkBoxCreateSamplePSA = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateSamplePresLayer = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateMetadataMapping = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonTruncate
             // 
             this.buttonTruncate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonTruncate.Location = new System.Drawing.Point(12, 117);
+            this.buttonTruncate.Location = new System.Drawing.Point(15, 117);
             this.buttonTruncate.Name = "buttonTruncate";
             this.buttonTruncate.Size = new System.Drawing.Size(139, 42);
             this.buttonTruncate.TabIndex = 20;
@@ -61,7 +64,7 @@
             // buttonDeploy
             // 
             this.buttonDeploy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDeploy.Location = new System.Drawing.Point(12, 14);
+            this.buttonDeploy.Location = new System.Drawing.Point(15, 14);
             this.buttonDeploy.Name = "buttonDeploy";
             this.buttonDeploy.Size = new System.Drawing.Size(139, 42);
             this.buttonDeploy.TabIndex = 21;
@@ -108,7 +111,7 @@
             // 
             this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(434, 340);
+            this.labelResult.Location = new System.Drawing.Point(534, 439);
             this.labelResult.Name = "labelResult";
             this.labelResult.Size = new System.Drawing.Size(38, 13);
             this.labelResult.TabIndex = 30;
@@ -127,7 +130,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(12, 217);
+            this.button1.Location = new System.Drawing.Point(15, 217);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(139, 42);
             this.button1.TabIndex = 31;
@@ -151,7 +154,7 @@
             // 
             this.labelMetadataRepository.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelMetadataRepository.AutoSize = true;
-            this.labelMetadataRepository.Location = new System.Drawing.Point(15, 339);
+            this.labelMetadataRepository.Location = new System.Drawing.Point(12, 439);
             this.labelMetadataRepository.Name = "labelMetadataRepository";
             this.labelMetadataRepository.Size = new System.Drawing.Size(197, 13);
             this.labelMetadataRepository.TabIndex = 62;
@@ -161,47 +164,47 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(291, 137);
+            this.label5.Location = new System.Drawing.Point(275, 137);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(152, 26);
             this.label5.TabIndex = 63;
             this.label5.Text = "- MD_TABLE_MAPPING\r\n- MD_ATTRIBUTE_MAPPING";
             // 
-            // checkBoxCreateSampleSourceDatabase
+            // checkBoxCreateSampleSource
             // 
-            this.checkBoxCreateSampleSourceDatabase.AutoSize = true;
-            this.checkBoxCreateSampleSourceDatabase.Checked = true;
-            this.checkBoxCreateSampleSourceDatabase.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateSampleSourceDatabase.Location = new System.Drawing.Point(275, 217);
-            this.checkBoxCreateSampleSourceDatabase.Name = "checkBoxCreateSampleSourceDatabase";
-            this.checkBoxCreateSampleSourceDatabase.Size = new System.Drawing.Size(169, 17);
-            this.checkBoxCreateSampleSourceDatabase.TabIndex = 64;
-            this.checkBoxCreateSampleSourceDatabase.Text = "Create sample Source content";
-            this.checkBoxCreateSampleSourceDatabase.UseVisualStyleBackColor = true;
+            this.checkBoxCreateSampleSource.AutoSize = true;
+            this.checkBoxCreateSampleSource.Checked = true;
+            this.checkBoxCreateSampleSource.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSampleSource.Location = new System.Drawing.Point(275, 217);
+            this.checkBoxCreateSampleSource.Name = "checkBoxCreateSampleSource";
+            this.checkBoxCreateSampleSource.Size = new System.Drawing.Size(169, 17);
+            this.checkBoxCreateSampleSource.TabIndex = 64;
+            this.checkBoxCreateSampleSource.Text = "Create sample Source content";
+            this.checkBoxCreateSampleSource.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // checkBoxCreateSampleStaging
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(275, 240);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(159, 17);
-            this.checkBox2.TabIndex = 65;
-            this.checkBox2.Text = "Create Sample Staging Area";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBoxCreateSampleStaging.AutoSize = true;
+            this.checkBoxCreateSampleStaging.Checked = true;
+            this.checkBoxCreateSampleStaging.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSampleStaging.Location = new System.Drawing.Point(275, 240);
+            this.checkBoxCreateSampleStaging.Name = "checkBoxCreateSampleStaging";
+            this.checkBoxCreateSampleStaging.Size = new System.Drawing.Size(159, 17);
+            this.checkBoxCreateSampleStaging.TabIndex = 65;
+            this.checkBoxCreateSampleStaging.Text = "Create Sample Staging Area";
+            this.checkBoxCreateSampleStaging.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // checkBoxCreateSampleDV
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Checked = true;
-            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox3.Location = new System.Drawing.Point(275, 263);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(148, 17);
-            this.checkBox3.TabIndex = 66;
-            this.checkBox3.Text = "Create Sample Data Vault";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBoxCreateSampleDV.AutoSize = true;
+            this.checkBoxCreateSampleDV.Checked = true;
+            this.checkBoxCreateSampleDV.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSampleDV.Location = new System.Drawing.Point(275, 286);
+            this.checkBoxCreateSampleDV.Name = "checkBoxCreateSampleDV";
+            this.checkBoxCreateSampleDV.Size = new System.Drawing.Size(148, 17);
+            this.checkBoxCreateSampleDV.TabIndex = 66;
+            this.checkBoxCreateSampleDV.Text = "Create Sample Data Vault";
+            this.checkBoxCreateSampleDV.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
@@ -211,15 +214,54 @@
             this.label6.Size = new System.Drawing.Size(0, 13);
             this.label6.TabIndex = 67;
             // 
+            // checkBoxCreateSamplePSA
+            // 
+            this.checkBoxCreateSamplePSA.AutoSize = true;
+            this.checkBoxCreateSamplePSA.Checked = true;
+            this.checkBoxCreateSamplePSA.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSamplePSA.Location = new System.Drawing.Point(275, 263);
+            this.checkBoxCreateSamplePSA.Name = "checkBoxCreateSamplePSA";
+            this.checkBoxCreateSamplePSA.Size = new System.Drawing.Size(208, 17);
+            this.checkBoxCreateSamplePSA.TabIndex = 68;
+            this.checkBoxCreateSamplePSA.Text = "Create Sample Persistent Staging Area";
+            this.checkBoxCreateSamplePSA.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCreateSamplePresLayer
+            // 
+            this.checkBoxCreateSamplePresLayer.AutoSize = true;
+            this.checkBoxCreateSamplePresLayer.Checked = true;
+            this.checkBoxCreateSamplePresLayer.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSamplePresLayer.Location = new System.Drawing.Point(275, 309);
+            this.checkBoxCreateSamplePresLayer.Name = "checkBoxCreateSamplePresLayer";
+            this.checkBoxCreateSamplePresLayer.Size = new System.Drawing.Size(186, 17);
+            this.checkBoxCreateSamplePresLayer.TabIndex = 69;
+            this.checkBoxCreateSamplePresLayer.Text = "Create Sample Presentation Layer";
+            this.checkBoxCreateSamplePresLayer.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCreateMetadataMapping
+            // 
+            this.checkBoxCreateMetadataMapping.AutoSize = true;
+            this.checkBoxCreateMetadataMapping.Checked = true;
+            this.checkBoxCreateMetadataMapping.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateMetadataMapping.Location = new System.Drawing.Point(275, 332);
+            this.checkBoxCreateMetadataMapping.Name = "checkBoxCreateMetadataMapping";
+            this.checkBoxCreateMetadataMapping.Size = new System.Drawing.Size(187, 17);
+            this.checkBoxCreateMetadataMapping.TabIndex = 70;
+            this.checkBoxCreateMetadataMapping.Text = "Create Sample Mapping Metadata";
+            this.checkBoxCreateMetadataMapping.UseVisualStyleBackColor = true;
+            // 
             // FormManageRepository
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 361);
+            this.ClientSize = new System.Drawing.Size(584, 461);
+            this.Controls.Add(this.checkBoxCreateMetadataMapping);
+            this.Controls.Add(this.checkBoxCreateSamplePresLayer);
+            this.Controls.Add(this.checkBoxCreateSamplePSA);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.checkBox3);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBoxCreateSampleSourceDatabase);
+            this.Controls.Add(this.checkBoxCreateSampleDV);
+            this.Controls.Add(this.checkBoxCreateSampleStaging);
+            this.Controls.Add(this.checkBoxCreateSampleSource);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.labelMetadataRepository);
             this.Controls.Add(this.checkBoxRetainManualMapping);
@@ -232,11 +274,10 @@
             this.Controls.Add(this.buttonDeploy);
             this.Controls.Add(this.buttonTruncate);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(500, 400);
-            this.MinimumSize = new System.Drawing.Size(500, 400);
+            this.MaximumSize = new System.Drawing.Size(600, 500);
+            this.MinimumSize = new System.Drawing.Size(600, 500);
             this.Name = "FormManageRepository";
             this.Text = "Create / Rebuild Repository";
-            this.Load += new System.EventHandler(this.FormManageRepository_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -256,9 +297,12 @@
         internal System.Windows.Forms.CheckBox checkBoxRetainManualMapping;
         private System.Windows.Forms.Label labelMetadataRepository;
         private System.Windows.Forms.Label label5;
-        internal System.Windows.Forms.CheckBox checkBoxCreateSampleSourceDatabase;
-        internal System.Windows.Forms.CheckBox checkBox2;
-        internal System.Windows.Forms.CheckBox checkBox3;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSampleSource;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSampleStaging;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSampleDV;
         private System.Windows.Forms.Label label6;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSamplePSA;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSamplePresLayer;
+        internal System.Windows.Forms.CheckBox checkBoxCreateMetadataMapping;
     }
 }
