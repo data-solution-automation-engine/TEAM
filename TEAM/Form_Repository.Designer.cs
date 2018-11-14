@@ -34,7 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerRepository = new System.ComponentModel.BackgroundWorker();
             this.labelResult = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -48,6 +48,7 @@
             this.checkBoxCreateSamplePSA = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateSamplePresLayer = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateMetadataMapping = new System.Windows.Forms.CheckBox();
+            this.backgroundWorkerSampleData = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // buttonTruncate
@@ -99,13 +100,13 @@
             this.label4.Size = new System.Drawing.Size(0, 13);
             this.label4.TabIndex = 25;
             // 
-            // backgroundWorker1
+            // backgroundWorkerRepository
             // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            this.backgroundWorkerRepository.WorkerReportsProgress = true;
+            this.backgroundWorkerRepository.WorkerSupportsCancellation = true;
+            this.backgroundWorkerRepository.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerRepository_DoWork);
+            this.backgroundWorkerRepository.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerRepository_ProgressChanged);
+            this.backgroundWorkerRepository.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerRepository_RunWorkerCompleted);
             // 
             // labelResult
             // 
@@ -141,8 +142,6 @@
             // checkBoxRetainManualMapping
             // 
             this.checkBoxRetainManualMapping.AutoSize = true;
-            this.checkBoxRetainManualMapping.Checked = true;
-            this.checkBoxRetainManualMapping.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxRetainManualMapping.Location = new System.Drawing.Point(275, 117);
             this.checkBoxRetainManualMapping.Name = "checkBoxRetainManualMapping";
             this.checkBoxRetainManualMapping.Size = new System.Drawing.Size(197, 17);
@@ -250,11 +249,19 @@
             this.checkBoxCreateMetadataMapping.Text = "Create Sample Mapping Metadata";
             this.checkBoxCreateMetadataMapping.UseVisualStyleBackColor = true;
             // 
+            // backgroundWorkerSampleData
+            // 
+            this.backgroundWorkerSampleData.WorkerReportsProgress = true;
+            this.backgroundWorkerSampleData.WorkerSupportsCancellation = true;
+            this.backgroundWorkerSampleData.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerSampleData_DoWork);
+            this.backgroundWorkerSampleData.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerSampleData_ProgressChanged);
+            this.backgroundWorkerSampleData.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerSampleData_RunWorkerCompleted);
+            // 
             // FormManageRepository
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 461);
+            this.ClientSize = new System.Drawing.Size(584, 462);
             this.Controls.Add(this.checkBoxCreateMetadataMapping);
             this.Controls.Add(this.checkBoxCreateSamplePresLayer);
             this.Controls.Add(this.checkBoxCreateSamplePSA);
@@ -290,7 +297,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerRepository;
         private System.Windows.Forms.Label labelResult;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
@@ -304,5 +311,6 @@
         internal System.Windows.Forms.CheckBox checkBoxCreateSamplePSA;
         internal System.Windows.Forms.CheckBox checkBoxCreateSamplePresLayer;
         internal System.Windows.Forms.CheckBox checkBoxCreateMetadataMapping;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerSampleData;
     }
 }

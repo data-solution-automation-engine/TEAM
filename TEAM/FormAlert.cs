@@ -28,7 +28,7 @@ namespace TEAM
             InitializeComponent();
         }
 
-        // Multithreading for updating the user (Staging Area form)
+        // Multithreading for updating the user
         delegate void SetTextCallBackLogging(string text);
         public void SetTextLogging(string text)
         {
