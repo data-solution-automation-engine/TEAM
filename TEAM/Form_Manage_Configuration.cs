@@ -464,7 +464,41 @@ namespace TEAM
             ConfigurationSettings.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
             ConfigurationSettings.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
             ConfigurationSettings.LinkedServer = textBoxLinkedServer.Text;
+            ConfigurationSettings.RecordChecksumAttribute = textBoxRecordChecksum.Text;
+            ConfigurationSettings.CurrentRowAttribute = textBoxCurrentRecordAttributeName.Text;
 
+            // Alternative attributes
+            if (checkBoxAlternativeHubLDTS.Checked)
+            {
+                ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = "True";
+                ConfigurationSettings.AlternativeLoadDateTimeAttribute = textBoxHubAlternativeLDTSAttribute.Text;
+            }
+            else
+            {
+                ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = "False";
+            }
+
+            if (checkBoxAlternativeRecordSource.Checked)
+            {
+                ConfigurationSettings.EnableAlternativeRecordSourceAttribute = "True";
+                ConfigurationSettings.AlternativeRecordSourceAttribute = textBoxAlternativeRecordSource.Text;
+            }
+            else
+            {
+                ConfigurationSettings.EnableAlternativeRecordSourceAttribute = "False";
+            }
+
+            if (checkBoxAlternativeSatLDTS.Checked)
+            {
+                ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = "True";
+                ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = textBoxSatelliteAlternativeLDTSAttribute.Text;
+            }
+            else
+            {
+                ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = "False";
+            }
+
+            // Prefix radio buttons
             if (tablePrefixRadiobutton.Checked)
             {
                 ConfigurationSettings.TableNamingLocation = "Prefix";

@@ -394,105 +394,48 @@ namespace TEAM
                 var configurationFile = new StringBuilder();
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-                configurationFile.AppendLine("SourceDatabase|" + FormBase.ConfigurationSettings.SourceDatabaseName +
-                                             "");
-                configurationFile.AppendLine("StagingDatabase|" + FormBase.ConfigurationSettings.StagingDatabaseName +
-                                             "");
-                configurationFile.AppendLine("PersistentStagingDatabase|" +
-                                             FormBase.ConfigurationSettings.PsaDatabaseName + "");
-                configurationFile.AppendLine("IntegrationDatabase|" +
-                                             FormBase.ConfigurationSettings.IntegrationDatabaseName + "");
-                configurationFile.AppendLine("PresentationDatabase|" +
-                                             FormBase.ConfigurationSettings.PresentationDatabaseName +
-                                             "");
-                configurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath + "");
-                configurationFile.AppendLine("ConfigurationPath|" + FormBase.GlobalParameters.ConfigurationPath +
-                                             "");
-                configurationFile.AppendLine(@"connectionStringSource|" +
-                                             FormBase.ConfigurationSettings.ConnectionStringSource +
-                                             "");
-                configurationFile.AppendLine(@"connectionStringStaging|" +
-                                             FormBase.ConfigurationSettings.ConnectionStringStg +
-                                             "");
-                configurationFile.AppendLine(@"connectionStringPersistentStaging|" +
-                                             FormBase.ConfigurationSettings.ConnectionStringHstg + "");
-                configurationFile.AppendLine(@"connectionStringMetadata|" +
-                                             FormBase.ConfigurationSettings.ConnectionStringOmd +
-                                             "");
-                configurationFile.AppendLine(@"connectionStringIntegration|" +
-                                             FormBase.ConfigurationSettings.ConnectionStringInt + "");
-                configurationFile.AppendLine(@"connectionStringPresentation|" +
-                                             FormBase.ConfigurationSettings.ConnectionStringPres + "");
-                configurationFile.AppendLine("SourceSystemPrefix|" + FormBase.ConfigurationSettings.SourceSystemPrefix +
-                                             "");
-                configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +
-                                             "");
-                configurationFile.AppendLine("PersistentStagingAreaPrefix|" +
-                                             FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
-                configurationFile.AppendLine(
-                    "HubTablePrefix|" + FormBase.ConfigurationSettings.HubTablePrefixValue + "");
-                configurationFile.AppendLine(
-                    "SatTablePrefix|" + FormBase.ConfigurationSettings.SatTablePrefixValue + "");
-                configurationFile.AppendLine("LinkTablePrefix|" + FormBase.ConfigurationSettings.LinkTablePrefixValue +
-                                             "");
-                configurationFile.AppendLine(
-                    "LinkSatTablePrefix|" + FormBase.ConfigurationSettings.LsatPrefixValue + "");
+                configurationFile.AppendLine("SourceDatabase|" + FormBase.ConfigurationSettings.SourceDatabaseName +"");
+                configurationFile.AppendLine("StagingDatabase|" + FormBase.ConfigurationSettings.StagingDatabaseName +"");
+                configurationFile.AppendLine("PersistentStagingDatabase|" +FormBase.ConfigurationSettings.PsaDatabaseName + "");
+                configurationFile.AppendLine("IntegrationDatabase|" +FormBase.ConfigurationSettings.IntegrationDatabaseName + "");
+                configurationFile.AppendLine("PresentationDatabase|" +FormBase.ConfigurationSettings.PresentationDatabaseName +"");
+                configurationFile.AppendLine(@"connectionStringSource|" +FormBase.ConfigurationSettings.ConnectionStringSource +"");
+                configurationFile.AppendLine(@"connectionStringStaging|" +FormBase.ConfigurationSettings.ConnectionStringStg +"");
+                configurationFile.AppendLine(@"connectionStringPersistentStaging|" +FormBase.ConfigurationSettings.ConnectionStringHstg + "");
+                configurationFile.AppendLine(@"connectionStringMetadata|" +FormBase.ConfigurationSettings.ConnectionStringOmd +"");
+                configurationFile.AppendLine(@"connectionStringIntegration|" +FormBase.ConfigurationSettings.ConnectionStringInt + "");
+                configurationFile.AppendLine(@"connectionStringPresentation|" +FormBase.ConfigurationSettings.ConnectionStringPres + "");
+                configurationFile.AppendLine("SourceSystemPrefix|" + FormBase.ConfigurationSettings.SourceSystemPrefix +"");
+                configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +"");
+                configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
+                configurationFile.AppendLine("HubTablePrefix|" + FormBase.ConfigurationSettings.HubTablePrefixValue + "");
+                configurationFile.AppendLine("SatTablePrefix|" + FormBase.ConfigurationSettings.SatTablePrefixValue + "");
+                configurationFile.AppendLine("LinkTablePrefix|" + FormBase.ConfigurationSettings.LinkTablePrefixValue +"");
+                configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.ConfigurationSettings.LsatPrefixValue + "");
                 configurationFile.AppendLine("KeyIdentifier|" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "");
                 configurationFile.AppendLine("SchemaName|" + FormBase.ConfigurationSettings.SchemaName + "");
                 configurationFile.AppendLine("RowID|" + FormBase.ConfigurationSettings.RowIdAttribute + "");
-                configurationFile.AppendLine("EventDateTimeStamp|" +
-                                             FormBase.ConfigurationSettings.EventDateTimeAttribute + "");
-                configurationFile.AppendLine("LoadDateTimeStamp|" +
-                                             FormBase.ConfigurationSettings.LoadDateTimeAttribute + "");
-                configurationFile.AppendLine(
-                    "ExpiryDateTimeStamp|" + FormBase.ConfigurationSettings.ExpiryDateTimeAttribute + "");
-                configurationFile.AppendLine("ChangeDataIndicator|" +
-                                             FormBase.ConfigurationSettings.ChangeDataCaptureAttribute +
-                                             "");
-                configurationFile.AppendLine(
-                    "RecordSourceAttribute|" + FormBase.ConfigurationSettings.RecordSourceAttribute + "");
+                configurationFile.AppendLine("EventDateTimeStamp|" + FormBase.ConfigurationSettings.EventDateTimeAttribute + "");
+                configurationFile.AppendLine("LoadDateTimeStamp|" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "");
+                configurationFile.AppendLine("ExpiryDateTimeStamp|" + FormBase.ConfigurationSettings.ExpiryDateTimeAttribute + "");
+                configurationFile.AppendLine("ChangeDataIndicator|" + FormBase.ConfigurationSettings.ChangeDataCaptureAttribute +"");
+                configurationFile.AppendLine("RecordSourceAttribute|" + FormBase.ConfigurationSettings.RecordSourceAttribute + "");
                 configurationFile.AppendLine("ETLProcessID|" + FormBase.ConfigurationSettings.EtlProcessAttribute + "");
-                configurationFile.AppendLine("ETLUpdateProcessID|" +
-                                             FormBase.ConfigurationSettings.EtlProcessUpdateAttribute +
-                                             "");
-                configurationFile.AppendLine("LogicalDeleteAttribute|" +
-                                             FormBase.ConfigurationSettings.LogicalDeleteAttribute +
-                                             "");
+                configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.ConfigurationSettings.EtlProcessUpdateAttribute +"");
+                configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.ConfigurationSettings.LogicalDeleteAttribute +"");
                 configurationFile.AppendLine("LinkedServerName|" + FormBase.ConfigurationSettings.LinkedServer + "");
-                configurationFile.AppendLine("TableNamingLocation|" +
-                                             FormBase.ConfigurationSettings.TableNamingLocation + "");
-                configurationFile.AppendLine("KeyNamingLocation|" + FormBase.ConfigurationSettings.KeyNamingLocation +
-                                             "");
-
-
-                configurationFile.AppendLine("RecordChecksum|" +
-                                             FormBase.ConfigurationSettings.RecordChecksumAttribute + "");
-                configurationFile.AppendLine("CurrentRecordAttribute|" +
-                                             FormBase.ConfigurationSettings.CurrentRowAttribute +
-                                             "");
-
-                configurationFile.AppendLine("AlternativeRecordSource|" +
-                                             FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "");
-                configurationFile.AppendLine("AlternativeHubLDTS|" +
-                                             FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "");
-                configurationFile.AppendLine("AlternativeSatelliteLDTS|" +
-                                             FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
-                                             "");
-                configurationFile.AppendLine("AlternativeRecordSourceFunction|" +
-                                             FormBase.ConfigurationSettings.EnableAlternativeRecordSourceAttribute +
-                                             "");
-                configurationFile.AppendLine("AlternativeHubLDTSFunction|" +
-                                             FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute +
-                                             "");
-                configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +
-                                             FormBase.ConfigurationSettings
-                                                 .EnableAlternativeSatelliteLoadDateTimeAttribute +
-                                             "");
-
+                configurationFile.AppendLine("TableNamingLocation|" + FormBase.ConfigurationSettings.TableNamingLocation + "");
+                configurationFile.AppendLine("KeyNamingLocation|" + FormBase.ConfigurationSettings.KeyNamingLocation +"");
+                configurationFile.AppendLine("RecordChecksum|" +FormBase.ConfigurationSettings.RecordChecksumAttribute + "");
+                configurationFile.AppendLine("CurrentRecordAttribute|" +FormBase.ConfigurationSettings.CurrentRowAttribute +"");
+                configurationFile.AppendLine("AlternativeRecordSource|" +FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "");
+                configurationFile.AppendLine("AlternativeHubLDTS|" +FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "");
+                configurationFile.AppendLine("AlternativeSatelliteLDTS|" +FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("AlternativeRecordSourceFunction|" +FormBase.ConfigurationSettings.EnableAlternativeRecordSourceAttribute +"");
+                configurationFile.AppendLine("AlternativeHubLDTSFunction|" +FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute +"");
                 configurationFile.AppendLine("PSAKeyLocation|" + FormBase.ConfigurationSettings.PsaKeyLocation + "");
-                configurationFile.AppendLine("metadataRepositoryType|" +
-                                             FormBase.ConfigurationSettings.MetadataRepositoryType +
-                                             "");
+                configurationFile.AppendLine("metadataRepositoryType|" +FormBase.ConfigurationSettings.MetadataRepositoryType +"");
 
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
