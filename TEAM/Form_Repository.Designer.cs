@@ -49,6 +49,7 @@
             this.checkBoxCreateSamplePresLayer = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateMetadataMapping = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerSampleData = new System.ComponentModel.BackgroundWorker();
+            this.checkBoxDIRECT = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonTruncate
@@ -257,11 +258,22 @@
             this.backgroundWorkerSampleData.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerSampleData_ProgressChanged);
             this.backgroundWorkerSampleData.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerSampleData_RunWorkerCompleted);
             // 
+            // checkBoxDIRECT
+            // 
+            this.checkBoxDIRECT.AutoSize = true;
+            this.checkBoxDIRECT.Location = new System.Drawing.Point(274, 383);
+            this.checkBoxDIRECT.Name = "checkBoxDIRECT";
+            this.checkBoxDIRECT.Size = new System.Drawing.Size(247, 17);
+            this.checkBoxDIRECT.TabIndex = 71;
+            this.checkBoxDIRECT.Text = "Experimental - generate for DIRECT integration";
+            this.checkBoxDIRECT.UseVisualStyleBackColor = true;
+            // 
             // FormManageRepository
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 462);
+            this.ClientSize = new System.Drawing.Size(584, 461);
+            this.Controls.Add(this.checkBoxDIRECT);
             this.Controls.Add(this.checkBoxCreateMetadataMapping);
             this.Controls.Add(this.checkBoxCreateSamplePresLayer);
             this.Controls.Add(this.checkBoxCreateSamplePSA);
@@ -312,5 +324,6 @@
         internal System.Windows.Forms.CheckBox checkBoxCreateSamplePresLayer;
         internal System.Windows.Forms.CheckBox checkBoxCreateMetadataMapping;
         private System.ComponentModel.BackgroundWorker backgroundWorkerSampleData;
+        internal System.Windows.Forms.CheckBox checkBoxDIRECT;
     }
 }

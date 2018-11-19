@@ -1526,6 +1526,49 @@ namespace TEAM
 
                 try
                 {
+                    #region Framework Default Attributes
+                    var etlFrameworkIncludeStg = new StringBuilder();
+                    var etlFrameWorkIncludePsa = new StringBuilder();
+
+                    if (checkBoxDIRECT.Checked)
+                    {
+                        etlFrameworkIncludeStg.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID] [int] NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [OMD_INSERT_DATETIME] [datetime2] (7) NOT NULL DEFAULT SYSDATETIME(),");
+                        etlFrameworkIncludeStg.AppendLine("  [OMD_EVENT_DATETIME] [datetime2] (7) NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [OMD_RECORD_SOURCE] [varchar] (100) NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [OMD_SOURCE_ROW_ID] [int] IDENTITY(1,1) NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [OMD_CDC_OPERATION] [varchar] (100) NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [OMD_HASH_FULL_RECORD] [binary] (16) NOT NULL,");
+
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID][int] NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_INSERT_DATETIME] [datetime2] (7) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_EVENT_DATETIME] [datetime2] (7) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_RECORD_SOURCE] [varchar] (100) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_SOURCE_ROW_ID] [int] NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_CDC_OPERATION] [varchar] (100) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_HASH_FULL_RECORD] [binary] (16) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [OMD_CURRENT_RECORD_INDICATOR] [varchar] (1) NOT NULL DEFAULT 'Y',");
+                    }
+                    else
+                    {
+                        etlFrameworkIncludeStg.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT SYSDATETIME(),");
+                        etlFrameworkIncludeStg.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
+                        etlFrameworkIncludeStg.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        etlFrameworkIncludeStg.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+
+                        etlFrameWorkIncludePsa.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        etlFrameWorkIncludePsa.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                    }
+                    #endregion
+
                     #region Source
 
                     if (checkBoxCreateSampleSource.Checked)
@@ -1549,13 +1592,13 @@ namespace TEAM
                         createStatement.AppendLine("/* Create the tables */");
                         createStatement.AppendLine("CREATE TABLE [CUST_MEMBERSHIP]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("    [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("    [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("    [Start_Date] datetime NULL,");
-                        createStatement.AppendLine("    [End_Date] datetime NULL,");
-                        createStatement.AppendLine("    [Status] varchar(10) NULL,");
-                        createStatement.AppendLine("    [Comment] varchar(50) NULL,");
-                        createStatement.AppendLine("	 PRIMARY KEY CLUSTERED(CustomerID ASC, Plan_Code ASC)");
+                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Start_Date] datetime NULL,");
+                        createStatement.AppendLine("  [End_Date] datetime NULL,");
+                        createStatement.AppendLine("  [Status] varchar(10) NULL,");
+                        createStatement.AppendLine("  [Comment] varchar(50) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED(CustomerID ASC, Plan_Code ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -1563,9 +1606,9 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [CUSTOMER_OFFER]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("    [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("    [OfferID] integer NOT NULL,");
-                        createStatement.AppendLine("    PRIMARY KEY CLUSTERED (CustomerID ASC, OfferID ASC)");
+                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
+                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (CustomerID ASC, OfferID ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -1573,18 +1616,18 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [CUSTOMER_PERSONAL]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("   [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("   [Given] varchar(100) NULL,");
-                        createStatement.AppendLine("   [Surname] varchar(100) NULL,");
-                        createStatement.AppendLine("   [Suburb] varchar(50) NULL,");
-                        createStatement.AppendLine("   [State] varchar(3) NULL,");
-                        createStatement.AppendLine("   [Postcode] varchar(6) NULL,");
-                        createStatement.AppendLine("   [Country] varchar(100) NULL,");
-                        createStatement.AppendLine("   [Gender] varchar(1) NULL,");
-                        createStatement.AppendLine("   [DOB] date NULL,");
-                        createStatement.AppendLine("   [Contact_Number] integer NULL,");
-                        createStatement.AppendLine("   [Referee_Offer_Made] integer NULL,");
-                        createStatement.AppendLine("   PRIMARY KEY CLUSTERED (CustomerID ASC)");
+                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
+                        createStatement.AppendLine("  [Given] varchar(100) NULL,");
+                        createStatement.AppendLine("  [Surname] varchar(100) NULL,");
+                        createStatement.AppendLine("  [Suburb] varchar(50) NULL,");
+                        createStatement.AppendLine("  [State] varchar(3) NULL,");
+                        createStatement.AppendLine("  [Postcode] varchar(6) NULL,");
+                        createStatement.AppendLine("  [Country] varchar(100) NULL,");
+                        createStatement.AppendLine("  [Gender] varchar(1) NULL,");
+                        createStatement.AppendLine("  [DOB] date NULL,");
+                        createStatement.AppendLine("  [Contact_Number] integer NULL,");
+                        createStatement.AppendLine("  [Referee_Offer_Made] integer NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (CustomerID ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -1592,10 +1635,10 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [ESTIMATED_WORTH]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("   [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("   [Date_effective] datetime NOT NULL,");
-                        createStatement.AppendLine("	[Value_Amount] numeric NULL,");
-                        createStatement.AppendLine("   PRIMARY KEY CLUSTERED(Plan_Code ASC, Date_effective ASC)");
+                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Date_effective] datetime NOT NULL,");
+                        createStatement.AppendLine("  [Value_Amount] numeric NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED(Plan_Code ASC, Date_effective ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -1603,9 +1646,9 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [OFFER]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("    [OfferID] integer NOT NULL,");
-                        createStatement.AppendLine("    [Offer_Long_Description] varchar(100) NULL,");
-                        createStatement.AppendLine("	 PRIMARY KEY CLUSTERED(OfferID ASC)");
+                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
+                        createStatement.AppendLine("  [Offer_Long_Description] varchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED(OfferID ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -1613,12 +1656,12 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [PERSONALISED_COSTING]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("    [Member] integer NOT NULL,");
-                        createStatement.AppendLine("    [Segment] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("    [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("    [Date_effective] datetime NOT NULL,");
-                        createStatement.AppendLine("	 [Monthly_Cost] numeric NULL,");
-                        createStatement.AppendLine("    PRIMARY KEY CLUSTERED(Member ASC, Segment ASC, Plan_Code ASC, Date_effective ASC)");
+                        createStatement.AppendLine("  [Member] integer NOT NULL,");
+                        createStatement.AppendLine("  [Segment] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Date_effective] datetime NOT NULL,");
+                        createStatement.AppendLine("  [Monthly_Cost] numeric NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED(Member ASC, Segment ASC, Plan_Code ASC, Date_effective ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -1626,10 +1669,10 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE[PLAN]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("   [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("   [Plan_Desc]varchar(100) NULL,");
-                        createStatement.AppendLine("   [Renewal_Plan_Code] varchar(100) NULL,");
-                        createStatement.AppendLine("   PRIMARY KEY  CLUSTERED(Plan_Code ASC)");
+                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Desc]varchar(100) NULL,");
+                        createStatement.AppendLine("  [Renewal_Plan_Code] varchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY  CLUSTERED(Plan_Code ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -1691,13 +1734,7 @@ namespace TEAM
                         createStatement.AppendLine("/* Create the tables */");
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUST_MEMBERSHIP]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7)	NOT NULL DEFAULT SYSDATETIME(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [CustomerID] int NULL,");
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Start_Date] datetime2(7) NULL,");
@@ -1729,13 +1766,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUSTOMER_OFFER]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [CustomerID] int NULL,");
                         createStatement.AppendLine("  [OfferID] int NULL ");
                         createStatement.AppendLine(")");
@@ -1763,13 +1794,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUSTOMER_PERSONAL]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [CustomerID] int NULL,");
                         createStatement.AppendLine("  [Given] varchar(100) NULL,");
                         createStatement.AppendLine("  [Surname] varchar(100) NULL,");
@@ -1797,13 +1822,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_ESTIMATED_WORTH]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [Plan_Code] varchar(100) NULL,");
                         createStatement.AppendLine("  [Date_effective] datetime2(7) NULL,");
                         createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL ");
@@ -1832,13 +1851,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_OFFER]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [OfferID] int NULL,");
                         createStatement.AppendLine("  [Offer_Long_Description] nvarchar(100)   NULL ");
                         createStatement.AppendLine();
@@ -1857,13 +1870,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_PERSONALISED_COSTING]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [Member] int NULL,");
                         createStatement.AppendLine("  [Segment] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
@@ -1903,13 +1910,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_PLAN]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Renewal_Plan_Code] nvarchar(100) NULL");
@@ -1929,13 +1930,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE [STG_USERMANAGED_SEGMENT]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameworkIncludeStg);
                         createStatement.AppendLine("  [Demographic_Segment_Code] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Demographic_Segment_Description] nvarchar(100) NULL ");
                         createStatement.AppendLine(")");
@@ -1953,8 +1948,8 @@ namespace TEAM
                         createStatement.Clear();
 
                         createStatement.AppendLine("/* Create the content (for the User Managed Staging table) */");
-                        createStatement.AppendLine("INSERT INTO[dbo].[STG_USERMANAGED_SEGMENT]");
-                        createStatement.AppendLine("([ETL_INSERT_RUN_ID]");
+                        createStatement.AppendLine("INSERT INTO[dbo].[STG_USERMANAGED_SEGMENT] (");
+                        createStatement.AppendLine(" [ETL_INSERT_RUN_ID]");
                         createStatement.AppendLine(",[LOAD_DATETIME]");
                         createStatement.AppendLine(",[EVENT_DATETIME]");
                         createStatement.AppendLine(",[RECORD_SOURCE]");
@@ -1996,13 +1991,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_PROFILER_CUST_MEMBERSHIP");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
                         createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Start_Date] datetime2(7) NULL,");
@@ -2017,13 +2006,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_PROFILER_CUSTOMER_OFFER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
                         createStatement.AppendLine("  [OfferID] integer NOT NULL,");
                         createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([CustomerID] ASC, [OfferID] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
@@ -2034,13 +2017,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_PROFILER_CUSTOMER_PERSONAL");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
                         createStatement.AppendLine("  [Given] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Surname] nvarchar(100) NULL,");
@@ -2060,13 +2037,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_PROFILER_ESTIMATED_WORTH");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Date_effective] datetime2(7) NOT NULL,");
                         createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL,");
@@ -2078,13 +2049,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_PROFILER_OFFER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [OfferID] integer NOT NULL,");
                         createStatement.AppendLine("  [Offer_Long_Description] nvarchar(100) NULL,");
                         createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([OfferID] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
@@ -2095,13 +2060,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_PROFILER_PERSONALISED_COSTING");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Member] integer NOT NULL,");
                         createStatement.AppendLine("  [Segment] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
@@ -2115,13 +2074,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_PROFILER_PLAN");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
                         createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
@@ -2132,13 +2085,7 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE TABLE PSA_USERMANAGED_SEGMENT");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Demographic_Segment_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Demographic_Segment_Description] nvarchar(100) NULL,");
                         createStatement.AppendLine("  PRIMARY KEY CLUSTERED([Demographic_Segment_Code] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
