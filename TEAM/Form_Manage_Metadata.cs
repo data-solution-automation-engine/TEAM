@@ -6199,7 +6199,7 @@ namespace TEAM
         {
             #region Validation for Source Object Existence
             // Informing the user.
-            _alertValidation.SetTextLogging("Commencing the validation to determine if the Staging Area metadata exists in the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Staging Area metadata exists in the physical model.\r\n\r\n");
 
 
             // Creating a list of unique table names from the data grid / data table
@@ -6253,7 +6253,7 @@ namespace TEAM
         {
             #region Validation for Source Object Existence
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\nCommencing the validation to determine if the Integration Layer metadata exists in the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Integration Layer metadata exists in the physical model.\r\n\r\n");
 
             // Creating a list of unique table names from the data grid / data table
             var objectList = new List<string>();
@@ -6307,7 +6307,7 @@ namespace TEAM
         {
             #region Retrieving the Links
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\nCommencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n\r\n");
 
 
             // Creating a list of unique Link business key combinations from the data grid / data table
@@ -6372,7 +6372,7 @@ namespace TEAM
         {
             #region Retrieving the Integration Layer tables
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\nCommencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n\r\n");
+            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n\r\n");
 
             // Creating a list of tables which are dependent on other tables being present
             var objectList = new List<Tuple<string, string, string>>();
@@ -6434,7 +6434,7 @@ namespace TEAM
         {
             #region Validation for source Business Key attribute existence
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\nCommencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
 
             // Creating a list of (staging area) table names and business key (combinations) from the data grid / data table
             var objectList = new List<Tuple<string, string>>();

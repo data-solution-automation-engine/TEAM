@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TEAM
 {
-    internal class MetadataValidation : FormBase
+    internal class MetadataValidation 
     {
 
         /// <summary>
@@ -39,19 +39,19 @@ namespace TEAM
             // The only interest is whether the Hub is there...
             var tableInclusionFilterCriterion = "";
             var tableClassification = "";
-            if (validationObject.Item2.StartsWith(ConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
+            if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
             {
-                tableInclusionFilterCriterion = ConfigurationSettings.HubTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.ConfigurationSettings.HubTablePrefixValue;
                 tableClassification = "SAT";
             }
-            else if (validationObject.Item2.StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
+            else if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
             {
-                tableInclusionFilterCriterion = ConfigurationSettings.HubTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.ConfigurationSettings.HubTablePrefixValue;
                 tableClassification = "LNK";
             }
-            else if (validationObject.Item2.StartsWith(ConfigurationSettings.LsatPrefixValue)) // If the table is a Link-Satellite, only the Link is required
+            else if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.LsatPrefixValue)) // If the table is a Link-Satellite, only the Link is required
             {
-                tableInclusionFilterCriterion = ConfigurationSettings.LinkTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.ConfigurationSettings.LinkTablePrefixValue;
                 tableClassification = "LSAT";
             }
             else
@@ -84,7 +84,7 @@ namespace TEAM
                     sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
                     sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
 
-                    var dependentsList = GetDataTable(ref conn, sqlStatementForDependent.ToString());
+                    var dependentsList = FormBase.GetDataTable(ref conn, sqlStatementForDependent.ToString());
 
                     // Derive the Hub surrogate key name, as this can be compared against the Link
                     foreach (DataRow row in dependentsList.Rows)
@@ -108,7 +108,7 @@ namespace TEAM
                 sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
                 sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
 
-                var dependentsList = GetDataTable(ref conn, sqlStatementForDependent.ToString());
+                var dependentsList = FormBase.GetDataTable(ref conn, sqlStatementForDependent.ToString());
 
                 // Derive the Hub surrogate key name, as this can be compared against the Link
                 foreach (DataRow row in dependentsList.Rows)
@@ -178,16 +178,16 @@ namespace TEAM
                 sqlStatementForHub.AppendLine("AND [VERSION_ID] = " + versionId);
                 sqlStatementForHub.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
                 sqlStatementForHub.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '"+hubBusinessKey.Replace("'","''").Trim()+"'");
-                sqlStatementForHub.AppendLine("AND [INTEGRATION_AREA_TABLE] NOT LIKE '" + ConfigurationSettings.SatTablePrefixValue + "_%'");
+                sqlStatementForHub.AppendLine("AND [INTEGRATION_AREA_TABLE] NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
 
-                var hubList = GetDataTable(ref conn, sqlStatementForHub.ToString());
+                var hubList = FormBase.GetDataTable(ref conn, sqlStatementForHub.ToString());
 
                 // Derive the Hub surrogate key name, as this can be compared against the Link
                 string hubSurrogateKeyName = "";
                 foreach (DataRow row in hubList.Rows)
                 {
                     string hubTableName = row["HUB_TABLE_NAME"].ToString();
-                    hubSurrogateKeyName = hubTableName.Replace(ConfigurationSettings.HubTablePrefixValue+'_', "")+"_SK";
+                    hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue+'_', "")+"_"+FormBase.ConfigurationSettings.DwhKeyIdentifier;
                 }
 
                 hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -195,7 +195,7 @@ namespace TEAM
             conn.Close();
 
             // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
-            var connTarget = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringInt };
+            var connTarget = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt };
             connTarget.Open();
 
             var sqlStatementForLink = new StringBuilder();
@@ -205,12 +205,12 @@ namespace TEAM
             sqlStatementForLink.AppendLine("  ,COLUMN_NAME");
             sqlStatementForLink.AppendLine("  ,ORDINAL_POSITION");
             sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY TABLE_NAME ORDER BY ORDINAL_POSITION) AS [HUB_KEY_POSITION]");
-            sqlStatementForLink.AppendLine("FROM "+ConfigurationSettings.IntegrationDatabaseName+".INFORMATION_SCHEMA.COLUMNS");
-            sqlStatementForLink.AppendLine("    WHERE TABLE_NAME LIKE '"+ConfigurationSettings.LinkTablePrefixValue+"_%'");
+            sqlStatementForLink.AppendLine("FROM "+ FormBase.ConfigurationSettings.IntegrationDatabaseName+".INFORMATION_SCHEMA.COLUMNS");
+            sqlStatementForLink.AppendLine("    WHERE TABLE_NAME LIKE '"+ FormBase.ConfigurationSettings.LinkTablePrefixValue+"_%'");
             sqlStatementForLink.AppendLine("AND ORDINAL_POSITION > 4");
             sqlStatementForLink.AppendLine("AND TABLE_NAME = '"+validationObject.Item2+"'");
 
-            var linkList = GetDataTable(ref connTarget, sqlStatementForLink.ToString());
+            var linkList = FormBase.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
             // Derive the Hub surrogate key name, as this can be compared against the Link
             var linkKeyOrder = new Dictionary<int, string>();
 
@@ -271,23 +271,25 @@ namespace TEAM
 
             foreach (string businessKey in businessKeys)
             {
+                var trimBusinessKey = businessKey.Trim();
+
                 // Handle concatenate and composite
                 List<string> subKeys = new List<string>();
 
-                if (businessKey.StartsWith("CONCATENATE"))
+                if (trimBusinessKey.StartsWith("CONCATENATE"))
                 {
-                    var localBusinessKey = businessKey.Replace("CONCATENATE(", "").Replace(")", "");
+                    var localBusinessKey = trimBusinessKey.Replace("CONCATENATE(", "").Replace(")", "");
 
                     subKeys = localBusinessKey.Split(';').ToList();
                 }
-                else if (businessKey.StartsWith("COMPOSITE"))
+                else if (trimBusinessKey.StartsWith("COMPOSITE"))
                 {
-                    var localBusinessKey = businessKey.Replace("COMPOSITE(", "").Replace(")", "");
+                    var localBusinessKey = trimBusinessKey.Replace("COMPOSITE(", "").Replace(")", "");
 
                     subKeys = localBusinessKey.Split(';').ToList();
                 } else
                 {
-                    subKeys.Add(businessKey);
+                    subKeys.Add(trimBusinessKey);
                 }
 
                 foreach (string businessKeyPart in subKeys)
