@@ -1507,8 +1507,6 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var connOmdString = ConfigurationSettings.ConnectionStringOmd;
-
             errorHandlingParameters.errorCatcher = 0;
 
             // Handle multithreading
@@ -1531,6 +1529,7 @@ namespace TEAM
                     {
                         // Create sample data
                         StringBuilder createStatement = new StringBuilder();
+                        var connString = ConfigurationSettings.ConnectionStringSource;
 
                         createStatement.AppendLine("/* Drop the tables, if they exist */");
                         createStatement.AppendLine("IF OBJECT_ID('dbo.ESTIMATED_WORTH', 'U') IS NOT NULL DROP TABLE [ESTIMATED_WORTH]");
@@ -1540,8 +1539,7 @@ namespace TEAM
                         createStatement.AppendLine("IF OBJECT_ID('dbo.CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE [CUSTOMER_OFFER]");
                         createStatement.AppendLine("IF OBJECT_ID('dbo.OFFER', 'U') IS NOT NULL DROP TABLE [OFFER]");
                         createStatement.AppendLine("IF OBJECT_ID('dbo.CUSTOMER_PERSONAL', 'U') IS NOT NULL DROP TABLE [CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("/* Create the tables */");
@@ -1555,8 +1553,7 @@ namespace TEAM
                         createStatement.AppendLine("    [Comment] varchar(50) NULL,");
                         createStatement.AppendLine("	 PRIMARY KEY CLUSTERED(CustomerID ASC, Plan_Code ASC)");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [CUSTOMER_OFFER]");
@@ -1565,27 +1562,25 @@ namespace TEAM
                         createStatement.AppendLine("    [OfferID] integer NOT NULL,");
                         createStatement.AppendLine("    PRIMARY KEY CLUSTERED (CustomerID ASC, OfferID ASC)");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [CUSTOMER_PERSONAL]");
                         createStatement.AppendLine("(");
                         createStatement.AppendLine("   [CustomerID] integer NOT NULL,");
                         createStatement.AppendLine("   [Given] varchar(100) NULL,");
-                        createStatement.AppendLine("	[Surname] varchar(100) NULL,");
-                        createStatement.AppendLine("	[Suburb] varchar(50) NULL,");
-                        createStatement.AppendLine("	[State] varchar(3) NULL,");
-                        createStatement.AppendLine("	[Postcode] varchar(6) NULL,");
-                        createStatement.AppendLine("	[Country] varchar(100) NULL,");
-                        createStatement.AppendLine("	[Gender] varchar(1) NULL,");
-                        createStatement.AppendLine("	[DOB] date NULL,");
+                        createStatement.AppendLine("   [Surname] varchar(100) NULL,");
+                        createStatement.AppendLine("   [Suburb] varchar(50) NULL,");
+                        createStatement.AppendLine("   [State] varchar(3) NULL,");
+                        createStatement.AppendLine("   [Postcode] varchar(6) NULL,");
+                        createStatement.AppendLine("   [Country] varchar(100) NULL,");
+                        createStatement.AppendLine("   [Gender] varchar(1) NULL,");
+                        createStatement.AppendLine("   [DOB] date NULL,");
                         createStatement.AppendLine("   [Contact_Number] integer NULL,");
                         createStatement.AppendLine("   [Referee_Offer_Made] integer NULL,");
                         createStatement.AppendLine("   PRIMARY KEY CLUSTERED (CustomerID ASC)");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [ESTIMATED_WORTH]");
@@ -1595,8 +1590,7 @@ namespace TEAM
                         createStatement.AppendLine("	[Value_Amount] numeric NULL,");
                         createStatement.AppendLine("   PRIMARY KEY CLUSTERED(Plan_Code ASC, Date_effective ASC)");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [OFFER]");
@@ -1605,8 +1599,7 @@ namespace TEAM
                         createStatement.AppendLine("    [Offer_Long_Description] varchar(100) NULL,");
                         createStatement.AppendLine("	 PRIMARY KEY CLUSTERED(OfferID ASC)");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [PERSONALISED_COSTING]");
@@ -1618,8 +1611,7 @@ namespace TEAM
                         createStatement.AppendLine("	 [Monthly_Cost] numeric NULL,");
                         createStatement.AppendLine("    PRIMARY KEY CLUSTERED(Member ASC, Segment ASC, Plan_Code ASC, Date_effective ASC)");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE[PLAN]");
@@ -1629,8 +1621,7 @@ namespace TEAM
                         createStatement.AppendLine("   [Renewal_Plan_Code] varchar(100) NULL,");
                         createStatement.AppendLine("   PRIMARY KEY  CLUSTERED(Plan_Code ASC)");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("/* Create the content */");
@@ -1658,8 +1649,7 @@ namespace TEAM
                         createStatement.AppendLine("INSERT[dbo].[PERSONALISED_COSTING] ([Member], [Segment], [Plan_Code], [Date_effective], [Monthly_Cost]) VALUES(258279, N'LOW', N'HIGH', CAST(N'2014-01-01 00:00:00.000' AS DateTime), CAST(150 AS Numeric(18, 0)))");
                         createStatement.AppendLine("INSERT[dbo].[PERSONALISED_COSTING] ([Member], [Segment], [Plan_Code], [Date_effective], [Monthly_Cost]) VALUES(683492, N'HIGH', N'AVG', CAST(N'2013-01-01 00:00:00.000' AS DateTime), CAST(450 AS Numeric(18, 0)))");
                         createStatement.AppendLine("INSERT[dbo].[PERSONALISED_COSTING] ([Member], [Segment], [Plan_Code], [Date_effective], [Monthly_Cost]) VALUES(885325, N'MED', N'AVG', CAST(N'2013-01-01 00:00:00.000' AS DateTime), CAST(475 AS Numeric(18, 0)))");
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
-                        createStatement.AppendLine();
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
                     }
 
@@ -1667,10 +1657,12 @@ namespace TEAM
 
                     #region Staging
 
-                    if (checkBoxCreateSampleSource.Checked)
+                    if (checkBoxCreateSampleStaging.Checked)
                     {
                         // Create sample data
                         StringBuilder createStatement = new StringBuilder();
+
+                        var connString = ConfigurationSettings.ConnectionStringStg;
 
                         createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_CUST_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_CUST_MEMBERSHIP]");
                         createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_CUSTOMER_OFFER]");
@@ -1680,8 +1672,8 @@ namespace TEAM
                         createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_PERSONALISED_COSTING', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_PERSONALISED_COSTING]");
                         createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_PLAN', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_PLAN]");
                         createStatement.AppendLine("IF OBJECT_ID('dbo.STG_USERMANAGED_SEGMENT', 'U') IS NOT NULL DROP TABLE [dbo].[STG_USERMANAGED_SEGMENT]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
 
                         createStatement.AppendLine("/* Create the tables */");
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUST_MEMBERSHIP]");
@@ -1695,44 +1687,43 @@ namespace TEAM
                         createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
                         createStatement.AppendLine("  [CustomerID] int NULL,");
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
-                        createStatement.AppendLine("	[Start_Date] datetime2(7) NULL,");
-                        createStatement.AppendLine("	[End_Date] datetime2(7) NULL,");
-                        createStatement.AppendLine("	[Status] nvarchar(100) NULL,");
-                        createStatement.AppendLine("	[Comment] nvarchar(100) NULL ");
+                        createStatement.AppendLine("  [Start_Date] datetime2(7) NULL,");
+                        createStatement.AppendLine("  [End_Date] datetime2(7) NULL,");
+                        createStatement.AppendLine("  [Status] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Comment] nvarchar(100) NULL ");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
                         createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUST_MEMBERSHIP',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CustomerID'");
-                        createStatement.AppendLine();
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
                         createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUST_MEMBERSHIP',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine("");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUSTOMER_OFFER]");
                         createStatement.AppendLine("(");
                         createStatement.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
                         createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT sysdatetime(),");
-                        createStatement.AppendLine("	[EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
                         createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
                         createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        createStatement.AppendLine("	[CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
                         createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
                         createStatement.AppendLine("  [CustomerID] int NULL,");
                         createStatement.AppendLine("  [OfferID] int NULL ");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
@@ -1740,15 +1731,15 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUSTOMER_OFFER',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CustomerID'");
-                        createStatement.AppendLine();
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
                         createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUSTOMER_OFFER',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'OfferID'");
-                        createStatement.AppendLine("");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUSTOMER_PERSONAL]");
@@ -1772,8 +1763,7 @@ namespace TEAM
                         createStatement.AppendLine("  [Contact_Number] int NULL,");
                         createStatement.AppendLine("  [Referee_Offer_Made] int NULL ");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
@@ -1781,8 +1771,7 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUSTOMER_PERSONAL',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CustomerID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_ESTIMATED_WORTH]");
@@ -1798,8 +1787,7 @@ namespace TEAM
                         createStatement.AppendLine("  [Date_effective] datetime2(7) NULL,");
                         createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL ");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
@@ -1807,14 +1795,15 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_ESTIMATED_WORTH',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine();
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
                         createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_ESTIMATED_WORTH',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Date_effective'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_OFFER]");
@@ -1829,8 +1818,7 @@ namespace TEAM
                         createStatement.AppendLine("  [OfferID] int NULL,");
                         createStatement.AppendLine("  [Offer_Long_Description] nvarchar(100)   NULL ");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
@@ -1838,8 +1826,7 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_OFFER',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'OfferID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_PERSONALISED_COSTING]");
@@ -1857,8 +1844,7 @@ namespace TEAM
                         createStatement.AppendLine("  [Date_effective] datetime2(7) NULL,");
                         createStatement.AppendLine("  [Monthly_Cost] numeric(38,20) NULL ");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
@@ -1866,20 +1852,23 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PERSONALISED_COSTING',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Segment'");
-                        createStatement.AppendLine();
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
                         createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PERSONALISED_COSTING',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine();
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
                         createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PERSONALISED_COSTING',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Date_effective'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_PLAN]");
@@ -1895,8 +1884,7 @@ namespace TEAM
                         createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Renewal_Plan_Code] nvarchar(100) NULL");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
@@ -1904,10 +1892,8 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PLAN',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
-
 
                         createStatement.AppendLine("CREATE TABLE [STG_USERMANAGED_SEGMENT]");
                         createStatement.AppendLine("(");
@@ -1921,8 +1907,7 @@ namespace TEAM
                         createStatement.AppendLine("  [Demographic_Segment_Code] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Demographic_Segment_Description] nvarchar(100) NULL ");
                         createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
@@ -1930,26 +1915,603 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_USERMANAGED_SEGMENT',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Demographic_Segment_Description'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         createStatement.AppendLine("/* Create the content (for the User Managed Staging table) */");
                         createStatement.AppendLine("INSERT INTO[dbo].[STG_USERMANAGED_SEGMENT]");
-                        createStatement.AppendLine("        ([ETL_INSERT_RUN_ID]");
-                        createStatement.AppendLine("         ,[LOAD_DATETIME]");
-                        createStatement.AppendLine("         ,[EVENT_DATETIME]");
-                        createStatement.AppendLine("         ,[RECORD_SOURCE]");
-                        createStatement.AppendLine("         ,[CDC_OPERATION]");
-                        createStatement.AppendLine("         ,[HASH_FULL_RECORD]");
-                        createStatement.AppendLine("         ,[Demographic_Segment_Code]");
-                        createStatement.AppendLine("         ,[Demographic_Segment_Description])");
+                        createStatement.AppendLine("([ETL_INSERT_RUN_ID]");
+                        createStatement.AppendLine(",[LOAD_DATETIME]");
+                        createStatement.AppendLine(",[EVENT_DATETIME]");
+                        createStatement.AppendLine(",[RECORD_SOURCE]");
+                        createStatement.AppendLine(",[CDC_OPERATION]");
+                        createStatement.AppendLine(",[HASH_FULL_RECORD]");
+                        createStatement.AppendLine(",[Demographic_Segment_Code]");
+                        createStatement.AppendLine(",[Demographic_Segment_Description])");
                         createStatement.AppendLine("VALUES");
-                        createStatement.AppendLine("   (-1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'LOW'), CONVERT(NVARCHAR(100),'Lower SES')),");
-                        createStatement.AppendLine("   (-1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'MED'), CONVERT(NVARCHAR(100),'Medium SES')),");
-                        createStatement.AppendLine("   (-1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'HIGH'), CONVERT(NVARCHAR(100),'High SES'))");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connOmdString, createStatement, worker, 5);
+                        createStatement.AppendLine("(-1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'LOW'), CONVERT(NVARCHAR(100),'Lower SES')),");
+                        createStatement.AppendLine("(-1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'MED'), CONVERT(NVARCHAR(100),'Medium SES')),");
+                        createStatement.AppendLine("(-1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'HIGH'), CONVERT(NVARCHAR(100),'High SES'))");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+                    }
+
+                    #endregion
+
+                    #region Persistent Staging
+
+                    if (checkBoxCreateSamplePSA.Checked)
+                    {
+                        var connString = ConfigurationSettings.ConnectionStringHstg;
+
+                        // Create sample data
+                        StringBuilder createStatement = new StringBuilder();
+
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_CUST_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_CUST_MEMBERSHIP]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_CUSTOMER_OFFER]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_CUSTOMER_PERSONAL', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_CUSTOMER_PERSONAL]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_ESTIMATED_WORTH', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_ESTIMATED_WORTH]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_OFFER]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_PERSONALISED_COSTING', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_PERSONALISED_COSTING]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_PLAN', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_PLAN]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_USERMANAGED_SEGMENT', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_USERMANAGED_SEGMENT]");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_PROFILER_CUST_MEMBERSHIP");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Start_Date] datetime2(7) NULL,");
+                        createStatement.AppendLine("  [End_Date] datetime2(7) NULL,");
+                        createStatement.AppendLine("  [Status] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Comment] nvarchar(100) NULL");
+                        createStatement.AppendLine("PRIMARY KEY NONCLUSTERED([CustomerID] ASC, [Plan_Code] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_PROFILER_CUSTOMER_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] int NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
+                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([CustomerID] ASC, [OfferID] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_PROFILER_CUSTOMER_PERSONAL");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
+                        createStatement.AppendLine("  [Given] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Surname] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Suburb] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [State] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Postcode] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Country] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Gender] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [DOB] datetime2(7) NULL,");
+                        createStatement.AppendLine("  [Contact_Number] integer NULL,");
+                        createStatement.AppendLine("  [Referee_Offer_Made] integer NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([CustomerID] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_PROFILER_ESTIMATED_WORTH");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Date_effective] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, [Date_effective] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_PROFILER_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
+                        createStatement.AppendLine("  [Offer_Long_Description] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([OfferID] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_PROFILER_PERSONALISED_COSTING");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [Member] integer NOT NULL,");
+                        createStatement.AppendLine("  [Segment] nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Date_effective] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [Monthly_Cost] numeric(38,20) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([Member] ASC, [Segment] ASC, [Plan_Code] ASC, [Date_effective] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_PROFILER_PLAN");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE PSA_USERMANAGED_SEGMENT");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
+                        createStatement.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [Demographic_Segment_Code] nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Demographic_Segment_Description] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED([Demographic_Segment_Code] ASC, [LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+                    }
+
+                    #endregion
+
+                    #region Integration Layer
+
+                    if (checkBoxCreateSampleDV.Checked)
+                    {
+                        var connString = ConfigurationSettings.ConnectionStringInt;
+
+                        // Create sample data
+                        StringBuilder createStatement = new StringBuilder();
+
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_CUSTOMER', 'U') IS NOT NULL DROP TABLE dbo.HUB_CUSTOMER");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_INCENTIVE_OFFER', 'U') IS NOT NULL DROP TABLE dbo.HUB_INCENTIVE_OFFER");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_MEMBERSHIP_PLAN', 'U') IS NOT NULL DROP TABLE dbo.HUB_MEMBERSHIP_PLAN");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_SEGMENT', 'U') IS NOT NULL DROP TABLE dbo.HUB_SEGMENT");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_CUSTOMER_COSTING', 'U') IS NOT NULL DROP TABLE dbo.LNK_CUSTOMER_COSTING");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE dbo.LNK_CUSTOMER_OFFER");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE dbo.LNK_MEMBERSHIP");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_RENEWAL_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE dbo.LNK_RENEWAL_MEMBERSHIP");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.LSAT_CUSTOMER_COSTING', 'U') IS NOT NULL DROP TABLE dbo.LSAT_CUSTOMER_COSTING");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.LSAT_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE dbo.LSAT_CUSTOMER_OFFER");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.LSAT_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE dbo.LSAT_MEMBERSHIP");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_CUSTOMER', 'U') IS NOT NULL DROP TABLE dbo.SAT_CUSTOMER");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_CUSTOMER_ADDITIONAL_DETAILS', 'U') IS NOT NULL DROP TABLE dbo.SAT_CUSTOMER_ADDITIONAL_DETAILS");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_INCENTIVE_OFFER', 'U') IS NOT NULL DROP TABLE dbo.SAT_INCENTIVE_OFFER");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_MEMBERSHIP_PLAN_DETAIL', 'U') IS NOT NULL DROP TABLE dbo.SAT_MEMBERSHIP_PLAN_DETAIL");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_MEMBERSHIP_PLAN_VALUATION', 'U') IS NOT NULL DROP TABLE dbo.SAT_MEMBERSHIP_PLAN_VALUATION");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_SEGMENT', 'U') IS NOT NULL DROP TABLE dbo.SAT_SEGMENT");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.BR_MEMBERSHIP_OFFER', 'U') IS NOT NULL DROP TABLE dbo.BR_MEMBERSHIP_OFFER");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- HUB CUSTOMER");
+                        createStatement.AppendLine("CREATE TABLE dbo.HUB_CUSTOMER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_ID nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED(CUSTOMER_HSH ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_MEMBER ON dbo.HUB_CUSTOMER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_ID ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- HUB INCENTIVE OFFER");
+                        createStatement.AppendLine("CREATE TABLE dbo.HUB_INCENTIVE_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  OFFER_ID nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED(INCENTIVE_OFFER_HSH ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_ACCOUNT_MANAGER ON dbo.HUB_INCENTIVE_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("    OFFER_ID ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- HUB MEMBERSHIP PLAN");
+                        createStatement.AppendLine("CREATE TABLE dbo.HUB_MEMBERSHIP_PLAN");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  PLAN_CODE nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  PLAN_SUFFIX nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED (MEMBERSHIP_PLAN_HSH ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_MEMBER ON dbo.HUB_MEMBERSHIP_PLAN");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  PLAN_CODE ASC,");
+                        createStatement.AppendLine("  PLAN_SUFFIX ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- HUB SEGMENT");
+                        createStatement.AppendLine("CREATE TABLE dbo.HUB_SEGMENT");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  SEGMENT_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SEGMENT_CODE nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED (SEGMENT_HSH ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_REF_SEGMENT ON dbo.HUB_SEGMENT");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  SEGMENT_CODE ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- LNK CUSTOMER COSTING");
+                        createStatement.AppendLine("CREATE TABLE dbo.LNK_CUSTOMER_COSTING");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_COSTING_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  SEGMENT_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED (CUSTOMER_COSTING_HSH ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_CUSTOMER_COSTING ON dbo.LNK_CUSTOMER_COSTING");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_HSH ASC,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH ASC,");
+                        createStatement.AppendLine("  SEGMENT_HSH ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+                        
+                        createStatement.AppendLine("-- LNK CUSTOMER OFFER");
+                        createStatement.AppendLine("CREATE TABLE dbo.LNK_CUSTOMER_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED(CUSTOMER_OFFER_HSH ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_MEMBER_ACCOUNT_MANAGER ON dbo.LNK_CUSTOMER_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_HSH ASC,");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'Driving_Key_Indicator', @value = 'True',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'LNK_CUSTOMER_OFFER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_HSH'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- LNK MEMBERSHIP");
+                        createStatement.AppendLine("CREATE TABLE dbo.LNK_MEMBERSHIP");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  MEMBERSHIP_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  SALES_CHANNEL nvarchar(100) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED(MEMBERSHIP_HSH ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_MEMBERSHIP ON dbo.LNK_MEMBERSHIP");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_HSH ASC,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH ASC,");
+                        createStatement.AppendLine("  SALES_CHANNEL ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- LNK RENEWAL_MEMBERSHIP");
+                        createStatement.AppendLine("CREATE TABLE[dbo].[LNK_RENEWAL_MEMBERSHIP]");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [RENEWAL_MEMBERSHIP_HSH][binary](16) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_HSH] [binary] (16) NOT NULL,");
+                        createStatement.AppendLine("  [RENEWAL_PLAN_HSH] [binary] (16) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED ([RENEWAL_MEMBERSHIP_HSH] ASC)");
+                        createStatement.AppendLine(") ON [PRIMARY]");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_RENEWAL_MEMBERSHIP ON dbo.LNK_RENEWAL_MEMBERSHIP");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_HSH] ASC,");
+                        createStatement.AppendLine("  [RENEWAL_PLAN_HSH] ASC");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- LSAT CUSTOMER COSTING");
+                        createStatement.AppendLine("CREATE TABLE dbo.LSAT_CUSTOMER_COSTING");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_COSTING_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  COSTING_EFFECTIVE_DATE datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  PERSONAL_MONTHLY_COST numeric(38,20) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (CUSTOMER_COSTING_HSH ASC, LOAD_DATETIME ASC, COSTING_EFFECTIVE_DATE ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+                        
+                        createStatement.AppendLine("-- LSAT CUSTOMER OFFER");
+                        createStatement.AppendLine("CREATE TABLE dbo.LSAT_CUSTOMER_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (CUSTOMER_OFFER_HSH ASC, LOAD_DATETIME ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- LSAT MEMBERSHIP");
+                        createStatement.AppendLine("CREATE TABLE dbo.LSAT_MEMBERSHIP");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  MEMBERSHIP_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_START_DATE datetime2(7) NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_END_DATE datetime2(7) NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_STATUS nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (MEMBERSHIP_HSH ASC, LOAD_DATETIME ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- SAT CUSTOMER");
+                        createStatement.AppendLine("CREATE TABLE dbo.SAT_CUSTOMER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  GIVEN_NAME nvarchar(100) NULL,");
+                        createStatement.AppendLine("  SURNAME nvarchar(100) NULL,");
+                        createStatement.AppendLine("  SUBURB nvarchar(100) NULL,");
+                        createStatement.AppendLine("  POSTCODE nvarchar(100) NULL,");
+                        createStatement.AppendLine("  COUNTRY nvarchar(100) NULL,");
+                        createStatement.AppendLine("  GENDER nvarchar(100) NULL,");
+                        createStatement.AppendLine("  DATE_OF_BIRTH datetime2(7) NULL,");
+                        createStatement.AppendLine("  REFERRAL_OFFER_MADE_INDICATOR nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (CUSTOMER_HSH ASC, LOAD_DATETIME ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- SAT CUSTOMER ADDITIONAL DETAILS");
+                        createStatement.AppendLine("CREATE TABLE dbo.SAT_CUSTOMER_ADDITIONAL_DETAILS");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,"); 
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,"); 
+                        createStatement.AppendLine("  CONTACT_NUMBER nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [STATE] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (CUSTOMER_HSH ASC, LOAD_DATETIME ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- SAT INCENTIVE OFFER");
+                        createStatement.AppendLine("CREATE TABLE dbo.SAT_INCENTIVE_OFFER");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  OFFER_DESCRIPTION nvarchar(100) NULL,"); 
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED(INCENTIVE_OFFER_HSH ASC, LOAD_DATETIME ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- SAT MEMBERSHIP PLAN DETAIL");
+                        createStatement.AppendLine("CREATE TABLE dbo.SAT_MEMBERSHIP_PLAN_DETAIL");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  PLAN_DESCRIPTION nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_HSH ASC, LOAD_DATETIME ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- SAT MEMBERSHIP PLAN VALUATION");
+                        createStatement.AppendLine("CREATE TABLE dbo.SAT_MEMBERSHIP_PLAN_VALUATION");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  PLAN_VALUATION_DATE datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  PLAN_VALUATION_AMOUNT numeric(38,20) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_HSH ASC, LOAD_DATETIME ASC, PLAN_VALUATION_DATE ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- SAT SEGMENT");
+                        createStatement.AppendLine("CREATE TABLE dbo.SAT_SEGMENT");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  SEGMENT_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
+                        createStatement.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
+                        createStatement.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
+                        createStatement.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
+                        createStatement.AppendLine("  SEGMENT_DESCRIPTION nvarchar(100) NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED (SEGMENT_HSH ASC, LOAD_DATETIME ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("-- BR MEMBERSHIP OFFER");
+                        createStatement.AppendLine("CREATE TABLE[dbo].[BR_MEMBERSHIP_OFFER]");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [SNAPSHOT_DATETIME][datetime2](7) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_OFFER_HSH] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [MEMBERSHIP_HSH] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_HSH] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_HSH] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [SALES_CHANNEL] [nvarchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED([SNAPSHOT_DATETIME] ASC, [CUSTOMER_OFFER_HSH] ASC, [MEMBERSHIP_HSH] ASC, [CUSTOMER_HSH] ASC, [MEMBERSHIP_PLAN_HSH] ASC, [SALES_CHANNEL] ASC)");
+                        createStatement.AppendLine(") ON [PRIMARY]");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
                     }
 
@@ -1960,6 +2522,7 @@ namespace TEAM
                     if (checkBoxCreateMetadataMapping.Checked)
                     {
                         // Create sample mapping data
+                        var connString = ConfigurationSettings.ConnectionStringOmd;
                         var createStatement = new StringBuilder();
 
                         createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'12=12', NULL, 'Y');");
@@ -1988,8 +2551,7 @@ namespace TEAM
                         createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID, COMPOSITE(Plan_Code;''XYZ'')', N'LSAT_MEMBERSHIP', N'17=17', NULL, 'Y');");
                         createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ''),COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'LNK_RENEWAL_MEMBERSHIP', N'1=1', NULL, 'Y');");
                         createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'1=1', NULL, 'Y');");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(ConfigurationSettings.ConnectionStringOmd, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                         // Attribute mapping details
@@ -2004,11 +2566,8 @@ namespace TEAM
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_OFFER', N'Offer_Long_Description', N'SAT_INCENTIVE_OFFER', N'OFFER_DESCRIPTION', N'');");
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'Start_Date', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_START_DATE', N'');");
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'Status', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_STATUS', N'');");
-
-                        // Customer Additional Details
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'Contact_Number', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'CONTACT_NUMBER', N'');");
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'State', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'STATE', N'');");
-                        // Customer Personal
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'DOB', N'SAT_CUSTOMER', N'DATE_OF_BIRTH', N'');");
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'Surname', N'SAT_CUSTOMER', N'SURNAME', N'');");
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'Gender', N'SAT_CUSTOMER', N'GENDER', N'');");
@@ -2017,8 +2576,7 @@ namespace TEAM
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'Referee_Offer_Made', N'SAT_CUSTOMER', N'REFERRAL_OFFER_MADE_INDICATOR', N'');");
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'Suburb', N'SAT_CUSTOMER', N'SUBURB', N'');");
                         createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'Postcode', N'SAT_CUSTOMER', N'POSTCODE', N'');");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(ConfigurationSettings.ConnectionStringOmd, createStatement, worker, 5);
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
                     }
