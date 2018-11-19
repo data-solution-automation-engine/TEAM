@@ -119,8 +119,8 @@ namespace TEAM
             // Make sure the validation information is available in this form
             try
             {
-                var validationFile = ConfigurationSettings.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
-                                     ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension;
+                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
+                                     GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
@@ -290,7 +290,7 @@ namespace TEAM
                 var JsonVersionExtension = @"_v" + versionId + ".json";
                 
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension))
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
 
@@ -313,12 +313,12 @@ namespace TEAM
 
                     string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension, json);
+                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension, json);
 
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension));
+                List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension));
 
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges();
@@ -356,7 +356,7 @@ namespace TEAM
                     dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Multi-Active";
                 }
 
-                richTextBoxInformation.AppendText("The file " + ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension + " was loaded.\r\n");
             }
             GridAutoLayout();
         }
@@ -419,7 +419,7 @@ namespace TEAM
                 var JsonVersionExtension = @"_v" + versionId +".json";
 
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension))
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
 
@@ -440,11 +440,11 @@ namespace TEAM
 
                     string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension, json);
+                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension, json);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension));
+                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
 
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
@@ -476,7 +476,7 @@ namespace TEAM
                     dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
                 }
 
-                richTextBoxInformation.AppendText("The file "+ ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file "+ GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension + " was loaded.\r\n");
             }
 
             // Resize the grid
@@ -541,7 +541,7 @@ namespace TEAM
                 var JsonVersionExtension = @"_v" + versionId + ".json";
 
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension))
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No attribute mapping JSON file was found, so a new empty one was created.\r\n");
 
@@ -561,12 +561,12 @@ namespace TEAM
 
                     string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension, json);
+                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension, json);
 
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
+                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
                 dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
@@ -597,7 +597,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                 }
 
-                richTextBoxInformation.AppendText("The file " + ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension + " was loaded.\r\n");
             }
 
             // Resize the grid
@@ -1306,7 +1306,7 @@ namespace TEAM
             {
                 //Generate a unique key using a hash
                 string output = JsonConvert.SerializeObject(jsonModelMappingFull, Formatting.Indented);
-                File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
             }
             catch (JsonReaderException ex)
             {
@@ -1487,7 +1487,7 @@ namespace TEAM
             {
                 //Generate a unique key using a hash
                 string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
+                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
             }
             catch (JsonReaderException ex)
             {
@@ -1645,7 +1645,7 @@ namespace TEAM
             {
                 //Generate a unique key using a hash
                 string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
-                File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
+                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
             }
             catch (JsonReaderException ex)
             {
@@ -1752,7 +1752,7 @@ namespace TEAM
                             else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
                             {
                                 //Read the file in memory
-                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
+                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
 
                                 //Retrieves the json segment in the file for the given hash returns value or NULL
                                 var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey); 
@@ -1778,14 +1778,14 @@ namespace TEAM
                                 {
                                     // The below is not really necessary and was added as an attempt to work around limitations in WriteAllText, but turns out to be handy nonetheless
                                     //var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
-                                    //var targetFilePathName = ConfigurationSettings.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
+                                    //var targetFilePathName = GlobalParameters.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
 
-                                    //File.Copy(ConfigurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, targetFilePathName);
-                                    //File.Delete(ConfigurationSettings.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
+                                    //File.Copy(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, targetFilePathName);
+                                    //File.Delete(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
 
 
                                     // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
-                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath +GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
 
                                     // Wait for half a second for I/O operations to complete
                                     // Thread.Sleep(500);
@@ -1863,7 +1863,7 @@ namespace TEAM
                                         CreateMd5(versionId + '|' + stagingTable + '|' + integrationTable + '|' + businessKeyDefinition + '|' + drivingKeyDefinition + '|' + filterCriterion);
 
                                     // Load the file
-                                    TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
+                                    TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonTableMappingFull = JArray.FromObject(jsonArray);
@@ -1882,7 +1882,7 @@ namespace TEAM
                                     jsonTableMappingFull.Add(newJsonSegment);
 
                                     string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -1921,7 +1921,7 @@ namespace TEAM
                                 {
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<TableMappingJson[]>(
-                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                            File.ReadAllText(GlobalParameters.ConfigurationPath +
                                                              GlobalParameters.JsonTableMappingFileName + JsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
@@ -1941,7 +1941,7 @@ namespace TEAM
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
-                                        ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension,
+                                        GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension,
                                         output);
 
                                 }
@@ -2068,7 +2068,7 @@ namespace TEAM
 
                                 try
                                 {
-                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
+                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
 
                                     var jsonHash = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
 
@@ -2091,7 +2091,7 @@ namespace TEAM
                                     }
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
                                 }
                                 catch (JsonReaderException ex)
                                 {
@@ -2175,7 +2175,7 @@ namespace TEAM
                                     var hashKey = CreateMd5(versionId +'|' + tableName + '|' + columnName);
 
                                     // Load the file
-                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
+                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonTableMappingFull = JArray.FromObject(jsonArray);
@@ -2196,7 +2196,7 @@ namespace TEAM
                                     jsonTableMappingFull.Add(newJsonSegment);
 
                                     string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -2231,7 +2231,7 @@ namespace TEAM
                                 {
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<ModelMetadataJson[]>(
-                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                            File.ReadAllText(GlobalParameters.ConfigurationPath +
                                                              GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
@@ -2250,7 +2250,7 @@ namespace TEAM
                                     }
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                    File.WriteAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
 
                                 }
                                 catch (JsonReaderException ex)
@@ -2406,7 +2406,7 @@ namespace TEAM
                                 {
                                     AttributeMappingJson[] jsonArray =
                                         JsonConvert.DeserializeObject<AttributeMappingJson[]>(
-                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                            File.ReadAllText(GlobalParameters.ConfigurationPath +
                                                              GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
 
                                     var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
@@ -2429,7 +2429,7 @@ namespace TEAM
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
-                                        ConfigurationSettings.ConfigurationPath +
+                                        GlobalParameters.ConfigurationPath +
                                         GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
                                 }
                                 catch (JsonReaderException ex)
@@ -2500,7 +2500,7 @@ namespace TEAM
                                     var hashKey = CreateMd5(versionId +'|' + stagingTable + '|' + stagingColumn + '|' + integrationTable + '|' +integrationColumn + '|' + transformationRule);
 
                                     // Load the file
-                                    AttributeMappingJson[] jsonArray =JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(ConfigurationSettings.ConfigurationPath +GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
+                                    AttributeMappingJson[] jsonArray =JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonAttributeMappingFull = JArray.FromObject(jsonArray);
@@ -2521,7 +2521,7 @@ namespace TEAM
                                     string output = JsonConvert.SerializeObject(jsonAttributeMappingFull,
                                         Formatting.Indented);
                                     File.WriteAllText(
-                                        ConfigurationSettings.ConfigurationPath +
+                                        GlobalParameters.ConfigurationPath +
                                         GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
@@ -2563,7 +2563,7 @@ namespace TEAM
                                 {
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<AttributeMappingJson[]>(
-                                            File.ReadAllText(ConfigurationSettings.ConfigurationPath +
+                                            File.ReadAllText(GlobalParameters.ConfigurationPath +
                                                              GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
@@ -2585,7 +2585,7 @@ namespace TEAM
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
-                                        ConfigurationSettings.ConfigurationPath +
+                                        GlobalParameters.ConfigurationPath +
                                         GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
 
                                 }
@@ -2661,7 +2661,7 @@ namespace TEAM
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
+            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
@@ -2681,7 +2681,7 @@ namespace TEAM
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the attribute mapping file, convert it to a DataTable and bind it to the source
-            List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
+            List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
@@ -2700,7 +2700,7 @@ namespace TEAM
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
+            List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
@@ -2722,7 +2722,7 @@ namespace TEAM
             {
                 Title = @"Open Business Key Metadata File",
                 Filter = @"Business Key files|*.xml;*.json",
-                InitialDirectory = ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
             };
 
             var ret = STAShowDialog(theDialog);
@@ -2786,7 +2786,7 @@ namespace TEAM
 
                     GridAutoLayout();
                     ContentCounter();
-                    richTextBoxInformation.AppendText("The file " + ConfigurationSettings.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + " was loaded.\r\n");
+                    richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + " was loaded.\r\n");
                 }
                 catch (Exception ex)
                 {
@@ -2803,7 +2803,7 @@ namespace TEAM
                 {
                     Title = @"Save Business Key Metadata File",
                     Filter = @"XML files|*.xml",
-                    InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -2841,7 +2841,7 @@ namespace TEAM
                 {
                     Title = @"Save Attribute Mapping Metadata File",
                     Filter = @"XML files|*.xml",
-                    InitialDirectory = ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
 
@@ -2878,7 +2878,7 @@ namespace TEAM
             {
                 Title = @"Open Attribute Mapping Metadata File",
                 Filter = @"Attribute Mapping files|*.xml;*.json",
-                InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
             };
 
 
@@ -5082,7 +5082,7 @@ namespace TEAM
                     _alert.SetTextLogging("Please check the Error Log for details \r\n");
                     _alert.SetTextLogging("\r\n");
                     //_alert.SetTextLogging(errorLog.ToString());
-                    using (var outfile = new StreamWriter(ConfigurationSettings.ConfigurationPath + @"\Error_Log.txt"))
+                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
                     {
                         outfile.Write(errorLog.ToString());
                         outfile.Close();
@@ -5843,7 +5843,7 @@ namespace TEAM
                 {
                     Title = @"Save Business Key Metadata File",
                     Filter = @"JSON files|*.json",
-                    InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -5917,7 +5917,7 @@ namespace TEAM
         {
             try
             {
-                System.Diagnostics.Process.Start(ConfigurationSettings.OutputPath);
+                System.Diagnostics.Process.Start(GlobalParameters.OutputPath);
             }
             catch (Exception ex)
             {
@@ -5933,7 +5933,7 @@ namespace TEAM
                 {
                     Title = @"Save Attribute Mapping Metadata File",
                     Filter = @"JSON files|*.json",
-                    InitialDirectory =  ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -5990,7 +5990,7 @@ namespace TEAM
                 {
                     Title = @"Save Model Metadata File",
                     Filter = @"JSON files|*.json",
-                    InitialDirectory = ConfigurationSettings.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -6117,9 +6117,9 @@ namespace TEAM
 
                 //Spool to disk
                 string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                File.WriteAllText(ConfigurationSettings.OutputPath + outputFileName, output);
+                File.WriteAllText(GlobalParameters.OutputPath + outputFileName, output);
 
-                richTextBoxInformation.Text = "File "+ outputFileName + " has been saved to "+ ConfigurationSettings.OutputPath + ".";
+                richTextBoxInformation.Text = "File "+ outputFileName + " has been saved to "+ GlobalParameters.OutputPath + ".";
             }
             catch (JsonReaderException ex)
             {

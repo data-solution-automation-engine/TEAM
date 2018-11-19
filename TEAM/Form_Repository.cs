@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Data.SqlClient;
-using System.Linq.Expressions;
 using System.Text;
 using System.Windows.Forms;
 
@@ -9,13 +8,11 @@ namespace TEAM
 {
     public partial class FormManageRepository : FormBase
     {
-        private readonly FormMain _myParent;
         FormAlert _alertRepository;
         FormAlert _alertSampleData;
 
-        public FormManageRepository(FormMain parent)
+        public FormManageRepository()
         {
-            _myParent = parent;
             InitializeComponent();
 
             labelMetadataRepository.Text = "Repository type in configuration is set to " +
@@ -69,7 +66,7 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     _alertRepository.SetTextLogging("An issue has occured " + ex);
-                    _alertRepository.SetTextLogging("This occurred with the following query: " + createStatement.ToString() + "\r\n\r\n");
+                    _alertRepository.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
                 }
             }
 
@@ -93,8 +90,8 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     _alertSampleData.SetTextLogging("An issue has occured " + ex);
-                    _alertSampleData.SetTextLogging("This occurred with the following query: " + createStatement.ToString()+"\r\n\r\n");
-                    errorHandlingParameters.errorCatcher++;
+                    _alertSampleData.SetTextLogging("This occurred with the following query: " + createStatement +"\r\n\r\n");
+                    ErrorHandlingParameters.ErrorCatcher++;
                 }
             }
 
@@ -1498,16 +1495,16 @@ namespace TEAM
             }
         }
 
-        internal static class errorHandlingParameters
+        internal static class ErrorHandlingParameters
         {
-            public static int errorCatcher { get; set; }
+            public static int ErrorCatcher { get; set; }
         }
 
         private void backgroundWorkerSampleData_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            errorHandlingParameters.errorCatcher = 0;
+            ErrorHandlingParameters.ErrorCatcher = 0;
 
             // Handle multithreading
             if (worker != null && worker.CancellationPending)
@@ -2517,6 +2514,222 @@ namespace TEAM
 
                     #endregion
 
+                    #region Presentation Layer
+
+                    if (checkBoxCreateSampleDV.Checked)
+                    {
+                        var connString = ConfigurationSettings.ConnectionStringPres;
+
+                        // Create sample data
+                        StringBuilder createStatement = new StringBuilder();
+
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER', 'U') IS NOT NULL DROP TABLE[DIM_CUSTOMER]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER_TMP', 'U') IS NOT NULL DROP TABLE[DIM_CUSTOMER_TMP]");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("/*");
+                        createStatement.AppendLine("Create tables");
+                        createStatement.AppendLine("*/");
+                        createStatement.AppendLine("CREATE TABLE [DIM_CUSTOMER]");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [DIM_CUSTOMER_HSH]          binary(16)  NOT NULL,");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID]         integer NOT NULL ,");
+                        createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] integer NOT NULL ,");
+                        createStatement.AppendLine("  [CHECKSUM_TYPE1] varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [CHECKSUM_TYPE2]            varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [EFFECTIVE_DATETIME]        datetime2(7)  NOT NULL,");
+                        createStatement.AppendLine("  [EXPIRY_DATETIME]           datetime2(7)  NOT NULL,");
+                        createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR]  varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_HSH]              binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_ID]               numeric(38,20)  NOT NULL,");
+                        createStatement.AppendLine("  [GIVEN_NAME]                varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [SURNAME]                   varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [GENDER]                    varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [SUBURB]                    varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [POSTCODE]                  varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [COUNTRY]                   varchar(100)  NOT NULL,");
+                        createStatement.AppendLine("  [DATE_OF_BIRTH]             datetime2(7)  NOT NULL,");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED([DIM_CUSTOMER_HSH] ASC)");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("CREATE TABLE [temp].[DIM_CUSTOMER_TMP]");
+                        createStatement.AppendLine("(");
+                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID][int] NOT NULL,");
+                        createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] [int] NOT NULL,");
+                        createStatement.AppendLine("  [EFFECTIVE_DATETIME] [datetime2] (7) NOT NULL,");
+                        createStatement.AppendLine("  [EXPIRY_DATETIME] [datetime2] (7) NOT NULL,");
+                        createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR] [varchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_HSH] [char](32) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_ID] [numeric] (38, 20) NOT NULL,");
+                        createStatement.AppendLine("  [GIVEN_NAME] [varchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  [SURNAME] [varchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  [GENDER] [varchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  [SUBURB] [varchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  [POSTCODE] [varchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  [COUNTRY] [varchar] (100) NOT NULL,");
+                        createStatement.AppendLine("  [DATE_OF_BIRTH] [datetime2] (7) NOT NULL");
+                        createStatement.AppendLine(")");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'ETL_INSERT_RUN_ID'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'ETL_UPDATE_RUN_ID'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GIVEN_NAME'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SURNAME'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type2',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SUBURB'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'POSTCODE'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GENDER'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DATE_OF_BIRTH'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_ID'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DIM_CUSTOMER_HSH'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CHECKSUM_TYPE1'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CHECKSUM_TYPE2'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'EFFECTIVE_DATETIME'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'EXPIRY_DATETIME'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("EXEC sp_addextendedproperty");
+                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CURRENT_RECORD_INDICATOR'");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+
+                        createStatement.AppendLine("/*");
+                        createStatement.AppendLine("	Create the Views");
+                        createStatement.AppendLine("*/");
+                        createStatement.AppendLine("CREATE VIEW DIM_CUSTOMER_VW AS");
+                        createStatement.AppendLine("SELECT ");
+                        createStatement.AppendLine("  -1 AS[ETL_INSERT_RUN_ID],");
+                        createStatement.AppendLine("  -1 AS[ETL_UPDATE_RUN_ID],");
+                        createStatement.AppendLine("  scu.[LOAD_DATETIME] AS EFFECTIVE_DATETIME,");
+                        createStatement.AppendLine("  scu.[LOAD_END_DATETIME] AS EXPIRY_DATETIME,");
+                        createStatement.AppendLine("  scu.[CURRENT_RECORD_INDICATOR],");
+                        createStatement.AppendLine("  --scu.[DELETED_RECORD_INDICATOR],");
+                        createStatement.AppendLine("  hcu.CUSTOMER_HSH, ");
+                        createStatement.AppendLine("  hcu.CUSTOMER_ID,");
+                        createStatement.AppendLine("  scu.GIVEN_NAME,");
+                        createStatement.AppendLine("  scu.SURNAME,");
+                        createStatement.AppendLine("  CASE scu.GENDER");
+                        createStatement.AppendLine("    WHEN 'M' THEN 'Male'");
+                        createStatement.AppendLine("    WHEN 'F' THEN 'Female'");
+                        createStatement.AppendLine("    ELSE 'Unknown'");
+                        createStatement.AppendLine("  END AS GENDER,");
+                        createStatement.AppendLine("  scu.SUBURB,");
+                        createStatement.AppendLine("  scu.POSTCODE,");
+                        createStatement.AppendLine("  scu.COUNTRY,");
+                        createStatement.AppendLine("  CAST(scu.DATE_OF_BIRTH AS DATE) AS DATE_OF_BIRTH");
+                        createStatement.AppendLine("FROM");
+                        createStatement.AppendLine("  DVI_200_Integration_Layer.dbo.HUB_CUSTOMER AS hcu INNER JOIN");
+                        createStatement.AppendLine("  DVI_200_Integration_Layer.dbo.SAT_CUSTOMER AS scu ON hcu.CUSTOMER_HSH = scu.CUSTOMER_HSH");
+                        createStatement.AppendLine("WHERE");
+                        createStatement.AppendLine("  (ISNULL(scu.CURRENT_RECORD_INDICATOR, 'Y') = 'Y') ");
+                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                        createStatement.Clear();
+                    }
+
+                    #endregion
+
                     #region Metadadata
 
                     if (checkBoxCreateMetadataMapping.Checked)
@@ -2617,16 +2830,16 @@ namespace TEAM
             else
             {
                 labelResult.Text = "Done!";
-                if (errorHandlingParameters.errorCatcher == 0)
+                if (ErrorHandlingParameters.ErrorCatcher == 0)
                 {
                     MessageBox.Show("The sample schema / data has been created.", "Completed", MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("The sample schema / data has been created with "+ errorHandlingParameters.errorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
+                    MessageBox.Show("The sample schema / data has been created with "+ ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
-                    errorHandlingParameters.errorCatcher = 0;
+                    ErrorHandlingParameters.ErrorCatcher = 0;
                 }
             }
         }

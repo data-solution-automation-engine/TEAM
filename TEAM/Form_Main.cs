@@ -40,7 +40,7 @@ namespace TEAM
             EnvironmentConfiguration.InitialiseConfigurationPath();
 
             // Load the available configuration file
-            EnvironmentConfiguration.LoadConfigurationFile(ConfigurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension);
+            EnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
 
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
@@ -183,7 +183,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(ConfigurationSettings.OutputPath);
+                Process.Start(GlobalParameters.OutputPath);
             }
             catch (Exception ex)
             {
@@ -397,7 +397,7 @@ namespace TEAM
         {
             if (_myRepositoryForm == null)
             {
-                _myRepositoryForm = new FormManageRepository(this);
+                _myRepositoryForm = new FormManageRepository();
                 _myRepositoryForm.Show();
 
                 Application.Run();
@@ -410,7 +410,7 @@ namespace TEAM
                     _myRepositoryForm.Invoke((MethodInvoker)delegate { _myRepositoryForm.Close(); });
                     _myRepositoryForm.FormClosed += CloseMetadataForm;
 
-                    _myRepositoryForm = new FormManageRepository(this);
+                    _myRepositoryForm = new FormManageRepository();
                     _myRepositoryForm.Show();
                     Application.Run();
                 }
@@ -419,7 +419,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myRepositoryForm.FormClosed += CloseRepositoryForm;
 
-                    _myRepositoryForm = new FormManageRepository(this);
+                    _myRepositoryForm = new FormManageRepository();
                     _myRepositoryForm.Show();
                     Application.Run();
                 }

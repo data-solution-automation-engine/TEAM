@@ -127,9 +127,9 @@ namespace TEAM
 
             internal static string PresentationDatabaseName { get; set; }
 
-            internal static string OutputPath { get; set; }
+            //internal static string OutputPath { get; set; }
 
-            internal static string ConfigurationPath { get; set; }
+            //internal static string ConfigurationPath { get; set; }
 
             internal static string LinkedServer { get; set; }
 
@@ -144,8 +144,6 @@ namespace TEAM
             internal static string EnableAlternativeLoadDateTimeAttribute { get; set; }
 
             internal static string MetadataRepositoryType { get; set; }
-
-            internal static string WorkingEnvironment { get; set; } 
         }
 
         /// <summary>
@@ -175,6 +173,7 @@ namespace TEAM
             // TEAM core path parameters
             public static string ConfigurationPath { get; set; } = Application.StartupPath + @"\Configuration\";
             public static string OutputPath { get; set; } = Application.StartupPath + @"\Output\";
+            internal static string WorkingEnvironment { get; set; } = "Development";
 
             public static string ConfigfileName { get; set; } = "TEAM_configuration";
             public static string PathfileName { get; set; } = "TEAM_Path_configuration";

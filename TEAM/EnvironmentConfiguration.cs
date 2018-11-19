@@ -16,68 +16,111 @@ namespace TEAM
         /// </summary>
         internal void CreateDummyEnvironmentConfiguration(string filename)
         {
-            var initialConfigurationFile = new StringBuilder();
-
-            initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
-            initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
-            initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
-            initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
-            initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
-            initialConfigurationFile.AppendLine("IntegrationDatabase|Data_Vault_Database");
-            initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
-            initialConfigurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath);
-            initialConfigurationFile.AppendLine("ConfigurationPath|" + FormBase.GlobalParameters.ConfigurationPath);
-            initialConfigurationFile.AppendLine(
-                @"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
-            initialConfigurationFile.AppendLine(
-                @"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
-            initialConfigurationFile.AppendLine(
-                @"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
-            initialConfigurationFile.AppendLine(
-                @"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
-            initialConfigurationFile.AppendLine(
-                @"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
-            initialConfigurationFile.AppendLine(
-                @"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
-            initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
-            initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
-            initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
-            initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
-            initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
-            initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
-            initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT");
-            initialConfigurationFile.AppendLine("KeyIdentifier|HSH");
-            initialConfigurationFile.AppendLine("SchemaName|dbo");
-            initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
-            initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");
-            initialConfigurationFile.AppendLine("LoadDateTimeStamp|LOAD_DATETIME");
-            initialConfigurationFile.AppendLine("ExpiryDateTimeStamp|LOAD_END_DATETIME");
-            initialConfigurationFile.AppendLine("ChangeDataIndicator|CDC_OPERATION");
-            initialConfigurationFile.AppendLine("RecordSourceAttribute|RECORD_SOURCE");
-            initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
-            initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
-            initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
-            initialConfigurationFile.AppendLine("LinkedServerName|");
-            initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
-            initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
-            initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
-            initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");
-            initialConfigurationFile.AppendLine("AlternativeRecordSource|N/A");
-            initialConfigurationFile.AppendLine("AlternativeHubLDTS|N/A");
-            initialConfigurationFile.AppendLine("AlternativeSatelliteLDTS|N/A");
-            initialConfigurationFile.AppendLine("AlternativeRecordSourceFunction|False");
-            initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
-            initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
-            initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
-            initialConfigurationFile.AppendLine("metadataRepositoryType|JSON");
-
-            initialConfigurationFile.AppendLine("/* End of file */");
-
-            using (var outfile = new StreamWriter(filename))
+            if (FormBase.GlobalParameters.WorkingEnvironment == "Development")
             {
-                outfile.Write(initialConfigurationFile.ToString());
-                outfile.Close();
+                // Create a completely new file
+                var initialConfigurationFile = new StringBuilder();
+
+                initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
+                initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
+                initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
+                initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
+                initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
+                initialConfigurationFile.AppendLine("IntegrationDatabase|Data_Vault_Database");
+                initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
+                //initialConfigurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath);
+                //initialConfigurationFile.AppendLine("ConfigurationPath|" + FormBase.GlobalParameters.ConfigurationPath);
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
+                initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
+                initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
+                initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
+                initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
+                initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
+                initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT");
+                initialConfigurationFile.AppendLine("KeyIdentifier|HSH");
+                initialConfigurationFile.AppendLine("SchemaName|dbo");
+                initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
+                initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");
+                initialConfigurationFile.AppendLine("LoadDateTimeStamp|LOAD_DATETIME");
+                initialConfigurationFile.AppendLine("ExpiryDateTimeStamp|LOAD_END_DATETIME");
+                initialConfigurationFile.AppendLine("ChangeDataIndicator|CDC_OPERATION");
+                initialConfigurationFile.AppendLine("RecordSourceAttribute|RECORD_SOURCE");
+                initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
+                initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
+                initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
+                initialConfigurationFile.AppendLine("LinkedServerName|");
+                initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
+                initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
+                initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
+                initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");
+                initialConfigurationFile.AppendLine("AlternativeRecordSource|N/A");
+                initialConfigurationFile.AppendLine("AlternativeHubLDTS|N/A");
+                initialConfigurationFile.AppendLine("AlternativeSatelliteLDTS|N/A");
+                initialConfigurationFile.AppendLine("AlternativeRecordSourceFunction|False");
+                initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
+                initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
+                initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
+                initialConfigurationFile.AppendLine("metadataRepositoryType|JSON");
+
+                initialConfigurationFile.AppendLine("/* End of file */");
+
+                using (var outfile = new StreamWriter(filename))
+                {
+                    outfile.Write(initialConfigurationFile.ToString());
+                    outfile.Close();
+                }
+            } else if (FormBase.GlobalParameters.WorkingEnvironment == "Production")
+            {
+                // Just copy the dev file to a prod version to retain settings
+                // Check if the paths are available, just to be sure
+                InitialiseRootPath();
+
+                try
+                {
+                    var sourceFilePathName = FormBase.GlobalParameters.ConfigurationPath +
+                                             FormBase.GlobalParameters.ConfigfileName + '_' + "Development" +
+                                             FormBase.GlobalParameters.FileExtension;
+
+                    if (File.Exists(sourceFilePathName))
+                    {
+                        var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' + "Production" + FormBase.GlobalParameters.FileExtension;
+
+                        File.Copy(sourceFilePathName, targetFilePathName);
+
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "TEAM couldn't locate a development configuration file! Can you check the paths and existence of directories?",
+                            "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error has occured during the creating of the production settings file. The error message is " + ex,
+                        "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
+            else
+            {
+                MessageBox.Show(
+                    "Either a Development or Production environment was expected! Can you check the radiobox settings for the environment?",
+                    "An issue has been enountered.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+
         }
 
 
@@ -120,20 +163,20 @@ namespace TEAM
 
             try
             {
-                if (File.Exists(FormBase.ConfigurationSettings.ConfigurationPath +
+                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
                                 FormBase.GlobalParameters.ConfigfileName + '_' +
-                                FormBase.ConfigurationSettings.WorkingEnvironment +
+                                FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension))
                 {
-                    var targetFilePathName = FormBase.ConfigurationSettings.ConfigurationPath +
+                    var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
                                              string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_",
                                                  FormBase.GlobalParameters.ConfigfileName + '_' +
-                                                 FormBase.ConfigurationSettings.WorkingEnvironment +
+                                                 FormBase.GlobalParameters.WorkingEnvironment +
                                                  FormBase.GlobalParameters.FileExtension);
 
                     File.Copy(
-                        FormBase.ConfigurationSettings.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName +
-                        '_' + FormBase.ConfigurationSettings.WorkingEnvironment +
+                        FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName +
+                        '_' + FormBase.GlobalParameters.WorkingEnvironment +
                         FormBase.GlobalParameters.FileExtension, targetFilePathName);
 
                 }
@@ -198,8 +241,7 @@ namespace TEAM
 
                     initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
                     initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
-                    initialConfigurationFile.AppendLine("ConfigurationPath|" +
-                                                        FormBase.GlobalParameters.ConfigurationPath);
+                    initialConfigurationFile.AppendLine("ConfigurationPath|" +FormBase.GlobalParameters.ConfigurationPath);
                     initialConfigurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath);
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
                     initialConfigurationFile.AppendLine("/* End of file */");
@@ -230,15 +272,15 @@ namespace TEAM
             // Create the configuration directory if it does not exist yet
             try
             {
-                if (!Directory.Exists(FormBase.ConfigurationSettings.ConfigurationPath))
+                if (!Directory.Exists(FormBase.GlobalParameters.ConfigurationPath))
                 {
-                    Directory.CreateDirectory(FormBase.ConfigurationSettings.ConfigurationPath);
+                    Directory.CreateDirectory(FormBase.GlobalParameters.ConfigurationPath);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Error creation default directory at " + FormBase.ConfigurationSettings.ConfigurationPath +
+                    "Error creation default directory at " + FormBase.GlobalParameters.ConfigurationPath +
                     " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -246,15 +288,15 @@ namespace TEAM
             // Create the output directory if it does not exist yet
             try
             {
-                if (!Directory.Exists(FormBase.ConfigurationSettings.OutputPath))
+                if (!Directory.Exists(FormBase.GlobalParameters.OutputPath))
                 {
-                    Directory.CreateDirectory(FormBase.ConfigurationSettings.OutputPath);
+                    Directory.CreateDirectory(FormBase.GlobalParameters.OutputPath);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Error creation default directory at " + FormBase.ConfigurationSettings.OutputPath +
+                    "Error creation default directory at " + FormBase.GlobalParameters.OutputPath +
                     " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -263,14 +305,14 @@ namespace TEAM
             try
             {
                 // Create a default configuration file if the file does not exist as expected
-                if (File.Exists(FormBase.ConfigurationSettings.ConfigurationPath +
+                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
                                 FormBase.GlobalParameters.ConfigfileName + '_' +
-                                FormBase.ConfigurationSettings.WorkingEnvironment +
+                                FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension)) return;
                 var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    FormBase.ConfigurationSettings.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' +
-                    FormBase.ConfigurationSettings.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
+                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' +
+                    FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
@@ -283,14 +325,14 @@ namespace TEAM
             try
             {
                 // Create a default configuration file if the file does not exist as expected
-                if (File.Exists(FormBase.ConfigurationSettings.ConfigurationPath +
+                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
                                 FormBase.GlobalParameters.ValidationFileName + '_' +
-                                FormBase.ConfigurationSettings.WorkingEnvironment +
+                                FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension)) return;
                 var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    FormBase.ConfigurationSettings.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName +
-                    '_' + FormBase.ConfigurationSettings.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
+                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName +
+                    '_' + FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
@@ -328,10 +370,11 @@ namespace TEAM
                 sr.Close();
                 fs.Close();
 
-                // These variables are used as global vairables throughout the application
-                FormBase.ConfigurationSettings.ConfigurationPath = configList["ConfigurationPath"];
-                FormBase.ConfigurationSettings.OutputPath = configList["OutputPath"];
-                FormBase.ConfigurationSettings.WorkingEnvironment = configList["WorkingEnvironment"];
+                // These variables are used as global variables throughout the application
+                FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
+                FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
+
+                FormBase.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
 
             }
             catch (Exception)
@@ -362,8 +405,8 @@ namespace TEAM
                 configurationFile.AppendLine("PresentationDatabase|" +
                                              FormBase.ConfigurationSettings.PresentationDatabaseName +
                                              "");
-                configurationFile.AppendLine("OutputPath|" + FormBase.ConfigurationSettings.OutputPath + "");
-                configurationFile.AppendLine("ConfigurationPath|" + FormBase.ConfigurationSettings.ConfigurationPath +
+                configurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath + "");
+                configurationFile.AppendLine("ConfigurationPath|" + FormBase.GlobalParameters.ConfigurationPath +
                                              "");
                 configurationFile.AppendLine(@"connectionStringSource|" +
                                              FormBase.ConfigurationSettings.ConnectionStringSource +
@@ -455,9 +498,9 @@ namespace TEAM
                 configurationFile.AppendLine("/* End of file */");
 
                 using (var outfile =
-                    new StreamWriter(FormBase.ConfigurationSettings.ConfigurationPath +
+                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
                                      FormBase.GlobalParameters.ConfigfileName + '_' +
-                                     FormBase.ConfigurationSettings.WorkingEnvironment +
+                                     FormBase.GlobalParameters.WorkingEnvironment +
                                      FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(configurationFile.ToString());
@@ -567,8 +610,8 @@ namespace TEAM
                 FormBase.ConfigurationSettings.PsaDatabaseName = configList["PersistentStagingDatabase"];
                 FormBase.ConfigurationSettings.IntegrationDatabaseName = configList["IntegrationDatabase"];
                 FormBase.ConfigurationSettings.PresentationDatabaseName = configList["PresentationDatabase"];
-                FormBase.ConfigurationSettings.OutputPath = configList["OutputPath"];
-                FormBase.ConfigurationSettings.ConfigurationPath = configList["ConfigurationPath"];
+                FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
+                FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
                 FormBase.ConfigurationSettings.LinkedServer = configList["LinkedServerName"];
             }
             catch (Exception)
@@ -641,9 +684,9 @@ namespace TEAM
                 validationFile.AppendLine("/* End of file */");
 
                 using (var outfile =
-                    new StreamWriter(FormBase.ConfigurationSettings.ConfigurationPath +
+                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
                                      FormBase.GlobalParameters.ValidationFileName + '_' +
-                                     FormBase.ConfigurationSettings.WorkingEnvironment +
+                                     FormBase.GlobalParameters.WorkingEnvironment +
                                      FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());

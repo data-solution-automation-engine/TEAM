@@ -76,9 +76,9 @@ namespace TEAM
         private void buttonShowLog_Click(object sender, EventArgs e)
         {
             //Check if the file exists, otherwise create a dummy / empty file   
-            if (File.Exists(ConfigurationSettings.ConfigurationPath + @"\Error_Log.txt"))
+            if (File.Exists(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
             {
-                Process.Start(ConfigurationSettings.ConfigurationPath + @"\Error_Log.txt");
+                Process.Start(GlobalParameters.ConfigurationPath + @"\Error_Log.txt");
             }
             else
             {

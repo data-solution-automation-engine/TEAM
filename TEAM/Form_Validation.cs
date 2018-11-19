@@ -17,8 +17,8 @@ namespace TEAM
             // Make sure the validation information is available in this form
             try
             {
-                var validationFile = ConfigurationSettings.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
-                                     ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension;
+                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
+                                     GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
@@ -130,7 +130,7 @@ namespace TEAM
             {
                 Title = @"Open Validation File",
                 Filter = @"Text files|*.txt",
-                InitialDirectory = @"" + ConfigurationSettings.ConfigurationPath + ""
+                InitialDirectory = @"" + GlobalParameters.ConfigurationPath + ""
             };
 
             if (theDialog.ShowDialog() != DialogResult.OK) return;
@@ -256,7 +256,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(ConfigurationSettings.ConfigurationPath);
+                Process.Start(GlobalParameters.ConfigurationPath);
             }
             catch (Exception ex)
             {
@@ -268,7 +268,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(ConfigurationSettings.OutputPath);
+                Process.Start(GlobalParameters.OutputPath);
             }
             catch (Exception ex)
             {

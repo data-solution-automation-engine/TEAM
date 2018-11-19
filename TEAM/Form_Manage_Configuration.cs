@@ -9,7 +9,7 @@ namespace TEAM
 {
     public partial class FormManageConfiguration : FormBase
     {
-        private bool FormLoading = true;
+        private bool _formLoading = true;
 
         public FormManageConfiguration()
         {
@@ -24,17 +24,35 @@ namespace TEAM
             //Also create the initial file with the configuration if it doesn't exist already
             EnvironmentConfiguration.InitialiseRootPath();
 
+            // Set the core TEAM (path) file using the information retrieved from memory. These values were loaded into memory from the path file in the main form.
+            //Dev or prod environment (working environment)
+            RadioButton radioButtonWorkingEnvironment;
+            if (GlobalParameters.WorkingEnvironment == "Development")
+            {
+                radioButtonWorkingEnvironment = radioButtonDevelopment;
+                radioButtonWorkingEnvironment.Checked = true;
+            }
+            else if (GlobalParameters.WorkingEnvironment == "Production")
+            {
+                radioButtonWorkingEnvironment = radioButtonProduction;
+                radioButtonWorkingEnvironment.Checked = true;
+            }
+
+            //Paths
+            textBoxOutputPath.Text = GlobalParameters.OutputPath;
+            textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
+
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
             {
-                LocalInitialiseConnections(ConfigurationSettings.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + ConfigurationSettings.WorkingEnvironment + GlobalParameters.FileExtension);
+                LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
 
-            FormLoading = false;
+            _formLoading = false;
         }
 
 
@@ -92,10 +110,6 @@ namespace TEAM
                 var connectionStringPres = configList["connectionStringPresentation"];
                 connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-
-                //Paths
-                textBoxOutputPath.Text = configList["OutputPath"];
-                textBoxConfigurationPath.Text = configList["ConfigurationPath"];
 
                 //Connections
                 textBoxIntegrationConnection.Text = connectionStringInt;
@@ -232,20 +246,6 @@ namespace TEAM
                     myMetadatarepositoryType.Checked = true;
                 }
 
-                //Dev or prod environment (working environment)
-                RadioButton radioButtonWorkingEnvironment;
-                if (ConfigurationSettings.WorkingEnvironment == "Development")
-                {
-                    radioButtonWorkingEnvironment = radioButtonDevelopment;
-                    radioButtonWorkingEnvironment.Checked = true;
-                }
-                else if (ConfigurationSettings.WorkingEnvironment == "Production")
-                {
-                    radioButtonWorkingEnvironment = radioButtonProduction;
-                    radioButtonWorkingEnvironment.Checked = true;
-                }
-
-
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
 
@@ -267,7 +267,15 @@ namespace TEAM
         {
             try
             {
-                Process.Start(textBoxOutputPath.Text);
+                if (textBoxOutputPath.Text != "")
+                {
+                    Process.Start(textBoxOutputPath.Text);
+                }
+                else
+                {
+                    richTextBoxInformation.Text =
+                        "There is no value given for the Output Path. Please enter a valid path name.";
+                }
             }
             catch (Exception ex)
             {
@@ -287,7 +295,7 @@ namespace TEAM
             {
                 Title = @"Open Configuration File",
                 Filter = @"Text files|*.txt",
-                InitialDirectory = @""+ConfigurationSettings.ConfigurationPath+""
+                InitialDirectory = @""+ GlobalParameters.ConfigurationPath+""
             };
 
             if (theDialog.ShowDialog() != DialogResult.OK) return;
@@ -327,7 +335,6 @@ namespace TEAM
         /// <param name="e"></param>
         private void saveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
             string workingEnvironment = "";
 
             if (radioButtonDevelopment.Checked)
@@ -359,9 +366,10 @@ namespace TEAM
             }
 
             // Update the paths in memory
-            ConfigurationSettings.OutputPath = textBoxOutputPath.Text;
-            ConfigurationSettings.ConfigurationPath = textBoxConfigurationPath.Text;
-            ConfigurationSettings.WorkingEnvironment = workingEnvironment;
+            GlobalParameters.OutputPath = textBoxOutputPath.Text;
+            GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
+
+            GlobalParameters.WorkingEnvironment = workingEnvironment;
 
             // Make sure the new paths as updated are available upon save for backup etc.
             EnvironmentConfiguration.InitialiseConfigurationPath();
@@ -420,8 +428,8 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Issues storing the metadata repository type. Is one of the radio buttons checked?");
             }
 
-            ConfigurationSettings.OutputPath = textBoxOutputPath.Text;
-            ConfigurationSettings.ConfigurationPath = textBoxConfigurationPath.Text;
+            GlobalParameters.OutputPath = textBoxOutputPath.Text;
+            GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
 
             ConfigurationSettings.SourceSystemPrefix = textBoxSourcePrefix.Text;
             ConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
@@ -495,7 +503,15 @@ namespace TEAM
         {
             try
             {
-                Process.Start(textBoxConfigurationPath.Text);
+                if (textBoxConfigurationPath.Text != "")
+                {
+                    Process.Start(textBoxConfigurationPath.Text);
+                }
+                else
+                {
+                    richTextBoxInformation.Text =
+                        "There is no value given for the Configuration Path. Please enter a valid path name.";
+                }
             }
             catch (Exception ex)
             {
@@ -509,15 +525,15 @@ namespace TEAM
             RadioButton rb = sender as RadioButton;
             if (rb != null)
             {
-                if (rb.Checked && FormLoading == false)
+                if (rb.Checked && _formLoading == false)
                 {
-                    ConfigurationSettings.WorkingEnvironment = "Development";
+                    GlobalParameters.WorkingEnvironment = "Development";
                     //MessageBox.Show("Dev");
                     try
                     {
-                        LocalInitialiseConnections(ConfigurationSettings.ConfigurationPath +
+                        LocalInitialiseConnections(GlobalParameters.ConfigurationPath +
                                                    GlobalParameters.ConfigfileName + '_' +
-                                                   ConfigurationSettings.WorkingEnvironment +
+                                                   GlobalParameters.WorkingEnvironment +
                                                    GlobalParameters.FileExtension);
                     }
                     catch (Exception ex)
@@ -537,15 +553,15 @@ namespace TEAM
             RadioButton rb = sender as RadioButton;
             if (rb != null)
             {
-                if (rb.Checked && FormLoading == false)
+                if (rb.Checked && _formLoading == false)
                 {
-                    ConfigurationSettings.WorkingEnvironment = "Production";
+                    GlobalParameters.WorkingEnvironment = "Production";
                     //MessageBox.Show("Prod");
                     try
                     {
-                        LocalInitialiseConnections(ConfigurationSettings.ConfigurationPath +
+                        LocalInitialiseConnections(GlobalParameters.ConfigurationPath +
                                                    GlobalParameters.ConfigfileName + '_' +
-                                                   ConfigurationSettings.WorkingEnvironment +
+                                                   GlobalParameters.WorkingEnvironment +
                                                    GlobalParameters.FileExtension);
                     }
                     catch (Exception ex)
