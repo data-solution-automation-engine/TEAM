@@ -54,15 +54,10 @@ namespace TEAM
         {
             //Prefixes
             internal static string StgTablePrefixValue { get; set; }
-
             internal static string PsaTablePrefixValue { get; set; }
-
             internal static string HubTablePrefixValue { get; set; }
-
             internal static string SatTablePrefixValue { get; set; }
-
             internal static string LinkTablePrefixValue { get; set; }
-
             internal static string LsatPrefixValue { get; set; }
 
             //Connection strings
@@ -126,10 +121,6 @@ namespace TEAM
             internal static string IntegrationDatabaseName { get; set; }
 
             internal static string PresentationDatabaseName { get; set; }
-
-            //internal static string OutputPath { get; set; }
-
-            //internal static string ConfigurationPath { get; set; }
 
             internal static string LinkedServer { get; set; }
 
