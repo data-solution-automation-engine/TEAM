@@ -3134,7 +3134,7 @@ namespace TEAM
             var psaDatabase = '[' + ConfigurationSettings.PsaDatabaseName+ ']';
             var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';            
 
-            var linkedServer = ConfigurationSettings.LinkedServer;
+            var linkedServer = ConfigurationSettings.PhysicalModelServerName;
             if (linkedServer != "")
             {
                 linkedServer = '['+linkedServer + "].";

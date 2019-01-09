@@ -22,26 +22,38 @@ namespace TEAM
                 var initialConfigurationFile = new StringBuilder();
 
                 initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
-                initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
+
+                // Databases
                 initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
                 initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
                 initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
                 initialConfigurationFile.AppendLine("IntegrationDatabase|Data_Vault_Database");
                 initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
-                //initialConfigurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath);
-                //initialConfigurationFile.AppendLine("ConfigurationPath|" + FormBase.GlobalParameters.ConfigurationPath);
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine("MetadataDatabase|Metadata_Database");
+
+                // Instances
+                initialConfigurationFile.AppendLine("PhysicalModelServerName|");
+                initialConfigurationFile.AppendLine("MetadataServerName|");
+
+                // Connectivity
+                initialConfigurationFile.AppendLine("MetadataSSPI|False");
+                initialConfigurationFile.AppendLine("MetadataNamed|True");
+                initialConfigurationFile.AppendLine("MetadataUserName|sa");
+                initialConfigurationFile.AppendLine("MetadataPassword|k3kobus2");
+
+                initialConfigurationFile.AppendLine("PhysicalModelSSPI|False");
+                initialConfigurationFile.AppendLine("PhysicalModelNamed|True");
+                initialConfigurationFile.AppendLine("PhysicalModelUserName|sa");
+                initialConfigurationFile.AppendLine("PhysicalModelPassword|k3kobus2");
+
+                // Connection strings
+                initialConfigurationFile.AppendLine(@"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(@"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(@"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(@"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(@"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(@"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
+
                 initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
@@ -60,7 +72,6 @@ namespace TEAM
                 initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
                 initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
                 initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
-                initialConfigurationFile.AppendLine("LinkedServerName|");
                 initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
                 initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
                 initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
@@ -125,7 +136,7 @@ namespace TEAM
 
 
         /// <summary>
-        ///    Method to create a new configuration file with default values at the default location
+        ///    Method to create a new validation file with default values at the default location
         /// </summary>
         internal void CreateDummyValidationConfiguration(string filename)
         {
@@ -240,7 +251,6 @@ namespace TEAM
                     var initialConfigurationFile = new StringBuilder();
 
                     initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
-                    initialConfigurationFile.AppendLine("/* Roelant Vos - 2018 */");
                     initialConfigurationFile.AppendLine("ConfigurationPath|" +FormBase.GlobalParameters.ConfigurationPath);
                     initialConfigurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath);
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
@@ -394,17 +404,35 @@ namespace TEAM
                 var configurationFile = new StringBuilder();
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
+
                 configurationFile.AppendLine("SourceDatabase|" + FormBase.ConfigurationSettings.SourceDatabaseName +"");
                 configurationFile.AppendLine("StagingDatabase|" + FormBase.ConfigurationSettings.StagingDatabaseName +"");
                 configurationFile.AppendLine("PersistentStagingDatabase|" +FormBase.ConfigurationSettings.PsaDatabaseName + "");
                 configurationFile.AppendLine("IntegrationDatabase|" +FormBase.ConfigurationSettings.IntegrationDatabaseName + "");
                 configurationFile.AppendLine("PresentationDatabase|" +FormBase.ConfigurationSettings.PresentationDatabaseName +"");
+                configurationFile.AppendLine("MetadataDatabase|" + FormBase.ConfigurationSettings.MetadataDatabaseName + "");
+                configurationFile.AppendLine("PhysicalModelServerName|" + FormBase.ConfigurationSettings.PhysicalModelServerName + "");
+                configurationFile.AppendLine("MetadataServerName|" + FormBase.ConfigurationSettings.MetadataServerName + "");
+
+
+                configurationFile.AppendLine("MetadataSSPI|" + FormBase.ConfigurationSettings.MetadataSSPI);
+                configurationFile.AppendLine("MetadataNamed|" + FormBase.ConfigurationSettings.MetadataNamed);
+                configurationFile.AppendLine("MetadataUserName|" + FormBase.ConfigurationSettings.MetadataUserName);
+                configurationFile.AppendLine("MetadataPassword|" + FormBase.ConfigurationSettings.MetadataPassword);
+
+                configurationFile.AppendLine("PhysicalModelSSPI|" + FormBase.ConfigurationSettings.PhysicalModelSSPI);
+                configurationFile.AppendLine("PhysicalModelNamed|" + FormBase.ConfigurationSettings.PhysicalModelNamed);
+                configurationFile.AppendLine("PhysicalModelUserName|" + FormBase.ConfigurationSettings.PhysicalModelUserName);
+                configurationFile.AppendLine("PhysicalModelPassword|" + FormBase.ConfigurationSettings.PhysicalModelPassword);
+
+
                 configurationFile.AppendLine(@"connectionStringSource|" +FormBase.ConfigurationSettings.ConnectionStringSource +"");
                 configurationFile.AppendLine(@"connectionStringStaging|" +FormBase.ConfigurationSettings.ConnectionStringStg +"");
                 configurationFile.AppendLine(@"connectionStringPersistentStaging|" +FormBase.ConfigurationSettings.ConnectionStringHstg + "");
                 configurationFile.AppendLine(@"connectionStringMetadata|" +FormBase.ConfigurationSettings.ConnectionStringOmd +"");
                 configurationFile.AppendLine(@"connectionStringIntegration|" +FormBase.ConfigurationSettings.ConnectionStringInt + "");
                 configurationFile.AppendLine(@"connectionStringPresentation|" +FormBase.ConfigurationSettings.ConnectionStringPres + "");
+
                 configurationFile.AppendLine("SourceSystemPrefix|" + FormBase.ConfigurationSettings.SourceSystemPrefix +"");
                 configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +"");
                 configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
@@ -423,7 +451,6 @@ namespace TEAM
                 configurationFile.AppendLine("ETLProcessID|" + FormBase.ConfigurationSettings.EtlProcessAttribute + "");
                 configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.ConfigurationSettings.EtlProcessUpdateAttribute +"");
                 configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.ConfigurationSettings.LogicalDeleteAttribute +"");
-                configurationFile.AppendLine("LinkedServerName|" + FormBase.ConfigurationSettings.LinkedServer + "");
                 configurationFile.AppendLine("TableNamingLocation|" + FormBase.ConfigurationSettings.TableNamingLocation + "");
                 configurationFile.AppendLine("KeyNamingLocation|" + FormBase.ConfigurationSettings.KeyNamingLocation +"");
                 configurationFile.AppendLine("RecordChecksum|" +FormBase.ConfigurationSettings.RecordChecksumAttribute + "");
@@ -483,30 +510,24 @@ namespace TEAM
                 fs.Close();
 
                 var connectionStringOmd = configList["connectionStringMetadata"];
-                connectionStringOmd = connectionStringOmd.Replace("Provider=SQLNCLI10;", "")
-                    .Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                connectionStringOmd = connectionStringOmd.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
                 var connectionStringSource = configList["connectionStringSource"];
-                connectionStringSource = connectionStringSource.Replace("Provider=SQLNCLI10;", "")
-                    .Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                connectionStringSource = connectionStringSource.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
                 var connectionStringStg = configList["connectionStringStaging"];
-                connectionStringStg = connectionStringStg.Replace("Provider=SQLNCLI10;", "")
-                    .Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                connectionStringStg = connectionStringStg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
                 var connectionStringHstg = configList["connectionStringPersistentStaging"];
-                connectionStringHstg = connectionStringHstg.Replace("Provider=SQLNCLI10;", "")
-                    .Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                connectionStringHstg = connectionStringHstg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
                 var connectionStringInt = configList["connectionStringIntegration"];
-                connectionStringInt = connectionStringInt.Replace("Provider=SQLNCLI10;", "")
-                    .Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                connectionStringInt = connectionStringInt.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
                 var connectionStringPres = configList["connectionStringPresentation"];
-                connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "")
-                    .Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                // These variables are used as global vairables throughout the application
+                // These variables are used as global variables throughout the application
                 // They will be set once after startup
                 FormBase.ConfigurationSettings.ConnectionStringSource = connectionStringSource;
                 FormBase.ConfigurationSettings.ConnectionStringStg = connectionStringStg;
@@ -514,7 +535,9 @@ namespace TEAM
                 FormBase.ConfigurationSettings.ConnectionStringInt = connectionStringInt;
                 FormBase.ConfigurationSettings.ConnectionStringOmd = connectionStringOmd;
                 FormBase.ConfigurationSettings.ConnectionStringPres = connectionStringPres;
+
                 FormBase.ConfigurationSettings.MetadataRepositoryType = configList["metadataRepositoryType"];
+
                 FormBase.ConfigurationSettings.StgTablePrefixValue = configList["StagingAreaPrefix"];
                 FormBase.ConfigurationSettings.PsaTablePrefixValue = configList["PersistentStagingAreaPrefix"];
                 FormBase.ConfigurationSettings.HubTablePrefixValue = configList["HubTablePrefix"];
@@ -538,24 +561,40 @@ namespace TEAM
                 FormBase.ConfigurationSettings.RecordChecksumAttribute = configList["RecordChecksum"];
                 FormBase.ConfigurationSettings.CurrentRowAttribute = configList["CurrentRecordAttribute"];
                 FormBase.ConfigurationSettings.LogicalDeleteAttribute = configList["LogicalDeleteAttribute"];
-                FormBase.ConfigurationSettings.EnableAlternativeRecordSourceAttribute =
-                    configList["AlternativeRecordSourceFunction"];
+                FormBase.ConfigurationSettings.EnableAlternativeRecordSourceAttribute =configList["AlternativeRecordSourceFunction"];
                 FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute = configList["AlternativeRecordSource"];
-                FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute =
-                    configList["AlternativeHubLDTSFunction"];
+                FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute =configList["AlternativeHubLDTSFunction"];
                 FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute = configList["AlternativeHubLDTS"];
-                FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute =
-                    configList["AlternativeSatelliteLDTSFunction"];
-                FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute =
-                    configList["AlternativeSatelliteLDTS"];
+                FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute =configList["AlternativeSatelliteLDTSFunction"];
+                FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute =configList["AlternativeSatelliteLDTS"];
+
+                // Databases
                 FormBase.ConfigurationSettings.SourceDatabaseName = configList["SourceDatabase"];
                 FormBase.ConfigurationSettings.StagingDatabaseName = configList["StagingDatabase"];
                 FormBase.ConfigurationSettings.PsaDatabaseName = configList["PersistentStagingDatabase"];
                 FormBase.ConfigurationSettings.IntegrationDatabaseName = configList["IntegrationDatabase"];
                 FormBase.ConfigurationSettings.PresentationDatabaseName = configList["PresentationDatabase"];
+                FormBase.ConfigurationSettings.MetadataDatabaseName = configList["MetadataDatabase"];
+
+                // Servers (instances)
+                FormBase.ConfigurationSettings.PhysicalModelServerName = configList["PhysicalModelServerName"];
+                FormBase.ConfigurationSettings.MetadataServerName = configList["MetadataServerName"];
+
+                // Authentication & connectivity
+                FormBase.ConfigurationSettings.MetadataSSPI = configList["MetadataSSPI"];
+                FormBase.ConfigurationSettings.MetadataNamed = configList["MetadataNamed"];
+                FormBase.ConfigurationSettings.MetadataUserName = configList["MetadataUserName"];
+                FormBase.ConfigurationSettings.MetadataPassword = configList["MetadataPassword"];
+
+                FormBase.ConfigurationSettings.PhysicalModelSSPI = configList["PhysicalModelSSPI"];
+                FormBase.ConfigurationSettings.PhysicalModelNamed = configList["PhysicalModelNamed"];
+                FormBase.ConfigurationSettings.PhysicalModelUserName = configList["PhysicalModelUserName"];
+                FormBase.ConfigurationSettings.PhysicalModelPassword = configList["PhysicalModelPassword"];
+
+                // Paths
                 FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
                 FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
-                FormBase.ConfigurationSettings.LinkedServer = configList["LinkedServerName"];
+
             }
             catch (Exception)
             {

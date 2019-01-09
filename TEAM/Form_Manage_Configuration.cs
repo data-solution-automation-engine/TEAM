@@ -137,18 +137,25 @@ namespace TEAM
                 textBoxStagingAreaPrefix.Text = configList["StagingAreaPrefix"];
                 textBoxPSAPrefix.Text = configList["PersistentStagingAreaPrefix"];
                 textBoxSourceRowId.Text = configList["RowID"];
+
+                // Databases
                 textBoxSourceDatabase.Text = configList["SourceDatabase"];
                 textBoxStagingDatabase.Text = configList["StagingDatabase"];
                 textBoxPSADatabase.Text = configList["PersistentStagingDatabase"];
                 textBoxIntegrationDatabase.Text = configList["IntegrationDatabase"];
                 textBoxPresentationDatabase.Text = configList["PresentationDatabase"];
+                textBoxMetadataDatabaseName.Text = configList["MetadataDatabase"];
+
                 textBoxRecordChecksum.Text = configList["RecordChecksum"];
                 textBoxCurrentRecordAttributeName.Text = configList["CurrentRecordAttribute"];
                 textBoxAlternativeRecordSource.Text = configList["AlternativeRecordSource"];
                 textBoxHubAlternativeLDTSAttribute.Text = configList["AlternativeHubLDTS"];
                 textBoxSatelliteAlternativeLDTSAttribute.Text = configList["AlternativeSatelliteLDTS"];
                 textBoxLogicalDeleteAttributeName.Text = configList["LogicalDeleteAttribute"];
-                textBoxLinkedServer.Text = configList["LinkedServerName"];
+
+                // Servers (instances)
+                textBoxPhysicalModelServerName.Text = configList["PhysicalModelServerName"];
+                textBoxMetadataServerName.Text = configList["MetadataServerName"];
 
                 //Checkbox setting based on loaded configuration
                 CheckBox myConfigurationCheckBox;
@@ -245,6 +252,66 @@ namespace TEAM
                     myMetadatarepositoryType = radioButtonSQLServer;
                     myMetadatarepositoryType.Checked = true;
                 }
+
+
+                // Authentication approach for metadata
+                var myRadioButtonMetadataSSPI = radioButtonMetadataSSPI;
+                var myRadioButtonMetadataNamed = radioButtonMetadataNamed;
+
+                if (configList["MetadataSSPI"] == "True")
+                {
+                    myRadioButtonMetadataSSPI.Checked = true;
+                    myRadioButtonMetadataNamed.Checked = false;
+                    groupBoxMetadataNamedUser.Visible = false;
+                }
+                else
+                {
+                    myRadioButtonMetadataSSPI.Checked = false;
+                }
+
+                if (configList["MetadataNamed"] == "True")
+                {
+                    myRadioButtonMetadataNamed.Checked = true;
+                    myRadioButtonMetadataSSPI.Checked = false;
+                    groupBoxMetadataNamedUser.Visible = true;
+                }
+                else
+                {
+                    myRadioButtonMetadataNamed.Checked = false;
+                    groupBoxMetadataNamedUser.Visible = false;
+                }
+
+                // Authentication approach for the physical model
+                var myRadioButtonPhysicalModelSSPI = radioButtonPhysicalModelSSPI;
+                var myRadioButtonPhysicalModelNamed = radioButtonPhysicalModelNamed;
+
+                if (configList["PhysicalModelSSPI"] == "True")
+                {
+                    myRadioButtonPhysicalModelSSPI.Checked = true;
+                    myRadioButtonPhysicalModelNamed.Checked = false;
+                    groupBoxMetadataNamedUser.Visible = false;
+                }
+                else
+                {
+                    myRadioButtonPhysicalModelSSPI.Checked = false;
+                }
+
+                if (configList["PhysicalModelNamed"] == "True")
+                {
+                    myRadioButtonPhysicalModelNamed.Checked = true;
+                    myRadioButtonPhysicalModelSSPI.Checked = false;
+                    groupBoxPhysicalModelNamedUser.Visible = true;
+                }
+                else
+                {
+                    myRadioButtonPhysicalModelNamed.Checked = false;
+                    groupBoxPhysicalModelNamedUser.Visible = false;
+                }
+
+                textBoxMetadataUserName.Text = configList["MetadataUserName"];
+                textBoxMetadataPassword.Text = configList["MetadataPassword"];
+                textBoxPhysicalModelUserName.Text = configList["PhysicalModelUserName"];
+                textBoxPhysicalModelPassword.Text = configList["PhysicalModelPassword"];
 
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
@@ -379,7 +446,7 @@ namespace TEAM
             try
             {
                 EnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
-                richTextBoxInformation.Text = "A backup of the current configuration was made in " + textBoxConfigurationPath.Text + ".";
+                richTextBoxInformation.Text = "A backup of the current configuration was made at " + DateTime.Now + " in " + textBoxConfigurationPath.Text + ".";
             }
             catch (Exception)
             {
@@ -407,6 +474,9 @@ namespace TEAM
             ConfigurationSettings.PsaDatabaseName = textBoxPSADatabase.Text;
             ConfigurationSettings.IntegrationDatabaseName = textBoxIntegrationDatabase.Text;
             ConfigurationSettings.PresentationDatabaseName = textBoxPresentationDatabase.Text;
+            ConfigurationSettings.MetadataDatabaseName = textBoxMetadataDatabaseName.Text;
+
+
             
             ConfigurationSettings.ConnectionStringSource = textBoxSourceConnection.Text;
             ConfigurationSettings.ConnectionStringStg = textBoxStagingConnection.Text;
@@ -430,6 +500,9 @@ namespace TEAM
 
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
+
+            ConfigurationSettings.PhysicalModelServerName = textBoxPhysicalModelServerName.Text;
+            ConfigurationSettings.MetadataServerName = textBoxMetadataServerName.Text;
 
             ConfigurationSettings.SourceSystemPrefix = textBoxSourcePrefix.Text;
             ConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
@@ -463,7 +536,7 @@ namespace TEAM
             ConfigurationSettings.EtlProcessAttribute = textBoxETLProcessID.Text;
             ConfigurationSettings.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
             ConfigurationSettings.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
-            ConfigurationSettings.LinkedServer = textBoxLinkedServer.Text;
+
             ConfigurationSettings.RecordChecksumAttribute = textBoxRecordChecksum.Text;
             ConfigurationSettings.CurrentRowAttribute = textBoxCurrentRecordAttributeName.Text;
 
@@ -524,6 +597,50 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText("Issues storing the table prefix location (prefix/suffix). Is one of the radio buttons checked?");
             }
+
+            // Authentication & connectivity
+            if (radioButtonMetadataSSPI.Checked)
+            {
+                ConfigurationSettings.MetadataSSPI = "True";
+            }
+            else
+            {
+                ConfigurationSettings.MetadataSSPI = "False";
+            }
+
+            if (radioButtonMetadataNamed.Checked)
+            {
+                ConfigurationSettings.MetadataNamed = "True";
+            }
+            else
+            {
+                ConfigurationSettings.MetadataNamed = "False";
+            }
+
+
+            if (radioButtonPhysicalModelSSPI.Checked)
+            {
+                ConfigurationSettings.PhysicalModelSSPI = "True";
+            }
+            else
+            {
+                ConfigurationSettings.PhysicalModelSSPI = "False";
+            }
+
+            if (radioButtonPhysicalModelNamed.Checked)
+            {
+                ConfigurationSettings.PhysicalModelNamed = "True";
+            }
+            else
+            {
+                ConfigurationSettings.PhysicalModelNamed = "False";
+            }
+
+
+            ConfigurationSettings.MetadataUserName = textBoxMetadataUserName.Text;
+            ConfigurationSettings.MetadataPassword = textBoxMetadataPassword.Text;
+            ConfigurationSettings.PhysicalModelUserName = textBoxPhysicalModelUserName.Text;
+            ConfigurationSettings.PhysicalModelPassword = textBoxPhysicalModelPassword.Text;
 
         }
 
@@ -642,6 +759,55 @@ namespace TEAM
             if (!checkBoxAlternativeSatLDTS.Checked)
             {
                 textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
+            }
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FormManageConfiguration_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButtonJSON_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButtonMetadataSSPI_CheckedChanged(object sender, EventArgs e)
+        {
+            //MessageBox.Show("SSPI: "+radioButtonMetadataSSPI.Checked.ToString());
+            //MessageBox.Show("Named: " + radioButtonMetadataNamed.Checked.ToString());
+            if (radioButtonMetadataNamed.Checked==false)
+            {
+                groupBoxMetadataNamedUser.Visible=false;
+            }
+        }
+
+        private void radioButtonMetadataNamed_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonMetadataNamed.Checked)
+            {
+                groupBoxMetadataNamedUser.Visible = true;
+            }
+        }
+
+        private void radioButtonPhysicalModelSSPI_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonPhysicalModelNamed.Checked == false)
+            {
+                groupBoxPhysicalModelNamedUser.Visible = false;
+            }
+        }
+
+        private void radioButtonPhysicalModelNamed_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonPhysicalModelNamed.Checked)
+            {
+                groupBoxPhysicalModelNamedUser.Visible = true;
             }
         }
     }

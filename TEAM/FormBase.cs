@@ -62,22 +62,26 @@ namespace TEAM
 
             //Connection strings
             internal static string ConnectionStringSource { get; set; }
-
             internal static string ConnectionStringStg { get; set; }
-
             internal static string ConnectionStringHstg { get; set; }
-
             internal static string ConnectionStringInt { get; set; }
-
             internal static string ConnectionStringPres { get; set; }
-
             internal static string ConnectionStringOmd { get; set; }
+
+            //Connection & authentication information
+            internal static string MetadataSSPI { get; set; }
+            internal static string MetadataNamed { get; set; }
+            internal static string MetadataUserName { get; set; }
+            internal static string MetadataPassword { get; set; }
+
+            internal static string PhysicalModelSSPI { get; set; }
+            internal static string PhysicalModelNamed { get; set; }
+            internal static string PhysicalModelUserName { get; set; }
+            internal static string PhysicalModelPassword { get; set; }
 
 
             internal static string DwhKeyIdentifier { get; set; }
-
             internal static string PsaKeyLocation { get; set; }
-
             internal static string SchemaName { get; set; }
 
             internal static string SourceSystemPrefix { get; set; }
@@ -112,21 +116,22 @@ namespace TEAM
 
             internal static string LogicalDeleteAttribute { get; set; }
 
+            // Database names
+            internal static string MetadataDatabaseName { get; set; }
             internal static string SourceDatabaseName { get; set; }
-
             internal static string StagingDatabaseName { get; set; }
-
             internal static string PsaDatabaseName { get; set; }
-
             internal static string IntegrationDatabaseName { get; set; }
-
             internal static string PresentationDatabaseName { get; set; }
 
-            internal static string LinkedServer { get; set; }
+            // Servers (instances)
+            internal static string MetadataServerName { get; set; }
+            internal static string PhysicalModelServerName { get; set; }
 
+            // Prefixes and suffixes
             internal static string TableNamingLocation { get; set; }
-
             internal static string KeyNamingLocation { get; set; }
+
 
             internal static string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }
 
