@@ -474,6 +474,7 @@ namespace TEAM
                                      FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(configurationFile.ToString());
+                    outfile.Flush();
                     outfile.Close();
                 }
             }

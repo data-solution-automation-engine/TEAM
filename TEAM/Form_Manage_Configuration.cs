@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using yWorks.Controls;
 
 namespace TEAM
 {
@@ -54,6 +55,20 @@ namespace TEAM
 
             _formLoading = false;
         }
+
+        internal void BuildMetadataConnectionString()
+        {
+            var metadataConnectionString = new StringBuilder();
+
+            metadataConnectionString.AppendLine("Server="+textBoxMetadataServerName.Text+";");
+            metadataConnectionString.Append("")
+
+       
+
+           //Server=BISERVER;Initial Catalog=DVI_000_Source;user id=sa; password=K3kobus2
+
+        }
+
 
 
         /// <summary>
@@ -777,21 +792,26 @@ namespace TEAM
 
         }
 
+        /// <summary>
+        /// Changing of the Metadata SSPI radiobutton.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void radioButtonMetadataSSPI_CheckedChanged(object sender, EventArgs e)
         {
             //MessageBox.Show("SSPI: "+radioButtonMetadataSSPI.Checked.ToString());
             //MessageBox.Show("Named: " + radioButtonMetadataNamed.Checked.ToString());
+
+           
             if (radioButtonMetadataNamed.Checked==false)
             {
                 groupBoxMetadataNamedUser.Visible=false;
             }
-        }
 
-        private void radioButtonMetadataNamed_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonMetadataNamed.Checked)
+            if (radioButtonMetadataSSPI.Checked)
             {
-                groupBoxMetadataNamedUser.Visible = true;
+                ConfigurationSettings.MetadataNamed = "False";
+                ConfigurationSettings.MetadataSSPI = "True";
             }
         }
 
@@ -801,13 +821,37 @@ namespace TEAM
             {
                 groupBoxPhysicalModelNamedUser.Visible = false;
             }
+
+            if (radioButtonPhysicalModelSSPI.Checked)
+            {
+                ConfigurationSettings.PhysicalModelNamed = "False";
+                ConfigurationSettings.PhysicalModelSSPI = "True";
+            }
         }
+
+
+
+
+
+        private void radioButtonMetadataNamed_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonMetadataNamed.Checked)
+            {
+                groupBoxMetadataNamedUser.Visible = true;
+                ConfigurationSettings.MetadataNamed = "True";
+                ConfigurationSettings.MetadataSSPI = "False";
+            }
+        }
+
+
 
         private void radioButtonPhysicalModelNamed_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButtonPhysicalModelNamed.Checked)
             {
                 groupBoxPhysicalModelNamedUser.Visible = true;
+                ConfigurationSettings.PhysicalModelNamed = "True";
+                ConfigurationSettings.PhysicalModelSSPI = "False";
             }
         }
     }
