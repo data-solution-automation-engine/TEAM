@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using yWorks.Controls;
 
 namespace TEAM
 {
@@ -60,13 +59,114 @@ namespace TEAM
         {
             var metadataConnectionString = new StringBuilder();
 
-            metadataConnectionString.AppendLine("Server="+textBoxMetadataServerName.Text+";");
-            metadataConnectionString.Append("")
+            metadataConnectionString.Append("Server="+textBoxMetadataServerName.Text+";");
+            metadataConnectionString.Append("Initial Catalog=" + textBoxMetadataDatabaseName.Text + ";");
+            if (radioButtonMetadataSSPI.Checked)
+            {
+                metadataConnectionString.Append("Integrated Security=SSPI;");
+            } else if (radioButtonMetadataNamed.Checked)
+            {
+                metadataConnectionString.Append("user id=" + textBoxMetadataUserName.Text + ";");
+                metadataConnectionString.Append("password=" + textBoxMetadataPassword.Text + ";");
+            }
 
-       
+            textBoxMetadataConnection.Text = metadataConnectionString.ToString();
+        }
 
-           //Server=BISERVER;Initial Catalog=DVI_000_Source;user id=sa; password=K3kobus2
+        internal void BuildSourceConnectionString()
+        {
+            var connectionString = new StringBuilder();
 
+            connectionString.Append("Server=" + textBoxPhysicalModelServerName.Text + ";");
+            connectionString.Append("Initial Catalog=" + textBoxSourceDatabase.Text + ";");
+            if (radioButtonPhysicalModelSSPI.Checked)
+            {
+                connectionString.Append("Integrated Security=SSPI;");
+            }
+            else if (radioButtonPhysicalModelNamed.Checked)
+            {
+                connectionString.Append("user id=" + textBoxPhysicalModelUserName.Text + ";");
+                connectionString.Append("password=" + textBoxPhysicalModelPassword.Text + ";");
+            }
+
+            textBoxSourceConnection.Text = connectionString.ToString();
+        }
+
+        internal void BuildStgConnectionString()
+        {
+            var connectionString = new StringBuilder();
+
+            connectionString.Append("Server=" + textBoxPhysicalModelServerName.Text + ";");
+            connectionString.Append("Initial Catalog=" + textBoxStagingDatabase.Text + ";");
+            if (radioButtonPhysicalModelSSPI.Checked)
+            {
+                connectionString.Append("Integrated Security=SSPI;");
+            }
+            else if (radioButtonPhysicalModelNamed.Checked)
+            {
+                connectionString.Append("user id=" + textBoxPhysicalModelUserName.Text + ";");
+                connectionString.Append("password=" + textBoxPhysicalModelPassword.Text + ";");
+            }
+
+            textBoxStagingConnection.Text = connectionString.ToString();
+        }
+
+
+        internal void BuildPsaConnectionString()
+        {
+            var connectionString = new StringBuilder();
+
+            connectionString.Append("Server=" + textBoxPhysicalModelServerName.Text + ";");
+            connectionString.Append("Initial Catalog=" + textBoxPSADatabase.Text + ";");
+            if (radioButtonPhysicalModelSSPI.Checked)
+            {
+                connectionString.Append("Integrated Security=SSPI;");
+            }
+            else if (radioButtonPhysicalModelNamed.Checked)
+            {
+                connectionString.Append("user id=" + textBoxPhysicalModelUserName.Text + ";");
+                connectionString.Append("password=" + textBoxPhysicalModelPassword.Text + ";");
+            }
+
+            textBoxPSAConnection.Text = connectionString.ToString();
+        }
+
+        internal void BuildIntConnectionString()
+        {
+            var connectionString = new StringBuilder();
+
+            connectionString.Append("Server=" + textBoxPhysicalModelServerName.Text + ";");
+            connectionString.Append("Initial Catalog=" + textBoxIntegrationDatabase.Text + ";");
+            if (radioButtonPhysicalModelSSPI.Checked)
+            {
+                connectionString.Append("Integrated Security=SSPI;");
+            }
+            else if (radioButtonPhysicalModelNamed.Checked)
+            {
+                connectionString.Append("user id=" + textBoxPhysicalModelUserName.Text + ";");
+                connectionString.Append("password=" + textBoxPhysicalModelPassword.Text + ";");
+            }
+
+            textBoxIntegrationConnection.Text = connectionString.ToString();
+        }
+
+        internal void BuildPresConnectionString()
+        {
+            var connectionString = new StringBuilder();
+
+            connectionString.Append("Server=" + textBoxPhysicalModelServerName.Text + ";");
+            connectionString.Append("Initial Catalog=" + textBoxPresentationDatabase.Text + ";");
+            if (radioButtonPhysicalModelSSPI.Checked)
+            {
+                connectionString.Append("Integrated Security=SSPI;");
+            }
+            else if (radioButtonPhysicalModelNamed.Checked)
+            {
+                connectionString.Append("user id=" + textBoxPhysicalModelUserName.Text + ";");
+                connectionString.Append("password=" + textBoxPhysicalModelPassword.Text + ";");
+            }
+
+            textBoxPresentationConnection.Text = connectionString.ToString();
         }
 
 
@@ -106,33 +206,33 @@ namespace TEAM
                 fs.Close();
 
 
-                //Replace values for formatting and connection string layout
-                var connectionStringOmd = configList["connectionStringMetadata"];
-                connectionStringOmd = connectionStringOmd.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                ////Replace values for formatting and connection string layout
+                //var connectionStringOmd = configList["connectionStringMetadata"];
+                //connectionStringOmd = connectionStringOmd.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringSource = configList["connectionStringSource"];
-                connectionStringSource = connectionStringSource.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                //var connectionStringSource = configList["connectionStringSource"];
+                //connectionStringSource = connectionStringSource.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringStg = configList["connectionStringStaging"];
-                connectionStringStg = connectionStringStg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                //var connectionStringStg = configList["connectionStringStaging"];
+                //connectionStringStg = connectionStringStg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringHstg = configList["connectionStringPersistentStaging"];
-                connectionStringHstg = connectionStringHstg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                //var connectionStringHstg = configList["connectionStringPersistentStaging"];
+                //connectionStringHstg = connectionStringHstg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringInt = configList["connectionStringIntegration"];
-                connectionStringInt = connectionStringInt.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                //var connectionStringInt = configList["connectionStringIntegration"];
+                //connectionStringInt = connectionStringInt.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
-                var connectionStringPres = configList["connectionStringPresentation"];
-                connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                //var connectionStringPres = configList["connectionStringPresentation"];
+                //connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
 
 
-                //Connections
-                textBoxIntegrationConnection.Text = connectionStringInt;
-                textBoxPSAConnection.Text = connectionStringHstg;
-                textBoxSourceConnection.Text = connectionStringSource;
-                textBoxStagingConnection.Text = connectionStringStg;
-                textBoxMetadataConnection.Text = connectionStringOmd;
-                textBoxPresentationConnection.Text = connectionStringPres;
+                ////Connections
+                //textBoxIntegrationConnection.Text = connectionStringInt;
+                //textBoxPSAConnection.Text = connectionStringHstg;
+                //textBoxSourceConnection.Text = connectionStringSource;
+                //textBoxStagingConnection.Text = connectionStringStg;
+                //textBoxMetadataConnection.Text = connectionStringOmd;
+                //textBoxPresentationConnection.Text = connectionStringPres;
 
                 //DWH settings
                 textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
@@ -813,6 +913,8 @@ namespace TEAM
                 ConfigurationSettings.MetadataNamed = "False";
                 ConfigurationSettings.MetadataSSPI = "True";
             }
+
+            BuildMetadataConnectionString();
         }
 
         private void radioButtonPhysicalModelSSPI_CheckedChanged(object sender, EventArgs e)
@@ -827,6 +929,12 @@ namespace TEAM
                 ConfigurationSettings.PhysicalModelNamed = "False";
                 ConfigurationSettings.PhysicalModelSSPI = "True";
             }
+
+            BuildSourceConnectionString();
+            BuildStgConnectionString();
+            BuildPsaConnectionString();
+            BuildIntConnectionString();
+            BuildPresConnectionString();
         }
 
 
@@ -841,6 +949,7 @@ namespace TEAM
                 ConfigurationSettings.MetadataNamed = "True";
                 ConfigurationSettings.MetadataSSPI = "False";
             }
+            BuildMetadataConnectionString();
         }
 
 
@@ -853,6 +962,81 @@ namespace TEAM
                 ConfigurationSettings.PhysicalModelNamed = "True";
                 ConfigurationSettings.PhysicalModelSSPI = "False";
             }
+
+
+            BuildSourceConnectionString();
+            BuildStgConnectionString();
+            BuildPsaConnectionString();
+            BuildIntConnectionString();
+            BuildPresConnectionString();
+        }
+
+        private void textBoxMetadataServerName_TextChanged(object sender, EventArgs e)
+        {
+            BuildMetadataConnectionString();
+        }
+
+        private void textBoxMetadataUserName_TextChanged(object sender, EventArgs e)
+        {
+            BuildMetadataConnectionString();
+        }
+
+        private void textBoxMetadataPassword_TextChanged(object sender, EventArgs e)
+        {
+            BuildMetadataConnectionString();
+        }
+
+        private void textBoxSourceDatabase_TextChanged(object sender, EventArgs e)
+        {
+            BuildSourceConnectionString();
+        }
+
+        private void textBoxPhysicalModelServerName_TextChanged(object sender, EventArgs e)
+        {
+            BuildSourceConnectionString();
+            BuildStgConnectionString();
+            BuildPsaConnectionString();
+            BuildIntConnectionString();
+            BuildPresConnectionString();
+        }
+
+        private void textBoxPhysicalModelUserName_TextChanged(object sender, EventArgs e)
+        {
+            BuildSourceConnectionString();
+            BuildStgConnectionString();
+            BuildPsaConnectionString();
+            BuildIntConnectionString();
+            BuildPresConnectionString();
+        }
+
+
+        private void textBoxPhysicalModelPassword_TextChanged(object sender, EventArgs e)
+        {
+            BuildSourceConnectionString();
+            BuildStgConnectionString();
+            BuildPsaConnectionString();
+            BuildIntConnectionString();
+            BuildPresConnectionString();
+        }
+
+        private void textBoxStagingDatabase_TextChanged(object sender, EventArgs e)
+        {
+            BuildStgConnectionString();
+        }
+
+        private void textBoxPSADatabase_TextChanged(object sender, EventArgs e)
+        {
+            BuildPsaConnectionString();
+        }
+
+        private void textBoxIntegrationDatabase_TextChanged(object sender, EventArgs e)
+        {
+            BuildIntConnectionString();
+        }
+
+        private void textBoxPresentationDatabase_TextChanged(object sender, EventArgs e)
+        {
+            BuildPresConnectionString();
         }
     }
 }
