@@ -1043,6 +1043,7 @@
             this.textBoxSourceDatabase.Name = "textBoxSourceDatabase";
             this.textBoxSourceDatabase.Size = new System.Drawing.Size(242, 20);
             this.textBoxSourceDatabase.TabIndex = 76;
+            this.textBoxSourceDatabase.TextChanged += new System.EventHandler(this.textBoxSourceDatabase_TextChanged);
             // 
             // label25
             // 
@@ -1059,6 +1060,7 @@
             this.textBoxPresentationDatabase.Name = "textBoxPresentationDatabase";
             this.textBoxPresentationDatabase.Size = new System.Drawing.Size(242, 20);
             this.textBoxPresentationDatabase.TabIndex = 80;
+            this.textBoxPresentationDatabase.TextChanged += new System.EventHandler(this.textBoxPresentationDatabase_TextChanged);
             // 
             // label24
             // 
@@ -1075,6 +1077,7 @@
             this.textBoxStagingDatabase.Name = "textBoxStagingDatabase";
             this.textBoxStagingDatabase.Size = new System.Drawing.Size(242, 20);
             this.textBoxStagingDatabase.TabIndex = 77;
+            this.textBoxStagingDatabase.TextChanged += new System.EventHandler(this.textBoxStagingDatabase_TextChanged);
             // 
             // label23
             // 
@@ -1091,6 +1094,7 @@
             this.textBoxPSADatabase.Name = "textBoxPSADatabase";
             this.textBoxPSADatabase.Size = new System.Drawing.Size(242, 20);
             this.textBoxPSADatabase.TabIndex = 78;
+            this.textBoxPSADatabase.TextChanged += new System.EventHandler(this.textBoxPSADatabase_TextChanged);
             // 
             // label22
             // 
@@ -1107,6 +1111,7 @@
             this.textBoxIntegrationDatabase.Name = "textBoxIntegrationDatabase";
             this.textBoxIntegrationDatabase.Size = new System.Drawing.Size(242, 20);
             this.textBoxIntegrationDatabase.TabIndex = 79;
+            this.textBoxIntegrationDatabase.TextChanged += new System.EventHandler(this.textBoxIntegrationDatabase_TextChanged);
             // 
             // label12
             // 
@@ -1143,6 +1148,7 @@
             this.textBoxPhysicalModelPassword.Name = "textBoxPhysicalModelPassword";
             this.textBoxPhysicalModelPassword.Size = new System.Drawing.Size(276, 20);
             this.textBoxPhysicalModelPassword.TabIndex = 79;
+            this.textBoxPhysicalModelPassword.TextChanged += new System.EventHandler(this.textBoxPhysicalModelPassword_TextChanged);
             // 
             // label5
             // 
@@ -1159,6 +1165,7 @@
             this.textBoxPhysicalModelUserName.Name = "textBoxPhysicalModelUserName";
             this.textBoxPhysicalModelUserName.Size = new System.Drawing.Size(276, 20);
             this.textBoxPhysicalModelUserName.TabIndex = 77;
+            this.textBoxPhysicalModelUserName.TextChanged += new System.EventHandler(this.textBoxPhysicalModelUserName_TextChanged);
             // 
             // label20
             // 
@@ -1217,6 +1224,7 @@
             this.textBoxPhysicalModelServerName.Name = "textBoxPhysicalModelServerName";
             this.textBoxPhysicalModelServerName.Size = new System.Drawing.Size(242, 20);
             this.textBoxPhysicalModelServerName.TabIndex = 37;
+            this.textBoxPhysicalModelServerName.TextChanged += new System.EventHandler(this.textBoxPhysicalModelServerName_TextChanged);
             // 
             // panel1
             // 
@@ -1240,7 +1248,7 @@
             this.textBoxMetadataConnection.BackColor = System.Drawing.Color.WhiteSmoke;
             this.textBoxMetadataConnection.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBoxMetadataConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxMetadataConnection.Location = new System.Drawing.Point(470, 82);
+            this.textBoxMetadataConnection.Location = new System.Drawing.Point(470, 83);
             this.textBoxMetadataConnection.Multiline = true;
             this.textBoxMetadataConnection.Name = "textBoxMetadataConnection";
             this.textBoxMetadataConnection.ReadOnly = true;
@@ -1266,6 +1274,7 @@
             this.textBoxMetadataPassword.Name = "textBoxMetadataPassword";
             this.textBoxMetadataPassword.Size = new System.Drawing.Size(276, 20);
             this.textBoxMetadataPassword.TabIndex = 79;
+            this.textBoxMetadataPassword.TextChanged += new System.EventHandler(this.textBoxMetadataPassword_TextChanged);
             // 
             // labelPasswordMetadata
             // 
@@ -1282,6 +1291,7 @@
             this.textBoxMetadataUserName.Name = "textBoxMetadataUserName";
             this.textBoxMetadataUserName.Size = new System.Drawing.Size(276, 20);
             this.textBoxMetadataUserName.TabIndex = 77;
+            this.textBoxMetadataUserName.TextChanged += new System.EventHandler(this.textBoxMetadataUserName_TextChanged);
             // 
             // labelUserName
             // 
@@ -1339,6 +1349,7 @@
             this.textBoxMetadataServerName.Name = "textBoxMetadataServerName";
             this.textBoxMetadataServerName.Size = new System.Drawing.Size(242, 20);
             this.textBoxMetadataServerName.TabIndex = 73;
+            this.textBoxMetadataServerName.TextChanged += new System.EventHandler(this.textBoxMetadataServerName_TextChanged);
             // 
             // label3
             // 
@@ -1361,7 +1372,7 @@
             // richTextBox1
             // 
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.Location = new System.Drawing.Point(152, 547);
+            this.richTextBox1.Location = new System.Drawing.Point(152, 546);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(487, 61);
             this.richTextBox1.TabIndex = 72;
@@ -1373,7 +1384,7 @@
             // 
             this.groupBox2.Controls.Add(this.radioButtonSQLServer);
             this.groupBox2.Controls.Add(this.radioButtonJSON);
-            this.groupBox2.Location = new System.Drawing.Point(6, 538);
+            this.groupBox2.Location = new System.Drawing.Point(6, 537);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(140, 70);
             this.groupBox2.TabIndex = 71;
