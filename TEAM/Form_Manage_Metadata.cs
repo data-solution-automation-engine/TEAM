@@ -361,6 +361,11 @@ namespace TEAM
             GridAutoLayout();
         }
 
+
+        /// <summary>
+        /// Populate the Table Mapping datagrid from a database or existing JSON file.
+        /// </summary>
+        /// <param name="versionId"></param>
         private void PopulateTableMappingGridWithVersion(int versionId)
         {
             var selectedVersion = versionId;
@@ -393,6 +398,10 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
 
                 var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+
+                // Order by Source Table, Integration_Area table, Business Key Attribute
+                //versionList.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+
                 _bindingSourceTableMetadata.DataSource = versionList;
 
                 if (versionList != null)
@@ -446,6 +455,7 @@ namespace TEAM
                 // Load the file, convert it to a DataTable and bind it to the source
                 List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
+                // Order by Source Table, Integration_Area table, Business Key Attribute
 
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
                 dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
@@ -456,6 +466,9 @@ namespace TEAM
                 dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
                 dt.Columns[6].ColumnName = "FILTER_CRITERIA";
                 dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
+
+                dt.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+
                 _bindingSourceTableMetadata.DataSource = dt;
 
                 if (jsonArray != null)
@@ -483,6 +496,10 @@ namespace TEAM
             GridAutoLayout();
         }
 
+        /// <summary>
+        /// Populates the datagrid directly from a database or an existing JSON file
+        /// </summary>
+        /// <param name="versionId"></param>
         private void PopulateAttributeGridWithVersion(int versionId)
         {
             var selectedVersion = versionId;
@@ -515,6 +532,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
 
                 var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+                
                 _bindingSourceAttributeMetadata.DataSource = versionList;
 
                 if (versionList != null)
@@ -1000,6 +1018,8 @@ namespace TEAM
 
             //Create a datatable containing the changes, to check if there are changes made
             var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
+            dataTableTableMappingChanges.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+
             var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhyicalModelMetadata.DataSource).GetChanges();
 
@@ -1987,7 +2007,8 @@ namespace TEAM
                     }
 
 
-                    //Committing the changes to the datatable
+                    //Committing the changes to the datatable - making sure new changes can be picked up
+                    // AcceptChanges will clear all New, Deleted and/or Modified settings
                     dataTableChanges.AcceptChanges();
                     ((DataTable)_bindingSourceTableMetadata.DataSource).AcceptChanges();
 
@@ -2736,23 +2757,23 @@ namespace TEAM
 
                     string fileExtension = Path.GetExtension(theDialog.FileName);
 
-                    if (fileExtension == "xml")
+                    if (fileExtension == ".xml")
                     {
-
                         dataSet.ReadXml(chosenFile);
 
                         dataGridViewTableMetadata.DataSource = dataSet.Tables[0];
                         _bindingSourceTableMetadata.DataSource = dataGridViewTableMetadata.DataSource;
 
                     }
-                    else if (fileExtension == "json")
+                    else if (fileExtension == ".json")
                     {
-                        //MessageBox.Show("Work in progress!");
-
                         // Load the file, convert it to a DataTable and bind it to the source
                         List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = ConvertToDataTable(jsonArray);
-                        dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
+
+                        //dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
+                        //// Note that this clears out everything that was already in the DataTable, so it's an overwrite. For now, this is by design.
+
                         dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
                         dt.Columns[1].ColumnName = "VERSION_ID";
                         dt.Columns[2].ColumnName = "STAGING_AREA_TABLE";
@@ -2761,11 +2782,28 @@ namespace TEAM
                         dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
                         dt.Columns[6].ColumnName = "FILTER_CRITERIA";
                         dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
+                        
+                        // Sort the columns
+                        dt.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+
+                        // After loading and committing, the that are now in the DataTable need to be set to 'added' so they can be saved.
+                        //foreach (DataRow row in dt.Rows)
+                        //{
+                        //    row.SetAdded();
+                        //}
+
+                        // Clear out the existing data from the grid
+                        _bindingSourceTableMetadata.DataSource = null;
+                        _bindingSourceTableMetadata.Clear();
+                        dataGridViewTableMetadata.DataSource = null;
+ 
+
+                        // Bind the datatable to the gridview
                         _bindingSourceTableMetadata.DataSource = dt;
 
                         if (jsonArray != null)
                         {
-                            // Set the column header names.
+                            // Set the column header names
                             dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
                             dataGridViewTableMetadata.ColumnHeadersVisible = true;
                             dataGridViewTableMetadata.Columns[0].Visible = false;
@@ -2781,7 +2819,6 @@ namespace TEAM
                             dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
                         }
 
-
                     }
 
                     GridAutoLayout();
@@ -2790,7 +2827,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show("An error has been encountered! "+ex.ToString());
                 }
             }
         }
@@ -2893,14 +2930,14 @@ namespace TEAM
 
                     string fileExtension = Path.GetExtension(theDialog.FileName);
 
-                    if (fileExtension == "xml")
+                    if (fileExtension == ".xml")
                     {
                         dataSet.ReadXml(chosenFile);
 
                         dataGridViewAttributeMetadata.DataSource = dataSet.Tables[0];
                         _bindingSourceAttributeMetadata.DataSource = dataGridViewAttributeMetadata.DataSource;
                     }
-                    else if (fileExtension == "json")
+                    else if (fileExtension == ".json")
                     {
                         //MessageBox.Show("Work in progress!");
 
