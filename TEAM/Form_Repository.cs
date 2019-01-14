@@ -149,20 +149,6 @@ namespace TEAM
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorkerSampleData.IsBusy != true)
-            {
-                // create a new instance of the alert form
-                _alertSampleData = new FormAlert();
-                // event handler for the Cancel button in AlertForm
-                _alertSampleData.Canceled += buttonCancel_Click;
-                _alertSampleData.Show();
-                // Start the asynchronous operation.
-                backgroundWorkerSampleData.RunWorkerAsync();
-            }
-        }
-
         private void backgroundWorkerRepository_DoWork(object sender, DoWorkEventArgs e)
         {
             // Instantiate the thread / background worker
@@ -2748,8 +2734,8 @@ namespace TEAM
                         createStatement.AppendLine("  scu.COUNTRY,");
                         createStatement.AppendLine("  CAST(scu.DATE_OF_BIRTH AS DATE) AS DATE_OF_BIRTH");
                         createStatement.AppendLine("FROM");
-                        createStatement.AppendLine("  DVI_200_Integration_Layer.dbo.HUB_CUSTOMER AS hcu INNER JOIN");
-                        createStatement.AppendLine("  DVI_200_Integration_Layer.dbo.SAT_CUSTOMER AS scu ON hcu.CUSTOMER_HSH = scu.CUSTOMER_HSH");
+                        createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".HUB_CUSTOMER AS hcu INNER JOIN");
+                        createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".SAT_CUSTOMER AS scu ON hcu.CUSTOMER_HSH = scu.CUSTOMER_HSH");
                         createStatement.AppendLine("WHERE");
                         createStatement.AppendLine("  (ISNULL(scu.CURRENT_RECORD_INDICATOR, 'Y') = 'Y') ");
                         createStatement.AppendLine();
@@ -2933,6 +2919,20 @@ namespace TEAM
                         MessageBoxIcon.Warning);
                     ErrorHandlingParameters.ErrorCatcher = 0;
                 }
+            }
+        }
+
+ private void button1_Click_1(object sender, EventArgs e)
+        {
+            if (backgroundWorkerSampleData.IsBusy != true)
+            {
+                // create a new instance of the alert form
+                _alertSampleData = new FormAlert();
+                // event handler for the Cancel button in AlertForm
+                _alertSampleData.Canceled += buttonCancel_Click;
+                _alertSampleData.Show();
+                // Start the asynchronous operation.
+                backgroundWorkerSampleData.RunWorkerAsync();
             }
         }
     }
