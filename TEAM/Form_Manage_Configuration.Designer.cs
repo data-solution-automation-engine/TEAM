@@ -1309,6 +1309,7 @@
             this.textBoxMetadataDatabaseName.Name = "textBoxMetadataDatabaseName";
             this.textBoxMetadataDatabaseName.Size = new System.Drawing.Size(242, 20);
             this.textBoxMetadataDatabaseName.TabIndex = 75;
+            this.textBoxMetadataDatabaseName.TextChanged += new System.EventHandler(this.textBoxMetadataDatabaseName_TextChanged);
             // 
             // groupBox4
             // 

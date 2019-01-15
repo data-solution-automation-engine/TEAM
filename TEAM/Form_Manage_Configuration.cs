@@ -1038,5 +1038,10 @@ namespace TEAM
         {
             BuildPresConnectionString();
         }
+
+        private void textBoxMetadataDatabaseName_TextChanged(object sender, EventArgs e)
+        {
+            BuildMetadataConnectionString();
+        }
     }
 }
