@@ -213,7 +213,6 @@ namespace TEAM
             this.trackBarVersioning.Name = "trackBarVersioning";
             this.trackBarVersioning.Size = new System.Drawing.Size(338, 45);
             this.trackBarVersioning.TabIndex = 4;
-            this.trackBarVersioning.Scroll += new System.EventHandler(this.trackBarVersioning_Scroll);
             this.trackBarVersioning.ValueChanged += new System.EventHandler(this.trackBarVersioning_ValueChanged);
             // 
             // groupBoxMetadataCounts
@@ -658,6 +657,7 @@ namespace TEAM
             this.openModelMetadataFileToolStripMenuItem.Name = "openModelMetadataFileToolStripMenuItem";
             this.openModelMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
             this.openModelMetadataFileToolStripMenuItem.Text = "Open Model Metadata File";
+            this.openModelMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openModelMetadataFileToolStripMenuItem_Click);
             // 
             // saveModelMetadataFileAsJSONToolStripMenuItem
             // 
@@ -757,7 +757,6 @@ namespace TEAM
             this.Name = "FormManageMetadata";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the automation metadata";
-            this.Load += new System.EventHandler(this.FormManageMetadata_Load);
             this.SizeChanged += new System.EventHandler(this.FormManageMetadata_SizeChanged);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

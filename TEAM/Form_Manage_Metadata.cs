@@ -32,7 +32,7 @@ namespace TEAM
         }
 
         #region JSON classes
-        public class ModelMetadataJson
+        public class PhysicalModelMetadataJson
         {
             //JSON representation of the physical model metadata
             public string versionAttributeHash { get; set; }
@@ -75,7 +75,9 @@ namespace TEAM
 
         internal static class FileConfiguration
         {
-            internal static string newFile { get; set; }
+            internal static string newFileTableMapping { get; set; }
+            internal static string newFileAttributeMapping { get; set; }
+            internal static string newFilePhysicalModel { get; set; }
             internal static string jsonVersionExtension { get; set; }
         }
 
@@ -298,7 +300,7 @@ namespace TEAM
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+ FileConfiguration.jsonVersionExtension));
+                List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+ FileConfiguration.jsonVersionExtension));
 
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges();
@@ -847,6 +849,12 @@ namespace TEAM
             ContentCounter();
         }
 
+
+        /// <summary>
+        ///   Clicking the 'activate' button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSubmitVersion_Click(object sender, EventArgs e)
         {
             //Clear out the information textbox
@@ -858,16 +866,16 @@ namespace TEAM
                 TruncateMetadata();
             }
 
-            //Create a datatable containing the changes, to check if there are changes made
+            //Create a datatable containing the changes, to check if there are changes made to begin with
             var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
             var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
 
             //Check if there are any rows available in the grid view, and if changes have been detected
             if (
-                (dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) || 
-                (dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) || 
-                (dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 || 
+                dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 || 
+                dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0
                 ) 
             {
                 //Create new version, or retain the old one, depending on selection (version radiobuttons)
@@ -1526,11 +1534,11 @@ namespace TEAM
 
         private void SaveTableMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
-            if (FileConfiguration.newFile == "true")
+            if (FileConfiguration.newFileTableMapping == "true")
             {
                 ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
-                FileConfiguration.newFile = "false";
+                FileConfiguration.newFileTableMapping = "false";
             }
 
             //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created
@@ -1890,7 +1898,12 @@ namespace TEAM
 
         private void SaveModelPhysicalModelMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
-            var JsonVersionExtension = @"_v" + versionId + ".json";
+            if (FileConfiguration.newFilePhysicalModel == "true")
+            {
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                FileConfiguration.newFilePhysicalModel = "false";
+            }
 
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
@@ -1951,7 +1964,7 @@ namespace TEAM
 
                                 try
                                 {
-                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
+                                    PhysicalModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension));
 
                                     var jsonHash = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
 
@@ -1974,7 +1987,7 @@ namespace TEAM
                                     }
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension, output);
                                 }
                                 catch (JsonReaderException ex)
                                 {
@@ -2058,7 +2071,7 @@ namespace TEAM
                                     var hashKey = CreateMd5(versionId +'|' + tableName + '|' + columnName);
 
                                     // Load the file
-                                    ModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<ModelMetadataJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
+                                    PhysicalModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonTableMappingFull = JArray.FromObject(jsonArray);
@@ -2079,7 +2092,7 @@ namespace TEAM
                                     jsonTableMappingFull.Add(newJsonSegment);
 
                                     string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -2113,9 +2126,9 @@ namespace TEAM
                                 try
                                 {
                                     var jsonArray =
-                                        JsonConvert.DeserializeObject<ModelMetadataJson[]>(
+                                        JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(
                                             File.ReadAllText(GlobalParameters.ConfigurationPath +
-                                                             GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension)).ToList();
+                                                             GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
                                     var jsonSegment = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey);
@@ -2133,7 +2146,7 @@ namespace TEAM
                                     }
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension, output);
 
                                 }
                                 catch (JsonReaderException ex)
@@ -2196,7 +2209,12 @@ namespace TEAM
 
         private void SaveAttributeMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
-            var JsonVersionExtension = @"_v" + versionId + ".json";
+            if (FileConfiguration.newFileAttributeMapping == "true")
+            {
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                FileConfiguration.newFileAttributeMapping = "false";
+            }
 
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
@@ -2290,7 +2308,7 @@ namespace TEAM
                                     AttributeMappingJson[] jsonArray =
                                         JsonConvert.DeserializeObject<AttributeMappingJson[]>(
                                             File.ReadAllText(GlobalParameters.ConfigurationPath +
-                                                             GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
+                                                             GlobalParameters.JsonAttributeMappingFileName + FileConfiguration.jsonVersionExtension));
 
                                     var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
@@ -2313,7 +2331,7 @@ namespace TEAM
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
                                         GlobalParameters.ConfigurationPath +
-                                        GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
+                                        GlobalParameters.JsonAttributeMappingFileName + FileConfiguration.jsonVersionExtension, output);
                                 }
                                 catch (JsonReaderException ex)
                                 {
@@ -2383,7 +2401,7 @@ namespace TEAM
                                     var hashKey = CreateMd5(versionId +'|' + stagingTable + '|' + stagingColumn + '|' + integrationTable + '|' +integrationColumn + '|' + transformationRule);
 
                                     // Load the file
-                                    AttributeMappingJson[] jsonArray =JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
+                                    AttributeMappingJson[] jsonArray =JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonAttributeMappingFileName+ FileConfiguration.jsonVersionExtension));
 
                                     // Conver it into a JArray so segments can be added easily
                                     var jsonAttributeMappingFull = JArray.FromObject(jsonArray);
@@ -2405,7 +2423,7 @@ namespace TEAM
                                         Formatting.Indented);
                                     File.WriteAllText(
                                         GlobalParameters.ConfigurationPath +
-                                        GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
+                                        GlobalParameters.JsonAttributeMappingFileName + FileConfiguration.jsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -2447,7 +2465,7 @@ namespace TEAM
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<AttributeMappingJson[]>(
                                             File.ReadAllText(GlobalParameters.ConfigurationPath +
-                                                             GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension)).ToList();
+                                                             GlobalParameters.JsonAttributeMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
                                     var jsonSegment =
@@ -2469,7 +2487,7 @@ namespace TEAM
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
                                         GlobalParameters.ConfigurationPath +
-                                        GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension, output);
+                                        GlobalParameters.JsonAttributeMappingFileName + FileConfiguration.jsonVersionExtension, output);
 
                                 }
                                 catch (JsonReaderException ex)
@@ -2583,7 +2601,7 @@ namespace TEAM
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
+            List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
@@ -2600,7 +2618,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Load a Json or XML file into the datagrid
+        ///   Load a Table Mapping Metadata Json or XML file into the datagrid
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -2654,7 +2672,7 @@ namespace TEAM
                         // This will overwrite existing files for the in-use version.
                         if (!checkBoxMergeFiles.Checked)
                         {
-                            FileConfiguration.newFile = "true";
+                            FileConfiguration.newFileTableMapping = "true";
                         }
 
                         // Load the file, convert it to a DataTable and bind it to the source
@@ -2670,7 +2688,7 @@ namespace TEAM
                         dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
                         dt.Columns[6].ColumnName = "FILTER_CRITERIA";
                         dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
-                        
+
                         // Sort the columns
                         dt.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
 
@@ -2797,8 +2815,7 @@ namespace TEAM
                 Filter = @"Attribute Mapping files|*.xml;*.json",
                 InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
             };
-
-
+            
             var ret = STAShowDialog(theDialog);
 
             if (ret == DialogResult.OK)
@@ -2819,10 +2836,30 @@ namespace TEAM
                     }
                     else if (fileExtension == ".json")
                     {
-                        //MessageBox.Show("Work in progress!");
+                        // Create a backup file, if enabled
+                        if (checkBoxBackupFiles.Checked)
+                        {
+                            try
+                            {
+                                var backupFile = new ClassJsonHandling();
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
+                            }
+                            catch (Exception exception)
+                            {
+                                richTextBoxInformation.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
+                            }
+                        }
+
+                        // If the information needs to be merged, a global parameter needs to be set.
+                        // This will overwrite existing files for the in-use version.
+                        if (!checkBoxMergeFiles.Checked)
+                        {
+                            FileConfiguration.newFileAttributeMapping = "true";
+                        }
 
                         // Load the file, convert it to a DataTable and bind it to the source
-                        List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
+                        List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = ConvertToDataTable(jsonArray);
                         dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
                         dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
@@ -2833,6 +2870,9 @@ namespace TEAM
                         dt.Columns[5].ColumnName = "TARGET_COLUMN";
                         dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
                         _bindingSourceAttributeMetadata.DataSource = dt;
+
+                        // Sort the columns
+                        dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
 
                         if (jsonArray != null)
                         {
@@ -5977,7 +6017,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
+                MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
             }
         }
 
@@ -6002,10 +6042,12 @@ namespace TEAM
 
                         DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
 
+                        gridDataTable.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
                         gridDataTable.TableName = "ModelMetadata";
 
                         JArray outputFileArray = new JArray();
-                        foreach (DataRow singleRow in gridDataTable.Rows)
+                        foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
                         {
                             JObject individualRow = JObject.FromObject(new
                             {
@@ -6037,7 +6079,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
+                MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
             }
         }
 
@@ -6069,7 +6111,7 @@ namespace TEAM
             var stagingReverseEngineerResults = new DataTable();
             if (checkBoxStagingLayer.Checked)
             {
-                stagingReverseEngineerResults = ReverseEngineerModelMetadata(connStg, stgPrefix, stgDatabase); ;
+                stagingReverseEngineerResults = ReverseEngineerModelMetadata(connStg, stgPrefix, stgDatabase); 
             }
 
             var integrationReverseEngineerResults = new DataTable();
@@ -6079,12 +6121,10 @@ namespace TEAM
             }
 
             // Merge the datatables
-            var completeDataTable = new DataTable();
-            completeDataTable = stagingReverseEngineerResults.Copy();
+            var completeDataTable = stagingReverseEngineerResults.Copy();
             completeDataTable.Merge(integrationReverseEngineerResults);
 
             completeDataTable.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-
 
             // Display the results on the datagrid
             _bindingSourcePhysicalModelMetadata.DataSource = completeDataTable;
@@ -6670,14 +6710,117 @@ namespace TEAM
             }
         }
 
-        private void trackBarVersioning_Scroll(object sender, EventArgs e)
+        private void openModelMetadataFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var theDialog = new OpenFileDialog
+            {
+                Title = @"Open Physical Model Metadata File",
+                Filter = @"Physical Model files|*.xml;*.json",
+                InitialDirectory = GlobalParameters.ConfigurationPath 
+            };
 
-        }
+            var ret = STAShowDialog(theDialog);
 
-        private void FormManageMetadata_Load(object sender, EventArgs e)
-        {
+            if (ret == DialogResult.OK)
+            {
+                richTextBoxInformation.Clear();
+                try
+                {
+                    var chosenFile = theDialog.FileName;
+                    var dataSet = new DataSet();
 
+                    string fileExtension = Path.GetExtension(theDialog.FileName);
+
+                    if (fileExtension == ".xml")
+                    {
+                        dataSet.ReadXml(chosenFile);
+
+                        dataGridViewPhysicalModelMetadata.DataSource = dataSet.Tables[0];
+                        _bindingSourcePhysicalModelMetadata.DataSource = dataGridViewPhysicalModelMetadata.DataSource;
+
+                    }
+                    else if (fileExtension == ".json")
+                    {
+                        // Create a backup file, if enabled
+                        if (checkBoxBackupFiles.Checked)
+                        {
+                            try
+                            {
+                                var backupFile = new ClassJsonHandling();
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
+                            }
+                            catch (Exception exception)
+                            {
+                                richTextBoxInformation.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
+                            }
+                        }
+
+                        // If the information needs to be merged, a global parameter needs to be set.
+                        // This will overwrite existing files for the in-use version.
+                        if (!checkBoxMergeFiles.Checked)
+                        {
+                            FileConfiguration.newFilePhysicalModel = "true";
+                        }
+
+                        // Load the file, convert it to a DataTable and bind it to the source
+                        List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(chosenFile));
+                        DataTable dt = ConvertToDataTable(jsonArray);
+
+                        // Setup the datatable with proper headings
+                        dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
+                        dt.Columns[1].ColumnName = "VERSION_ID";
+                        dt.Columns[2].ColumnName = "TABLE_NAME";
+                        dt.Columns[3].ColumnName = "COLUMN_NAME";
+                        dt.Columns[4].ColumnName = "DATA_TYPE";
+                        dt.Columns[5].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
+                        dt.Columns[6].ColumnName = "NUMERIC_PRECISION";
+                        dt.Columns[7].ColumnName = "ORDINAL_POSITION";
+                        dt.Columns[8].ColumnName = "PRIMARY_KEY_INDICATOR";
+                        dt.Columns[9].ColumnName = "MULTI_ACTIVE_INDICATOR";
+
+                        // Sort the columns
+                        dt.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
+                        // Clear out the existing data from the grid
+                        _bindingSourcePhysicalModelMetadata.DataSource = null;
+                        _bindingSourcePhysicalModelMetadata.Clear();
+                        dataGridViewPhysicalModelMetadata.DataSource = null;
+
+                        // Bind the datatable to the gridview
+                        _bindingSourcePhysicalModelMetadata.DataSource = dt;
+
+                        if (jsonArray != null)
+                        {
+                            // Set the column header names
+                            dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
+
+                            dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
+                            dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
+                            dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
+
+                            dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Table Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Column Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Data Type";
+                            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Length";
+                            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Precision";
+                            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Position";
+                            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Primary Key";
+                            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Multi-Active";
+                        }
+                    }
+
+                    GridAutoLayout();
+                    ContentCounter();
+                    richTextBoxInformation.AppendText("The file " + chosenFile + " was loaded.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error has been encountered! The reported error is: " + ex);
+                }
+            }
         }
     }
 }
