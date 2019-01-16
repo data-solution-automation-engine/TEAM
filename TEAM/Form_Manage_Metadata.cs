@@ -409,7 +409,7 @@ namespace TEAM
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
-                    ClassJsonHandling.CreateDummyJsonFile(FormBase.GlobalParameters.JsonTableMappingFileName);
+                    ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
@@ -642,125 +642,26 @@ namespace TEAM
             }
         }
 
-        private void ReverseEngineerModelMetadata(SqlConnection conn, string prefix, string databaseName)
+        private List<string> TableMetadataFilter (DataTable inputDataTable)
         {
-            // This method is called when the reverse-engineer button is clicked.
-            try
+            var distinctList = new List<string>();
+            foreach (DataRow row in inputDataTable.Rows) 
             {
-                conn.Open();
-            }
-            catch (Exception exception)
-            {
-                richTextBoxInformation.Text += "An error has occurred uploading the model for the new version. The error message is: " + exception.Message + ".\r\n";
-            }
+                if (!distinctList.Contains((string)row["STAGING_AREA_TABLE"]))
+                {
+                    distinctList.Add((string)row["STAGING_AREA_TABLE"]);
+                }
 
-            //Retrieve the version key after version handling
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-            var versionId = GetMaxVersionId(connOmd);
-
-            // Get everything as local variables to reduce multithreading issues
-            var effectiveDateTimeAttribute = ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute == "True" ? ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute : ConfigurationSettings.LoadDateTimeAttribute;
-
-            var dwhKeyIdentifier = ConfigurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
-
-            var keyIdentifierLocation = ConfigurationSettings.KeyNamingLocation;
-            // ReverseEngineerMainDataGrid(conn, prefix, databaseName, versionId, effectiveDateTimeAttribute, dwhKeyIdentifier, keyIdentifierLocation);
-
-            //Create the attribute selection statement for the array
-            var sqlStatementForAttributeVersion = new StringBuilder();
-
-            sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), "+ versionId + ") + '|' + main.TABLE_NAME + '|' + main.COLUMN_NAME),2),");
-            sqlStatementForAttributeVersion.AppendLine("  " + versionId + " AS VERSION_ID,");
-            sqlStatementForAttributeVersion.AppendLine("  main.TABLE_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.COLUMN_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.DATA_TYPE, ");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.CHARACTER_MAXIMUM_LENGTH,0) AS VARCHAR(100)) AS CHARACTER_MAXIMUM_LENGTH,");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.NUMERIC_PRECISION,0) AS VARCHAR(100)) AS NUMERIC_PRECISION, ");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(main.ORDINAL_POSITION AS VARCHAR(100)) AS ORDINAL_POSITION, ");
-
-            sqlStatementForAttributeVersion.AppendLine("  CASE ");
-            sqlStatementForAttributeVersion.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
-            sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
-            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
-            sqlStatementForAttributeVersion.AppendLine("  END AS PRIMARY_KEY_INDICATOR, ");
-
-            sqlStatementForAttributeVersion.AppendLine("  CASE ");
-            sqlStatementForAttributeVersion.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
-            sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
-            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
-            sqlStatementForAttributeVersion.AppendLine("  END AS MULTI_ACTIVE_INDICATOR ");
-
-            sqlStatementForAttributeVersion.AppendLine("FROM [" + databaseName + "].INFORMATION_SCHEMA.COLUMNS main");
-            sqlStatementForAttributeVersion.AppendLine("-- Primary Key");
-            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForAttributeVersion.AppendLine("	SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("		sc.name AS TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1) keysub");
-            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = keysub.TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = keysub.COLUMN_NAME");
-            //sqlStatementForAttributeVersion.AppendLine("-- Driving Key");
-            //sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            //sqlStatementForAttributeVersion.AppendLine("		SELECT");
-            //sqlStatementForAttributeVersion.AppendLine("		 st.name LINK_TABLE_NAME,");
-            //sqlStatementForAttributeVersion.AppendLine("		 sc.name HASH_KEY_NAME,");
-            //sqlStatementForAttributeVersion.AppendLine("		 sep.value [Value]");
-            //sqlStatementForAttributeVersion.AppendLine("		 FROM [" + databaseName + "].sys.tables st");
-            //sqlStatementForAttributeVersion.AppendLine("		 INNER JOIN [" + databaseName + "].sys.columns sc on st.object_id = sc.object_id");
-            //sqlStatementForAttributeVersion.AppendLine("		 LEFT JOIN [" + databaseName + "].sys.extended_properties sep on st.object_id = sep.major_id");
-            //sqlStatementForAttributeVersion.AppendLine("		 AND sc.column_id = sep.minor_id");
-            //sqlStatementForAttributeVersion.AppendLine("		 AND sep.name = 'Driving_Key_Indicator'");
-            //sqlStatementForAttributeVersion.AppendLine("	) extprop");
-            //sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME=extprop.LINK_TABLE_NAME");
-            //sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME=extprop.HASH_KEY_NAME");
-
-            //Multi-active
-            sqlStatementForAttributeVersion.AppendLine("-- Multi-Active");
-            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForAttributeVersion.AppendLine("	SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("		sc.name AS TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1");
-            sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN('" + effectiveDateTimeAttribute + "')");
-            if (keyIdentifierLocation == "Prefix")
-            {
-                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
-            }
-            else
-            {
-                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
+                if (!distinctList.Contains((string)row["INTEGRATION_AREA_TABLE"]))
+                {
+                    distinctList.Add((string)row["INTEGRATION_AREA_TABLE"]);
+                }
             }
 
-            sqlStatementForAttributeVersion.AppendLine("	) ma");
-            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = ma.TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = ma.COLUMN_NAME");
-
-            sqlStatementForAttributeVersion.AppendLine("WHERE main.TABLE_NAME LIKE '" + prefix + "_%'");
-            sqlStatementForAttributeVersion.AppendLine("ORDER BY main.ORDINAL_POSITION");
-
-            var reverseEngineerResults = GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
-
-            _bindingSourcePhysicalModelMetadata.DataSource = reverseEngineerResults;
-
-            foreach (DataRow row in reverseEngineerResults.Rows) //Flag as new row so it's detected by the save button
-            {
-                row.SetAdded();
-            }
-
+            return distinctList;
         }
+
+
 
 
 
@@ -951,9 +852,6 @@ namespace TEAM
             //Clear out the information textbox
             richTextBoxInformation.Clear();
 
-            //Instantiate the global configuration settings
-            var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
-
             //Remove all metadata from repository
             if (checkBoxClearMetadata.Checked)
             {
@@ -962,8 +860,6 @@ namespace TEAM
 
             //Create a datatable containing the changes, to check if there are changes made
             var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
-            dataTableTableMappingChanges.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
-
             var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
 
@@ -984,9 +880,9 @@ namespace TEAM
                     int versionId = CreateOrRetrieveVersion();
 
                     //Commit the save of the metadata
-                    SaveTableMappingMetadata(versionId, dataTableTableMappingChanges, repositoryTarget);
-                    SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges, repositoryTarget);
-                    SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges, repositoryTarget);
+                    SaveTableMappingMetadata(versionId, dataTableTableMappingChanges, ConfigurationSettings.MetadataRepositoryType);
+                    SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges, ConfigurationSettings.MetadataRepositoryType);
+                    SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges, ConfigurationSettings.MetadataRepositoryType);
 
                     //Load the grids from the repository after being updated
                     PopulateTableMappingGridWithVersion(versionId);
@@ -1064,6 +960,11 @@ namespace TEAM
 
             //Retrieve the current version (again, may have changed)
             var versionId = GetMaxVersionId(connOmd);
+
+            //Make sure the correct version is added to the global parameters
+            GlobalParameters.VersionId = versionId;
+            FileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
+
             return versionId;
         }
 
@@ -1625,12 +1526,10 @@ namespace TEAM
 
         private void SaveTableMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
         {
-            var JsonVersionExtension = @"_v" + versionId + ".json";
-
             if (FileConfiguration.newFile == "true")
             {
                 ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
-                ClassJsonHandling.CreatePlaceholderJsonFile(FormBase.GlobalParameters.JsonTableMappingFileName);
+                ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
                 FileConfiguration.newFile = "false";
             }
 
@@ -1726,7 +1625,7 @@ namespace TEAM
                             else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
                             {
                                 //Read the file in memory
-                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
+                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
 
                                 //Retrieves the json segment in the file for the given hash returns value or NULL
                                 var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey); 
@@ -1759,7 +1658,7 @@ namespace TEAM
 
 
                                     // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
-                                    File.WriteAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
 
                                     // Wait for half a second for I/O operations to complete
                                     // Thread.Sleep(500);
@@ -1839,7 +1738,7 @@ namespace TEAM
                                         JsonConvert.DeserializeObject<TableMappingJson[]>(
                                             File.ReadAllText(
                                                 GlobalParameters.ConfigurationPath +
-                                                GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
+                                                GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
 
                                     // Convert it into a JArray so segments can be added easily
                                     if (jsonArray != null)
@@ -1865,7 +1764,7 @@ namespace TEAM
                                     jsonTableMappingFull.Add(newJsonSegment);
 
                                     string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension, output);
+                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
                                     row[0] = hashKey;
@@ -1905,7 +1804,7 @@ namespace TEAM
                                     var jsonArray =
                                         JsonConvert.DeserializeObject<TableMappingJson[]>(
                                             File.ReadAllText(GlobalParameters.ConfigurationPath +
-                                                             GlobalParameters.JsonTableMappingFileName + JsonVersionExtension)).ToList();
+                                                             GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
 
                                     //Retrieves the json segment in the file for the given hash returns value or NULL
                                     var jsonSegment = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
@@ -1924,7 +1823,7 @@ namespace TEAM
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                                     File.WriteAllText(
-                                        GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension,
+                                        GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension,
                                         output);
 
                                 }
@@ -6043,10 +5942,13 @@ namespace TEAM
 
                         DataTable gridDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
 
+                        // Make sure the output is sorted
+                        gridDataTable.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
+
                         gridDataTable.TableName = "AttributeMappingMetadata";
 
                         JArray outputFileArray = new JArray();
-                        foreach (DataRow singleRow in gridDataTable.Rows)
+                        foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
                         {
                             JObject individualRow = JObject.FromObject(new
                             {
@@ -6139,10 +6041,13 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        ///   Method called when clicking the Reverse Engineer button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ReverseEngineerMetadataButtonClick(object sender, EventArgs e)
         {
-            //Method called when clicking the Reverse Engieer button
-
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text += "Commencing reverse-engineering the model metadata from the database.\r\n";
 
@@ -6152,7 +6057,7 @@ namespace TEAM
                 TruncateMetadata();
             }
 
-            //Populate table / attribute version table
+            // Populate table / attribute version table
             var intDatabase = ConfigurationSettings.IntegrationDatabaseName;
             var stgDatabase = ConfigurationSettings.StagingDatabaseName;
 
@@ -6161,17 +6066,167 @@ namespace TEAM
             var stgPrefix = ConfigurationSettings.StgTablePrefixValue;
 
             // Process changes
+            var stagingReverseEngineerResults = new DataTable();
             if (checkBoxStagingLayer.Checked)
             {
-                ReverseEngineerModelMetadata(connStg, stgPrefix, stgDatabase);
+                stagingReverseEngineerResults = ReverseEngineerModelMetadata(connStg, stgPrefix, stgDatabase); ;
             }
 
+            var integrationReverseEngineerResults = new DataTable();
             if (checkBoxIntegrationLayer.Checked)
             {
-                ReverseEngineerModelMetadata(connInt, @"", intDatabase);
+                integrationReverseEngineerResults = ReverseEngineerModelMetadata(connInt, @"", intDatabase);
             }
 
+            // Merge the datatables
+            var completeDataTable = new DataTable();
+            completeDataTable = stagingReverseEngineerResults.Copy();
+            completeDataTable.Merge(integrationReverseEngineerResults);
+
+            completeDataTable.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
+
+            // Display the results on the datagrid
+            _bindingSourcePhysicalModelMetadata.DataSource = completeDataTable;
+
+            // Set the column header names.
+            dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
+            dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
+            dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
+            dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
+
+            dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Table Name"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Column Name"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Data Type";
+            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Length";
+            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Precision";
+            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Position";
+            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Primary Key";
+            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Multi-Active";
+
+            foreach (DataRow row in completeDataTable.Rows) //Flag as new row so it's detected by the save button
+            {
+                row.SetAdded();
+            }
         }
+
+
+        /// <summary>
+        ///   Connect to a given database and return the data dictionary (catalog) information in the datagrid.
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="prefix"></param>
+        /// <param name="databaseName"></param>
+        private DataTable ReverseEngineerModelMetadata(SqlConnection conn, string prefix, string databaseName)
+        {
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception exception)
+            {
+                richTextBoxInformation.Text += "An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: " + exception.Message + ".\r\n";
+            }
+
+            // Get everything as local variables to reduce multi-threading issues
+            var effectiveDateTimeAttribute = ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute == "True" ? ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute : ConfigurationSettings.LoadDateTimeAttribute;
+            var dwhKeyIdentifier = ConfigurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
+            var keyIdentifierLocation = ConfigurationSettings.KeyNamingLocation;
+
+            // Create the attribute selection statement for the array
+            var sqlStatementForAttributeVersion = new StringBuilder();
+
+            sqlStatementForAttributeVersion.AppendLine("SELECT ");
+            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.VersionId + ") + '|' + main.TABLE_NAME + '|' + main.COLUMN_NAME),2),");
+            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.VersionId + " AS VERSION_ID,");
+            sqlStatementForAttributeVersion.AppendLine("  main.TABLE_NAME, ");
+            sqlStatementForAttributeVersion.AppendLine("  main.COLUMN_NAME, ");
+            sqlStatementForAttributeVersion.AppendLine("  main.DATA_TYPE, ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.CHARACTER_MAXIMUM_LENGTH,0) AS VARCHAR(100)) AS CHARACTER_MAXIMUM_LENGTH,");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.NUMERIC_PRECISION,0) AS VARCHAR(100)) AS NUMERIC_PRECISION, ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(main.ORDINAL_POSITION AS VARCHAR(100)) AS ORDINAL_POSITION, ");
+
+            sqlStatementForAttributeVersion.AppendLine("  CASE ");
+            sqlStatementForAttributeVersion.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
+            sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
+            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
+            sqlStatementForAttributeVersion.AppendLine("  END AS PRIMARY_KEY_INDICATOR, ");
+
+            sqlStatementForAttributeVersion.AppendLine("  CASE ");
+            sqlStatementForAttributeVersion.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
+            sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
+            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
+            sqlStatementForAttributeVersion.AppendLine("  END AS MULTI_ACTIVE_INDICATOR ");
+
+            sqlStatementForAttributeVersion.AppendLine("FROM [" + databaseName + "].INFORMATION_SCHEMA.COLUMNS main");
+            sqlStatementForAttributeVersion.AppendLine("-- Primary Key");
+            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
+            sqlStatementForAttributeVersion.AppendLine("	SELECT ");
+            sqlStatementForAttributeVersion.AppendLine("		sc.name AS TABLE_NAME,");
+            sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
+            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1) keysub");
+            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = keysub.TABLE_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = keysub.COLUMN_NAME");
+
+            //Multi-active
+            sqlStatementForAttributeVersion.AppendLine("-- Multi-Active");
+            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
+            sqlStatementForAttributeVersion.AppendLine("	SELECT ");
+            sqlStatementForAttributeVersion.AppendLine("		sc.name AS TABLE_NAME,");
+            sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
+            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1");
+            sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN('" + effectiveDateTimeAttribute + "')");
+
+            if (keyIdentifierLocation == "Prefix")
+            {
+                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
+            }
+            else
+            {
+                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
+            }
+
+            sqlStatementForAttributeVersion.AppendLine("	) ma");
+            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = ma.TABLE_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = ma.COLUMN_NAME");
+
+            sqlStatementForAttributeVersion.AppendLine("WHERE main.TABLE_NAME LIKE '" + prefix + "_%'");
+
+
+            // Retrieve (and apply) the list of tables to filter from the Table Mapping datagrid
+            sqlStatementForAttributeVersion.AppendLine("  AND main.TABLE_NAME IN (");
+            var filterList = TableMetadataFilter((DataTable)_bindingSourceTableMetadata.DataSource);
+            foreach (var filter in filterList)
+            {
+                sqlStatementForAttributeVersion.AppendLine("  '"+filter+"',");
+            }
+            sqlStatementForAttributeVersion.Remove(sqlStatementForAttributeVersion.Length - 3, 3);
+            sqlStatementForAttributeVersion.AppendLine();
+
+            sqlStatementForAttributeVersion.AppendLine("  )");
+
+            sqlStatementForAttributeVersion.AppendLine("ORDER BY main.ORDINAL_POSITION");
+
+            var reverseEngineerResults = GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
+
+            return reverseEngineerResults;
+        }
+
+
 
         public void exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -6318,7 +6373,7 @@ namespace TEAM
 
             foreach (string sourceObject in objectList)
             {
-                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
 
                 if (sourceObjectValidated == "False")
                 {
@@ -6370,7 +6425,7 @@ namespace TEAM
             var resultList = new Dictionary<string, string>();
             foreach (string sourceObject in objectList)
             {
-                var sourceObjectValidated = MetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringInt);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringInt);
 
                 if (sourceObjectValidated == "False")
                 {
@@ -6428,7 +6483,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -6490,7 +6545,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -6553,7 +6608,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.VersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.VersionId);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
