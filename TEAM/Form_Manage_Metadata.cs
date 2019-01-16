@@ -591,6 +591,7 @@ namespace TEAM
 
         private void GridAutoLayout()
         {
+            return;
             //Table Mapping metadata grid - set the autosize based on all cells for each column
             for (var i = 0; i < dataGridViewTableMetadata.Columns.Count - 1; i++)
             {
@@ -5836,9 +5837,31 @@ namespace TEAM
             }
         }
 
-        private void textBoxFilterCriterion_TextChanged(object sender, EventArgs e)
+        private void textBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
         {
+            foreach (DataGridViewRow dr in dataGridViewTableMetadata.Rows)
+            {
+                dr.Visible = true;
+            }
 
+            foreach (DataGridViewRow dr in dataGridViewTableMetadata.Rows)
+            {
+                if (dr.Cells[3].Value != null)
+                {
+                    if (!dr.Cells[3].Value.ToString().Contains(textBoxFilterCriterion.Text) && !dr.Cells[2].Value.ToString().Contains(textBoxFilterCriterion.Text))
+                    {
+                        CurrencyManager currencyManager1 = (CurrencyManager)BindingContext[dataGridViewTableMetadata.DataSource];
+                        currencyManager1.SuspendBinding();
+                        dr.Visible = false;
+                        currencyManager1.ResumeBinding();
+                    }
+                }
+            }
+        }
+
+        /*private void textBoxFilterCriterion_TextChanged(object sender, EventArgs e)
+        {
+            return;
             //dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
             //dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
             //dataGridViewTableMetadata.Columns[2].HeaderText = "Staging Area Table";
@@ -5866,8 +5889,7 @@ namespace TEAM
                 }
             }
 
-        }
-
+        }*/
 
         private void saveTableMappingAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
