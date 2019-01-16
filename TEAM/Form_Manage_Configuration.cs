@@ -22,7 +22,7 @@ namespace TEAM
 
             //Make sure the root directories exist, based on hard-coded (tool) parameters
             //Also create the initial file with the configuration if it doesn't exist already
-            EnvironmentConfiguration.InitialiseRootPath();
+            ClassEnvironmentConfiguration.InitialiseRootPath();
 
             // Set the core TEAM (path) file using the information retrieved from memory. These values were loaded into memory from the path file in the main form.
             //Dev or prod environment (working environment)
@@ -180,7 +180,7 @@ namespace TEAM
             // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
             if (!File.Exists(chosenFile))
             {
-                var newEnvironmentConfiguration = new EnvironmentConfiguration();
+                var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(chosenFile);
             }
 
@@ -554,13 +554,13 @@ namespace TEAM
             GlobalParameters.WorkingEnvironment = workingEnvironment;
 
             // Make sure the new paths as updated are available upon save for backup etc.
-            EnvironmentConfiguration.InitialiseConfigurationPath();
+            ClassEnvironmentConfiguration.InitialiseConfigurationPath();
 
 
             // Create a file backup for the configuration file
             try
             {
-                EnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
+                ClassEnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
                 richTextBoxInformation.Text = "A backup of the current configuration was made at " + DateTime.Now + " in " + textBoxConfigurationPath.Text + ".";
             }
             catch (Exception)
@@ -575,7 +575,7 @@ namespace TEAM
 
 
             // Save the information 
-            EnvironmentConfiguration.SaveConfigurationFile();
+            ClassEnvironmentConfiguration.SaveConfigurationFile();
         }
 
 

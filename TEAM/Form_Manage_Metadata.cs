@@ -73,9 +73,10 @@ namespace TEAM
         }
         #endregion
 
-        internal static class LoadConfiguration
+        internal static class FileConfiguration
         {
             internal static string newFile { get; set; }
+            internal static string jsonVersionExtension { get; set; }
         }
 
         public FormManageMetadata(FormMain parent) : base(parent)
@@ -99,6 +100,7 @@ namespace TEAM
             
             // Set the version in memory
             GlobalParameters.VersionId = selectedVersion;
+            FileConfiguration.jsonVersionExtension = @"_v" + selectedVersion + ".json";
 
             trackBarVersioning.Maximum = selectedVersion;
             trackBarVersioning.TickFrequency = GetVersionCount();
@@ -129,12 +131,12 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    var newEnvironmentConfiguration = new EnvironmentConfiguration();
+                    var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
                     newEnvironmentConfiguration.CreateDummyValidationConfiguration(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                EnvironmentConfiguration.LoadValidationFile(validationFile);
+                ClassEnvironmentConfiguration.LoadValidationFile(validationFile);
 
                 richTextBoxInformation.Text += "\r\nThe validation file " + validationFile + " has been loaded.";
             }
@@ -240,8 +242,6 @@ namespace TEAM
                 // open latest version
                 var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
-                int selectedVersion = versionId;
-
                 try
                 {
                     connOmd.Open();
@@ -265,7 +265,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
                 sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
                 sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
-                sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
+                sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + versionId);
 
                 var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
                 _bindingSourcePhysicalModelMetadata.DataSource = versionList;
@@ -290,38 +290,15 @@ namespace TEAM
             }
             else if (repositoryTarget == "JSON") //Update the JSON
             {
-                var JsonVersionExtension = @"_v" + versionId + ".json";
-                
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension))
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
-
-                    JArray outputFileArray = new JArray();
-
-                    JObject dummyJsonTableMappingFile = new JObject(
-                        new JProperty("versionAttributeHash", "NewHash"),
-                        new JProperty("versionId", "versionId"),
-                        new JProperty("tableName", "Sample Table"),
-                        new JProperty("columnName", "Sample Column"),
-                        new JProperty("dataType", "nvarchar"),
-                        new JProperty("characterMaximumLength", "100"),
-                        new JProperty("numericPrecision", "0"),
-                        new JProperty("ordinalPosition", "1"),
-                        new JProperty("primaryKeyIndicator", "N"),
-                        new JProperty("multiActiveIndicator", "N")
-                        );
-
-                    outputFileArray.Add(dummyJsonTableMappingFile);
-
-                    string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
-
-                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension, json);
-
+                    ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension));
+                List<ModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<ModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+ FileConfiguration.jsonVersionExtension));
 
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges();
@@ -359,7 +336,7 @@ namespace TEAM
                     dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Multi-Active";
                 }
 
-                richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
             }
             GridAutoLayout();
         }
@@ -428,18 +405,15 @@ namespace TEAM
             }
             else if (repositoryTarget == "JSON") // Retrieve from the JSON file
             {
-                var JsonVersionExtension = @"_v" + versionId +".json";
-
                 // Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension))
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
-
-                    JsonHandling.CreateDummyJsonFile();
+                    ClassJsonHandling.CreateDummyJsonFile(FormBase.GlobalParameters.JsonTableMappingFileName);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension));
+                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
                 // Order by Source Table, Integration_Area table, Business Key Attribute
 
@@ -475,7 +449,7 @@ namespace TEAM
                     dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
                 }
 
-                richTextBoxInformation.AppendText("The file "+ GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file "+ GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
             }
 
             // Resize the grid
@@ -544,35 +518,15 @@ namespace TEAM
             }
             else if (repositoryTarget == "JSON") //Update the JSON
             {
-                var JsonVersionExtension = @"_v" + versionId + ".json";
-
                 //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension))
+                if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No attribute mapping JSON file was found, so a new empty one was created.\r\n");
-
-                    JArray outputFileArray = new JArray();
-
-                    JObject dummyJsonAttributeMappingFile = new JObject(
-                        new JProperty("attributeMappingHash", "NewHash"),
-                        new JProperty("versionId", "versionId"),
-                        new JProperty("sourceTable", "SOURCE_TABLE"),
-                        new JProperty("sourceAttribute", "EXAMPLE_FROM_ATTRIBUTE"),
-                        new JProperty("TargetTable", "TARGET_TABLE"),
-                        new JProperty("TargetAttribute", "EXAMPLE_TO_ATTRIBUTE"),
-                        new JProperty("transformationRule", "")
-                        );
-
-                    outputFileArray.Add(dummyJsonAttributeMappingFile);
-
-                    string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
-
-                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension, json);
-
+                    ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension));
+                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
                 dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
@@ -603,7 +557,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                 }
 
-                richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+JsonVersionExtension + " was loaded.\r\n");
+                richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
             }
 
             // Resize the grid
@@ -974,7 +928,9 @@ namespace TEAM
         private void trackBarVersioning_ValueChanged(object sender, EventArgs e)
         {
             richTextBoxInformation.Clear();
-
+            FileConfiguration.jsonVersionExtension = @"_v" + trackBarVersioning.Value + ".json";
+            GlobalParameters.VersionId = trackBarVersioning.Value;
+            
             PopulateTableMappingGridWithVersion(trackBarVersioning.Value);
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
             PopulatePhysicalModelGridWithVersion(trackBarVersioning.Value);
@@ -1226,7 +1182,6 @@ namespace TEAM
         internal void CreateNewPhysicalModelMetadataVersionJson(int versionId)
         {
             // This method creates a new version in the repository for the physical model (MD_VERSION_ATTRIBUTE table or TEAM_Model.json file)    
-            var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Create a JArray so segments can be added easily from the datatable
             var jsonModelMappingFull = new JArray();
@@ -1316,7 +1271,7 @@ namespace TEAM
             {
                 //Generate a unique key using a hash
                 string output = JsonConvert.SerializeObject(jsonModelMappingFull, Formatting.Indented);
-                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension, output);
+                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension, output);
             }
             catch (JsonReaderException ex)
             {
@@ -1672,11 +1627,11 @@ namespace TEAM
         {
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
-            if (LoadConfiguration.newFile == "true")
+            if (FileConfiguration.newFile == "true")
             {
-                JsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
-                JsonHandling.CreatePlaceholderJsonFile();
-                LoadConfiguration.newFile = "false";
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                ClassJsonHandling.CreatePlaceholderJsonFile(FormBase.GlobalParameters.JsonTableMappingFileName);
+                FileConfiguration.newFile = "false";
             }
 
             //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created
@@ -2781,13 +2736,12 @@ namespace TEAM
                     }
                     else if (fileExtension == ".json")
                     {
-        
                         // Create a backup file, if enabled
                         if (checkBoxBackupFiles.Checked)
                         {
                             try
                             {
-                                var backupFile = new JsonHandling();
+                                var backupFile = new ClassJsonHandling();
                                 var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.VersionId +".json");
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
@@ -2801,16 +2755,14 @@ namespace TEAM
                         // This will overwrite existing files for the in-use version.
                         if (!checkBoxMergeFiles.Checked)
                         {
-                            LoadConfiguration.newFile = "true";
+                            FileConfiguration.newFile = "true";
                         }
 
                         // Load the file, convert it to a DataTable and bind it to the source
                         List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = ConvertToDataTable(jsonArray);
 
-                        //dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-                        //// Note that this clears out everything that was already in the DataTable, so it's an overwrite. For now, this is by design.
-
+                        // Setup the datatable with proper headings
                         dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
                         dt.Columns[1].ColumnName = "VERSION_ID";
                         dt.Columns[2].ColumnName = "STAGING_AREA_TABLE";
@@ -2823,18 +2775,11 @@ namespace TEAM
                         // Sort the columns
                         dt.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
 
-                        // After loading and committing, the that are now in the DataTable need to be set to 'added' so they can be saved.
-                        //foreach (DataRow row in dt.Rows)
-                        //{
-                        //    row.SetAdded();
-                        //}
-
                         // Clear out the existing data from the grid
                         _bindingSourceTableMetadata.DataSource = null;
                         _bindingSourceTableMetadata.Clear();
                         dataGridViewTableMetadata.DataSource = null;
  
-
                         // Bind the datatable to the gridview
                         _bindingSourceTableMetadata.DataSource = dt;
 
@@ -2855,7 +2800,6 @@ namespace TEAM
                             dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
                             dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
                         }
-
                     }
 
                     GridAutoLayout();
@@ -2864,7 +2808,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An error has been encountered! "+ex);
+                    MessageBox.Show("An error has been encountered! The reported error is: "+ex);
                 }
             }
         }
@@ -6007,10 +5951,13 @@ namespace TEAM
 
                         DataTable gridDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
 
+                        // Make sure the output is sorted
+                        gridDataTable.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+
                         gridDataTable.TableName = "TableMappingMetadata";
 
                         JArray outputFileArray = new JArray();
-                        foreach (DataRow singleRow in gridDataTable.Rows)
+                        foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
                         {
                             JObject individualRow = JObject.FromObject(new
                             {
@@ -6040,9 +5987,8 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
+                MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
             }
-
         }
 
         /// <summary>

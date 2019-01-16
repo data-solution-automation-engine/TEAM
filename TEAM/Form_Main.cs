@@ -31,16 +31,16 @@ namespace TEAM
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberforTeamApplication;
 
             // Make sure the application and custom location directories exist
-            EnvironmentConfiguration.InitialiseRootPath();
+            ClassEnvironmentConfiguration.InitialiseRootPath();
 
             // Set the root path, to be able to locate the customisable configuration file
-            EnvironmentConfiguration.LoadRootPathFile();
+            ClassEnvironmentConfiguration.LoadRootPathFile();
 
             // Make sure the configuration file is in memory
-            EnvironmentConfiguration.InitialiseConfigurationPath();
+            ClassEnvironmentConfiguration.InitialiseConfigurationPath();
 
             // Load the available configuration file
-            EnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+            ClassEnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
 
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
