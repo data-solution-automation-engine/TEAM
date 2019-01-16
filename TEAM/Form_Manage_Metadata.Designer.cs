@@ -34,7 +34,7 @@ namespace TEAM
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageMetadata));
             this.backgroundWorkerMetadata = new System.ComponentModel.BackgroundWorker();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBoxFilterCriterion = new System.Windows.Forms.TextBox();
+            this.textBoxFilterCriterion = new CustomTimedTextBox();
             this.buttonValidation = new System.Windows.Forms.Button();
             this.labelResult = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
@@ -137,7 +137,8 @@ namespace TEAM
             this.textBoxFilterCriterion.Name = "textBoxFilterCriterion";
             this.textBoxFilterCriterion.Size = new System.Drawing.Size(213, 20);
             this.textBoxFilterCriterion.TabIndex = 23;
-            this.textBoxFilterCriterion.TextChanged += new System.EventHandler(this.textBoxFilterCriterion_TextChanged);
+            //this.textBoxFilterCriterion.TextChanged += new System.EventHandler(this.textBoxFilterCriterion_TextChanged);
+            this.textBoxFilterCriterion.DelayedTextChanged += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             // 
             // buttonValidation
             // 
@@ -832,7 +833,7 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxIgnoreVersion;
         private System.Windows.Forms.ToolStripMenuItem saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox textBoxFilterCriterion;
+        private CustomTimedTextBox textBoxFilterCriterion;
         private System.Windows.Forms.ToolStripMenuItem saveTableMappingAsJSONToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAttributeMappingAsJSONToolStripMenuItem;
