@@ -262,10 +262,9 @@
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox1.Location = new System.Drawing.Point(244, 208);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(289, 69);
+            this.richTextBox1.Size = new System.Drawing.Size(465, 83);
             this.richTextBox1.TabIndex = 29;
-            this.richTextBox1.Text = "Note: for v1.5.3.0 the Link Key Order check does not support Same-As Link and Deg" +
-    "enerate Attributes.";
+            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
             // FormManageValidation
             // 

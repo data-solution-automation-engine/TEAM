@@ -158,27 +158,6 @@ namespace TEAM
             }
         }
 
-        //  Executing a SQL object against the databasa (SQL Server SMO API)
-        public void GenerateInDatabase(SqlConnection sqlConnection, string viewStatement)
-        {
-            using (var connection = sqlConnection)
-            {
-                var server = new Server(new ServerConnection(connection));
-                try
-                {
-                    server.ConnectionContext.ExecuteNonQuery(viewStatement);
-                    SetTextDebug("The statement was executed succesfully.\r\n");
-                }
-                catch (Exception exception)
-                {
-                    SetTextDebug("Issues occurred executing the SQL statement.\r\n");
-                    SetTextDebug(@"SQL error: " + exception.Message + "\r\n\r\n");
-                 // SetTextDebug(@"The executed query was: " + viewStatement);
-                }
-            }               
-        }
-
-
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try

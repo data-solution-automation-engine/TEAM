@@ -266,8 +266,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine(" CAST([ORDINAL_POSITION] AS VARCHAR(100)) AS ORDINAL_POSITION,");
                 sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
                 sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
-                sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
-                sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + versionId);
+                sqlStatementForLatestVersion.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE]");
 
                 var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
                 _bindingSourcePhysicalModelMetadata.DataSource = versionList;
@@ -1291,10 +1290,7 @@ namespace TEAM
                     }
                 }
             }
-
         }
-
-
 
 
         /// <summary>
@@ -1334,25 +1330,25 @@ namespace TEAM
                     if (row.Cells[4].Value != DBNull.Value)
                     {
                         businessKeyDefinition = (string)row.Cells[4].Value;
-                        businessKeyDefinition = businessKeyDefinition.Replace("'", "''");  //Double quotes for composites
+                        //businessKeyDefinition = businessKeyDefinition.Replace("'", "''");  //Double quotes for composites
                     }
 
                     if (row.Cells[5].Value != DBNull.Value)
                     {
                         drivingKeyDefinition = (string)row.Cells[5].Value;
-                        drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''"); //Double quotes for composites
+                        //drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''"); //Double quotes for composites
                     }
 
                     if (row.Cells[6].Value != DBNull.Value)
                     {
                         filterCriterion = (string)row.Cells[6].Value;
-                        filterCriterion = filterCriterion.Replace("'", "''"); //Double quotes for composites
+                        //filterCriterion = filterCriterion.Replace("'", "''"); //Double quotes for composites
                     }
 
                     if (row.Cells[7].Value != DBNull.Value)
                     {
                         generateIndicator = (string)row.Cells[7].Value;
-                        generateIndicator = generateIndicator.Replace("'", "''"); //Double quotes for composites
+                        //generateIndicator = generateIndicator.Replace("'", "''"); //Double quotes for composites
                     }
 
                     var hashKey =
@@ -3037,8 +3033,182 @@ namespace TEAM
             }
         }
 
-        //public TextBox status = new TextBox();
-        //status.Name = "true";
+        private void createtemporaryWorkerTable(string connString)
+        {
+            var inputTableMapping = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var inputAttributeMapping = (DataTable)_bindingSourceAttributeMetadata.DataSource;
+            var inputPhysicalModel = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
+
+            // Attribute mapping
+            var createStatement = new StringBuilder();
+            createStatement.AppendLine();
+            createStatement.AppendLine("-- Attribute mapping");
+            createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_ATTRIBUTE_MAPPING]', 'U') IS NOT NULL");
+            createStatement.AppendLine(" DROP TABLE [TMP_MD_ATTRIBUTE_MAPPING]");
+            createStatement.AppendLine("");
+            createStatement.AppendLine("CREATE TABLE [TMP_MD_ATTRIBUTE_MAPPING]");
+            createStatement.AppendLine("( ");
+            createStatement.AppendLine("    [ATTRIBUTE_MAPPING_HASH] AS(");
+            createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_COLUMN])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_COLUMN])),'NA')+'|' +");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TRANSFORMATION_RULE])),'NA')+'|'");
+            createStatement.AppendLine("			),(2)");
+            createStatement.AppendLine("		)");
+            createStatement.AppendLine("	) PERSISTED NOT NULL,");
+            createStatement.AppendLine("	[VERSION_ID]          integer NOT NULL,");
+            createStatement.AppendLine("	[SOURCE_TABLE]        varchar(100)  NULL,");
+            createStatement.AppendLine("	[SOURCE_COLUMN]       varchar(100)  NULL,");
+            createStatement.AppendLine("	[TARGET_TABLE]        varchar(100)  NULL,");
+            createStatement.AppendLine("	[TARGET_COLUMN]       varchar(100)  NULL,");
+            createStatement.AppendLine("	[TRANSFORMATION_RULE] varchar(4000)  NULL,");
+            createStatement.AppendLine("   CONSTRAINT[PK_TMP_MD_ATTRIBUTE_MAPPING] PRIMARY KEY CLUSTERED ([ATTRIBUTE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
+            createStatement.AppendLine(")");
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+
+            foreach (DataRow row in inputAttributeMapping.Rows)
+            {
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + (string)row["SOURCE_TABLE"] + "', N'" + (string)row["SOURCE_COLUMN"] + "', N'" + (string)row["TARGET_TABLE"] + "', N'" + (string)row["TARGET_COLUMN"] + "', N'" + (string)row["TRANSFORMATION_RULE"] + "');");
+            }
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+
+
+            // Table Mapping
+            createStatement.AppendLine();
+            createStatement.AppendLine("-- Table Mapping");
+            createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_TABLE_MAPPING]', 'U') IS NOT NULL");
+            createStatement.AppendLine(" DROP TABLE[TMP_MD_TABLE_MAPPING]");
+            createStatement.AppendLine("");
+            createStatement.AppendLine("CREATE TABLE[TMP_MD_TABLE_MAPPING]");
+            createStatement.AppendLine("( ");
+            createStatement.AppendLine("    [TABLE_MAPPING_HASH] AS(");
+            createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[INTEGRATION_AREA_TABLE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[STAGING_AREA_TABLE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[BUSINESS_KEY_ATTRIBUTE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DRIVING_KEY_ATTRIBUTE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[FILTER_CRITERIA])),'NA')+'|'");
+            createStatement.AppendLine("			),(2)");
+            createStatement.AppendLine("			)");
+            createStatement.AppendLine("		) PERSISTED NOT NULL ,");
+            createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
+            createStatement.AppendLine("	[STAGING_AREA_TABLE] varchar(100)  NULL,");
+            createStatement.AppendLine("	[BUSINESS_KEY_ATTRIBUTE] varchar(4000)  NULL,");
+            createStatement.AppendLine("	[DRIVING_KEY_ATTRIBUTE] varchar(4000)  NULL,");
+            createStatement.AppendLine("	[INTEGRATION_AREA_TABLE] varchar(100)  NULL,");
+            createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
+            createStatement.AppendLine("	[GENERATE_INDICATOR] varchar(1)  NULL,");
+            createStatement.AppendLine("    CONSTRAINT[PK_TMP_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
+            createStatement.AppendLine(")");
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+
+            foreach (DataRow row in inputTableMapping.Rows)
+            {
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'" + (string)row["STAGING_AREA_TABLE"] + "', N'" + (string)row["BUSINESS_KEY_ATTRIBUTE"].ToString().Replace("'","''") + "', N'" + (string)row["INTEGRATION_AREA_TABLE"] + "', N'" + (string)row["FILTER_CRITERIA"] + "', '" + (string)row["DRIVING_KEY_ATTRIBUTE"] + "', '" + (string)row["GENERATE_INDICATOR"] + "');");
+            }
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+
+
+            // Physical Model
+            createStatement.AppendLine();
+            createStatement.AppendLine("-- Version Attribute");
+            createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_VERSION_ATTRIBUTE]', 'U') IS NOT NULL");
+            createStatement.AppendLine(" DROP TABLE[TMP_MD_VERSION_ATTRIBUTE]");
+            createStatement.AppendLine("");
+            createStatement.AppendLine("CREATE TABLE[TMP_MD_VERSION_ATTRIBUTE]");
+            createStatement.AppendLine("( ");
+            createStatement.AppendLine("");
+            createStatement.AppendLine("    [VERSION_ATTRIBUTE_HASH] AS(");
+            createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TABLE_NAME])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[COLUMN_NAME])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[VERSION_ID])),'NA')+'|'");
+            createStatement.AppendLine("			),(2)");
+            createStatement.AppendLine("			)");
+            createStatement.AppendLine("		) PERSISTED NOT NULL ,");
+            createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
+            createStatement.AppendLine("	[TABLE_NAME]         varchar(100)  NULL ,");
+            createStatement.AppendLine("	[COLUMN_NAME]        varchar(100)  NOT NULL,");
+            createStatement.AppendLine("    [DATA_TYPE]          varchar(100)  NULL ,");
+            createStatement.AppendLine("	[CHARACTER_MAXIMUM_LENGTH] integer NULL,");
+            createStatement.AppendLine("    [NUMERIC_PRECISION]  integer NULL,");
+            createStatement.AppendLine("    [ORDINAL_POSITION]   integer NULL,");
+            createStatement.AppendLine("    [PRIMARY_KEY_INDICATOR] varchar(1)  NULL ,");
+            createStatement.AppendLine("	[MULTI_ACTIVE_INDICATOR] varchar(1)  NULL ");
+            createStatement.AppendLine(")");
+            createStatement.AppendLine("");
+            createStatement.AppendLine("ALTER TABLE[MD_VERSION_ATTRIBUTE]");
+            createStatement.AppendLine("    ADD CONSTRAINT[PK_TMP_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([VERSION_ATTRIBUTE_HASH] ASC, [VERSION_ID] ASC)");
+            createStatement.AppendLine();
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+
+            foreach (DataRow row in inputPhysicalModel.Rows)
+            {
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_VERSION_ATTRIBUTE] ([VERSION_ID], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'" + (string)row["TABLE_NAME"] + "', N'" + (string)row["COLUMN_NAME"] + "', N'" + (string)row["DATA_TYPE"] + "', N'" + (string)row["CHARACTER_MAXIMUM_LENGTH"] + "', N'" + (string)row["NUMERIC_PRECISION"] + "', N'" + (string)row["ORDINAL_POSITION"] + "', N'" + (string)row["PRIMARY_KEY_INDICATOR"] + "', N'" + (string)row["MULTI_ACTIVE_INDICATOR"] + "');");
+            }
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+        }
+
+        private void executeSqlCommand(StringBuilder inputString, string connString)
+        {
+            using (var connectionVersion = new SqlConnection(connString))
+            {
+                var commandVersion = new SqlCommand(inputString.ToString(), connectionVersion);
+
+                try
+                {
+                    connectionVersion.Open();
+                    commandVersion.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    // IGNORE FOR NOW
+                }
+            }
+        }
+
+        private void droptemporaryWorkerTable(string connString)
+        {
+            // Attribute mapping
+            var createStatement = new StringBuilder();
+            createStatement.AppendLine("-- Attribute mapping");
+            createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_ATTRIBUTE_MAPPING]', 'U') IS NOT NULL");
+            createStatement.AppendLine(" DROP TABLE [TMP_MD_ATTRIBUTE_MAPPING]");
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+
+            // Table Mapping
+            createStatement.AppendLine("-- Table Mapping");
+            createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_TABLE_MAPPING]', 'U') IS NOT NULL");
+            createStatement.AppendLine(" DROP TABLE[TMP_MD_TABLE_MAPPING]");
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();        
+  
+            // Physical Model
+            createStatement.AppendLine("-- Version Attribute");
+            createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_VERSION_ATTRIBUTE]', 'U') IS NOT NULL");
+            createStatement.AppendLine(" DROP TABLE[TMP_MD_VERSION_ATTRIBUTE]");
+
+            executeSqlCommand(createStatement, connString);
+            createStatement.Clear();
+        }
 
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
@@ -3067,9 +3237,6 @@ namespace TEAM
             #region Activation
             if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0))
             {
-
-
-
                 // Commence the activation
                 var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
@@ -3080,13 +3247,14 @@ namespace TEAM
                 var minorVersion = versionMajorMinor.Value;
                 richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n";
 
-                //MessageBox.Show(trackBarVersioning.Value.ToString());
+                // Move data from the grids into temp tables
+                createtemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
 
                 if (checkBoxIgnoreVersion.Checked == false)
                 {
                     var versionExistenceCheck = new StringBuilder();
 
-                    versionExistenceCheck.AppendLine("SELECT * FROM MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
+                    versionExistenceCheck.AppendLine("SELECT * FROM TMP_MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
 
                     var versionExistenceCheckDataTable = GetDataTable(ref connOmd, versionExistenceCheck.ToString());
 
@@ -3103,8 +3271,7 @@ namespace TEAM
                     }
                     else
                     {
-                        richTextBoxInformation.Text +=
-                            "There is no model metadata available for this version, so the metadata can only be actived with the 'Ignore Version' enabled for this specific version.\r\n ";
+                        richTextBoxInformation.Text += "There is no model metadata available for this version, so the metadata can only be actived with the 'Ignore Version' enabled for this specific version.\r\n ";
                     }
                 }
                 else
@@ -3192,18 +3359,15 @@ namespace TEAM
             _alert.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
             _alert.ProgressValue = e.ProgressPercentage;
         }
-
         # endregion
 
         // This event handler is where the time-consuming work is done.
         private void backgroundWorkerMetadata_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
         {
+            #region Generic
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            if (checkBoxValidation.Checked)
-            {
-                // DO VALIDATION
-            }
+            var inputTable = (DataTable)_bindingSourceTableMetadata.DataSource;
 
             var errorLog = new StringBuilder();
             var errorCounter = new int();
@@ -3291,28 +3455,29 @@ namespace TEAM
                 _alert.SetTextLogging(checkBoxIgnoreVersion.Checked
                     ? "The 'ignore model version' option is selected. This means when possible the live database (tables and attributes) will be used in conjunction with the Data Vault metadata. In other words, the model versioning is ignored.\r\n\r\n"
                     : "Metadata is prepared using the selected version for both the Data Vault metadata as well as the model metadata.\r\n\r\n");
+                #endregion
 
-                # region Delete Metadata - 5%
+                #region Delete Metadata - 5%
                 // 1. Deleting metadata
                 _alert.SetTextLogging("Commencing removal of existing metadata.\r\n");
                 var deleteStatement = new StringBuilder();
                 deleteStatement.AppendLine( @"
-                                        DELETE FROM [MD_STG_SAT_ATT_XREF];
-                                        DELETE FROM dbo.MD_STG_LINK_ATT_XREF;
-                                        DELETE FROM dbo.MD_STG_SAT_ATT_XREF;
-                                        DELETE FROM dbo.MD_STG_LINK_XREF;
-                                        DELETE FROM dbo.MD_STG_SAT_XREF;
-                                        DELETE FROM dbo.MD_DRIVING_KEY_XREF
-                                        DELETE FROM dbo.MD_HUB_LINK_XREF;
-                                        DELETE FROM dbo.MD_SAT;
-                                        DELETE FROM dbo.MD_BUSINESS_KEY_COMPONENT_PART;
-                                        DELETE FROM dbo.MD_BUSINESS_KEY_COMPONENT;
-                                        DELETE FROM dbo.MD_STG_HUB_XREF;
-                                        DELETE FROM dbo.MD_ATT;
-                                        DELETE FROM dbo.MD_STG;
-                                        DELETE FROM dbo.MD_HUB;
-                                        DELETE FROM dbo.MD_LINK;
-                                        DELETE FROM dbo.MD_MODEL_METADATA;
+                                        DELETE FROM dbo.[MD_STG_SAT_ATT_XREF];
+                                        DELETE FROM dbo.[MD_STG_LINK_ATT_XREF];
+                                        DELETE FROM dbo.[MD_STG_SAT_ATT_XREF];
+                                        DELETE FROM dbo.[MD_STG_LINK_XREF];
+                                        DELETE FROM dbo.[MD_STG_SAT_XREF];
+                                        DELETE FROM dbo.[MD_DRIVING_KEY_XREF];
+                                        DELETE FROM dbo.[MD_HUB_LINK_XREF];
+                                        DELETE FROM dbo.[MD_SAT];
+                                        DELETE FROM dbo.[MD_BUSINESS_KEY_COMPONENT_PART];
+                                        DELETE FROM dbo.[MD_BUSINESS_KEY_COMPONENT];
+                                        DELETE FROM dbo.[MD_STG_HUB_XREF];
+                                        DELETE FROM dbo.[MD_ATT];
+                                        DELETE FROM dbo.[MD_STG];
+                                        DELETE FROM dbo.[MD_HUB];
+                                        DELETE FROM dbo.[MD_LINK];
+                                        DELETE FROM dbo.[MD_MODEL_METADATA];
                                         ");
 
                 using (var connectionVersion = new SqlConnection(metaDataConnection))
@@ -3343,9 +3508,6 @@ namespace TEAM
 
                 try
                 {
-
-
-
                     var versionName = string.Concat(majorVersion, '.', minorVersion);
 
                     using (var connection = new SqlConnection(metaDataConnection))
@@ -3394,33 +3556,55 @@ namespace TEAM
                     var prepareStgStatement = new StringBuilder();
                     var stgCounter = 1;
 
-                    /*
-                     * LBM 2019/01/10 - Changing to String using @
-                     *                  Adding psaPrefix to the filer in STAGING_AREA_TABLE 
-                     */
-                    prepareStgStatement.AppendLine(@"
-                                                    SELECT DISTINCT STAGING_AREA_TABLE
-                                                    FROM MD_TABLE_MAPPING
-                                                    WHERE (STAGING_AREA_TABLE LIKE '" + stagingPrefix + @"'
-                                                    OR  STAGING_AREA_TABLE LIKE '" + psaPrefix+ @"')
-                                                    AND [VERSION_ID] =" + versionId+@"
-                                                    AND [GENERATE_INDICATOR] = 'Y'
-                                                    ORDER BY STAGING_AREA_TABLE
-                                                    ");
+                    // Getting the distinct list of tables to go into the 'source'
+                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND (STAGING_AREA_TABLE LIKE '" + stagingPrefix + "' OR STAGING_AREA_TABLE LIKE '" + psaPrefix + "')");
 
-                    var listStaging = GetDataTable(ref connOmd, prepareStgStatement.ToString());
+                    var distinctList = new List<string>();
+                    foreach (DataRow row in selectionRows)
+                    {
+                        if (!distinctList.Contains((string)row["STAGING_AREA_TABLE"]))
+                        {
+                            distinctList.Add((string)row["STAGING_AREA_TABLE"]);
+                        }
+                    }
 
-                    foreach (DataRow tableName in listStaging.Rows)
+
+                    // Create dummy row
+                    using (var connection = new SqlConnection(metaDataConnection))
+                    {
+                        var dummyStatement = new StringBuilder();
+                        dummyStatement.AppendLine("INSERT INTO [MD_STG]");
+                        dummyStatement.AppendLine("([STAGING_AREA_TABLE_NAME],[STAGING_AREA_TABLE_ID])");
+                        dummyStatement.AppendLine("VALUES ('Not applicable'," + stgCounter + ")");
+
+                        var command = new SqlCommand(dummyStatement.ToString(), connection);
+
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                            stgCounter++;
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the Staging Area metadata. Please check the Error Log for more details.\r\n");
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
+                        }
+                    }
+
+
+                    foreach (var tableName in distinctList)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName["STAGING_AREA_TABLE"] + "\r\n");
+                            _alert.SetTextLogging("--> " + tableName + "\r\n");
 
                             var insertStgStatemeent = new StringBuilder();
 
                             insertStgStatemeent.AppendLine("INSERT INTO [MD_STG]");
                             insertStgStatemeent.AppendLine("([STAGING_AREA_TABLE_NAME],[STAGING_AREA_TABLE_ID])");
-                            insertStgStatemeent.AppendLine("VALUES ('" + tableName["STAGING_AREA_TABLE"] + "'," + stgCounter + ")");
+                            insertStgStatemeent.AppendLine("VALUES ('" + tableName + "'," + stgCounter + ")");
 
                             var command = new SqlCommand(insertStgStatemeent.ToString(), connection);
 
@@ -3459,30 +3643,57 @@ namespace TEAM
                 try
                 {
                     var prepareHubStatement = new StringBuilder();
-                    var hubCounter = 1;
-                    /*LBM 2019/01/10: Changing to use @ String                     */
-                    prepareHubStatement.AppendLine(@"
-                                                    SELECT 'Not applicable' AS HUB_TABLE_NAME
-                                                    UNION
-                                                    SELECT DISTINCT INTEGRATION_AREA_TABLE AS HUB_TABLE_NAME
-                                                    FROM MD_TABLE_MAPPING
-                                                    WHERE INTEGRATION_AREA_TABLE LIKE '"+hubTablePrefix+@"'
-                                                    AND [GENERATE_INDICATOR] = 'Y'
-                                                    AND [VERSION_ID] = " + versionId+@"
-                                                    ");
-                    var listHub = GetDataTable(ref connOmd, prepareHubStatement.ToString());
+                    var hubCounter = 1; 
 
-                    foreach (DataRow tableName in listHub.Rows)
+                    // Getting the distinct list of tables to go into the MD_HUB table
+                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix + "'");
+
+                    var distinctList = new List<string>();
+                    foreach (DataRow row in selectionRows)
+                    {
+                        if (!distinctList.Contains((string)row["INTEGRATION_AREA_TABLE"]))
+                        {
+                            distinctList.Add((string)row["INTEGRATION_AREA_TABLE"]);
+                        }
+                    }
+
+
+                    // Create dummy row
+                    using (var connection = new SqlConnection(metaDataConnection))
+                    {
+                        var dummyStatement = new StringBuilder();
+                        dummyStatement.AppendLine("INSERT INTO [MD_HUB]");
+                        dummyStatement.AppendLine("([HUB_TABLE_NAME],[HUB_TABLE_ID])");
+                        dummyStatement.AppendLine("VALUES ('Not applicable'," + hubCounter + ")");
+
+                        var command = new SqlCommand(dummyStatement.ToString(), connection);
+
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                            hubCounter++;
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the Hubs. Please check the Error Log for more details.\r\n");
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
+                        }
+                    }
+
+
+                    foreach (var tableName in distinctList)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName["HUB_TABLE_NAME"] + "\r\n");
+                            _alert.SetTextLogging("--> " + tableName + "\r\n");
 
                             var insertHubStatemeent = new StringBuilder();
 
                             insertHubStatemeent.AppendLine("INSERT INTO [MD_HUB]");
                             insertHubStatemeent.AppendLine("([HUB_TABLE_NAME],[HUB_TABLE_ID])");
-                            insertHubStatemeent.AppendLine("VALUES ('" + tableName["HUB_TABLE_NAME"] + "'," + hubCounter + ")");
+                            insertHubStatemeent.AppendLine("VALUES ('" + tableName + "'," + hubCounter + ")");
 
                             var command = new SqlCommand(insertHubStatemeent.ToString(), connection);
 
@@ -3521,30 +3732,57 @@ namespace TEAM
                 {
                     var prepareLinkStatement = new StringBuilder();
                     var linkCounter = 1;
-                    /*LBM 2019/01/10 - Changing to use @ Strings
-                     */
-                    prepareLinkStatement.AppendLine(@"
-                                                    SELECT 'Not applicable' AS LINK_TABLE_NAME
-                                                    UNION
-                                                    SELECT DISTINCT INTEGRATION_AREA_TABLE AS LINK_TABLE_NAME
-                                                    FROM MD_TABLE_MAPPING
-                                                    WHERE INTEGRATION_AREA_TABLE LIKE '" + lnkTablePrefix + @"'
-                                                    AND [GENERATE_INDICATOR] = 'Y'
-                                                    AND [VERSION_ID] = " + versionId + @"
-                                                    ");
-                    var listLink = GetDataTable(ref connOmd, prepareLinkStatement.ToString());
 
-                    foreach (DataRow tableName in listLink.Rows)
+                    // Getting the distinct list of tables to go into the MD_LINK table
+                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND INTEGRATION_AREA_TABLE LIKE '" + lnkTablePrefix + "'");
+
+                    var distinctList = new List<string>();
+                    foreach (DataRow row in selectionRows)
+                    {
+                        if (!distinctList.Contains((string)row["INTEGRATION_AREA_TABLE"]))
+                        {
+                            distinctList.Add((string)row["INTEGRATION_AREA_TABLE"]);
+                        }
+                    }
+
+
+                    // Create dummy row
+                    using (var connection = new SqlConnection(metaDataConnection))
+                    {
+                        var dummyStatement = new StringBuilder();
+                        dummyStatement.AppendLine("INSERT INTO [MD_LINK]");
+                        dummyStatement.AppendLine("([LINK_TABLE_NAME],[LINK_TABLE_ID])");
+                        dummyStatement.AppendLine("VALUES ('Not applicable'," + linkCounter + ")");
+
+                        var command = new SqlCommand(dummyStatement.ToString(), connection);
+
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                            linkCounter++;
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the Link metadata. Please check the Error Log for more details.\r\n");
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link metadata: \r\n\r\n" + ex);
+                        }
+                    }
+                    
+
+                    // Insert the rest of the rows
+                    foreach (var tableName in distinctList)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName["LINK_TABLE_NAME"] + "\r\n");
+                            _alert.SetTextLogging("--> " + tableName + "\r\n");
 
                             var insertLinkStatement = new StringBuilder();
 
                             insertLinkStatement.AppendLine("INSERT INTO [MD_LINK]");
                             insertLinkStatement.AppendLine("([LINK_TABLE_NAME],[LINK_TABLE_ID])");
-                            insertLinkStatement.AppendLine("VALUES ('" + tableName["LINK_TABLE_NAME"] + "'," + linkCounter + ")");
+                            insertLinkStatement.AppendLine("VALUES ('" + tableName + "'," + linkCounter + ")");
 
                             var command = new SqlCommand(insertLinkStatement.ToString(), connection);
 
@@ -3591,22 +3829,20 @@ namespace TEAM
                                                            hubkeysub.HUB_TABLE_ID,
                                                            'Normal' AS SATELLITE_TYPE,
                                                            (SELECT LINK_TABLE_ID FROM MD_LINK WHERE LINK_TABLE_NAME='Not applicable') AS LINK_TABLE_ID -- No link for normal Satellites 
-                                                    FROM MD_TABLE_MAPPING spec 
+                                                    FROM TMP_MD_TABLE_MAPPING spec 
                                                     LEFT OUTER JOIN 
                                                     ( 
                                                            SELECT DISTINCT INTEGRATION_AREA_TABLE, hub.HUB_TABLE_ID, STAGING_AREA_TABLE, BUSINESS_KEY_ATTRIBUTE 
-                                                           FROM MD_TABLE_MAPPING spec2 
+                                                           FROM TMP_MD_TABLE_MAPPING spec2 
                                                            LEFT OUTER JOIN -- Join in the Hub ID from the MD table 
                                                                  MD_HUB hub ON hub.HUB_TABLE_NAME=spec2.INTEGRATION_AREA_TABLE 
                                                         WHERE INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix + @"'
-                                                        AND [GENERATE_INDICATOR] = 'Y'
-                                                        AND VERSION_ID = " + versionId + @"
+                                                        AND [GENERATE_INDICATOR] = 'Y'                                                        
                                                     ) hubkeysub 
                                                            ON spec.STAGING_AREA_TABLE=hubkeysub.STAGING_AREA_TABLE 
                                                            AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') 
                                                     WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + satTablePrefix + @"'
                                                     AND [GENERATE_INDICATOR] = 'Y'
-                                                    AND VERSION_ID = " + versionId + @"
                                                     ");
 
                     var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
@@ -3667,7 +3903,7 @@ namespace TEAM
                                                            (SELECT HUB_TABLE_ID FROM MD_HUB WHERE HUB_TABLE_NAME='Not applicable') AS HUB_TABLE_ID, -- No Hub for Link Satellites
                                                            'Link Satellite' AS SATELLITE_TYPE,
                                                            lnkkeysub.LINK_TABLE_ID
-                                                    FROM MD_TABLE_MAPPING spec
+                                                    FROM TMP_MD_TABLE_MAPPING spec
                                                     LEFT OUTER JOIN  -- Get the Link ID that belongs to this LSAT
                                                     (
                                                            SELECT DISTINCT 
@@ -3675,12 +3911,11 @@ namespace TEAM
                                                                  STAGING_AREA_TABLE,
                                                                  BUSINESS_KEY_ATTRIBUTE,
                                                            lnk.LINK_TABLE_ID
-                                                           FROM MD_TABLE_MAPPING spec2
+                                                           FROM TMP_MD_TABLE_MAPPING spec2
                                                            LEFT OUTER JOIN -- Join in the Link ID from the MD table
                                                                  MD_LINK lnk ON lnk.LINK_TABLE_NAME=spec2.INTEGRATION_AREA_TABLE
                                                            WHERE INTEGRATION_AREA_TABLE LIKE '" + lnkTablePrefix + @"'
                                                            AND [GENERATE_INDICATOR] = 'Y'
-                                                           AND VERSION_ID = " + versionId + @"
                                                     ) lnkkeysub
                                                         ON spec.STAGING_AREA_TABLE=lnkkeysub.STAGING_AREA_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
                                                        AND spec.BUSINESS_KEY_ATTRIBUTE=lnkkeysub.BUSINESS_KEY_ATTRIBUTE
@@ -3688,7 +3923,6 @@ namespace TEAM
                                                     -- Only select Link Satellites as the base / driving table (spec alias)
                                                     WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix + @"'
                                                     AND [GENERATE_INDICATOR] = 'Y'
-                                                    AND VERSION_ID = " + versionId + @"
                                                     ");
  
 
@@ -3752,14 +3986,13 @@ namespace TEAM
 	                                                           stg.STAGING_AREA_TABLE_NAME,
 	                                                           spec.BUSINESS_KEY_ATTRIBUTE,
                                                                spec.FILTER_CRITERIA
-                                                        FROM MD_TABLE_MAPPING spec
+                                                        FROM TMP_MD_TABLE_MAPPING spec
                                                         LEFT OUTER JOIN -- Join in the Staging_Area_ID from the MD_STG table
                                                                MD_STG stg ON stg.STAGING_AREA_TABLE_NAME=spec.STAGING_AREA_TABLE
                                                         LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SAT table
                                                                MD_SAT sat ON sat.SATELLITE_TABLE_NAME=spec.INTEGRATION_AREA_TABLE
                                                         WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + satTablePrefix + @"' 
                                                         AND [GENERATE_INDICATOR] = 'Y'
-                                                        AND VERSION_ID = " + versionId + @"
                                                         UNION
                                                         SELECT
                                                                sat.SATELLITE_TABLE_ID,
@@ -3768,14 +4001,13 @@ namespace TEAM
 	                                                           stg.STAGING_AREA_TABLE_NAME,
 	                                                           spec.BUSINESS_KEY_ATTRIBUTE,
                                                                spec.FILTER_CRITERIA
-                                                        FROM MD_TABLE_MAPPING spec
+                                                        FROM TMP_MD_TABLE_MAPPING spec
                                                         LEFT OUTER JOIN -- Join in the Staging_Area_ID from the MD_STG table
                                                                MD_STG stg ON stg.STAGING_AREA_TABLE_NAME=spec.STAGING_AREA_TABLE
                                                         LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SAT table
                                                                MD_SAT sat ON sat.SATELLITE_TABLE_NAME=spec.INTEGRATION_AREA_TABLE
                                                         WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix + @"' 
                                                         AND [GENERATE_INDICATOR] = 'Y'
-                                                        AND VERSION_ID = " + versionId + @"
                                                         ");
 
 
@@ -3851,10 +4083,9 @@ namespace TEAM
                                                                                  INTEGRATION_AREA_TABLE,
 					                                                                BUSINESS_KEY_ATTRIBUTE,
                                                                                  FILTER_CRITERIA
-                                                                          FROM   MD_TABLE_MAPPING
+                                                                          FROM   TMP_MD_TABLE_MAPPING
                                                                           WHERE 
                                                                                  INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix + @"'
-                                                                          AND VERSION_ID = " + versionId + @"
                                                                           AND [GENERATE_INDICATOR] = 'Y'
                                                                    ) hub
                                                             LEFT OUTER JOIN
@@ -3926,8 +4157,8 @@ namespace TEAM
                 {
                     SqlCommand command;
                     SqlDataReader reader;
-                    string stgTableFilerQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + stagingPrefix + "'";
-                    string psaTableFilerQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + psaPrefix + "'";
+                    string stgTableFilerQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + stagingPrefix + "'";
+                    string psaTableFilerQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + psaPrefix + "'";
                     try
                     {
 
@@ -3950,9 +4181,8 @@ namespace TEAM
                     catch (Exception ex)
                     {
                         errorCounter++;
-                        _alert.SetTextLogging(
-                            "An issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [MD_TABLE_MAPPING].\r\n");
-                        errorLog.AppendLine("\r\nAn issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [MD_TABLE_MAPPING].\r\n: \r\n\r\n" + ex);
+                        _alert.SetTextLogging("An issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n");
+                        errorLog.AppendLine("\r\nAn issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n: \r\n\r\n" + ex);
                     }
                     worker.ReportProgress(35);
                     _alert.SetTextLogging("Filter variables Created successfully.\r\n");
@@ -4010,8 +4240,7 @@ namespace TEAM
                     else
                     {
                         _alert.SetTextLogging("Commencing preparing the attributes from the metadata.\r\n");
-                        prepareAttStatement.AppendLine("SELECT DISTINCT COLUMN_NAME FROM MD_VERSION_ATTRIBUTE");
-                        prepareAttStatement.AppendLine("WHERE VERSION_ID = " + versionId);
+                        prepareAttStatement.AppendLine("SELECT DISTINCT COLUMN_NAME FROM TMP_MD_VERSION_ATTRIBUTE");
                     }
 
                     var listAtt = GetDataTable(ref connOmd, prepareAttStatement.ToString());
@@ -4120,10 +4349,9 @@ namespace TEAM
                     prepareKeyStatement.AppendLine("        FROM");
                     prepareKeyStatement.AppendLine("        (");
                     prepareKeyStatement.AppendLine("            SELECT DISTINCT STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
-                    prepareKeyStatement.AppendLine("            FROM MD_TABLE_MAPPING");
+                    prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
                     prepareKeyStatement.AppendLine("            WHERE INTEGRATION_AREA_TABLE LIKE '"+hubTablePrefix+"'");
                     prepareKeyStatement.AppendLine("              AND [GENERATE_INDICATOR] = 'Y'");
-                    prepareKeyStatement.AppendLine("              AND VERSION_ID = " + versionId);
                     prepareKeyStatement.AppendLine("        ) TableName");
                     prepareKeyStatement.AppendLine("    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
                     prepareKeyStatement.AppendLine("    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''");
@@ -4327,9 +4555,8 @@ namespace TEAM
                                                                     STAGING_AREA_TABLE,
                                                                     ROW_NUMBER() OVER(PARTITION BY INTEGRATION_AREA_TABLE ORDER BY INTEGRATION_AREA_TABLE) AS LINK_ORDER,
                                                                     BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML
-                                                                FROM  MD_TABLE_MAPPING
+                                                                FROM  TMP_MD_TABLE_MAPPING
                                                                 WHERE [INTEGRATION_AREA_TABLE] LIKE '" + lnkTablePrefix + @"'
-                                                                    AND [VERSION_ID] = " + versionId + @"
                                                                     AND [GENERATE_INDICATOR] = 'Y'
                                                                 ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)
                                                                 WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same
@@ -4349,11 +4576,10 @@ namespace TEAM
                                                             AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER
 
                                                             --Adding the Hub mapping data to get the business keys
-                                                            JOIN MD_TABLE_MAPPING hub
+                                                            JOIN TMP_MD_TABLE_MAPPING hub
                                                                 ON lnk_hubkey_order.[STAGING_AREA_TABLE] = hub.STAGING_AREA_TABLE
                                                                 AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting
                                                                 AND hub.[INTEGRATION_AREA_TABLE] LIKE '" + hubTablePrefix + @"'
-                                                                AND hub.[VERSION_ID] = " + versionId + @"
                                                                 AND hub.[GENERATE_INDICATOR] = 'Y'
                                                             --Lastly adding the IDs for the Hubs and Links
                                                             JOIN dbo.MD_HUB hub_tbl
@@ -4423,11 +4649,10 @@ namespace TEAM
                                                               stg_tbl.STAGING_AREA_TABLE_NAME,
                                                               lnk.FILTER_CRITERIA,
                                                               lnk.BUSINESS_KEY_ATTRIBUTE
-                                                            FROM [dbo].[MD_TABLE_MAPPING] lnk
+                                                            FROM [dbo].[TMP_MD_TABLE_MAPPING] lnk
                                                             JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.INTEGRATION_AREA_TABLE = lnk_tbl.LINK_TABLE_NAME
                                                             JOIN [dbo].[MD_STG] stg_tbl ON lnk.STAGING_AREA_TABLE = stg_tbl.STAGING_AREA_TABLE_NAME
                                                             WHERE lnk.INTEGRATION_AREA_TABLE like '" + lnkTablePrefix + @"'
-                                                            AND lnk.VERSION_ID = " + versionId +@"
                                                             AND[GENERATE_INDICATOR] = 'Y'
                                                             ");
                     var listHlXref = GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
@@ -4506,17 +4731,15 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	   ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME");
                         prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
                         prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
-                        prepareMappingStatement.AppendLine("FROM dbo.MD_ATTRIBUTE_MAPPING mapping");
+                        prepareMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                         prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_TABLE_MAPPING table_mapping");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
                         prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.INTEGRATION_AREA_TABLE");
                         prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.STAGING_AREA_TABLE");
                         prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '"+ dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '"+lnkTablePrefix+"'");
-                        prepareMappingStatement.AppendLine("      AND mapping.VERSION_ID = " + versionId);
-                        prepareMappingStatement.AppendLine("      AND table_mapping.VERSION_ID = " + versionId);
                         prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
@@ -4622,17 +4845,15 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	   ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME");
                         prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
                         prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
-                        prepareMappingStatement.AppendLine("FROM dbo.MD_ATTRIBUTE_MAPPING mapping");
+                        prepareMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                         prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_TABLE_MAPPING table_mapping");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
                         prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.INTEGRATION_AREA_TABLE");
                         prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.STAGING_AREA_TABLE");
                         prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '" + lnkTablePrefix + "'");
-                        prepareMappingStatement.AppendLine("      AND mapping.VERSION_ID = " + versionId);
-                        prepareMappingStatement.AppendLine("      AND table_mapping.VERSION_ID = " + versionId);
                         prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
@@ -4648,14 +4869,14 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME,");
                         prepareMappingStatement.AppendLine("	'N' as MULTI_ACTIVE_KEY_INDICATOR,");
                         prepareMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
-                        prepareMappingStatement.AppendLine("FROM MD_VERSION_ATTRIBUTE mapping");
+                        prepareMappingStatement.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE mapping");
 
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_STG_SAT_XREF xref ON stg.STAGING_AREA_TABLE_ID = xref.STAGING_AREA_TABLE_ID");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_SAT sat ON xref.SATELLITE_TABLE_ID = sat.SATELLITE_TABLE_ID");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_ATT stg_attr on mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
 
-                        prepareMappingStatement.AppendLine("JOIN MD_VERSION_ATTRIBUTE satatts");
+                        prepareMappingStatement.AppendLine("JOIN TMP_MD_VERSION_ATTRIBUTE satatts");
                         prepareMappingStatement.AppendLine("    on sat.SATELLITE_TABLE_NAME=satatts.TABLE_NAME");
                         prepareMappingStatement.AppendLine("    and UPPER(mapping.COLUMN_NAME) = UPPER(satatts.COLUMN_NAME)");
                         prepareMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN");
@@ -4675,7 +4896,6 @@ namespace TEAM
 
                         prepareMappingStatement.AppendLine("  ) ");
 
-                        prepareMappingStatement.AppendLine("AND mapping.VERSION_ID = " + versionId + " AND satatts.VERSION_ID = " + versionId);
                         prepareMappingStatement.AppendLine(")");
                         prepareMappingStatement.AppendLine("SELECT ");
                         prepareMappingStatement.AppendLine("	STAGING_AREA_TABLE_ID,");
@@ -4786,7 +5006,7 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
                         prepareDegenerateMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
                         prepareDegenerateMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM dbo.MD_ATTRIBUTE_MAPPING mapping");
+                        prepareDegenerateMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                         prepareDegenerateMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk");
                         prepareDegenerateMappingStatement.AppendLine("	     on lnk.LINK_TABLE_NAME=mapping.TARGET_TABLE");
                         prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr");
@@ -4796,7 +5016,6 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr");
                         prepareDegenerateMappingStatement.AppendLine("	     on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("WHERE TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
-                        prepareDegenerateMappingStatement.AppendLine("AND VERSION_ID = " + versionId);
                         prepareDegenerateMappingStatement.AppendLine("),");
                         prepareDegenerateMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareDegenerateMappingStatement.AppendLine("(");
@@ -4868,7 +5087,7 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
                         prepareDegenerateMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
                         prepareDegenerateMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM dbo.MD_ATTRIBUTE_MAPPING mapping");
+                        prepareDegenerateMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                         prepareDegenerateMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk");
                         prepareDegenerateMappingStatement.AppendLine("	     on lnk.LINK_TABLE_NAME=mapping.TARGET_TABLE");
                         prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr");
@@ -4878,7 +5097,6 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr");
                         prepareDegenerateMappingStatement.AppendLine("	     on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("WHERE TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
-                        prepareDegenerateMappingStatement.AppendLine("AND VERSION_ID = " + versionId);
                         prepareDegenerateMappingStatement.AppendLine("),");
                         prepareDegenerateMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareDegenerateMappingStatement.AppendLine("(");
@@ -4890,12 +5108,12 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM MD_VERSION_ATTRIBUTE mapping");
+                        prepareDegenerateMappingStatement.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE mapping");
                         prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("JOIN MD_STG_LINK_ATT_XREF stglnk ON stg.STAGING_AREA_TABLE_ID = stglnk.STAGING_AREA_TABLE_ID");
                         prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk ON stglnk.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_VERSION_ATTRIBUTE lnkatts");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN TMP_MD_VERSION_ATTRIBUTE lnkatts");
                         prepareDegenerateMappingStatement.AppendLine("    on lnk.LINK_TABLE_NAME=lnkatts.TABLE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("    and UPPER(mapping.COLUMN_NAME) = UPPER(lnkatts.COLUMN_NAME)");
                         prepareDegenerateMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN ");
@@ -5056,9 +5274,8 @@ namespace TEAM
                         prepareMultiKeyStatement.AppendLine("	SELECT");
                         prepareMultiKeyStatement.AppendLine("		TABLE_NAME AS SATELLITE_TABLE_NAME,");
                         prepareMultiKeyStatement.AppendLine("		COLUMN_NAME AS ATTRIBUTE_NAME");
-                        prepareMultiKeyStatement.AppendLine("	FROM MD_VERSION_ATTRIBUTE");
+                        prepareMultiKeyStatement.AppendLine("	FROM TMP_MD_VERSION_ATTRIBUTE");
                         prepareMultiKeyStatement.AppendLine("	WHERE MULTI_ACTIVE_INDICATOR='Y'");
-                        prepareMultiKeyStatement.AppendLine("	AND VERSION_ID=" + versionId);
                         prepareMultiKeyStatement.AppendLine(") sub");
                         prepareMultiKeyStatement.AppendLine("ON sat.SATELLITE_TABLE_NAME=sub.SATELLITE_TABLE_NAME");
                         prepareMultiKeyStatement.AppendLine("AND att.ATTRIBUTE_NAME=sub.ATTRIBUTE_NAME");
@@ -5155,14 +5372,13 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("              FROM");
                         prepareDrivingKeyStatement.AppendLine("              (");
                         prepareDrivingKeyStatement.AppendLine("                     SELECT DISTINCT STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE");
-                        prepareDrivingKeyStatement.AppendLine("                     FROM MD_TABLE_MAPPING");
+                        prepareDrivingKeyStatement.AppendLine("                     FROM TMP_MD_TABLE_MAPPING");
                         prepareDrivingKeyStatement.AppendLine("                     WHERE INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix +"' AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
-                        prepareDrivingKeyStatement.AppendLine("                     AND VERSION_ID =" + versionId);
                         prepareDrivingKeyStatement.AppendLine("                     AND [GENERATE_INDICATOR] = 'Y'");
                         prepareDrivingKeyStatement.AppendLine("              ) TableName");
                         prepareDrivingKeyStatement.AppendLine("       ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
                         prepareDrivingKeyStatement.AppendLine(")  base");
-                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN[dbo].[MD_TABLE_MAPPING]");
+                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN[dbo].[TMP_MD_TABLE_MAPPING]");
                         prepareDrivingKeyStatement.AppendLine("        hub");
                         prepareDrivingKeyStatement.AppendLine(" ON  base.STAGING_AREA_TABLE=hub.STAGING_AREA_TABLE");
                         prepareDrivingKeyStatement.AppendLine(" AND hub.INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix +"'");
@@ -5171,7 +5387,7 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("  ON base.INTEGRATION_AREA_TABLE = sat.SATELLITE_TABLE_NAME");
                         prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_HUB hubkey");
                         prepareDrivingKeyStatement.AppendLine("  ON hub.INTEGRATION_AREA_TABLE = hubkey.HUB_TABLE_NAME");
-                        prepareDrivingKeyStatement.AppendLine("WHERE base.VERSION_ID = " + versionId);
+                        prepareDrivingKeyStatement.AppendLine("WHERE 1=1");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE!=''");
                         prepareDrivingKeyStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
@@ -5252,7 +5468,7 @@ namespace TEAM
                     _alert.SetTextLogging("\r\nNo errors were detected.\r\n");
                 }
 
-
+                droptemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
 
                 worker.ReportProgress(100);
             }

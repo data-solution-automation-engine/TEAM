@@ -58,10 +58,9 @@ namespace TEAM
         {
 
             var connStg = new SqlConnection();
-            var connVariable = new SqlConnection();
 
             // Assign database connection string
-            connStg.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringStg;
+            connStg.ConnectionString = ConfigurationSettings.ConnectionStringStg;
 
             try
             {
@@ -74,10 +73,10 @@ namespace TEAM
                 testCaseQuery.AppendLine("-- Generated at " + DateTime.Now);
                 testCaseQuery.AppendLine("--");
 
-                const string queryTableArray =
+                string queryTableArray =
                     "SELECT TABLE_SCHEMA,TABLE_NAME, ROW_NUMBER() OVER (ORDER BY TABLE_NAME) as ROW_NR " +
                     "FROM INFORMATION_SCHEMA.TABLES " +
-                    "WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME NOT LIKE '%_USERMANAGED_%'";
+                    "WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME NOT LIKE '%_USERMANAGED_%' AND TABLE_NAME LIKE '"+ConfigurationSettings.StgTablePrefixValue+"_%'";
 
                 var tables = GetDataTable(ref connStg, queryTableArray);
 
@@ -127,11 +126,11 @@ namespace TEAM
                             testCaseQuery.AppendLine("-- Testcase " + intCounter);
                             testCaseQuery.AppendLine("INSERT INTO [dbo].[" + stgTableName + "]");
                             testCaseQuery.AppendLine("(");
-                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.EtlProcessAttribute + "],");
-                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.EventDateTimeAttribute + "],");
-                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.RecordSourceAttribute + "],");
-                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.ChangeDataCaptureAttribute + "],");
-                            testCaseQuery.AppendLine("[" + FormBase.ConfigurationSettings.RecordChecksumAttribute + "],");
+                            testCaseQuery.AppendLine("[" + ConfigurationSettings.EtlProcessAttribute + "],");
+                            testCaseQuery.AppendLine("[" + ConfigurationSettings.EventDateTimeAttribute + "],");
+                            testCaseQuery.AppendLine("[" + ConfigurationSettings.RecordSourceAttribute + "],");
+                            testCaseQuery.AppendLine("[" + ConfigurationSettings.ChangeDataCaptureAttribute + "],");
+                            testCaseQuery.AppendLine("[" + ConfigurationSettings.RecordChecksumAttribute + "],");
 
                             foreach (DataRow attributeRow in attributeArray.Rows)
                             {
@@ -148,7 +147,7 @@ namespace TEAM
                             testCaseQuery.AppendLine("GETDATE(),");
                             testCaseQuery.AppendLine("'Testcases',");
                             testCaseQuery.AppendLine("'Insert',");
-                            testCaseQuery.AppendLine("'N/A',");
+                            testCaseQuery.AppendLine("00,");
 
                             foreach (DataRow attributeRow in attributeArray.Rows)
                             {
@@ -171,10 +170,13 @@ namespace TEAM
                                 {
                                     testCaseQuery.AppendLine("'" + GetRandomDate(1975).ToString("yyyy-MM-dd HH:mm:ss.fff") + "',");
                                 }
+                                else if (localAttribute == "binary")
+                                {
+                                    testCaseQuery.AppendLine("00,");
+                                }
                                 else
                                 {
-                                    DebuggingTextbox.Text+=("Issue encountered, the datatype " +
-                                                    attributeRow["DATA_TYPE"] + " is not supported. The attribute is " + attributeRow["COLUMN_NAME"] + " of table " + stgTableName + ".\n\r");
+                                    DebuggingTextbox.Text+=("Issue encountered, the datatype " + attributeRow["DATA_TYPE"] + " is not supported. The attribute is " + attributeRow["COLUMN_NAME"] + " of table " + stgTableName + ".\n\r");
                                 }
                             }
                             testCaseQuery.Remove(testCaseQuery.Length - 3, 3);
@@ -185,24 +187,25 @@ namespace TEAM
 
                         if (checkBoxGenerateInDatabase.Checked)
                         {
-                            if (radioButtonStagingArea.Checked)
-                            {
-                                connVariable.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringStg;
-                            }
-                            if (radioButtonPSA.Checked)
-                            {
-                                connVariable.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringHstg;
-                            }
-                            if (radiobuttonSource.Checked)
-                            {
-                                connVariable.ConnectionString = FormBase.ConfigurationSettings.ConnectionStringSource;
-                            }
-
                             try
                             {
-                                _myParent.GenerateInDatabase(connVariable, testCaseQuery.ToString());
-                                richTextBoxOutput.Text = "The " + textBoxTestCaseAmount.Text +
-                                                         " testcases were created in the designated database.";
+                                using (var connectionVersion = new SqlConnection(ConfigurationSettings.ConnectionStringStg))
+                                {
+                                    var commandVersion = new SqlCommand(testCaseQuery.ToString(), connectionVersion);
+
+                                    try
+                                    {
+                                        connectionVersion.Open();
+                                        commandVersion.ExecuteNonQuery();
+
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        // IGNORE FOR NOW
+                                    }
+                                }
+
+                                richTextBoxOutput.Text = "The " + textBoxTestCaseAmount.Text + " testcases were created in the designated database.";
                             }
                             catch (Exception ex)
                             {
