@@ -49,6 +49,7 @@
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxExistenceChecks.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -126,7 +127,8 @@
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Text = "Close Window";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // groupBoxExistenceChecks
             // 
@@ -254,11 +256,23 @@
             this.checkBoxBusinessKeySyntaxValidation.Text = "Business Key syntax validation";
             this.checkBoxBusinessKeySyntaxValidation.UseVisualStyleBackColor = true;
             // 
+            // richTextBox1
+            // 
+            this.richTextBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox1.Location = new System.Drawing.Point(244, 208);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(289, 69);
+            this.richTextBox1.TabIndex = 29;
+            this.richTextBox1.Text = "Note: for v1.5.3.0 the Link Key Order check does not support Same-As Link and Deg" +
+    "enerate Attributes.";
+            // 
             // FormManageValidation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(721, 485);
+            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.labelInformation);
             this.Controls.Add(this.richTextBoxInformation);
@@ -302,5 +316,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBoxBusinessKeySyntaxValidation;
+        private System.Windows.Forms.RichTextBox richTextBox1;
     }
 }

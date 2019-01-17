@@ -34,7 +34,7 @@ namespace TEAM
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageMetadata));
             this.backgroundWorkerMetadata = new System.ComponentModel.BackgroundWorker();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBoxFilterCriterion = new CustomTimedTextBox();
+            this.textBoxFilterCriterion = new TEAM.CustomTimedTextBox();
             this.buttonValidation = new System.Windows.Forms.Button();
             this.labelResult = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
@@ -133,11 +133,11 @@ namespace TEAM
             // 
             // textBoxFilterCriterion
             // 
+            this.textBoxFilterCriterion.DelayedTextChangedTimeout = 1000;
             this.textBoxFilterCriterion.Location = new System.Drawing.Point(6, 16);
             this.textBoxFilterCriterion.Name = "textBoxFilterCriterion";
             this.textBoxFilterCriterion.Size = new System.Drawing.Size(213, 20);
             this.textBoxFilterCriterion.TabIndex = 23;
-            //this.textBoxFilterCriterion.TextChanged += new System.EventHandler(this.textBoxFilterCriterion_TextChanged);
             this.textBoxFilterCriterion.DelayedTextChanged += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             // 
             // buttonValidation
@@ -184,11 +184,11 @@ namespace TEAM
             this.buttonSaveMetadataChanges.TabIndex = 1;
             this.buttonSaveMetadataChanges.Text = "&Save Metadata Changes";
             this.buttonSaveMetadataChanges.UseVisualStyleBackColor = true;
-            this.buttonSaveMetadataChanges.Click += new System.EventHandler(this.buttonSubmitVersion_Click);
+            this.buttonSaveMetadataChanges.Click += new System.EventHandler(this.buttonActivateMetadata_Click);
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.labelVersion);
             this.groupBox1.Controls.Add(this.trackBarVersioning);
             this.groupBox1.Location = new System.Drawing.Point(277, 764);
@@ -311,12 +311,12 @@ namespace TEAM
             this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem});
             this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
-            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 26);
+            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(341, 26);
             // 
             // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
             // 
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(340, 22);
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = "Export this row as Source-to-Target interface JSON";
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click);
             // 
@@ -486,8 +486,6 @@ namespace TEAM
             // checkBoxValidation
             // 
             this.checkBoxValidation.AutoSize = true;
-            this.checkBoxValidation.Checked = true;
-            this.checkBoxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxValidation.Location = new System.Drawing.Point(6, 42);
             this.checkBoxValidation.Name = "checkBoxValidation";
             this.checkBoxValidation.Size = new System.Drawing.Size(164, 17);
@@ -582,14 +580,15 @@ namespace TEAM
             this.saveMetadataFileToolStripMenuItem,
             this.saveTableMappingAsJSONToolStripMenuItem});
             this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
-            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(151, 20);
+            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(152, 20);
             this.businessKeyMetadataToolStripMenuItem.Text = "Table &Mapping Metadata";
+            this.businessKeyMetadataToolStripMenuItem.Click += new System.EventHandler(this.businessKeyMetadataToolStripMenuItem_Click);
             // 
             // openMetadataFileToolStripMenuItem
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.openMetadataFileToolStripMenuItem.Text = "Open Table Mapping file";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
             // 
@@ -597,7 +596,7 @@ namespace TEAM
             // 
             this.saveMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveMetadataFileToolStripMenuItem.Name = "saveMetadataFileToolStripMenuItem";
-            this.saveMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.saveMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.saveMetadataFileToolStripMenuItem.Text = "Save Table Mapping as XML";
             this.saveMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.saveBusinessKeyMetadataFileToolStripMenuItem_Click);
             // 
@@ -605,7 +604,7 @@ namespace TEAM
             // 
             this.saveTableMappingAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveTableMappingAsJSONToolStripMenuItem.Name = "saveTableMappingAsJSONToolStripMenuItem";
-            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.saveTableMappingAsJSONToolStripMenuItem.Text = "Save Table Mapping as JSON";
             this.saveTableMappingAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveTableMappingAsJSONToolStripMenuItem_Click);
             // 
@@ -673,7 +672,7 @@ namespace TEAM
             this.validationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.manageValidationRulesToolStripMenuItem});
             this.validationToolStripMenuItem.Name = "validationToolStripMenuItem";
-            this.validationToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.validationToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
             this.validationToolStripMenuItem.Text = "&Validation";
             // 
             // manageValidationRulesToolStripMenuItem
@@ -689,9 +688,9 @@ namespace TEAM
             this.checkBoxMergeFiles.AutoSize = true;
             this.checkBoxMergeFiles.Location = new System.Drawing.Point(6, 19);
             this.checkBoxMergeFiles.Name = "checkBoxMergeFiles";
-            this.checkBoxMergeFiles.Size = new System.Drawing.Size(211, 17);
+            this.checkBoxMergeFiles.Size = new System.Drawing.Size(208, 17);
             this.checkBoxMergeFiles.TabIndex = 9;
-            this.checkBoxMergeFiles.Text = "Merge loaded files with existing content";
+            this.checkBoxMergeFiles.Text = "Append loaded files to existing content";
             this.toolTipMetadata.SetToolTip(this.checkBoxMergeFiles, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
         "t having this option checked will overwrite the mapping information for the sele" +
         "cted version (in the datagrid).");

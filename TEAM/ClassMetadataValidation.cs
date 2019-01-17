@@ -28,7 +28,7 @@ namespace TEAM
             return exists.ToString();
         }
 
-        internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, string connectionString, int versionId)
+        internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, string connectionString, int versionId, DataTable inputDataTable)
         {
             // First, the Business Key need to be checked. This is to determine how many dependents are expected.
             // For instance, if a Link has a three-part Business Key then three Hubs will be expected
@@ -74,47 +74,85 @@ namespace TEAM
                     // Query the dependent information
                     var sqlStatementForDependent = new StringBuilder();
 
-                    sqlStatementForDependent.AppendLine("SELECT COUNT(*) AS NR_OF_DEPENDENTS");
-                    sqlStatementForDependent.AppendLine("FROM [MD_TABLE_MAPPING]");
-                    sqlStatementForDependent.AppendLine("WHERE");
-                    sqlStatementForDependent.AppendLine("    [GENERATE_INDICATOR] = 'Y'");
-                    sqlStatementForDependent.AppendLine("AND [VERSION_ID] = " + versionId);
-                    sqlStatementForDependent.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
-                    sqlStatementForDependent.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '" + businessKeyComponent.Replace("'", "''").Trim() + "'");
-                    sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
-                    sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
+                    //sqlStatementForDependent.AppendLine("SELECT COUNT(*) AS NR_OF_DEPENDENTS");
+                    //sqlStatementForDependent.AppendLine("FROM [MD_TABLE_MAPPING]");
+                    //sqlStatementForDependent.AppendLine("WHERE");
+                    //sqlStatementForDependent.AppendLine("    [GENERATE_INDICATOR] = 'Y'");
+                    //sqlStatementForDependent.AppendLine("AND [VERSION_ID] = " + versionId);
+                    //sqlStatementForDependent.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
+                    //sqlStatementForDependent.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '" + businessKeyComponent.Replace("'", "''").Trim() + "'");
+                    //sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
+                    //sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
 
-                    var dependentsList = FormBase.GetDataTable(ref conn, sqlStatementForDependent.ToString());
 
-                    // Derive the Hub surrogate key name, as this can be compared against the Link
-                    foreach (DataRow row in dependentsList.Rows)
+                    //var filterList = TableMetadataFilter((DataTable)_bindingSourceTableMetadata.DataSource);
+                    //foreach (var filter in filterList)
+                    //{
+                    //    sqlStatementForAttributeVersion.AppendLine("  '" + filter + "',");
+                    //}
+
+                    foreach (DataRow row in inputDataTable.Rows)
                     {
-                        numberOfDependents = numberOfDependents + Convert.ToInt32(row["NR_OF_DEPENDENTS"]);
+                        if (
+                             (string)row["GENERATE_INDICATOR"] == "Y" && // Only active generated objects
+                             (string)row["STAGING_AREA_TABLE"] == validationObject.Item1 &&
+                             (string)row["BUSINESS_KEY_ATTRIBUTE"] == businessKeyComponent.Trim() &&
+                             (string)row["INTEGRATION_AREA_TABLE"] != validationObject.Item2 && // Exclude itself
+                             row["INTEGRATION_AREA_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion) 
+                           )
+                        {
+                            numberOfDependents++;
+                        }
                     }
+
+
+                    //var dependentsList = FormBase.GetDataTable(ref conn, sqlStatementForDependent.ToString());
+
+                    //// Derive the Hub surrogate key name, as this can be compared against the Link
+                    //foreach (DataRow row in dependentsList.Rows)
+                    //{
+                    //    numberOfDependents = numberOfDependents + Convert.ToInt32(row["NR_OF_DEPENDENTS"]);
+                    //}
                 }
             }
             else // In the case of an LSAT, only join on the Link using the full business key
             {
                 // Query the dependent information
-                var sqlStatementForDependent = new StringBuilder();
+                //var sqlStatementForDependent = new StringBuilder();
 
-                sqlStatementForDependent.AppendLine("SELECT COUNT(*) AS NR_OF_DEPENDENTS");
-                sqlStatementForDependent.AppendLine("FROM [MD_TABLE_MAPPING]");
-                sqlStatementForDependent.AppendLine("WHERE");
-                sqlStatementForDependent.AppendLine("    [GENERATE_INDICATOR] = 'Y'");
-                sqlStatementForDependent.AppendLine("AND [VERSION_ID] = " + versionId);
-                sqlStatementForDependent.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
-                sqlStatementForDependent.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '" + validationObject.Item3.Replace("'", "''").Trim() + "'");
-                sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
-                sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
+                //sqlStatementForDependent.AppendLine("SELECT COUNT(*) AS NR_OF_DEPENDENTS");
+                //sqlStatementForDependent.AppendLine("FROM [MD_TABLE_MAPPING]");
+                //sqlStatementForDependent.AppendLine("WHERE");
+                //sqlStatementForDependent.AppendLine("    [GENERATE_INDICATOR] = 'Y'");
+                //sqlStatementForDependent.AppendLine("AND [VERSION_ID] = " + versionId);
+                //sqlStatementForDependent.AppendLine("AND [STAGING_AREA_TABLE] = '" + validationObject.Item1 + "'");
+                //sqlStatementForDependent.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '" + validationObject.Item3.Replace("'", "''").Trim() + "'");
+                //sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] != '" + validationObject.Item2 + "'"); // Exclude itself
+                //sqlStatementForDependent.AppendLine("AND [INTEGRATION_AREA_TABLE] LIKE '" + tableInclusionFilterCriterion + "_%'");
 
-                var dependentsList = FormBase.GetDataTable(ref conn, sqlStatementForDependent.ToString());
+                //var dependentsList = FormBase.GetDataTable(ref conn, sqlStatementForDependent.ToString());
 
-                // Derive the Hub surrogate key name, as this can be compared against the Link
-                foreach (DataRow row in dependentsList.Rows)
+                //// Derive the Hub surrogate key name, as this can be compared against the Link
+                //foreach (DataRow row in dependentsList.Rows)
+                //{
+                //    numberOfDependents = Convert.ToInt32(row["NR_OF_DEPENDENTS"]);
+                //}
+
+
+                foreach (DataRow row in inputDataTable.Rows)
                 {
-                    numberOfDependents = Convert.ToInt32(row["NR_OF_DEPENDENTS"]);
+                    if (
+                         (string)row["GENERATE_INDICATOR"] == "Y" && // Only active generated objects
+                         (string)row["STAGING_AREA_TABLE"] == validationObject.Item1 &&
+                         (string)row["BUSINESS_KEY_ATTRIBUTE"] == validationObject.Item3.Trim() &&
+                         (string)row["INTEGRATION_AREA_TABLE"] != validationObject.Item2 && // Exclude itself
+                         row["INTEGRATION_AREA_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion)
+                       )
+                    {
+                        numberOfDependents++;
+                    }
                 }
+
             }
 
             conn.Close();
@@ -145,7 +183,7 @@ namespace TEAM
         }
 
 
-        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string> validationObject, string connectionString, int versionId)
+        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string> validationObject, string connectionString, int versionId, DataTable inputDataTable)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to query the individual Hub information
@@ -180,17 +218,38 @@ namespace TEAM
                 sqlStatementForHub.AppendLine("AND [BUSINESS_KEY_ATTRIBUTE] = '"+hubBusinessKey.Replace("'","''").Trim()+"'");
                 sqlStatementForHub.AppendLine("AND [INTEGRATION_AREA_TABLE] NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
 
-                var hubList = FormBase.GetDataTable(ref conn, sqlStatementForHub.ToString());
+                //var hubList = FormBase.GetDataTable(ref conn, sqlStatementForHub.ToString());
+
+
+
+                DataRow[] selectionRows = inputDataTable.Select("STAGING_AREA_TABLE = '"+validationObject.Item1+ "' AND [BUSINESS_KEY_ATTRIBUTE] = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND [INTEGRATION_AREA_TABLE] NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
+
+
+                //foreach (DataRow row in inputDataTable.Rows)
+                //{
+                //    if (
+                //         (string)row["GENERATE_INDICATOR"] == "Y" && // Only active generated objects
+                //         (string)row["STAGING_AREA_TABLE"] == validationObject.Item1 &&
+                //         (string)row["BUSINESS_KEY_ATTRIBUTE"] == validationObject.Item3.Trim() &&
+                //         (string)row["INTEGRATION_AREA_TABLE"] != validationObject.Item2 && // Exclude itself
+                //         row["INTEGRATION_AREA_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion)
+                //       )
+                //    {
+                //        numberOfDependents++;
+                //    }
+                //}
+
 
                 // Derive the Hub surrogate key name, as this can be compared against the Link
                 string hubSurrogateKeyName = "";
-                foreach (DataRow row in hubList.Rows)
+                foreach (DataRow row in selectionRows)
                 {
-                    string hubTableName = row["HUB_TABLE_NAME"].ToString();
-                    hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue+'_', "")+"_"+FormBase.ConfigurationSettings.DwhKeyIdentifier;
+                    string hubTableName = row["INTEGRATION_AREA_TABLE"].ToString();
+                    hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.ConfigurationSettings.DwhKeyIdentifier;
+                    hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
                 }
 
-                hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
+                //hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
             }
             conn.Close();
 

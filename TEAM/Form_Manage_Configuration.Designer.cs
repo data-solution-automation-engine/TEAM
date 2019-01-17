@@ -271,7 +271,7 @@
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Text = "Close Window";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // label4
@@ -1430,7 +1430,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 63);
+            this.label1.Location = new System.Drawing.Point(9, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(93, 13);
             this.label1.TabIndex = 74;
@@ -1439,7 +1439,7 @@
             // textBoxConfigurationPath
             // 
             this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxConfigurationPath.Location = new System.Drawing.Point(8, 81);
+            this.textBoxConfigurationPath.Location = new System.Drawing.Point(12, 30);
             this.textBoxConfigurationPath.Multiline = true;
             this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
             this.textBoxConfigurationPath.Size = new System.Drawing.Size(1094, 27);
@@ -1457,7 +1457,7 @@
             // OutputPathLabel
             // 
             this.OutputPathLabel.AutoSize = true;
-            this.OutputPathLabel.Location = new System.Drawing.Point(5, 11);
+            this.OutputPathLabel.Location = new System.Drawing.Point(9, 66);
             this.OutputPathLabel.Name = "OutputPathLabel";
             this.OutputPathLabel.Size = new System.Drawing.Size(63, 13);
             this.OutputPathLabel.TabIndex = 65;
@@ -1466,7 +1466,7 @@
             // textBoxOutputPath
             // 
             this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxOutputPath.Location = new System.Drawing.Point(8, 29);
+            this.textBoxOutputPath.Location = new System.Drawing.Point(12, 84);
             this.textBoxOutputPath.Multiline = true;
             this.textBoxOutputPath.Name = "textBoxOutputPath";
             this.textBoxOutputPath.Size = new System.Drawing.Size(1094, 27);

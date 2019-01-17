@@ -54,6 +54,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+            this.linkLabel3 = new System.Windows.Forms.LinkLabel();
+            this.linkLabel4 = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -180,6 +184,10 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.linkLabel4);
+            this.groupBox2.Controls.Add(this.linkLabel3);
+            this.groupBox2.Controls.Add(this.linkLabel2);
+            this.groupBox2.Controls.Add(this.linkLabel1);
             this.groupBox2.Controls.Add(this.checkBoxDIRECT);
             this.groupBox2.Controls.Add(this.checkBoxCreateMetadataMapping);
             this.groupBox2.Controls.Add(this.checkBoxCreateSamplePresLayer);
@@ -204,16 +212,15 @@
             this.checkBoxCreateMetadataMapping.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxCreateMetadataMapping.Location = new System.Drawing.Point(267, 134);
             this.checkBoxCreateMetadataMapping.Name = "checkBoxCreateMetadataMapping";
-            this.checkBoxCreateMetadataMapping.Size = new System.Drawing.Size(187, 17);
+            this.checkBoxCreateMetadataMapping.Size = new System.Drawing.Size(219, 17);
             this.checkBoxCreateMetadataMapping.TabIndex = 80;
-            this.checkBoxCreateMetadataMapping.Text = "Create Sample Mapping Metadata";
+            this.checkBoxCreateMetadataMapping.Text = "Create Sample Mapping Metadata (DML)";
             this.checkBoxCreateMetadataMapping.UseVisualStyleBackColor = true;
             // 
             // checkBoxCreateSamplePresLayer
             // 
             this.checkBoxCreateSamplePresLayer.AutoSize = true;
-            this.checkBoxCreateSamplePresLayer.Checked = true;
-            this.checkBoxCreateSamplePresLayer.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSamplePresLayer.Enabled = false;
             this.checkBoxCreateSamplePresLayer.Location = new System.Drawing.Point(267, 111);
             this.checkBoxCreateSamplePresLayer.Name = "checkBoxCreateSamplePresLayer";
             this.checkBoxCreateSamplePresLayer.Size = new System.Drawing.Size(186, 17);
@@ -310,11 +317,51 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Create Metadata Repository";
             // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(479, 20);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(118, 13);
+            this.linkLabel1.TabIndex = 82;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "https://bit.ly/2ARcCTw";
+            // 
+            // linkLabel2
+            // 
+            this.linkLabel2.AutoSize = true;
+            this.linkLabel2.Location = new System.Drawing.Point(479, 43);
+            this.linkLabel2.Name = "linkLabel2";
+            this.linkLabel2.Size = new System.Drawing.Size(114, 13);
+            this.linkLabel2.TabIndex = 83;
+            this.linkLabel2.TabStop = true;
+            this.linkLabel2.Text = "https://bit.ly/2VY4Os3";
+            // 
+            // linkLabel3
+            // 
+            this.linkLabel3.AutoSize = true;
+            this.linkLabel3.Location = new System.Drawing.Point(479, 66);
+            this.linkLabel3.Name = "linkLabel3";
+            this.linkLabel3.Size = new System.Drawing.Size(111, 13);
+            this.linkLabel3.TabIndex = 84;
+            this.linkLabel3.TabStop = true;
+            this.linkLabel3.Text = "https://bit.ly/2SX0Xth";
+            // 
+            // linkLabel4
+            // 
+            this.linkLabel4.AutoSize = true;
+            this.linkLabel4.Location = new System.Drawing.Point(479, 89);
+            this.linkLabel4.Name = "linkLabel4";
+            this.linkLabel4.Size = new System.Drawing.Size(117, 13);
+            this.linkLabel4.TabIndex = 85;
+            this.linkLabel4.TabStop = true;
+            this.linkLabel4.Text = "https://bit.ly/2FuWBq5";
+            // 
             // FormManageRepository
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 661);
+            this.ClientSize = new System.Drawing.Size(784, 662);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -363,5 +410,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.LinkLabel linkLabel4;
+        private System.Windows.Forms.LinkLabel linkLabel3;
+        private System.Windows.Forms.LinkLabel linkLabel2;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }

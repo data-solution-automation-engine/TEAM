@@ -254,16 +254,24 @@ namespace TEAM
 
         public DataTable ConvertToDataTable<T>(IList<T> data)
         {
-            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
             DataTable table = new DataTable();
-            foreach (PropertyDescriptor prop in properties)
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-            foreach (T item in data)
+
+            try
             {
-                DataRow row = table.NewRow();
+                PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
                 foreach (PropertyDescriptor prop in properties)
-                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
-                table.Rows.Add(row);
+                    table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                foreach (T item in data)
+                {
+                    DataRow row = table.NewRow();
+                    foreach (PropertyDescriptor prop in properties)
+                        row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+                    table.Rows.Add(row);
+                }
+            }
+            catch (Exception ex)
+            { 
+                // IGNORE
             }
             return table;
         }

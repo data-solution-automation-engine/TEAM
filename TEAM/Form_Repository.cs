@@ -2499,7 +2499,7 @@ namespace TEAM
 
                     #region Presentation Layer
 
-                    if (checkBoxCreateSampleDV.Checked)
+                    if (checkBoxCreateSamplePresLayer.Checked)
                     {
                         var connString = ConfigurationSettings.ConnectionStringPres;
 
@@ -2574,23 +2574,6 @@ namespace TEAM
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'ETL_INSERT_RUN_ID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'ETL_UPDATE_RUN_ID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
 
                         createStatement.AppendLine("EXEC sp_addextendedproperty");
                         createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
@@ -2660,51 +2643,6 @@ namespace TEAM
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
                         createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DIM_CUSTOMER_HSH'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CHECKSUM_TYPE1'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CHECKSUM_TYPE2'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'EFFECTIVE_DATETIME'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'EXPIRY_DATETIME'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CURRENT_RECORD_INDICATOR'");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();

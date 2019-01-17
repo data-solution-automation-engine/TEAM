@@ -635,7 +635,7 @@ namespace TEAM
                 FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
                 FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
 
-                FormBase.ValidationSettings.LinkKeyOrder = configList["BusinessKeySyntax"];
+                FormBase.ValidationSettings.BusinessKeySyntax = configList["BusinessKeySyntax"];
             }
             catch (Exception)
             {
@@ -661,7 +661,6 @@ namespace TEAM
                 validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
                 validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
                 validationFile.AppendLine("BusinessKeySyntax|" + FormBase.ValidationSettings.BusinessKeySyntax + "");
-
 
                 // Closing off
                 validationFile.AppendLine("/* End of file */");

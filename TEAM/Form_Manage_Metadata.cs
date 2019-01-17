@@ -591,7 +591,7 @@ namespace TEAM
 
         private void GridAutoLayout()
         {
-            return;
+            //return;
             //Table Mapping metadata grid - set the autosize based on all cells for each column
             for (var i = 0; i < dataGridViewTableMetadata.Columns.Count - 1; i++)
             {
@@ -856,7 +856,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonSubmitVersion_Click(object sender, EventArgs e)
+        private void buttonActivateMetadata_Click(object sender, EventArgs e)
         {
             //Clear out the information textbox
             richTextBoxInformation.Clear();
@@ -872,7 +872,7 @@ namespace TEAM
             var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
 
-            //Check if there are any rows available in the grid view, and if changes have been detected
+            //Check if there are any rows available in the grid view, and if changes have been detected ata ll
             if (
                 dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 || 
                 dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 || 
@@ -888,10 +888,24 @@ namespace TEAM
                     //Retrieve the current version, or create a new one
                     int versionId = CreateOrRetrieveVersion();
 
-                    //Commit the save of the metadata
-                    SaveTableMappingMetadata(versionId, dataTableTableMappingChanges, ConfigurationSettings.MetadataRepositoryType);
+                    //Commit the save of the metadata, one for each grid
+                    if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+                    {
+                        SaveTableMappingMetadataSql(versionId, dataTableTableMappingChanges);
+                    }
+                    else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+                    {
+                        SaveTableMappingMetadataJson(versionId, dataTableTableMappingChanges);
+                    }
+                    else
+                    {
+                        richTextBoxInformation.Text = "There was an issue detecting the repository type. The in-use value is: "+ ConfigurationSettings.MetadataRepositoryType;
+                    }
+
                     SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges, ConfigurationSettings.MetadataRepositoryType);
+
                     SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges, ConfigurationSettings.MetadataRepositoryType);
+
 
                     //Load the grids from the repository after being updated
                     PopulateTableMappingGridWithVersion(versionId);
@@ -1533,7 +1547,181 @@ namespace TEAM
         }
 
 
-        private void SaveTableMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
+        private void SaveTableMappingMetadataSql(int versionId, DataTable dataTableChanges)
+        {
+            if (FileConfiguration.newFileTableMapping == "true")
+            {
+                // TO BE DEVELOPED FURTHER, needs to clear out existing version from MD_TABLE_MAPPING
+                FileConfiguration.newFileTableMapping = "false";
+            }
+
+            //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created
+            if (!radiobuttonNoVersionChange.Checked)
+            {
+               CreateNewTableMappingMetadataVersionSqlServer(versionId);
+            }
+            else //... otherwise an in-place update to the existing version is done (insert / update / delete)
+            {
+                var insertQueryTables = new StringBuilder();
+
+                if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0)) //Double-check if there are any changes made at all
+                {
+                    foreach (DataRow row in dataTableChanges.Rows) //Start looping through the changes
+                    {
+                        #region Changed rows 
+                        if ((row.RowState & DataRowState.Modified) != 0)
+                        {
+                            //Grab the attributes into local variables
+                            var hashKey = (string)row["TABLE_MAPPING_HASH"];
+                            var versionKey = row["VERSION_ID"].ToString();
+                            var stagingTable = "";
+                            var integrationTable = "";
+                            var businessKeyDefinition = "";
+                            var drivingKeyDefinition = "";
+                            var filterCriterion = "";
+                            var generateIndicator = "";
+
+                            if (row["STAGING_AREA_TABLE"] != DBNull.Value)
+                            {
+                                stagingTable = (string)row["STAGING_AREA_TABLE"];
+                            }
+                            if (row["INTEGRATION_AREA_TABLE"] != DBNull.Value)
+                            {
+                                integrationTable = (string)row["INTEGRATION_AREA_TABLE"];
+                            }
+                            if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value)
+                            {
+                                businessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"];
+                            }
+                            if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
+                            {
+                                drivingKeyDefinition = (string)row["DRIVING_KEY_ATTRIBUTE"];
+                            }
+                            if (row["FILTER_CRITERIA"] != DBNull.Value)
+                            {
+                                filterCriterion = (string)row["FILTER_CRITERIA"];
+                            }
+                            if (row["GENERATE_INDICATOR"] != DBNull.Value)
+                            {
+                                generateIndicator = (string)row["GENERATE_INDICATOR"];
+                            }
+
+                            //Double quotes for composites, but only if things are written to the database otherwise it's already OK
+                            businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+                            drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
+                            filterCriterion = filterCriterion.Replace("'", "''");
+                            generateIndicator = generateIndicator.Replace("'", "''");
+
+                            insertQueryTables.AppendLine("UPDATE [MD_TABLE_MAPPING]");
+                            insertQueryTables.AppendLine("SET [STAGING_AREA_TABLE] = '" + stagingTable +
+                                                            "',[BUSINESS_KEY_ATTRIBUTE] = '" + businessKeyDefinition +
+                                                            "',[INTEGRATION_AREA_TABLE] = '" + integrationTable +
+                                                            "',[DRIVING_KEY_ATTRIBUTE] = '" + drivingKeyDefinition +
+                                                            "',[FILTER_CRITERIA] = '" + filterCriterion +
+                                                            "',[GENERATE_INDICATOR] = '" + generateIndicator + "'");
+                            insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
+                        }
+                        #endregion
+
+                        #region Inserted rows
+                        if ((row.RowState & DataRowState.Added) != 0)
+                        {
+                            var stagingTable = "";
+                            var integrationTable = "";
+                            var businessKeyDefinition = "";
+                            var drivingKeyDefinition = "";
+                            var filterCriterion = "";
+                            var generateIndicator = "";
+
+                            if (row[2] != DBNull.Value)
+                            {
+                                stagingTable = (string)row[2];
+                            }
+                            if (row[3] != DBNull.Value)
+                            {
+                                integrationTable = (string)row[3];
+                            }
+                            if (row[4] != DBNull.Value)
+                            {
+                                businessKeyDefinition = (string)row[4];
+                                businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+                                //Double quotes for composites
+                            }
+                            if (row[5] != DBNull.Value)
+                            {
+                                drivingKeyDefinition = (string)row[5];
+                                drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
+                            }
+                            if (row[6] != DBNull.Value)
+                            {
+                                filterCriterion = (string)row[6];
+                                filterCriterion = filterCriterion.Replace("'", "''");
+                            }
+                            if (row[7] != DBNull.Value)
+                            {
+                                generateIndicator = (string)row[7];
+                                generateIndicator = generateIndicator.Replace("'", "''");
+                            }
+
+                            insertQueryTables.AppendLine("INSERT INTO [MD_TABLE_MAPPING]");
+                            insertQueryTables.AppendLine("([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
+                            insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
+                                                         businessKeyDefinition + "','" + integrationTable + "','" +
+                                                         drivingKeyDefinition + "','" + filterCriterion + "','" +
+                                                         generateIndicator + "')");
+
+                        }
+                        #endregion
+
+                        #region Deleted rows
+                        //Deleted rows
+                        if ((row.RowState & DataRowState.Deleted) != 0)
+                        {
+                            var hashKey = row["TABLE_MAPPING_HASH", DataRowVersion.Original].ToString();
+                            var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
+
+                            insertQueryTables.AppendLine("DELETE FROM MD_TABLE_MAPPING");
+                            insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
+                        }
+                        #endregion
+                    }
+
+                    #region Statement execution
+                    // Execute the statement, if the repository is SQL Server
+                    if (insertQueryTables.ToString() == "")
+                    {
+                        richTextBoxInformation.Text += "No Business Key / Table mapping metadata changes were saved.\r\n";
+                    }
+                    else
+                    {
+                        using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+                        {
+                            var command = new SqlCommand(insertQueryTables.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                richTextBoxInformation.Text += "An issue has occurred: " + ex;
+                            }
+                        }
+                    }             
+
+                    //Committing the changes to the datatable - making sure new changes can be picked up
+                    // AcceptChanges will clear all New, Deleted and/or Modified settings
+                    dataTableChanges.AcceptChanges();
+                    ((DataTable)_bindingSourceTableMetadata.DataSource).AcceptChanges();
+                    #endregion
+
+                    richTextBoxInformation.Text += "The Business Key / Table Mapping metadata has been saved.\r\n";
+                }
+            } // End of constructing the statements for insert / update / delete
+        }
+
+        private void SaveTableMappingMetadataJson(int versionId, DataTable dataTableChanges)
         {
             if (FileConfiguration.newFileTableMapping == "true")
             {
@@ -1545,14 +1733,7 @@ namespace TEAM
             //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
-                {
-                    CreateNewTableMappingMetadataVersionSqlServer(versionId);
-                }
-                else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
-                {
-                    CreateNewTableMappingMetadataVersionJson(versionId);
-                }
+                CreateNewTableMappingMetadataVersionJson(versionId);
             }
 
             //... otherwise an in-place update to the existing version is done (insert / update / delete)
@@ -1560,11 +1741,11 @@ namespace TEAM
             {
                 var insertQueryTables = new StringBuilder();
 
-                if ((dataTableChanges != null && (dataTableChanges.Rows.Count > 0))) //Double-check if there are any changes made at all
+                if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0)) //Double-check if there are any changes made at all
                 {
                     foreach (DataRow row in dataTableChanges.Rows) //Start looping through the changes
                     {
-                        #region updated rows
+                        #region Changed rows
                         //Changed rows
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
@@ -1582,106 +1763,76 @@ namespace TEAM
                             {
                                 stagingTable = (string)row["STAGING_AREA_TABLE"];
                             }
-
                             if (row["INTEGRATION_AREA_TABLE"] != DBNull.Value)
                             {
                                 integrationTable = (string)row["INTEGRATION_AREA_TABLE"];
                             }
-
                             if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value)
                             {
                                 businessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"];
                             }
-
                             if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
                             {
                                 drivingKeyDefinition = (string)row["DRIVING_KEY_ATTRIBUTE"];
                             }
-
                             if (row["FILTER_CRITERIA"] != DBNull.Value)
                             {
                                 filterCriterion = (string)row["FILTER_CRITERIA"];
                             }
-
                             if (row["GENERATE_INDICATOR"] != DBNull.Value)
                             {
                                 generateIndicator = (string)row["GENERATE_INDICATOR"];
                             }
 
-                            //Double quotes for composites, but only if things are written to the database otherwise it's already OK
-                            if (repositoryTarget == "SQLServer") //Update the tables in SQL Server
+                            //Read the file in memory
+                            TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
+
+                            //Retrieves the json segment in the file for the given hash returns value or NULL
+                            var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
+
+                            if (jsonHash.tableMappingHash == "")
                             {
-                                businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
-                                drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
-                                filterCriterion = filterCriterion.Replace("'", "''");
-                                generateIndicator = generateIndicator.Replace("'", "''");
+                                richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                            }
+                            else
+                            {
+                                // Update the values in the JSON segment
+                                jsonHash.businessKeyDefinition = businessKeyDefinition;
+                                jsonHash.drivingKeyDefinition = drivingKeyDefinition;
+                                jsonHash.filterCriteria = filterCriterion;
+                                jsonHash.generationIndicator = generateIndicator;
+                                jsonHash.integrationAreaTable = integrationTable;
+                                jsonHash.stagingAreaTable = stagingTable;
                             }
 
+                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
 
-                            if (repositoryTarget == "SQLServer") //Update the tables in SQL Server
+                            try
                             {
-                                insertQueryTables.AppendLine("UPDATE MD_TABLE_MAPPING");
-                                insertQueryTables.AppendLine("SET [STAGING_AREA_TABLE] = '" + stagingTable +
-                                                             "',[BUSINESS_KEY_ATTRIBUTE] = '" + businessKeyDefinition +
-                                                             "',[INTEGRATION_AREA_TABLE] = '" + integrationTable +
-                                                             "',[DRIVING_KEY_ATTRIBUTE] = '" + drivingKeyDefinition +
-                                                             "',[FILTER_CRITERIA] = '" + filterCriterion +
-                                                             "',[GENERATE_INDICATOR] = '" + generateIndicator + "'");
-                                insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey +
-                                                             "' AND [VERSION_ID] = " + versionKey);
-                            }
+                                // The below is not really necessary and was added as an attempt to work around limitations in WriteAllText, but turns out to be handy nonetheless
+                                //var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
+                                //var targetFilePathName = GlobalParameters.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
 
-                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                                //File.Copy(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, targetFilePathName);
+                                //File.Delete(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
+
+
+                                // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
+                                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
+
+                                // Wait for half a second for I/O operations to complete
+                                // Thread.Sleep(500);
+                            }
+                            catch (JsonReaderException ex)
                             {
-                                //Read the file in memory
-                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
-
-                                //Retrieves the json segment in the file for the given hash returns value or NULL
-                                var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey); 
-
-                                if (jsonHash.tableMappingHash == "")
-                                {
-                                    richTextBoxInformation.Text +="The correct segment in the JSON file was not found.\r\n";
-                                }
-                                else
-                                {
-                                    // Update the values in the JSON segment
-                                    jsonHash.businessKeyDefinition = businessKeyDefinition;
-                                    jsonHash.drivingKeyDefinition = drivingKeyDefinition;
-                                    jsonHash.filterCriteria = filterCriterion;
-                                    jsonHash.generationIndicator = generateIndicator;
-                                    jsonHash.integrationAreaTable = integrationTable;
-                                    jsonHash.stagingAreaTable = stagingTable;
-                                }
-
-                                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-
-                                try
-                                {
-                                    // The below is not really necessary and was added as an attempt to work around limitations in WriteAllText, but turns out to be handy nonetheless
-                                    //var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
-                                    //var targetFilePathName = GlobalParameters.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
-
-                                    //File.Copy(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, targetFilePathName);
-                                    //File.Delete(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
-
-
-                                    // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
-                                    File.WriteAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
-
-                                    // Wait for half a second for I/O operations to complete
-                                    // Thread.Sleep(500);
-                                }
-                                catch (JsonReaderException ex)
-                                {
-                                    richTextBoxInformation.Text += "There were issues saving the JSON update to disk.\r\n" + ex;
-                                }
-                                //var bla2 = jsonArray.Any(obj => obj.tableMappingHash == "1029C102DE45D40066210E426B605885"); // Returns true if any is found
+                                richTextBoxInformation.Text += "There were issues saving the JSON update to disk.\r\n" + ex;
                             }
+                            //var bla2 = jsonArray.Any(obj => obj.tableMappingHash == "1029C102DE45D40066210E426B605885"); // Returns true if any is found
+
                         }
                         #endregion
 
-                        #region inserted rows
+                        #region Inserted rows
                         //Inserted rows
                         if ((row.RowState & DataRowState.Added) != 0)
                         {
@@ -1705,178 +1856,126 @@ namespace TEAM
                             if (row[4] != DBNull.Value)
                             {
                                 businessKeyDefinition = (string)row[4];
-                                businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+                                //businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
                                 //Double quotes for composites
                             }
 
                             if (row[5] != DBNull.Value)
                             {
                                 drivingKeyDefinition = (string)row[5];
-                                drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
+                                //drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
                             }
 
                             if (row[6] != DBNull.Value)
                             {
                                 filterCriterion = (string)row[6];
-                                filterCriterion = filterCriterion.Replace("'", "''");
+                                //filterCriterion = filterCriterion.Replace("'", "''");
                             }
 
                             if (row[7] != DBNull.Value)
                             {
                                 generateIndicator = (string)row[7];
-                                generateIndicator = generateIndicator.Replace("'", "''");
+                                //generateIndicator = generateIndicator.Replace("'", "''");
                             }
 
-                            if (repositoryTarget == "SQLServer") //Update the tables in SQL Server
+
+
+                            try
                             {
-                                insertQueryTables.AppendLine("INSERT INTO MD_TABLE_MAPPING");
-                                insertQueryTables.AppendLine("([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
-                                insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
-                                                             businessKeyDefinition + "','" + integrationTable + "','" +
-                                                             drivingKeyDefinition + "','" + filterCriterion + "','" +
-                                                             generateIndicator + "')");
-                            }
-                            else if (repositoryTarget == "JSON") //Insert a new row / segment into the JSON
-                            {
-                                try
+                                var jsonTableMappingFull = new JArray();
+
+                                // Load the file, if existing information needs to be merged
+                                TableMappingJson[] jsonArray =
+                                    JsonConvert.DeserializeObject<TableMappingJson[]>(
+                                        File.ReadAllText(
+                                            GlobalParameters.ConfigurationPath +
+                                            GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
+
+                                // Convert it into a JArray so segments can be added easily
+                                if (jsonArray != null)
                                 {
-                                    var jsonTableMappingFull = new JArray();
-
-                                    // Load the file, if existing information needs to be merged
-                                    TableMappingJson[] jsonArray =
-                                        JsonConvert.DeserializeObject<TableMappingJson[]>(
-                                            File.ReadAllText(
-                                                GlobalParameters.ConfigurationPath +
-                                                GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
-
-                                    // Convert it into a JArray so segments can be added easily
-                                    if (jsonArray != null)
-                                    {
-                                        jsonTableMappingFull = JArray.FromObject(jsonArray);
-                                    }
-
-                                    //Generate a unique key using a hash
-                                    var hashKey = CreateMd5(versionId + '|' + stagingTable + '|' + integrationTable + '|' + businessKeyDefinition + '|' + drivingKeyDefinition + '|' + filterCriterion);
-
-                                    // Convert it into a JArray so segments can be added easily
-                                    JObject newJsonSegment = new JObject(
-                                        new JProperty("tableMappingHash", hashKey),
-                                        new JProperty("versionId", versionId),
-                                        new JProperty("stagingAreaTable", stagingTable),
-                                        new JProperty("integrationAreaTable", integrationTable),
-                                        new JProperty("businessKeyDefinition", businessKeyDefinition),
-                                        new JProperty("drivingKeyDefinition", drivingKeyDefinition),
-                                        new JProperty("filterCriteria", filterCriterion),
-                                        new JProperty("generationIndicator", generateIndicator)
-                                        );
-
-                                    jsonTableMappingFull.Add(newJsonSegment);
-
-                                    string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                                    File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
-
-                                    //Making sure the hash key value is added to the datatable as well
-                                    row[0] = hashKey;
-
+                                    jsonTableMappingFull = JArray.FromObject(jsonArray);
                                 }
-                                catch (JsonReaderException ex)
-                                {
-                                    richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
-                                }
+
+                                //Generate a unique key using a hash
+                                var hashKey = CreateMd5(versionId + '|' + stagingTable + '|' + integrationTable + '|' + businessKeyDefinition + '|' + drivingKeyDefinition + '|' + filterCriterion);
+
+                                // Convert it into a JArray so segments can be added easily
+                                JObject newJsonSegment = new JObject(
+                                    new JProperty("tableMappingHash", hashKey),
+                                    new JProperty("versionId", versionId),
+                                    new JProperty("stagingAreaTable", stagingTable),
+                                    new JProperty("integrationAreaTable", integrationTable),
+                                    new JProperty("businessKeyDefinition", businessKeyDefinition),
+                                    new JProperty("drivingKeyDefinition", drivingKeyDefinition),
+                                    new JProperty("filterCriteria", filterCriterion),
+                                    new JProperty("generationIndicator", generateIndicator)
+                                    );
+
+                                jsonTableMappingFull.Add(newJsonSegment);
+
+                                string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
+                                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
+
+                                //Making sure the hash key value is added to the datatable as well
+                                row[0] = hashKey;
+
                             }
-                            else
+                            catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                                richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
                             }
+
                         }
                         #endregion
 
-                        #region deleted rows
+                        #region Deleted rows
                         //Deleted rows
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
                             var hashKey = row["TABLE_MAPPING_HASH", DataRowVersion.Original].ToString();
                             var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
 
-                            if (repositoryTarget == "SQLServer")
-                            {
-                                insertQueryTables.AppendLine("DELETE FROM MD_TABLE_MAPPING");
-                                insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey +
-                                                             "' AND [VERSION_ID] = " + versionKey);
-                            }
 
-                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                            try
                             {
+                                var jsonArray =
+                                    JsonConvert.DeserializeObject<TableMappingJson[]>(
+                                        File.ReadAllText(GlobalParameters.ConfigurationPath +
+                                                         GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
 
-                                try
+                                //Retrieves the json segment in the file for the given hash returns value or NULL
+                                var jsonSegment = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
+
+                                jsonArray.Remove(jsonSegment);
+
+                                if (jsonSegment.tableMappingHash == "")
                                 {
-                                    var jsonArray =
-                                        JsonConvert.DeserializeObject<TableMappingJson[]>(
-                                            File.ReadAllText(GlobalParameters.ConfigurationPath +
-                                                             GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
-
-                                    //Retrieves the json segment in the file for the given hash returns value or NULL
-                                    var jsonSegment = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
-
+                                    richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                                }
+                                else
+                                {
+                                    //Remove the segment from the JSON
                                     jsonArray.Remove(jsonSegment);
-
-                                    if (jsonSegment.tableMappingHash == "")
-                                    {
-                                        richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
-                                    }
-                                    else
-                                    {
-                                        //Remove the segment from the JSON
-                                        jsonArray.Remove(jsonSegment);
-                                    }
-
-                                    string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                    File.WriteAllText(
-                                        GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension,
-                                        output);
-
                                 }
-                                catch (JsonReaderException ex)
-                                {
-                                    richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
-                                }
+
+                                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                                File.WriteAllText(
+                                    GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension,
+                                    output);
+
                             }
-                            else
+                            catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
+                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
                             }
+
                         }
                         #endregion
                     }
 
                     #region Statement execution
-                    // Execute the statement, if the repository is SQL Server
-                    // If the source is JSON this is done in separate calls for now
-                    if (repositoryTarget == "SQLServer")
-                    {
-                        if (insertQueryTables.ToString() == "")
-                        {
-                            richTextBoxInformation.Text += "No Business Key / Table mapping metadata changes were saved.\r\n";
-                        }
-                        else
-                        {
-                            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
-                            {
-                                var command = new SqlCommand(insertQueryTables.ToString(), connection);
-
-                                try
-                                {
-                                    connection.Open();
-                                    command.ExecuteNonQuery();
-                                }
-                                catch (Exception ex)
-                                {
-                                    richTextBoxInformation.Text += "An issue has occurred: " + ex;
-                                }
-                            }
-                        }
-                    }
-
+                    // Execute the statement. If the source is JSON this is done in separate calls for now
 
                     //Committing the changes to the datatable - making sure new changes can be picked up
                     // AcceptChanges will clear all New, Deleted and/or Modified settings
@@ -1884,17 +1983,14 @@ namespace TEAM
                     ((DataTable)_bindingSourceTableMetadata.DataSource).AcceptChanges();
 
                     //The JSON needs to be re-bound to the datatable / datagrid after being updated (accepted) to allow all values to be present including the hash which may have changed
-                    if (repositoryTarget == "JSON")
-                    {
-                        BindTableMappingJsonToDataTable();
-                    }
+
+                    BindTableMappingJsonToDataTable();
+
                     #endregion
 
                     richTextBoxInformation.Text += "The Business Key / Table Mapping metadata has been saved.\r\n";
-
                 }
             } // End of constructing the statements for insert / update / delete
-
         }
 
         private void SaveModelPhysicalModelMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
@@ -1929,7 +2025,7 @@ namespace TEAM
                 {
                     foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes
                     {
-
+                        #region Changed Rows
                         //Changed rows
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
@@ -2000,6 +2096,7 @@ namespace TEAM
                                 richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
                             }
                         }
+                        #endregion
 
                         // Insert new rows
                         if ((row.RowState & DataRowState.Added) != 0)
@@ -2068,14 +2165,23 @@ namespace TEAM
                             {
                                 try
                                 {
+                                    var jsonPhysicalModelMappingFull = new JArray();
+
+                                    // Load the file, if existing information needs to be merged
+                                    PhysicalModelMetadataJson[] jsonArray =
+                                        JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(
+                                            File.ReadAllText(
+                                                GlobalParameters.ConfigurationPath +
+                                                GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension));
+
+                                    // Convert it into a JArray so segments can be added easily
+                                    if (jsonArray != null)
+                                    {
+                                        jsonPhysicalModelMappingFull = JArray.FromObject(jsonArray);
+                                    }
                                     //Generate a unique key using a hash
                                     var hashKey = CreateMd5(versionId +'|' + tableName + '|' + columnName);
 
-                                    // Load the file
-                                    PhysicalModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension));
-
-                                    // Conver it into a JArray so segments can be added easily
-                                    var jsonTableMappingFull = JArray.FromObject(jsonArray);
 
                                     JObject newJsonSegment = new JObject(
                                             new JProperty("versionAttributeHash", hashKey),
@@ -2090,9 +2196,9 @@ namespace TEAM
                                             new JProperty("multiActiveIndicator", multiActiveIndicator)
                                         );
 
-                                    jsonTableMappingFull.Add(newJsonSegment);
+                                    jsonPhysicalModelMappingFull.Add(newJsonSegment);
 
-                                    string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
+                                    string output = JsonConvert.SerializeObject(jsonPhysicalModelMappingFull, Formatting.Indented);
                                     File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension, output);
 
                                     //Making sure the hash key value is added to the datatable as well
@@ -2110,7 +2216,7 @@ namespace TEAM
                             }
                         }
 
-
+                        #region Deleted Rows
                         //Deleted rows
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
@@ -2160,6 +2266,8 @@ namespace TEAM
                                 richTextBoxInformation.Text += "There were issues identifying the repository type to apply changes.\r\n";
                             }
                         }
+                        #endregion
+
                     } // All changes have been processed.
 
                     #region Statement execution
@@ -2398,14 +2506,23 @@ namespace TEAM
                             {
                                 try
                                 {
+                                    var jsonAttributeMappingFull = new JArray();
+
+                                    // Load the file, if existing information needs to be merged
+                                    AttributeMappingJson[] jsonArray =
+                                        JsonConvert.DeserializeObject<AttributeMappingJson[]>(
+                                            File.ReadAllText(
+                                                GlobalParameters.ConfigurationPath +
+                                                GlobalParameters.JsonAttributeMappingFileName + FileConfiguration.jsonVersionExtension));
+
+                                    // Convert it into a JArray so segments can be added easily
+                                    if (jsonArray != null)
+                                    {
+                                        jsonAttributeMappingFull = JArray.FromObject(jsonArray);
+                                    }
+
                                     //Generate a unique key using a hash
                                     var hashKey = CreateMd5(versionId +'|' + stagingTable + '|' + stagingColumn + '|' + integrationTable + '|' +integrationColumn + '|' + transformationRule);
-
-                                    // Load the file
-                                    AttributeMappingJson[] jsonArray =JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonAttributeMappingFileName+ FileConfiguration.jsonVersionExtension));
-
-                                    // Conver it into a JArray so segments can be added easily
-                                    var jsonAttributeMappingFull = JArray.FromObject(jsonArray);
 
                                     JObject newJsonSegment = new JObject(
                                         new JProperty("attributeMappingHash", hashKey),
@@ -2416,7 +2533,6 @@ namespace TEAM
                                         new JProperty("targetAttribute", integrationColumn),
                                         new JProperty("transformationRule", transformationRule)
                                         );
-
 
                                     jsonAttributeMappingFull.Add(newJsonSegment);
 
@@ -2852,45 +2968,53 @@ namespace TEAM
                             }
                         }
 
-                        // If the information needs to be merged, a global parameter needs to be set.
-                        // This will overwrite existing files for the in-use version.
-                        if (!checkBoxMergeFiles.Checked)
-                        {
-                            FileConfiguration.newFileAttributeMapping = "true";
-                        }
+                    // If the information needs to be merged, a global parameter needs to be set.
+                    // This will overwrite existing files for the in-use version.
+                    if (!checkBoxMergeFiles.Checked)
+                    {
+                        FileConfiguration.newFileAttributeMapping = "true";
+                    }                                           
 
-                        // Load the file, convert it to a DataTable and bind it to the source
-                        List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
-                        DataTable dt = ConvertToDataTable(jsonArray);
-                        dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-                        dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
-                        dt.Columns[1].ColumnName = "VERSION_ID";
-                        dt.Columns[2].ColumnName = "SOURCE_TABLE";
-                        dt.Columns[3].ColumnName = "SOURCE_COLUMN";
-                        dt.Columns[4].ColumnName = "TARGET_TABLE";
-                        dt.Columns[5].ColumnName = "TARGET_COLUMN";
-                        dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
-                        _bindingSourceAttributeMetadata.DataSource = dt;
 
-                        // Sort the columns
-                        dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
+                    // Load the file, convert it to a DataTable and bind it to the source
+                    List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
+                    DataTable dt = ConvertToDataTable(jsonArray);
 
-                        if (jsonArray != null)
+                    dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
+                    dt.Columns[1].ColumnName = "VERSION_ID";
+                    dt.Columns[2].ColumnName = "SOURCE_TABLE";
+                    dt.Columns[3].ColumnName = "SOURCE_COLUMN";
+                    dt.Columns[4].ColumnName = "TARGET_TABLE";
+                    dt.Columns[5].ColumnName = "TARGET_COLUMN";
+                    dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
+
+                    // Sort the columns
+                    dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
+
+                    // Clear out the existing data from the grid
+                    _bindingSourceAttributeMetadata.DataSource = null;
+                    _bindingSourceAttributeMetadata.Clear();
+                    dataGridViewAttributeMetadata.DataSource = null;
+
+                    // Bind the datatable to the gridview
+                    _bindingSourceAttributeMetadata.DataSource = dt;
+
+                    if (jsonArray != null)
                         {
                             // Set the column header names.
                             dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
                             dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
                             dataGridViewAttributeMetadata.Columns[0].Visible = false;
                             dataGridViewAttributeMetadata.Columns[1].Visible = false;
+                            dataGridViewAttributeMetadata.Columns[6].ReadOnly = true;
 
                             dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
                             dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
                             dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
-                            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Integration Area Table";
-                            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Business Key Definition";
-                            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Driving Key Definition";
-                            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Filter Criteria";
-                            dataGridViewAttributeMetadata.Columns[7].HeaderText = "Generation Indicator";
+                            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Staging Area Column";
+                            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
+                            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
+                            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                         }
                     }
 
@@ -5959,7 +6083,7 @@ namespace TEAM
         /// <param name="e"></param>
         private void buttonValidation_Click(object sender, EventArgs e)
         {
-
+            richTextBoxInformation.Clear();
             if (backgroundWorkerValidationOnly.IsBusy) return;
             // create a new instance of the alert form
             _alertValidation = new FormAlert();
@@ -5967,8 +6091,7 @@ namespace TEAM
             _alertValidation.Canceled += buttonCancel_Click;
             _alertValidation.Show();
             // Start the asynchronous operation.
-            backgroundWorkerValidationOnly.RunWorkerAsync();
-            
+            backgroundWorkerValidationOnly.RunWorkerAsync();            
         }
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -6530,14 +6653,13 @@ namespace TEAM
             {
                 if (!row.IsNewRow && row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // Only select the lines that relate to a Link target
                 {
-                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString())))
+                    var businessKey = row.Cells[4].Value.ToString().Replace("''''", "'");
+                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey)))
                     {
-                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString()));
+                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey));
                     }
                 }
-            }
-
- 
+            } 
 
             // Execute the validation check using the list of unique objects
             var resultList = new Dictionary<string, bool>();
@@ -6545,7 +6667,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -6560,7 +6682,6 @@ namespace TEAM
                 }
             }
             #endregion
-
 
 
             // Return the results back to the user
@@ -6594,9 +6715,10 @@ namespace TEAM
             {
                 if (!row.IsNewRow && (row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LsatPrefixValue))  )
                 {
-                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString())))
+                    var businessKey = row.Cells[4].Value.ToString().Replace("''''", "'");
+                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey)))
                     {
-                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), row.Cells[4].Value.ToString()));
+                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey));
                     }
                 }
             }
@@ -6607,7 +6729,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -6644,6 +6766,9 @@ namespace TEAM
 
         }
 
+        /// <summary>
+        ///   A validation check to make sure the Business Key is available in the source model.
+        /// </summary>
         private void ValidateBusinessKeyObject()
         {
             #region Validation for source Business Key attribute existence
@@ -6700,10 +6825,8 @@ namespace TEAM
             {
                 _alertValidation.SetTextLogging("There were no validation issues related to the existence of the business keys in the Staging Area tables.\r\n");
             }
-
-
-
         }
+
 
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -6815,7 +6938,7 @@ namespace TEAM
                         if (jsonArray != null)
                         {
                             // Set the column header names
-                            dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
+                            dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
 
                             dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
                             dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
@@ -6843,6 +6966,11 @@ namespace TEAM
                     MessageBox.Show("An error has been encountered! The reported error is: " + ex);
                 }
             }
+        }
+
+        private void businessKeyMetadataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

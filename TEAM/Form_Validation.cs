@@ -48,7 +48,7 @@ namespace TEAM
         /// <param name="chosenFile"></param>
         private void LocalInitialiseValidationSettings()
         {
-            ////Checkbox setting based on loaded configuration
+            //Checkbox setting based on loaded configuration
             if (ValidationSettings.SourceObjectExistence == "True")
             {
                 checkBoxSourceObjectExistence.Checked = true;
@@ -60,13 +60,11 @@ namespace TEAM
             else
             {
                 // Raise exception
-                MessageBox.Show(
-                    "There is something wrong with the validation values, only true and false are allowed but this was encountered: " +
-                    ValidationSettings.SourceObjectExistence +
-                    ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.SourceObjectExistence + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
+            // Target Object Existence
             if (ValidationSettings.TargetObjectExistence == "True")
             {
                 checkBoxTargetObjectExistence.Checked = true;
@@ -78,10 +76,7 @@ namespace TEAM
             else
             {
                 // Raise exception
-                MessageBox.Show(
-                    "There is something wrong with the validation values, only true and false are allowed but this was encountered: " +
-                    ValidationSettings.TargetObjectExistence +
-                    ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " +ValidationSettings.TargetObjectExistence + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
@@ -114,10 +109,38 @@ namespace TEAM
             else
             {
                 // Raise exception
-                MessageBox.Show(
-                    "There is something wrong with the validation values, only true and false are allowed but this was encountered: " +
-                    ValidationSettings.LogicalGroup +
-                    ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.LogicalGroup +                    ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+            // Link Key order
+            if (ValidationSettings.LinkKeyOrder == "True")
+            {
+                checkBoxLinkKeyOrder.Checked = true;
+            }
+            else if (ValidationSettings.LinkKeyOrder == "False")
+            {
+                checkBoxLinkKeyOrder.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.LinkKeyOrder + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Business Key Syntax
+            if (ValidationSettings.BusinessKeySyntax == "True")
+            {
+                checkBoxBusinessKeySyntaxValidation.Checked = true;
+            }
+            else if (ValidationSettings.BusinessKeySyntax == "False")
+            {
+                checkBoxBusinessKeySyntaxValidation.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.BusinessKeySyntax + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
@@ -240,7 +263,6 @@ namespace TEAM
                 ValidationSettings.BusinessKeySyntax = businessKeySyntax;
 
 
-
                 // Write to disk
                 ClassEnvironmentConfiguration.SaveValidationFile();
 
@@ -274,6 +296,11 @@ namespace TEAM
             {
                 richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
             }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

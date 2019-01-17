@@ -123,6 +123,9 @@
   <metadata name="backgroundWorkerRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <metadata name="toolTipRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>448, 19</value>
+  </metadata>
   <data name="checkBoxRetainManualMapping.ToolTip" xml:space="preserve">
     <value>Checking this option will not delete the MD_TABLE_MAPPING and MD_ATTRIBUTE_MAPPING tables, if a SQL Server repository is used.
 
