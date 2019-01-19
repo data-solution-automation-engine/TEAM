@@ -61,7 +61,8 @@ namespace TEAM
             if (revalidateFlag == false)
                 return;
             revalidateFlag = false;
-            MessageBox.Show("Valildating Connections");
+            //MessageBox.Show("Valildating Connections");
+            richTextBoxInformation.AppendText("Validating database connections.\r\n");
             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
             var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
             var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg };
@@ -120,7 +121,8 @@ namespace TEAM
                 return;
             }
             EnableMenu();
-            
+            richTextBoxInformation.AppendText("Database connections have been successfully validated.\r\n");
+
             try
             {
                 DisplayMaxVersion(connOmd);
