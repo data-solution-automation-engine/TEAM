@@ -25,8 +25,7 @@ namespace TEAM
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var configurationSettings = new ConfigurationSettings();
-            var connHstg = new SqlConnection {ConnectionString = configurationSettings.ConnectionStringHstg };
+            var connHstg = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringHstg };
 
             try
             {
@@ -92,6 +91,11 @@ namespace TEAM
             linkLabel1.LinkVisited = true;
             // Navigate to a URL.
             Process.Start("http://www.roelantvos.com");
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

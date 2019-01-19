@@ -35,7 +35,6 @@ namespace TEAM
             this.button1 = new System.Windows.Forms.Button();
             this.buttonClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -71,26 +70,18 @@ namespace TEAM
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(234, 13);
             this.textBox1.TabIndex = 2;
-            this.textBox1.Text = "The Virtual Enterprise Data Warehouse";
-            // 
-            // textBox2
-            // 
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Location = new System.Drawing.Point(13, 32);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 64);
-            this.textBox2.TabIndex = 3;
-            this.textBox2.Text = "Roelant Vos\r\n2015-2018\r\nv1.4";
+            this.textBox1.Text = "Taxonomy of ETL Automation Metadata";
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(189, 9);
+            this.pictureBox1.Location = new System.Drawing.Point(169, 32);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(100, 55);
+            this.pictureBox1.Size = new System.Drawing.Size(108, 83);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             // 
@@ -112,12 +103,11 @@ namespace TEAM
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(289, 275);
+            this.ClientSize = new System.Drawing.Size(289, 276);
             this.ControlBox = false;
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.button1);
             this.DoubleBuffered = true;
@@ -145,8 +135,7 @@ namespace TEAM
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.LinkLabel linkLabel1;
+        private LinkLabel linkLabel1;
     }
 }

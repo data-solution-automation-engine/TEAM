@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TEAM
@@ -14,202 +8,152 @@ namespace TEAM
     public partial class FormManageValidation : FormBase
     {
         private readonly FormManageMetadata _myParent;
+
         public FormManageValidation(FormManageMetadata parent)
         {            
             _myParent = parent;
             InitializeComponent();
-        }
 
-        private void LocalInitialiseConnections(string chosenFile)
-        {
-            var configList = new Dictionary<string, string>();
-            var fs = new FileStream(chosenFile, FileMode.Open, FileAccess.Read);
-            var sr = new StreamReader(fs);
-
+            // Make sure the validation information is available in this form
             try
             {
-                string textline;
-                while ((textline = sr.ReadLine()) != null)
+                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
+                                     GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+
+                // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
+                if (!File.Exists(validationFile))
                 {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
-                    {
-                        var line = textline.Split('|');
-                        configList.Add(line[0], line[1]);
-                    }
+                    var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                    newEnvironmentConfiguration.CreateDummyValidationConfiguration(validationFile);
                 }
 
-                sr.Close();
-                fs.Close();
+                // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
+                ClassEnvironmentConfiguration.LoadValidationFile(validationFile);
 
-                var connectionStringOmd = configList["connectionStringMetadata"];
-                connectionStringOmd = connectionStringOmd.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
+                richTextBoxInformation.Text += "The validation file " + validationFile + " has been loaded.";
 
-                var connectionStringSource = configList["connectionStringSource"];
-                connectionStringSource = connectionStringSource.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
-
-                var connectionStringStg = configList["connectionStringStaging"];
-                connectionStringStg = connectionStringStg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
-
-                var connectionStringHstg = configList["connectionStringPersistentStaging"];
-                connectionStringHstg = connectionStringHstg.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
-
-                var connectionStringInt = configList["connectionStringIntegration"];
-                connectionStringInt = connectionStringInt.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
-
-                var connectionStringPres = configList["connectionStringPresentation"];
-                connectionStringPres = connectionStringPres.Replace("Provider=SQLNCLI10;", "").Replace("Provider=SQLNCLI11;", "").Replace("Provider=SQLNCLI12;", "");
-
-                //textBoxOutputPath.Text = GlobalParameters.OutputPath;
-                //textBoxIntegrationConnection.Text = connectionStringInt;
-                //textBoxPSAConnection.Text = connectionStringHstg;
-                //textBoxSourceConnection.Text = connectionStringSource;
-                //textBoxStagingConnection.Text = connectionStringStg;
-                //textBoxMetadataConnection.Text = connectionStringOmd;
-                //textBoxPresentationConnection.Text = connectionStringPres;
-
-                //textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
-                //textBoxSatPrefix.Text = configList["SatTablePrefix"];
-                //textBoxLinkTablePrefix.Text = configList["LinkTablePrefix"];
-                //textBoxLinkSatPrefix.Text = configList["LinkSatTablePrefix"];
-                //textBoxDWHKeyIdentifier.Text = configList["KeyIdentifier"];
-                //textBoxSchemaName.Text = configList["SchemaName"];
-                //textBoxEventDateTime.Text = configList["EventDateTimeStamp"];
-                //textBoxLDST.Text = configList["LoadDateTimeStamp"];
-                //textBoxExpiryDateTimeName.Text = configList["ExpiryDateTimeStamp"];
-                //textBoxChangeDataCaptureIndicator.Text = configList["ChangeDataIndicator"];
-                //textBoxRecordSource.Text = configList["RecordSourceAttribute"];
-                //textBoxETLProcessID.Text = configList["ETLProcessID"];
-                //textBoxETLUpdateProcessID.Text = configList["ETLUpdateProcessID"];
-                //textBoxSourcePrefix.Text = configList["SourceSystemPrefix"];
-                //textBoxStagingAreaPrefix.Text = configList["StagingAreaPrefix"];
-                //textBoxPSAPrefix.Text = configList["PersistentStagingAreaPrefix"];
-                //textBoxSourceRowId.Text = configList["RowID"];
-                //textBoxSourceDatabase.Text = configList["SourceDatabase"];
-                //textBoxStagingDatabase.Text = configList["StagingDatabase"];
-                //textBoxPSADatabase.Text = configList["PersistentStagingDatabase"];
-                //textBoxIntegrationDatabase.Text = configList["IntegrationDatabase"];
-                //textBoxPresentationDatabase.Text = configList["PresentationDatabase"];
-                //textBoxRecordChecksum.Text = configList["RecordChecksum"];
-                //textBoxCurrentRecordAttributeName.Text = configList["CurrentRecordAttribute"];
-                //textBoxAlternativeRecordSource.Text = configList["AlternativeRecordSource"];
-                //textBoxHubAlternativeLDTSAttribute.Text = configList["AlternativeHubLDTS"];
-                //textBoxSatelliteAlternativeLDTSAttribute.Text = configList["AlternativeSatelliteLDTS"];
-                //textBoxLogicalDeleteAttributeName.Text = configList["LogicalDeleteAttribute"];
-                //textBoxLinkedServer.Text = configList["LinkedServerName"];
-
-                ////Checkbox setting based on loaded configuration
-                //CheckBox myConfigurationCheckBox;
-
-                //if (configList["AlternativeRecordSourceFunction"] == "False")
-                //{
-                //    myConfigurationCheckBox = checkBoxAlternativeRecordSource;
-                //    myConfigurationCheckBox.Checked = false;
-                //    textBoxAlternativeRecordSource.Enabled = false;
-                //}
-                //else
-                //{
-                //    myConfigurationCheckBox = checkBoxAlternativeRecordSource;
-                //    myConfigurationCheckBox.Checked = true;
-                //}
-
-                //if (configList["AlternativeHubLDTSFunction"] == "False")
-                //{
-                //    myConfigurationCheckBox = checkBoxAlternativeHubLDTS;
-                //    myConfigurationCheckBox.Checked = false;
-                //    textBoxHubAlternativeLDTSAttribute.Enabled = false;
-                //}
-                //else
-                //{
-                //    myConfigurationCheckBox = checkBoxAlternativeHubLDTS;
-                //    myConfigurationCheckBox.Checked = true;
-                //}
-
-                //if (configList["AlternativeSatelliteLDTSFunction"] == "False")
-                //{
-                //    myConfigurationCheckBox = checkBoxAlternativeSatLDTS;
-                //    myConfigurationCheckBox.Checked = false;
-                //    textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
-                //}
-                //else
-                //{
-                //    myConfigurationCheckBox = checkBoxAlternativeSatLDTS;
-                //    myConfigurationCheckBox.Checked = true;
-                //}
-
-
-                ////Radiobutton setting for prefix / suffix 
-                //RadioButton myTableRadioButton;
-
-                //if (configList["TableNamingLocation"] == "Prefix")
-                //{
-                //    myTableRadioButton = tablePrefixRadiobutton;
-                //    myTableRadioButton.Checked = true;
-                //}
-                //else
-                //{
-                //    myTableRadioButton = tableSuffixRadiobutton;
-                //    myTableRadioButton.Checked = true;
-                //}
-
-                ////Radiobutton settings for on key location
-                //RadioButton myKeyRadioButton;
-
-                //if (configList["KeyNamingLocation"] == "Prefix")
-                //{
-                //    myKeyRadioButton = keyPrefixRadiobutton;
-                //    myKeyRadioButton.Checked = true;
-                //}
-                //else
-                //{
-                //    myKeyRadioButton = keySuffixRadiobutton;
-                //    myKeyRadioButton.Checked = true;
-                //}
-
-                ////Radiobutton settings for PSA Natural Key determination
-                //RadioButton myPsaBusinessKeyLocation;
-
-                //if (configList["PSAKeyLocation"] == "PrimaryKey")
-                //{
-                //    myPsaBusinessKeyLocation = radioButtonPSABusinessKeyPK;
-                //    myPsaBusinessKeyLocation.Checked = true;
-                //}
-                //else
-                //{
-                //    myPsaBusinessKeyLocation = radioButtonPSABusinessKeyIndex;
-                //    myPsaBusinessKeyLocation.Checked = true;
-                //}
-
-                ////Radiobutton settings for repository type
-                //RadioButton myMetadatarepositoryType;
-
-                //if (configList["metadataRepositoryType"] == "JSON")
-                //{
-                //    myMetadatarepositoryType = radioButtonJSON;
-                //    myMetadatarepositoryType.Checked = true;
-                //}
-                //else
-                //{
-                //    myMetadatarepositoryType = radioButtonSQLServer;
-                //    myMetadatarepositoryType.Checked = true;
-                //}
-
-                richTextBoxInformation.AppendText("The default values were loaded. \r\n\r\n");
-                richTextBoxInformation.AppendText(@"The file " + chosenFile + " was uploaded successfully. \r\n\r\n");
+                // Apply the values to the form
+                LocalInitialiseValidationSettings();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+
             }
+
+        }
+
+        /// <summary>
+        ///    This method will update the validation values on the form
+        /// </summary>
+        /// <param name="chosenFile"></param>
+        private void LocalInitialiseValidationSettings()
+        {
+            //Checkbox setting based on loaded configuration
+            if (ValidationSettings.SourceObjectExistence == "True")
+            {
+                checkBoxSourceObjectExistence.Checked = true;
+            }
+            else if (ValidationSettings.SourceObjectExistence == "False")
+            {
+                checkBoxSourceObjectExistence.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.SourceObjectExistence + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+            // Target Object Existence
+            if (ValidationSettings.TargetObjectExistence == "True")
+            {
+                checkBoxTargetObjectExistence.Checked = true;
+            }
+            else if (ValidationSettings.TargetObjectExistence == "False")
+            {
+                checkBoxTargetObjectExistence.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " +ValidationSettings.TargetObjectExistence + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+            if (ValidationSettings.SourceBusinessKeyExistence == "True")
+            {
+                checkBoxSourceBusinessKeyExistence.Checked = true;
+            }
+            else if (ValidationSettings.SourceBusinessKeyExistence == "False")
+            {
+                checkBoxSourceBusinessKeyExistence.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show(
+                    "There is something wrong with the validation values, only true and false are allowed but this was encountered: " +
+                    ValidationSettings.SourceBusinessKeyExistence +
+                    ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+            if (ValidationSettings.LogicalGroup == "True")
+            {
+                checkBoxLogicalGroup.Checked = true;
+            }
+            else if (ValidationSettings.LogicalGroup == "False")
+            {
+                checkBoxLogicalGroup.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.LogicalGroup +                    ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+            // Link Key order
+            if (ValidationSettings.LinkKeyOrder == "True")
+            {
+                checkBoxLinkKeyOrder.Checked = true;
+            }
+            else if (ValidationSettings.LinkKeyOrder == "False")
+            {
+                checkBoxLinkKeyOrder.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.LinkKeyOrder + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Business Key Syntax
+            if (ValidationSettings.BusinessKeySyntax == "True")
+            {
+                checkBoxBusinessKeySyntaxValidation.Checked = true;
+            }
+            else if (ValidationSettings.BusinessKeySyntax == "False")
+            {
+                checkBoxBusinessKeySyntaxValidation.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the validation values, only true and false are allowed but this was encountered: " + ValidationSettings.BusinessKeySyntax + ". Please check the validation file (TEAM_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+
         }
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var configurationPath = Application.StartupPath + @"\Configuration\";
             var theDialog = new OpenFileDialog
             {
-                Title = @"Open Configuration File",
+                Title = @"Open Validation File",
                 Filter = @"Text files|*.txt",
-                InitialDirectory = @"" + configurationPath + ""
+                InitialDirectory = @"" + GlobalParameters.ConfigurationPath + ""
             };
 
             if (theDialog.ShowDialog() != DialogResult.OK) return;
@@ -221,13 +165,142 @@ namespace TEAM
                 {
                     richTextBoxInformation.Clear();
                     var chosenFile = theDialog.FileName;
-                    LocalInitialiseConnections(chosenFile);
+                    
+                    // Load from disk into memory
+                    ClassEnvironmentConfiguration.LoadValidationFile(chosenFile);
+
+                    // Update values on form
+                    LocalInitialiseValidationSettings();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Save form values to memory
+
+                // Source object existence check
+                var stringSourceObjectExistence = "";
+                if (checkBoxSourceObjectExistence.Checked)
+                {
+                    stringSourceObjectExistence = "True";
+                }
+                else
+                {
+                    stringSourceObjectExistence = "False";
+                }
+                ValidationSettings.SourceObjectExistence = stringSourceObjectExistence;
+
+
+                // Target object existence check
+                var stringtargetObjectExistence = "";
+                if (checkBoxTargetObjectExistence.Checked)
+                {
+                    stringtargetObjectExistence = "True";
+                }
+                else
+                {
+                    stringtargetObjectExistence = "False";
+                }
+                ValidationSettings.TargetObjectExistence = stringtargetObjectExistence;
+
+
+                // Source business key existence check
+                var stringBusinessKeyExistence = "";
+                if (checkBoxSourceBusinessKeyExistence.Checked)
+                {
+                    stringBusinessKeyExistence = "True";
+                }
+                else
+                {
+                    stringBusinessKeyExistence = "False";
+                }
+                ValidationSettings.SourceBusinessKeyExistence = stringBusinessKeyExistence;
+
+
+                // Logical Group Validation
+                var stringLogicalGroup = "";
+                if (checkBoxLogicalGroup.Checked)
+                {
+                    stringLogicalGroup = "True";
+                }
+                else
+                {
+                    stringLogicalGroup = "False";
+                }
+                ValidationSettings.LogicalGroup = stringLogicalGroup;
+
+
+                // Link Key Order Validation
+                var stringLinkKeyOrder = "";
+                if (checkBoxLinkKeyOrder.Checked)
+                {
+                    stringLinkKeyOrder = "True";
+                }
+                else
+                {
+                    stringLinkKeyOrder = "False";
+                }
+                ValidationSettings.LinkKeyOrder = stringLinkKeyOrder;
+
+
+                // Business key syntax check
+                var businessKeySyntax = "";
+                if (checkBoxBusinessKeySyntaxValidation.Checked)
+                {
+                    businessKeySyntax = "True";
+                }
+                else
+                {
+                    businessKeySyntax = "False";
+                }
+                ValidationSettings.BusinessKeySyntax = businessKeySyntax;
+
+
+                // Write to disk
+                ClassEnvironmentConfiguration.SaveValidationFile();
+
+                richTextBoxInformation.Text = "The values have been successfully saved.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: Could not write values to memory and disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void openConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(GlobalParameters.ConfigurationPath);
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+            }
+        }
+
+        private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(GlobalParameters.OutputPath);
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

@@ -225,8 +225,7 @@ namespace TEAM
 
         private void MetadataGraph()
         {
-            var configurationSettings = new ConfigurationSettings();
-            var connOmd = new SqlConnection { ConnectionString = configurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
             var systemList = new List<string>(); // To create the groups (per system)
             var nodeDictionary = new Dictionary<string, string>(); // To create the nodes and add them to a parent node (group)

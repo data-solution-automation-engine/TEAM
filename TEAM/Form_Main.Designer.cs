@@ -80,7 +80,7 @@
             this.groupBox2.Size = new System.Drawing.Size(299, 88);
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Repository Version";
+            this.groupBox2.Text = "Repository version";
             // 
             // labelMetadataRepository
             // 
@@ -140,7 +140,7 @@
             this.groupBoxVersionSelection.Size = new System.Drawing.Size(299, 87);
             this.groupBoxVersionSelection.TabIndex = 20;
             this.groupBoxVersionSelection.TabStop = false;
-            this.groupBoxVersionSelection.Text = "Version Selection";
+            this.groupBoxVersionSelection.Text = "Version selection";
             // 
             // labelActiveVersion
             // 
@@ -239,7 +239,7 @@
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Text = "Exit Application";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // metadataToolStripMenuItem
@@ -292,14 +292,14 @@
             this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generateTestDataToolStripMenuItem});
             this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
-            this.testingToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.testingToolStripMenuItem.Text = "&Testing";
             // 
             // generateTestDataToolStripMenuItem
             // 
             this.generateTestDataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generateTestDataToolStripMenuItem.Image")));
             this.generateTestDataToolStripMenuItem.Name = "generateTestDataToolStripMenuItem";
-            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.generateTestDataToolStripMenuItem.Text = "Generate Test Data";
             this.generateTestDataToolStripMenuItem.Click += new System.EventHandler(this.generateTestDataToolStripMenuItem_Click);
             // 
@@ -336,7 +336,7 @@
             this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
             this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
             this.helpToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.helpToolStripMenuItem1.Text = "Help";
             this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
             // 
@@ -344,19 +344,19 @@
             // 
             this.linksToolStripMenuItem.Image = global::TEAM.Properties.Resources.LinkIcon;
             this.linksToolStripMenuItem.Name = "linksToolStripMenuItem";
-            this.linksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.linksToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.linksToolStripMenuItem.Text = "Links";
             this.linksToolStripMenuItem.Click += new System.EventHandler(this.linksToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(115, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
@@ -379,6 +379,7 @@
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TEAM - Taxonomy for ETL Automation Metadata ";
+            this.Activated += new System.EventHandler(this.FormMain_Activated);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBoxVersionSelection.ResumeLayout(false);

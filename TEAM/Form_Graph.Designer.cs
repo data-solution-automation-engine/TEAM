@@ -158,8 +158,8 @@
             // 
             this.exitToolStripMenuItem1.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(92, 22);
-            this.exitToolStripMenuItem1.Text = "Exit";
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem1.Text = "Close Window";
             this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
             // 
             // toolStripZoomControl

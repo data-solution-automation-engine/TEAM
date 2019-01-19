@@ -134,6 +134,11 @@
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ClassJsonHandling.cs" />
+    <Compile Include="ClassEnvironmentConfiguration.cs" />
+    <Compile Include="CustomTimedTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FormBase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,6 +199,7 @@
     <Compile Include="Form_Validation.Designer.cs">
       <DependentUpon>Form_Validation.cs</DependentUpon>
     </Compile>
+    <Compile Include="ClassMetadataValidation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CustomDataGridViewTable.cs">
@@ -461,7 +467,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release "D:\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\PreEmptiveSolutions\DotfuscatorCE\DotfuscatorCLI.exe" "D:\Git_Repositories\TEAM\TEAM\Dotfuscator\DotfuscatorTEAM.xml"</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Release "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\PreEmptiveSolutions\DotfuscatorCE\DotfuscatorCLI.exe" "D:\Git_Repositories\TEAM\TEAM\Dotfuscator\DotfuscatorTEAM.xml"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
