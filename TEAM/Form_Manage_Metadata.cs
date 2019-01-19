@@ -251,6 +251,7 @@ namespace TEAM
                 catch (Exception exception)
                 {
                     richTextBoxInformation.Text += exception.Message;
+                    return;
                 }
 
                 var sqlStatementForLatestVersion = new StringBuilder();

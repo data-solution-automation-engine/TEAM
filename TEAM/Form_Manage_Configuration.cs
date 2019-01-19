@@ -10,7 +10,7 @@ namespace TEAM
     public partial class FormManageConfiguration : FormBase
     {
         private bool _formLoading = true;
-
+        private FormMain parentFormMain;
         public FormManageConfiguration()
         {
             InitializeComponent();
@@ -18,6 +18,7 @@ namespace TEAM
 
         public FormManageConfiguration(FormMain parent) : base(parent)
         {
+            this.parentFormMain = parent;
             InitializeComponent();
 
             //Make sure the root directories exist, based on hard-coded (tool) parameters
@@ -576,6 +577,7 @@ namespace TEAM
 
             // Save the information 
             ClassEnvironmentConfiguration.SaveConfigurationFile();
+            parentFormMain.revalidateFlag = true;
         }
 
 
@@ -877,11 +879,6 @@ namespace TEAM
             }
         }
 
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void FormManageConfiguration_Load(object sender, EventArgs e)
         {
 
@@ -1042,6 +1039,16 @@ namespace TEAM
         private void textBoxMetadataDatabaseName_TextChanged(object sender, EventArgs e)
         {
             BuildMetadataConnectionString();
+        }
+
+        private void FormManageConfiguration_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            
+        }
+
+        private void FormManageConfiguration_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            parentFormMain.revalidateFlag=true;
         }
     }
 }

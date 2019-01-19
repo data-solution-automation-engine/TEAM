@@ -1301,7 +1301,6 @@
             this.labelUserName.Size = new System.Drawing.Size(55, 13);
             this.labelUserName.TabIndex = 78;
             this.labelUserName.Text = "Username";
-            this.labelUserName.Click += new System.EventHandler(this.label5_Click);
             // 
             // textBoxMetadataDatabaseName
             // 
@@ -1525,7 +1524,8 @@
             this.Name = "FormManageConfiguration";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the configuration settings";
-            this.Load += new System.EventHandler(this.FormManageConfiguration_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormManageConfiguration_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormManageConfiguration_FormClosed);
             this.menuStripMainMenu.ResumeLayout(false);
             this.menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

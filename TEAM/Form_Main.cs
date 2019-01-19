@@ -14,6 +14,7 @@ namespace TEAM
 {
     public partial class FormMain : FormBase
     {
+        internal bool revalidateFlag = true;
         public FormMain()
         {
             // Set the version of the build for everything
@@ -46,49 +47,100 @@ namespace TEAM
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
             richTextBoxInformation.AppendText("Version "+versionNumberforTeamApplication+"\r\n\r\n");
             richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
-            
+
+            TestConnections();
+
+            if (errorCounter > 0)
+            {
+                richTextBoxInformation.AppendText(errorMessage.ToString());
+            }
+        }
+
+        public void TestConnections()
+        {
+            if (revalidateFlag == false)
+                return;
+            revalidateFlag = false;
+            MessageBox.Show("Valildating Connections");
             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
             var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
             var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg };
 
+            if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
+                try
+                {
+                    connOmd.Open();
+                }
+                catch
+                {
+                    this.richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    DisableMenu();
+                    return;
+                }
+            else
+            { 
+                richTextBoxInformation.AppendText("Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+                DisableMenu();
+                return;
+            }
+            
+
+            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>")
+                try
+                {
+                    connStg.Open();
+                }
+                catch
+                {
+                    this.richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    DisableMenu();
+                    return;
+                }
+            else
+            {
+                richTextBoxInformation.AppendText("Staging Area connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+                DisableMenu();
+                return;
+            }
+            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>")
+                try
+                {
+                    connPsa.Open();
+                }
+                catch
+                {
+                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Persistent Staging Area (PSA) Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    DisableMenu();
+                    return;
+                }
+            else
+            { 
+                richTextBoxInformation.AppendText("Persistent Staging Area (PSA) connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+                DisableMenu();
+                return;
+            }
+            EnableMenu();
+            
             try
             {
-                connOmd.Open();
-
                 DisplayMaxVersion(connOmd);
                 DisplayCurrentVersion(connOmd);
                 DisplayRepositoryVersion(connOmd);
             }
             catch
             {
-                richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                this.richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables  \r\n");
             }
 
-            try
-            {
-                connStg.Open();
-            }
-            catch
-            {
-                richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-            }
+        }
 
-            try
-            {
-                connPsa.Open();
-            }
-            catch
-            {
-                richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Persistent Staging Area (PSA) Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-            }
-
-            if (errorCounter > 0)
-            {
-                richTextBoxInformation.AppendText(errorMessage.ToString());
-            }
-
-
-
+        public void DisableMenu()
+        {
+            this.metadataToolStripMenuItem.Enabled = false;
+        }
+        public void EnableMenu()
+        {
+            this.metadataToolStripMenuItem.Enabled = true;
         }
 
         internal void DisplayMaxVersion(SqlConnection connOmd)
@@ -206,7 +258,9 @@ namespace TEAM
         }
 
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
-        {         
+        {
+            if (this.metadataToolStripMenuItem.Enabled == false)
+                return;
             var t = new Thread(ThreadProcMetadata);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
@@ -502,6 +556,11 @@ namespace TEAM
         private void richTextBoxInformation_Enter(object sender, EventArgs e)
         {
             ActiveControl = null;
+        }
+
+        private void FormMain_Activated(object sender, EventArgs e)
+        {
+            TestConnections();
         }
     }
 }
