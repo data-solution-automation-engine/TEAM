@@ -867,10 +867,13 @@ namespace TEAM
                 TruncateMetadata();
             }
 
+            removeNullsFromGrid(((DataTable)_bindingSourceTableMetadata.DataSource));
+
             //Create a datatable containing the changes, to check if there are changes made to begin with
             var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
             var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+
 
             //Check if there are any rows available in the grid view, and if changes have been detected ata ll
             if (
@@ -1539,6 +1542,21 @@ namespace TEAM
             catch (JsonReaderException ex)
             {
                 richTextBoxInformation.Text += "There were issues inserting the new JSON version file for the Attribute Mapping.\r\n" + ex;
+            }
+
+        }
+
+        private void removeNullsFromGrid(DataTable dataTable)
+        {
+            int rows = dataTable.Rows.Count;
+            int cols = dataTable.Columns.Count;
+            for (int r=0;r<rows;r++)
+            {
+                for (int c=0;c<cols;c++)
+                {
+                    if (dataTable.Rows[r][c].ToString() == String.Empty)
+                        dataTable.Rows[r][c] = "";
+                }
             }
 
         }
@@ -3214,6 +3232,7 @@ namespace TEAM
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
+
             #region Validation
             // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
             if (checkBoxValidation.Checked)
@@ -6758,25 +6777,55 @@ namespace TEAM
 
 
             // Creating a list of unique table names from the data grid / data table
-            var objectList = new List<string>();
+            var objectListSTG = new List<string>();
+            var objectListPSA = new List<string>();
+            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
+            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
+            var resultList = new Dictionary<string, string>();
+
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (!objectList.Contains(row.Cells[2].Value.ToString()))
+                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix.ToString())
                     {
-                        objectList.Add(row.Cells[2].Value.ToString());
+                        if (!objectListSTG.Contains(row.Cells[2].Value.ToString()))
+                        {
+                            objectListSTG.Add(row.Cells[2].Value.ToString());
+                        }
+                    }
+                    else if (row.Cells[2].Value.ToString().Substring(0, psaPrefix.Length) == psaPrefix.ToString())
+                    {
+                        if (!objectListPSA.Contains(row.Cells[2].Value.ToString()))
+                        {
+                            objectListPSA.Add(row.Cells[2].Value.ToString());
+                        }
+                    }
+                    else
+                    {
+                        if (!resultList.ContainsKey(row.Cells[2].Value.ToString()))
+                            resultList.Add(row.Cells[2].Value.ToString(), "Entry prefix doesn't match neither Staging nor Persistant Staging source.\r\n");
                     }
                 }
             }
 
 
             // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, string>();
 
-            foreach (string sourceObject in objectList)
+            //Validate STG Entries 
+            foreach (string sourceObject in objectListSTG)
             {
                 var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
+
+                if (sourceObjectValidated == "False")
+                {
+                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                }
+            }
+            //Validate PSA Entries
+            foreach (string sourceObject in objectListPSA)
+            {
+                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg);
 
                 if (sourceObjectValidated == "False")
                 {
