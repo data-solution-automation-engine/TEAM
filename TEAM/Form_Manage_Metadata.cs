@@ -267,7 +267,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine(" CAST([ORDINAL_POSITION] AS VARCHAR(100)) AS ORDINAL_POSITION,");
                 sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
                 sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
-                sqlStatementForLatestVersion.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE]");
+                sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
 
                 var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
                 _bindingSourcePhysicalModelMetadata.DataSource = versionList;
@@ -591,7 +591,7 @@ namespace TEAM
 
         private void GridAutoLayout()
         {
-            //return;
+            return;
             //Table Mapping metadata grid - set the autosize based on all cells for each column
             for (var i = 0; i < dataGridViewTableMetadata.Columns.Count - 1; i++)
             {
@@ -6688,8 +6688,9 @@ namespace TEAM
         /// <param name="e"></param>
         private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (checkBoxValidation.Checked)
-            {
+           //LBM 2019-01-24 - We don't need to have the checked box marked when pressing Validation Only, removing the IF
+            //if (checkBoxValidation.Checked)
+            //{
                 BackgroundWorker worker = sender as BackgroundWorker;
 
                 // Handling multi-threading
@@ -6734,12 +6735,12 @@ namespace TEAM
                     // Informing the user.
                     _alertValidation.SetTextLogging("\r\nIn total "+ MetadataParameters.ValidationIssues + " validation issues have been found.");
                 }
-            }
-            else
-            {
-                // Raise exception
-                MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //}
+            //else
+            //{
+            //    // Raise exception
+            //    MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
 
         internal static class MetadataParameters
