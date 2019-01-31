@@ -591,7 +591,8 @@ namespace TEAM
 
         private void GridAutoLayout()
         {
-            return;
+            if (checkBoxResizeDataGrid.Checked == false)
+                return;
             //Table Mapping metadata grid - set the autosize based on all cells for each column
             for (var i = 0; i < dataGridViewTableMetadata.Columns.Count - 1; i++)
             {
@@ -867,13 +868,10 @@ namespace TEAM
                 TruncateMetadata();
             }
 
-            removeNullsFromGrid(((DataTable)_bindingSourceTableMetadata.DataSource));
-
             //Create a datatable containing the changes, to check if there are changes made to begin with
             var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
             var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
-
 
             //Check if there are any rows available in the grid view, and if changes have been detected ata ll
             if (
@@ -1542,21 +1540,6 @@ namespace TEAM
             catch (JsonReaderException ex)
             {
                 richTextBoxInformation.Text += "There were issues inserting the new JSON version file for the Attribute Mapping.\r\n" + ex;
-            }
-
-        }
-
-        private void removeNullsFromGrid(DataTable dataTable)
-        {
-            int rows = dataTable.Rows.Count;
-            int cols = dataTable.Columns.Count;
-            for (int r=0;r<rows;r++)
-            {
-                for (int c=0;c<cols;c++)
-                {
-                    if (dataTable.Rows[r][c].ToString() == String.Empty)
-                        dataTable.Rows[r][c] = "";
-                }
             }
 
         }
@@ -3091,7 +3074,23 @@ namespace TEAM
 
             foreach (DataRow row in inputAttributeMapping.Rows)
             {
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + (string)row["SOURCE_TABLE"] + "', N'" + (string)row["SOURCE_COLUMN"] + "', N'" + (string)row["TARGET_TABLE"] + "', N'" + (string)row["TARGET_COLUMN"] + "', N'" + (string)row["TRANSFORMATION_RULE"] + "');");
+                //LBM 2019-01-31 -- ENSURE NO NULLS ARE INSERTED IN THE TABLE
+                string SOURCE_TABLE       = "";
+                string SOURCE_COLUMN      ="";
+                string TARGET_TABLE       ="";
+                string TARGET_COLUMN      ="";
+                string TRANSFORMATION_RULE="";
+                if (row["SOURCE_TABLE"] != DBNull.Value)
+                    SOURCE_TABLE = (string)row["SOURCE_TABLE"];
+                if (row["SOURCE_COLUMN"] != DBNull.Value);
+                    SOURCE_COLUMN = (string)row["SOURCE_COLUMN"];
+                if (row["TARGET_TABLE"] != DBNull.Value)
+                    TARGET_TABLE = (string)row["TARGET_TABLE"];
+                if (row["TARGET_COLUMN"] != DBNull.Value)
+                    TARGET_COLUMN = (string)row["TARGET_COLUMN"];
+                if (row["TRANSFORMATION_RULE"] != DBNull.Value)
+                    TRANSFORMATION_RULE = (string)row["TRANSFORMATION_RULE"];
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + SOURCE_TABLE + "', N'" + SOURCE_COLUMN + "', N'" + TARGET_TABLE + "', N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3131,7 +3130,26 @@ namespace TEAM
 
             foreach (DataRow row in inputTableMapping.Rows)
             {
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'" + (string)row["STAGING_AREA_TABLE"] + "', N'" + (string)row["BUSINESS_KEY_ATTRIBUTE"].ToString().Replace("'","''") + "', N'" + (string)row["INTEGRATION_AREA_TABLE"] + "', N'" + (string)row["FILTER_CRITERIA"] + "', '" + (string)row["DRIVING_KEY_ATTRIBUTE"] + "', '" + (string)row["GENERATE_INDICATOR"] + "');");
+                //LBM 2019-01-31 -- ENSURE NO NULLS ARE INSERTED IN THE TABLE
+                string STAGING_AREA_TABLE = "";
+                string BUSINESS_KEY_ATTRIBUTE = "";
+                string INTEGRATION_AREA_TABLE = "";
+                string FILTER_CRITERIA = "";
+                string DRIVING_KEY_ATTRIBUTE = "";
+                string GENERATE_INDICATOR = "";
+                if (row["STAGING_AREA_TABLE"] != DBNull.Value)
+                    STAGING_AREA_TABLE = (string)row["STAGING_AREA_TABLE"];
+                if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value) ;
+                    BUSINESS_KEY_ATTRIBUTE = (string)row["BUSINESS_KEY_ATTRIBUTE"];
+                if (row["INTEGRATION_AREA_TABLE"] != DBNull.Value)
+                    INTEGRATION_AREA_TABLE = (string)row["INTEGRATION_AREA_TABLE"];
+                if (row["FILTER_CRITERIA"] != DBNull.Value)
+                    FILTER_CRITERIA = (string)row["FILTER_CRITERIA"];
+                if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
+                    DRIVING_KEY_ATTRIBUTE = (string)row["DRIVING_KEY_ATTRIBUTE"];
+                if (row["GENERATE_INDICATOR"] != DBNull.Value)
+                    GENERATE_INDICATOR = (string)row["GENERATE_INDICATOR"];
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'" + STAGING_AREA_TABLE + "', N'" + BUSINESS_KEY_ATTRIBUTE.ToString().Replace("'","''") + "', N'" + INTEGRATION_AREA_TABLE + "', N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + GENERATE_INDICATOR + "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3232,7 +3250,6 @@ namespace TEAM
         # region Background worker
         private void buttonStart_Click(object sender, EventArgs e)
         {
-
             #region Validation
             // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
             if (checkBoxValidation.Checked)
@@ -6707,9 +6724,8 @@ namespace TEAM
         /// <param name="e"></param>
         private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
-           //LBM 2019-01-24 - We don't need to have the checked box marked when pressing Validation Only, removing the IF
-            //if (checkBoxValidation.Checked)
-            //{
+            if (checkBoxValidation.Checked)
+            {
                 BackgroundWorker worker = sender as BackgroundWorker;
 
                 // Handling multi-threading
@@ -6754,12 +6770,12 @@ namespace TEAM
                     // Informing the user.
                     _alertValidation.SetTextLogging("\r\nIn total "+ MetadataParameters.ValidationIssues + " validation issues have been found.");
                 }
-            //}
-            //else
-            //{
-            //    // Raise exception
-            //    MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         internal static class MetadataParameters
@@ -6777,55 +6793,25 @@ namespace TEAM
 
 
             // Creating a list of unique table names from the data grid / data table
-            var objectListSTG = new List<string>();
-            var objectListPSA = new List<string>();
-            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
-            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
-            var resultList = new Dictionary<string, string>();
-
+            var objectList = new List<string>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix.ToString())
+                    if (!objectList.Contains(row.Cells[2].Value.ToString()))
                     {
-                        if (!objectListSTG.Contains(row.Cells[2].Value.ToString()))
-                        {
-                            objectListSTG.Add(row.Cells[2].Value.ToString());
-                        }
-                    }
-                    else if (row.Cells[2].Value.ToString().Substring(0, psaPrefix.Length) == psaPrefix.ToString())
-                    {
-                        if (!objectListPSA.Contains(row.Cells[2].Value.ToString()))
-                        {
-                            objectListPSA.Add(row.Cells[2].Value.ToString());
-                        }
-                    }
-                    else
-                    {
-                        if (!resultList.ContainsKey(row.Cells[2].Value.ToString()))
-                            resultList.Add(row.Cells[2].Value.ToString(), "Entry prefix doesn't match neither Staging nor Persistant Staging source.\r\n");
+                        objectList.Add(row.Cells[2].Value.ToString());
                     }
                 }
             }
 
 
             // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<string, string>();
 
-            //Validate STG Entries 
-            foreach (string sourceObject in objectListSTG)
+            foreach (string sourceObject in objectList)
             {
                 var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
-
-                if (sourceObjectValidated == "False")
-                {
-                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
-                }
-            }
-            //Validate PSA Entries
-            foreach (string sourceObject in objectListPSA)
-            {
-                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg);
 
                 if (sourceObjectValidated == "False")
                 {
@@ -7233,11 +7219,6 @@ namespace TEAM
                     MessageBox.Show("An error has been encountered! The reported error is: " + ex);
                 }
             }
-        }
-
-        private void businessKeyMetadataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
