@@ -3418,10 +3418,13 @@ namespace TEAM
             var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';            
 
             var linkedServer = ConfigurationSettings.PhysicalModelServerName;
-            if (linkedServer != "")
+            var metadataServer = ConfigurationSettings.MetadataServerName;
+            if (linkedServer != "" && linkedServer != metadataServer)
             {
-                linkedServer = '['+linkedServer + "].";
+                linkedServer = '[' + linkedServer + "].";
             }
+            else
+                linkedServer = "";
 
             var effectiveDateTimeAttribute = ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute=="True" ? ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute : ConfigurationSettings.LoadDateTimeAttribute;
             var currentRecordAttribute = ConfigurationSettings.CurrentRowAttribute;
