@@ -6724,9 +6724,10 @@ namespace TEAM
         /// <param name="e"></param>
         private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (checkBoxValidation.Checked)
-            {
-                BackgroundWorker worker = sender as BackgroundWorker;
+            //LBM 2019-01-24 - We don't need to have the checked box marked when pressing Validation Only, removing the IF
+            //if (checkBoxValidation.Checked)
+            //{
+            BackgroundWorker worker = sender as BackgroundWorker;
 
                 // Handling multi-threading
                 if (worker != null && worker.CancellationPending)
@@ -6770,12 +6771,12 @@ namespace TEAM
                     // Informing the user.
                     _alertValidation.SetTextLogging("\r\nIn total "+ MetadataParameters.ValidationIssues + " validation issues have been found.");
                 }
-            }
-            else
-            {
-                // Raise exception
-                MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //}
+            //else
+            //{
+            //    // Raise exception
+            //    MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
 
         internal static class MetadataParameters
@@ -6793,25 +6794,55 @@ namespace TEAM
 
 
             // Creating a list of unique table names from the data grid / data table
-            var objectList = new List<string>();
+            var objectListSTG = new List<string>();
+            var objectListPSA = new List<string>();
+            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
+            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
+            var resultList = new Dictionary<string, string>();
+
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (!objectList.Contains(row.Cells[2].Value.ToString()))
+                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix.ToString())
                     {
-                        objectList.Add(row.Cells[2].Value.ToString());
+                        if (!objectListSTG.Contains(row.Cells[2].Value.ToString()))
+                        {
+                            objectListSTG.Add(row.Cells[2].Value.ToString());
+                        }
+                    }
+                    else if (row.Cells[2].Value.ToString().Substring(0, psaPrefix.Length) == psaPrefix.ToString())
+                    {
+                        if (!objectListPSA.Contains(row.Cells[2].Value.ToString()))
+                        {
+                            objectListPSA.Add(row.Cells[2].Value.ToString());
+                        }
+                    }
+                    else
+                    {
+                        if (!resultList.ContainsKey(row.Cells[2].Value.ToString()))
+                            resultList.Add(row.Cells[2].Value.ToString(), "Entry prefix doesn't match neither Staging nor Persistant Staging source.\r\n");
                     }
                 }
             }
 
 
             // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, string>();
 
-            foreach (string sourceObject in objectList)
+            //Validate STG Entries 
+            foreach (string sourceObject in objectListSTG)
             {
                 var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
+
+                if (sourceObjectValidated == "False")
+                {
+                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
+                }
+            }
+            //Validate PSA Entries
+            foreach (string sourceObject in objectListPSA)
+            {
+                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg);
 
                 if (sourceObjectValidated == "False")
                 {
