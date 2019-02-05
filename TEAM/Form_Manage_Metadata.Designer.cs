@@ -717,7 +717,7 @@ namespace TEAM
             this.checkBoxResizeDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxResizeDataGrid.Checked = true;
             this.checkBoxResizeDataGrid.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxResizeDataGrid.Location = new System.Drawing.Point(1261, 476);
+            this.checkBoxResizeDataGrid.Location = new System.Drawing.Point(1258, 476);
             this.checkBoxResizeDataGrid.Name = "checkBoxResizeDataGrid";
             this.checkBoxResizeDataGrid.Size = new System.Drawing.Size(108, 17);
             this.checkBoxResizeDataGrid.TabIndex = 27;

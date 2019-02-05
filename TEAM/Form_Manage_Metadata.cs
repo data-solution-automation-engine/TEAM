@@ -4187,33 +4187,79 @@ namespace TEAM
                 #endregion
 
                 #region Filter Variables  - 35%
-                /*LBM 2019/01/10 - Create a filter vabiable String to the INFORMATION_SCHEMA.COLUMNS to only fetch COLUMNS_NAME(attributes) from the TALBES in the MD_TABLE_MAPPING*/
-                string stgTableFiler = "''";
-                string psaTableFiler = "''";
+                string stgTableFilter = "";
+                string psaTableFilter = "";
+                string intTableFilter = "";
+
                 using (var connection = new SqlConnection(metaDataConnection))
                 {
                     SqlCommand command;
                     SqlDataReader reader;
-                    string stgTableFilerQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + stagingPrefix + "'";
-                    string psaTableFilerQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + psaPrefix + "'";
+                    string stgTableFilterQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + stagingPrefix + "'";
+                    string psaTableFilterQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + psaPrefix + "'";
+                    string intTableFilterQuery = @"SELECT DISTINCT [INTEGRATION_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING]";
+
                     try
                     {
-
                         connection.Open();
-                        command = new SqlCommand(stgTableFilerQuery, connection);
+
+                        // Staging
+                        command = new SqlCommand(stgTableFilterQuery, connection);
                         reader = command.ExecuteReader();
+
+                        int stgCounter = 1;
                         while (reader.Read())
                         {
-                            stgTableFiler = stgTableFiler + ",'" + reader["STAGING_AREA_TABLE"] + "'";
+                            if (stgCounter==1)
+                            {
+                                stgTableFilter = stgTableFilter + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                            }
+                            else
+                            {
+                                stgTableFilter = stgTableFilter + ", " + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                            }
+                            stgCounter++;
                         }
                         reader.Close();
-                        command = new SqlCommand(psaTableFilerQuery, connection);
+
+                        // PSA
+                        command = new SqlCommand(psaTableFilterQuery, connection);
                         reader = command.ExecuteReader();
+
+                        int psaCounter = 1;
                         while (reader.Read())
                         {
-                            psaTableFiler = psaTableFiler + ",'" + reader["STAGING_AREA_TABLE"] + "'";
+                            if (psaCounter == 1)
+                            {
+                                psaTableFilter = psaTableFilter + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                            }
+                            else
+                            {
+                                psaTableFilter = psaTableFilter + ", " + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                            }
+                            psaCounter++;
                         }
                         reader.Close();
+
+                        // Integration
+                        command = new SqlCommand(intTableFilterQuery, connection);
+                        reader = command.ExecuteReader();
+
+                        int intCounter = 1;
+                        while (reader.Read())
+                        {
+                            if (intCounter == 1)
+                            {
+                                intTableFilter = intTableFilter + "object_id(N'" + reader["INTEGRATION_AREA_TABLE"] + "')";
+                            }
+                            else
+                            {
+                                intTableFilter = intTableFilter + ", " + "object_id(N'" + reader["INTEGRATION_AREA_TABLE"] + "')";
+                            }
+                            intCounter++;
+                        }
+                        reader.Close();
+
                     }
                     catch (Exception ex)
                     {
@@ -4221,6 +4267,23 @@ namespace TEAM
                         _alert.SetTextLogging("An issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n");
                         errorLog.AppendLine("\r\nAn issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n: \r\n\r\n" + ex);
                     }
+
+                    // Making sure a value is returned if the filter doesn't contain any results
+                    if (stgTableFilter=="")
+                    {
+                        stgTableFilter = "NULL";
+                    }
+
+                    if (psaTableFilter == "")
+                    {
+                        psaTableFilter = "NULL";
+                    }
+
+                    if (intTableFilter == "")
+                    {
+                        intTableFilter = "NULL";
+                    }
+
                     worker.ReportProgress(35);
                     _alert.SetTextLogging("Filter variables Created successfully.\r\n");
                 }
@@ -4267,11 +4330,11 @@ namespace TEAM
                         _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
                         prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM");
                         prepareAttStatement.AppendLine("(");
-                        prepareAttStatement.AppendLine("	SELECT COLUMN_NAME FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN (''"+ stgTableFiler + ")");
+                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + stagingDatabase + ".sys.columns WHERE columns.[object_id] IN (" + stgTableFilter + ")");
                         prepareAttStatement.AppendLine("	UNION");
-                        prepareAttStatement.AppendLine("	SELECT COLUMN_NAME FROM " + linkedServer + psaDatabase     + ".INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN (''" + psaTableFiler + ")");
+                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + psaDatabase + ".sys.columns WHERE columns.[object_id] IN (" + psaTableFilter + ")");
                         prepareAttStatement.AppendLine("	UNION");
-                        prepareAttStatement.AppendLine("	SELECT COLUMN_NAME FROM " + linkedServer + integrationDatabase + ".INFORMATION_SCHEMA.COLUMNS");
+                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + integrationDatabase + ".sys.columns WHERE columns.[object_id] IN (" + intTableFilter + ")");
                         prepareAttStatement.AppendLine(") sub1");
                     }
                     else
@@ -4602,12 +4665,12 @@ namespace TEAM
                                                             JOIN 
                                                             (
                                                             SELECT 
-	                                                            TABLE_NAME AS LINK_TABLE_NAME,
-	                                                            COLUMN_NAME AS HUB_TARGET_KEY_NAME_IN_LINK ,
-	                                                            ROW_NUMBER() OVER(PARTITION BY TABLE_NAME ORDER BY ORDINAL_POSITION) AS LINK_ORDER
-                                                            FROM " + linkedServer + integrationDatabase + @".INFORMATION_SCHEMA.COLUMNS
-                                                            WHERE [ORDINAL_POSITION]>4
-                                                            AND [TABLE_NAME] LIKE '" + lnkTablePrefix + @"'
+	                                                            object_name(object_id) AS LINK_TABLE_NAME,
+	                                                            [name] AS HUB_TARGET_KEY_NAME_IN_LINK ,
+	                                                            ROW_NUMBER() OVER(PARTITION BY object_name(object_id) ORDER BY column_id) AS LINK_ORDER
+                                                            FROM " + linkedServer + integrationDatabase + @".sys.columns
+                                                            WHERE [column_id]>4
+                                                            AND object_name(object_id) LIKE '" + lnkTablePrefix + @"'
                                                             ) lnk_target_model
                                                             ON lnk_hubkey_order.INTEGRATION_AREA_TABLE = lnk_target_model.LINK_TABLE_NAME
                                                             AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER
@@ -4802,25 +4865,28 @@ namespace TEAM
                         //prepareMappingStatement.AppendLine("        AND A.COLUMN_NAME = B.COLUMN_NAME");
                         //prepareMappingStatement.AppendLine("        AND  B.TABLE_NAME LIKE '%_VW'");
                         /*Failure LBM*/
-                        prepareMappingStatement.AppendLine("SELECT A.TABLE_NAME, A.COLUMN_NAME");
-                        prepareMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS A");
-                        prepareMappingStatement.AppendLine("WHERE A.TABLE_NAME IN(" + stgTableFiler + ")");
+
+                        // Adding STG and PSA columns for auto-mapping
+                        prepareMappingStatement.AppendLine("SELECT object_name(A.object_id) as TABLE_NAME, A.[name] AS COLUMN_NAME");
+                        prepareMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".sys.columns A");
+                        prepareMappingStatement.AppendLine("WHERE A.[object_id] IN (" + stgTableFilter + ")");
                         prepareMappingStatement.AppendLine("UNION ALL");
-                        prepareMappingStatement.AppendLine("SELECT B.TABLE_NAME, B.COLUMN_NAME");
-                        prepareMappingStatement.AppendLine("FROM " + linkedServer + psaDatabase + ".INFORMATION_SCHEMA.COLUMNS B");
-                        prepareMappingStatement.AppendLine("WHERE B.TABLE_NAME IN("+psaTableFiler+ ")");
+                        prepareMappingStatement.AppendLine("SELECT object_name(B.object_id) as TABLE_NAME, B.[name] AS COLUMN_NAME");
+                        prepareMappingStatement.AppendLine("FROM " + linkedServer + psaDatabase + ".sys.columns B");
+                        prepareMappingStatement.AppendLine("WHERE B.[object_id] IN (" + psaTableFilter+ ")");
                         
                         prepareMappingStatement.AppendLine("    ) mapping");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
                         prepareMappingStatement.AppendLine("JOIN MD_STG_SAT_XREF xref ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
                         prepareMappingStatement.AppendLine("JOIN MD_SAT sat ON xref.SATELLITE_TABLE_ID = sat.SATELLITE_TABLE_ID");
-                        prepareMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".INFORMATION_SCHEMA.COLUMNS satatts");
-                        prepareMappingStatement.AppendLine("on sat.SATELLITE_TABLE_NAME = satatts.TABLE_NAME");
-                        prepareMappingStatement.AppendLine("and UPPER(mapping.COLUMN_NAME) = UPPER(satatts.COLUMN_NAME)");
+
+                        // Do the mapping to the target columns (Integration Layer)
+                        prepareMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".sys.columns satatts");
+                        prepareMappingStatement.AppendLine("on sat.SATELLITE_TABLE_NAME = object_name(satatts.object_id)");
+                        prepareMappingStatement.AppendLine("and UPPER(mapping.COLUMN_NAME) = UPPER(satatts.[name])");
                         prepareMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN");
                         prepareMappingStatement.AppendLine("  ( ");
-
                         prepareMappingStatement.AppendLine("  '" + recordSource + "',");
                         prepareMappingStatement.AppendLine("  '" + alternativeRecordSource + "',");
                         prepareMappingStatement.AppendLine("  '" + sourceRowId + "',");
@@ -5064,19 +5130,19 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS mapping");
+                        prepareDegenerateMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".sys.columns mapping");
                         prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg");
-                        prepareDegenerateMappingStatement.AppendLine("	on stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("	on stg.STAGING_AREA_TABLE_NAME = object_name(mapping.object_id)");
                         prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr");
-                        prepareDegenerateMappingStatement.AppendLine("	on mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("	on mapping.[name] = stg_attr.ATTRIBUTE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("JOIN MD_STG_LINK_ATT_XREF stglnk");
-                        prepareDegenerateMappingStatement.AppendLine("    on 	stg.STAGING_AREA_TABLE_ID = stglnk.STAGING_AREA_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("  on 	stg.STAGING_AREA_TABLE_ID = stglnk.STAGING_AREA_TABLE_ID");
                         prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk");
-                        prepareDegenerateMappingStatement.AppendLine("    on stglnk.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".INFORMATION_SCHEMA.COLUMNS lnkatts");
-                        prepareDegenerateMappingStatement.AppendLine("    on lnk.LINK_TABLE_NAME=lnkatts.TABLE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("    and UPPER(mapping.COLUMN_NAME) = UPPER(lnkatts.COLUMN_NAME)");
-                        prepareDegenerateMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN ");
+                        prepareDegenerateMappingStatement.AppendLine("  on stglnk.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".sys.columns lnkatts");
+                        prepareDegenerateMappingStatement.AppendLine("  on lnk.LINK_TABLE_NAME = object_name(lnkatts.object_id)");
+                        prepareDegenerateMappingStatement.AppendLine("  and UPPER(mapping.[name]) = UPPER(lnkatts.[name])");
+                        prepareDegenerateMappingStatement.AppendLine("WHERE mapping.[name] NOT IN ");
                         prepareDegenerateMappingStatement.AppendLine("  ( ");
 
                         prepareDegenerateMappingStatement.AppendLine("  '" + recordSource + "',");
@@ -6577,14 +6643,18 @@ namespace TEAM
             var sqlStatementForAttributeVersion = new StringBuilder();
 
             sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.VersionId + ") + '|' + main.TABLE_NAME + '|' + main.COLUMN_NAME),2),");
-            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.VersionId + " AS VERSION_ID,");
-            sqlStatementForAttributeVersion.AppendLine("  main.TABLE_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.COLUMN_NAME, ");
-            sqlStatementForAttributeVersion.AppendLine("  main.DATA_TYPE, ");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.CHARACTER_MAXIMUM_LENGTH,0) AS VARCHAR(100)) AS CHARACTER_MAXIMUM_LENGTH,");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.NUMERIC_PRECISION,0) AS VARCHAR(100)) AS NUMERIC_PRECISION, ");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(main.ORDINAL_POSITION AS VARCHAR(100)) AS ORDINAL_POSITION, ");
+            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.VersionId + ") + '|' + object_name(main.object_id) + '|' + main.[name]),2),");
+            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.VersionId + " AS [VERSION_ID],");
+            sqlStatementForAttributeVersion.AppendLine("  object_name(main.object_id) AS [TABLE_NAME], ");
+            sqlStatementForAttributeVersion.AppendLine("  main.[name] AS [COLUMN_NAME], ");
+            sqlStatementForAttributeVersion.AppendLine("  t.[name] AS [DATA_TYPE], ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(");
+            sqlStatementForAttributeVersion.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
+            sqlStatementForAttributeVersion.AppendLine("    ELSE main.[max_length]");
+            sqlStatementForAttributeVersion.AppendLine("    END");
+            sqlStatementForAttributeVersion.AppendLine("     ,0) AS VARCHAR(100)) AS [CHARACTER_MAXIMUM_LENGTH],");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [NUMERIC_PRECISION], ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(main.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION], ");
 
             sqlStatementForAttributeVersion.AppendLine("  CASE ");
             sqlStatementForAttributeVersion.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
@@ -6598,21 +6668,23 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
             sqlStatementForAttributeVersion.AppendLine("  END AS MULTI_ACTIVE_INDICATOR ");
 
-            sqlStatementForAttributeVersion.AppendLine("FROM [" + databaseName + "].INFORMATION_SCHEMA.COLUMNS main");
+            sqlStatementForAttributeVersion.AppendLine("FROM [" + databaseName + "].sys.columns main");
+            sqlStatementForAttributeVersion.AppendLine("JOIN sys.types t ON main.user_type_id=t.user_type_id");
             sqlStatementForAttributeVersion.AppendLine("-- Primary Key");
             sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
             sqlStatementForAttributeVersion.AppendLine("	SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("		sc.name AS TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	  sc.name AS TABLE_NAME,");
+            sqlStatementForAttributeVersion.AppendLine("	  C.name AS COLUMN_NAME");
             sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
             sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
             sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1) keysub");
-            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = keysub.TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = keysub.COLUMN_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1 ");
+            sqlStatementForAttributeVersion.AppendLine(") keysub");
+            sqlStatementForAttributeVersion.AppendLine("   ON object_name(main.object_id) = keysub.TABLE_NAME");
+            sqlStatementForAttributeVersion.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
 
             //Multi-active
             sqlStatementForAttributeVersion.AppendLine("-- Multi-Active");
@@ -6627,7 +6699,7 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
             sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1");
-            sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN('" + effectiveDateTimeAttribute + "')");
+            sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
 
             if (keyIdentifierLocation == "Prefix")
             {
@@ -6639,14 +6711,13 @@ namespace TEAM
             }
 
             sqlStatementForAttributeVersion.AppendLine("	) ma");
-            sqlStatementForAttributeVersion.AppendLine("	ON main.TABLE_NAME = ma.TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.COLUMN_NAME = ma.COLUMN_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	ON object_name(main.object_id) = ma.TABLE_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
 
-            sqlStatementForAttributeVersion.AppendLine("WHERE main.TABLE_NAME LIKE '" + prefix + "_%'");
-
+            sqlStatementForAttributeVersion.AppendLine("WHERE object_name(main.object_id) LIKE '" + prefix + "_%'");
 
             // Retrieve (and apply) the list of tables to filter from the Table Mapping datagrid
-            sqlStatementForAttributeVersion.AppendLine("  AND main.TABLE_NAME IN (");
+            sqlStatementForAttributeVersion.AppendLine("  AND object_name(main.object_id) IN (");
             var filterList = TableMetadataFilter((DataTable)_bindingSourceTableMetadata.DataSource);
             foreach (var filter in filterList)
             {
@@ -6657,7 +6728,7 @@ namespace TEAM
 
             sqlStatementForAttributeVersion.AppendLine("  )");
 
-            sqlStatementForAttributeVersion.AppendLine("ORDER BY main.ORDINAL_POSITION");
+            sqlStatementForAttributeVersion.AppendLine("ORDER BY main.column_id");
 
             var reverseEngineerResults = GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
 
