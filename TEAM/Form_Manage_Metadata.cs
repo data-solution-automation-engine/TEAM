@@ -4190,9 +4190,9 @@ namespace TEAM
                 #endregion
 
                 #region Filter Variables  - 35%
-                string stgTableFilter = "";
-                string psaTableFilter = "";
-                string intTableFilter = "";
+                string stgTableFilterObjects = "";
+                string psaTableFilterObjects = "";
+                string intTableFilterObjects = "";
 
                 using (var connection = new SqlConnection(metaDataConnection))
                 {
@@ -4215,11 +4215,11 @@ namespace TEAM
                         {
                             if (stgCounter==1)
                             {
-                                stgTableFilter = stgTableFilter + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                                stgTableFilterObjects = stgTableFilterObjects + "object_id(N'["+ ConfigurationSettings.StagingDatabaseName + "].["+ ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
                             }
                             else
                             {
-                                stgTableFilter = stgTableFilter + ", " + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                                stgTableFilterObjects = stgTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.StagingDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
                             }
                             stgCounter++;
                         }
@@ -4234,11 +4234,11 @@ namespace TEAM
                         {
                             if (psaCounter == 1)
                             {
-                                psaTableFilter = psaTableFilter + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                                psaTableFilterObjects = psaTableFilterObjects + "object_id(N'[" + ConfigurationSettings.PsaDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
                             }
                             else
                             {
-                                psaTableFilter = psaTableFilter + ", " + "object_id(N'" + reader["STAGING_AREA_TABLE"] + "')";
+                                psaTableFilterObjects = psaTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.PsaDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
                             }
                             psaCounter++;
                         }
@@ -4253,11 +4253,11 @@ namespace TEAM
                         {
                             if (intCounter == 1)
                             {
-                                intTableFilter = intTableFilter + "object_id(N'" + reader["INTEGRATION_AREA_TABLE"] + "')";
+                                intTableFilterObjects = intTableFilterObjects + "object_id(N'[" + ConfigurationSettings.IntegrationDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["INTEGRATION_AREA_TABLE"] + "]')";
                             }
                             else
                             {
-                                intTableFilter = intTableFilter + ", " + "object_id(N'" + reader["INTEGRATION_AREA_TABLE"] + "')";
+                                intTableFilterObjects = intTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.IntegrationDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["INTEGRATION_AREA_TABLE"] + "]')";
                             }
                             intCounter++;
                         }
@@ -4272,19 +4272,19 @@ namespace TEAM
                     }
 
                     // Making sure a value is returned if the filter doesn't contain any results
-                    if (stgTableFilter=="")
+                    if (stgTableFilterObjects=="")
                     {
-                        stgTableFilter = "NULL";
+                        stgTableFilterObjects = "NULL";
                     }
 
-                    if (psaTableFilter == "")
+                    if (psaTableFilterObjects == "")
                     {
-                        psaTableFilter = "NULL";
+                        psaTableFilterObjects = "NULL";
                     }
 
-                    if (intTableFilter == "")
+                    if (intTableFilterObjects == "")
                     {
-                        intTableFilter = "NULL";
+                        intTableFilterObjects = "NULL";
                     }
 
                     worker.ReportProgress(35);
@@ -4333,11 +4333,11 @@ namespace TEAM
                         _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
                         prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM");
                         prepareAttStatement.AppendLine("(");
-                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + stagingDatabase + ".sys.columns WHERE columns.[object_id] IN (" + stgTableFilter + ")");
+                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + stagingDatabase + ".sys.columns WHERE columns.[object_id] IN (" + stgTableFilterObjects + ")");
                         prepareAttStatement.AppendLine("	UNION");
-                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + psaDatabase + ".sys.columns WHERE columns.[object_id] IN (" + psaTableFilter + ")");
+                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + psaDatabase + ".sys.columns WHERE columns.[object_id] IN (" + psaTableFilterObjects + ")");
                         prepareAttStatement.AppendLine("	UNION");
-                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + integrationDatabase + ".sys.columns WHERE columns.[object_id] IN (" + intTableFilter + ")");
+                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + integrationDatabase + ".sys.columns WHERE columns.[object_id] IN (" + intTableFilterObjects + ")");
                         prepareAttStatement.AppendLine(") sub1");
                     }
                     else
@@ -4634,62 +4634,61 @@ namespace TEAM
                 {
                     var prepareHubLnkXrefStatement = new StringBuilder();
                     /*LBM 2019/01/10: Changing to use @ String*/
-                    prepareHubLnkXrefStatement.AppendLine(@"
-                                                            SELECT
-                                                                hub_tbl.HUB_TABLE_ID,
-                                                                hub_tbl.HUB_TABLE_NAME,
-                                                                lnk_tbl.LINK_TABLE_ID,
-                                                                lnk_tbl.LINK_TABLE_NAME,
-                                                                lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,
-                                                                lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK
-                                                            FROM
-                                                            -- This base query adds the Link and its Hubs and their order by pivoting on the full business key
-                                                            (
-                                                                SELECT
-                                                                INTEGRATION_AREA_TABLE,
-                                                                STAGING_AREA_TABLE,
-                                                                BUSINESS_KEY_ATTRIBUTE,
-                                                                LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,
-                                                                ROW_NUMBER() OVER(PARTITION BY INTEGRATION_AREA_TABLE ORDER BY INTEGRATION_AREA_TABLE) AS HUB_KEY_ORDER
-                                                                FROM
-                                                                (
-                                                                SELECT
-                                                                    INTEGRATION_AREA_TABLE,
-                                                                    STAGING_AREA_TABLE,
-                                                                    ROW_NUMBER() OVER(PARTITION BY INTEGRATION_AREA_TABLE ORDER BY INTEGRATION_AREA_TABLE) AS LINK_ORDER,
-                                                                    BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML
-                                                                FROM  TMP_MD_TABLE_MAPPING
-                                                                WHERE [INTEGRATION_AREA_TABLE] LIKE '" + lnkTablePrefix + @"'
-                                                                    AND [GENERATE_INDICATOR] = 'Y'
-                                                                ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)
-                                                                WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same
-                                                            ) lnk_hubkey_order
-                                                            -- Adding the information required for the target model in the query
-                                                            JOIN 
-                                                            (
-                                                            SELECT 
-	                                                            object_name(object_id) AS LINK_TABLE_NAME,
-	                                                            [name] AS HUB_TARGET_KEY_NAME_IN_LINK ,
-	                                                            ROW_NUMBER() OVER(PARTITION BY object_name(object_id) ORDER BY column_id) AS LINK_ORDER
-                                                            FROM " + linkedServer + integrationDatabase + @".sys.columns
-                                                            WHERE [column_id]>4
-                                                            AND object_name(object_id) LIKE '" + lnkTablePrefix + @"'
-                                                            ) lnk_target_model
-                                                            ON lnk_hubkey_order.INTEGRATION_AREA_TABLE = lnk_target_model.LINK_TABLE_NAME
-                                                            AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER
+                    /* RV changed it back, some bugs handling variables */
+                    prepareHubLnkXrefStatement.AppendLine("SELECT");
+                    prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_TABLE_ID,");
+                    prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_TABLE_NAME,");
+                    prepareHubLnkXrefStatement.AppendLine("       lnk_tbl.LINK_TABLE_ID,");
+                    prepareHubLnkXrefStatement.AppendLine("       lnk_tbl.LINK_TABLE_NAME,");
+                    prepareHubLnkXrefStatement.AppendLine("       lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,");
+                    prepareHubLnkXrefStatement.AppendLine("       lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK");
+                    prepareHubLnkXrefStatement.AppendLine("   FROM");
+                    prepareHubLnkXrefStatement.AppendLine("   -- This base query adds the Link and its Hubs and their order by pivoting on the full business key");
+                    prepareHubLnkXrefStatement.AppendLine("   (");
+                    prepareHubLnkXrefStatement.AppendLine("       SELECT");
+                    prepareHubLnkXrefStatement.AppendLine("       INTEGRATION_AREA_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("       STAGING_AREA_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("       BUSINESS_KEY_ATTRIBUTE,");
+                    prepareHubLnkXrefStatement.AppendLine("       LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,");
+                    prepareHubLnkXrefStatement.AppendLine("       ROW_NUMBER() OVER(PARTITION BY INTEGRATION_AREA_TABLE ORDER BY INTEGRATION_AREA_TABLE) AS HUB_KEY_ORDER");
+                    prepareHubLnkXrefStatement.AppendLine("       FROM");
+                    prepareHubLnkXrefStatement.AppendLine("       (");
+                    prepareHubLnkXrefStatement.AppendLine("       SELECT");
+                    prepareHubLnkXrefStatement.AppendLine("           INTEGRATION_AREA_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("           STAGING_AREA_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("           ROW_NUMBER() OVER(PARTITION BY INTEGRATION_AREA_TABLE ORDER BY INTEGRATION_AREA_TABLE) AS LINK_ORDER,");
+                    prepareHubLnkXrefStatement.AppendLine("           BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
+                    prepareHubLnkXrefStatement.AppendLine("       FROM  TMP_MD_TABLE_MAPPING");
+                    prepareHubLnkXrefStatement.AppendLine("       WHERE [INTEGRATION_AREA_TABLE] LIKE '" + lnkTablePrefix + @"'");
+                    prepareHubLnkXrefStatement.AppendLine("           AND [GENERATE_INDICATOR] = 'Y'");
+                    prepareHubLnkXrefStatement.AppendLine("     ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
+                    prepareHubLnkXrefStatement.AppendLine("     WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same");
+                    prepareHubLnkXrefStatement.AppendLine(" ) lnk_hubkey_order");
+                    prepareHubLnkXrefStatement.AppendLine(" -- Adding the information required for the target model in the query");
+                    prepareHubLnkXrefStatement.AppendLine(" JOIN ");
+                    prepareHubLnkXrefStatement.AppendLine(" (");
+                    prepareHubLnkXrefStatement.AppendLine(" SELECT ");
+                    prepareHubLnkXrefStatement.AppendLine("     object_name(object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_TABLE_NAME,");
+                    prepareHubLnkXrefStatement.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
+                    prepareHubLnkXrefStatement.AppendLine("     ROW_NUMBER() OVER(PARTITION BY object_name(object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
+                    prepareHubLnkXrefStatement.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
+                    prepareHubLnkXrefStatement.AppendLine(" WHERE [column_id]>4");
+                    prepareHubLnkXrefStatement.AppendLine(" AND object_name(object_id,db_id('"+ConfigurationSettings.IntegrationDatabaseName+"')) LIKE '" + lnkTablePrefix + @"'");
+                    prepareHubLnkXrefStatement.AppendLine(" ) lnk_target_model");
+                    prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.INTEGRATION_AREA_TABLE = lnk_target_model.LINK_TABLE_NAME");
+                    prepareHubLnkXrefStatement.AppendLine(" AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
+                    prepareHubLnkXrefStatement.AppendLine(" --Adding the Hub mapping data to get the business keys");
+                    prepareHubLnkXrefStatement.AppendLine(" JOIN TMP_MD_TABLE_MAPPING hub");
+                    prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[STAGING_AREA_TABLE] = hub.STAGING_AREA_TABLE");
+                    prepareHubLnkXrefStatement.AppendLine("     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
+                    prepareHubLnkXrefStatement.AppendLine("     AND hub.[INTEGRATION_AREA_TABLE] LIKE '" + hubTablePrefix + @"'");
+                    prepareHubLnkXrefStatement.AppendLine("     AND hub.[GENERATE_INDICATOR] = 'Y'");
+                    prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
+                    prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
+                    prepareHubLnkXrefStatement.AppendLine("     ON hub.INTEGRATION_AREA_TABLE = hub_tbl.HUB_TABLE_NAME");
+                    prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_LINK lnk_tbl");
+                    prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.INTEGRATION_AREA_TABLE = lnk_tbl.LINK_TABLE_NAME");
 
-                                                            --Adding the Hub mapping data to get the business keys
-                                                            JOIN TMP_MD_TABLE_MAPPING hub
-                                                                ON lnk_hubkey_order.[STAGING_AREA_TABLE] = hub.STAGING_AREA_TABLE
-                                                                AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting
-                                                                AND hub.[INTEGRATION_AREA_TABLE] LIKE '" + hubTablePrefix + @"'
-                                                                AND hub.[GENERATE_INDICATOR] = 'Y'
-                                                            --Lastly adding the IDs for the Hubs and Links
-                                                            JOIN dbo.MD_HUB hub_tbl
-                                                                ON hub.INTEGRATION_AREA_TABLE = hub_tbl.HUB_TABLE_NAME
-                                                            JOIN dbo.MD_LINK lnk_tbl
-                                                                ON lnk_hubkey_order.INTEGRATION_AREA_TABLE = lnk_tbl.LINK_TABLE_NAME
-                                                            ");
                    var listHlXref = GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
                     foreach (DataRow tableName in listHlXref.Rows)
@@ -4870,14 +4869,14 @@ namespace TEAM
                         /*Failure LBM*/
 
                         // Adding STG and PSA columns for auto-mapping
-                        prepareMappingStatement.AppendLine("SELECT object_name(A.object_id) as TABLE_NAME, A.[name] AS COLUMN_NAME");
+                        prepareMappingStatement.AppendLine("SELECT object_name(A.object_id, db_id('"+ConfigurationSettings.StagingDatabaseName+"')) as TABLE_NAME, A.[name] AS COLUMN_NAME");
                         prepareMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".sys.columns A");
-                        prepareMappingStatement.AppendLine("WHERE A.[object_id] IN (" + stgTableFilter + ")");
+                        prepareMappingStatement.AppendLine("WHERE A.[object_id] IN (" + stgTableFilterObjects + ")");
                         prepareMappingStatement.AppendLine("UNION ALL");
-                        prepareMappingStatement.AppendLine("SELECT object_name(B.object_id) as TABLE_NAME, B.[name] AS COLUMN_NAME");
+                        prepareMappingStatement.AppendLine("SELECT object_name(B.object_id, db_id('"+ConfigurationSettings.PsaDatabaseName+"')) as TABLE_NAME, B.[name] AS COLUMN_NAME");
                         prepareMappingStatement.AppendLine("FROM " + linkedServer + psaDatabase + ".sys.columns B");
-                        prepareMappingStatement.AppendLine("WHERE B.[object_id] IN (" + psaTableFilter+ ")");
-                        
+                        prepareMappingStatement.AppendLine("WHERE B.[object_id] IN (" + psaTableFilterObjects+ ")");
+
                         prepareMappingStatement.AppendLine("    ) mapping");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
@@ -4886,7 +4885,7 @@ namespace TEAM
 
                         // Do the mapping to the target columns (Integration Layer)
                         prepareMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".sys.columns satatts");
-                        prepareMappingStatement.AppendLine("on sat.SATELLITE_TABLE_NAME = object_name(satatts.object_id)");
+                        prepareMappingStatement.AppendLine("on sat.SATELLITE_TABLE_NAME = object_name(satatts.object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "'))");
                         prepareMappingStatement.AppendLine("and UPPER(mapping.COLUMN_NAME) = UPPER(satatts.[name])");
                         prepareMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN");
                         prepareMappingStatement.AppendLine("  ( ");
@@ -4900,7 +4899,7 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("  '" + effectiveDateTimeAttribute + "',");
                         prepareMappingStatement.AppendLine("  '" + etlProcessId + "',");
                         prepareMappingStatement.AppendLine("  '" + loadDateTimeStamp + "',");
-                        prepareMappingStatement.AppendLine("  '" + currentRecordAttribute + "'");//LBM 2018-08-06 - CURRENT_ROW_INDICATOR should be excluded from the list as well
+                        prepareMappingStatement.AppendLine("  '" + currentRecordAttribute + "'"); //LBM 2018-08-06 - CURRENT_ROW_INDICATOR should be excluded from the list as well
 
                         prepareMappingStatement.AppendLine("  ) ");
                         prepareMappingStatement.AppendLine(")");
@@ -5133,19 +5132,38 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".sys.columns mapping");
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg");
-                        prepareDegenerateMappingStatement.AppendLine("	on stg.STAGING_AREA_TABLE_NAME = object_name(mapping.object_id)");
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr");
-                        prepareDegenerateMappingStatement.AppendLine("	on mapping.[name] = stg_attr.ATTRIBUTE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_STG_LINK_ATT_XREF stglnk");
-                        prepareDegenerateMappingStatement.AppendLine("  on 	stg.STAGING_AREA_TABLE_ID = stglnk.STAGING_AREA_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk");
-                        prepareDegenerateMappingStatement.AppendLine("  on stglnk.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".sys.columns lnkatts");
-                        prepareDegenerateMappingStatement.AppendLine("  on lnk.LINK_TABLE_NAME = object_name(lnkatts.object_id)");
-                        prepareDegenerateMappingStatement.AppendLine("  and UPPER(mapping.[name]) = UPPER(lnkatts.[name])");
-                        prepareDegenerateMappingStatement.AppendLine("WHERE mapping.[name] NOT IN ");
+                        prepareDegenerateMappingStatement.AppendLine("FROM");
+                        prepareDegenerateMappingStatement.AppendLine("(");
+                        // Making sure both STG and PSA are considered
+                        prepareDegenerateMappingStatement.AppendLine("  SELECT");                        
+                        prepareDegenerateMappingStatement.AppendLine("    object_name(object_id, db_id('" + ConfigurationSettings.StagingDatabaseName + "')) AS TABLE_NAME, [name] AS COLUMN_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("  FROM " + linkedServer + stagingDatabase + ".sys.columns");
+                        prepareDegenerateMappingStatement.AppendLine(  "WHERE [object_id] IN (" + stgTableFilterObjects + ")");
+                        prepareDegenerateMappingStatement.AppendLine("  UNION");
+                        prepareDegenerateMappingStatement.AppendLine("  SELECT");
+                        prepareDegenerateMappingStatement.AppendLine("    object_name(object_id, db_id('" + ConfigurationSettings.PsaDatabaseName + "')) AS TABLE_NAME, [name] AS COLUMN_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("  FROM " + linkedServer + psaDatabase + ".sys.columns");
+                        prepareDegenerateMappingStatement.AppendLine("  WHERE [object_id] IN (" + psaTableFilterObjects + ")");
+                        prepareDegenerateMappingStatement.AppendLine(") mapping");
+
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_STG_LINK_ATT_XREF stglnk ON stg.STAGING_AREA_TABLE_ID = stglnk.STAGING_AREA_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk ON stglnk.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
+
+                        prepareDegenerateMappingStatement.AppendLine("JOIN ");
+                        prepareDegenerateMappingStatement.AppendLine("(");
+                        // Making sure Integration is filtered
+                        prepareDegenerateMappingStatement.AppendLine("  SELECT");
+                        prepareDegenerateMappingStatement.AppendLine("    object_name(object_id, db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS TABLE_NAME, [name] AS COLUMN_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("  FROM " + linkedServer + integrationDatabase + ".sys.columns");
+                        prepareDegenerateMappingStatement.AppendLine("  WHERE [object_id] IN (" + intTableFilterObjects + ")");
+                        prepareDegenerateMappingStatement.AppendLine(") lnkatts");
+
+                        prepareDegenerateMappingStatement.AppendLine("  ON lnk.LINK_TABLE_NAME = lnkatts.TABLE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("  AND UPPER(mapping.COLUMN_NAME) = UPPER(lnkatts.TABLE_NAME)");
+
+                        prepareDegenerateMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN ");
                         prepareDegenerateMappingStatement.AppendLine("  ( ");
 
                         prepareDegenerateMappingStatement.AppendLine("  '" + recordSource + "',");
