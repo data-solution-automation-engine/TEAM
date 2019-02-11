@@ -2758,7 +2758,7 @@ namespace TEAM
 
                     string fileExtension = Path.GetExtension(theDialog.FileName);
 
-                    if (fileExtension == ".xml")
+                    if (fileExtension == ".xml" || fileExtension == ".XML")
                     {
                         dataSet.ReadXml(chosenFile);
 
@@ -2766,7 +2766,7 @@ namespace TEAM
                         _bindingSourceTableMetadata.DataSource = dataGridViewTableMetadata.DataSource;
 
                     }
-                    else if (fileExtension == ".json")
+                    else if (fileExtension == ".json" || fileExtension == ".JSON")
                     {
                         // Create a backup file, if enabled
                         if (checkBoxBackupFiles.Checked)
