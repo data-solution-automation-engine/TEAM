@@ -6882,8 +6882,7 @@ namespace TEAM
         {
             #region Validation for Source Object Existence
             // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Staging Area metadata exists in the physical model.\r\n\r\n");
-
+            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the sources as captured in metadata exists in the physical model.\r\n\r\n");
 
             // Creating a list of unique table names from the data grid / data table
             var objectListSTG = new List<string>();
@@ -6913,7 +6912,7 @@ namespace TEAM
                     else
                     {
                         if (!resultList.ContainsKey(row.Cells[2].Value.ToString()))
-                            resultList.Add(row.Cells[2].Value.ToString(), "Entry prefix doesn't match neither Staging nor Persistant Staging source.\r\n");
+                            resultList.Add(row.Cells[2].Value.ToString(), "The provided prefix doesn't match either Staging or Persistent Staging.\r\n");
                     }
                 }
             }
@@ -7152,23 +7151,38 @@ namespace TEAM
             _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
 
             // Creating a list of (staging area) table names and business key (combinations) from the data grid / data table
-            var objectList = new List<Tuple<string, string>>();
+            var objectListSTG = new List<Tuple<string, string>>();
+            var objectListPSA = new List<Tuple<string, string>>();
+            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
+            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
+            var resultList = new Dictionary<Tuple<string, string>, bool>();
+
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (!objectList.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
+                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix.ToString())
                     {
-                        objectList.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                        if (!objectListSTG.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
+                        {
+                            objectListSTG.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                        }
+                    }
+                    else if (row.Cells[2].Value.ToString().Substring(0, psaPrefix.Length) == psaPrefix.ToString())
+                    {
+                        if (!objectListPSA.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
+                        {
+                            objectListPSA.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                        }
                     }
                 }
             }
 
 
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<Tuple<string,string>, bool>();
 
-            foreach (var sourceObject in objectList)
+
+            // Execute the validation check using the list of unique objects
+            foreach (var sourceObject in objectListSTG)
             {
                 // The validation check returns a Dictionary
                 var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.VersionId);
@@ -7185,6 +7199,26 @@ namespace TEAM
                     }
                 }
             }
+
+            foreach (var sourceObject in objectListPSA)
+            {
+                // The validation check returns a Dictionary
+                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg, GlobalParameters.VersionId);
+
+                // Looping through the dictionary
+                foreach (var pair in sourceObjectValidated)
+                {
+                    if (pair.Value == false)
+                    {
+                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
+                        {
+                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                        }
+                    }
+                }
+            }
+
+
             #endregion
 
             // Return the results back to the user

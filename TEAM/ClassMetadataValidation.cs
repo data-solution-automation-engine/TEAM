@@ -19,7 +19,7 @@ namespace TEAM
             conn.Open();
 
             // Execute the check
-            var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + validationObject + "')) THEN 1 ELSE 0 END", conn);
+            var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM sys.objects WHERE [name] = '" + validationObject + "')) THEN 1 ELSE 0 END", conn);
             var exists = (int) cmd.ExecuteScalar() == 1;
 
             conn.Close();
@@ -175,15 +175,25 @@ namespace TEAM
 
             var sqlStatementForLink = new StringBuilder();
 
+            //sqlStatementForLink.AppendLine("SELECT");
+            //sqlStatementForLink.AppendLine("   TABLE_NAME");
+            //sqlStatementForLink.AppendLine("  ,COLUMN_NAME");
+            //sqlStatementForLink.AppendLine("  ,ORDINAL_POSITION");
+            //sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY TABLE_NAME ORDER BY ORDINAL_POSITION) AS [HUB_KEY_POSITION]");
+            //sqlStatementForLink.AppendLine("FROM "+ FormBase.ConfigurationSettings.IntegrationDatabaseName+".INFORMATION_SCHEMA.COLUMNS");
+            //sqlStatementForLink.AppendLine("    WHERE TABLE_NAME LIKE '"+ FormBase.ConfigurationSettings.LinkTablePrefixValue+"_%'");
+            //sqlStatementForLink.AppendLine("AND ORDINAL_POSITION > 4");
+            //sqlStatementForLink.AppendLine("AND TABLE_NAME = '"+validationObject.Item2+"'");
+
             sqlStatementForLink.AppendLine("SELECT");
-            sqlStatementForLink.AppendLine("   TABLE_NAME");
-            sqlStatementForLink.AppendLine("  ,COLUMN_NAME");
-            sqlStatementForLink.AppendLine("  ,ORDINAL_POSITION");
-            sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY TABLE_NAME ORDER BY ORDINAL_POSITION) AS [HUB_KEY_POSITION]");
-            sqlStatementForLink.AppendLine("FROM "+ FormBase.ConfigurationSettings.IntegrationDatabaseName+".INFORMATION_SCHEMA.COLUMNS");
-            sqlStatementForLink.AppendLine("    WHERE TABLE_NAME LIKE '"+ FormBase.ConfigurationSettings.LinkTablePrefixValue+"_%'");
-            sqlStatementForLink.AppendLine("AND ORDINAL_POSITION > 4");
-            sqlStatementForLink.AppendLine("AND TABLE_NAME = '"+validationObject.Item2+"'");
+            sqlStatementForLink.AppendLine("   OBJECT_NAME([object_id]) AS [TABLE_NAME]");
+            sqlStatementForLink.AppendLine("  ,[name] AS [COLUMN_NAME]");
+            sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
+            sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
+            sqlStatementForLink.AppendLine("FROM " + FormBase.ConfigurationSettings.IntegrationDatabaseName + ".sys.columns");
+            sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" + FormBase.ConfigurationSettings.LinkTablePrefixValue + "_%'");
+            sqlStatementForLink.AppendLine("AND column_id > 4");
+            sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
 
             var linkList = FormBase.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
             // Derive the Hub surrogate key name, as this can be compared against the Link
@@ -277,7 +287,7 @@ namespace TEAM
                     else
                     {
                         // Query the data dictionary to valdiate existence
-                        var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + validationObject.Item1 + "' AND COLUMN_NAME = '" + businessKeyPart.Trim() + "')) THEN 1 ELSE 0 END", conn);
+                        var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM sys.columns WHERE OBJECT_NAME([object_id]) = '" + validationObject.Item1 + "' AND [name] = '" + businessKeyPart.Trim() + "')) THEN 1 ELSE 0 END", conn);
                         var exists = (int)cmd.ExecuteScalar() == 1;
                         result.Add(Tuple.Create(validationObject.Item1, businessKeyPart.Trim()), exists);
                     }
