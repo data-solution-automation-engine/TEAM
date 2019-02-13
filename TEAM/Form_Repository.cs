@@ -2126,6 +2126,7 @@ namespace TEAM
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Renewal_Plan_Code] nvarchar(100) NULL");
                         createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
