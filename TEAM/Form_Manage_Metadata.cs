@@ -5887,7 +5887,7 @@ namespace TEAM
                         {
                             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
 
-                            //For later, get the source/target model relationships for Hubs/Sats
+                            //For later, get the source/target model relationships for Hubs and Sats
                             var sqlStatementForHubCategories = new StringBuilder();
                             sqlStatementForHubCategories.AppendLine("SELECT ");
                             sqlStatementForHubCategories.AppendLine(" [STAGING_AREA_TABLE_ID]");
@@ -6161,7 +6161,7 @@ namespace TEAM
                                 dgmlExtract.AppendLine("    <Link Source=\"" + targetNodeStg + "\" Target=\"" + targetNodeSat + "\" />");
                             }
 
-                            //Add Data Vault objects to segment
+                            //Add Data Vault objects to Segment
                             foreach (var node in segmentNodeList)
                             {
                                 var segmentName = node.Remove(0, 4).ToLower();

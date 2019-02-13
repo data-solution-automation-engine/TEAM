@@ -175,16 +175,6 @@ namespace TEAM
 
             var sqlStatementForLink = new StringBuilder();
 
-            //sqlStatementForLink.AppendLine("SELECT");
-            //sqlStatementForLink.AppendLine("   TABLE_NAME");
-            //sqlStatementForLink.AppendLine("  ,COLUMN_NAME");
-            //sqlStatementForLink.AppendLine("  ,ORDINAL_POSITION");
-            //sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY TABLE_NAME ORDER BY ORDINAL_POSITION) AS [HUB_KEY_POSITION]");
-            //sqlStatementForLink.AppendLine("FROM "+ FormBase.ConfigurationSettings.IntegrationDatabaseName+".INFORMATION_SCHEMA.COLUMNS");
-            //sqlStatementForLink.AppendLine("    WHERE TABLE_NAME LIKE '"+ FormBase.ConfigurationSettings.LinkTablePrefixValue+"_%'");
-            //sqlStatementForLink.AppendLine("AND ORDINAL_POSITION > 4");
-            //sqlStatementForLink.AppendLine("AND TABLE_NAME = '"+validationObject.Item2+"'");
-
             sqlStatementForLink.AppendLine("SELECT");
             sqlStatementForLink.AppendLine("   OBJECT_NAME([object_id]) AS [TABLE_NAME]");
             sqlStatementForLink.AppendLine("  ,[name] AS [COLUMN_NAME]");
@@ -204,36 +194,49 @@ namespace TEAM
                 var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
                 int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
 
-                linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
+                if (linkHubSurrogateKeyName.Contains(FormBase.ConfigurationSettings.DwhKeyIdentifier)) // Exclude degenerate attributes from the order
+                {
+                    linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
+                }
             }
             connTarget.Close();
 
+            // Check for duplicates, which indicate a Same-As Link or Hierarchical Link
+            var duplicateValues = hubKeyOrder.Where(i => hubKeyOrder.Any(t => t.Key != i.Key && t.Value == i.Value)).ToDictionary(i => i.Key, i => i.Value);
 
-            // Run the comparison
-            // Test for equality.
+
+            // Run the comparison, test for equality.
+            // Only if there are no duplicates, as this indicates the SAL / HLINK which is not currently supported
             bool equal = false;
-            if (hubKeyOrder.Count == linkKeyOrder.Count) // Require equal count.
+            if (duplicateValues.Count == 0)
             {
-                equal = true;
-                foreach (var pair in hubKeyOrder)
+                if (hubKeyOrder.Count == linkKeyOrder.Count) // Require equal count.
                 {
-                    string value;
-                    if (linkKeyOrder.TryGetValue(pair.Key, out value))
+                    equal = true;
+                    foreach (var pair in hubKeyOrder)
                     {
-                        // Require value be equal.
-                        if (value != pair.Value)
+                        string value;
+                        if (linkKeyOrder.TryGetValue(pair.Key, out value))
                         {
+                            // Require value be equal.
+                            if (value != pair.Value)
+                            {
+                                equal = false;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // Require key be present.
                             equal = false;
                             break;
                         }
                     }
-                    else
-                    {
-                        // Require key be present.
-                        equal = false;
-                        break;
-                    }
                 }
+            }
+            else
+            {
+                equal = true;
             }
 
             // return the result of the test;
