@@ -39,12 +39,12 @@ namespace TEAM
                 initialConfigurationFile.AppendLine("MetadataSSPI|False");
                 initialConfigurationFile.AppendLine("MetadataNamed|True");
                 initialConfigurationFile.AppendLine("MetadataUserName|sa");
-                initialConfigurationFile.AppendLine("MetadataPassword|k3kobus2");
+                initialConfigurationFile.AppendLine("MetadataPassword|");
 
                 initialConfigurationFile.AppendLine("PhysicalModelSSPI|False");
                 initialConfigurationFile.AppendLine("PhysicalModelNamed|True");
                 initialConfigurationFile.AppendLine("PhysicalModelUserName|sa");
-                initialConfigurationFile.AppendLine("PhysicalModelPassword|k3kobus2");
+                initialConfigurationFile.AppendLine("PhysicalModelPassword|");
 
                 // Connection strings
                 initialConfigurationFile.AppendLine(@"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
