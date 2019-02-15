@@ -2126,6 +2126,7 @@ namespace TEAM
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
+                        createStatement.AppendLine("  [Renewal_Plan_Code] nvarchar(100) NULL");
                         createStatement.AppendLine("  PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
@@ -2811,6 +2812,12 @@ namespace TEAM
                     }
 
                     #endregion
+
+                    #region Configuration Settings
+
+                    SetStandardConfigurationSettings();
+
+                    #endregion
                 }
                 catch (Exception ex)
                 {
@@ -2818,6 +2825,134 @@ namespace TEAM
                 }
                                 
                 backgroundWorkerSampleData.ReportProgress(100);
+            }
+        }
+
+        private void SetStandardConfigurationSettings()
+        {
+            if (checkBoxConfigurationSettings.Checked)
+            {
+                ClassEnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
+
+                // Shared values (same for all samples)
+                var metadataRepositoryType = "SQLServer";
+                var sourceSystemPrefix = "PROFILER";
+                var stagingAreaPrefix = "STG";
+                var hubTablePrefix = "HUB";
+                var satTablePrefix = "SAT";
+                var linkTablePrefix = "LNK";
+                var linkSatTablePrefix = "LSAT";
+                string psaKeyLocation = "PrimaryKey";
+
+                string persistentStagingAreaPrefix;
+                string keyIdentifier;
+                string sourceRowId;
+                string eventDateTime;
+                string loadDateTime;
+                string expiryDateTime;
+                string changeDataIndicator;
+                string recordSource;
+                string etlProcessId;
+                string etlUpdateProcessId;
+                string logicalDeleteAttribute;
+                string tableNamingLocation;
+                string keyNamingLocation;
+                string recordChecksum;
+                string currentRecordIndicator;
+                string alternativeRecordSource;
+                string alternativeHubLoadDateTime;
+                string alternativeSatelliteLoadDateTime;
+                string alternativeRecordSourceFunction;
+                string alternativeHubLoadDateTimeFunction;
+                string alternativeSatelliteLoadDateTimeFunction;
+
+
+                // Update the values using the DIRECT information
+                if (checkBoxDIRECT.Checked)
+                {
+                    persistentStagingAreaPrefix = "HSTG";
+                    keyIdentifier = "SK";
+
+                    sourceRowId = "OMD_SOURCE_ROW_ID";
+                    eventDateTime = "OMD_EVENT_DATETIME";
+                    loadDateTime = "OMD_INSERT_DATETIME";
+                    expiryDateTime = "OD_EXPIRY_DATETIME";
+                    changeDataIndicator = "OMD_CDC_OPERATION";
+                    recordSource = "OMD_RECORD_SOURCE";
+                    etlProcessId = "OMD_INSERT_MODULE_INSTANCE_ID";
+                    etlUpdateProcessId = "OMD_UPDATE_MODULE_INSTANCE_ID";
+                    logicalDeleteAttribute = "OMD_DELETED_RECORD_INDICATOR";
+                    tableNamingLocation = "Prefix";
+                    keyNamingLocation = "Suffix";
+                    recordChecksum = "OMD_HASH_FULL_RECORD";
+                    currentRecordIndicator = "OMD_CURRENT_RECORD_INDICATOR";
+                    alternativeRecordSource = "OMD_RECORD_SOURCE_ID";
+                    alternativeHubLoadDateTime = "OMD_FIRST_SEEN_DATETIME";
+                    alternativeSatelliteLoadDateTime = "OMD_EFFECTIVE_DATETIME";
+                    alternativeRecordSourceFunction = "True";
+                    alternativeHubLoadDateTimeFunction = "True";
+                    alternativeSatelliteLoadDateTimeFunction = "True";
+                }
+                else  // Use the standard (profiler) sample
+                {
+                    persistentStagingAreaPrefix = "PSA";
+                    keyIdentifier = "HSH";
+
+                    sourceRowId = "SOURCE_ROW_ID";
+                    eventDateTime = "EVENT_DATETIME";
+                    loadDateTime = "LOAD_DATETIME";
+                    expiryDateTime = "LOAD_END_DATETIME";
+                    changeDataIndicator = "CDC_OPERATION";
+                    recordSource = "RECORD_SOURCE";
+                    etlProcessId = "ETL_INSERT_RUN_ID";
+                    etlUpdateProcessId = "ETL_UPDATE_RUN_ID";
+                    logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
+                    tableNamingLocation = "Prefix";
+                    keyNamingLocation = "Suffix";
+                    recordChecksum = "HASH_FULL_RECORD";
+                    currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
+                    alternativeRecordSource = "N/A";
+                    alternativeHubLoadDateTime = "N/A";
+                    alternativeSatelliteLoadDateTime = "N/A";
+                    alternativeRecordSourceFunction = "False";
+                    alternativeHubLoadDateTimeFunction = "False";
+                    alternativeSatelliteLoadDateTimeFunction = "False";
+                }
+
+                ConfigurationSettings.MetadataRepositoryType = metadataRepositoryType;
+
+                ConfigurationSettings.StgTablePrefixValue = stagingAreaPrefix;
+                ConfigurationSettings.PsaTablePrefixValue = persistentStagingAreaPrefix;
+
+                ConfigurationSettings.HubTablePrefixValue = hubTablePrefix;
+                ConfigurationSettings.SatTablePrefixValue = satTablePrefix;
+                ConfigurationSettings.LinkTablePrefixValue = linkTablePrefix;
+                ConfigurationSettings.LsatPrefixValue = linkSatTablePrefix;
+                ConfigurationSettings.DwhKeyIdentifier = keyIdentifier;
+                ConfigurationSettings.PsaKeyLocation = psaKeyLocation;
+                ConfigurationSettings.TableNamingLocation = tableNamingLocation;
+                ConfigurationSettings.KeyNamingLocation = keyNamingLocation;
+
+                ConfigurationSettings.SourceSystemPrefix = sourceSystemPrefix;
+                ConfigurationSettings.EventDateTimeAttribute = eventDateTime;
+                ConfigurationSettings.LoadDateTimeAttribute = loadDateTime;
+                ConfigurationSettings.ExpiryDateTimeAttribute = expiryDateTime;
+                ConfigurationSettings.ChangeDataCaptureAttribute = changeDataIndicator;
+                ConfigurationSettings.RecordSourceAttribute = recordSource;
+                ConfigurationSettings.EtlProcessAttribute = etlProcessId;
+                ConfigurationSettings.EtlProcessUpdateAttribute = etlUpdateProcessId;
+                ConfigurationSettings.RowIdAttribute = sourceRowId;
+                ConfigurationSettings.RecordChecksumAttribute = recordChecksum;
+                ConfigurationSettings.CurrentRowAttribute = currentRecordIndicator;
+                ConfigurationSettings.LogicalDeleteAttribute = logicalDeleteAttribute;
+                ConfigurationSettings.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
+                ConfigurationSettings.AlternativeRecordSourceAttribute = alternativeRecordSource;
+                ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;
+                ConfigurationSettings.AlternativeLoadDateTimeAttribute = alternativeHubLoadDateTime;
+                ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
+                ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
+
+                ClassEnvironmentConfiguration.SaveConfigurationFile();
             }
         }
 
@@ -2872,6 +3007,26 @@ namespace TEAM
                 // Start the asynchronous operation.
                 backgroundWorkerSampleData.RunWorkerAsync();
             }
+        }
+
+        private void labelMetadataRepository_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelResult_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SetStandardConfigurationSettings();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

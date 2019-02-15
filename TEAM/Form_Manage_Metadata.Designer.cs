@@ -91,6 +91,7 @@ namespace TEAM
             this.toolTipMetadata = new System.Windows.Forms.ToolTip(this.components);
             this.checkBoxMergeFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxBackupFiles = new System.Windows.Forms.CheckBox();
+            this.checkBoxResizeDataGrid = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
             this.groupBox2.SuspendLayout();
@@ -304,6 +305,7 @@ namespace TEAM
             this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1217, 699);
             this.dataGridViewTableMetadata.TabIndex = 1;
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
+            this.dataGridViewTableMetadata.Sorted += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
             // 
             // contextMenuStripTableMapping
@@ -582,7 +584,6 @@ namespace TEAM
             this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
             this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(152, 20);
             this.businessKeyMetadataToolStripMenuItem.Text = "Table &Mapping Metadata";
-            this.businessKeyMetadataToolStripMenuItem.Click += new System.EventHandler(this.businessKeyMetadataToolStripMenuItem_Click);
             // 
             // openMetadataFileToolStripMenuItem
             // 
@@ -711,6 +712,21 @@ namespace TEAM
         "cted version (in the datagrid).");
             this.checkBoxBackupFiles.UseVisualStyleBackColor = true;
             // 
+            // checkBoxResizeDataGrid
+            // 
+            this.checkBoxResizeDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxResizeDataGrid.Checked = true;
+            this.checkBoxResizeDataGrid.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxResizeDataGrid.Location = new System.Drawing.Point(1258, 476);
+            this.checkBoxResizeDataGrid.Name = "checkBoxResizeDataGrid";
+            this.checkBoxResizeDataGrid.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxResizeDataGrid.TabIndex = 27;
+            this.checkBoxResizeDataGrid.Text = "Auto Resize Grid ";
+            this.toolTipMetadata.SetToolTip(this.checkBoxResizeDataGrid, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
+        "t having this option checked will overwrite the mapping information for the sele" +
+        "cted version (in the datagrid).");
+            this.checkBoxResizeDataGrid.UseVisualStyleBackColor = true;
+            // 
             // backgroundWorkerValidationOnly
             // 
             this.backgroundWorkerValidationOnly.WorkerReportsProgress = true;
@@ -736,6 +752,7 @@ namespace TEAM
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1507, 861);
+            this.Controls.Add(this.checkBoxResizeDataGrid);
             this.Controls.Add(this.groupBoxJsonOptions);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.buttonValidation);
@@ -851,5 +868,6 @@ namespace TEAM
         private System.Windows.Forms.GroupBox groupBoxJsonOptions;
         private System.Windows.Forms.CheckBox checkBoxMergeFiles;
         private System.Windows.Forms.CheckBox checkBoxBackupFiles;
+        private System.Windows.Forms.CheckBox checkBoxResizeDataGrid;
     }
 }
