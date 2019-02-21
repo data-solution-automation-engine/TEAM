@@ -577,7 +577,7 @@ namespace TEAM
 
             // Save the information 
             ClassEnvironmentConfiguration.SaveConfigurationFile();
-            parentFormMain.revalidateFlag = true;
+            parentFormMain.RevalidateFlag = true;
         }
 
 
@@ -1048,7 +1048,7 @@ namespace TEAM
 
         private void FormManageConfiguration_FormClosed(object sender, FormClosedEventArgs e)
         {
-            parentFormMain.revalidateFlag=true;
+            parentFormMain.RevalidateFlag=true;
         }
     }
 }

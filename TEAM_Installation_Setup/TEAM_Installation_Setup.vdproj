@@ -296,6 +296,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
         "Release"
@@ -829,7 +837,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
         "ProductCode" = "8:{3DC0AB49-CEDC-4712-9399-3CD7D2EAF7B3}"
-        "PackageCode" = "8:{36DE940F-DF6A-4296-894F-329214CA85FF}"
+        "PackageCode" = "8:{B8598F88-002A-41B8-AC15-84DBF3875640}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -840,7 +848,7 @@
         "Manufacturer" = "8:Open Source - Roelant Vos"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.roelantvos.com/blog"
-        "Title" = "8:TEAM_Installation_Setup"
+        "Title" = "8:Taxonomy of ETL Automation Metadata (TEAM)"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Roelant Vos"
         "Keywords" = "8:"
@@ -1039,7 +1047,7 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:0"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -1050,8 +1058,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1202"
+                            "Setting" = "3:2"
+                            "Value" = "8:This program has been compiled using the Open Source (Github) code for TEAM."
                             "DefaultValue" = "8:#1202"
                             "UsePlugInResources" = "11:TRUE"
                             }

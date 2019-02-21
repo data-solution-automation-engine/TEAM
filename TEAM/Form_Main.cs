@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using Microsoft.SqlServer.Management.Smo;
-using Microsoft.SqlServer.Management.Common;
 using System.Threading;
 using System.Drawing;
 using System.Data;
@@ -14,11 +12,11 @@ namespace TEAM
 {
     public partial class FormMain : FormBase
     {
-        internal bool revalidateFlag = true;
+        internal bool RevalidateFlag = true;
         public FormMain()
         {
             // Set the version of the build for everything
-            string versionNumberforTeamApplication = "v1.5.4.0";
+            string versionNumberforTeamApplication = "v1.5.4.1";
 
             // Placeholder for the error handling
             var errorMessage = new StringBuilder();
@@ -56,11 +54,17 @@ namespace TEAM
             }
         }
 
+        public sealed override string Text
+        {
+            get { return base.Text; }
+            set { base.Text = value; }
+        }
+
         public void TestConnections()
         {
-            if (revalidateFlag == false)
+            if (RevalidateFlag == false)
                 return;
-            revalidateFlag = false;
+            RevalidateFlag = false;
             //MessageBox.Show("Valildating Connections");
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
@@ -74,7 +78,7 @@ namespace TEAM
                 }
                 catch
                 {
-                    this.richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
                     DisableMenu();
                     return;
                 }
