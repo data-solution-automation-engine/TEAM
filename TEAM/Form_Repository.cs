@@ -1521,8 +1521,14 @@ namespace TEAM
                     var etlFrameworkIncludeSat = new StringBuilder();
                     var etlFrameworkIncludeSatKey = new StringBuilder();
 
+                    string dwhKeyName = "";
+                    string psaPrefixName = "";
+
                     if (checkBoxDIRECT.Checked)
                     {
+                        dwhKeyName = "SK";
+                        psaPrefixName = "HSTG";
+
                         etlFrameworkIncludeStg.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID] [int] NOT NULL,");
                         etlFrameworkIncludeStg.AppendLine("  [OMD_INSERT_DATETIME] [datetime2] (7) NOT NULL DEFAULT SYSDATETIME(),");
                         etlFrameworkIncludeStg.AppendLine("  [OMD_EVENT_DATETIME] [datetime2] (7) NOT NULL,");
@@ -1560,6 +1566,9 @@ namespace TEAM
                     }
                     else
                     {
+                        dwhKeyName = "HSH";
+                        psaPrefixName = "PSA";
+
                         etlFrameworkIncludeStg.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
                         etlFrameworkIncludeStg.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT SYSDATETIME(),");
                         etlFrameworkIncludeStg.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
@@ -2026,19 +2035,19 @@ namespace TEAM
                         // Create sample data
                         StringBuilder createStatement = new StringBuilder();
 
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_CUST_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_CUST_MEMBERSHIP]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_CUSTOMER_OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_CUSTOMER_PERSONAL', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_ESTIMATED_WORTH', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_ESTIMATED_WORTH]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_PERSONALISED_COSTING', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_PERSONALISED_COSTING]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_PROFILER_PLAN', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_PROFILER_PLAN]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PSA_USERMANAGED_SEGMENT', 'U') IS NOT NULL DROP TABLE[dbo].[PSA_USERMANAGED_SEGMENT]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_CUST_MEMBERSHIP]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_CUSTOMER_OFFER]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_CUSTOMER_PERSONAL]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_ESTIMATED_WORTH', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_ESTIMATED_WORTH]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_OFFER]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_PERSONALISED_COSTING', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_PERSONALISED_COSTING]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_PLAN', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_PLAN]");
+                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_USERMANAGED_SEGMENT', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_USERMANAGED_SEGMENT]");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_PROFILER_CUST_MEMBERSHIP]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_CUST_MEMBERSHIP]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
@@ -2047,24 +2056,24 @@ namespace TEAM
                         createStatement.AppendLine("  [End_Date] datetime2(7) NULL,");
                         createStatement.AppendLine("  [Status] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Comment] nvarchar(100) NULL");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_PROFILER_CUST_MEMBERSHIP] PRIMARY KEY NONCLUSTERED ([CustomerID] ASC, [Plan_Code] ASC, " + etlFrameworkIncludePsaKey+")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_CUST_MEMBERSHIP] PRIMARY KEY NONCLUSTERED ([CustomerID] ASC, [Plan_Code] ASC, " + etlFrameworkIncludePsaKey+")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_PROFILER_CUSTOMER_OFFER]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_CUSTOMER_OFFER]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
                         createStatement.AppendLine("  [OfferID] integer NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_PROFILER_CUSTOMER_OFFER] PRIMARY KEY NONCLUSTERED ([CustomerID] ASC, [OfferID] ASC, " + etlFrameworkIncludePsaKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_CUSTOMER_OFFER] PRIMARY KEY NONCLUSTERED ([CustomerID] ASC, [OfferID] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_PROFILER_CUSTOMER_PERSONAL]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_CUSTOMER_PERSONAL]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
@@ -2078,36 +2087,36 @@ namespace TEAM
                         createStatement.AppendLine("  [DOB] datetime2(7) NULL,");
                         createStatement.AppendLine("  [Contact_Number] integer NULL,");
                         createStatement.AppendLine("  [Referee_Offer_Made] integer NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_PROFILER_CUSTOMER_PERSONAL] PRIMARY KEY NONCLUSTERED([CustomerID] ASC, " + etlFrameworkIncludePsaKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_CUSTOMER_PERSONAL] PRIMARY KEY NONCLUSTERED([CustomerID] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_PROFILER_ESTIMATED_WORTH]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_ESTIMATED_WORTH]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Date_effective] datetime2(7) NOT NULL,");
                         createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_PROFILER_ESTIMATED_WORTH] PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, [Date_effective] ASC, " + etlFrameworkIncludePsaKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_ESTIMATED_WORTH] PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, [Date_effective] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_PROFILER_OFFER]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_OFFER]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [OfferID] integer NOT NULL,");
                         createStatement.AppendLine("  [Offer_Long_Description] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_PROFILER_OFFER] PRIMARY KEY NONCLUSTERED([OfferID] ASC, " + etlFrameworkIncludePsaKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_OFFER] PRIMARY KEY NONCLUSTERED([OfferID] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_PROFILER_PERSONALISED_COSTING]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_PERSONALISED_COSTING]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Member] integer NOT NULL,");
@@ -2115,30 +2124,30 @@ namespace TEAM
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Date_effective] datetime2(7) NOT NULL,");
                         createStatement.AppendLine("  [Monthly_Cost] numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_PROFILER_PERSONALISED_COSTING] PRIMARY KEY NONCLUSTERED([Member] ASC, [Segment] ASC, [Plan_Code] ASC, [Date_effective] ASC, " + etlFrameworkIncludePsaKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_PERSONALISED_COSTING] PRIMARY KEY NONCLUSTERED([Member] ASC, [Segment] ASC, [Plan_Code] ASC, [Date_effective] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_PROFILER_PLAN]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_PLAN]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Renewal_Plan_Code] nvarchar(100) NULL");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_PROFILER_PLAN] PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_PLAN] PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE TABLE [PSA_USERMANAGED_SEGMENT]");
+                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_USERMANAGED_SEGMENT]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [Demographic_Segment_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Demographic_Segment_Description] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PSA_USERMANAGED_SEGMENT] PRIMARY KEY CLUSTERED([Demographic_Segment_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_USERMANAGED_SEGMENT] PRIMARY KEY CLUSTERED([Demographic_Segment_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2181,16 +2190,16 @@ namespace TEAM
                         createStatement.AppendLine("-- HUB CUSTOMER");
                         createStatement.AppendLine("CREATE TABLE dbo.HUB_CUSTOMER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName+ " binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
                         createStatement.AppendLine("  CUSTOMER_ID nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_CUSTOMER] PRIMARY KEY NONCLUSTERED (CUSTOMER_HSH ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_CUSTOMER] PRIMARY KEY NONCLUSTERED (CUSTOMER_" + dwhKeyName +" ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_MEMBER ON dbo.HUB_CUSTOMER");
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_CUSTOMER ON dbo.HUB_CUSTOMER");
                         createStatement.AppendLine("(");
                         createStatement.AppendLine("  CUSTOMER_ID ASC");
                         createStatement.AppendLine(")");
@@ -2201,16 +2210,16 @@ namespace TEAM
                         createStatement.AppendLine("-- HUB INCENTIVE OFFER");
                         createStatement.AppendLine("CREATE TABLE dbo.HUB_INCENTIVE_OFFER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
                         createStatement.AppendLine("  OFFER_ID nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_INCENTIVE_OFFER] PRIMARY KEY NONCLUSTERED (INCENTIVE_OFFER_HSH ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_INCENTIVE_OFFER] PRIMARY KEY NONCLUSTERED (INCENTIVE_OFFER_" + dwhKeyName +" ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_ACCOUNT_MANAGER ON dbo.HUB_INCENTIVE_OFFER");
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_INCENTIVE_OFFER ON dbo.HUB_INCENTIVE_OFFER");
                         createStatement.AppendLine("(");
                         createStatement.AppendLine("    OFFER_ID ASC");
                         createStatement.AppendLine(")");
@@ -2221,17 +2230,17 @@ namespace TEAM
                         createStatement.AppendLine("-- HUB MEMBERSHIP PLAN");
                         createStatement.AppendLine("CREATE TABLE dbo.HUB_MEMBERSHIP_PLAN");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
                         createStatement.AppendLine("  PLAN_CODE nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  PLAN_SUFFIX nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_MEMBERSHIP_PLAN] PRIMARY KEY NONCLUSTERED (MEMBERSHIP_PLAN_HSH ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_MEMBERSHIP_PLAN] PRIMARY KEY NONCLUSTERED (MEMBERSHIP_PLAN_" + dwhKeyName +" ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_MEMBER ON dbo.HUB_MEMBERSHIP_PLAN");
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_MEMBERSHIP_PLAN ON dbo.HUB_MEMBERSHIP_PLAN");
                         createStatement.AppendLine("(");
                         createStatement.AppendLine("  PLAN_CODE ASC,");
                         createStatement.AppendLine("  PLAN_SUFFIX ASC");
@@ -2243,16 +2252,16 @@ namespace TEAM
                         createStatement.AppendLine("-- HUB SEGMENT");
                         createStatement.AppendLine("CREATE TABLE dbo.HUB_SEGMENT");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  SEGMENT_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
                         createStatement.AppendLine("  SEGMENT_CODE nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_SEGMENT] PRIMARY KEY NONCLUSTERED (SEGMENT_HSH ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_SEGMENT] PRIMARY KEY NONCLUSTERED (SEGMENT_" + dwhKeyName +" ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_REF_SEGMENT ON dbo.HUB_SEGMENT");
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_SEGMENT ON dbo.HUB_SEGMENT");
                         createStatement.AppendLine("(");
                         createStatement.AppendLine("  SEGMENT_CODE ASC");
                         createStatement.AppendLine(")");
@@ -2263,12 +2272,12 @@ namespace TEAM
                         createStatement.AppendLine("-- LNK CUSTOMER COSTING");
                         createStatement.AppendLine("CREATE TABLE dbo.LNK_CUSTOMER_COSTING");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_COSTING_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_COSTING_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
-                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
-                        createStatement.AppendLine("  SEGMENT_HSH binary(16) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_CUSTOMER_COSTING] PRIMARY KEY NONCLUSTERED (CUSTOMER_COSTING_HSH ASC)");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
+                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_CUSTOMER_COSTING] PRIMARY KEY NONCLUSTERED (CUSTOMER_COSTING_" + dwhKeyName +" ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2276,9 +2285,9 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_CUSTOMER_COSTING ON dbo.LNK_CUSTOMER_COSTING");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_HSH ASC,");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH ASC,");
-                        createStatement.AppendLine("  SEGMENT_HSH ASC");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" ASC,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" ASC,");
+                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" ASC");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2287,20 +2296,20 @@ namespace TEAM
                         createStatement.AppendLine("-- LNK CUSTOMER OFFER");
                         createStatement.AppendLine("CREATE TABLE dbo.LNK_CUSTOMER_OFFER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH binary(16) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_CUSTOMER_OFFER] PRIMARY KEY NONCLUSTERED(CUSTOMER_OFFER_HSH ASC)");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_CUSTOMER_OFFER] PRIMARY KEY NONCLUSTERED(CUSTOMER_OFFER_" + dwhKeyName +" ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_MEMBER_ACCOUNT_MANAGER ON dbo.LNK_CUSTOMER_OFFER");
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_CUSTOMER_OFFER ON dbo.LNK_CUSTOMER_OFFER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_HSH ASC,");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH ASC");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" ASC,");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" ASC");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2310,7 +2319,7 @@ namespace TEAM
                         createStatement.AppendLine("@name = 'Driving_Key_Indicator', @value = 'True',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'LNK_CUSTOMER_OFFER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_HSH'");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_" + dwhKeyName +"'");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
@@ -2318,12 +2327,12 @@ namespace TEAM
                         createStatement.AppendLine("-- LNK MEMBERSHIP");
                         createStatement.AppendLine("CREATE TABLE dbo.LNK_MEMBERSHIP");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.AppendLine("  SALES_CHANNEL nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_MEMBERSHIP] PRIMARY KEY NONCLUSTERED(MEMBERSHIP_HSH ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_MEMBERSHIP] PRIMARY KEY NONCLUSTERED(MEMBERSHIP_" + dwhKeyName +" ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2331,8 +2340,8 @@ namespace TEAM
 
                         createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_MEMBERSHIP ON dbo.LNK_MEMBERSHIP");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_HSH ASC,");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH ASC,");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" ASC,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" ASC,");
                         createStatement.AppendLine("  SALES_CHANNEL ASC");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
@@ -2342,20 +2351,20 @@ namespace TEAM
                         createStatement.AppendLine("-- LNK RENEWAL_MEMBERSHIP");
                         createStatement.AppendLine("CREATE TABLE[dbo].[LNK_RENEWAL_MEMBERSHIP]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [RENEWAL_MEMBERSHIP_HSH][binary](16) NOT NULL,");
+                        createStatement.AppendLine("  [RENEWAL_MEMBERSHIP_" + dwhKeyName +"][binary](16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_HSH] [binary] (16) NOT NULL,");
-                        createStatement.AppendLine("  [RENEWAL_PLAN_HSH] [binary] (16) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_RENEWAL_MEMBERSHIP] PRIMARY KEY NONCLUSTERED ([RENEWAL_MEMBERSHIP_HSH] ASC)");
+                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_" + dwhKeyName +"] [binary] (16) NOT NULL,");
+                        createStatement.AppendLine("  [RENEWAL_PLAN_" + dwhKeyName +"] [binary] (16) NOT NULL,");
+                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_RENEWAL_MEMBERSHIP] PRIMARY KEY NONCLUSTERED ([RENEWAL_MEMBERSHIP_" + dwhKeyName +"] ASC)");
                         createStatement.AppendLine(") ON [PRIMARY]");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_RENEWAL_MEMBERSHIP ON dbo.LNK_RENEWAL_MEMBERSHIP");
+                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_RENEWAL_MEMBERSHIP ON dbo.LNK_RENEWAL_MEMBERSHIP");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_HSH] ASC,");
-                        createStatement.AppendLine("  [RENEWAL_PLAN_HSH] ASC");
+                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_" + dwhKeyName +"] ASC,");
+                        createStatement.AppendLine("  [RENEWAL_PLAN_" + dwhKeyName +"] ASC");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2364,11 +2373,11 @@ namespace TEAM
                         createStatement.AppendLine("-- LSAT CUSTOMER COSTING");
                         createStatement.AppendLine("CREATE TABLE dbo.LSAT_CUSTOMER_COSTING");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_COSTING_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_COSTING_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.AppendLine("  COSTING_EFFECTIVE_DATE datetime2(7) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  PERSONAL_MONTHLY_COST numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_CUSTOMER_COSTING] PRIMARY KEY CLUSTERED (CUSTOMER_COSTING_HSH ASC, " + etlFrameworkIncludeSatKey + ", COSTING_EFFECTIVE_DATE ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_CUSTOMER_COSTING] PRIMARY KEY CLUSTERED (CUSTOMER_COSTING_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ", COSTING_EFFECTIVE_DATE ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2377,9 +2386,9 @@ namespace TEAM
                         createStatement.AppendLine("-- LSAT CUSTOMER OFFER");
                         createStatement.AppendLine("CREATE TABLE dbo.LSAT_CUSTOMER_OFFER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_CUSTOMER_OFFER] PRIMARY KEY CLUSTERED (CUSTOMER_OFFER_HSH ASC, " + etlFrameworkIncludeSatKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_CUSTOMER_OFFER] PRIMARY KEY CLUSTERED (CUSTOMER_OFFER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2388,12 +2397,12 @@ namespace TEAM
                         createStatement.AppendLine("-- LSAT MEMBERSHIP");
                         createStatement.AppendLine("CREATE TABLE dbo.LSAT_MEMBERSHIP");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  MEMBERSHIP_START_DATE datetime2(7) NULL,");
                         createStatement.AppendLine("  MEMBERSHIP_END_DATE datetime2(7) NULL,");
                         createStatement.AppendLine("  MEMBERSHIP_STATUS nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_MEMBERSHIP] PRIMARY KEY CLUSTERED (MEMBERSHIP_HSH ASC, " + etlFrameworkIncludeSatKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_MEMBERSHIP] PRIMARY KEY CLUSTERED (MEMBERSHIP_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2402,7 +2411,7 @@ namespace TEAM
                         createStatement.AppendLine("-- SAT CUSTOMER");
                         createStatement.AppendLine("CREATE TABLE dbo.SAT_CUSTOMER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  GIVEN_NAME nvarchar(100) NULL,");
                         createStatement.AppendLine("  SURNAME nvarchar(100) NULL,");
@@ -2412,7 +2421,7 @@ namespace TEAM
                         createStatement.AppendLine("  GENDER nvarchar(100) NULL,");
                         createStatement.AppendLine("  DATE_OF_BIRTH datetime2(7) NULL,");
                         createStatement.AppendLine("  REFERRAL_OFFER_MADE_INDICATOR nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_CUSTOMER] PRIMARY KEY CLUSTERED (CUSTOMER_HSH ASC, " + etlFrameworkIncludeSatKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_CUSTOMER] PRIMARY KEY CLUSTERED (CUSTOMER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2421,11 +2430,11 @@ namespace TEAM
                         createStatement.AppendLine("-- SAT CUSTOMER ADDITIONAL DETAILS");
                         createStatement.AppendLine("CREATE TABLE dbo.SAT_CUSTOMER_ADDITIONAL_DETAILS");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  CONTACT_NUMBER nvarchar(100) NULL,");
                         createStatement.AppendLine("  [STATE] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_CUSTOMER_ADDITIONAL_DETAILS] PRIMARY KEY CLUSTERED (CUSTOMER_HSH ASC, " + etlFrameworkIncludeSatKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_CUSTOMER_ADDITIONAL_DETAILS] PRIMARY KEY CLUSTERED (CUSTOMER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2434,10 +2443,10 @@ namespace TEAM
                         createStatement.AppendLine("-- SAT INCENTIVE OFFER");
                         createStatement.AppendLine("CREATE TABLE dbo.SAT_INCENTIVE_OFFER");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  OFFER_DESCRIPTION nvarchar(100) NULL,"); 
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_INCENTIVE_OFFER] PRIMARY KEY CLUSTERED(INCENTIVE_OFFER_HSH ASC, " + etlFrameworkIncludeSatKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_INCENTIVE_OFFER] PRIMARY KEY CLUSTERED(INCENTIVE_OFFER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2446,10 +2455,10 @@ namespace TEAM
                         createStatement.AppendLine("-- SAT MEMBERSHIP PLAN DETAIL");
                         createStatement.AppendLine("CREATE TABLE dbo.SAT_MEMBERSHIP_PLAN_DETAIL");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  PLAN_DESCRIPTION nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_MEMBERSHIP_PLAN_DETAIL] PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_HSH ASC, " + etlFrameworkIncludeSatKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_MEMBERSHIP_PLAN_DETAIL] PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2458,11 +2467,11 @@ namespace TEAM
                         createStatement.AppendLine("-- SAT MEMBERSHIP PLAN VALUATION");
                         createStatement.AppendLine("CREATE TABLE dbo.SAT_MEMBERSHIP_PLAN_VALUATION");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.AppendLine("  PLAN_VALUATION_DATE datetime2(7) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  PLAN_VALUATION_AMOUNT numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_MEMBERSHIP_PLAN_VALUATION] PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_HSH ASC, " + etlFrameworkIncludeSatKey + ", PLAN_VALUATION_DATE ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_MEMBERSHIP_PLAN_VALUATION] PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ", PLAN_VALUATION_DATE ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2471,10 +2480,10 @@ namespace TEAM
                         createStatement.AppendLine("-- SAT SEGMENT");
                         createStatement.AppendLine("CREATE TABLE dbo.SAT_SEGMENT");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  SEGMENT_HSH binary(16) NOT NULL,");
+                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" binary(16) NOT NULL,");
                         createStatement.Append(etlFrameworkIncludeSat);
                         createStatement.AppendLine("  SEGMENT_DESCRIPTION nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_SEGMENT] PRIMARY KEY CLUSTERED (SEGMENT_HSH ASC, " + etlFrameworkIncludeSatKey + ")");
+                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_SEGMENT] PRIMARY KEY CLUSTERED (SEGMENT_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2484,12 +2493,12 @@ namespace TEAM
                         createStatement.AppendLine("CREATE TABLE[dbo].[BR_MEMBERSHIP_OFFER]");
                         createStatement.AppendLine("(");
                         createStatement.AppendLine("  [SNAPSHOT_DATETIME][datetime2](7) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_OFFER_HSH] binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [MEMBERSHIP_HSH] binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_HSH] binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_HSH] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_OFFER_" + dwhKeyName +"] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [MEMBERSHIP_" + dwhKeyName +"] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"] binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_" + dwhKeyName +"] binary(16) NOT NULL,");
                         createStatement.AppendLine("  [SALES_CHANNEL] [nvarchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_BR_MEMBERSHIP_OFFER] PRIMARY KEY CLUSTERED([SNAPSHOT_DATETIME] ASC, [CUSTOMER_OFFER_HSH] ASC, [MEMBERSHIP_HSH] ASC, [CUSTOMER_HSH] ASC, [MEMBERSHIP_PLAN_HSH] ASC, [SALES_CHANNEL] ASC)");
+                        createStatement.AppendLine("  CONSTRAINT [PK_BR_MEMBERSHIP_OFFER] PRIMARY KEY CLUSTERED([SNAPSHOT_DATETIME] ASC, [CUSTOMER_OFFER_" + dwhKeyName +"] ASC, [MEMBERSHIP_" + dwhKeyName +"] ASC, [CUSTOMER_" + dwhKeyName +"] ASC, [MEMBERSHIP_PLAN_" + dwhKeyName +"] ASC, [SALES_CHANNEL] ASC)");
                         createStatement.AppendLine(") ON [PRIMARY]");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2531,7 +2540,7 @@ namespace TEAM
                         createStatement.AppendLine("*/");
                         createStatement.AppendLine("CREATE TABLE [DIM_CUSTOMER]");
                         createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [DIM_CUSTOMER_HSH]          binary(16)  NOT NULL,");
+                        createStatement.AppendLine("  [DIM_CUSTOMER_" + dwhKeyName +"]          binary(16)  NOT NULL,");
                         createStatement.AppendLine("  [ETL_INSERT_RUN_ID]         integer NOT NULL ,");
                         createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] integer NOT NULL ,");
                         createStatement.AppendLine("  [CHECKSUM_TYPE1] varchar(100)  NOT NULL,");
@@ -2539,7 +2548,7 @@ namespace TEAM
                         createStatement.AppendLine("  [EFFECTIVE_DATETIME]        datetime2(7)  NOT NULL,");
                         createStatement.AppendLine("  [EXPIRY_DATETIME]           datetime2(7)  NOT NULL,");
                         createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR]  varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_HSH]              binary(16) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"]              binary(16) NOT NULL,");
                         createStatement.AppendLine("  [CUSTOMER_ID]               numeric(38,20)  NOT NULL,");
                         createStatement.AppendLine("  [GIVEN_NAME]                varchar(100)  NOT NULL,");
                         createStatement.AppendLine("  [SURNAME]                   varchar(100)  NOT NULL,");
@@ -2548,7 +2557,7 @@ namespace TEAM
                         createStatement.AppendLine("  [POSTCODE]                  varchar(100)  NOT NULL,");
                         createStatement.AppendLine("  [COUNTRY]                   varchar(100)  NOT NULL,");
                         createStatement.AppendLine("  [DATE_OF_BIRTH]             datetime2(7)  NOT NULL,");
-                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED([DIM_CUSTOMER_HSH] ASC)");
+                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED([DIM_CUSTOMER_" + dwhKeyName +"] ASC)");
                         createStatement.AppendLine(")");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
@@ -2561,7 +2570,7 @@ namespace TEAM
                         createStatement.AppendLine("  [EFFECTIVE_DATETIME] [datetime2] (7) NOT NULL,");
                         createStatement.AppendLine("  [EXPIRY_DATETIME] [datetime2] (7) NOT NULL,");
                         createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_HSH] [char](32) NOT NULL,");
+                        createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"] [char](32) NOT NULL,");
                         createStatement.AppendLine("  [CUSTOMER_ID] [numeric] (38, 20) NOT NULL,");
                         createStatement.AppendLine("  [GIVEN_NAME] [varchar] (100) NOT NULL,");
                         createStatement.AppendLine("  [SURNAME] [varchar] (100) NOT NULL,");
@@ -2643,7 +2652,7 @@ namespace TEAM
                         createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
                         createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
                         createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DIM_CUSTOMER_HSH'");
+                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DIM_CUSTOMER_" + dwhKeyName +"'");
                         createStatement.AppendLine();
                         RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                         createStatement.Clear();
@@ -2659,7 +2668,7 @@ namespace TEAM
                         createStatement.AppendLine("  scu.[LOAD_END_DATETIME] AS EXPIRY_DATETIME,");
                         createStatement.AppendLine("  scu.[CURRENT_RECORD_INDICATOR],");
                         createStatement.AppendLine("  --scu.[DELETED_RECORD_INDICATOR],");
-                        createStatement.AppendLine("  hcu.CUSTOMER_HSH, ");
+                        createStatement.AppendLine("  hcu.CUSTOMER_" + dwhKeyName +", ");
                         createStatement.AppendLine("  hcu.CUSTOMER_ID,");
                         createStatement.AppendLine("  scu.GIVEN_NAME,");
                         createStatement.AppendLine("  scu.SURNAME,");
@@ -2674,7 +2683,7 @@ namespace TEAM
                         createStatement.AppendLine("  CAST(scu.DATE_OF_BIRTH AS DATE) AS DATE_OF_BIRTH");
                         createStatement.AppendLine("FROM");
                         createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".HUB_CUSTOMER AS hcu INNER JOIN");
-                        createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".SAT_CUSTOMER AS scu ON hcu.CUSTOMER_HSH = scu.CUSTOMER_HSH");
+                        createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".SAT_CUSTOMER AS scu ON hcu.CUSTOMER_" + dwhKeyName +" = scu.CUSTOMER_" + dwhKeyName +"");
                         createStatement.AppendLine("WHERE");
                         createStatement.AppendLine("  (ISNULL(scu.CURRENT_RECORD_INDICATOR, 'Y') = 'Y') ");
                         createStatement.AppendLine();
