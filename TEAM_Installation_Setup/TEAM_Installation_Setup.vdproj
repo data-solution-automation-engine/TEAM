@@ -202,24 +202,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7005F4A6881E182ADBF553ACC5313DDB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6C17198D46295DD15D142529DA57CB95"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_BDBB773B7D3FBAA025C9248894F318BF"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -269,6 +251,24 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1ACB6F9EEE7F4CD9CD64EFC1FE4A095C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_7005F4A6881E182ADBF553ACC5313DDB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_6C17198D46295DD15D142529DA57CB95"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -837,7 +837,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
         "ProductCode" = "8:{3DC0AB49-CEDC-4712-9399-3CD7D2EAF7B3}"
-        "PackageCode" = "8:{B8598F88-002A-41B8-AC15-84DBF3875640}"
+        "PackageCode" = "8:{D1315EBC-7F3A-4925-ABF5-7682BADD1E6A}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -845,7 +845,7 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Open Source - Roelant Vos"
+        "Manufacturer" = "8:Roelant Vos"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.roelantvos.com/blog"
         "Title" = "8:Taxonomy of ETL Automation Metadata (TEAM)"
@@ -1386,7 +1386,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2CA91C3E5CDB4111B03879697165DB37"
             {
-            "SourcePath" = "8:..\\TEAM\\obj\\Debug\\TEAM.exe"
+            "SourcePath" = "8:..\\TEAM\\obj\\Release\\TEAM.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
