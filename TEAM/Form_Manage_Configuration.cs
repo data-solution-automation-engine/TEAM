@@ -542,7 +542,7 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + workingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
-            using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + GlobalParameters.PathfileName + GlobalParameters.FileExtension))
+            using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathfileName + GlobalParameters.FileExtension))
             {
                 outfile.Write(rootPathConfigurationFile.ToString());
                 outfile.Close();

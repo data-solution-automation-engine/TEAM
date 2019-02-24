@@ -279,7 +279,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\TEAM_Installation_Setup.msi"
+        "OutputFilename" = "8:Debug\\TEAM_Setup.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -1386,7 +1386,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2CA91C3E5CDB4111B03879697165DB37"
             {
-            "SourcePath" = "8:..\\TEAM\\obj\\Release\\TEAM.exe"
+            "SourcePath" = "8:..\\TEAM\\obj\\Debug\\TEAM.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"

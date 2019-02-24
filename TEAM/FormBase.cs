@@ -166,15 +166,17 @@ namespace TEAM
         internal static class GlobalParameters
         {
             // TEAM core path parameters
-            public static string ConfigurationPath { get; set; } = Application.StartupPath + @"\Configuration\";
-            public static string OutputPath { get; set; } = Application.StartupPath + @"\Output\";
-            internal static string WorkingEnvironment { get; set; } = "Development";
-
+            public static string RootPath { get; } = Application.StartupPath + @"\Configuration\";
             public static string ConfigfileName { get; set; } = "TEAM_configuration";
             public static string PathfileName { get; set; } = "TEAM_Path_configuration";
             public static string ValidationFileName { get; set; } = "TEAM_validation";
             public static string FileExtension { get; set; } = ".txt";
 
+            // TEAM core path variables
+            public static string ConfigurationPath { get; set; } = Application.StartupPath + @"\Configuration\";
+            public static string OutputPath { get; set; } = Application.StartupPath + @"\Output\";
+            internal static string WorkingEnvironment { get; set; } = "Development";
+            
             // Json file name parameters
             public static string JsonTableMappingFileName { get; set; } = "TEAM_Table_Mapping";
             public static string JsonAttributeMappingFileName { get; set; } = "TEAM_Attribute_Mapping";

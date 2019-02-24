@@ -16,7 +16,7 @@ namespace TEAM
         public FormMain()
         {
             // Set the version of the build for everything
-            string versionNumberforTeamApplication = "v1.5.4.1";
+            string versionNumberforTeamApplication = "v1.5.4.2";
 
             // Placeholder for the error handling
             var errorMessage = new StringBuilder();
@@ -44,7 +44,9 @@ namespace TEAM
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
             richTextBoxInformation.AppendText("Version "+versionNumberforTeamApplication+"\r\n\r\n");
-            richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
+            //richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
+
+            labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
 
             TestConnections();
 
@@ -174,7 +176,7 @@ namespace TEAM
             }
 
 
-            labelMetadataRepository.Text = "Repository type in configuration is set to " + ConfigurationSettings.MetadataRepositoryType;
+            labelMetadataRepository.Text = "Repository type in configuration is set to: " + ConfigurationSettings.MetadataRepositoryType;
         }
 
 

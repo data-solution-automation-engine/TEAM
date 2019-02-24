@@ -143,7 +143,6 @@ namespace TEAM
             var validationFile = new StringBuilder();
 
             validationFile.AppendLine("/* TEAM Validation Settings */");
-            validationFile.AppendLine("/* Roelant Vos - 2018 */");
 
             // Object existence validation
             validationFile.AppendLine("SourceObjectExistence|True");
@@ -153,6 +152,8 @@ namespace TEAM
             // Consistency validation
             validationFile.AppendLine("LogicalGroup|True");
             validationFile.AppendLine("LinkKeyOrder|True");
+            validationFile.AppendLine("BusinessKeySyntax|True"); 
+
 
             validationFile.AppendLine("/* End of file */");
 
@@ -245,7 +246,7 @@ namespace TEAM
             // Create root path file, with dummy values if it doesn't exist already
             try
             {
-                if (!File.Exists(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathfileName +
+                if (!File.Exists(FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathfileName +
                                  FormBase.GlobalParameters.FileExtension))
                 {
                     var initialConfigurationFile = new StringBuilder();
@@ -256,7 +257,7 @@ namespace TEAM
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
                     initialConfigurationFile.AppendLine("/* End of file */");
 
-                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
+                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.RootPath +
                                                           FormBase.GlobalParameters.PathfileName +
                                                           FormBase.GlobalParameters.FileExtension))
                     {
@@ -361,7 +362,7 @@ namespace TEAM
             // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
             var configList = new Dictionary<string, string>();
             var fs = new FileStream(
-                FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathfileName +
+                FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathfileName +
                 FormBase.GlobalParameters.FileExtension, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
@@ -383,7 +384,6 @@ namespace TEAM
                 // These variables are used as global variables throughout the application
                 FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
                 FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
-
                 FormBase.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
 
             }

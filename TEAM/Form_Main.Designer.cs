@@ -61,6 +61,7 @@
             this.linksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.labelWorkingEnvironment = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBoxVersionSelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -70,14 +71,15 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox2.Controls.Add(this.labelWorkingEnvironment);
             this.groupBox2.Controls.Add(this.labelMetadataRepository);
             this.groupBox2.Controls.Add(this.labelRepositoryDate);
             this.groupBox2.Controls.Add(this.labelRepositoryUpdateDateTime);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.labelRepositoryVersion);
-            this.groupBox2.Location = new System.Drawing.Point(12, 603);
+            this.groupBox2.Location = new System.Drawing.Point(12, 577);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(299, 88);
+            this.groupBox2.Size = new System.Drawing.Size(299, 102);
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Repository version";
@@ -88,9 +90,9 @@
             this.labelMetadataRepository.AutoSize = true;
             this.labelMetadataRepository.Location = new System.Drawing.Point(6, 57);
             this.labelMetadataRepository.Name = "labelMetadataRepository";
-            this.labelMetadataRepository.Size = new System.Drawing.Size(197, 13);
+            this.labelMetadataRepository.Size = new System.Drawing.Size(200, 13);
             this.labelMetadataRepository.TabIndex = 64;
-            this.labelMetadataRepository.Text = "Repository type in configuration is set to ";
+            this.labelMetadataRepository.Text = "Repository type in configuration is set to :";
             // 
             // labelRepositoryDate
             // 
@@ -135,9 +137,9 @@
             this.groupBoxVersionSelection.Controls.Add(this.label1);
             this.groupBoxVersionSelection.Controls.Add(this.labelDocumentationVersion);
             this.groupBoxVersionSelection.Controls.Add(this.labelVersion);
-            this.groupBoxVersionSelection.Location = new System.Drawing.Point(12, 697);
+            this.groupBoxVersionSelection.Location = new System.Drawing.Point(12, 684);
             this.groupBoxVersionSelection.Name = "groupBoxVersionSelection";
-            this.groupBoxVersionSelection.Size = new System.Drawing.Size(299, 87);
+            this.groupBoxVersionSelection.Size = new System.Drawing.Size(299, 100);
             this.groupBoxVersionSelection.TabIndex = 20;
             this.groupBoxVersionSelection.TabStop = false;
             this.groupBoxVersionSelection.Text = "Version selection";
@@ -361,6 +363,16 @@
             this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // labelWorkingEnvironment
+            // 
+            this.labelWorkingEnvironment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelWorkingEnvironment.AutoSize = true;
+            this.labelWorkingEnvironment.Location = new System.Drawing.Point(6, 73);
+            this.labelWorkingEnvironment.Name = "labelWorkingEnvironment";
+            this.labelWorkingEnvironment.Size = new System.Drawing.Size(140, 13);
+            this.labelWorkingEnvironment.TabIndex = 65;
+            this.labelWorkingEnvironment.Text = "The working environment is:";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -424,6 +436,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label labelRepositoryVersion;
         private System.Windows.Forms.Label labelMetadataRepository;
+        private System.Windows.Forms.Label labelWorkingEnvironment;
     }
 }
 

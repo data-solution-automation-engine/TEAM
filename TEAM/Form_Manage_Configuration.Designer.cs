@@ -963,7 +963,7 @@
             this.panel2.Controls.Add(this.label49);
             this.panel2.Controls.Add(this.groupBox6);
             this.panel2.Controls.Add(this.textBoxPhysicalModelServerName);
-            this.panel2.Location = new System.Drawing.Point(6, 154);
+            this.panel2.Location = new System.Drawing.Point(6, 134);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1107, 260);
             this.panel2.TabIndex = 78;
@@ -1238,7 +1238,7 @@
             this.panel1.Controls.Add(this.textBoxMetadataServerName);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.label2);
-            this.panel1.Location = new System.Drawing.Point(6, 16);
+            this.panel1.Location = new System.Drawing.Point(6, 6);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1107, 122);
             this.panel1.TabIndex = 77;
@@ -1437,7 +1437,7 @@
             // 
             // textBoxConfigurationPath
             // 
-            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.textBoxConfigurationPath.Location = new System.Drawing.Point(12, 30);
             this.textBoxConfigurationPath.Multiline = true;
             this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
@@ -1464,7 +1464,7 @@
             // 
             // textBoxOutputPath
             // 
-            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.textBoxOutputPath.Location = new System.Drawing.Point(12, 84);
             this.textBoxOutputPath.Multiline = true;
             this.textBoxOutputPath.Name = "textBoxOutputPath";
