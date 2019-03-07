@@ -4328,7 +4328,10 @@ namespace TEAM
                     }
 
                     // Regular processing
-                    if (checkBoxIgnoreVersion.Checked) // Read from live databasse
+
+                    // RV: there is an issue below where not all SQL version (i.e. SQL Server) are supporting cross database SQL.
+                    //     i.e. Azure. long term fix is to create individual queries to database without cross-db sql and add to single data table in the application
+                    if (checkBoxIgnoreVersion.Checked) // Read from live database
                     {
                         _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
                         prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM");
@@ -4485,11 +4488,13 @@ namespace TEAM
                         {
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                _alert.SetTextLogging("-->  Processing the Business Key from " + tableName["STAGING_AREA_TABLE_NAME"] + " to " + tableName["HUB_TABLE_NAME"] + "\r\n");
-
                                 var insertKeyStatement = new StringBuilder();
                                 var keyComponent = tableName["COMPONENT_VALUE"]; //Handle quotes between SQL and C%
                                 keyComponent = keyComponent.ToString().Replace("'", "''");
+
+                                _alert.SetTextLogging("-->  Processing the Business Key "+ tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component "+ keyComponent + ") from " + tableName["STAGING_AREA_TABLE_NAME"] + " to " + tableName["HUB_TABLE_NAME"] + "\r\n");
+
+
 
                                 var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                                 businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
@@ -4857,16 +4862,7 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME,");
                         prepareMappingStatement.AppendLine("    'N' as MULTI_ACTIVE_KEY_INDICATOR,");
                         prepareMappingStatement.AppendLine("    'automatically_mapped' AS VERIFICATION");
-                        //prepareMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS mapping");
-                        /*LBM 17-04-2018 - Temporary fix to allow mapping when the View comes from a HSTG*/
                         prepareMappingStatement.AppendLine("    FROM (");
-                        //prepareMappingStatement.AppendLine("        SELECT COALESCE(A.TABLE_NAME,SUBSTRING (B.TABLE_NAME,2,LEN(B.TABLE_NAME))) TABLE_NAME, COALESCE(A.COLUMN_NAME, B.COLUMN_NAME) COLUMN_NAME");
-                        //prepareMappingStatement.AppendLine("        FROM " + linkedServer + stagingDatabase + ".INFORMATION_SCHEMA.COLUMNS A");
-                        //prepareMappingStatement.AppendLine("        FULL OUTER JOIN " + linkedServer + psaDatabase + ".INFORMATION_SCHEMA.COLUMNS B");
-                        //prepareMappingStatement.AppendLine("        ON A.TABLE_NAME = SUBSTRING (B.TABLE_NAME,2,LEN(B.TABLE_NAME))");
-                        //prepareMappingStatement.AppendLine("        AND A.COLUMN_NAME = B.COLUMN_NAME");
-                        //prepareMappingStatement.AppendLine("        AND  B.TABLE_NAME LIKE '%_VW'");
-                        /*Failure LBM*/
 
                         // Adding STG and PSA columns for auto-mapping
                         prepareMappingStatement.AppendLine("SELECT object_name(A.object_id, db_id('"+ConfigurationSettings.StagingDatabaseName+"')) as TABLE_NAME, A.[name] AS COLUMN_NAME");

@@ -1204,8 +1204,7 @@ namespace TEAM
                 // Create the schemas
 
                 createStatement.AppendLine("-- Creating the schema");
-                createStatement.AppendLine(
-                    "IF EXISTS ( SELECT schema_name FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'interface')");
+                createStatement.AppendLine("IF EXISTS ( SELECT schema_name FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'interface')");
                 createStatement.AppendLine("DROP SCHEMA [interface]");
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 82);
                 createStatement.Clear();
@@ -1294,35 +1293,28 @@ namespace TEAM
                 createStatement.AppendLine(" hub.HUB_TABLE_NAME,");
                 createStatement.AppendLine(" hlxref.HUB_ORDER,");
                 createStatement.AppendLine(" BUSINESS_KEY_PART_SOURCE AS BUSINESS_KEY_DEFINITION");
-                createStatement.AppendLine(
-                    "FROM --Base table that selects the Links to generate. This is the basis for the Link generation");
+                createStatement.AppendLine("FROM --Base table that selects the Links to generate. This is the basis for the Link generation");
                 createStatement.AppendLine("(");
                 createStatement.AppendLine("	SELECT");
                 createStatement.AppendLine("	  LINK_TABLE_ID,");
                 createStatement.AppendLine("	  STAGING_AREA_TABLE_ID,");
-                createStatement.AppendLine(
-                    "	  LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART_SOURCE,");
-                createStatement.AppendLine(
-                    "	  ROW_NUMBER() OVER(PARTITION BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID ORDER BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID) AS HUB_ORDER");
+                createStatement.AppendLine("	  LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART_SOURCE,");
+                createStatement.AppendLine("	  ROW_NUMBER() OVER(PARTITION BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID ORDER BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID) AS HUB_ORDER");
                 createStatement.AppendLine("	FROM");
                 createStatement.AppendLine("	(");
                 createStatement.AppendLine("	  SELECT");
                 createStatement.AppendLine("		LINK_TABLE_ID,");
                 createStatement.AppendLine("		STAGING_AREA_TABLE_ID,");
-                createStatement.AppendLine(
-                    "		CAST('<M>' + REPLACE(BUSINESS_KEY_DEFINITION, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
+                createStatement.AppendLine("		CAST('<M>' + REPLACE(BUSINESS_KEY_DEFINITION, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
                 createStatement.AppendLine("		FROM [MD_STG_LINK_XREF]");
                 createStatement.AppendLine("	) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
                 createStatement.AppendLine(") slxref");
                 createStatement.AppendLine("JOIN MD_STG stg ");
-                createStatement.AppendLine(
-                    "	ON slxref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID -- Adding the Staging Area table name and schema");
+                createStatement.AppendLine("	ON slxref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID -- Adding the Staging Area table name and schema");
                 createStatement.AppendLine("JOIN MD_LINK lnk ");
-                createStatement.AppendLine(
-                    "	ON slxref.LINK_TABLE_ID = lnk.LINK_TABLE_ID -- Adding the Link table name");
+                createStatement.AppendLine("	ON slxref.LINK_TABLE_ID = lnk.LINK_TABLE_ID -- Adding the Link table name");
                 createStatement.AppendLine("JOIN MD_HUB_LINK_XREF hlxref ");
-                createStatement.AppendLine(
-                    "	ON slxref.LINK_TABLE_ID = hlxref.LINK_TABLE_ID -- Adding the Hubs that relate to the Link, from a target perspective");
+                createStatement.AppendLine("	ON slxref.LINK_TABLE_ID = hlxref.LINK_TABLE_ID -- Adding the Hubs that relate to the Link, from a target perspective");
                 createStatement.AppendLine("  AND slxref.HUB_ORDER = hlxref.HUB_ORDER");
                 createStatement.AppendLine("JOIN MD_HUB hub");
                 createStatement.AppendLine("    ON hlxref.HUB_TABLE_ID = hub.HUB_TABLE_ID -- Adding the Hub name");
@@ -1333,40 +1325,32 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_TO_STAGING]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("/*");
-                createStatement.AppendLine(
-                    "This view combines the staging area listing / interfaces with the exceptions where a single source file/table is mapped to more than one Staging Area tables.");
+                createStatement.AppendLine("This view combines the staging area listing / interfaces with the exceptions where a single source file/table is mapped to more than one Staging Area tables.");
                 createStatement.AppendLine("This is the default source for source-to-staging interfaces.");
                 createStatement.AppendLine("*/");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(
-                    " schema_stg_listing.TABLE_NAME AS STAGING_AREA_TABLE_NAME-- the Staging Area tables queried from the catalog");
+                createStatement.AppendLine(" schema_stg_listing.TABLE_NAME AS STAGING_AREA_TABLE_NAME-- the Staging Area tables queried from the catalog");
                 createStatement.AppendLine(" , '[dbo]' AS STAGING_AREA_SCHEMA_NAME");
                 createStatement.AppendLine(" , coalesce(dataset.SOURCE_DATASET_NAME");
                 createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
-                createStatement.AppendLine(
-                    " , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1 -- always prefixed with STG_(length 4)");
+                createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1 -- always prefixed with STG_(length 4)");
                 createStatement.AppendLine(" , len(schema_stg_listing.TABLE_NAME))) AS SOURCE_TABLE_NAME");
                 createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
                 createStatement.AppendLine(" , 5 -- always prefixed with STG_(length 4)");
-                createStatement.AppendLine(
-                    " , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) - 5) AS SOURCE_TABLE_SYSTEM_NAME");
+                createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) - 5) AS SOURCE_TABLE_SYSTEM_NAME");
                 createStatement.AppendLine(" ,'tbd' AS SOURCE_SCHEMA_NAME");
-                createStatement.AppendLine(
-                    " , COALESCE(cdctype.CHANGE_DATA_CAPTURE_TYPE, 'Undefined') AS CHANGE_DATA_CAPTURE_TYPE");
-                createStatement.AppendLine(
-                    " , COALESCE(naming_exception.CHANGE_DATETIME_DEFINITION, cdctype.CHANGE_DATETIME_DEFINITION) AS CHANGE_DATETIME_DEFINITION");
+                createStatement.AppendLine(" , COALESCE(cdctype.CHANGE_DATA_CAPTURE_TYPE, 'Undefined') AS CHANGE_DATA_CAPTURE_TYPE");
+                createStatement.AppendLine(" , COALESCE(naming_exception.CHANGE_DATETIME_DEFINITION, cdctype.CHANGE_DATETIME_DEFINITION) AS CHANGE_DATETIME_DEFINITION");
                 createStatement.AppendLine(" , cdctype.GENERATE_INDICATOR AS GENERATE_INDICATOR");
-                createStatement.AppendLine("FROM EDW_100_Staging_Area.INFORMATION_SCHEMA.TABLES as schema_stg_listing");
-                createStatement.AppendLine(
-                    "LEFT JOIN dbo.MD_SOURCE_STG_XREF as naming_exception on naming_exception.STAGING_AREA_TABLE_NAME = schema_stg_listing.TABLE_NAME");
-                createStatement.AppendLine(
-                    "LEFT JOIN dbo.MD_STG_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.STAGING_AREA_TABLE_NAME");
-                createStatement.AppendLine(
-                    "LEFT JOIN dbo.MD_SOURCE_DATASET dataset ON naming_exception.SOURCE_DATASET_ID = dataset.SOURCE_DATASET_ID");
+                createStatement.AppendLine("FROM ["+ConfigurationSettings.StagingDatabaseName+"].INFORMATION_SCHEMA.TABLES as schema_stg_listing");
+                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_STG_XREF as naming_exception on naming_exception.STAGING_AREA_TABLE_NAME = schema_stg_listing.TABLE_NAME");
+                createStatement.AppendLine("LEFT JOIN dbo.MD_STG_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.STAGING_AREA_TABLE_NAME");
+                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_DATASET dataset ON naming_exception.SOURCE_DATASET_ID = dataset.SOURCE_DATASET_ID");
                 createStatement.AppendLine("WHERE TABLE_TYPE = 'BASE TABLE'");
                 createStatement.AppendLine("AND TABLE_NAME not like '%LANDING%'");
                 createStatement.AppendLine("AND TABLE_NAME not like '%USERMANAGED%'");
+                createStatement.AppendLine("AND TABLE_SCHEMA = '" + ConfigurationSettings.SchemaName + "'");
                 createStatement.AppendLine("AND schema_stg_listing.TABLE_NAME LIKE 'STG_%'");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 93);
@@ -1544,7 +1528,7 @@ namespace TEAM
                         etlFrameWorkIncludePsa.AppendLine("  [OMD_SOURCE_ROW_ID] [int] NOT NULL,");
                         etlFrameWorkIncludePsa.AppendLine("  [OMD_CDC_OPERATION] [varchar] (100) NOT NULL,");
                         etlFrameWorkIncludePsa.AppendLine("  [OMD_HASH_FULL_RECORD] [binary] (16) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_CURRENT_RECORD_INDICATOR] [varchar] (1) NOT NULL DEFAULT 'Y',");
+                        //etlFrameWorkIncludePsa.AppendLine("  [OMD_CURRENT_RECORD_INDICATOR] [varchar] (1) NOT NULL DEFAULT 'Y',");
 
                         etlFrameworkIncludePsaKey.AppendLine("[OMD_INSERT_DATETIME] ASC, [OMD_SOURCE_ROW_ID] ASC");
 
@@ -1860,7 +1844,7 @@ namespace TEAM
                         createStatement.AppendLine("CREATE TABLE [STG_PROFILER_ESTIMATED_WORTH]");
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [Plan_Code] varchar(100) NULL,");
+                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
                         createStatement.AppendLine("  [Date_effective] datetime2(7) NULL,");
                         createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL ");
                         createStatement.AppendLine(")");
@@ -2051,7 +2035,7 @@ namespace TEAM
                         createStatement.AppendLine("(");
                         createStatement.Append(etlFrameWorkIncludePsa);
                         createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
+                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
                         createStatement.AppendLine("  [Start_Date] datetime2(7) NULL,");
                         createStatement.AppendLine("  [End_Date] datetime2(7) NULL,");
                         createStatement.AppendLine("  [Status] nvarchar(100) NULL,");
