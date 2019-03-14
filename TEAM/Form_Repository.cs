@@ -2869,7 +2869,7 @@ namespace TEAM
                     sourceRowId = "OMD_SOURCE_ROW_ID";
                     eventDateTime = "OMD_EVENT_DATETIME";
                     loadDateTime = "OMD_INSERT_DATETIME";
-                    expiryDateTime = "OD_EXPIRY_DATETIME";
+                    expiryDateTime = "OMD_EXPIRY_DATETIME";
                     changeDataIndicator = "OMD_CDC_OPERATION";
                     recordSource = "OMD_RECORD_SOURCE";
                     etlProcessId = "OMD_INSERT_MODULE_INSTANCE_ID";
