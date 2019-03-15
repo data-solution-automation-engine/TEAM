@@ -52,8 +52,8 @@ namespace TEAM
             //JSON represenation of the table mapping metadata
             public string tableMappingHash { get; set; }
             public string versionId { get; set; }
-            public string stagingAreaTable { get; set; }
-            public string integrationAreaTable { get; set; }
+            public string sourceTable { get; set; }
+            public string targetTable { get; set; }
             public string businessKeyDefinition { get; set; }
             public string drivingKeyDefinition { get; set; }
             public string filterCriteria { get; set; }
@@ -370,8 +370,8 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine("SELECT ");
                 sqlStatementForLatestVersion.AppendLine(" [TABLE_MAPPING_HASH],");
                 sqlStatementForLatestVersion.AppendLine(" CAST([VERSION_ID] AS VARCHAR(100)) AS VERSION_ID,");
-                sqlStatementForLatestVersion.AppendLine(" [STAGING_AREA_TABLE],");
-                sqlStatementForLatestVersion.AppendLine(" [INTEGRATION_AREA_TABLE],");
+                sqlStatementForLatestVersion.AppendLine(" [SOURCE_TABLE],");
+                sqlStatementForLatestVersion.AppendLine(" [TARGET_TABLE],");
                 sqlStatementForLatestVersion.AppendLine(" [BUSINESS_KEY_ATTRIBUTE],");
                 sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_ATTRIBUTE],");
                 sqlStatementForLatestVersion.AppendLine(" [FILTER_CRITERIA],");
@@ -382,7 +382,7 @@ namespace TEAM
                 var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
 
                 // Order by Source Table, Integration_Area table, Business Key Attribute
-                //versionList.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+                //versionList.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
 
                 _bindingSourceTableMetadata.DataSource = versionList;
 
@@ -396,8 +396,8 @@ namespace TEAM
 
                     dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
                     dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
-                    dataGridViewTableMetadata.Columns[2].HeaderText = "Staging Area Table";
-                    dataGridViewTableMetadata.Columns[3].HeaderText = "Integration Area Table";
+                    dataGridViewTableMetadata.Columns[2].HeaderText = "Source Table";
+                    dataGridViewTableMetadata.Columns[3].HeaderText = "Target Table";
                     dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                     dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                     dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
@@ -422,14 +422,14 @@ namespace TEAM
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
                 dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
                 dt.Columns[1].ColumnName = "VERSION_ID";
-                dt.Columns[2].ColumnName = "STAGING_AREA_TABLE";
-                dt.Columns[3].ColumnName = "INTEGRATION_AREA_TABLE";
+                dt.Columns[2].ColumnName = "SOURCE_TABLE";
+                dt.Columns[3].ColumnName = "TARGET_TABLE";
                 dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
                 dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
                 dt.Columns[6].ColumnName = "FILTER_CRITERIA";
                 dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
 
-                dt.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+                dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
 
                 _bindingSourceTableMetadata.DataSource = dt;
 
@@ -443,8 +443,8 @@ namespace TEAM
 
                     dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
                     dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
-                    dataGridViewTableMetadata.Columns[2].HeaderText = "Staging Area Table";
-                    dataGridViewTableMetadata.Columns[3].HeaderText = "Integration Area Table";
+                    dataGridViewTableMetadata.Columns[2].HeaderText = "Source Table";
+                    dataGridViewTableMetadata.Columns[3].HeaderText = "Target Table";
                     dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                     dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                     dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
@@ -511,10 +511,10 @@ namespace TEAM
 
                     dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
                     dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
-                    dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
-                    dataGridViewAttributeMetadata.Columns[3].HeaderText = "Staging Area Column";
-                    dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
-                    dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
+                    dataGridViewAttributeMetadata.Columns[2].HeaderText = "Source Table";
+                    dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
+                    dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
+                    dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                 }
             }
@@ -552,10 +552,10 @@ namespace TEAM
 
                     dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
                     dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
-                    dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
-                    dataGridViewAttributeMetadata.Columns[3].HeaderText = "Staging Area Column";
-                    dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
-                    dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
+                    dataGridViewAttributeMetadata.Columns[2].HeaderText = "Source Table";
+                    dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
+                    dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
+                    dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                 }
 
@@ -651,14 +651,14 @@ namespace TEAM
             var distinctList = new List<string>();
             foreach (DataRow row in inputDataTable.Rows) 
             {
-                if (!distinctList.Contains((string)row["STAGING_AREA_TABLE"]))
+                if (!distinctList.Contains((string)row["SOURCE_TABLE"]))
                 {
-                    distinctList.Add((string)row["STAGING_AREA_TABLE"]);
+                    distinctList.Add((string)row["SOURCE_TABLE"]);
                 }
 
-                if (!distinctList.Contains((string)row["INTEGRATION_AREA_TABLE"]))
+                if (!distinctList.Contains((string)row["TARGET_TABLE"]))
                 {
-                    distinctList.Add((string)row["INTEGRATION_AREA_TABLE"]);
+                    distinctList.Add((string)row["TARGET_TABLE"]);
                 }
             }
 
@@ -1261,7 +1261,7 @@ namespace TEAM
                     }
 
                     insertQueryTables.AppendLine("INSERT INTO MD_TABLE_MAPPING");
-                    insertQueryTables.AppendLine("([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
+                    insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
                     insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                  businessKeyDefinition + "','" + integrationTable + "','" +
                                                  drivingKeyDefinition + "','" + filterCriterion + "','" +
@@ -1359,8 +1359,8 @@ namespace TEAM
                     JObject newJsonSegment = new JObject(
                         new JProperty("tableMappingHash", hashKey),
                         new JProperty("versionId", versionId),
-                        new JProperty("stagingAreaTable", stagingTable),
-                        new JProperty("integrationAreaTable", integrationTable),
+                        new JProperty("sourceTable", stagingTable),
+                        new JProperty("targetTable", integrationTable),
                         new JProperty("businessKeyDefinition", businessKeyDefinition),
                         new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                         new JProperty("filterCriteria", filterCriterion),
@@ -1579,13 +1579,13 @@ namespace TEAM
                             var filterCriterion = "";
                             var generateIndicator = "";
 
-                            if (row["STAGING_AREA_TABLE"] != DBNull.Value)
+                            if (row["SOURCE_TABLE"] != DBNull.Value)
                             {
-                                stagingTable = (string)row["STAGING_AREA_TABLE"];
+                                stagingTable = (string)row["SOURCE_TABLE"];
                             }
-                            if (row["INTEGRATION_AREA_TABLE"] != DBNull.Value)
+                            if (row["TARGET_TABLE"] != DBNull.Value)
                             {
-                                integrationTable = (string)row["INTEGRATION_AREA_TABLE"];
+                                integrationTable = (string)row["TARGET_TABLE"];
                             }
                             if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value)
                             {
@@ -1611,9 +1611,9 @@ namespace TEAM
                             generateIndicator = generateIndicator.Replace("'", "''");
 
                             insertQueryTables.AppendLine("UPDATE [MD_TABLE_MAPPING]");
-                            insertQueryTables.AppendLine("SET [STAGING_AREA_TABLE] = '" + stagingTable +
+                            insertQueryTables.AppendLine("SET [SOURCE_TABLE] = '" + stagingTable +
                                                             "',[BUSINESS_KEY_ATTRIBUTE] = '" + businessKeyDefinition +
-                                                            "',[INTEGRATION_AREA_TABLE] = '" + integrationTable +
+                                                            "',[TARGET_TABLE] = '" + integrationTable +
                                                             "',[DRIVING_KEY_ATTRIBUTE] = '" + drivingKeyDefinition +
                                                             "',[FILTER_CRITERIA] = '" + filterCriterion +
                                                             "',[GENERATE_INDICATOR] = '" + generateIndicator + "'");
@@ -1662,7 +1662,7 @@ namespace TEAM
                             }
 
                             insertQueryTables.AppendLine("INSERT INTO [MD_TABLE_MAPPING]");
-                            insertQueryTables.AppendLine("([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
+                            insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
                             insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                          businessKeyDefinition + "','" + integrationTable + "','" +
                                                          drivingKeyDefinition + "','" + filterCriterion + "','" +
@@ -1757,13 +1757,13 @@ namespace TEAM
                             var filterCriterion = "";
                             var generateIndicator = "";
 
-                            if (row["STAGING_AREA_TABLE"] != DBNull.Value)
+                            if (row["SOURCE_TABLE"] != DBNull.Value)
                             {
-                                stagingTable = (string)row["STAGING_AREA_TABLE"];
+                                stagingTable = (string)row["SOURCE_TABLE"];
                             }
-                            if (row["INTEGRATION_AREA_TABLE"] != DBNull.Value)
+                            if (row["TARGET_TABLE"] != DBNull.Value)
                             {
-                                integrationTable = (string)row["INTEGRATION_AREA_TABLE"];
+                                integrationTable = (string)row["TARGET_TABLE"];
                             }
                             if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value)
                             {
@@ -1799,8 +1799,8 @@ namespace TEAM
                                 jsonHash.drivingKeyDefinition = drivingKeyDefinition;
                                 jsonHash.filterCriteria = filterCriterion;
                                 jsonHash.generationIndicator = generateIndicator;
-                                jsonHash.integrationAreaTable = integrationTable;
-                                jsonHash.stagingAreaTable = stagingTable;
+                                jsonHash.targetTable = integrationTable;
+                                jsonHash.sourceTable = stagingTable;
                             }
 
                             string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
@@ -1902,8 +1902,8 @@ namespace TEAM
                                 JObject newJsonSegment = new JObject(
                                     new JProperty("tableMappingHash", hashKey),
                                     new JProperty("versionId", versionId),
-                                    new JProperty("stagingAreaTable", stagingTable),
-                                    new JProperty("integrationAreaTable", integrationTable),
+                                    new JProperty("sourceTable", stagingTable),
+                                    new JProperty("targetTable", integrationTable),
                                     new JProperty("businessKeyDefinition", businessKeyDefinition),
                                     new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                                     new JProperty("filterCriteria", filterCriterion),
@@ -2682,8 +2682,8 @@ namespace TEAM
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
             dt.Columns[1].ColumnName = "VERSION_ID";
-            dt.Columns[2].ColumnName = "STAGING_AREA_TABLE";
-            dt.Columns[3].ColumnName = "INTEGRATION_AREA_TABLE";
+            dt.Columns[2].ColumnName = "SOURCE_TABLE";
+            dt.Columns[3].ColumnName = "TARGET_TABLE";
             dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
             dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
             dt.Columns[6].ColumnName = "FILTER_CRITERIA";
@@ -2797,15 +2797,15 @@ namespace TEAM
                         // Setup the datatable with proper headings
                         dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
                         dt.Columns[1].ColumnName = "VERSION_ID";
-                        dt.Columns[2].ColumnName = "STAGING_AREA_TABLE";
-                        dt.Columns[3].ColumnName = "INTEGRATION_AREA_TABLE";
+                        dt.Columns[2].ColumnName = "SOURCE_TABLE";
+                        dt.Columns[3].ColumnName = "TARGET_TABLE";
                         dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
                         dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
                         dt.Columns[6].ColumnName = "FILTER_CRITERIA";
                         dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
 
                         // Sort the columns
-                        dt.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+                        dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
 
                         // Clear out the existing data from the grid
                         _bindingSourceTableMetadata.DataSource = null;
@@ -2825,8 +2825,8 @@ namespace TEAM
 
                             dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
                             dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
-                            dataGridViewTableMetadata.Columns[2].HeaderText = "Staging Area Table";
-                            dataGridViewTableMetadata.Columns[3].HeaderText = "Integration Area Table";
+                            dataGridViewTableMetadata.Columns[2].HeaderText = "Source Table";
+                            dataGridViewTableMetadata.Columns[3].HeaderText = "Target Table";
                             dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                             dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                             dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
@@ -3008,10 +3008,10 @@ namespace TEAM
 
                             dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
                             dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
-                            dataGridViewAttributeMetadata.Columns[2].HeaderText = "Staging Area Table";
-                            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Staging Area Column";
-                            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Integration Area Table";
-                            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Integration Area Column";
+                            dataGridViewAttributeMetadata.Columns[2].HeaderText = "Source Table";
+                            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
+                            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
+                            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
                             dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                         }
                     }
@@ -3107,8 +3107,8 @@ namespace TEAM
             createStatement.AppendLine("( ");
             createStatement.AppendLine("    [TABLE_MAPPING_HASH] AS(");
             createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[INTEGRATION_AREA_TABLE])),'NA')+'|'+");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[STAGING_AREA_TABLE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[BUSINESS_KEY_ATTRIBUTE])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DRIVING_KEY_ATTRIBUTE])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[FILTER_CRITERIA])),'NA')+'|'");
@@ -3116,10 +3116,10 @@ namespace TEAM
             createStatement.AppendLine("			)");
             createStatement.AppendLine("		) PERSISTED NOT NULL ,");
             createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
-            createStatement.AppendLine("	[STAGING_AREA_TABLE] varchar(100)  NULL,");
+            createStatement.AppendLine("	[SOURCE_TABLE] varchar(100)  NULL,");
             createStatement.AppendLine("	[BUSINESS_KEY_ATTRIBUTE] varchar(4000)  NULL,");
             createStatement.AppendLine("	[DRIVING_KEY_ATTRIBUTE] varchar(4000)  NULL,");
-            createStatement.AppendLine("	[INTEGRATION_AREA_TABLE] varchar(100)  NULL,");
+            createStatement.AppendLine("	[TARGET_TABLE] varchar(100)  NULL,");
             createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
             createStatement.AppendLine("	[GENERATE_INDICATOR] varchar(1)  NULL,");
             createStatement.AppendLine("    CONSTRAINT[PK_TMP_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
@@ -3131,25 +3131,25 @@ namespace TEAM
             foreach (DataRow row in inputTableMapping.Rows)
             {
                 //LBM 2019-01-31 -- ENSURE NO NULLS ARE INSERTED IN THE TABLE
-                string STAGING_AREA_TABLE = "";
+                string SOURCE_TABLE = "";
                 string BUSINESS_KEY_ATTRIBUTE = "";
-                string INTEGRATION_AREA_TABLE = "";
+                string TARGET_TABLE = "";
                 string FILTER_CRITERIA = "";
                 string DRIVING_KEY_ATTRIBUTE = "";
                 string GENERATE_INDICATOR = "";
-                if (row["STAGING_AREA_TABLE"] != DBNull.Value)
-                    STAGING_AREA_TABLE = (string)row["STAGING_AREA_TABLE"];
+                if (row["SOURCE_TABLE"] != DBNull.Value)
+                    SOURCE_TABLE = (string)row["SOURCE_TABLE"];
                 if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value) ;
                     BUSINESS_KEY_ATTRIBUTE = (string)row["BUSINESS_KEY_ATTRIBUTE"];
-                if (row["INTEGRATION_AREA_TABLE"] != DBNull.Value)
-                    INTEGRATION_AREA_TABLE = (string)row["INTEGRATION_AREA_TABLE"];
+                if (row["TARGET_TABLE"] != DBNull.Value)
+                    TARGET_TABLE = (string)row["TARGET_TABLE"];
                 if (row["FILTER_CRITERIA"] != DBNull.Value)
                     FILTER_CRITERIA = (string)row["FILTER_CRITERIA"];
                 if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
                     DRIVING_KEY_ATTRIBUTE = (string)row["DRIVING_KEY_ATTRIBUTE"];
                 if (row["GENERATE_INDICATOR"] != DBNull.Value)
                     GENERATE_INDICATOR = (string)row["GENERATE_INDICATOR"];
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'" + STAGING_AREA_TABLE + "', N'" + BUSINESS_KEY_ATTRIBUTE.ToString().Replace("'","''") + "', N'" + INTEGRATION_AREA_TABLE + "', N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + GENERATE_INDICATOR + "');");
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'" + SOURCE_TABLE + "', N'" + BUSINESS_KEY_ATTRIBUTE.ToString().Replace("'","''") + "', N'" + TARGET_TABLE + "', N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + GENERATE_INDICATOR + "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3502,19 +3502,19 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing removal of existing metadata.\r\n");
                 var deleteStatement = new StringBuilder();
                 deleteStatement.AppendLine( @"
-                                        DELETE FROM dbo.[MD_STG_SAT_ATT_XREF];
-                                        DELETE FROM dbo.[MD_STG_LINK_ATT_XREF];
-                                        DELETE FROM dbo.[MD_STG_SAT_ATT_XREF];
-                                        DELETE FROM dbo.[MD_STG_LINK_XREF];
-                                        DELETE FROM dbo.[MD_STG_SAT_XREF];
+                                        DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
+                                        DELETE FROM dbo.[MD_SOURCE_LINK_ATTRIBUTE_XREF];
+                                        DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
+                                        DELETE FROM dbo.[MD_SOURCE_LINK_XREF];
+                                        DELETE FROM dbo.[MD_SOURCE_SATELLITE_XREF];
                                         DELETE FROM dbo.[MD_DRIVING_KEY_XREF];
                                         DELETE FROM dbo.[MD_HUB_LINK_XREF];
-                                        DELETE FROM dbo.[MD_SAT];
+                                        DELETE FROM dbo.[MD_SATELLITE];
                                         DELETE FROM dbo.[MD_BUSINESS_KEY_COMPONENT_PART];
                                         DELETE FROM dbo.[MD_BUSINESS_KEY_COMPONENT];
-                                        DELETE FROM dbo.[MD_STG_HUB_XREF];
-                                        DELETE FROM dbo.[MD_ATT];
-                                        DELETE FROM dbo.[MD_STG];
+                                        DELETE FROM dbo.[MD_SOURCE_HUB_XREF];
+                                        DELETE FROM dbo.[MD_ATTRIBUTE];
+                                        DELETE FROM dbo.[MD_SOURCE];
                                         DELETE FROM dbo.[MD_HUB];
                                         DELETE FROM dbo.[MD_LINK];
                                         DELETE FROM dbo.[MD_MODEL_METADATA];
@@ -3586,10 +3586,10 @@ namespace TEAM
 
                 #endregion
 
-                # region Prepare Staging Area - 10%
+                # region Prepare Source - 10%
                 // 2. Prepare STG
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Staging Area metadata.\r\n");
+                _alert.SetTextLogging("Commencing preparing the Source metadata.\r\n");
 
                 try
                 {
@@ -3597,14 +3597,14 @@ namespace TEAM
                     var stgCounter = 1;
 
                     // Getting the distinct list of tables to go into the 'source'
-                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND (STAGING_AREA_TABLE LIKE '" + stagingPrefix + "' OR STAGING_AREA_TABLE LIKE '" + psaPrefix + "')");
+                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND (SOURCE_TABLE LIKE '" + stagingPrefix + "' OR SOURCE_TABLE LIKE '" + psaPrefix + "')");
 
                     var distinctList = new List<string>();
                     foreach (DataRow row in selectionRows)
                     {
-                        if (!distinctList.Contains((string)row["STAGING_AREA_TABLE"]))
+                        if (!distinctList.Contains((string)row["SOURCE_TABLE"]))
                         {
-                            distinctList.Add((string)row["STAGING_AREA_TABLE"]);
+                            distinctList.Add((string)row["SOURCE_TABLE"]);
                         }
                     }
 
@@ -3613,8 +3613,8 @@ namespace TEAM
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
                         var dummyStatement = new StringBuilder();
-                        dummyStatement.AppendLine("INSERT INTO [MD_STG]");
-                        dummyStatement.AppendLine("([STAGING_AREA_TABLE_NAME],[STAGING_AREA_TABLE_ID])");
+                        dummyStatement.AppendLine("INSERT INTO [MD_SOURCE]");
+                        dummyStatement.AppendLine("([SOURCE_NAME],[SOURCE_ID])");
                         dummyStatement.AppendLine("VALUES ('Not applicable'," + stgCounter + ")");
 
                         var command = new SqlCommand(dummyStatement.ToString(), connection);
@@ -3628,7 +3628,7 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Staging Area metadata. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging("An issue has occured during preparation of the Source metadata. Please check the Error Log for more details.\r\n");
                             errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
                         }
                     }
@@ -3642,8 +3642,8 @@ namespace TEAM
 
                             var insertStgStatemeent = new StringBuilder();
 
-                            insertStgStatemeent.AppendLine("INSERT INTO [MD_STG]");
-                            insertStgStatemeent.AppendLine("([STAGING_AREA_TABLE_NAME],[STAGING_AREA_TABLE_ID])");
+                            insertStgStatemeent.AppendLine("INSERT INTO [MD_SOURCE]");
+                            insertStgStatemeent.AppendLine("([SOURCE_NAME],[SOURCE_ID])");
                             insertStgStatemeent.AppendLine("VALUES ('" + tableName + "'," + stgCounter + ")");
 
                             var command = new SqlCommand(insertStgStatemeent.ToString(), connection);
@@ -3657,20 +3657,20 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Staging Area. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging Area: \r\n\r\n" + ex);
+                                _alert.SetTextLogging("An issue has occured during preparation of the Source. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source: \r\n\r\n" + ex);
                             }
                         }
                     }
 
                     if (worker != null) worker.ReportProgress(10);
-                    _alert.SetTextLogging("Preparation of the Staging Area completed.\r\n");
+                    _alert.SetTextLogging("Preparation of the Source completed.\r\n");
                 }
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Staging Area. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging Area: \r\n\r\n" + ex);
+                    _alert.SetTextLogging("An issue has occured during preparation of the Source. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source: \r\n\r\n" + ex);
                 }
 
                 #endregion
@@ -3686,14 +3686,14 @@ namespace TEAM
                     var hubCounter = 1; 
 
                     // Getting the distinct list of tables to go into the MD_HUB table
-                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix + "'");
+                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + hubTablePrefix + "'");
 
                     var distinctList = new List<string>();
                     foreach (DataRow row in selectionRows)
                     {
-                        if (!distinctList.Contains((string)row["INTEGRATION_AREA_TABLE"]))
+                        if (!distinctList.Contains((string)row["TARGET_TABLE"]))
                         {
-                            distinctList.Add((string)row["INTEGRATION_AREA_TABLE"]);
+                            distinctList.Add((string)row["TARGET_TABLE"]);
                         }
                     }
 
@@ -3703,7 +3703,7 @@ namespace TEAM
                     {
                         var dummyStatement = new StringBuilder();
                         dummyStatement.AppendLine("INSERT INTO [MD_HUB]");
-                        dummyStatement.AppendLine("([HUB_TABLE_NAME],[HUB_TABLE_ID])");
+                        dummyStatement.AppendLine("([HUB_NAME],[HUB_ID])");
                         dummyStatement.AppendLine("VALUES ('Not applicable'," + hubCounter + ")");
 
                         var command = new SqlCommand(dummyStatement.ToString(), connection);
@@ -3732,7 +3732,7 @@ namespace TEAM
                             var insertHubStatemeent = new StringBuilder();
 
                             insertHubStatemeent.AppendLine("INSERT INTO [MD_HUB]");
-                            insertHubStatemeent.AppendLine("([HUB_TABLE_NAME],[HUB_TABLE_ID])");
+                            insertHubStatemeent.AppendLine("([HUB_NAME],[HUB_ID])");
                             insertHubStatemeent.AppendLine("VALUES ('" + tableName + "'," + hubCounter + ")");
 
                             var command = new SqlCommand(insertHubStatemeent.ToString(), connection);
@@ -3774,14 +3774,14 @@ namespace TEAM
                     var linkCounter = 1;
 
                     // Getting the distinct list of tables to go into the MD_LINK table
-                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND INTEGRATION_AREA_TABLE LIKE '" + lnkTablePrefix + "'");
+                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
 
                     var distinctList = new List<string>();
                     foreach (DataRow row in selectionRows)
                     {
-                        if (!distinctList.Contains((string)row["INTEGRATION_AREA_TABLE"]))
+                        if (!distinctList.Contains((string)row["TARGET_TABLE"]))
                         {
-                            distinctList.Add((string)row["INTEGRATION_AREA_TABLE"]);
+                            distinctList.Add((string)row["TARGET_TABLE"]);
                         }
                     }
 
@@ -3791,7 +3791,7 @@ namespace TEAM
                     {
                         var dummyStatement = new StringBuilder();
                         dummyStatement.AppendLine("INSERT INTO [MD_LINK]");
-                        dummyStatement.AppendLine("([LINK_TABLE_NAME],[LINK_TABLE_ID])");
+                        dummyStatement.AppendLine("([LINK_NAME],[LINK_ID])");
                         dummyStatement.AppendLine("VALUES ('Not applicable'," + linkCounter + ")");
 
                         var command = new SqlCommand(dummyStatement.ToString(), connection);
@@ -3821,7 +3821,7 @@ namespace TEAM
                             var insertLinkStatement = new StringBuilder();
 
                             insertLinkStatement.AppendLine("INSERT INTO [MD_LINK]");
-                            insertLinkStatement.AppendLine("([LINK_TABLE_NAME],[LINK_TABLE_ID])");
+                            insertLinkStatement.AppendLine("([LINK_NAME],[LINK_ID])");
                             insertLinkStatement.AppendLine("VALUES ('" + tableName + "'," + linkCounter + ")");
 
                             var command = new SqlCommand(insertLinkStatement.ToString(), connection);
@@ -3865,23 +3865,23 @@ namespace TEAM
                     /*LBM 2019/01/10 - Changing to use @ Strings*/
                     prepareSatStatement.AppendLine(@"
                                                     SELECT DISTINCT
-                                                           spec.INTEGRATION_AREA_TABLE AS SATELLITE_TABLE_NAME,
-                                                           hubkeysub.HUB_TABLE_ID,
+                                                           spec.TARGET_TABLE AS SATELLITE_NAME,
+                                                           hubkeysub.HUB_ID,
                                                            'Normal' AS SATELLITE_TYPE,
-                                                           (SELECT LINK_TABLE_ID FROM MD_LINK WHERE LINK_TABLE_NAME='Not applicable') AS LINK_TABLE_ID -- No link for normal Satellites 
+                                                           (SELECT LINK_ID FROM MD_LINK WHERE LINK_NAME='Not applicable') AS LINK_ID -- No link for normal Satellites 
                                                     FROM TMP_MD_TABLE_MAPPING spec 
                                                     LEFT OUTER JOIN 
                                                     ( 
-                                                           SELECT DISTINCT INTEGRATION_AREA_TABLE, hub.HUB_TABLE_ID, STAGING_AREA_TABLE, BUSINESS_KEY_ATTRIBUTE 
+                                                           SELECT DISTINCT TARGET_TABLE, hub.HUB_ID, SOURCE_TABLE, BUSINESS_KEY_ATTRIBUTE 
                                                            FROM TMP_MD_TABLE_MAPPING spec2 
                                                            LEFT OUTER JOIN -- Join in the Hub ID from the MD table 
-                                                                 MD_HUB hub ON hub.HUB_TABLE_NAME=spec2.INTEGRATION_AREA_TABLE 
-                                                        WHERE INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix + @"'
+                                                                 MD_HUB hub ON hub.HUB_NAME=spec2.TARGET_TABLE 
+                                                        WHERE TARGET_TABLE LIKE '" + hubTablePrefix + @"'
                                                         AND [GENERATE_INDICATOR] = 'Y'                                                        
                                                     ) hubkeysub 
-                                                           ON spec.STAGING_AREA_TABLE=hubkeysub.STAGING_AREA_TABLE 
+                                                           ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE 
                                                            AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') 
-                                                    WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + satTablePrefix + @"'
+                                                    WHERE spec.TARGET_TABLE LIKE '" + satTablePrefix + @"'
                                                     AND [GENERATE_INDICATOR] = 'Y'
                                                     ");
 
@@ -3891,13 +3891,13 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName["SATELLITE_TABLE_NAME"] + "\r\n");
+                            _alert.SetTextLogging("--> " + tableName["SATELLITE_NAME"] + "\r\n");
 
                             var insertSatStatement = new StringBuilder();
 
-                            insertSatStatement.AppendLine("INSERT INTO [MD_SAT]");
-                            insertSatStatement.AppendLine("([SATELLITE_TABLE_NAME],[SATELLITE_TABLE_ID], [SATELLITE_TYPE], [HUB_TABLE_ID], [LINK_TABLE_ID])");
-                            insertSatStatement.AppendLine("VALUES ('" + tableName["SATELLITE_TABLE_NAME"] + "'," + satCounter + ",'" + tableName["SATELLITE_TYPE"] + "'," + tableName["HUB_TABLE_ID"] + "," + tableName["LINK_TABLE_ID"] + ")");
+                            insertSatStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
+                            insertSatStatement.AppendLine("([SATELLITE_NAME],[SATELLITE_ID], [SATELLITE_TYPE], [HUB_ID], [LINK_ID])");
+                            insertSatStatement.AppendLine("VALUES ('" + tableName["SATELLITE_NAME"] + "'," + satCounter + ",'" + tableName["SATELLITE_TYPE"] + "'," + tableName["HUB_ID"] + "," + tableName["LINK_ID"] + ")");
 
                             var command = new SqlCommand(insertSatStatement.ToString(), connection);
 
@@ -3939,29 +3939,29 @@ namespace TEAM
                     /*LBM 2019/01/10 - Changing to use @ Strings*/
                     prepareSatStatement.AppendLine(@"
                                                     SELECT DISTINCT
-                                                           spec.INTEGRATION_AREA_TABLE AS SATELLITE_TABLE_NAME, 
-                                                           (SELECT HUB_TABLE_ID FROM MD_HUB WHERE HUB_TABLE_NAME='Not applicable') AS HUB_TABLE_ID, -- No Hub for Link Satellites
+                                                           spec.TARGET_TABLE AS SATELLITE_NAME, 
+                                                           (SELECT HUB_ID FROM MD_HUB WHERE HUB_NAME='Not applicable') AS HUB_ID, -- No Hub for Link Satellites
                                                            'Link Satellite' AS SATELLITE_TYPE,
-                                                           lnkkeysub.LINK_TABLE_ID
+                                                           lnkkeysub.LINK_ID
                                                     FROM TMP_MD_TABLE_MAPPING spec
                                                     LEFT OUTER JOIN  -- Get the Link ID that belongs to this LSAT
                                                     (
                                                            SELECT DISTINCT 
-                                                                 INTEGRATION_AREA_TABLE AS LINK_TABLE_NAME,
-                                                                 STAGING_AREA_TABLE,
+                                                                 TARGET_TABLE AS LINK_NAME,
+                                                                 SOURCE_TABLE,
                                                                  BUSINESS_KEY_ATTRIBUTE,
-                                                           lnk.LINK_TABLE_ID
+                                                           lnk.LINK_ID
                                                            FROM TMP_MD_TABLE_MAPPING spec2
                                                            LEFT OUTER JOIN -- Join in the Link ID from the MD table
-                                                                 MD_LINK lnk ON lnk.LINK_TABLE_NAME=spec2.INTEGRATION_AREA_TABLE
-                                                           WHERE INTEGRATION_AREA_TABLE LIKE '" + lnkTablePrefix + @"'
+                                                                 MD_LINK lnk ON lnk.LINK_NAME=spec2.TARGET_TABLE
+                                                           WHERE TARGET_TABLE LIKE '" + lnkTablePrefix + @"'
                                                            AND [GENERATE_INDICATOR] = 'Y'
                                                     ) lnkkeysub
-                                                        ON spec.STAGING_AREA_TABLE=lnkkeysub.STAGING_AREA_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
+                                                        ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
                                                        AND spec.BUSINESS_KEY_ATTRIBUTE=lnkkeysub.BUSINESS_KEY_ATTRIBUTE
 
                                                     -- Only select Link Satellites as the base / driving table (spec alias)
-                                                    WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix + @"'
+                                                    WHERE spec.TARGET_TABLE LIKE '" + lsatTablePrefix + @"'
                                                     AND [GENERATE_INDICATOR] = 'Y'
                                                     ");
  
@@ -3972,13 +3972,13 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName["SATELLITE_TABLE_NAME"] + "\r\n");
+                            _alert.SetTextLogging("--> " + tableName["SATELLITE_NAME"] + "\r\n");
 
                             var insertSatStatement = new StringBuilder();
 
-                            insertSatStatement.AppendLine("INSERT INTO [MD_SAT]");
-                            insertSatStatement.AppendLine("([SATELLITE_TABLE_NAME],[SATELLITE_TABLE_ID], [SATELLITE_TYPE], [HUB_TABLE_ID], [LINK_TABLE_ID])");
-                            insertSatStatement.AppendLine("VALUES ('" + tableName["SATELLITE_TABLE_NAME"] + "'," + satCounter + ",'" + tableName["SATELLITE_TYPE"] + "'," + tableName["HUB_TABLE_ID"] + "," + tableName["LINK_TABLE_ID"] + ")");
+                            insertSatStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
+                            insertSatStatement.AppendLine("([SATELLITE_NAME],[SATELLITE_ID], [SATELLITE_TYPE], [HUB_ID], [LINK_ID])");
+                            insertSatStatement.AppendLine("VALUES ('" + tableName["SATELLITE_NAME"] + "'," + satCounter + ",'" + tableName["SATELLITE_TYPE"] + "'," + tableName["HUB_ID"] + "," + tableName["LINK_ID"] + ")");
 
                             var command = new SqlCommand(insertSatStatement.ToString(), connection);
 
@@ -4011,7 +4011,7 @@ namespace TEAM
                 #region Prepare STG / SAT Xref - 28%
                 //5.3 Prepare STG / Sat XREF
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between (Link) Satellites and the Staging Area tables.\r\n");
+                _alert.SetTextLogging("Commencing preparing the relationship between (Link) Satellites and the Source tables.\r\n");
                 satCounter = 1;
 
                 try
@@ -4020,33 +4020,33 @@ namespace TEAM
                     /*LBM 2019/01/10 - Changing to use @ Strings*/
                     prepareSatXrefStatement.AppendLine(@"
                                                         SELECT
-                                                               sat.SATELLITE_TABLE_ID,
-	                                                           sat.SATELLITE_TABLE_NAME,
-                                                               stg.STAGING_AREA_TABLE_ID, 
-	                                                           stg.STAGING_AREA_TABLE_NAME,
+                                                               sat.SATELLITE_ID,
+	                                                           sat.SATELLITE_NAME,
+                                                               stg.SOURCE_ID, 
+	                                                           stg.SOURCE_NAME,
 	                                                           spec.BUSINESS_KEY_ATTRIBUTE,
                                                                spec.FILTER_CRITERIA
                                                         FROM TMP_MD_TABLE_MAPPING spec
-                                                        LEFT OUTER JOIN -- Join in the Staging_Area_ID from the MD_STG table
-                                                               MD_STG stg ON stg.STAGING_AREA_TABLE_NAME=spec.STAGING_AREA_TABLE
-                                                        LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SAT table
-                                                               MD_SAT sat ON sat.SATELLITE_TABLE_NAME=spec.INTEGRATION_AREA_TABLE
-                                                        WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + satTablePrefix + @"' 
+                                                        LEFT OUTER JOIN -- Join in the Source_ID from the MD_SOURCE table
+                                                               MD_SOURCE stg ON stg.SOURCE_NAME=spec.SOURCE_TABLE
+                                                        LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
+                                                               MD_SATELLITE sat ON sat.SATELLITE_NAME=spec.TARGET_TABLE
+                                                        WHERE spec.TARGET_TABLE LIKE '" + satTablePrefix + @"' 
                                                         AND [GENERATE_INDICATOR] = 'Y'
                                                         UNION
                                                         SELECT
-                                                               sat.SATELLITE_TABLE_ID,
-	                                                           sat.SATELLITE_TABLE_NAME,
-                                                               stg.STAGING_AREA_TABLE_ID, 
-	                                                           stg.STAGING_AREA_TABLE_NAME,
+                                                               sat.SATELLITE_ID,
+	                                                           sat.SATELLITE_NAME,
+                                                               stg.SOURCE_ID, 
+	                                                           stg.SOURCE_NAME,
 	                                                           spec.BUSINESS_KEY_ATTRIBUTE,
                                                                spec.FILTER_CRITERIA
                                                         FROM TMP_MD_TABLE_MAPPING spec
-                                                        LEFT OUTER JOIN -- Join in the Staging_Area_ID from the MD_STG table
-                                                               MD_STG stg ON stg.STAGING_AREA_TABLE_NAME=spec.STAGING_AREA_TABLE
-                                                        LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SAT table
-                                                               MD_SAT sat ON sat.SATELLITE_TABLE_NAME=spec.INTEGRATION_AREA_TABLE
-                                                        WHERE spec.INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix + @"' 
+                                                        LEFT OUTER JOIN -- Join in the Source_ID from the MD_SOURCE table
+                                                               MD_SOURCE stg ON stg.SOURCE_NAME=spec.SOURCE_TABLE
+                                                        LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
+                                                               MD_SATELLITE sat ON sat.SATELLITE_NAME=spec.TARGET_TABLE
+                                                        WHERE spec.TARGET_TABLE LIKE '" + lsatTablePrefix + @"' 
                                                         AND [GENERATE_INDICATOR] = 'Y'
                                                         ");
 
@@ -4057,7 +4057,7 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("-->  Processing the " + tableName["STAGING_AREA_TABLE_NAME"] + " / " + tableName["SATELLITE_TABLE_NAME"] + " relationship\r\n");
+                            _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["SATELLITE_NAME"] + " relationship\r\n");
 
                             var insertSatStatement = new StringBuilder();
                             var filterCriterion = tableName["FILTER_CRITERIA"].ToString();
@@ -4066,9 +4066,16 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                            insertSatStatement.AppendLine("INSERT INTO [MD_STG_SAT_XREF]");
-                            insertSatStatement.AppendLine("([SATELLITE_TABLE_ID], [STAGING_AREA_TABLE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA])");
-                            insertSatStatement.AppendLine("VALUES ('" + tableName["SATELLITE_TABLE_ID"] + "','" + tableName["STAGING_AREA_TABLE_ID"] + "','" + businessKeyDefinition + "','" + filterCriterion + "')");
+                            var localArea = GetArea(tableName["SOURCE_NAME"].ToString(), tableName["SATELLITE_NAME"].ToString());
+                            
+                            insertSatStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_XREF]");
+                            insertSatStatement.AppendLine("([SATELLITE_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [AREA])");
+                            insertSatStatement.AppendLine("VALUES ('" + 
+                                                          tableName["SATELLITE_ID"] + "','" + 
+                                                          tableName["SOURCE_ID"] + "','" + 
+                                                          businessKeyDefinition + "','" +
+                                                          filterCriterion + "','" +
+                                                          localArea + "')");
 
                             var command = new SqlCommand(insertSatStatement.ToString(), connection);
 
@@ -4081,20 +4088,20 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Staging Area and the Satellite. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Satellite XREF: \r\n\r\n" + ex);
+                                _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" + ex);
                             }
                         }
                     }
 
                     worker.ReportProgress(28);
-                    _alert.SetTextLogging("Preparation of the Staging / Satellite XREF metadata completed.\r\n");
+                    _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed.\r\n");
                 }
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Staging Area and the Satellite. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Satellite XREF: \r\n\r\n" + ex);
+                    _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" + ex);
                 }
 
                 #endregion
@@ -4102,7 +4109,7 @@ namespace TEAM
                 #region Staging / Hub relationship - 30%
                 //6. Prepare STG / HUB xref
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between Staging Area and Hubs.\r\n");
+                _alert.SetTextLogging("Commencing preparing the relationship between Source and Hubs.\r\n");
 
                 try
                 {
@@ -4110,36 +4117,36 @@ namespace TEAM
                     /*LBM 2019/01/10 - Changing to use @ Strings*/
                     prepareStgHubXrefStatement.AppendLine(@"
                                                             SELECT
-                                                                HUB_TABLE_ID,
-	                                                               HUB_TABLE_NAME,
-                                                                STAGING_AREA_TABLE_ID,
-	                                                               STAGING_AREA_TABLE_NAME,
+                                                                HUB_ID,
+	                                                               HUB_NAME,
+                                                                SOURCE_ID,
+	                                                               SOURCE_NAME,
 	                                                               BUSINESS_KEY_ATTRIBUTE,
                                                                 FILTER_CRITERIA
                                                             FROM
                                                                    (      
                                                                           SELECT DISTINCT 
-                                                                                 STAGING_AREA_TABLE,
-                                                                                 INTEGRATION_AREA_TABLE,
+                                                                                 SOURCE_TABLE,
+                                                                                 TARGET_TABLE,
 					                                                                BUSINESS_KEY_ATTRIBUTE,
                                                                                  FILTER_CRITERIA
                                                                           FROM   TMP_MD_TABLE_MAPPING
                                                                           WHERE 
-                                                                                 INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix + @"'
+                                                                                 TARGET_TABLE LIKE '" + hubTablePrefix + @"'
                                                                           AND [GENERATE_INDICATOR] = 'Y'
                                                                    ) hub
                                                             LEFT OUTER JOIN
                                                                    ( 
-                                                                          SELECT STAGING_AREA_TABLE_ID, STAGING_AREA_TABLE_NAME
-                                                                          FROM MD_STG
+                                                                          SELECT SOURCE_ID, SOURCE_NAME
+                                                                          FROM MD_SOURCE
                                                                    ) stgsub
-                                                            ON hub.STAGING_AREA_TABLE=stgsub.STAGING_AREA_TABLE_NAME
+                                                            ON hub.SOURCE_TABLE=stgsub.SOURCE_NAME
                                                             LEFT OUTER JOIN
                                                                    ( 
-                                                                          SELECT HUB_TABLE_ID, HUB_TABLE_NAME
+                                                                          SELECT HUB_ID, HUB_NAME
                                                                           FROM MD_HUB
                                                                    ) hubsub
-                                                            ON hub.INTEGRATION_AREA_TABLE=hubsub.HUB_TABLE_NAME
+                                                            ON hub.TARGET_TABLE=hubsub.HUB_NAME
                                                             ");
 
 
@@ -4149,7 +4156,7 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("-->  Processing the " + tableName["STAGING_AREA_TABLE_NAME"] + " / " + tableName["HUB_TABLE_NAME"] + " relationship\r\n");
+                            _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["HUB_NAME"] + " relationship\r\n");
 
                             var insertXrefStatement = new StringBuilder();
                             var filterCriterion = tableName["FILTER_CRITERIA"].ToString();
@@ -4158,9 +4165,9 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                            insertXrefStatement.AppendLine("INSERT INTO [MD_STG_HUB_XREF]");
-                            insertXrefStatement.AppendLine("([HUB_TABLE_ID], [STAGING_AREA_TABLE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA])");
-                            insertXrefStatement.AppendLine("VALUES ('" + tableName["HUB_TABLE_ID"] + "','" + tableName["STAGING_AREA_TABLE_ID"] + "','" + businessKeyDefinition + "','" + filterCriterion + "')");
+                            insertXrefStatement.AppendLine("INSERT INTO [MD_SOURCE_HUB_XREF]");
+                            insertXrefStatement.AppendLine("([HUB_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA])");
+                            insertXrefStatement.AppendLine("VALUES ('" + tableName["HUB_ID"] + "','" + tableName["SOURCE_ID"] + "','" + businessKeyDefinition + "','" + filterCriterion + "')");
 
                             var command = new SqlCommand(insertXrefStatement.ToString(), connection);
 
@@ -4172,19 +4179,19 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Staging Area and the Hubs. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
                                 errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
                             }
                         }
                     }
 
                     worker.ReportProgress(30);
-                    _alert.SetTextLogging("Preparation of the relationship between Staging Area and Hubs completed.\r\n");
+                    _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed.\r\n");
                 }
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Staging Area and the Hubs. Please check the Error Log for more details.\r\n");
+                    _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
                 }
                 #endregion
@@ -4198,9 +4205,9 @@ namespace TEAM
                 {
                     SqlCommand command;
                     SqlDataReader reader;
-                    string stgTableFilterQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + stagingPrefix + "'";
-                    string psaTableFilterQuery = @"SELECT DISTINCT [STAGING_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [STAGING_AREA_TABLE] LIKE '" + psaPrefix + "'";
-                    string intTableFilterQuery = @"SELECT DISTINCT [INTEGRATION_AREA_TABLE] FROM [TMP_MD_TABLE_MAPPING]";
+                    string stgTableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [SOURCE_TABLE] LIKE '" + stagingPrefix + "'";
+                    string psaTableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] FROM [TMP_MD_TABLE_MAPPING] WHERE [SOURCE_TABLE] LIKE '" + psaPrefix + "'";
+                    string intTableFilterQuery = @"SELECT DISTINCT [TARGET_TABLE] FROM [TMP_MD_TABLE_MAPPING]";
 
                     try
                     {
@@ -4215,11 +4222,11 @@ namespace TEAM
                         {
                             if (stgCounter==1)
                             {
-                                stgTableFilterObjects = stgTableFilterObjects + "object_id(N'["+ ConfigurationSettings.StagingDatabaseName + "].["+ ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
+                                stgTableFilterObjects = stgTableFilterObjects + "object_id(N'["+ ConfigurationSettings.StagingDatabaseName + "].["+ ConfigurationSettings.SchemaName + "].[" + reader["SOURCE_TABLE"] + "]')";
                             }
                             else
                             {
-                                stgTableFilterObjects = stgTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.StagingDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
+                                stgTableFilterObjects = stgTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.StagingDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["SOURCE_TABLE"] + "]')";
                             }
                             stgCounter++;
                         }
@@ -4234,11 +4241,11 @@ namespace TEAM
                         {
                             if (psaCounter == 1)
                             {
-                                psaTableFilterObjects = psaTableFilterObjects + "object_id(N'[" + ConfigurationSettings.PsaDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
+                                psaTableFilterObjects = psaTableFilterObjects + "object_id(N'[" + ConfigurationSettings.PsaDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["SOURCE_TABLE"] + "]')";
                             }
                             else
                             {
-                                psaTableFilterObjects = psaTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.PsaDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["STAGING_AREA_TABLE"] + "]')";
+                                psaTableFilterObjects = psaTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.PsaDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["SOURCE_TABLE"] + "]')";
                             }
                             psaCounter++;
                         }
@@ -4253,11 +4260,11 @@ namespace TEAM
                         {
                             if (intCounter == 1)
                             {
-                                intTableFilterObjects = intTableFilterObjects + "object_id(N'[" + ConfigurationSettings.IntegrationDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["INTEGRATION_AREA_TABLE"] + "]')";
+                                intTableFilterObjects = intTableFilterObjects + "object_id(N'[" + ConfigurationSettings.IntegrationDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["TARGET_TABLE"] + "]')";
                             }
                             else
                             {
-                                intTableFilterObjects = intTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.IntegrationDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["INTEGRATION_AREA_TABLE"] + "]')";
+                                intTableFilterObjects = intTableFilterObjects + ", " + "object_id(N'[" + ConfigurationSettings.IntegrationDatabaseName + "].[" + ConfigurationSettings.SchemaName + "].[" + reader["TARGET_TABLE"] + "]')";
                             }
                             intCounter++;
                         }
@@ -4267,8 +4274,8 @@ namespace TEAM
                     catch (Exception ex)
                     {
                         errorCounter++;
-                        _alert.SetTextLogging("An issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n");
-                        errorLog.AppendLine("\r\nAn issue has occured when trying to get the list of STAGING_AREA_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n: \r\n\r\n" + ex);
+                        _alert.SetTextLogging("An issue has occured when trying to get the list of SOURCE_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n");
+                        errorLog.AppendLine("\r\nAn issue has occured when trying to get the list of SOURCE_TABLE FROM [TMP_MD_TABLE_MAPPING].\r\n: \r\n\r\n" + ex);
                     }
 
                     // Making sure a value is returned if the filter doesn't contain any results
@@ -4306,7 +4313,7 @@ namespace TEAM
                     {
                         var insertAttDummyStatement = new StringBuilder();
 
-                        insertAttDummyStatement.AppendLine("INSERT INTO [MD_ATT]");
+                        insertAttDummyStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
                         insertAttDummyStatement.AppendLine("([ATTRIBUTE_ID], [ATTRIBUTE_NAME])");
                         insertAttDummyStatement.AppendLine("VALUES ('-1','Not applicable')");
 
@@ -4365,7 +4372,7 @@ namespace TEAM
 
                                 var insertAttStatement = new StringBuilder();
 
-                                insertAttStatement.AppendLine("INSERT INTO [MD_ATT]");
+                                insertAttStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
                                 insertAttStatement.AppendLine("([ATTRIBUTE_ID], [ATTRIBUTE_NAME])");
                                 insertAttStatement.AppendLine("VALUES (" + attCounter + ",'" + tableName["COLUMN_NAME"] + "')");
 
@@ -4412,12 +4419,12 @@ namespace TEAM
                     var prepareKeyStatement = new StringBuilder();
 
                     prepareKeyStatement.AppendLine("SELECT ");
-                    prepareKeyStatement.AppendLine("  STAGING_AREA_TABLE_ID,");
-                    prepareKeyStatement.AppendLine("  STAGING_AREA_TABLE_NAME,");
-                    prepareKeyStatement.AppendLine("  HUB_TABLE_ID,");
-                    prepareKeyStatement.AppendLine("  HUB_TABLE_NAME,");
+                    prepareKeyStatement.AppendLine("  SOURCE_ID,");
+                    prepareKeyStatement.AppendLine("  SOURCE_NAME,");
+                    prepareKeyStatement.AppendLine("  HUB_ID,");
+                    prepareKeyStatement.AppendLine("  HUB_NAME,");
                     prepareKeyStatement.AppendLine("  BUSINESS_KEY_ATTRIBUTE,");
-                    prepareKeyStatement.AppendLine("  ROW_NUMBER() OVER(PARTITION BY STAGING_AREA_TABLE_ID, HUB_TABLE_ID, BUSINESS_KEY_ATTRIBUTE ORDER BY STAGING_AREA_TABLE_ID, HUB_TABLE_ID, COMPONENT_ORDER ASC) AS COMPONENT_ID,");
+                    prepareKeyStatement.AppendLine("  ROW_NUMBER() OVER(PARTITION BY SOURCE_ID, HUB_ID, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_ID, HUB_ID, COMPONENT_ORDER ASC) AS COMPONENT_ID,");
                     prepareKeyStatement.AppendLine("  COMPONENT_ORDER,");
                     prepareKeyStatement.AppendLine("  REPLACE(COMPONENT_VALUE,'COMPOSITE(', '') AS COMPONENT_VALUE,");
                     prepareKeyStatement.AppendLine("    CASE");
@@ -4429,22 +4436,22 @@ namespace TEAM
                     prepareKeyStatement.AppendLine("FROM");
                     prepareKeyStatement.AppendLine("(");
                     prepareKeyStatement.AppendLine("    SELECT DISTINCT");
-                    prepareKeyStatement.AppendLine("        A.STAGING_AREA_TABLE,");
+                    prepareKeyStatement.AppendLine("        A.SOURCE_TABLE,");
                     prepareKeyStatement.AppendLine("        A.BUSINESS_KEY_ATTRIBUTE,");
-                    prepareKeyStatement.AppendLine("        A.INTEGRATION_AREA_TABLE,");
+                    prepareKeyStatement.AppendLine("        A.TARGET_TABLE,");
                     prepareKeyStatement.AppendLine("        CASE");
                     prepareKeyStatement.AppendLine("            WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
                     prepareKeyStatement.AppendLine("            THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))");
                     prepareKeyStatement.AppendLine("            ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')");
                     prepareKeyStatement.AppendLine("        END AS COMPONENT_VALUE,");
-                    prepareKeyStatement.AppendLine("        ROW_NUMBER() OVER(PARTITION BY STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER");
+                    prepareKeyStatement.AppendLine("        ROW_NUMBER() OVER(PARTITION BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER");
                     prepareKeyStatement.AppendLine("    FROM");
                     prepareKeyStatement.AppendLine("    (");
 
                     // Change to move from comma separate to semicolon separation for composite keys
                     prepareKeyStatement.AppendLine("      SELECT");
-                    prepareKeyStatement.AppendLine("          STAGING_AREA_TABLE, ");
-                    prepareKeyStatement.AppendLine("          INTEGRATION_AREA_TABLE, ");
+                    prepareKeyStatement.AppendLine("          SOURCE_TABLE, ");
+                    prepareKeyStatement.AppendLine("          TARGET_TABLE, ");
                     prepareKeyStatement.AppendLine("          BUSINESS_KEY_ATTRIBUTE,");
                     prepareKeyStatement.AppendLine("          CASE SUBSTRING(BUSINESS_KEY_ATTRIBUTE, 0, CHARINDEX('(', BUSINESS_KEY_ATTRIBUTE))");
                     prepareKeyStatement.AppendLine("        	 WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') ");
@@ -4454,9 +4461,9 @@ namespace TEAM
 
                     prepareKeyStatement.AppendLine("        FROM");
                     prepareKeyStatement.AppendLine("        (");
-                    prepareKeyStatement.AppendLine("            SELECT DISTINCT STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
+                    prepareKeyStatement.AppendLine("            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
                     prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
-                    prepareKeyStatement.AppendLine("            WHERE INTEGRATION_AREA_TABLE LIKE '"+hubTablePrefix+"'");
+                    prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE LIKE '"+hubTablePrefix+"'");
                     prepareKeyStatement.AppendLine("              AND [GENERATE_INDICATOR] = 'Y'");
                     prepareKeyStatement.AppendLine("        ) TableName");
                     prepareKeyStatement.AppendLine("    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
@@ -4464,17 +4471,17 @@ namespace TEAM
                     prepareKeyStatement.AppendLine(") pivotsub");
                     prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
                     prepareKeyStatement.AppendLine("       (");
-                    prepareKeyStatement.AppendLine("              SELECT STAGING_AREA_TABLE_ID, STAGING_AREA_TABLE_NAME");
-                    prepareKeyStatement.AppendLine("              FROM MD_STG");
+                    prepareKeyStatement.AppendLine("              SELECT SOURCE_ID, SOURCE_NAME");
+                    prepareKeyStatement.AppendLine("              FROM MD_SOURCE");
                     prepareKeyStatement.AppendLine("       ) stgsub");
-                    prepareKeyStatement.AppendLine("ON pivotsub.STAGING_AREA_TABLE = stgsub.STAGING_AREA_TABLE_NAME");
+                    prepareKeyStatement.AppendLine("ON pivotsub.SOURCE_TABLE = stgsub.SOURCE_NAME");
                     prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
                     prepareKeyStatement.AppendLine("       (");
-                    prepareKeyStatement.AppendLine("              SELECT HUB_TABLE_ID, HUB_TABLE_NAME");
+                    prepareKeyStatement.AppendLine("              SELECT HUB_ID, HUB_NAME");
                     prepareKeyStatement.AppendLine("              FROM MD_HUB");
                     prepareKeyStatement.AppendLine("       ) hubsub");
-                    prepareKeyStatement.AppendLine("ON pivotsub.INTEGRATION_AREA_TABLE = hubsub.HUB_TABLE_NAME");
-                    prepareKeyStatement.AppendLine("ORDER BY stgsub.STAGING_AREA_TABLE_ID, hubsub.HUB_TABLE_ID, COMPONENT_ORDER");
+                    prepareKeyStatement.AppendLine("ON pivotsub.TARGET_TABLE = hubsub.HUB_NAME");
+                    prepareKeyStatement.AppendLine("ORDER BY stgsub.SOURCE_ID, hubsub.HUB_ID, COMPONENT_ORDER");
 
                     var listKeys = GetDataTable(ref connOmd, prepareKeyStatement.ToString());
 
@@ -4492,7 +4499,7 @@ namespace TEAM
                                 var keyComponent = tableName["COMPONENT_VALUE"]; //Handle quotes between SQL and C%
                                 keyComponent = keyComponent.ToString().Replace("'", "''");
 
-                                _alert.SetTextLogging("-->  Processing the Business Key "+ tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component "+ keyComponent + ") from " + tableName["STAGING_AREA_TABLE_NAME"] + " to " + tableName["HUB_TABLE_NAME"] + "\r\n");
+                                _alert.SetTextLogging("-->  Processing the Business Key "+ tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component "+ keyComponent + ") from " + tableName["SOURCE_NAME"] + " to " + tableName["HUB_NAME"] + "\r\n");
 
 
 
@@ -4500,8 +4507,8 @@ namespace TEAM
                                 businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                                 insertKeyStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT]");
-                                insertKeyStatement.AppendLine("(STAGING_AREA_TABLE_ID, HUB_TABLE_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
-                                insertKeyStatement.AppendLine("VALUES ('" + tableName["STAGING_AREA_TABLE_ID"] + "','" + tableName["HUB_TABLE_ID"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_TYPE"] + "')");
+                                insertKeyStatement.AppendLine("(SOURCE_ID, HUB_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
+                                insertKeyStatement.AppendLine("VALUES ('" + tableName["SOURCE_ID"] + "','" + tableName["HUB_ID"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_TYPE"] + "')");
 
                                 var command = new SqlCommand(insertKeyStatement.ToString(), connection);
 
@@ -4545,12 +4552,12 @@ namespace TEAM
                     /*LBM 2019/01/10: Changing to use @ String*/
                     prepareKeyComponentStatement.AppendLine(@"
                                                                 SELECT DISTINCT
-                                                                  STAGING_AREA_TABLE_ID,
-                                                                  HUB_TABLE_ID,
+                                                                  SOURCE_ID,
+                                                                  HUB_ID,
                                                                   BUSINESS_KEY_DEFINITION,
                                                                   COMPONENT_ID,
-                                                                  ROW_NUMBER() over(partition by STAGING_AREA_TABLE_ID, HUB_TABLE_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID order by nullif(0 * Split.a.value('count(.)', 'int'), 0)) AS COMPONENT_ELEMENT_ID,
-                                                                  ROW_NUMBER() over(partition by STAGING_AREA_TABLE_ID, HUB_TABLE_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID order by nullif(0 * Split.a.value('count(.)', 'int'), 0)) AS COMPONENT_ELEMENT_ORDER,
+                                                                  ROW_NUMBER() over(partition by SOURCE_ID, HUB_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID order by nullif(0 * Split.a.value('count(.)', 'int'), 0)) AS COMPONENT_ELEMENT_ID,
+                                                                  ROW_NUMBER() over(partition by SOURCE_ID, HUB_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID order by nullif(0 * Split.a.value('count(.)', 'int'), 0)) AS COMPONENT_ELEMENT_ORDER,
                                                                   REPLACE(REPLACE(REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), 'CONCATENATE(', ''), ')', ''), 'COMPOSITE(', '') AS COMPONENT_ELEMENT_VALUE,
                                                                   CASE
                                                                      WHEN charindex(CHAR(39), REPLACE(REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), 'CONCATENATE(', ''), ')', '')) = 1 THEN 'User Defined Value'
@@ -4560,18 +4567,18 @@ namespace TEAM
                                                                 FROM
                                                                 (
                                                                     SELECT
-                                                                        STAGING_AREA_TABLE_ID,
-                                                                        HUB_TABLE_ID,
+                                                                        SOURCE_ID,
+                                                                        HUB_ID,
                                                                         BUSINESS_KEY_DEFINITION,
                                                                         COMPONENT_ID,
                                                                         COMPONENT_VALUE,
                                                                         CONVERT(XML, '<M>' + REPLACE(COMPONENT_VALUE, ';', '</M><M>') + '</M>') AS COMPONENT_VALUE_XML
                                                                     FROM MD_BUSINESS_KEY_COMPONENT
                                                                 ) AS A CROSS APPLY COMPONENT_VALUE_XML.nodes('/M') AS Split(a)
-                                                                LEFT OUTER JOIN MD_ATT att ON
+                                                                LEFT OUTER JOIN MD_ATTRIBUTE att ON
                                                                     REPLACE(REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), 'CONCATENATE(', ''), ')', '') = att.ATTRIBUTE_NAME
                                                                 WHERE COMPONENT_VALUE <> 'N/A' AND A.COMPONENT_VALUE != ''
-                                                                ORDER BY A.STAGING_AREA_TABLE_ID, A.HUB_TABLE_ID, BUSINESS_KEY_DEFINITION, A.COMPONENT_ID, COMPONENT_ELEMENT_ORDER
+                                                                ORDER BY A.SOURCE_ID, A.HUB_ID, BUSINESS_KEY_DEFINITION, A.COMPONENT_ID, COMPONENT_ELEMENT_ORDER
                                                                 ");
                     var listKeyParts = GetDataTable(ref connOmd, prepareKeyComponentStatement.ToString());
 
@@ -4594,8 +4601,8 @@ namespace TEAM
                                 businessKeyDefinition = businessKeyDefinition.ToString().Replace("'", "''");
 
                                 insertKeyPartStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT_PART]");
-                                insertKeyPartStatement.AppendLine("(STAGING_AREA_TABLE_ID, HUB_TABLE_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID,COMPONENT_ELEMENT_ID,COMPONENT_ELEMENT_ORDER,COMPONENT_ELEMENT_VALUE,COMPONENT_ELEMENT_TYPE,ATTRIBUTE_ID)");
-                                insertKeyPartStatement.AppendLine("VALUES ('" + tableName["STAGING_AREA_TABLE_ID"] + "','" + tableName["HUB_TABLE_ID"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ELEMENT_ID"] + "','" + tableName["COMPONENT_ELEMENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_ELEMENT_TYPE"] + "','" + tableName["ATTRIBUTE_ID"] + "')");
+                                insertKeyPartStatement.AppendLine("(SOURCE_ID, HUB_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID,COMPONENT_ELEMENT_ID,COMPONENT_ELEMENT_ORDER,COMPONENT_ELEMENT_VALUE,COMPONENT_ELEMENT_TYPE,ATTRIBUTE_ID)");
+                                insertKeyPartStatement.AppendLine("VALUES ('" + tableName["SOURCE_ID"] + "','" + tableName["HUB_ID"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ELEMENT_ID"] + "','" + tableName["COMPONENT_ELEMENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_ELEMENT_TYPE"] + "','" + tableName["ATTRIBUTE_ID"] + "')");
 
                                 var command = new SqlCommand(insertKeyPartStatement.ToString(), connection);
 
@@ -4641,30 +4648,30 @@ namespace TEAM
                     /*LBM 2019/01/10: Changing to use @ String*/
                     /* RV changed it back, some bugs handling variables */
                     prepareHubLnkXrefStatement.AppendLine("SELECT");
-                    prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_TABLE_ID,");
-                    prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_TABLE_NAME,");
-                    prepareHubLnkXrefStatement.AppendLine("       lnk_tbl.LINK_TABLE_ID,");
-                    prepareHubLnkXrefStatement.AppendLine("       lnk_tbl.LINK_TABLE_NAME,");
+                    prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_ID,");
+                    prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_NAME,");
+                    prepareHubLnkXrefStatement.AppendLine("       lnk_tbl.LINK_ID,");
+                    prepareHubLnkXrefStatement.AppendLine("       lnk_tbl.LINK_NAME,");
                     prepareHubLnkXrefStatement.AppendLine("       lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,");
                     prepareHubLnkXrefStatement.AppendLine("       lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK");
                     prepareHubLnkXrefStatement.AppendLine("   FROM");
                     prepareHubLnkXrefStatement.AppendLine("   -- This base query adds the Link and its Hubs and their order by pivoting on the full business key");
                     prepareHubLnkXrefStatement.AppendLine("   (");
                     prepareHubLnkXrefStatement.AppendLine("       SELECT");
-                    prepareHubLnkXrefStatement.AppendLine("       INTEGRATION_AREA_TABLE,");
-                    prepareHubLnkXrefStatement.AppendLine("       STAGING_AREA_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("       TARGET_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("       SOURCE_TABLE,");
                     prepareHubLnkXrefStatement.AppendLine("       BUSINESS_KEY_ATTRIBUTE,");
                     prepareHubLnkXrefStatement.AppendLine("       LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,");
-                    prepareHubLnkXrefStatement.AppendLine("       ROW_NUMBER() OVER(PARTITION BY INTEGRATION_AREA_TABLE ORDER BY INTEGRATION_AREA_TABLE) AS HUB_KEY_ORDER");
+                    prepareHubLnkXrefStatement.AppendLine("       ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS HUB_KEY_ORDER");
                     prepareHubLnkXrefStatement.AppendLine("       FROM");
                     prepareHubLnkXrefStatement.AppendLine("       (");
                     prepareHubLnkXrefStatement.AppendLine("       SELECT");
-                    prepareHubLnkXrefStatement.AppendLine("           INTEGRATION_AREA_TABLE,");
-                    prepareHubLnkXrefStatement.AppendLine("           STAGING_AREA_TABLE,");
-                    prepareHubLnkXrefStatement.AppendLine("           ROW_NUMBER() OVER(PARTITION BY INTEGRATION_AREA_TABLE ORDER BY INTEGRATION_AREA_TABLE) AS LINK_ORDER,");
+                    prepareHubLnkXrefStatement.AppendLine("           TARGET_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("           SOURCE_TABLE,");
+                    prepareHubLnkXrefStatement.AppendLine("           ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS LINK_ORDER,");
                     prepareHubLnkXrefStatement.AppendLine("           BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
                     prepareHubLnkXrefStatement.AppendLine("       FROM  TMP_MD_TABLE_MAPPING");
-                    prepareHubLnkXrefStatement.AppendLine("       WHERE [INTEGRATION_AREA_TABLE] LIKE '" + lnkTablePrefix + @"'");
+                    prepareHubLnkXrefStatement.AppendLine("       WHERE [TARGET_TABLE] LIKE '" + lnkTablePrefix + @"'");
                     prepareHubLnkXrefStatement.AppendLine("           AND [GENERATE_INDICATOR] = 'Y'");
                     prepareHubLnkXrefStatement.AppendLine("     ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
                     prepareHubLnkXrefStatement.AppendLine("     WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same");
@@ -4673,26 +4680,26 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine(" JOIN ");
                     prepareHubLnkXrefStatement.AppendLine(" (");
                     prepareHubLnkXrefStatement.AppendLine(" SELECT ");
-                    prepareHubLnkXrefStatement.AppendLine("     object_name(object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_TABLE_NAME,");
+                    prepareHubLnkXrefStatement.AppendLine("     object_name(object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
                     prepareHubLnkXrefStatement.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
                     prepareHubLnkXrefStatement.AppendLine("     ROW_NUMBER() OVER(PARTITION BY object_name(object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
                     prepareHubLnkXrefStatement.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
                     prepareHubLnkXrefStatement.AppendLine(" WHERE [column_id]>4");
                     prepareHubLnkXrefStatement.AppendLine(" AND object_name(object_id,db_id('"+ConfigurationSettings.IntegrationDatabaseName+"')) LIKE '" + lnkTablePrefix + @"'");
                     prepareHubLnkXrefStatement.AppendLine(" ) lnk_target_model");
-                    prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.INTEGRATION_AREA_TABLE = lnk_target_model.LINK_TABLE_NAME COLLATE DATABASE_DEFAULT");
+                    prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
                     prepareHubLnkXrefStatement.AppendLine(" AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
                     prepareHubLnkXrefStatement.AppendLine(" --Adding the Hub mapping data to get the business keys");
                     prepareHubLnkXrefStatement.AppendLine(" JOIN TMP_MD_TABLE_MAPPING hub");
-                    prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[STAGING_AREA_TABLE] = hub.STAGING_AREA_TABLE");
+                    prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[SOURCE_TABLE] = hub.SOURCE_TABLE");
                     prepareHubLnkXrefStatement.AppendLine("     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
-                    prepareHubLnkXrefStatement.AppendLine("     AND hub.[INTEGRATION_AREA_TABLE] LIKE '" + hubTablePrefix + @"'");
+                    prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE] LIKE '" + hubTablePrefix + @"'");
                     prepareHubLnkXrefStatement.AppendLine("     AND hub.[GENERATE_INDICATOR] = 'Y'");
                     prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
                     prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
-                    prepareHubLnkXrefStatement.AppendLine("     ON hub.INTEGRATION_AREA_TABLE = hub_tbl.HUB_TABLE_NAME");
+                    prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.HUB_NAME");
                     prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_LINK lnk_tbl");
-                    prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.INTEGRATION_AREA_TABLE = lnk_tbl.LINK_TABLE_NAME");
+                    prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.LINK_NAME");
 
                    var listHlXref = GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
@@ -4700,13 +4707,13 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("-->  Processing the " + tableName["HUB_TABLE_NAME"] + " / " + tableName["LINK_TABLE_NAME"] + " relationship\r\n");
+                            _alert.SetTextLogging("-->  Processing the " + tableName["HUB_NAME"] + " / " + tableName["LINK_NAME"] + " relationship\r\n");
 
                             var insertHlXrefStatement = new StringBuilder();
 
                             insertHlXrefStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
-                            insertHlXrefStatement.AppendLine("([HUB_TABLE_ID], [LINK_TABLE_ID], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
-                            insertHlXrefStatement.AppendLine("VALUES ('" + tableName["HUB_TABLE_ID"] + "','" + tableName["LINK_TABLE_ID"] + "','" + tableName["HUB_ORDER"] + "','" + tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
+                            insertHlXrefStatement.AppendLine("([HUB_ID], [LINK_ID], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
+                            insertHlXrefStatement.AppendLine("VALUES ('" + tableName["HUB_ID"] + "','" + tableName["LINK_ID"] + "','" + tableName["HUB_ORDER"] + "','" + tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
 
                             var command = new SqlCommand(insertHlXrefStatement.ToString(), connection);
 
@@ -4742,7 +4749,7 @@ namespace TEAM
 
                 //10. Prepare STG / LNK xref
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between Staging Area and Link tables.\r\n");
+                _alert.SetTextLogging("Commencing preparing the relationship between Source and Link tables.\r\n");
 
                 try
                 {
@@ -4750,16 +4757,16 @@ namespace TEAM
                     /*LBM 2019/01/10: Changing to use @ String*/
                     preparestgLnkXrefStatement.AppendLine(@"
                                                             SELECT
-                                                              lnk_tbl.LINK_TABLE_ID,
-                                                              lnk_tbl.LINK_TABLE_NAME,
-                                                              stg_tbl.STAGING_AREA_TABLE_ID,
-                                                              stg_tbl.STAGING_AREA_TABLE_NAME,
+                                                              lnk_tbl.LINK_ID,
+                                                              lnk_tbl.LINK_NAME,
+                                                              stg_tbl.SOURCE_ID,
+                                                              stg_tbl.SOURCE_NAME,
                                                               lnk.FILTER_CRITERIA,
                                                               lnk.BUSINESS_KEY_ATTRIBUTE
                                                             FROM [dbo].[TMP_MD_TABLE_MAPPING] lnk
-                                                            JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.INTEGRATION_AREA_TABLE = lnk_tbl.LINK_TABLE_NAME
-                                                            JOIN [dbo].[MD_STG] stg_tbl ON lnk.STAGING_AREA_TABLE = stg_tbl.STAGING_AREA_TABLE_NAME
-                                                            WHERE lnk.INTEGRATION_AREA_TABLE like '" + lnkTablePrefix + @"'
+                                                            JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.LINK_NAME
+                                                            JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.SOURCE_NAME
+                                                            WHERE lnk.TARGET_TABLE like '" + lnkTablePrefix + @"'
                                                             AND[GENERATE_INDICATOR] = 'Y'
                                                             ");
                     var listHlXref = GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
@@ -4768,7 +4775,7 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("-->  Processing the " + tableName["STAGING_AREA_TABLE_NAME"] + " / " + tableName["LINK_TABLE_NAME"] + " relationship\r\n");
+                            _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["LINK_NAME"] + " relationship\r\n");
 
                             var insertStgLinkStatement = new StringBuilder();
 
@@ -4778,9 +4785,9 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                            insertStgLinkStatement.AppendLine("INSERT INTO [MD_STG_LINK_XREF]");
-                            insertStgLinkStatement.AppendLine("([STAGING_AREA_TABLE_ID], [LINK_TABLE_ID], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION])");
-                            insertStgLinkStatement.AppendLine("VALUES ('" + tableName["STAGING_AREA_TABLE_ID"] + "','" + tableName["LINK_TABLE_ID"] + "','" + filterCriterion + "','" + businessKeyDefinition + "')");
+                            insertStgLinkStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_XREF]");
+                            insertStgLinkStatement.AppendLine("([SOURCE_ID], [LINK_ID], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION])");
+                            insertStgLinkStatement.AppendLine("VALUES ('" + tableName["SOURCE_ID"] + "','" + tableName["LINK_ID"] + "','" + filterCriterion + "','" + businessKeyDefinition + "')");
 
                             var command = new SqlCommand(insertStgLinkStatement.ToString(), connection);
 
@@ -4799,7 +4806,7 @@ namespace TEAM
                     }
 
                     worker.ReportProgress(80);
-                    _alert.SetTextLogging("Preparation of the relationship between Staging Area and the Links completed.\r\n");
+                    _alert.SetTextLogging("Preparation of the relationship between Source and the Links completed.\r\n");
                 }
                 catch (Exception ex)
                 {
@@ -4828,10 +4835,10 @@ namespace TEAM
 
                         prepareMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS ");
                         prepareMappingStatement.AppendLine("(");
-                        prepareMappingStatement.AppendLine("SELECT  stg.STAGING_AREA_TABLE_ID");
-                        prepareMappingStatement.AppendLine("	   ,stg.STAGING_AREA_TABLE_NAME");
-                        prepareMappingStatement.AppendLine("       ,sat.SATELLITE_TABLE_ID");
-                        prepareMappingStatement.AppendLine("	   ,sat.SATELLITE_TABLE_NAME");
+                        prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
+                        prepareMappingStatement.AppendLine("	   ,stg.SOURCE_NAME");
+                        prepareMappingStatement.AppendLine("       ,sat.SATELLITE_ID");
+                        prepareMappingStatement.AppendLine("	   ,sat.SATELLITE_NAME");
                         prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
                         prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME");
                         prepareMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
@@ -4839,23 +4846,23 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
                         prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
                         prepareMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
-                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SATELLITE sat on sat.SATELLITE_NAME=mapping.TARGET_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
-                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.INTEGRATION_AREA_TABLE");
-                        prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.STAGING_AREA_TABLE");
+                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
+                        prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
                         prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '"+ dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '"+lnkTablePrefix+"'");
                         prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareMappingStatement.AppendLine("(");
                         prepareMappingStatement.AppendLine("SELECT");
-                        prepareMappingStatement.AppendLine("	stg.STAGING_AREA_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	stg.STAGING_AREA_TABLE_NAME,");
-                        prepareMappingStatement.AppendLine("	sat.SATELLITE_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	sat.SATELLITE_TABLE_NAME,");
+                        prepareMappingStatement.AppendLine("	stg.SOURCE_ID,");
+                        prepareMappingStatement.AppendLine("	stg.SOURCE_NAME,");
+                        prepareMappingStatement.AppendLine("	sat.SATELLITE_ID,");
+                        prepareMappingStatement.AppendLine("	sat.SATELLITE_NAME,");
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME,");
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
@@ -4874,14 +4881,14 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("WHERE B.[object_id] IN (" + psaTableFilterObjects+ ")");
 
                         prepareMappingStatement.AppendLine("    ) mapping");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareMappingStatement.AppendLine("JOIN MD_STG_SAT_XREF xref ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                        prepareMappingStatement.AppendLine("JOIN MD_SAT sat ON xref.SATELLITE_TABLE_ID = sat.SATELLITE_TABLE_ID");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg ON stg.SOURCE_NAME = mapping.TABLE_NAME COLLATE DATABASE_DEFAULT");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                        prepareMappingStatement.AppendLine("JOIN MD_SOURCE_SATELLITE_XREF xref ON xref.SOURCE_ID = stg.SOURCE_ID");
+                        prepareMappingStatement.AppendLine("JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
 
                         // Do the mapping to the target columns (Integration Layer)
                         prepareMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".sys.columns satatts");
-                        prepareMappingStatement.AppendLine("on sat.SATELLITE_TABLE_NAME = object_name(satatts.object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) COLLATE DATABASE_DEFAULT");
+                        prepareMappingStatement.AppendLine("on sat.SATELLITE_NAME = object_name(satatts.object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) COLLATE DATABASE_DEFAULT");
                         prepareMappingStatement.AppendLine("and UPPER(mapping.COLUMN_NAME) = UPPER(satatts.[name])");
                         prepareMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN");
                         prepareMappingStatement.AppendLine("  ( ");
@@ -4900,10 +4907,10 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("  ) ");
                         prepareMappingStatement.AppendLine(")");
                         prepareMappingStatement.AppendLine("SELECT ");
-                        prepareMappingStatement.AppendLine("	STAGING_AREA_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	STAGING_AREA_TABLE_NAME,");
-                        prepareMappingStatement.AppendLine("	SATELLITE_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	SATELLITE_TABLE_NAME,");
+                        prepareMappingStatement.AppendLine("	SOURCE_ID,");
+                        prepareMappingStatement.AppendLine("	SOURCE_NAME,");
+                        prepareMappingStatement.AppendLine("	SATELLITE_ID,");
+                        prepareMappingStatement.AppendLine("	SATELLITE_NAME,");
                         prepareMappingStatement.AppendLine("	ATTRIBUTE_FROM_ID,");
                         prepareMappingStatement.AppendLine("	ATTRIBUTE_FROM_NAME,");
                         prepareMappingStatement.AppendLine("	ATTRIBUTE_TO_ID,");
@@ -4913,10 +4920,10 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("FROM MAPPED_ATTRIBUTES");
                         prepareMappingStatement.AppendLine("UNION");
                         prepareMappingStatement.AppendLine("SELECT ");
-                        prepareMappingStatement.AppendLine("	a.STAGING_AREA_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	a.STAGING_AREA_TABLE_NAME,");
-                        prepareMappingStatement.AppendLine("	a.SATELLITE_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	a.SATELLITE_TABLE_NAME,");
+                        prepareMappingStatement.AppendLine("	a.SOURCE_ID,");
+                        prepareMappingStatement.AppendLine("	a.SOURCE_NAME,");
+                        prepareMappingStatement.AppendLine("	a.SATELLITE_ID,");
+                        prepareMappingStatement.AppendLine("	a.SATELLITE_NAME,");
                         prepareMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_ID,");
                         prepareMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_NAME,");
                         prepareMappingStatement.AppendLine("	a.ATTRIBUTE_TO_ID,");
@@ -4925,8 +4932,8 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	a.VERIFICATION");
                         prepareMappingStatement.AppendLine("FROM ORIGINAL_ATTRIBUTES a");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN MAPPED_ATTRIBUTES b ");
-                        prepareMappingStatement.AppendLine("	ON a.STAGING_AREA_TABLE_ID=b.STAGING_AREA_TABLE_ID ");
-                        prepareMappingStatement.AppendLine("  AND a.SATELLITE_TABLE_ID=b.SATELLITE_TABLE_ID");
+                        prepareMappingStatement.AppendLine("	ON a.SOURCE_ID=b.SOURCE_ID ");
+                        prepareMappingStatement.AppendLine("  AND a.SATELLITE_ID=b.SATELLITE_ID");
                         prepareMappingStatement.AppendLine("  AND a.ATTRIBUTE_FROM_ID=b.ATTRIBUTE_FROM_ID");
                         prepareMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
                     }
@@ -4936,10 +4943,10 @@ namespace TEAM
 
                         prepareMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS ");
                         prepareMappingStatement.AppendLine("(");
-                        prepareMappingStatement.AppendLine("SELECT  stg.STAGING_AREA_TABLE_ID");
-                        prepareMappingStatement.AppendLine("	   ,stg.STAGING_AREA_TABLE_NAME");
-                        prepareMappingStatement.AppendLine("       ,sat.SATELLITE_TABLE_ID");
-                        prepareMappingStatement.AppendLine("	   ,sat.SATELLITE_TABLE_NAME");
+                        prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
+                        prepareMappingStatement.AppendLine("	   ,stg.SOURCE_NAME");
+                        prepareMappingStatement.AppendLine("       ,sat.SATELLITE_ID");
+                        prepareMappingStatement.AppendLine("	   ,sat.SATELLITE_NAME");
                         prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
                         prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME");
                         prepareMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
@@ -4947,23 +4954,23 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
                         prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
                         prepareMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
-                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SAT sat on sat.SATELLITE_TABLE_NAME=mapping.TARGET_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SATELLITE sat on sat.SATELLITE_NAME=mapping.TARGET_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
-                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.INTEGRATION_AREA_TABLE");
-                        prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.STAGING_AREA_TABLE");
+                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
+                        prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
                         prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '" + lnkTablePrefix + "'");
                         prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareMappingStatement.AppendLine("(");
                         prepareMappingStatement.AppendLine("SELECT ");
-                        prepareMappingStatement.AppendLine("	stg.STAGING_AREA_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	stg.STAGING_AREA_TABLE_NAME,");
-                        prepareMappingStatement.AppendLine("	sat.SATELLITE_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	sat.SATELLITE_TABLE_NAME,");
+                        prepareMappingStatement.AppendLine("	stg.SOURCE_ID,");
+                        prepareMappingStatement.AppendLine("	stg.SOURCE_NAME,");
+                        prepareMappingStatement.AppendLine("	sat.SATELLITE_ID,");
+                        prepareMappingStatement.AppendLine("	sat.SATELLITE_NAME,");
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME,");
                         prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
@@ -4972,13 +4979,13 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
                         prepareMappingStatement.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE mapping");
 
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_STG_SAT_XREF xref ON stg.STAGING_AREA_TABLE_ID = xref.STAGING_AREA_TABLE_ID");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_SAT sat ON xref.SATELLITE_TABLE_ID = sat.SATELLITE_TABLE_ID");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_ATT stg_attr on mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_SOURCE stg ON stg.SOURCE_NAME = mapping.TABLE_NAME");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_SOURCE_SATELLITE_XREF xref ON stg.SOURCE_ID = xref.SOURCE_ID");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MD_ATTRIBUTE stg_attr on mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
 
                         prepareMappingStatement.AppendLine("JOIN TMP_MD_VERSION_ATTRIBUTE satatts");
-                        prepareMappingStatement.AppendLine("    on sat.SATELLITE_TABLE_NAME=satatts.TABLE_NAME");
+                        prepareMappingStatement.AppendLine("    on sat.SATELLITE_NAME=satatts.TABLE_NAME");
                         prepareMappingStatement.AppendLine("    and UPPER(mapping.COLUMN_NAME) = UPPER(satatts.COLUMN_NAME)");
                         prepareMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN");
                         prepareMappingStatement.AppendLine("  ( ");
@@ -4999,10 +5006,10 @@ namespace TEAM
 
                         prepareMappingStatement.AppendLine(")");
                         prepareMappingStatement.AppendLine("SELECT ");
-                        prepareMappingStatement.AppendLine("	STAGING_AREA_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	STAGING_AREA_TABLE_NAME,");
-                        prepareMappingStatement.AppendLine("	SATELLITE_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	SATELLITE_TABLE_NAME,");
+                        prepareMappingStatement.AppendLine("	SOURCE_ID,");
+                        prepareMappingStatement.AppendLine("	SOURCE_NAME,");
+                        prepareMappingStatement.AppendLine("	SATELLITE_ID,");
+                        prepareMappingStatement.AppendLine("	SATELLITE_NAME,");
                         prepareMappingStatement.AppendLine("	ATTRIBUTE_FROM_ID,");
                         prepareMappingStatement.AppendLine("	ATTRIBUTE_FROM_NAME,");
                         prepareMappingStatement.AppendLine("	ATTRIBUTE_TO_ID,");
@@ -5012,10 +5019,10 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("FROM MAPPED_ATTRIBUTES");
                         prepareMappingStatement.AppendLine("UNION");
                         prepareMappingStatement.AppendLine("SELECT ");
-                        prepareMappingStatement.AppendLine("	a.STAGING_AREA_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	a.STAGING_AREA_TABLE_NAME,");
-                        prepareMappingStatement.AppendLine("	a.SATELLITE_TABLE_ID,");
-                        prepareMappingStatement.AppendLine("	a.SATELLITE_TABLE_NAME,");
+                        prepareMappingStatement.AppendLine("	a.SOURCE_ID,");
+                        prepareMappingStatement.AppendLine("	a.SOURCE_NAME,");
+                        prepareMappingStatement.AppendLine("	a.SATELLITE_ID,");
+                        prepareMappingStatement.AppendLine("	a.SATELLITE_NAME,");
                         prepareMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_ID,");
                         prepareMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_NAME,");
                         prepareMappingStatement.AppendLine("	a.ATTRIBUTE_TO_ID,");
@@ -5024,8 +5031,8 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	a.VERIFICATION");
                         prepareMappingStatement.AppendLine("FROM ORIGINAL_ATTRIBUTES a");
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN MAPPED_ATTRIBUTES b ");
-                        prepareMappingStatement.AppendLine("	ON a.STAGING_AREA_TABLE_ID=b.STAGING_AREA_TABLE_ID ");
-                        prepareMappingStatement.AppendLine("  AND a.SATELLITE_TABLE_ID=b.SATELLITE_TABLE_ID");
+                        prepareMappingStatement.AppendLine("	ON a.SOURCE_ID=b.SOURCE_ID ");
+                        prepareMappingStatement.AppendLine("  AND a.SATELLITE_ID=b.SATELLITE_ID");
                         prepareMappingStatement.AppendLine("  AND a.ATTRIBUTE_FROM_ID=b.ATTRIBUTE_FROM_ID");
                         prepareMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
                     }
@@ -5045,11 +5052,11 @@ namespace TEAM
 
                                 var insertMappingStatement = new StringBuilder();
 
-                                insertMappingStatement.AppendLine("INSERT INTO [MD_STG_SAT_ATT_XREF]");
-                                insertMappingStatement.AppendLine("( [STAGING_AREA_TABLE_ID],[SATELLITE_TABLE_ID],[ATTRIBUTE_ID_FROM],[ATTRIBUTE_ID_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
+                                insertMappingStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+                                insertMappingStatement.AppendLine("( [SOURCE_ID],[SATELLITE_ID],[ATTRIBUTE_ID_FROM],[ATTRIBUTE_ID_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
                                 insertMappingStatement.AppendLine("VALUES ('" +
-                                                               tableName["STAGING_AREA_TABLE_ID"] + "'," +
-                                                               tableName["SATELLITE_TABLE_ID"] + "," +
+                                                               tableName["SOURCE_ID"] + "'," +
+                                                               tableName["SATELLITE_ID"] + "," +
                                                                tableName["ATTRIBUTE_FROM_ID"] + "," +
                                                                tableName["ATTRIBUTE_TO_ID"] + ",'" +
                                                                tableName["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
@@ -5064,7 +5071,7 @@ namespace TEAM
                                 }
                                 catch (Exception)
                                 {
-                                    _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + tableName["STAGING_AREA_TABLE_NAME"] + " to " + tableName["SATELLITE_TABLE_NAME"] + ". \r\n");
+                                    _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["SATELLITE_NAME"] + ". \r\n");
                                     if (tableName["ATTRIBUTE_FROM_ID"].ToString() == "")
                                     {
                                         _alert.SetTextLogging("Both attributes are NULL.");
@@ -5102,19 +5109,19 @@ namespace TEAM
 
                         prepareDegenerateMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS");
                         prepareDegenerateMappingStatement.AppendLine("(");
-                        prepareDegenerateMappingStatement.AppendLine("SELECT  stg.STAGING_AREA_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("       ,lnk.LINK_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("       ,lnk.LINK_ID");
                         prepareDegenerateMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
                         prepareDegenerateMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
                         prepareDegenerateMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
                         prepareDegenerateMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                         prepareDegenerateMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk");
-                        prepareDegenerateMappingStatement.AppendLine("	     on lnk.LINK_TABLE_NAME=mapping.TARGET_TABLE");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr");
+                        prepareDegenerateMappingStatement.AppendLine("	     on lnk.LINK_NAME=mapping.TARGET_TABLE");
+                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr");
                         prepareDegenerateMappingStatement.AppendLine("	     on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg");
-                        prepareDegenerateMappingStatement.AppendLine("	     on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr");
+                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg");
+                        prepareDegenerateMappingStatement.AppendLine("	     on stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr");
                         prepareDegenerateMappingStatement.AppendLine("	     on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("WHERE TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
                         prepareDegenerateMappingStatement.AppendLine("),");
@@ -5123,8 +5130,8 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("SELECT ");
                         prepareDegenerateMappingStatement.AppendLine("	--TABLE_NAME, ");
                         prepareDegenerateMappingStatement.AppendLine("	--COLUMN_NAME, ");
-                        prepareDegenerateMappingStatement.AppendLine("	stg.STAGING_AREA_TABLE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	lnk.LINK_TABLE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	stg.SOURCE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	lnk.LINK_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
@@ -5142,10 +5149,10 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("  WHERE [object_id] IN (" + psaTableFilterObjects + ")");
                         prepareDegenerateMappingStatement.AppendLine(") mapping");
 
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_STG_LINK_ATT_XREF stglnk ON stg.STAGING_AREA_TABLE_ID = stglnk.STAGING_AREA_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk ON stglnk.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg ON stg.SOURCE_NAME = mapping.TABLE_NAME COLLATE DATABASE_DEFAULT");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_SOURCE_LINK_ATTRIBUTE_XREF stglnk ON stg.SOURCE_ID = stglnk.SOURCE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk ON stglnk.LINK_ID = lnk.LINK_ID");
 
                         prepareDegenerateMappingStatement.AppendLine("JOIN ");
                         prepareDegenerateMappingStatement.AppendLine("(");
@@ -5156,7 +5163,7 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("  WHERE [object_id] IN (" + intTableFilterObjects + ")");
                         prepareDegenerateMappingStatement.AppendLine(") lnkatts");
 
-                        prepareDegenerateMappingStatement.AppendLine("  ON lnk.LINK_TABLE_NAME = lnkatts.TABLE_NAME COLLATE DATABASE_DEFAULT");
+                        prepareDegenerateMappingStatement.AppendLine("  ON lnk.LINK_NAME = lnkatts.TABLE_NAME COLLATE DATABASE_DEFAULT");
                         prepareDegenerateMappingStatement.AppendLine("  AND UPPER(mapping.COLUMN_NAME) = UPPER(lnkatts.TABLE_NAME)");
 
                         prepareDegenerateMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN ");
@@ -5176,23 +5183,23 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("  ) ");
                         prepareDegenerateMappingStatement.AppendLine(")");
                         prepareDegenerateMappingStatement.AppendLine("SELECT ");
-                        prepareDegenerateMappingStatement.AppendLine("	STAGING_AREA_TABLE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	LINK_TABLE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	SOURCE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	LINK_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	ATTRIBUTE_TO_ID");
                         prepareDegenerateMappingStatement.AppendLine("	--VERIFICATION");
                         prepareDegenerateMappingStatement.AppendLine("FROM MAPPED_ATTRIBUTES");
                         prepareDegenerateMappingStatement.AppendLine("UNION");
                         prepareDegenerateMappingStatement.AppendLine("SELECT ");
-                        prepareDegenerateMappingStatement.AppendLine("	a.STAGING_AREA_TABLE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	a.LINK_TABLE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	a.SOURCE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	a.LINK_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	a.ATTRIBUTE_TO_ID");
                         prepareDegenerateMappingStatement.AppendLine("	--a.VERIFICATION");
                         prepareDegenerateMappingStatement.AppendLine("FROM ORIGINAL_ATTRIBUTES a");
                         prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN MAPPED_ATTRIBUTES b ");
-                        prepareDegenerateMappingStatement.AppendLine("	ON a.STAGING_AREA_TABLE_ID=b.STAGING_AREA_TABLE_ID ");
-                        prepareDegenerateMappingStatement.AppendLine("  AND a.LINK_TABLE_ID=b.LINK_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("	ON a.SOURCE_ID=b.SOURCE_ID ");
+                        prepareDegenerateMappingStatement.AppendLine("  AND a.LINK_ID=b.LINK_ID");
                         prepareDegenerateMappingStatement.AppendLine("  AND a.ATTRIBUTE_FROM_ID=b.ATTRIBUTE_FROM_ID");
                         prepareDegenerateMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
                     }
@@ -5202,19 +5209,19 @@ namespace TEAM
 
                         prepareDegenerateMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS");
                         prepareDegenerateMappingStatement.AppendLine("(");
-                        prepareDegenerateMappingStatement.AppendLine("SELECT  stg.STAGING_AREA_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("       ,lnk.LINK_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("       ,lnk.LINK_ID");
                         prepareDegenerateMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
                         prepareDegenerateMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
                         prepareDegenerateMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
                         prepareDegenerateMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                         prepareDegenerateMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk");
-                        prepareDegenerateMappingStatement.AppendLine("	     on lnk.LINK_TABLE_NAME=mapping.TARGET_TABLE");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT target_attr");
+                        prepareDegenerateMappingStatement.AppendLine("	     on lnk.LINK_NAME=mapping.TARGET_TABLE");
+                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr");
                         prepareDegenerateMappingStatement.AppendLine("	     on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_STG stg");
-                        prepareDegenerateMappingStatement.AppendLine("	     on stg.STAGING_AREA_TABLE_NAME = mapping.SOURCE_TABLE");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATT stg_attr");
+                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg");
+                        prepareDegenerateMappingStatement.AppendLine("	     on stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr");
                         prepareDegenerateMappingStatement.AppendLine("	     on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("WHERE TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
                         prepareDegenerateMappingStatement.AppendLine("),");
@@ -5223,18 +5230,18 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("SELECT ");
                         prepareDegenerateMappingStatement.AppendLine("	--TABLE_NAME, ");
                         prepareDegenerateMappingStatement.AppendLine("	--COLUMN_NAME, ");
-                        prepareDegenerateMappingStatement.AppendLine("	stg.STAGING_AREA_TABLE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	lnk.LINK_TABLE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	stg.SOURCE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	lnk.LINK_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
                         prepareDegenerateMappingStatement.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE mapping");
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STG stg ON stg.STAGING_AREA_TABLE_NAME = mapping.TABLE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATT stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_STG_LINK_ATT_XREF stglnk ON stg.STAGING_AREA_TABLE_ID = stglnk.STAGING_AREA_TABLE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk ON stglnk.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg ON stg.SOURCE_NAME = mapping.TABLE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_SOURCE_LINK_ATTRIBUTE_XREF stglnk ON stg.SOURCE_ID = stglnk.SOURCE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk ON stglnk.LINK_ID = lnk.LINK_ID");
                         prepareDegenerateMappingStatement.AppendLine("JOIN TMP_MD_VERSION_ATTRIBUTE lnkatts");
-                        prepareDegenerateMappingStatement.AppendLine("    on lnk.LINK_TABLE_NAME=lnkatts.TABLE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("    on lnk.LINK_NAME=lnkatts.TABLE_NAME");
                         prepareDegenerateMappingStatement.AppendLine("    and UPPER(mapping.COLUMN_NAME) = UPPER(lnkatts.COLUMN_NAME)");
                         prepareDegenerateMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN ");
                         prepareDegenerateMappingStatement.AppendLine("  ( ");
@@ -5254,23 +5261,23 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("AND mapping.VERSION_ID = " + versionId + " AND lnkatts.VERSION_ID = " + versionId);
                         prepareDegenerateMappingStatement.AppendLine(")");
                         prepareDegenerateMappingStatement.AppendLine("SELECT ");
-                        prepareDegenerateMappingStatement.AppendLine("	STAGING_AREA_TABLE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	LINK_TABLE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	SOURCE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	LINK_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	ATTRIBUTE_TO_ID");
                         prepareDegenerateMappingStatement.AppendLine("	--VERIFICATION");
                         prepareDegenerateMappingStatement.AppendLine("FROM MAPPED_ATTRIBUTES");
                         prepareDegenerateMappingStatement.AppendLine("UNION");
                         prepareDegenerateMappingStatement.AppendLine("SELECT ");
-                        prepareDegenerateMappingStatement.AppendLine("	a.STAGING_AREA_TABLE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	a.LINK_TABLE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	a.SOURCE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("	a.LINK_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_ID,");
                         prepareDegenerateMappingStatement.AppendLine("	a.ATTRIBUTE_TO_ID");
                         prepareDegenerateMappingStatement.AppendLine("	--a.VERIFICATION");
                         prepareDegenerateMappingStatement.AppendLine("FROM ORIGINAL_ATTRIBUTES a");
                         prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN MAPPED_ATTRIBUTES b ");
-                        prepareDegenerateMappingStatement.AppendLine("	ON a.STAGING_AREA_TABLE_ID=b.STAGING_AREA_TABLE_ID ");
-                        prepareDegenerateMappingStatement.AppendLine("  AND a.LINK_TABLE_ID=b.LINK_TABLE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("	ON a.SOURCE_ID=b.SOURCE_ID ");
+                        prepareDegenerateMappingStatement.AppendLine("  AND a.LINK_ID=b.LINK_ID");
                         prepareDegenerateMappingStatement.AppendLine("  AND a.ATTRIBUTE_FROM_ID=b.ATTRIBUTE_FROM_ID");
                         prepareDegenerateMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
                     }
@@ -5286,16 +5293,16 @@ namespace TEAM
                         {
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                // _alert.SetTextLogging("--> " + tableName["SATELLITE_TABLE_NAME"] + "\r\n");
+                                // _alert.SetTextLogging("--> " + tableName["SATELLITE_NAME"] + "\r\n");
 
                                 var insertDegenerateMappingStatement = new StringBuilder();
 
-                                insertDegenerateMappingStatement.AppendLine("INSERT INTO [dbo].MD_STG_LINK_ATT_XREF");
-                                insertDegenerateMappingStatement.AppendLine("( [STAGING_AREA_TABLE_ID] ,[LINK_TABLE_ID] ,[ATTRIBUTE_ID_FROM] ,[ATTRIBUTE_ID_TO] )");
+                                insertDegenerateMappingStatement.AppendLine("INSERT INTO [dbo].MD_SOURCE_LINK_ATTRIBUTE_XREF");
+                                insertDegenerateMappingStatement.AppendLine("( [SOURCE_ID] ,[LINK_ID] ,[ATTRIBUTE_ID_FROM] ,[ATTRIBUTE_ID_TO] )");
                                 insertDegenerateMappingStatement.AppendLine("VALUES ");
                                 insertDegenerateMappingStatement.AppendLine("(");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["STAGING_AREA_TABLE_ID"] + ",");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["LINK_TABLE_ID"] + ",");
+                                insertDegenerateMappingStatement.AppendLine("  " + tableName["SOURCE_ID"] + ",");
+                                insertDegenerateMappingStatement.AppendLine("  " + tableName["LINK_ID"] + ",");
                                 insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_FROM_ID"] + ",");
                                 insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_TO_ID"]);
                                 insertDegenerateMappingStatement.AppendLine(")");
@@ -5347,19 +5354,19 @@ namespace TEAM
                         _alert.SetTextLogging("Commencing Multi-Active Key handling using database.\r\n");
 
                         prepareMultiKeyStatement.AppendLine("SELECT ");
-                        prepareMultiKeyStatement.AppendLine("   u.STAGING_AREA_TABLE_ID,");
-                        prepareMultiKeyStatement.AppendLine("	u.SATELLITE_TABLE_ID,");
-                        prepareMultiKeyStatement.AppendLine("	sat.SATELLITE_TABLE_NAME,");
+                        prepareMultiKeyStatement.AppendLine("   u.SOURCE_ID,");
+                        prepareMultiKeyStatement.AppendLine("	u.SATELLITE_ID,");
+                        prepareMultiKeyStatement.AppendLine("	sat.SATELLITE_NAME,");
                         prepareMultiKeyStatement.AppendLine("	u.ATTRIBUTE_ID_FROM,");
                         prepareMultiKeyStatement.AppendLine("	u.ATTRIBUTE_ID_TO,");
                         prepareMultiKeyStatement.AppendLine("	att.ATTRIBUTE_NAME");
-                        prepareMultiKeyStatement.AppendLine("FROM MD_STG_SAT_ATT_XREF u");
-                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_SAT sat ON sat.SATELLITE_TABLE_ID=u.SATELLITE_TABLE_ID");
-                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_ATT att ON att.ATTRIBUTE_ID = u.ATTRIBUTE_ID_TO");
+                        prepareMultiKeyStatement.AppendLine("FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF u");
+                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_SATELLITE sat ON sat.SATELLITE_ID=u.SATELLITE_ID");
+                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_ATTRIBUTE att ON att.ATTRIBUTE_ID = u.ATTRIBUTE_ID_TO");
                         prepareMultiKeyStatement.AppendLine("INNER JOIN ");
                         prepareMultiKeyStatement.AppendLine("(");
                         prepareMultiKeyStatement.AppendLine("  SELECT ");
-                        prepareMultiKeyStatement.AppendLine("  	sc.name AS SATELLITE_TABLE_NAME,");
+                        prepareMultiKeyStatement.AppendLine("  	sc.name AS SATELLITE_NAME,");
                         prepareMultiKeyStatement.AppendLine("  	C.name AS ATTRIBUTE_NAME");
                         prepareMultiKeyStatement.AppendLine("  FROM " + linkedServer + integrationDatabase + ".sys.index_columns A");
                         prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.indexes B");
@@ -5371,33 +5378,33 @@ namespace TEAM
                         prepareMultiKeyStatement.AppendLine("  AND C.name!='" + effectiveDateTimeAttribute + "' AND C.name!='" + currentRecordAttribute + "' AND C.name!='" + eventDateTimeAtttribute + "'");
                         prepareMultiKeyStatement.AppendLine("  AND C.name NOT LIKE '"+dwhKeyIdentifier+"'");
                         prepareMultiKeyStatement.AppendLine(") ddsub");
-                        prepareMultiKeyStatement.AppendLine("ON sat.SATELLITE_TABLE_NAME=ddsub.SATELLITE_TABLE_NAME COLLATE DATABASE_DEFAULT");
+                        prepareMultiKeyStatement.AppendLine("ON sat.SATELLITE_NAME=ddsub.SATELLITE_NAME COLLATE DATABASE_DEFAULT");
                         prepareMultiKeyStatement.AppendLine("AND att.ATTRIBUTE_NAME=ddsub.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareMultiKeyStatement.AppendLine("  WHERE ddsub.SATELLITE_TABLE_NAME LIKE '"+satTablePrefix+"' OR ddsub.SATELLITE_TABLE_NAME LIKE '"+lsatTablePrefix+"'");
+                        prepareMultiKeyStatement.AppendLine("  WHERE ddsub.SATELLITE_NAME LIKE '"+satTablePrefix+"' OR ddsub.SATELLITE_NAME LIKE '"+lsatTablePrefix+"'");
                     }
                     else
                     {
                         _alert.SetTextLogging("Commencing Multi-Active Key handling using model metadata.\r\n");
 
                         prepareMultiKeyStatement.AppendLine("SELECT ");
-                        prepareMultiKeyStatement.AppendLine("   u.STAGING_AREA_TABLE_ID,");
-                        prepareMultiKeyStatement.AppendLine("	u.SATELLITE_TABLE_ID,");
-                        prepareMultiKeyStatement.AppendLine("	sat.SATELLITE_TABLE_NAME,");
+                        prepareMultiKeyStatement.AppendLine("   u.SOURCE_ID,");
+                        prepareMultiKeyStatement.AppendLine("	u.SATELLITE_ID,");
+                        prepareMultiKeyStatement.AppendLine("	sat.SATELLITE_NAME,");
                         prepareMultiKeyStatement.AppendLine("	u.ATTRIBUTE_ID_FROM,");
                         prepareMultiKeyStatement.AppendLine("	u.ATTRIBUTE_ID_TO,");
                         prepareMultiKeyStatement.AppendLine("	att.ATTRIBUTE_NAME");
-                        prepareMultiKeyStatement.AppendLine("FROM MD_STG_SAT_ATT_XREF u");
-                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_SAT sat ON sat.SATELLITE_TABLE_ID=u.SATELLITE_TABLE_ID");
-                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_ATT att ON att.ATTRIBUTE_ID = u.ATTRIBUTE_ID_TO");
+                        prepareMultiKeyStatement.AppendLine("FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF u");
+                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_SATELLITE sat ON sat.SATELLITE_ID=u.SATELLITE_ID");
+                        prepareMultiKeyStatement.AppendLine("INNER JOIN MD_ATTRIBUTE att ON att.ATTRIBUTE_ID = u.ATTRIBUTE_ID_TO");
                         prepareMultiKeyStatement.AppendLine("INNER JOIN ");
                         prepareMultiKeyStatement.AppendLine("(");
                         prepareMultiKeyStatement.AppendLine("	SELECT");
-                        prepareMultiKeyStatement.AppendLine("		TABLE_NAME AS SATELLITE_TABLE_NAME,");
+                        prepareMultiKeyStatement.AppendLine("		TABLE_NAME AS SATELLITE_NAME,");
                         prepareMultiKeyStatement.AppendLine("		COLUMN_NAME AS ATTRIBUTE_NAME");
                         prepareMultiKeyStatement.AppendLine("	FROM TMP_MD_VERSION_ATTRIBUTE");
                         prepareMultiKeyStatement.AppendLine("	WHERE MULTI_ACTIVE_INDICATOR='Y'");
                         prepareMultiKeyStatement.AppendLine(") sub");
-                        prepareMultiKeyStatement.AppendLine("ON sat.SATELLITE_TABLE_NAME=sub.SATELLITE_TABLE_NAME");
+                        prepareMultiKeyStatement.AppendLine("ON sat.SATELLITE_NAME=sub.SATELLITE_NAME");
                         prepareMultiKeyStatement.AppendLine("AND att.ATTRIBUTE_NAME=sub.ATTRIBUTE_NAME");
                     }
 
@@ -5415,14 +5422,14 @@ namespace TEAM
                             {
                                 _alert.SetTextLogging("-->  Processing the Multi-Active Key attribute " +
                                                       tableName["ATTRIBUTE_NAME"] + " for " +
-                                                      tableName["SATELLITE_TABLE_NAME"] + "\r\n");
+                                                      tableName["SATELLITE_NAME"] + "\r\n");
 
                                 var updateMultiActiveKeyStatement = new StringBuilder();
 
-                                updateMultiActiveKeyStatement.AppendLine("UPDATE [MD_STG_SAT_ATT_XREF]");
+                                updateMultiActiveKeyStatement.AppendLine("UPDATE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                                 updateMultiActiveKeyStatement.AppendLine("SET MULTI_ACTIVE_KEY_INDICATOR='Y'");
-                                updateMultiActiveKeyStatement.AppendLine("WHERE STAGING_AREA_TABLE_ID = " + tableName["STAGING_AREA_TABLE_ID"]);
-                                updateMultiActiveKeyStatement.AppendLine("AND SATELLITE_TABLE_ID = " + tableName["SATELLITE_TABLE_ID"]);
+                                updateMultiActiveKeyStatement.AppendLine("WHERE SOURCE_ID = " + tableName["SOURCE_ID"]);
+                                updateMultiActiveKeyStatement.AppendLine("AND SATELLITE_ID = " + tableName["SATELLITE_ID"]);
                                 updateMultiActiveKeyStatement.AppendLine("AND ATTRIBUTE_ID_FROM = " + tableName["ATTRIBUTE_ID_FROM"]);
                                 updateMultiActiveKeyStatement.AppendLine("AND ATTRIBUTE_ID_TO = " + tableName["ATTRIBUTE_ID_TO"]);
 
@@ -5467,19 +5474,19 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("SELECT DISTINCT");
                         prepareDrivingKeyStatement.AppendLine("    -- base.[TABLE_MAPPING_HASH]");
                         prepareDrivingKeyStatement.AppendLine("    --,base.[VERSION_ID]");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[STAGING_AREA_TABLE]");
+                        prepareDrivingKeyStatement.AppendLine("    --,base.[SOURCE_TABLE]");
                         prepareDrivingKeyStatement.AppendLine("    --,base.[BUSINESS_KEY_ATTRIBUTE]");
-                        prepareDrivingKeyStatement.AppendLine("       sat.SATELLITE_TABLE_ID");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[INTEGRATION_AREA_TABLE] AS LINK_SATELLITE_TABLE_NAME");
+                        prepareDrivingKeyStatement.AppendLine("       sat.SATELLITE_ID");
+                        prepareDrivingKeyStatement.AppendLine("    --,base.[TARGET_TABLE] AS LINK_SATELLITE_NAME");
                         prepareDrivingKeyStatement.AppendLine("    --,base.[FILTER_CRITERIA]");
                         prepareDrivingKeyStatement.AppendLine("    --,base.[DRIVING_KEY_ATTRIBUTE]");
-                        prepareDrivingKeyStatement.AppendLine("      ,COALESCE(hubkey.HUB_TABLE_ID, (SELECT HUB_TABLE_ID FROM MD_HUB WHERE HUB_TABLE_NAME = 'Not applicable')) AS HUB_TABLE_ID");
-                        prepareDrivingKeyStatement.AppendLine("    --,hub.[INTEGRATION_AREA_TABLE] AS [HUB_TABLE]");
+                        prepareDrivingKeyStatement.AppendLine("      ,COALESCE(hubkey.HUB_ID, (SELECT HUB_ID FROM MD_HUB WHERE HUB_NAME = 'Not applicable')) AS HUB_ID");
+                        prepareDrivingKeyStatement.AppendLine("    --,hub.[TARGET_TABLE] AS [HUB_TABLE]");
                         prepareDrivingKeyStatement.AppendLine("FROM");
                         prepareDrivingKeyStatement.AppendLine("(");
                         prepareDrivingKeyStatement.AppendLine("       SELECT");
-                        prepareDrivingKeyStatement.AppendLine("              STAGING_AREA_TABLE,");
-                        prepareDrivingKeyStatement.AppendLine("              INTEGRATION_AREA_TABLE,");
+                        prepareDrivingKeyStatement.AppendLine("              SOURCE_TABLE,");
+                        prepareDrivingKeyStatement.AppendLine("              TARGET_TABLE,");
                         prepareDrivingKeyStatement.AppendLine("              VERSION_ID,");
                         prepareDrivingKeyStatement.AppendLine("              CASE");
                         prepareDrivingKeyStatement.AppendLine("                     WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
@@ -5488,25 +5495,25 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("              END AS BUSINESS_KEY_ATTRIBUTE--For Driving Key");
                         prepareDrivingKeyStatement.AppendLine("       FROM");
                         prepareDrivingKeyStatement.AppendLine("       (");
-                        prepareDrivingKeyStatement.AppendLine("              SELECT STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, DRIVING_KEY_ATTRIBUTE, VERSION_ID, CONVERT(XML, '<M>' + REPLACE(DRIVING_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') AS DRIVING_KEY_ATTRIBUTE_XML");
+                        prepareDrivingKeyStatement.AppendLine("              SELECT SOURCE_TABLE, TARGET_TABLE, DRIVING_KEY_ATTRIBUTE, VERSION_ID, CONVERT(XML, '<M>' + REPLACE(DRIVING_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') AS DRIVING_KEY_ATTRIBUTE_XML");
                         prepareDrivingKeyStatement.AppendLine("              FROM");
                         prepareDrivingKeyStatement.AppendLine("              (");
-                        prepareDrivingKeyStatement.AppendLine("                     SELECT DISTINCT STAGING_AREA_TABLE, INTEGRATION_AREA_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE");
+                        prepareDrivingKeyStatement.AppendLine("                     SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE");
                         prepareDrivingKeyStatement.AppendLine("                     FROM TMP_MD_TABLE_MAPPING");
-                        prepareDrivingKeyStatement.AppendLine("                     WHERE INTEGRATION_AREA_TABLE LIKE '" + lsatTablePrefix +"' AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
+                        prepareDrivingKeyStatement.AppendLine("                     WHERE TARGET_TABLE LIKE '" + lsatTablePrefix +"' AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
                         prepareDrivingKeyStatement.AppendLine("                     AND [GENERATE_INDICATOR] = 'Y'");
                         prepareDrivingKeyStatement.AppendLine("              ) TableName");
                         prepareDrivingKeyStatement.AppendLine("       ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
                         prepareDrivingKeyStatement.AppendLine(")  base");
                         prepareDrivingKeyStatement.AppendLine("LEFT JOIN[dbo].[TMP_MD_TABLE_MAPPING]");
                         prepareDrivingKeyStatement.AppendLine("        hub");
-                        prepareDrivingKeyStatement.AppendLine(" ON  base.STAGING_AREA_TABLE=hub.STAGING_AREA_TABLE");
-                        prepareDrivingKeyStatement.AppendLine(" AND hub.INTEGRATION_AREA_TABLE LIKE '" + hubTablePrefix +"'");
+                        prepareDrivingKeyStatement.AppendLine(" ON  base.SOURCE_TABLE=hub.SOURCE_TABLE");
+                        prepareDrivingKeyStatement.AppendLine(" AND hub.TARGET_TABLE LIKE '" + hubTablePrefix +"'");
                         prepareDrivingKeyStatement.AppendLine("  AND base.BUSINESS_KEY_ATTRIBUTE=hub.BUSINESS_KEY_ATTRIBUTE");
-                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_SAT sat");
-                        prepareDrivingKeyStatement.AppendLine("  ON base.INTEGRATION_AREA_TABLE = sat.SATELLITE_TABLE_NAME");
+                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_SATELLITE sat");
+                        prepareDrivingKeyStatement.AppendLine("  ON base.TARGET_TABLE = sat.SATELLITE_NAME");
                         prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_HUB hubkey");
-                        prepareDrivingKeyStatement.AppendLine("  ON hub.INTEGRATION_AREA_TABLE = hubkey.HUB_TABLE_NAME");
+                        prepareDrivingKeyStatement.AppendLine("  ON hub.TARGET_TABLE = hubkey.HUB_NAME");
                         prepareDrivingKeyStatement.AppendLine("WHERE 1=1");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE!=''");
@@ -5528,11 +5535,11 @@ namespace TEAM
                                     var insertDrivingKeyStatement = new StringBuilder();
 
                                     insertDrivingKeyStatement.AppendLine("INSERT INTO [MD_DRIVING_KEY_XREF]");
-                                    insertDrivingKeyStatement.AppendLine("( [SATELLITE_TABLE_ID] ,[HUB_TABLE_ID] )");
+                                    insertDrivingKeyStatement.AppendLine("( [SATELLITE_ID] ,[HUB_ID] )");
                                     insertDrivingKeyStatement.AppendLine("VALUES ");
                                     insertDrivingKeyStatement.AppendLine("(");
-                                    insertDrivingKeyStatement.AppendLine("  " + tableName["SATELLITE_TABLE_ID"] + ",");
-                                    insertDrivingKeyStatement.AppendLine("  " + tableName["HUB_TABLE_ID"]);
+                                    insertDrivingKeyStatement.AppendLine("  " + tableName["SATELLITE_ID"] + ",");
+                                    insertDrivingKeyStatement.AppendLine("  " + tableName["HUB_ID"]);
                                     insertDrivingKeyStatement.AppendLine(")");
 
                                     var command = new SqlCommand(insertDrivingKeyStatement.ToString(), connection);
@@ -5592,6 +5599,21 @@ namespace TEAM
 
                 worker.ReportProgress(100);
             }
+        }
+
+        private string GetArea(string sourceMapping, string targetMapping)
+        {
+            string localArea = "";
+            if (targetMapping.Contains("BDV"))
+            {
+                localArea = "Derived";
+            }
+            else
+            {
+                localArea = "Base";
+            }
+
+            return localArea;
         }
 
         private void DataGridViewTableMetadataKeyDown(object sender, KeyEventArgs e)
@@ -5775,7 +5797,7 @@ namespace TEAM
             var cellValue = e.FormattedValue.ToString();
             var valueLength = e.FormattedValue.ToString().Length;
 
-            // Source Table (Staging Area)
+            // Source Table (Source)
             if (e.ColumnIndex == 2)
             {
                 dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
@@ -5783,7 +5805,7 @@ namespace TEAM
                 if (e.FormattedValue == DBNull.Value || valueLength == 0)
                 {
                     e.Cancel = true;
-                    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Staging Area) table cannot be empty!";
+                    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) table cannot be empty!";
                 }
 
                 if (valueLength > 0)
@@ -5793,13 +5815,13 @@ namespace TEAM
                     //    //dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = System.Drawing.Color.Red;
 
                     //    e.Cancel = true;
-                    //    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Staging Area) name is not conform with the Staging Area prefix ('" + stagingPrefix + "').";
+                    //    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) name is not conform with the Source prefix ('" + stagingPrefix + "').";
                     //}
 
                     //if (!e.FormattedValue.ToString().Contains(stagingPrefix))
                     //{
                     //    e.Cancel = true;
-                    //    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Staging Area) is not conform to the Staging Area prefix ('" + stagingPrefix + "').";
+                    //    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) is not conform to the Source prefix ('" + stagingPrefix + "').";
                     //}
                 }
             }
@@ -5886,18 +5908,18 @@ namespace TEAM
                             //For later, get the source/target model relationships for Hubs and Sats
                             var sqlStatementForHubCategories = new StringBuilder();
                             sqlStatementForHubCategories.AppendLine("SELECT ");
-                            sqlStatementForHubCategories.AppendLine(" [STAGING_AREA_TABLE_ID]");
-                            sqlStatementForHubCategories.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-                            sqlStatementForHubCategories.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
+                            sqlStatementForHubCategories.AppendLine(" [SOURCE_ID]");
+                            sqlStatementForHubCategories.AppendLine(",[SOURCE_NAME]");
+                            sqlStatementForHubCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
                             sqlStatementForHubCategories.AppendLine(",[FILTER_CRITERIA]");
-                            sqlStatementForHubCategories.AppendLine(",[SATELLITE_TABLE_ID]");
-                            sqlStatementForHubCategories.AppendLine(",[SATELLITE_TABLE_NAME]");
+                            sqlStatementForHubCategories.AppendLine(",[SATELLITE_ID]");
+                            sqlStatementForHubCategories.AppendLine(",[SATELLITE_NAME]");
                             sqlStatementForHubCategories.AppendLine(",[SATELLITE_TYPE]");
-                            sqlStatementForHubCategories.AppendLine(",[HUB_TABLE_ID]");
-                            sqlStatementForHubCategories.AppendLine(",[HUB_TABLE_NAME]");
+                            sqlStatementForHubCategories.AppendLine(",[HUB_ID]");
+                            sqlStatementForHubCategories.AppendLine(",[HUB_NAME]");
                             sqlStatementForHubCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
-                            sqlStatementForHubCategories.AppendLine(",[LINK_TABLE_ID]");
-                            sqlStatementForHubCategories.AppendLine(",[LINK_TABLE_NAME]");
+                            sqlStatementForHubCategories.AppendLine(",[LINK_ID]");
+                            sqlStatementForHubCategories.AppendLine(",[LINK_NAME]");
                             sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_STAGING_SATELLITE_XREF]");
                             sqlStatementForHubCategories.AppendLine("WHERE SATELLITE_TYPE = 'Normal'");
  
@@ -5906,18 +5928,18 @@ namespace TEAM
                             //For later, get the source/target model relationships for Links and Link Satellites
                             var sqlStatementForLinkCategories = new StringBuilder();
                             sqlStatementForLinkCategories.AppendLine("SELECT ");
-                            sqlStatementForLinkCategories.AppendLine(" [STAGING_AREA_TABLE_ID]");
-                            sqlStatementForLinkCategories.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-                            sqlStatementForLinkCategories.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
+                            sqlStatementForLinkCategories.AppendLine(" [SOURCE_ID]");
+                            sqlStatementForLinkCategories.AppendLine(",[SOURCE_NAME]");
+                            sqlStatementForLinkCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
                             sqlStatementForLinkCategories.AppendLine(",[FILTER_CRITERIA]");
-                            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TABLE_ID]");
-                            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TABLE_NAME]");
+                            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_ID]");
+                            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_NAME]");
                             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TYPE]");
-                            sqlStatementForLinkCategories.AppendLine(",[HUB_TABLE_ID]");
-                            sqlStatementForLinkCategories.AppendLine(",[HUB_TABLE_NAME]");
+                            sqlStatementForLinkCategories.AppendLine(",[HUB_ID]");
+                            sqlStatementForLinkCategories.AppendLine(",[HUB_NAME]");
                             sqlStatementForLinkCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
-                            sqlStatementForLinkCategories.AppendLine(",[LINK_TABLE_ID]");
-                            sqlStatementForLinkCategories.AppendLine(",[LINK_TABLE_NAME]");
+                            sqlStatementForLinkCategories.AppendLine(",[LINK_ID]");
+                            sqlStatementForLinkCategories.AppendLine(",[LINK_NAME]");
                             sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_STAGING_SATELLITE_XREF]");
                             sqlStatementForLinkCategories.AppendLine("WHERE SATELLITE_TYPE = 'Link Satellite'");
 
@@ -5927,13 +5949,13 @@ namespace TEAM
                             //Create the relationships between business concepts (Hubs, Links)
                             var sqlStatementForRelationships = new StringBuilder();
                             sqlStatementForRelationships.AppendLine("SELECT ");
-                            sqlStatementForRelationships.AppendLine(" [LINK_TABLE_ID]");
-                            sqlStatementForRelationships.AppendLine(",[LINK_TABLE_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[STAGING_AREA_TABLE_ID]");
-                            sqlStatementForRelationships.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[HUB_TABLE_ID]");
-                            sqlStatementForRelationships.AppendLine(",[HUB_TABLE_NAME]");
+                            sqlStatementForRelationships.AppendLine(" [LINK_ID]");
+                            sqlStatementForRelationships.AppendLine(",[LINK_NAME]");
+                            sqlStatementForRelationships.AppendLine(",[SOURCE_ID]");
+                            sqlStatementForRelationships.AppendLine(",[SOURCE_NAME]");
+                            sqlStatementForRelationships.AppendLine(",[SOURCE_SCHEMA_NAME]");
+                            sqlStatementForRelationships.AppendLine(",[HUB_ID]");
+                            sqlStatementForRelationships.AppendLine(",[HUB_NAME]");
                             sqlStatementForRelationships.AppendLine(",[BUSINESS_KEY_DEFINITION]");
                             sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
 
@@ -5943,11 +5965,11 @@ namespace TEAM
                             //Make sure the source-to-target mappings are created for the attributes (STG->SAT)
                             var sqlStatementForSatelliteAttributes = new StringBuilder();
                             sqlStatementForSatelliteAttributes.AppendLine("SELECT ");
-                            sqlStatementForSatelliteAttributes.AppendLine(" [STAGING_AREA_TABLE_ID]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_TABLE_ID]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_TABLE_NAME]");
+                            sqlStatementForSatelliteAttributes.AppendLine(" [SOURCE_ID]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_NAME]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ID]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_NAME]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_FROM]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_NAME_FROM]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_TO]");
@@ -5963,7 +5985,7 @@ namespace TEAM
 
                             foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
                             {
-                                var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
+                                var modelRelationshipsHub = (string)row["HUB_NAME"];
 
                                 if (!segmentNodeList.Contains(modelRelationshipsHub))
                                 {
@@ -5974,7 +5996,7 @@ namespace TEAM
                             // ... and the Links / LSATs
                             foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
                             {
-                                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
+                                var modelRelationshipsLink = (string)row["LINK_NAME"];
 
                                 if (!segmentNodeList.Contains(modelRelationshipsLink))
                                 {
@@ -5985,8 +6007,8 @@ namespace TEAM
                             // ... and for any orphan Hubs or Links (without Satellites)
                             foreach (DataRow row in businessConceptsRelationships.Rows)
                             {
-                                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
-                                var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
+                                var modelRelationshipsLink = (string)row["LINK_NAME"];
+                                var modelRelationshipsHub = (string)row["HUB_NAME"];
 
                                 if (!segmentNodeList.Contains(modelRelationshipsLink))
                                 {
@@ -6087,7 +6109,7 @@ namespace TEAM
 
 
                             //Adding the category nodes
-                            dgmlExtract.AppendLine("    <Node Id=\"Staging Area\" Group=\"Expanded\" Label=\"Staging Area\"/>");
+                            dgmlExtract.AppendLine("    <Node Id=\"Source\" Group=\"Expanded\" Label=\"Source\"/>");
                             dgmlExtract.AppendLine("    <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
 
                             //Adding the source system containers as nodes
@@ -6122,13 +6144,13 @@ namespace TEAM
                                 dgmlExtract.AppendLine("    <Link Source=\"" + sourceNode + "\" Target=\""+targetNode+"\" BusinessKeyDefintion=\""+ businessKey +"\"/>");
                             }
 
-                            //Add container groupings (node-based) - adding source system containers to 'staging area'
+                            //Add container groupings (node-based) - adding source system containers to 'Source'
                             foreach (var node in systemList)
                             {
-                                dgmlExtract.AppendLine("     <Link Source=\"Staging Area\" Target=\"" + node + "\" Category=\"Contains\" />");
+                                dgmlExtract.AppendLine("     <Link Source=\"Source\" Target=\"" + node + "\" Category=\"Contains\" />");
                             }
 
-                            // Adding the staging area table to the source system container
+                            // Adding the Source table to the source system container
                             for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
                             {
                                 var row = dataGridViewTableMetadata.Rows[i];
@@ -6144,9 +6166,9 @@ namespace TEAM
                             // Separate routine to create STG/ATT and SAT/ATT relationships
                             foreach (DataRow row in satelliteAttributes.Rows)
                             {
-                                var sourceNodeSat = (string)row["SATELLITE_TABLE_NAME"];
+                                var sourceNodeSat = (string)row["SATELLITE_NAME"];
                                 var targetNodeSat = "dwh_"+(string)row["ATTRIBUTE_NAME_TO"];
-                                var sourceNodeStg = (string)row["STAGING_AREA_TABLE_NAME"];
+                                var sourceNodeStg = (string)row["SOURCE_NAME"];
                                 var targetNodeStg = "staging_"+(string)row["ATTRIBUTE_NAME_FROM"];
 
                                 // This is adding the attributes to the tables
@@ -6171,10 +6193,10 @@ namespace TEAM
                             //Add groupings to a Hub (CBC), if there is a Satellite
                             foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
                             {
-                                if (row["SATELLITE_TABLE_NAME"] == DBNull.Value || row["HUB_TABLE_NAME"] == DBNull.Value)
+                                if (row["SATELLITE_NAME"] == DBNull.Value || row["HUB_NAME"] == DBNull.Value)
                                     continue;
-                                var modelRelationshipsHub = (string) row["HUB_TABLE_NAME"];
-                                var modelRelationshipsSat = (string) row["SATELLITE_TABLE_NAME"];
+                                var modelRelationshipsHub = (string) row["HUB_NAME"];
+                                var modelRelationshipsSat = (string) row["SATELLITE_NAME"];
 
                                 var segmentName = modelRelationshipsHub.Remove(0, 4).ToLower();
                                 var textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -6190,10 +6212,10 @@ namespace TEAM
                             //Add groupings per Link (CBC), if there is a Satellite
                             foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
                             {
-                                if (row["SATELLITE_TABLE_NAME"] == DBNull.Value || row["LINK_TABLE_NAME"] == DBNull.Value)
+                                if (row["SATELLITE_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
                                     continue;
-                                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
-                                var modelRelationshipsSat = (string)row["SATELLITE_TABLE_NAME"];
+                                var modelRelationshipsLink = (string)row["LINK_NAME"];
+                                var modelRelationshipsSat = (string)row["SATELLITE_NAME"];
 
                                 var segmentName = modelRelationshipsLink.Remove(0, 4).ToLower();
                                 var textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -6209,10 +6231,10 @@ namespace TEAM
                             //Add the relationships between groupings (core business concepts) - from Hub to Link
                             foreach (DataRow row in businessConceptsRelationships.Rows)
                             {
-                                if (row["HUB_TABLE_NAME"] == DBNull.Value || row["LINK_TABLE_NAME"] == DBNull.Value)
+                                if (row["HUB_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
                                     continue;
-                                var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
-                                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
+                                var modelRelationshipsHub = (string)row["HUB_NAME"];
+                                var modelRelationshipsLink = (string)row["LINK_NAME"];
 
                                 var segmentNameFrom = modelRelationshipsHub.Remove(0, 4).ToLower();
                                 var textInfoFrom = new CultureInfo("en-US", false).TextInfo;
@@ -6324,8 +6346,8 @@ namespace TEAM
             return;
             //dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
             //dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
-            //dataGridViewTableMetadata.Columns[2].HeaderText = "Staging Area Table";
-            //dataGridViewTableMetadata.Columns[3].HeaderText = "Integration Area Table";
+            //dataGridViewTableMetadata.Columns[2].HeaderText = "Source Table";
+            //dataGridViewTableMetadata.Columns[3].HeaderText = "Target Table";
             //dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
             //dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
             //dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
@@ -6373,7 +6395,7 @@ namespace TEAM
                         DataTable gridDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
 
                         // Make sure the output is sorted
-                        gridDataTable.DefaultView.Sort = "[STAGING_AREA_TABLE] ASC, [INTEGRATION_AREA_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+                        gridDataTable.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
 
                         gridDataTable.TableName = "TableMappingMetadata";
 
@@ -6384,8 +6406,8 @@ namespace TEAM
                             {
                                 tableMappingHash = singleRow[0].ToString(),
                                 versionId = singleRow[1].ToString(),
-                                stagingAreaTable = singleRow[2].ToString(),
-                                integrationAreaTable = singleRow[3].ToString(),
+                                sourceTable = singleRow[2].ToString(),
+                                targetTable = singleRow[3].ToString(),
                                 businessKeyDefinition = singleRow[4].ToString(),
                                 drivingKeyDefinition = singleRow[5].ToString(),
                                 filterCriteria = singleRow[6].ToString(),
@@ -6950,7 +6972,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the source table / object (Staging Area table).\r\n");
+                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the source table / object (Source table).\r\n");
             }
 
 
@@ -7146,7 +7168,7 @@ namespace TEAM
             // Informing the user.
             _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
 
-            // Creating a list of (staging area) table names and business key (combinations) from the data grid / data table
+            // Creating a list of (Source) table names and business key (combinations) from the data grid / data table
             var objectListSTG = new List<Tuple<string, string>>();
             var objectListPSA = new List<Tuple<string, string>>();
             var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
@@ -7229,7 +7251,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the business keys in the Staging Area tables.\r\n");
+                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
             }
         }
 

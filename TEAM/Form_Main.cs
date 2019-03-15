@@ -16,7 +16,7 @@ namespace TEAM
         public FormMain()
         {
             // Set the version of the build for everything
-            string versionNumberforTeamApplication = "v1.5.4.2";
+            string versionNumberforTeamApplication = "v1.5.5.0";
 
             // Placeholder for the error handling
             var errorMessage = new StringBuilder();

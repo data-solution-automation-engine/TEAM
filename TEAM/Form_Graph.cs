@@ -235,10 +235,10 @@ namespace TEAM
             var sqlStatementForTableMetadata = new StringBuilder();
             sqlStatementForTableMetadata.AppendLine("SELECT [TABLE_MAPPING_HASH]");
             sqlStatementForTableMetadata.AppendLine("      ,[VERSION_ID]");
-            sqlStatementForTableMetadata.AppendLine("      ,[STAGING_AREA_TABLE]");
+            sqlStatementForTableMetadata.AppendLine("      ,[SOURCE_TABLE]");
             sqlStatementForTableMetadata.AppendLine("      ,[BUSINESS_KEY_ATTRIBUTE]");
             sqlStatementForTableMetadata.AppendLine("      ,[DRIVING_KEY_ATTRIBUTE]");
-            sqlStatementForTableMetadata.AppendLine("      ,[INTEGRATION_AREA_TABLE]");
+            sqlStatementForTableMetadata.AppendLine("      ,[TARGET_TABLE]");
             sqlStatementForTableMetadata.AppendLine("      ,[FILTER_CRITERIA]");
             sqlStatementForTableMetadata.AppendLine("      ,[GENERATE_INDICATOR]");
             sqlStatementForTableMetadata.AppendLine("FROM [MD_TABLE_MAPPING]");
@@ -250,7 +250,7 @@ namespace TEAM
             foreach (DataRow row in tableMetadataDataTable.Rows)
             {
                 //Create the list of systems (containers)
-                var systemName = row["STAGING_AREA_TABLE"].ToString().Split('_')[1];
+                var systemName = row["SOURCE_TABLE"].ToString().Split('_')[1];
                 if (!systemList.Contains(systemName))
                 {
                     systemList.Add(systemName);
@@ -258,22 +258,22 @@ namespace TEAM
 
 
                 // Add the Integration Layer nodes
-                if (!nodeDictionary.ContainsKey((string)row["INTEGRATION_AREA_TABLE"]))
+                if (!nodeDictionary.ContainsKey((string)row["TARGET_TABLE"]))
                 {
-                    nodeDictionary.Add((string)row["INTEGRATION_AREA_TABLE"], systemName);
+                    nodeDictionary.Add((string)row["TARGET_TABLE"], systemName);
                 }
 
                 //Add the Staging Layer nodes
-                if (!nodeDictionary.ContainsKey((string)row["STAGING_AREA_TABLE"]))
+                if (!nodeDictionary.ContainsKey((string)row["SOURCE_TABLE"]))
                 {
-                    nodeDictionary.Add((string)row["STAGING_AREA_TABLE"], systemName);
+                    nodeDictionary.Add((string)row["SOURCE_TABLE"], systemName);
                 }
 
                 // Add the edge to the custom dictionary
                 //if (edgeDictionary.All((e => e.Value.TargetNode != "")))
                 if (!edgeDictionary.ContainsKey((string)row["TABLE_MAPPING_HASH"]))
                 {
-                    edgeDictionary.Add((string)row["TABLE_MAPPING_HASH"], new EdgeCollection { SourceNode = (string)row["STAGING_AREA_TABLE"], TargetNode = (string)row["INTEGRATION_AREA_TABLE"], BusinessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"] });
+                    edgeDictionary.Add((string)row["TABLE_MAPPING_HASH"], new EdgeCollection { SourceNode = (string)row["SOURCE_TABLE"], TargetNode = (string)row["TARGET_TABLE"], BusinessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"] });
                 }
             }
 
@@ -367,18 +367,18 @@ namespace TEAM
             //For later, get the source/target model relationships for Hubs/Sats
             var sqlStatementForHubCategories = new StringBuilder();
             sqlStatementForHubCategories.AppendLine("SELECT ");
-            sqlStatementForHubCategories.AppendLine(" [STAGING_AREA_TABLE_ID]");
-            sqlStatementForHubCategories.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-            sqlStatementForHubCategories.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
+            sqlStatementForHubCategories.AppendLine(" [SOURCE_ID]");
+            sqlStatementForHubCategories.AppendLine(",[SOURCE_NAME]");
+            sqlStatementForHubCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
             sqlStatementForHubCategories.AppendLine(",[FILTER_CRITERIA]");
-            sqlStatementForHubCategories.AppendLine(",[SATELLITE_TABLE_ID]");
-            sqlStatementForHubCategories.AppendLine(",[SATELLITE_TABLE_NAME]");
+            sqlStatementForHubCategories.AppendLine(",[SATELLITE_ID]");
+            sqlStatementForHubCategories.AppendLine(",[SATELLITE_NAME]");
             sqlStatementForHubCategories.AppendLine(",[SATELLITE_TYPE]");
-            sqlStatementForHubCategories.AppendLine(",[HUB_TABLE_ID]");
-            sqlStatementForHubCategories.AppendLine(",[HUB_TABLE_NAME]");
+            sqlStatementForHubCategories.AppendLine(",[HUB_ID]");
+            sqlStatementForHubCategories.AppendLine(",[HUB_NAME]");
             sqlStatementForHubCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
-            sqlStatementForHubCategories.AppendLine(",[LINK_TABLE_ID]");
-            sqlStatementForHubCategories.AppendLine(",[LINK_TABLE_NAME]");
+            sqlStatementForHubCategories.AppendLine(",[LINK_ID]");
+            sqlStatementForHubCategories.AppendLine(",[LINK_NAME]");
             sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_STAGING_SATELLITE_XREF]");
             sqlStatementForHubCategories.AppendLine("WHERE SATELLITE_TYPE = 'Normal'");
 
@@ -388,18 +388,18 @@ namespace TEAM
             //For later, get the source/target model relationships for Links and Link Satellites
             var sqlStatementForLinkCategories = new StringBuilder();
             sqlStatementForLinkCategories.AppendLine("SELECT ");
-            sqlStatementForLinkCategories.AppendLine(" [STAGING_AREA_TABLE_ID]");
-            sqlStatementForLinkCategories.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-            sqlStatementForLinkCategories.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
+            sqlStatementForLinkCategories.AppendLine(" [SOURCE_ID]");
+            sqlStatementForLinkCategories.AppendLine(",[SOURCE_NAME]");
+            sqlStatementForLinkCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
             sqlStatementForLinkCategories.AppendLine(",[FILTER_CRITERIA]");
-            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TABLE_ID]");
-            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TABLE_NAME]");
+            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_ID]");
+            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_NAME]");
             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TYPE]");
-            sqlStatementForLinkCategories.AppendLine(",[HUB_TABLE_ID]");
-            sqlStatementForLinkCategories.AppendLine(",[HUB_TABLE_NAME]");
+            sqlStatementForLinkCategories.AppendLine(",[HUB_ID]");
+            sqlStatementForLinkCategories.AppendLine(",[HUB_NAME]");
             sqlStatementForLinkCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
-            sqlStatementForLinkCategories.AppendLine(",[LINK_TABLE_ID]");
-            sqlStatementForLinkCategories.AppendLine(",[LINK_TABLE_NAME]");
+            sqlStatementForLinkCategories.AppendLine(",[LINK_ID]");
+            sqlStatementForLinkCategories.AppendLine(",[LINK_NAME]");
             sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_STAGING_SATELLITE_XREF]");
             sqlStatementForLinkCategories.AppendLine("WHERE SATELLITE_TYPE = 'Link Satellite'");
 
@@ -409,13 +409,13 @@ namespace TEAM
             //Create the relationships between business concepts (Hubs, Links)
             var sqlStatementForRelationships = new StringBuilder();
             sqlStatementForRelationships.AppendLine("SELECT ");
-            sqlStatementForRelationships.AppendLine(" [LINK_TABLE_ID]");
-            sqlStatementForRelationships.AppendLine(",[LINK_TABLE_NAME]");
-            sqlStatementForRelationships.AppendLine(",[STAGING_AREA_TABLE_ID]");
-            sqlStatementForRelationships.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-            sqlStatementForRelationships.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
-            sqlStatementForRelationships.AppendLine(",[HUB_TABLE_ID]");
-            sqlStatementForRelationships.AppendLine(",[HUB_TABLE_NAME]");
+            sqlStatementForRelationships.AppendLine(" [LINK_ID]");
+            sqlStatementForRelationships.AppendLine(",[LINK_NAME]");
+            sqlStatementForRelationships.AppendLine(",[SOURCE_ID]");
+            sqlStatementForRelationships.AppendLine(",[SOURCE_NAME]");
+            sqlStatementForRelationships.AppendLine(",[SOURCE_SCHEMA_NAME]");
+            sqlStatementForRelationships.AppendLine(",[HUB_ID]");
+            sqlStatementForRelationships.AppendLine(",[HUB_NAME]");
             sqlStatementForRelationships.AppendLine(",[BUSINESS_KEY_DEFINITION]");
             sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
 
@@ -425,11 +425,11 @@ namespace TEAM
             //Make sure the source-to-target mappings are created for the attributes (STG->SAT)
             var sqlStatementForSatelliteAttributes = new StringBuilder();
             sqlStatementForSatelliteAttributes.AppendLine("SELECT ");
-            sqlStatementForSatelliteAttributes.AppendLine(" [STAGING_AREA_TABLE_ID]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[STAGING_AREA_TABLE_NAME]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[STAGING_AREA_SCHEMA_NAME]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_TABLE_ID]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_TABLE_NAME]");
+            sqlStatementForSatelliteAttributes.AppendLine(" [SOURCE_ID]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_NAME]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ID]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_NAME]");
             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_FROM]");
             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_NAME_FROM]");
             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_TO]");
@@ -445,7 +445,7 @@ namespace TEAM
 
             foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
             {
-                var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
+                var modelRelationshipsHub = (string)row["HUB_NAME"];
 
                 if (!segmentNodeList.Contains(modelRelationshipsHub))
                 {
@@ -456,7 +456,7 @@ namespace TEAM
             // ... and the Links / LSATs
             foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
             {
-                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
+                var modelRelationshipsLink = (string)row["LINK_NAME"];
 
                 if (!segmentNodeList.Contains(modelRelationshipsLink))
                 {
@@ -473,8 +473,8 @@ namespace TEAM
                 // ... and for any orphan Hubs or Links (without Satellites)
                 foreach (DataRow row in businessConceptsRelationships.Rows)
                 {
-                    var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
-                    var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
+                    var modelRelationshipsLink = (string)row["LINK_NAME"];
+                    var modelRelationshipsHub = (string)row["HUB_NAME"];
 
                     if (!segmentNodeList.Contains(modelRelationshipsLink))
                     {
@@ -526,9 +526,9 @@ namespace TEAM
             // Separate routine to create STG/ATT and SAT/ATT relationships
             foreach (DataRow row in satelliteAttributes.Rows)
             {
-                var sourceNodeSat = (string)row["SATELLITE_TABLE_NAME"];
+                var sourceNodeSat = (string)row["SATELLITE_NAME"];
                 var targetNodeSat = "dwh_" + (string)row["ATTRIBUTE_NAME_TO"];
-                var sourceNodeStg = (string)row["STAGING_AREA_TABLE_NAME"];
+                var sourceNodeStg = (string)row["SOURCE_NAME"];
                 var targetNodeStg = "staging_" + (string)row["ATTRIBUTE_NAME_FROM"];
 
                 // This is adding the attributes to the tables
@@ -547,10 +547,10 @@ namespace TEAM
             //Add groupings to a Hub (CBC), if there is a Satellite
             foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
             {
-                if (row["SATELLITE_TABLE_NAME"] == DBNull.Value || row["HUB_TABLE_NAME"] == DBNull.Value)
+                if (row["SATELLITE_NAME"] == DBNull.Value || row["HUB_NAME"] == DBNull.Value)
                     continue;
-                var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
-                var modelRelationshipsSat = (string)row["SATELLITE_TABLE_NAME"];
+                var modelRelationshipsHub = (string)row["HUB_NAME"];
+                var modelRelationshipsSat = (string)row["SATELLITE_NAME"];
 
                 var segmentName = modelRelationshipsHub.Remove(0, 4).ToLower();
                 var textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -563,10 +563,10 @@ namespace TEAM
             //Add groupings per Link (CBC), if there is a Satellite
             foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
             {
-                if (row["SATELLITE_TABLE_NAME"] == DBNull.Value || row["LINK_TABLE_NAME"] == DBNull.Value)
+                if (row["SATELLITE_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
                     continue;
-                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
-                var modelRelationshipsSat = (string)row["SATELLITE_TABLE_NAME"];
+                var modelRelationshipsLink = (string)row["LINK_NAME"];
+                var modelRelationshipsSat = (string)row["SATELLITE_NAME"];
 
                 var segmentName = modelRelationshipsLink.Remove(0, 4).ToLower();
                 var textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -580,10 +580,10 @@ namespace TEAM
             //Add the relationships between groupings (core business concepts) - from Hub to Link
             foreach (DataRow row in businessConceptsRelationships.Rows)
             {
-                if (row["HUB_TABLE_NAME"] == DBNull.Value || row["LINK_TABLE_NAME"] == DBNull.Value)
+                if (row["HUB_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
                     continue;
-                var modelRelationshipsHub = (string)row["HUB_TABLE_NAME"];
-                var modelRelationshipsLink = (string)row["LINK_TABLE_NAME"];
+                var modelRelationshipsHub = (string)row["HUB_NAME"];
+                var modelRelationshipsLink = (string)row["LINK_NAME"];
 
                 var segmentNameFrom = modelRelationshipsHub.Remove(0, 4).ToLower();
                 var textInfoFrom = new CultureInfo("en-US", false).TextInfo;

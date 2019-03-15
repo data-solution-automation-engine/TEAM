@@ -105,18 +105,18 @@ namespace TEAM
             // Truncating the entire repository
             StringBuilder commandText = new StringBuilder();
 
-            commandText.AppendLine("DELETE FROM [MD_STG_LINK_ATT_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_STG_SAT_ATT_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_STG_LINK_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_STG_SAT_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_LINK_ATTRIBUTE_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_LINK_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_SATELLITE_XREF];");
             commandText.AppendLine("DELETE FROM [MD_DRIVING_KEY_XREF];");
             commandText.AppendLine("DELETE FROM [MD_HUB_LINK_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SAT];");
+            commandText.AppendLine("DELETE FROM [MD_SATELLITE];");
             commandText.AppendLine("DELETE FROM [MD_BUSINESS_KEY_COMPONENT_PART];");
             commandText.AppendLine("DELETE FROM [MD_BUSINESS_KEY_COMPONENT];");
-            commandText.AppendLine("DELETE FROM [MD_STG_HUB_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_ATT];");
-            commandText.AppendLine("DELETE FROM [MD_STG];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_HUB_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE];");
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
@@ -169,14 +169,14 @@ namespace TEAM
                 var createStatement = new StringBuilder();
 
                 // Drop any existing Foreign Key Constraints
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_MD_STG_HUB_XREF]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_STG_HUB_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 0);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATT]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATT]");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATTRIBUTE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATTRIBUTE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 1);
                 createStatement.Clear();
@@ -196,9 +196,9 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_DRIVING_KEY_XREF_MD_SAT]', 'F') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_DRIVING_KEY_XREF_MD_SATELLITE]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_DRIVING_KEY_XREF] DROP CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SAT]");
+                    "ALTER TABLE [MD_DRIVING_KEY_XREF] DROP CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SATELLITE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
@@ -224,123 +224,123 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SAT_MD_HUB]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_SAT] DROP CONSTRAINT [FK_MD_SAT_MD_HUB]");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SATELLITE_MD_HUB]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SATELLITE] DROP CONSTRAINT [FK_MD_SATELLITE_MD_HUB]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SAT_MD_LINK]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_SAT] DROP CONSTRAINT [FK_MD_SAT_MD_LINK]");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SATELLITE_MD_LINK]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SATELLITE] DROP CONSTRAINT [FK_MD_SATELLITE_MD_LINK]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_HUB_XREF_MD_HUB]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_STG_HUB_XREF] DROP CONSTRAINT [FK_MD_STG_HUB_XREF_MD_HUB]");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_HUB_XREF_MD_HUB]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_HUB_XREF] DROP CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_HUB]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_HUB_XREF_MD_STG]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_STG_HUB_XREF] DROP CONSTRAINT [FK_MD_STG_HUB_XREF_MD_STG]");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_HUB_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_HUB_XREF] DROP CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_SOURCE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_LINK_ATT_XREF_MD_ATT_FROM]', 'F') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_ATT_FROM]");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_LINK_ATT_XREF_MD_ATT_TO]', 'F') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_ATT_TO]");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_LINK_ATT_XREF_MD_STG]', 'F') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_STG]");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_LINK_ATT_XREF_MD_LINK]', 'F') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_LINK]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[FK_MD_STG_SAT_ATT_XREF_MD_ATTRIBUTE_FROM]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_ATTRIBUTE_FROM]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_SAT_ATT_XREF_MD_ATTRIBUTE_TO]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_ATTRIBUTE_TO]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_SAT_ATT_XREF_MD_SAT]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_SAT]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_SAT_ATT_XREF_MD_STG]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF] DROP CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_STG]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_SAT_XREF_MD_SAT]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_STG_SAT_XREF] DROP CONSTRAINT [FK_MD_STG_SAT_XREF_MD_SAT]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_SAT_XREF_MD_STG]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_STG_SAT_XREF] DROP CONSTRAINT [FK_MD_STG_SAT_XREF_MD_STG]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_SAT_XREF_MD_STG]', 'F') IS NOT NULL");
-                createStatement.AppendLine("ALTER TABLE [MD_STG_SAT_XREF] DROP CONSTRAINT [FK_MD_STG_SAT_XREF_MD_STG]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_LINK_XREF_MD_LINK]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_XREF] DROP CONSTRAINT [FK_MD_STG_LINK_XREF_MD_LINK]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
-                createStatement.Clear();
-
-                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_STG_LINK_XREF_MD_STG]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_XREF] DROP CONSTRAINT [FK_MD_STG_LINK_XREF_MD_STG]");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "IF OBJECT_ID('[FK_MD_SOURCE_STG_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
+                    "IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_ATTRIBUTERIBUTE_FROM]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_STG_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STG_XREF_MD_SOURCE_DATASET]");
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_ATTRIBUTERIBUTE_FROM]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_ATTRIBUTERIBUTE_TO]', 'F') IS NOT NULL");
+                createStatement.AppendLine(
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_ATTRIBUTERIBUTE_TO]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SATELLITE]', 'F') IS NOT NULL");
+                createStatement.AppendLine(
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SATELLITE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine(
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SOURCE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_XREF_MD_SATELLITE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_SATELLITE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_XREF_MD_SATELLITE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_SATELLITE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_XREF_MD_SOURCE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_SATELLITE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_XREF_MD_SOURCE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_XREF_MD_LINK]', 'F') IS NOT NULL");
+                createStatement.AppendLine(
+                    "ALTER TABLE [MD_SOURCE_LINK_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_LINK]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine(
+                    "ALTER TABLE [MD_SOURCE_LINK_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_SOURCE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine(
+                    "IF OBJECT_ID('[FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
+                createStatement.AppendLine(
+                    "ALTER TABLE [MD_SOURCE_STAGING_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 4);
                 createStatement.Clear();
@@ -399,8 +399,8 @@ namespace TEAM
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("VALUES");
                 createStatement.AppendLine("(");
-                createStatement.AppendLine("'1.4.1',");
-                createStatement.AppendLine("'Removed Driving Key indicator from physical model metadata.',");
+                createStatement.AppendLine("'1.5',");
+                createStatement.AppendLine("'Changed STG to SOURCE and removed the TABLE part in attribute names.',");
                 createStatement.AppendLine("SYSDATETIME(),");
                 createStatement.AppendLine("SYSDATETIME()");
                 createStatement.AppendLine(")");
@@ -411,17 +411,17 @@ namespace TEAM
                 // Attribute 
                 createStatement.AppendLine();
                 createStatement.AppendLine("--Attribute");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_ATT]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_ATT]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_ATTRIBUTE]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_ATTRIBUTE]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_ATT]");
+                createStatement.AppendLine("CREATE TABLE [MD_ATTRIBUTE]");
                 createStatement.AppendLine("(");
                 createStatement.AppendLine("    [ATTRIBUTE_ID]       integer NOT NULL ,");
                 createStatement.AppendLine("    [ATTRIBUTE_NAME]     varchar(100) NOT NULL,");
-                createStatement.AppendLine("    CONSTRAINT [PK_MD_ATT] PRIMARY KEY CLUSTERED ( [ATTRIBUTE_ID] ASC)");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_ATTRIBUTE] PRIMARY KEY CLUSTERED ( [ATTRIBUTE_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_ATT] ON [MD_ATT]");
+                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_ATTRIBUTE] ON [MD_ATTRIBUTE]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("    [ATTRIBUTE_NAME] ASC");
                 createStatement.AppendLine(")");
@@ -476,15 +476,15 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_BUSINESS_KEY_COMPONENT]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID]        integer NOT NULL,");
-                createStatement.AppendLine("	[HUB_TABLE_ID]      integer NOT NULL,");
+                createStatement.AppendLine("    [SOURCE_ID]        integer NOT NULL,");
+                createStatement.AppendLine("	[HUB_ID]      integer NOT NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] [varchar](4000) NOT NULL,");
                 createStatement.AppendLine("	[COMPONENT_ID]       integer NOT NULL,");
                 createStatement.AppendLine("	[COMPONENT_ORDER]       integer NOT NULL,");
                 createStatement.AppendLine("	[COMPONENT_VALUE]    varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [COMPONENT_TYPE]     varchar(100)  NOT NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_BUSINESS_KEY_COMPONENT] PRIMARY KEY CLUSTERED ([STAGING_AREA_TABLE_ID] ASC, [HUB_TABLE_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC, [COMPONENT_ID] ASC)");
+                    "    CONSTRAINT[PK_MD_BUSINESS_KEY_COMPONENT] PRIMARY KEY CLUSTERED ([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC, [COMPONENT_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 15);
@@ -499,8 +499,8 @@ namespace TEAM
                 createStatement.AppendLine("CREATE TABLE [MD_BUSINESS_KEY_COMPONENT_PART]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID]  integer NOT NULL,");
-                createStatement.AppendLine("	[HUB_TABLE_ID]       integer NOT NULL,");
+                createStatement.AppendLine("    [SOURCE_ID]  integer NOT NULL,");
+                createStatement.AppendLine("	[HUB_ID]       integer NOT NULL,");
                 createStatement.AppendLine("	[COMPONENT_ID]      integer NOT NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] [varchar](4000) NOT NULL, ");
                 createStatement.AppendLine("	[COMPONENT_ELEMENT_ID]     integer NOT NULL,");
@@ -509,7 +509,7 @@ namespace TEAM
                 createStatement.AppendLine("	[COMPONENT_ELEMENT_TYPE] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [ATTRIBUTE_ID]       integer NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_BUSINESS_KEY_COMPONENT_PART] PRIMARY KEY CLUSTERED ([STAGING_AREA_TABLE_ID] ASC, [HUB_TABLE_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC, [COMPONENT_ID] ASC, [COMPONENT_ELEMENT_ID] ASC)");
+                    "    CONSTRAINT [PK_MD_BUSINESS_KEY_COMPONENT_PART] PRIMARY KEY CLUSTERED ([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC, [COMPONENT_ID] ASC, [COMPONENT_ELEMENT_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 try
@@ -533,10 +533,10 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_DRIVING_KEY_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [SATELLITE_TABLE_ID]  integer NOT NULL,");
-                createStatement.AppendLine("	[HUB_TABLE_ID]       integer NOT NULL,");
+                createStatement.AppendLine("    [SATELLITE_ID]  integer NOT NULL,");
+                createStatement.AppendLine("	[HUB_ID]       integer NOT NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_DRIVING_KEY_XREF] PRIMARY KEY CLUSTERED ([SATELLITE_TABLE_ID] ASC, [HUB_TABLE_ID] ASC)");
+                    "    CONSTRAINT [PK_MD_DRIVING_KEY_XREF] PRIMARY KEY CLUSTERED ([SATELLITE_ID] ASC, [HUB_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 25);
@@ -550,14 +550,14 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_HUB]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [HUB_TABLE_ID]        integer NOT NULL ,");
-                createStatement.AppendLine("	[HUB_TABLE_NAME]     varchar(100)  NOT NULL,");
-                createStatement.AppendLine("    CONSTRAINT [PK_MD_HUB] PRIMARY KEY CLUSTERED ([HUB_TABLE_ID] ASC)");
+                createStatement.AppendLine("    [HUB_ID]        integer NOT NULL ,");
+                createStatement.AppendLine("	[HUB_NAME]     varchar(100)  NOT NULL,");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_HUB] PRIMARY KEY CLUSTERED ([HUB_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_HUB] ON [MD_HUB]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [HUB_TABLE_NAME] ASC");
+                createStatement.AppendLine("    [HUB_NAME] ASC");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 30);
@@ -571,12 +571,12 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE[MD_HUB_LINK_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [HUB_TABLE_ID]          integer NOT NULL,");
-                createStatement.AppendLine("	[LINK_TABLE_ID]         integer NOT NULL,");
+                createStatement.AppendLine("    [HUB_ID]          integer NOT NULL,");
+                createStatement.AppendLine("	[LINK_ID]         integer NOT NULL,");
                 createStatement.AppendLine("	[HUB_ORDER]             integer NOT NULL,");
                 createStatement.AppendLine("	[HUB_TARGET_KEY_NAME_IN_LINK]  varchar(4000) NOT NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_HUB_LINK_XREF] PRIMARY KEY CLUSTERED ( [LINK_TABLE_ID] ASC, [HUB_TABLE_ID] ASC, [HUB_ORDER] ASC)");
+                    "    CONSTRAINT[PK_MD_HUB_LINK_XREF] PRIMARY KEY CLUSTERED ( [LINK_ID] ASC, [HUB_ID] ASC, [HUB_ORDER] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 35);
@@ -590,14 +590,14 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_LINK]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [LINK_TABLE_ID]      integer NOT NULL,");
-                createStatement.AppendLine("	[LINK_TABLE_NAME]    varchar(100)  NOT NULL,");
-                createStatement.AppendLine("    CONSTRAINT [PK_MD_LINK] PRIMARY KEY CLUSTERED ( [LINK_TABLE_ID] ASC)");
+                createStatement.AppendLine("    [LINK_ID]      integer NOT NULL,");
+                createStatement.AppendLine("	[LINK_NAME]    varchar(100)  NOT NULL,");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_LINK] PRIMARY KEY CLUSTERED ( [LINK_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_LINK] ON [MD_LINK]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [LINK_TABLE_NAME] ASC");
+                createStatement.AppendLine("    [LINK_NAME] ASC");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 40);
@@ -606,18 +606,18 @@ namespace TEAM
                 // Satellite
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Sat");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_SAT]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_SAT]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SATELLITE]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE[MD_SATELLITE]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_SAT]");
+                createStatement.AppendLine("CREATE TABLE[MD_SATELLITE]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [SATELLITE_TABLE_ID]  integer NOT NULL ,");
-                createStatement.AppendLine("	[SATELLITE_TABLE_NAME] varchar(100)  NOT NULL,");
+                createStatement.AppendLine("    [SATELLITE_ID]  integer NOT NULL ,");
+                createStatement.AppendLine("	[SATELLITE_NAME] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [SATELLITE_TYPE]     varchar(100)  NOT NULL,");
-                createStatement.AppendLine("	[HUB_TABLE_ID]  integer NOT NULL,");
-                createStatement.AppendLine("	[LINK_TABLE_ID] integer NOT NULL ,");
+                createStatement.AppendLine("	[HUB_ID]  integer NOT NULL,");
+                createStatement.AppendLine("	[LINK_ID] integer NOT NULL ,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_SAT] PRIMARY KEY CLUSTERED ([SATELLITE_TABLE_ID] ASC)");
+                    "    CONSTRAINT [PK_MD_SATELLITE] PRIMARY KEY CLUSTERED ([SATELLITE_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 41);
@@ -626,17 +626,17 @@ namespace TEAM
                 // Source CDC Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Source / CDC Xref");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_STG_CDC_TYPE_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_STG_CDC_TYPE_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_CDC_TYPE_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_CDC_TYPE_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_STG_CDC_TYPE_XREF]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_CDC_TYPE_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("	[STAGING_AREA_TABLE_NAME] varchar(100)  NOT NULL,");
+                createStatement.AppendLine("	[SOURCE_NAME] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [CHANGE_DATA_CAPTURE_TYPE] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [CHANGE_DATETIME_DEFINITION] varchar(4000) NULL,");
                 createStatement.AppendLine("    [GENERATE_INDICATOR] varchar(1) NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_STG_CDC_TYPE_XREF] PRIMARY KEY CLUSTERED ( [CHANGE_DATA_CAPTURE_TYPE], [STAGING_AREA_TABLE_NAME] ASC)");
+                    "    CONSTRAINT [PK_MD_SOURCE_CDC_TYPE_XREF] PRIMARY KEY CLUSTERED ( [CHANGE_DATA_CAPTURE_TYPE], [SOURCE_NAME] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 42);
@@ -645,16 +645,16 @@ namespace TEAM
                 // Source CDC Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Source / Staging Xref");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_STG_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_STG_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_STAGING_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_STG_XREF]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("	[STAGING_AREA_TABLE_NAME] varchar(100)  NOT NULL,");
+                createStatement.AppendLine("	[SOURCE_NAME] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [SOURCE_DATASET_ID] int  NOT NULL,");
                 createStatement.AppendLine("    [CHANGE_DATETIME_DEFINITION] varchar(4000) NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_SOURCE_STG_XREF] PRIMARY KEY CLUSTERED ( [STAGING_AREA_TABLE_NAME] ASC)");
+                    "    CONSTRAINT [PK_MD_SOURCE_STAGING_XREF] PRIMARY KEY CLUSTERED ( [SOURCE_NAME] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 43);
@@ -719,21 +719,21 @@ namespace TEAM
                 // Staging
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Staging");
-                createStatement.AppendLine("IF OBJECT_ID ('[MD_STG]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_STG]");
+                createStatement.AppendLine("IF OBJECT_ID ('[MD_SOURCE]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_STG]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID] integer NOT NULL,");
-                createStatement.AppendLine("	[STAGING_AREA_TABLE_NAME] varchar(100) NOT NULL,");
-                createStatement.AppendLine("	[STAGING_AREA_SCHEMA_NAME] varchar(100) NULL,");
+                createStatement.AppendLine("    [SOURCE_ID] integer NOT NULL,");
+                createStatement.AppendLine("	[SOURCE_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[SOURCE_SCHEMA_NAME] varchar(100) NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_STG] PRIMARY KEY CLUSTERED ([STAGING_AREA_TABLE_ID] ASC)");
+                    "    CONSTRAINT[PK_MD_SOURCE] PRIMARY KEY CLUSTERED ([SOURCE_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_STG] ON [MD_STG]");
+                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_SOURCE] ON [MD_SOURCE]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_NAME]   ASC");
+                createStatement.AppendLine("    [SOURCE_NAME]   ASC");
                 createStatement.AppendLine(")");
 
                 try
@@ -751,17 +751,17 @@ namespace TEAM
                 // Staging Hub Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Staging Hub XREF");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_STG_HUB_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_STG_HUB_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_HUB_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE[MD_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_STG_HUB_XREF]");
+                createStatement.AppendLine("CREATE TABLE[MD_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID]  integer NOT NULL,");
-                createStatement.AppendLine("	[HUB_TABLE_ID] integer NOT NULL,");
+                createStatement.AppendLine("    [SOURCE_ID]  integer NOT NULL,");
+                createStatement.AppendLine("	[HUB_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] varchar(4000) NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA]  varchar(4000)  NULL");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_STG_HUB_XREF] PRIMARY KEY CLUSTERED([STAGING_AREA_TABLE_ID] ASC, [HUB_TABLE_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC)");
+                    "    CONSTRAINT[PK_MD_SOURCE_HUB_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 45);
@@ -770,17 +770,17 @@ namespace TEAM
                 // Staging Link Attribute Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Staging Link Attribute XREF");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_STG_LINK_ATT_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_STG_LINK_ATT_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_LINK_ATTRIBUTE_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE[MD_SOURCE_LINK_ATTRIBUTE_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_STG_LINK_ATT_XREF]");
+                createStatement.AppendLine("CREATE TABLE[MD_SOURCE_LINK_ATTRIBUTE_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID] integer NOT NULL,");
-                createStatement.AppendLine("	[LINK_TABLE_ID] integer NOT NULL,");
+                createStatement.AppendLine("    [SOURCE_ID] integer NOT NULL,");
+                createStatement.AppendLine("	[LINK_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_ID_FROM] integer NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_ID_TO] integer NOT NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_STG_LINK_ATT_XREF] PRIMARY KEY CLUSTERED([STAGING_AREA_TABLE_ID] ASC, [LINK_TABLE_ID] ASC, [ATTRIBUTE_ID_FROM] ASC, [ATTRIBUTE_ID_TO] ASC)");
+                    "    CONSTRAINT[PK_MD_SOURCE_LINK_ATTRIBUTE_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [LINK_ID] ASC, [ATTRIBUTE_ID_FROM] ASC, [ATTRIBUTE_ID_TO] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 46);
@@ -789,17 +789,17 @@ namespace TEAM
                 // Staging Link  Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Staging Link  XREF");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_STG_LINK_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_STG_LINK_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_LINK_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE[MD_SOURCE_LINK_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_STG_LINK_XREF]");
+                createStatement.AppendLine("CREATE TABLE[MD_SOURCE_LINK_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID] integer NOT NULL,");
-                createStatement.AppendLine("	[LINK_TABLE_ID] integer NOT NULL,");
+                createStatement.AppendLine("    [SOURCE_ID] integer NOT NULL,");
+                createStatement.AppendLine("	[LINK_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000) NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] varchar(4000) NOT NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_STG_LINK_XREF] PRIMARY KEY CLUSTERED([STAGING_AREA_TABLE_ID] ASC, [LINK_TABLE_ID] ASC)");
+                    "    CONSTRAINT[PK_MD_SOURCE_LINK_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [LINK_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 47);
@@ -808,18 +808,18 @@ namespace TEAM
                 // Staging / Satellite Attribute Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Staging Attribute XREF");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_STG_SAT_ATT_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_STG_SAT_ATT_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_STG_SAT_ATT_XREF]");
+                createStatement.AppendLine("CREATE TABLE[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID] integer NOT NULL,");
-                createStatement.AppendLine("	[SATELLITE_TABLE_ID] integer NOT NULL,");
+                createStatement.AppendLine("    [SOURCE_ID] integer NOT NULL,");
+                createStatement.AppendLine("	[SATELLITE_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_ID_FROM]  integer NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_ID_TO] integer NOT NULL,");
                 createStatement.AppendLine("	[MULTI_ACTIVE_KEY_INDICATOR] varchar(100)  NOT NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_STG_SAT_ATT_XREF] PRIMARY KEY CLUSTERED([STAGING_AREA_TABLE_ID] ASC, [SATELLITE_TABLE_ID] ASC, [ATTRIBUTE_ID_FROM] ASC, [ATTRIBUTE_ID_TO] ASC)");
+                    "    CONSTRAINT[PK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [SATELLITE_ID] ASC, [ATTRIBUTE_ID_FROM] ASC, [ATTRIBUTE_ID_TO] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 48);
@@ -828,17 +828,18 @@ namespace TEAM
                 // Staging / Satellite  Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Staging Satellite XREF");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_STG_SAT_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_STG_SAT_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_SATELLITE_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE[MD_SOURCE_SATELLITE_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_STG_SAT_XREF]");
+                createStatement.AppendLine("CREATE TABLE[MD_SOURCE_SATELLITE_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("	[SATELLITE_TABLE_ID] integer NOT NULL,");
-                createStatement.AppendLine("    [STAGING_AREA_TABLE_ID] integer NOT NULL,");
+                createStatement.AppendLine("	[SATELLITE_ID] integer NOT NULL,");
+                createStatement.AppendLine("    [SOURCE_ID] integer NOT NULL,");
                 createStatement.AppendLine("    [BUSINESS_KEY_DEFINITION] [varchar](1000) NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
+                createStatement.AppendLine("	[AREA] varchar(100)  NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_STG_SAT_XREF] PRIMARY KEY CLUSTERED([SATELLITE_TABLE_ID] ASC, [STAGING_AREA_TABLE_ID] ASC)");
+                    "    CONSTRAINT[PK_MD_SOURCE_SATELLITE_XREF] PRIMARY KEY CLUSTERED([SATELLITE_ID] ASC, [SOURCE_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 50);
@@ -857,9 +858,9 @@ namespace TEAM
                     createStatement.AppendLine("    [TABLE_MAPPING_HASH] AS(");
                     createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
                     createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[INTEGRATION_AREA_TABLE])),'NA')+'|'+");
+                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
                     createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[STAGING_AREA_TABLE])),'NA')+'|'+");
+                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
                     createStatement.AppendLine(
                         "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[BUSINESS_KEY_ATTRIBUTE])),'NA')+'|'+");
                     createStatement.AppendLine(
@@ -870,10 +871,10 @@ namespace TEAM
                     createStatement.AppendLine("			)");
                     createStatement.AppendLine("		) PERSISTED NOT NULL ,");
                     createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
-                    createStatement.AppendLine("	[STAGING_AREA_TABLE] varchar(100)  NULL,");
+                    createStatement.AppendLine("	[SOURCE_TABLE] varchar(100)  NULL,");
                     createStatement.AppendLine("	[BUSINESS_KEY_ATTRIBUTE] varchar(4000)  NULL,");
                     createStatement.AppendLine("	[DRIVING_KEY_ATTRIBUTE] varchar(4000)  NULL,");
-                    createStatement.AppendLine("	[INTEGRATION_AREA_TABLE] varchar(100)  NULL,");
+                    createStatement.AppendLine("	[TARGET_TABLE] varchar(100)  NULL,");
                     createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
                     createStatement.AppendLine("	[GENERATE_INDICATOR] varchar(1)  NULL,");
                     createStatement.AppendLine(
@@ -953,170 +954,170 @@ namespace TEAM
 
                 // Create existing Foreign Key Constraints
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_STG_HUB_XREF] FOREIGN KEY([STAGING_AREA_TABLE_ID], [HUB_TABLE_ID], [BUSINESS_KEY_DEFINITION])");
+                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF] FOREIGN KEY([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION])");
                 createStatement.AppendLine(
-                    "REFERENCES  [MD_STG_HUB_XREF] ([STAGING_AREA_TABLE_ID], [HUB_TABLE_ID], [BUSINESS_KEY_DEFINITION])");
+                    "REFERENCES  [MD_SOURCE_HUB_XREF] ([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 60);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATT] FOREIGN KEY([ATTRIBUTE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_ATT] ([ATTRIBUTE_ID])");
+                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATTRIBUTE] FOREIGN KEY([ATTRIBUTE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 61);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT] FOREIGN KEY([STAGING_AREA_TABLE_ID], [HUB_TABLE_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
+                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT] FOREIGN KEY([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
                 createStatement.AppendLine(
-                    "REFERENCES  [MD_BUSINESS_KEY_COMPONENT]([STAGING_AREA_TABLE_ID], [HUB_TABLE_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
+                    "REFERENCES  [MD_BUSINESS_KEY_COMPONENT]([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 62);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_HUB] FOREIGN KEY([HUB_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_TABLE_ID])");
+                    "ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 63);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SAT] FOREIGN KEY([SATELLITE_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_SAT] ([SATELLITE_TABLE_ID])");
+                    "ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SATELLITE] FOREIGN KEY([SATELLITE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SATELLITE] ([SATELLITE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 64);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_HUB] FOREIGN KEY([HUB_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_TABLE_ID])");
+                    "ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 65);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_LINK] FOREIGN KEY([LINK_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_TABLE_ID])");
+                    "ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_LINK] FOREIGN KEY([LINK_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 66);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_SAT]  WITH CHECK ADD  CONSTRAINT [FK_MD_SAT_MD_HUB] FOREIGN KEY([HUB_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_TABLE_ID])");
+                    "ALTER TABLE [MD_SATELLITE]  WITH CHECK ADD  CONSTRAINT [FK_MD_SATELLITE_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 67);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_SAT]  WITH CHECK ADD  CONSTRAINT [FK_MD_SAT_MD_LINK] FOREIGN KEY([LINK_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_TABLE_ID])");
+                    "ALTER TABLE [MD_SATELLITE]  WITH CHECK ADD  CONSTRAINT [FK_MD_SATELLITE_MD_LINK] FOREIGN KEY([LINK_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 68);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_HUB_XREF_MD_HUB] FOREIGN KEY([HUB_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 69);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_HUB_XREF_MD_STG] FOREIGN KEY([STAGING_AREA_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_STG] ([STAGING_AREA_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 70);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_ATT_FROM] FOREIGN KEY([ATTRIBUTE_ID_FROM])");
-                createStatement.AppendLine("REFERENCES  [MD_ATT] ([ATTRIBUTE_ID])");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_ID_FROM])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_ATT_TO] FOREIGN KEY([ATTRIBUTE_ID_TO])");
-                createStatement.AppendLine("REFERENCES  [MD_ATT] ([ATTRIBUTE_ID])");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO] FOREIGN KEY([ATTRIBUTE_ID_TO])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_LINK] FOREIGN KEY([LINK_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK] FOREIGN KEY([LINK_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 72);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_LINK_ATT_XREF_MD_STG] FOREIGN KEY([STAGING_AREA_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_STG] ([STAGING_AREA_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 73);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_LINK_XREF_MD_LINK] FOREIGN KEY([LINK_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_LINK] FOREIGN KEY([LINK_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 74);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_LINK_XREF_MD_STG] FOREIGN KEY([STAGING_AREA_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_STG] ([STAGING_AREA_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 75);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_ATTRIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_ID_FROM])");
-                createStatement.AppendLine("REFERENCES  [MD_ATT] ([ATTRIBUTE_ID])");
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_ATTRIBUTERIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_ID_FROM])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 76);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_ATTRIBUTE_TO] FOREIGN KEY([ATTRIBUTE_ID_TO])");
-                createStatement.AppendLine("REFERENCES  [MD_ATT] ([ATTRIBUTE_ID])");
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_ATTRIBUTERIBUTE_TO] FOREIGN KEY([ATTRIBUTE_ID_TO])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 77);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_SAT] FOREIGN KEY([SATELLITE_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_SAT] ([SATELLITE_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SATELLITE] FOREIGN KEY([SATELLITE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SATELLITE] ([SATELLITE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 78);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_ATT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_SAT_ATT_XREF_MD_STG] FOREIGN KEY([STAGING_AREA_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_STG] ([STAGING_AREA_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 78);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_SAT_XREF_MD_SAT] FOREIGN KEY([SATELLITE_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_SAT] ([SATELLITE_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SATELLITE_XREF_MD_SATELLITE] FOREIGN KEY([SATELLITE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SATELLITE] ([SATELLITE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_STG_SAT_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_STG_SAT_XREF_MD_STG] FOREIGN KEY([STAGING_AREA_TABLE_ID])");
-                createStatement.AppendLine("REFERENCES  [MD_STG] ([STAGING_AREA_TABLE_ID])");
+                    "ALTER TABLE [MD_SOURCE_SATELLITE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SATELLITE_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [dbo].[MD_SOURCE_STG_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STG_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
+                    "ALTER TABLE [dbo].[MD_SOURCE_STAGING_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
                 createStatement.AppendLine("REFERENCES [dbo].[MD_SOURCE_DATASET] ([SOURCE_DATASET_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
@@ -1219,18 +1220,18 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_BUSINESS_KEY_COMPONENT]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" xref.STAGING_AREA_TABLE_ID,");
-                createStatement.AppendLine(" STAGING_AREA_TABLE_NAME,");
-                createStatement.AppendLine(" STAGING_AREA_SCHEMA_NAME,");
-                createStatement.AppendLine(" xref.HUB_TABLE_ID,");
-                createStatement.AppendLine(" HUB_TABLE_NAME,");
+                createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" SOURCE_NAME,");
+                createStatement.AppendLine(" SOURCE_SCHEMA_NAME,");
+                createStatement.AppendLine(" xref.HUB_ID,");
+                createStatement.AppendLine(" HUB_NAME,");
                 createStatement.AppendLine(" BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" COMPONENT_ID AS BUSINESS_KEY_COMPONENT_ID,");
                 createStatement.AppendLine(" COMPONENT_ORDER AS BUSINESS_KEY_COMPONENT_ORDER,");
                 createStatement.AppendLine(" COMPONENT_VALUE AS BUSINESS_KEY_COMPONENT_VALUE");
                 createStatement.AppendLine("FROM MD_BUSINESS_KEY_COMPONENT xref");
-                createStatement.AppendLine("JOIN MD_STG stg ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_HUB hub ON xref.HUB_TABLE_ID = hub.HUB_TABLE_ID");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_HUB hub ON xref.HUB_ID = hub.HUB_ID");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 85);
                 createStatement.Clear();
@@ -1238,11 +1239,11 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("  comp.STAGING_AREA_TABLE_ID, ");
-                createStatement.AppendLine("  stg.STAGING_AREA_TABLE_NAME,");
-                createStatement.AppendLine("  stg.STAGING_AREA_SCHEMA_NAME,");
-                createStatement.AppendLine("  comp.HUB_TABLE_ID, ");
-                createStatement.AppendLine("  hub.HUB_TABLE_NAME,");
+                createStatement.AppendLine("  comp.SOURCE_ID, ");
+                createStatement.AppendLine("  stg.SOURCE_NAME,");
+                createStatement.AppendLine("  stg.SOURCE_SCHEMA_NAME,");
+                createStatement.AppendLine("  comp.HUB_ID, ");
+                createStatement.AppendLine("  hub.HUB_NAME,");
                 createStatement.AppendLine("  comp.BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine("  comp.COMPONENT_ID AS BUSINESS_KEY_COMPONENT_ID, ");
                 createStatement.AppendLine("  comp.COMPONENT_ORDER AS BUSINESS_KEY_COMPONENT_ORDER,");
@@ -1255,13 +1256,13 @@ namespace TEAM
                     "  COALESCE(att.ATTRIBUTE_NAME, 'Not applicable') AS BUSINESS_KEY_COMPONENT_ELEMENT_ATTRIBUTE_NAME");
                 createStatement.AppendLine("FROM MD_BUSINESS_KEY_COMPONENT comp");
                 createStatement.AppendLine("JOIN MD_BUSINESS_KEY_COMPONENT_PART elem");
-                createStatement.AppendLine("  ON comp.STAGING_AREA_TABLE_ID = elem.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine(" AND comp.HUB_TABLE_ID = elem.HUB_TABLE_ID");
+                createStatement.AppendLine("  ON comp.SOURCE_ID = elem.SOURCE_ID");
+                createStatement.AppendLine(" AND comp.HUB_ID = elem.HUB_ID");
                 createStatement.AppendLine(" AND comp.BUSINESS_KEY_DEFINITION = elem.BUSINESS_KEY_DEFINITION");
                 createStatement.AppendLine(" AND comp.COMPONENT_ID = elem.COMPONENT_ID");
-                createStatement.AppendLine("JOIN MD_STG stg ON comp.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_HUB hub ON comp.HUB_TABLE_ID = hub.HUB_TABLE_ID");
-                createStatement.AppendLine("LEFT JOIN MD_ATT att ON elem.ATTRIBUTE_ID = att.ATTRIBUTE_ID");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON comp.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_HUB hub ON comp.HUB_ID = hub.HUB_ID");
+                createStatement.AppendLine("LEFT JOIN MD_ATTRIBUTE att ON elem.ATTRIBUTE_ID = att.ATTRIBUTE_ID");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 87);
                 createStatement.Clear();
@@ -1269,14 +1270,14 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_DRIVING_KEY]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("  MD.SATELLITE_TABLE_ID, ");
-                createStatement.AppendLine("  sat.SATELLITE_TABLE_NAME,");
-                createStatement.AppendLine("  MD.HUB_TABLE_ID,");
-                createStatement.AppendLine("  hub.HUB_TABLE_NAME");
+                createStatement.AppendLine("  MD.SATELLITE_ID, ");
+                createStatement.AppendLine("  sat.SATELLITE_NAME,");
+                createStatement.AppendLine("  MD.HUB_ID,");
+                createStatement.AppendLine("  hub.HUB_NAME");
                 createStatement.AppendLine("FROM MD_DRIVING_KEY_XREF MD");
                 createStatement.AppendLine(
-                    "LEFT OUTER JOIN dbo.MD_SAT sat ON MD.SATELLITE_TABLE_ID = sat.SATELLITE_TABLE_ID");
-                createStatement.AppendLine("LEFT OUTER JOIN dbo.MD_HUB hub ON MD.HUB_TABLE_ID = hub.HUB_TABLE_ID");
+                    "LEFT OUTER JOIN dbo.MD_SATELLITE sat ON MD.SATELLITE_ID = sat.SATELLITE_ID");
+                createStatement.AppendLine("LEFT OUTER JOIN dbo.MD_HUB hub ON MD.HUB_ID = hub.HUB_ID");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 89);
                 createStatement.Clear();
@@ -1284,40 +1285,40 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_HUB_LINK_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" slxref.LINK_TABLE_ID,");
-                createStatement.AppendLine(" lnk.LINK_TABLE_NAME,");
-                createStatement.AppendLine(" slxref.STAGING_AREA_TABLE_ID,");
-                createStatement.AppendLine(" stg.STAGING_AREA_TABLE_NAME,");
-                createStatement.AppendLine(" stg.STAGING_AREA_SCHEMA_NAME,");
-                createStatement.AppendLine(" hub.HUB_TABLE_ID,");
-                createStatement.AppendLine(" hub.HUB_TABLE_NAME,");
+                createStatement.AppendLine(" slxref.LINK_ID,");
+                createStatement.AppendLine(" lnk.LINK_NAME,");
+                createStatement.AppendLine(" slxref.SOURCE_ID,");
+                createStatement.AppendLine(" stg.SOURCE_NAME,");
+                createStatement.AppendLine(" stg.SOURCE_SCHEMA_NAME,");
+                createStatement.AppendLine(" hub.HUB_ID,");
+                createStatement.AppendLine(" hub.HUB_NAME,");
                 createStatement.AppendLine(" hlxref.HUB_ORDER,");
                 createStatement.AppendLine(" BUSINESS_KEY_PART_SOURCE AS BUSINESS_KEY_DEFINITION");
                 createStatement.AppendLine("FROM --Base table that selects the Links to generate. This is the basis for the Link generation");
                 createStatement.AppendLine("(");
                 createStatement.AppendLine("	SELECT");
-                createStatement.AppendLine("	  LINK_TABLE_ID,");
-                createStatement.AppendLine("	  STAGING_AREA_TABLE_ID,");
+                createStatement.AppendLine("	  LINK_ID,");
+                createStatement.AppendLine("	  SOURCE_ID,");
                 createStatement.AppendLine("	  LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART_SOURCE,");
-                createStatement.AppendLine("	  ROW_NUMBER() OVER(PARTITION BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID ORDER BY LINK_TABLE_ID, STAGING_AREA_TABLE_ID) AS HUB_ORDER");
+                createStatement.AppendLine("	  ROW_NUMBER() OVER(PARTITION BY LINK_ID, SOURCE_ID ORDER BY LINK_ID, SOURCE_ID) AS HUB_ORDER");
                 createStatement.AppendLine("	FROM");
                 createStatement.AppendLine("	(");
                 createStatement.AppendLine("	  SELECT");
-                createStatement.AppendLine("		LINK_TABLE_ID,");
-                createStatement.AppendLine("		STAGING_AREA_TABLE_ID,");
+                createStatement.AppendLine("		LINK_ID,");
+                createStatement.AppendLine("		SOURCE_ID,");
                 createStatement.AppendLine("		CAST('<M>' + REPLACE(BUSINESS_KEY_DEFINITION, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
-                createStatement.AppendLine("		FROM [MD_STG_LINK_XREF]");
+                createStatement.AppendLine("		FROM [MD_SOURCE_LINK_XREF]");
                 createStatement.AppendLine("	) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
                 createStatement.AppendLine(") slxref");
-                createStatement.AppendLine("JOIN MD_STG stg ");
-                createStatement.AppendLine("	ON slxref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID -- Adding the Staging Area table name and schema");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ");
+                createStatement.AppendLine("	ON slxref.SOURCE_ID = stg.SOURCE_ID -- Adding the Staging Area table name and schema");
                 createStatement.AppendLine("JOIN MD_LINK lnk ");
-                createStatement.AppendLine("	ON slxref.LINK_TABLE_ID = lnk.LINK_TABLE_ID -- Adding the Link table name");
+                createStatement.AppendLine("	ON slxref.LINK_ID = lnk.LINK_ID -- Adding the Link table name");
                 createStatement.AppendLine("JOIN MD_HUB_LINK_XREF hlxref ");
-                createStatement.AppendLine("	ON slxref.LINK_TABLE_ID = hlxref.LINK_TABLE_ID -- Adding the Hubs that relate to the Link, from a target perspective");
+                createStatement.AppendLine("	ON slxref.LINK_ID = hlxref.LINK_ID -- Adding the Hubs that relate to the Link, from a target perspective");
                 createStatement.AppendLine("  AND slxref.HUB_ORDER = hlxref.HUB_ORDER");
                 createStatement.AppendLine("JOIN MD_HUB hub");
-                createStatement.AppendLine("    ON hlxref.HUB_TABLE_ID = hub.HUB_TABLE_ID -- Adding the Hub name");
+                createStatement.AppendLine("    ON hlxref.HUB_ID = hub.HUB_ID -- Adding the Hub name");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 91);
                 createStatement.Clear();
@@ -1330,8 +1331,8 @@ namespace TEAM
                 createStatement.AppendLine("*/");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" schema_stg_listing.TABLE_NAME AS STAGING_AREA_TABLE_NAME-- the Staging Area tables queried from the catalog");
-                createStatement.AppendLine(" , '[dbo]' AS STAGING_AREA_SCHEMA_NAME");
+                createStatement.AppendLine(" schema_stg_listing.TABLE_NAME AS SOURCE_NAME-- the Staging Area tables queried from the catalog");
+                createStatement.AppendLine(" , '[dbo]' AS SOURCE_SCHEMA_NAME");
                 createStatement.AppendLine(" , coalesce(dataset.SOURCE_DATASET_NAME");
                 createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
                 createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1 -- always prefixed with STG_(length 4)");
@@ -1344,8 +1345,8 @@ namespace TEAM
                 createStatement.AppendLine(" , COALESCE(naming_exception.CHANGE_DATETIME_DEFINITION, cdctype.CHANGE_DATETIME_DEFINITION) AS CHANGE_DATETIME_DEFINITION");
                 createStatement.AppendLine(" , cdctype.GENERATE_INDICATOR AS GENERATE_INDICATOR");
                 createStatement.AppendLine("FROM ["+ConfigurationSettings.StagingDatabaseName+"].INFORMATION_SCHEMA.TABLES as schema_stg_listing");
-                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_STG_XREF as naming_exception on naming_exception.STAGING_AREA_TABLE_NAME = schema_stg_listing.TABLE_NAME");
-                createStatement.AppendLine("LEFT JOIN dbo.MD_STG_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.STAGING_AREA_TABLE_NAME");
+                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_STAGING_XREF as naming_exception on naming_exception.SOURCE_NAME = schema_stg_listing.TABLE_NAME");
+                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.SOURCE_NAME");
                 createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_DATASET dataset ON naming_exception.SOURCE_DATASET_ID = dataset.SOURCE_DATASET_ID");
                 createStatement.AppendLine("WHERE TABLE_TYPE = 'BASE TABLE'");
                 createStatement.AppendLine("AND TABLE_NAME not like '%LANDING%'");
@@ -1359,16 +1360,16 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_STAGING_HUB_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" xref.STAGING_AREA_TABLE_ID,");
-                createStatement.AppendLine(" STAGING_AREA_TABLE_NAME,");
-                createStatement.AppendLine(" STAGING_AREA_SCHEMA_NAME,");
-                createStatement.AppendLine(" xref.HUB_TABLE_ID,");
-                createStatement.AppendLine(" HUB_TABLE_NAME,");
+                createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" SOURCE_NAME,");
+                createStatement.AppendLine(" SOURCE_SCHEMA_NAME,");
+                createStatement.AppendLine(" xref.HUB_ID,");
+                createStatement.AppendLine(" HUB_NAME,");
                 createStatement.AppendLine(" BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" FILTER_CRITERIA");
-                createStatement.AppendLine("FROM MD_STG_HUB_XREF xref");
-                createStatement.AppendLine("JOIN MD_STG stg ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_HUB hub ON xref.HUB_TABLE_ID = hub.HUB_TABLE_ID");
+                createStatement.AppendLine("FROM MD_SOURCE_HUB_XREF xref");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_HUB hub ON xref.HUB_ID = hub.HUB_ID");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 95);
                 createStatement.Clear();
@@ -1376,14 +1377,14 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_STAGING_LINK_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("  xref.[STAGING_AREA_TABLE_ID]");
-                createStatement.AppendLine(" ,stg.[STAGING_AREA_TABLE_NAME]");
-                createStatement.AppendLine(" ,xref.[LINK_TABLE_ID]");
-                createStatement.AppendLine(" ,lnk.[LINK_TABLE_NAME]");
+                createStatement.AppendLine("  xref.[SOURCE_ID]");
+                createStatement.AppendLine(" ,stg.[SOURCE_NAME]");
+                createStatement.AppendLine(" ,xref.[LINK_ID]");
+                createStatement.AppendLine(" ,lnk.[LINK_NAME]");
                 createStatement.AppendLine(" ,[FILTER_CRITERIA]");
-                createStatement.AppendLine("FROM[MD_STG_LINK_XREF] xref");
-                createStatement.AppendLine("JOIN MD_STG stg ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_LINK lnk ON xref.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
+                createStatement.AppendLine("FROM[MD_SOURCE_LINK_XREF] xref");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_LINK lnk ON xref.LINK_ID = lnk.LINK_ID");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 97);
                 createStatement.Clear();
@@ -1391,21 +1392,21 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_STAGING_SATELLITE_ATTRIBUTE_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("  xref.[STAGING_AREA_TABLE_ID]");
-                createStatement.AppendLine(" ,stg.STAGING_AREA_TABLE_NAME");
-                createStatement.AppendLine(" ,stg.STAGING_AREA_SCHEMA_NAME");
-                createStatement.AppendLine(" ,xref.[SATELLITE_TABLE_ID]");
-                createStatement.AppendLine(" ,[SATELLITE_TABLE_NAME]");
+                createStatement.AppendLine("  xref.[SOURCE_ID]");
+                createStatement.AppendLine(" ,stg.SOURCE_NAME");
+                createStatement.AppendLine(" ,stg.SOURCE_SCHEMA_NAME");
+                createStatement.AppendLine(" ,xref.[SATELLITE_ID]");
+                createStatement.AppendLine(" ,[SATELLITE_NAME]");
                 createStatement.AppendLine(" ,[ATTRIBUTE_ID_FROM]");
                 createStatement.AppendLine(" ,att_from.[ATTRIBUTE_NAME] AS ATTRIBUTE_NAME_FROM");
                 createStatement.AppendLine(" ,[ATTRIBUTE_ID_TO]");
                 createStatement.AppendLine(" ,UPPER(att_to.[ATTRIBUTE_NAME]) AS ATTRIBUTE_NAME_TO");
                 createStatement.AppendLine(" ,[MULTI_ACTIVE_KEY_INDICATOR]");
-                createStatement.AppendLine("FROM [MD_STG_SAT_ATT_XREF] xref");
-                createStatement.AppendLine("JOIN MD_STG stg ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_SAT sat ON xref.SATELLITE_TABLE_ID = sat.SATELLITE_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_ATT att_from ON xref.ATTRIBUTE_ID_FROM = att_from.ATTRIBUTE_ID");
-                createStatement.AppendLine("JOIN MD_ATT att_to ON xref.ATTRIBUTE_ID_TO = att_to.ATTRIBUTE_ID");
+                createStatement.AppendLine("FROM [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] xref");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
+                createStatement.AppendLine("JOIN MD_ATTRIBUTE att_from ON xref.ATTRIBUTE_ID_FROM = att_from.ATTRIBUTE_ID");
+                createStatement.AppendLine("JOIN MD_ATTRIBUTE att_to ON xref.ATTRIBUTE_ID_TO = att_to.ATTRIBUTE_ID");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 98);
                 createStatement.Clear();
@@ -1413,26 +1414,26 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_STAGING_SATELLITE_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" xref.STAGING_AREA_TABLE_ID,");
-                createStatement.AppendLine(" STAGING_AREA_TABLE_NAME,");
-                createStatement.AppendLine(" STAGING_AREA_SCHEMA_NAME,");
+                createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" SOURCE_NAME,");
+                createStatement.AppendLine(" SOURCE_SCHEMA_NAME,");
                 createStatement.AppendLine(" xref.FILTER_CRITERIA,");
-                createStatement.AppendLine(" xref.SATELLITE_TABLE_ID,");
-                createStatement.AppendLine(" sat.SATELLITE_TABLE_NAME,");
+                createStatement.AppendLine(" xref.SATELLITE_ID,");
+                createStatement.AppendLine(" sat.SATELLITE_NAME,");
                 createStatement.AppendLine(" sat.SATELLITE_TYPE,");
-                createStatement.AppendLine(" sat.HUB_TABLE_ID,");
-                createStatement.AppendLine(" hub.HUB_TABLE_NAME,");
+                createStatement.AppendLine(" sat.HUB_ID,");
+                createStatement.AppendLine(" hub.HUB_NAME,");
                 createStatement.AppendLine(" stghubxref.BUSINESS_KEY_DEFINITION,");
-                createStatement.AppendLine(" sat.LINK_TABLE_ID,");
-                createStatement.AppendLine(" lnk.LINK_TABLE_NAME");
-                createStatement.AppendLine("FROM MD_STG_SAT_XREF xref");
-                createStatement.AppendLine("JOIN MD_STG stg ON xref.STAGING_AREA_TABLE_ID = stg.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_SAT sat ON xref.SATELLITE_TABLE_ID = sat.SATELLITE_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_HUB hub ON sat.HUB_TABLE_ID = hub.HUB_TABLE_ID");
-                createStatement.AppendLine("JOIN MD_LINK lnk ON sat.LINK_TABLE_ID = lnk.LINK_TABLE_ID");
-                createStatement.AppendLine("LEFT JOIN MD_STG_HUB_XREF stghubxref");
-                createStatement.AppendLine("  ON xref.STAGING_AREA_TABLE_ID = stghubxref.STAGING_AREA_TABLE_ID");
-                createStatement.AppendLine("  AND hub.HUB_TABLE_ID = stghubxref.HUB_TABLE_ID");
+                createStatement.AppendLine(" sat.LINK_ID,");
+                createStatement.AppendLine(" lnk.LINK_NAME");
+                createStatement.AppendLine("FROM MD_SOURCE_SATELLITE_XREF xref");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
+                createStatement.AppendLine("JOIN MD_HUB hub ON sat.HUB_ID = hub.HUB_ID");
+                createStatement.AppendLine("JOIN MD_LINK lnk ON sat.LINK_ID = lnk.LINK_ID");
+                createStatement.AppendLine("LEFT JOIN MD_SOURCE_HUB_XREF stghubxref");
+                createStatement.AppendLine("  ON xref.SOURCE_ID = stghubxref.SOURCE_ID");
+                createStatement.AppendLine("  AND hub.HUB_ID = stghubxref.HUB_ID");
                 createStatement.AppendLine("  AND xref.BUSINESS_KEY_DEFINITION = stghubxref.BUSINESS_KEY_DEFINITION");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 100);
@@ -2696,57 +2697,57 @@ namespace TEAM
                             createStatement.Clear();
 
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'12=12', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'12=12', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'14=14', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'14=14', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'CustomerID, OfferID', N'LNK_CUSTOMER_OFFER', N'7=7', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'CustomerID, OfferID', N'LNK_CUSTOMER_OFFER', N'7=7', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'Member', N'HUB_CUSTOMER', N'', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'Member', N'HUB_CUSTOMER', N'', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'10=10', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'10=10', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'CONCATENATE(Segment;''TEST'')', N'HUB_SEGMENT', N'', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'CONCATENATE(Segment;''TEST'')', N'HUB_SEGMENT', N'', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_USERMANAGED_SEGMENT', N'CONCATENATE(Demographic_Segment_Code;''TEST'')', N'SAT_SEGMENT', N'9=9', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_USERMANAGED_SEGMENT', N'CONCATENATE(Demographic_Segment_Code;''TEST'')', N'SAT_SEGMENT', N'9=9', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'CustomerID, OfferID', N'LSAT_CUSTOMER_OFFER', N'7=7', 'CustomerID', 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'CustomerID, OfferID', N'LSAT_CUSTOMER_OFFER', N'7=7', 'CustomerID', 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID', N'HUB_CUSTOMER', N'15=15', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID', N'HUB_CUSTOMER', N'15=15', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID, COMPOSITE(Plan_Code;''XYZ'')', N'LNK_MEMBERSHIP', N'16=16', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID, COMPOSITE(Plan_Code;''XYZ'')', N'LNK_MEMBERSHIP', N'16=16', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ'')', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'11=11', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ'')', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'11=11', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'CustomerID', N'HUB_CUSTOMER', N'5=5', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'CustomerID', N'HUB_CUSTOMER', N'5=5', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_OFFER', N'OfferID', N'HUB_INCENTIVE_OFFER', N'3=3', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_OFFER', N'OfferID', N'HUB_INCENTIVE_OFFER', N'3=3', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'18=18', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'18=18', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_OFFER', N'OfferID', N'SAT_INCENTIVE_OFFER', N'4=4', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_OFFER', N'OfferID', N'SAT_INCENTIVE_OFFER', N'4=4', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'HUB_CUSTOMER', N'1=1', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'HUB_CUSTOMER', N'1=1', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'SAT_CUSTOMER', N'2=2', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'SAT_CUSTOMER', N'2=2', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', NULL, NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', NULL, NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_USERMANAGED_SEGMENT', N'CONCATENATE(Demographic_Segment_Code;''TEST'')', N'HUB_SEGMENT', N'8=8', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_USERMANAGED_SEGMENT', N'CONCATENATE(Demographic_Segment_Code;''TEST'')', N'HUB_SEGMENT', N'8=8', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ''), Member, CONCATENATE(Segment;''TEST'')', N'LSAT_CUSTOMER_COSTING', N'', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ''), Member, CONCATENATE(Segment;''TEST'')', N'LSAT_CUSTOMER_COSTING', N'', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'OfferID', N'HUB_INCENTIVE_OFFER', N'6=6', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'OfferID', N'HUB_INCENTIVE_OFFER', N'6=6', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ''), Member, CONCATENATE(Segment;''TEST'')', N'LNK_CUSTOMER_COSTING', N'', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ''), Member, CONCATENATE(Segment;''TEST'')', N'LNK_CUSTOMER_COSTING', N'', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'13=13', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'13=13', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID, COMPOSITE(Plan_Code;''XYZ'')', N'LSAT_MEMBERSHIP', N'17=17', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID, COMPOSITE(Plan_Code;''XYZ'')', N'LSAT_MEMBERSHIP', N'17=17', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ''),COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'LNK_RENEWAL_MEMBERSHIP', N'1=1', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ''),COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'LNK_RENEWAL_MEMBERSHIP', N'1=1', NULL, 'Y');");
                             createStatement.AppendLine(
-                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [STAGING_AREA_TABLE], [BUSINESS_KEY_ATTRIBUTE], [INTEGRATION_AREA_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'1=1', NULL, 'Y');");
+                                "INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'1=1', NULL, 'Y');");
                             createStatement.AppendLine();
                             RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
                             createStatement.Clear();
