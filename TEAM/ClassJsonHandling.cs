@@ -30,7 +30,7 @@ namespace TEAM
                     new JProperty("businessKeyDefinition", "EXAMPLE"),
                     new JProperty("drivingKeyDefinition", ""),
                     new JProperty("filterCriteria", ""),
-                    new JProperty("generationIndicator", "Y")
+                    new JProperty("processIndicator", "Y")
                 );
             } else if (fileType == FormBase.GlobalParameters.JsonModelMetadataFileName) // Physical Model
             {

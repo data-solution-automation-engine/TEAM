@@ -57,7 +57,7 @@ namespace TEAM
             public string businessKeyDefinition { get; set; }
             public string drivingKeyDefinition { get; set; }
             public string filterCriteria { get; set; }
-            public string generationIndicator { get; set; }
+            public string processIndicator { get; set; }
         }
 
         public class AttributeMappingJson
@@ -231,7 +231,7 @@ namespace TEAM
             }
             catch (FormatException)
             {
-                MessageBox.Show("There is an issue with the data formate for this cell!");
+                MessageBox.Show("There is an issue with the data format for this cell!");
             }
         }
 
@@ -375,7 +375,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine(" [BUSINESS_KEY_ATTRIBUTE],");
                 sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_ATTRIBUTE],");
                 sqlStatementForLatestVersion.AppendLine(" [FILTER_CRITERIA],");
-                sqlStatementForLatestVersion.AppendLine(" [GENERATE_INDICATOR]");
+                sqlStatementForLatestVersion.AppendLine(" [PROCESS_INDICATOR]");
                 sqlStatementForLatestVersion.AppendLine("FROM [MD_TABLE_MAPPING]");
                 sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + versionId);
 
@@ -401,7 +401,7 @@ namespace TEAM
                     dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                     dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                     dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
-                    dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
+                    dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
                 }
 
             }
@@ -427,7 +427,7 @@ namespace TEAM
                 dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
                 dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
                 dt.Columns[6].ColumnName = "FILTER_CRITERIA";
-                dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
+                dt.Columns[7].ColumnName = "PROCESS_INDICATOR";
 
                 dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
 
@@ -448,7 +448,7 @@ namespace TEAM
                     dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                     dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                     dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
-                    dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
+                    dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
                 }
 
                 richTextBoxInformation.AppendText("The file "+ GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
@@ -1261,7 +1261,7 @@ namespace TEAM
                     }
 
                     insertQueryTables.AppendLine("INSERT INTO MD_TABLE_MAPPING");
-                    insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
+                    insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [PROCESS_INDICATOR])");
                     insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                  businessKeyDefinition + "','" + integrationTable + "','" +
                                                  drivingKeyDefinition + "','" + filterCriterion + "','" +
@@ -1364,7 +1364,7 @@ namespace TEAM
                         new JProperty("businessKeyDefinition", businessKeyDefinition),
                         new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                         new JProperty("filterCriteria", filterCriterion),
-                        new JProperty("generationIndicator", generateIndicator)
+                        new JProperty("processIndicator", generateIndicator)
                     );
 
                     jsonTableMappingFull.Add(newJsonSegment);
@@ -1599,9 +1599,9 @@ namespace TEAM
                             {
                                 filterCriterion = (string)row["FILTER_CRITERIA"];
                             }
-                            if (row["GENERATE_INDICATOR"] != DBNull.Value)
+                            if (row["PROCESS_INDICATOR"] != DBNull.Value)
                             {
-                                generateIndicator = (string)row["GENERATE_INDICATOR"];
+                                generateIndicator = (string)row["PROCESS_INDICATOR"];
                             }
 
                             //Double quotes for composites, but only if things are written to the database otherwise it's already OK
@@ -1616,7 +1616,7 @@ namespace TEAM
                                                             "',[TARGET_TABLE] = '" + integrationTable +
                                                             "',[DRIVING_KEY_ATTRIBUTE] = '" + drivingKeyDefinition +
                                                             "',[FILTER_CRITERIA] = '" + filterCriterion +
-                                                            "',[GENERATE_INDICATOR] = '" + generateIndicator + "'");
+                                                            "',[PROCESS_INDICATOR] = '" + generateIndicator + "'");
                             insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
                         }
                         #endregion
@@ -1662,7 +1662,7 @@ namespace TEAM
                             }
 
                             insertQueryTables.AppendLine("INSERT INTO [MD_TABLE_MAPPING]");
-                            insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [GENERATE_INDICATOR])");
+                            insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [PROCESS_INDICATOR])");
                             insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                          businessKeyDefinition + "','" + integrationTable + "','" +
                                                          drivingKeyDefinition + "','" + filterCriterion + "','" +
@@ -1777,9 +1777,9 @@ namespace TEAM
                             {
                                 filterCriterion = (string)row["FILTER_CRITERIA"];
                             }
-                            if (row["GENERATE_INDICATOR"] != DBNull.Value)
+                            if (row["PROCESS_INDICATOR"] != DBNull.Value)
                             {
-                                generateIndicator = (string)row["GENERATE_INDICATOR"];
+                                generateIndicator = (string)row["PROCESS_INDICATOR"];
                             }
 
                             //Read the file in memory
@@ -1798,7 +1798,7 @@ namespace TEAM
                                 jsonHash.businessKeyDefinition = businessKeyDefinition;
                                 jsonHash.drivingKeyDefinition = drivingKeyDefinition;
                                 jsonHash.filterCriteria = filterCriterion;
-                                jsonHash.generationIndicator = generateIndicator;
+                                jsonHash.processIndicator = generateIndicator;
                                 jsonHash.targetTable = integrationTable;
                                 jsonHash.sourceTable = stagingTable;
                             }
@@ -1907,7 +1907,7 @@ namespace TEAM
                                     new JProperty("businessKeyDefinition", businessKeyDefinition),
                                     new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                                     new JProperty("filterCriteria", filterCriterion),
-                                    new JProperty("generationIndicator", generateIndicator)
+                                    new JProperty("processIndicator", generateIndicator)
                                     );
 
                                 jsonTableMappingFull.Add(newJsonSegment);
@@ -2687,7 +2687,7 @@ namespace TEAM
             dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
             dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
             dt.Columns[6].ColumnName = "FILTER_CRITERIA";
-            dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
+            dt.Columns[7].ColumnName = "PROCESS_INDICATOR";
             _bindingSourceTableMetadata.DataSource = dt;
         }
 
@@ -2802,7 +2802,7 @@ namespace TEAM
                         dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
                         dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
                         dt.Columns[6].ColumnName = "FILTER_CRITERIA";
-                        dt.Columns[7].ColumnName = "GENERATE_INDICATOR";
+                        dt.Columns[7].ColumnName = "PROCESS_INDICATOR";
 
                         // Sort the columns
                         dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
@@ -2830,7 +2830,7 @@ namespace TEAM
                             dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                             dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                             dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
-                            dataGridViewTableMetadata.Columns[7].HeaderText = "Generation Indicator";
+                            dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
                         }
                     }
 
@@ -3121,7 +3121,7 @@ namespace TEAM
             createStatement.AppendLine("	[DRIVING_KEY_ATTRIBUTE] varchar(4000)  NULL,");
             createStatement.AppendLine("	[TARGET_TABLE] varchar(100)  NULL,");
             createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
-            createStatement.AppendLine("	[GENERATE_INDICATOR] varchar(1)  NULL,");
+            createStatement.AppendLine("	[PROCESS_INDICATOR] varchar(1)  NULL,");
             createStatement.AppendLine("    CONSTRAINT[PK_TMP_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
             createStatement.AppendLine(")");
 
@@ -3136,7 +3136,7 @@ namespace TEAM
                 string TARGET_TABLE = "";
                 string FILTER_CRITERIA = "";
                 string DRIVING_KEY_ATTRIBUTE = "";
-                string GENERATE_INDICATOR = "";
+                string PROCESS_INDICATOR = "";
                 if (row["SOURCE_TABLE"] != DBNull.Value)
                     SOURCE_TABLE = (string)row["SOURCE_TABLE"];
                 if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value) ;
@@ -3147,9 +3147,9 @@ namespace TEAM
                     FILTER_CRITERIA = (string)row["FILTER_CRITERIA"];
                 if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
                     DRIVING_KEY_ATTRIBUTE = (string)row["DRIVING_KEY_ATTRIBUTE"];
-                if (row["GENERATE_INDICATOR"] != DBNull.Value)
-                    GENERATE_INDICATOR = (string)row["GENERATE_INDICATOR"];
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [GENERATE_INDICATOR]) VALUES(0, N'" + SOURCE_TABLE + "', N'" + BUSINESS_KEY_ATTRIBUTE.ToString().Replace("'","''") + "', N'" + TARGET_TABLE + "', N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + GENERATE_INDICATOR + "');");
+                if (row["PROCESS_INDICATOR"] != DBNull.Value)
+                    PROCESS_INDICATOR = (string)row["PROCESS_INDICATOR"];
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + SOURCE_TABLE + "', N'" + BUSINESS_KEY_ATTRIBUTE.ToString().Replace("'","''") + "', N'" + TARGET_TABLE + "', N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3589,17 +3589,22 @@ namespace TEAM
                 # region Prepare Source - 10%
                 // 2. Prepare STG
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Source metadata.\r\n");
+                _alert.SetTextLogging("Commencing preparing the source metadata.\r\n");
 
                 try
                 {
-                    var prepareStgStatement = new StringBuilder();
                     var stgCounter = 1;
 
                     // Getting the distinct list of tables to go into the 'source'
-                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND (SOURCE_TABLE LIKE '" + stagingPrefix + "' OR SOURCE_TABLE LIKE '" + psaPrefix + "')");
+                    //DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND (SOURCE_TABLE LIKE '" + stagingPrefix + "' OR SOURCE_TABLE LIKE '" + psaPrefix + "')");
+                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y'");
 
                     var distinctList = new List<string>();
+
+                    // Create a dummy row
+                    distinctList.Add("Not applicable");
+
+                    // Create a distinct list of sources from the datagrid
                     foreach (DataRow row in selectionRows)
                     {
                         if (!distinctList.Contains((string)row["SOURCE_TABLE"]))
@@ -3609,44 +3614,45 @@ namespace TEAM
                     }
 
 
-                    // Create dummy row
-                    using (var connection = new SqlConnection(metaDataConnection))
-                    {
-                        var dummyStatement = new StringBuilder();
-                        dummyStatement.AppendLine("INSERT INTO [MD_SOURCE]");
-                        dummyStatement.AppendLine("([SOURCE_NAME],[SOURCE_ID])");
-                        dummyStatement.AppendLine("VALUES ('Not applicable'," + stgCounter + ")");
+                    //// Create a dummy row
+                    //using (var connection = new SqlConnection(metaDataConnection))
+                    //{
+                    //    var dummyStatement = new StringBuilder();
+                    //    dummyStatement.AppendLine("INSERT INTO [MD_SOURCE]");
+                    //    dummyStatement.AppendLine("([SOURCE_NAME],[SOURCE_ID], [SOURCE_SCHEMA_NAME])");
+                    //    dummyStatement.AppendLine("VALUES ('Not applicable'," + stgCounter + ", '"+GlobalParameters.DefaultSchema+"')");
 
-                        var command = new SqlCommand(dummyStatement.ToString(), connection);
+                    //    var command = new SqlCommand(dummyStatement.ToString(), connection);
 
-                        try
-                        {
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                            stgCounter++;
-                        }
-                        catch (Exception ex)
-                        {
-                            errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Source metadata. Please check the Error Log for more details.\r\n");
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
-                        }
-                    }
+                    //    try
+                    //    {
+                    //        connection.Open();
+                    //        command.ExecuteNonQuery();
+                    //        stgCounter++;
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        errorCounter++;
+                    //        _alert.SetTextLogging("An issue has occured during preparation of the source metadata. Please check the Error Log for more details.\r\n");
+                    //        errorLog.AppendLine("\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
+                    //    }
+                    //}
 
-
+                    // Add the list of sources to the MD_SOURCE table
                     foreach (var tableName in distinctList)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
                             _alert.SetTextLogging("--> " + tableName + "\r\n");
 
-                            var insertStgStatemeent = new StringBuilder();
+                            var fullyQualifiedName = GetSchema(tableName).FirstOrDefault();
 
-                            insertStgStatemeent.AppendLine("INSERT INTO [MD_SOURCE]");
-                            insertStgStatemeent.AppendLine("([SOURCE_NAME],[SOURCE_ID])");
-                            insertStgStatemeent.AppendLine("VALUES ('" + tableName + "'," + stgCounter + ")");
+                            var insertStgStatement = new StringBuilder();
+                            insertStgStatement.AppendLine("INSERT INTO [MD_SOURCE]");
+                            insertStgStatement.AppendLine("([SOURCE_NAME],[SOURCE_ID], [SOURCE_SCHEMA_NAME])");
+                            insertStgStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + stgCounter + ", '"+ fullyQualifiedName.Key + "')");
 
-                            var command = new SqlCommand(insertStgStatemeent.ToString(), connection);
+                            var command = new SqlCommand(insertStgStatement.ToString(), connection);
 
                             try
                             {
@@ -3657,23 +3663,25 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Source. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source: \r\n\r\n" + ex);
+                                _alert.SetTextLogging("An issue has occured during preparation of the source metadata. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
                             }
                         }
                     }
 
                     if (worker != null) worker.ReportProgress(10);
-                    _alert.SetTextLogging("Preparation of the Source completed.\r\n");
+                    _alert.SetTextLogging("Preparation of the source metadata completed.\r\n");
                 }
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Source. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source: \r\n\r\n" + ex);
+                    _alert.SetTextLogging("An issue has occured during preparation of the source metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
                 }
 
                 #endregion
+
+
 
                 # region Prepare Hubs - 15%
                 //3. Prepare Hubs
@@ -3686,7 +3694,7 @@ namespace TEAM
                     var hubCounter = 1; 
 
                     // Getting the distinct list of tables to go into the MD_HUB table
-                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + hubTablePrefix + "'");
+                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + hubTablePrefix + "'");
 
                     var distinctList = new List<string>();
                     foreach (DataRow row in selectionRows)
@@ -3774,7 +3782,7 @@ namespace TEAM
                     var linkCounter = 1;
 
                     // Getting the distinct list of tables to go into the MD_LINK table
-                    DataRow[] selectionRows = inputTable.Select("GENERATE_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
+                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
 
                     var distinctList = new List<string>();
                     foreach (DataRow row in selectionRows)
@@ -3877,12 +3885,12 @@ namespace TEAM
                                                            LEFT OUTER JOIN -- Join in the Hub ID from the MD table 
                                                                  MD_HUB hub ON hub.HUB_NAME=spec2.TARGET_TABLE 
                                                         WHERE TARGET_TABLE LIKE '" + hubTablePrefix + @"'
-                                                        AND [GENERATE_INDICATOR] = 'Y'                                                        
+                                                        AND [PROCESS_INDICATOR] = 'Y'                                                        
                                                     ) hubkeysub 
                                                            ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE 
                                                            AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') 
                                                     WHERE spec.TARGET_TABLE LIKE '" + satTablePrefix + @"'
-                                                    AND [GENERATE_INDICATOR] = 'Y'
+                                                    AND [PROCESS_INDICATOR] = 'Y'
                                                     ");
 
                     var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
@@ -3955,14 +3963,14 @@ namespace TEAM
                                                            LEFT OUTER JOIN -- Join in the Link ID from the MD table
                                                                  MD_LINK lnk ON lnk.LINK_NAME=spec2.TARGET_TABLE
                                                            WHERE TARGET_TABLE LIKE '" + lnkTablePrefix + @"'
-                                                           AND [GENERATE_INDICATOR] = 'Y'
+                                                           AND [PROCESS_INDICATOR] = 'Y'
                                                     ) lnkkeysub
                                                         ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
                                                        AND spec.BUSINESS_KEY_ATTRIBUTE=lnkkeysub.BUSINESS_KEY_ATTRIBUTE
 
                                                     -- Only select Link Satellites as the base / driving table (spec alias)
                                                     WHERE spec.TARGET_TABLE LIKE '" + lsatTablePrefix + @"'
-                                                    AND [GENERATE_INDICATOR] = 'Y'
+                                                    AND [PROCESS_INDICATOR] = 'Y'
                                                     ");
  
 
@@ -4032,7 +4040,7 @@ namespace TEAM
                                                         LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
                                                                MD_SATELLITE sat ON sat.SATELLITE_NAME=spec.TARGET_TABLE
                                                         WHERE spec.TARGET_TABLE LIKE '" + satTablePrefix + @"' 
-                                                        AND [GENERATE_INDICATOR] = 'Y'
+                                                        AND [PROCESS_INDICATOR] = 'Y'
                                                         UNION
                                                         SELECT
                                                                sat.SATELLITE_ID,
@@ -4047,7 +4055,7 @@ namespace TEAM
                                                         LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
                                                                MD_SATELLITE sat ON sat.SATELLITE_NAME=spec.TARGET_TABLE
                                                         WHERE spec.TARGET_TABLE LIKE '" + lsatTablePrefix + @"' 
-                                                        AND [GENERATE_INDICATOR] = 'Y'
+                                                        AND [PROCESS_INDICATOR] = 'Y'
                                                         ");
 
 
@@ -4133,7 +4141,7 @@ namespace TEAM
                                                                           FROM   TMP_MD_TABLE_MAPPING
                                                                           WHERE 
                                                                                  TARGET_TABLE LIKE '" + hubTablePrefix + @"'
-                                                                          AND [GENERATE_INDICATOR] = 'Y'
+                                                                          AND [PROCESS_INDICATOR] = 'Y'
                                                                    ) hub
                                                             LEFT OUTER JOIN
                                                                    ( 
@@ -4464,7 +4472,7 @@ namespace TEAM
                     prepareKeyStatement.AppendLine("            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
                     prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
                     prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE LIKE '"+hubTablePrefix+"'");
-                    prepareKeyStatement.AppendLine("              AND [GENERATE_INDICATOR] = 'Y'");
+                    prepareKeyStatement.AppendLine("              AND [PROCESS_INDICATOR] = 'Y'");
                     prepareKeyStatement.AppendLine("        ) TableName");
                     prepareKeyStatement.AppendLine("    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
                     prepareKeyStatement.AppendLine("    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''");
@@ -4672,7 +4680,7 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine("           BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
                     prepareHubLnkXrefStatement.AppendLine("       FROM  TMP_MD_TABLE_MAPPING");
                     prepareHubLnkXrefStatement.AppendLine("       WHERE [TARGET_TABLE] LIKE '" + lnkTablePrefix + @"'");
-                    prepareHubLnkXrefStatement.AppendLine("           AND [GENERATE_INDICATOR] = 'Y'");
+                    prepareHubLnkXrefStatement.AppendLine("           AND [PROCESS_INDICATOR] = 'Y'");
                     prepareHubLnkXrefStatement.AppendLine("     ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
                     prepareHubLnkXrefStatement.AppendLine("     WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same");
                     prepareHubLnkXrefStatement.AppendLine(" ) lnk_hubkey_order");
@@ -4694,7 +4702,7 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[SOURCE_TABLE] = hub.SOURCE_TABLE");
                     prepareHubLnkXrefStatement.AppendLine("     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
                     prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE] LIKE '" + hubTablePrefix + @"'");
-                    prepareHubLnkXrefStatement.AppendLine("     AND hub.[GENERATE_INDICATOR] = 'Y'");
+                    prepareHubLnkXrefStatement.AppendLine("     AND hub.[PROCESS_INDICATOR] = 'Y'");
                     prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
                     prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
                     prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.HUB_NAME");
@@ -4767,7 +4775,7 @@ namespace TEAM
                                                             JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.LINK_NAME
                                                             JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.SOURCE_NAME
                                                             WHERE lnk.TARGET_TABLE like '" + lnkTablePrefix + @"'
-                                                            AND[GENERATE_INDICATOR] = 'Y'
+                                                            AND[PROCESS_INDICATOR] = 'Y'
                                                             ");
                     var listHlXref = GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
 
@@ -4854,7 +4862,7 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
                         prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
                         prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '"+ dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '"+lnkTablePrefix+"'");
-                        prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
+                        prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareMappingStatement.AppendLine("(");
@@ -4962,7 +4970,7 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
                         prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
                         prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '" + lnkTablePrefix + "'");
-                        prepareMappingStatement.AppendLine("      AND table_mapping.GENERATE_INDICATOR = 'Y'");
+                        prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
                         prepareMappingStatement.AppendLine("(");
@@ -5501,7 +5509,7 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("                     SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE");
                         prepareDrivingKeyStatement.AppendLine("                     FROM TMP_MD_TABLE_MAPPING");
                         prepareDrivingKeyStatement.AppendLine("                     WHERE TARGET_TABLE LIKE '" + lsatTablePrefix +"' AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
-                        prepareDrivingKeyStatement.AppendLine("                     AND [GENERATE_INDICATOR] = 'Y'");
+                        prepareDrivingKeyStatement.AppendLine("                     AND [PROCESS_INDICATOR] = 'Y'");
                         prepareDrivingKeyStatement.AppendLine("              ) TableName");
                         prepareDrivingKeyStatement.AppendLine("       ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
                         prepareDrivingKeyStatement.AppendLine(")  base");
@@ -5517,7 +5525,7 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("WHERE 1=1");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE!=''");
-                        prepareDrivingKeyStatement.AppendLine("AND [GENERATE_INDICATOR] = 'Y'");
+                        prepareDrivingKeyStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
 
 
                     var listDrivingKeys = GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
@@ -5599,6 +5607,30 @@ namespace TEAM
 
                 worker.ReportProgress(100);
             }
+        }
+
+        private Dictionary<string,string> GetSchema(string tableName)
+        {
+            Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
+            string schemaName = "";
+            string returnTableName = "";
+
+            if (tableName.Contains('.')) // Split the string
+            {
+                var splitName = tableName.Split('.').ToList();
+                
+                fullyQualifiedTableName.Add(splitName[0], splitName[1]);
+
+            }
+            else // Return the default (e.g. [dbo])
+            {
+                schemaName = GlobalParameters.DefaultSchema;
+                returnTableName = tableName;
+            }
+
+            fullyQualifiedTableName.Add(schemaName, returnTableName);
+
+            return fullyQualifiedTableName;
         }
 
         private string GetArea(string sourceMapping, string targetMapping)
@@ -6411,7 +6443,7 @@ namespace TEAM
                                 businessKeyDefinition = singleRow[4].ToString(),
                                 drivingKeyDefinition = singleRow[5].ToString(),
                                 filterCriteria = singleRow[6].ToString(),
-                                generationIndicator = singleRow[7].ToString()
+                                processIndicator = singleRow[7].ToString()
                             });
                             outputFileArray.Add(individualRow);
                         }

@@ -177,6 +177,9 @@ namespace TEAM
             public static string OutputPath { get; set; } = Application.StartupPath + @"\Output\";
             internal static string WorkingEnvironment { get; set; } = "Development";
             
+            // Database defaults
+            public static string DefaultSchema { get; set; } = "[dbo]";
+
             // Json file name parameters
             public static string JsonTableMappingFileName { get; set; } = "TEAM_Table_Mapping";
             public static string JsonAttributeMappingFileName { get; set; } = "TEAM_Attribute_Mapping";

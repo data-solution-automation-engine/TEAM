@@ -240,7 +240,7 @@ namespace TEAM
             sqlStatementForTableMetadata.AppendLine("      ,[DRIVING_KEY_ATTRIBUTE]");
             sqlStatementForTableMetadata.AppendLine("      ,[TARGET_TABLE]");
             sqlStatementForTableMetadata.AppendLine("      ,[FILTER_CRITERIA]");
-            sqlStatementForTableMetadata.AppendLine("      ,[GENERATE_INDICATOR]");
+            sqlStatementForTableMetadata.AppendLine("      ,[PROCESS_INDICATOR]");
             sqlStatementForTableMetadata.AppendLine("FROM [MD_TABLE_MAPPING]");
 
             var tableMetadataDataTable = GetDataTable(ref connOmd, sqlStatementForTableMetadata.ToString());
