@@ -128,8 +128,8 @@ namespace TEAM
             internal static string PhysicalModelServerName { get; set; }
 
             // Prefixes and suffixes
-            internal static string TableNamingLocation { get; set; }
-            internal static string KeyNamingLocation { get; set; }
+            internal static string TableNamingLocation { get; set; } // The location if the table classification (i.e. HUB OR SAT) is a prefix (HUB_CUSTOMER) or suffix (CUSTOMER_HUB).
+            internal static string KeyNamingLocation { get; set; } // The location if the key (i.e. HSH or SK), whether it is a prefix (SK_CUSTOMER) or a suffix (CUSTOMER_SK).
 
 
             internal static string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }

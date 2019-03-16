@@ -369,7 +369,7 @@ namespace TEAM
             sqlStatementForHubCategories.AppendLine("SELECT ");
             sqlStatementForHubCategories.AppendLine(" [SOURCE_ID]");
             sqlStatementForHubCategories.AppendLine(",[SOURCE_NAME]");
-            sqlStatementForHubCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
+            sqlStatementForHubCategories.AppendLine(",[SCHEMA_NAME]");
             sqlStatementForHubCategories.AppendLine(",[FILTER_CRITERIA]");
             sqlStatementForHubCategories.AppendLine(",[SATELLITE_ID]");
             sqlStatementForHubCategories.AppendLine(",[SATELLITE_NAME]");
@@ -390,7 +390,7 @@ namespace TEAM
             sqlStatementForLinkCategories.AppendLine("SELECT ");
             sqlStatementForLinkCategories.AppendLine(" [SOURCE_ID]");
             sqlStatementForLinkCategories.AppendLine(",[SOURCE_NAME]");
-            sqlStatementForLinkCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
+            sqlStatementForLinkCategories.AppendLine(",[SCHEMA_NAME]");
             sqlStatementForLinkCategories.AppendLine(",[FILTER_CRITERIA]");
             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_ID]");
             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_NAME]");
@@ -413,7 +413,7 @@ namespace TEAM
             sqlStatementForRelationships.AppendLine(",[LINK_NAME]");
             sqlStatementForRelationships.AppendLine(",[SOURCE_ID]");
             sqlStatementForRelationships.AppendLine(",[SOURCE_NAME]");
-            sqlStatementForRelationships.AppendLine(",[SOURCE_SCHEMA_NAME]");
+            sqlStatementForRelationships.AppendLine(",[SCHEMA_NAME]");
             sqlStatementForRelationships.AppendLine(",[HUB_ID]");
             sqlStatementForRelationships.AppendLine(",[HUB_NAME]");
             sqlStatementForRelationships.AppendLine(",[BUSINESS_KEY_DEFINITION]");
@@ -427,7 +427,7 @@ namespace TEAM
             sqlStatementForSatelliteAttributes.AppendLine("SELECT ");
             sqlStatementForSatelliteAttributes.AppendLine(" [SOURCE_ID]");
             sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_NAME]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SCHEMA_NAME]");
             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ID]");
             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_NAME]");
             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_FROM]");

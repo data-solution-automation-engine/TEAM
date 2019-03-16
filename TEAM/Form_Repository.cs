@@ -181,31 +181,26 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 1);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT]");
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 2);
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_DRIVING_KEY_XREF_MD_HUB]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_DRIVING_KEY_XREF] DROP CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_HUB]");
+                createStatement.AppendLine("ALTER TABLE [MD_DRIVING_KEY_XREF] DROP CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_HUB]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_DRIVING_KEY_XREF_MD_SATELLITE]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_DRIVING_KEY_XREF] DROP CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SATELLITE]");
+                createStatement.AppendLine("ALTER TABLE [MD_DRIVING_KEY_XREF] DROP CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SATELLITE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_HUB_LINK_XREF_MD_HUB]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_HUB_LINK_XREF] DROP CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_HUB]");
+                createStatement.AppendLine("ALTER TABLE [MD_HUB_LINK_XREF] DROP CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_HUB]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
@@ -550,8 +545,9 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_HUB]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [HUB_ID]        integer NOT NULL ,");
+                createStatement.AppendLine("    [HUB_ID]       integer NOT NULL ,");
                 createStatement.AppendLine("	[HUB_NAME]     varchar(100)  NOT NULL,");
+                createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_HUB] PRIMARY KEY CLUSTERED ([HUB_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
@@ -592,6 +588,7 @@ namespace TEAM
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("    [LINK_ID]      integer NOT NULL,");
                 createStatement.AppendLine("	[LINK_NAME]    varchar(100)  NOT NULL,");
+                createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_LINK] PRIMARY KEY CLUSTERED ( [LINK_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
@@ -614,6 +611,7 @@ namespace TEAM
                 createStatement.AppendLine("    [SATELLITE_ID]  integer NOT NULL ,");
                 createStatement.AppendLine("	[SATELLITE_NAME] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [SATELLITE_TYPE]     varchar(100)  NOT NULL,");
+                createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
                 createStatement.AppendLine("	[HUB_ID]  integer NOT NULL,");
                 createStatement.AppendLine("	[LINK_ID] integer NOT NULL ,");
                 createStatement.AppendLine(
@@ -682,8 +680,7 @@ namespace TEAM
                 createStatement.AppendLine("    	[FILE_LAST_ROW_DELIMITER_TYPE] [varchar] (100) NULL,");
                 createStatement.AppendLine("    	[ARCHIVE_REQUIRED_INDICATOR] [varchar] (1) NULL,");
                 createStatement.AppendLine("    	[SOURCE_SYSTEM_ID] [int] NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_SOURCE_DATASET] PRIMARY KEY CLUSTERED ( [SOURCE_DATASET_ID] ASC)");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_SOURCE_DATASET] PRIMARY KEY CLUSTERED ( [SOURCE_DATASET_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 43);
@@ -726,7 +723,7 @@ namespace TEAM
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("    [SOURCE_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[SOURCE_NAME] varchar(100) NOT NULL,");
-                createStatement.AppendLine("	[SOURCE_SCHEMA_NAME] varchar(100) NULL,");
+                createStatement.AppendLine("	[SCHEMA_NAME] varchar(100) NULL,");
                 createStatement.AppendLine(
                     "    CONSTRAINT[PK_MD_SOURCE] PRIMARY KEY CLUSTERED ([SOURCE_ID] ASC)");
                 createStatement.AppendLine(")");
@@ -1222,7 +1219,7 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
                 createStatement.AppendLine(" SOURCE_NAME,");
-                createStatement.AppendLine(" SOURCE_SCHEMA_NAME,");
+                //createStatement.AppendLine(" SCHEMA_NAME,");
                 createStatement.AppendLine(" xref.HUB_ID,");
                 createStatement.AppendLine(" HUB_NAME,");
                 createStatement.AppendLine(" BUSINESS_KEY_DEFINITION,");
@@ -1241,7 +1238,7 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine("  comp.SOURCE_ID, ");
                 createStatement.AppendLine("  stg.SOURCE_NAME,");
-                createStatement.AppendLine("  stg.SOURCE_SCHEMA_NAME,");
+                //createStatement.AppendLine("  stg.SCHEMA_NAME,");
                 createStatement.AppendLine("  comp.HUB_ID, ");
                 createStatement.AppendLine("  hub.HUB_NAME,");
                 createStatement.AppendLine("  comp.BUSINESS_KEY_DEFINITION,");
@@ -1289,7 +1286,7 @@ namespace TEAM
                 createStatement.AppendLine(" lnk.LINK_NAME,");
                 createStatement.AppendLine(" slxref.SOURCE_ID,");
                 createStatement.AppendLine(" stg.SOURCE_NAME,");
-                createStatement.AppendLine(" stg.SOURCE_SCHEMA_NAME,");
+                //createStatement.AppendLine(" stg.SCHEMA_NAME,");
                 createStatement.AppendLine(" hub.HUB_ID,");
                 createStatement.AppendLine(" hub.HUB_NAME,");
                 createStatement.AppendLine(" hlxref.HUB_ORDER,");
@@ -1332,7 +1329,7 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" schema_stg_listing.TABLE_NAME AS SOURCE_NAME-- the Staging Area tables queried from the catalog");
-                createStatement.AppendLine(" , '[dbo]' AS SOURCE_SCHEMA_NAME");
+                createStatement.AppendLine(" , '[dbo]' AS SCHEMA_NAME");
                 createStatement.AppendLine(" , coalesce(dataset.SOURCE_DATASET_NAME");
                 createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
                 createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1 -- always prefixed with STG_(length 4)");
@@ -1340,7 +1337,7 @@ namespace TEAM
                 createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
                 createStatement.AppendLine(" , 5 -- always prefixed with STG_(length 4)");
                 createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) - 5) AS SOURCE_TABLE_SYSTEM_NAME");
-                createStatement.AppendLine(" ,'tbd' AS SOURCE_SCHEMA_NAME");
+                createStatement.AppendLine(" ,'tbd' AS SCHEMA_NAME");
                 createStatement.AppendLine(" , COALESCE(cdctype.CHANGE_DATA_CAPTURE_TYPE, 'Undefined') AS CHANGE_DATA_CAPTURE_TYPE");
                 createStatement.AppendLine(" , COALESCE(naming_exception.CHANGE_DATETIME_DEFINITION, cdctype.CHANGE_DATETIME_DEFINITION) AS CHANGE_DATETIME_DEFINITION");
                 createStatement.AppendLine(" , cdctype.PROCESS_INDICATOR AS PROCESS_INDICATOR");
@@ -1362,7 +1359,7 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
                 createStatement.AppendLine(" SOURCE_NAME,");
-                createStatement.AppendLine(" SOURCE_SCHEMA_NAME,");
+                //createStatement.AppendLine(" SCHEMA_NAME,");
                 createStatement.AppendLine(" xref.HUB_ID,");
                 createStatement.AppendLine(" HUB_NAME,");
                 createStatement.AppendLine(" BUSINESS_KEY_DEFINITION,");
@@ -1394,7 +1391,7 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine("  xref.[SOURCE_ID]");
                 createStatement.AppendLine(" ,stg.SOURCE_NAME");
-                createStatement.AppendLine(" ,stg.SOURCE_SCHEMA_NAME");
+                //createStatement.AppendLine(" ,stg.SCHEMA_NAME");
                 createStatement.AppendLine(" ,xref.[SATELLITE_ID]");
                 createStatement.AppendLine(" ,[SATELLITE_NAME]");
                 createStatement.AppendLine(" ,[ATTRIBUTE_ID_FROM]");
@@ -1416,7 +1413,7 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
                 createStatement.AppendLine(" SOURCE_NAME,");
-                createStatement.AppendLine(" SOURCE_SCHEMA_NAME,");
+                //createStatement.AppendLine(" SCHEMA_NAME,");
                 createStatement.AppendLine(" xref.FILTER_CRITERIA,");
                 createStatement.AppendLine(" xref.SATELLITE_ID,");
                 createStatement.AppendLine(" sat.SATELLITE_NAME,");
