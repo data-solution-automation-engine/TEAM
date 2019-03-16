@@ -3062,8 +3062,10 @@ namespace TEAM
             createStatement.AppendLine("	) PERSISTED NOT NULL,");
             createStatement.AppendLine("	[VERSION_ID]          integer NOT NULL,");
             createStatement.AppendLine("	[SOURCE_TABLE]        varchar(100)  NULL,");
+            createStatement.AppendLine("	[SOURCE_TABLE_TYPE]   varchar(100)  NULL,");
             createStatement.AppendLine("	[SOURCE_COLUMN]       varchar(100)  NULL,");
             createStatement.AppendLine("	[TARGET_TABLE]        varchar(100)  NULL,");
+            createStatement.AppendLine("	[TARGET_TABLE_TYPE]   varchar(100)  NULL,");
             createStatement.AppendLine("	[TARGET_COLUMN]       varchar(100)  NULL,");
             createStatement.AppendLine("	[TRANSFORMATION_RULE] varchar(4000)  NULL,");
             createStatement.AppendLine("   CONSTRAINT[PK_TMP_MD_ATTRIBUTE_MAPPING] PRIMARY KEY CLUSTERED ([ATTRIBUTE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
@@ -3075,22 +3077,30 @@ namespace TEAM
             foreach (DataRow row in inputAttributeMapping.Rows)
             {
                 //LBM 2019-01-31 -- ENSURE NO NULLS ARE INSERTED IN THE TABLE
-                string SOURCE_TABLE       = "";
+                string sourceTable       = "";
                 string SOURCE_COLUMN      ="";
-                string TARGET_TABLE       ="";
+                string targetTable       ="";
                 string TARGET_COLUMN      ="";
                 string TRANSFORMATION_RULE="";
+
                 if (row["SOURCE_TABLE"] != DBNull.Value)
-                    SOURCE_TABLE = (string)row["SOURCE_TABLE"];
+                    sourceTable = (string)row["SOURCE_TABLE"];
                 if (row["SOURCE_COLUMN"] != DBNull.Value);
                     SOURCE_COLUMN = (string)row["SOURCE_COLUMN"];
                 if (row["TARGET_TABLE"] != DBNull.Value)
-                    TARGET_TABLE = (string)row["TARGET_TABLE"];
+                    targetTable = (string)row["TARGET_TABLE"];
                 if (row["TARGET_COLUMN"] != DBNull.Value)
                     TARGET_COLUMN = (string)row["TARGET_COLUMN"];
                 if (row["TRANSFORMATION_RULE"] != DBNull.Value)
                     TRANSFORMATION_RULE = (string)row["TRANSFORMATION_RULE"];
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + SOURCE_TABLE + "', N'" + SOURCE_COLUMN + "', N'" + TARGET_TABLE + "', N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
+
+                var fullyQualifiedSourceName = ClassMetadataHandling.getFullSchemaTable(sourceTable);
+                var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
+
+                var fullyQualifiedTargetName = ClassMetadataHandling.getFullSchemaTable(targetTable);
+                var targetType = ClassMetadataHandling.GetTableType(targetTable);
+
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_TABLE_TYPE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' ,N'" + SOURCE_COLUMN + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3512,9 +3522,9 @@ namespace TEAM
                 #region Delete Metadata - 5%
                 // 1. Deleting metadata
                 _alert.SetTextLogging("Commencing removal of existing metadata.\r\n");
+
                 var deleteStatement = new StringBuilder();
                 deleteStatement.AppendLine( @"
-                                        DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_XREF];
@@ -3630,7 +3640,10 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            if (tableName != "Not applicable")
+                            {
+                                _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            }
 
                             var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
@@ -3668,8 +3681,6 @@ namespace TEAM
 
                 #endregion
 
-
-
                 # region Prepare Hubs - 15%
                 //3. Prepare Hubs
                 _alert.SetTextLogging("\r\n");
@@ -3700,7 +3711,10 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            if (tableName != "Not applicable")
+                            {
+                                _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            }
 
                             var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
@@ -3768,7 +3782,10 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            if (tableName != "'Not applicable'")
+                            {
+                                _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            }
 
                             var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
@@ -3806,11 +3823,11 @@ namespace TEAM
                 }
                 #endregion
 
-
                 #region Prepare Satellites - 24%
                 //5.1 Prepare Satellites
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Satellite metadata.\r\n");
+
                 var satCounter = 1;
 
                 try
@@ -3851,7 +3868,10 @@ namespace TEAM
                             var hubId = satelliteName["HUB_ID"];
                             var linkId = satelliteName["LINK_ID"];
 
-                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            if (tableName != "Not applicable")
+                            {
+                                _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            }
 
                             var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
@@ -3887,7 +3907,6 @@ namespace TEAM
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
                 }
                 #endregion
-
 
                 #region Prepare Link Satellites - 28%
                 //5.2 Prepare Link Satellites
@@ -3976,13 +3995,11 @@ namespace TEAM
                 }
                 #endregion
 
-
-
                 #region Prepare STG / SAT Xref - 28%
                 //5.3 Prepare STG / Sat XREF
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between (Link) Satellites and the Source tables.\r\n");
-                satCounter = 1;
+                var srcSatXrefCounter = 1;
 
                 try
                 {
@@ -4053,7 +4070,7 @@ namespace TEAM
                             {
                                 connection.Open();
                                 command.ExecuteNonQuery();
-                                satCounter++;
+                                srcSatXrefCounter++;
                             }
                             catch (Exception ex)
                             {
@@ -4166,8 +4183,6 @@ namespace TEAM
                 }
                 #endregion
 
-
-
                 #region Filter Variables  - 35%
                 string tableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
                                             UNION
@@ -4235,16 +4250,91 @@ namespace TEAM
                     presTableFilterObjects = "NULL";
                 }
 
-
                 worker.ReportProgress(35);
+                _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Filter variables Created successfully.\r\n");
                 
                 #endregion
 
-
                 #region Prepare attributes - 40%
                 //7. Prepare Attributes
                 _alert.SetTextLogging("\r\n");
+
+                // Define the master attribute list for reuse many times later on
+                var allDatabaseAttributes = new StringBuilder();
+
+                allDatabaseAttributes.AppendLine("  SELECT * FROM");
+                allDatabaseAttributes.AppendLine("  (");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" + ConfigurationSettings.StagingDatabaseName + "')) +']' AS [SCHEMA_NAME],");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" + ConfigurationSettings.StagingDatabaseName + "')) AS [TABLE_NAME],");
+                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                allDatabaseAttributes.AppendLine("    FROM");
+                allDatabaseAttributes.AppendLine("    (");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.StagingDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + stagingDatabase + ".sys.columns A");
+                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + stgTableFilterObjects + ")");
+                allDatabaseAttributes.AppendLine("    ) stg");
+                allDatabaseAttributes.AppendLine("    UNION ALL");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" + ConfigurationSettings.PsaDatabaseName + "')) +']' AS [SCHEMA_NAME],");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" + ConfigurationSettings.PsaDatabaseName + "')) AS [TABLE_NAME],");
+                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                allDatabaseAttributes.AppendLine("    FROM");
+                allDatabaseAttributes.AppendLine("    (");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.PsaDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + psaDatabase + ".sys.columns A");
+                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + psaTableFilterObjects + ")");
+                allDatabaseAttributes.AppendLine("    ) psa");
+                allDatabaseAttributes.AppendLine("    UNION ALL");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) +']' AS [SCHEMA_NAME],");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS [TABLE_NAME],");
+                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                allDatabaseAttributes.AppendLine("    FROM");
+                allDatabaseAttributes.AppendLine("    (");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + integrationDatabase + ".sys.columns A");
+                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + intTableFilterObjects + ")");
+                allDatabaseAttributes.AppendLine("    ) [int]");
+                allDatabaseAttributes.AppendLine("    UNION ALL");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" + ConfigurationSettings.PresentationDatabaseName + "')) +']' AS [SCHEMA_NAME],");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" + ConfigurationSettings.PresentationDatabaseName + "')) AS [TABLE_NAME],");
+                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                allDatabaseAttributes.AppendLine("    FROM");
+                allDatabaseAttributes.AppendLine("    (");
+                allDatabaseAttributes.AppendLine("    SELECT");
+                allDatabaseAttributes.AppendLine("      A.object_id,");
+                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.PresentationDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + presentationDatabase + ".sys.columns A");
+                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + presTableFilterObjects + ")");
+                allDatabaseAttributes.AppendLine("    ) pres");
+                allDatabaseAttributes.AppendLine("  ) mapping");
+                allDatabaseAttributes.AppendLine("  WHERE mapping.COLUMN_NAME NOT IN");
+                allDatabaseAttributes.AppendLine("  ( ");
+                allDatabaseAttributes.AppendLine("    '" + recordSource + "',");
+                allDatabaseAttributes.AppendLine("    '" + alternativeRecordSource + "',");
+                allDatabaseAttributes.AppendLine("    '" + sourceRowId + "',");
+                allDatabaseAttributes.AppendLine("    '" + recordChecksum + "',");
+                allDatabaseAttributes.AppendLine("    '" + changeDataCaptureIndicator + "',");
+                allDatabaseAttributes.AppendLine("    '" + hubAlternativeLdts + "',");
+                allDatabaseAttributes.AppendLine("    '" + eventDateTimeAtttribute + "',");
+                allDatabaseAttributes.AppendLine("    '" + effectiveDateTimeAttribute + "',");
+                allDatabaseAttributes.AppendLine("    '" + etlProcessId + "',");
+                allDatabaseAttributes.AppendLine("    '" + loadDateTimeStamp + "',");
+                allDatabaseAttributes.AppendLine("    '" + currentRecordAttribute + "'");
+                allDatabaseAttributes.AppendLine("  ) ");
 
                 try
                 {
@@ -4258,7 +4348,7 @@ namespace TEAM
 
                         insertAttDummyStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
                         insertAttDummyStatement.AppendLine("([ATTRIBUTE_ID], [ATTRIBUTE_NAME])");
-                        insertAttDummyStatement.AppendLine("VALUES ('-1','Not applicable')");
+                        insertAttDummyStatement.AppendLine("VALUES ("+attCounter+",'Not applicable')");
 
                         var command = new SqlCommand(insertAttDummyStatement.ToString(), connection);
 
@@ -4286,13 +4376,7 @@ namespace TEAM
                         _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
                         prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM");
                         prepareAttStatement.AppendLine("(");
-                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + stagingDatabase + ".sys.columns WHERE columns.[object_id] IN (" + stgTableFilterObjects + ")");
-                        prepareAttStatement.AppendLine("	UNION");
-                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + psaDatabase + ".sys.columns WHERE columns.[object_id] IN (" + psaTableFilterObjects + ")");
-                        prepareAttStatement.AppendLine("	UNION");
-                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + integrationDatabase + ".sys.columns WHERE columns.[object_id] IN (" + intTableFilterObjects + ")");
-                        prepareAttStatement.AppendLine("	UNION");
-                        prepareAttStatement.AppendLine("	SELECT columns.[name] as COLUMN_NAME FROM " + linkedServer + presentationDatabase + ".sys.columns WHERE columns.[object_id] IN (" + presTableFilterObjects + ")");
+                        prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
                         prepareAttStatement.AppendLine(") sub1");
                     }
                     else
@@ -4402,8 +4486,6 @@ namespace TEAM
                     prepareKeyStatement.AppendLine("        	 WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') ");
                     prepareKeyStatement.AppendLine("        	 ELSE CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') ");
                     prepareKeyStatement.AppendLine("          END AS BUSINESS_KEY_ATTRIBUTE_XML");
-                    // End of composite key change
-
                     prepareKeyStatement.AppendLine("        FROM");
                     prepareKeyStatement.AppendLine("        (");
                     prepareKeyStatement.AppendLine("            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
@@ -4508,7 +4590,7 @@ namespace TEAM
                                                                      WHEN charindex(CHAR(39), REPLACE(REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), 'CONCATENATE(', ''), ')', '')) = 1 THEN 'User Defined Value'
                                                                     ELSE 'Attribute'
                                                                   END AS COMPONENT_ELEMENT_TYPE,
-                                                                  COALESCE(att.ATTRIBUTE_ID, -1) AS ATTRIBUTE_ID
+                                                                  COALESCE(att.ATTRIBUTE_ID, 1) AS ATTRIBUTE_ID
                                                                 FROM
                                                                 (
                                                                     SELECT
@@ -4539,7 +4621,7 @@ namespace TEAM
                             {
                                 var insertKeyPartStatement = new StringBuilder();
 
-                                var keyComponent = tableName["COMPONENT_ELEMENT_VALUE"]; //Handle quotes between SQL and C%
+                                var keyComponent = tableName["COMPONENT_ELEMENT_VALUE"]; //Handle quotes between SQL and C#
                                 keyComponent = keyComponent.ToString().Replace("'", "''");
 
                                 var businessKeyDefinition = tableName["BUSINESS_KEY_DEFINITION"];
@@ -4710,11 +4792,11 @@ namespace TEAM
                                                               lnk.FILTER_CRITERIA,
                                                               lnk.BUSINESS_KEY_ATTRIBUTE
                                                             FROM [dbo].[TMP_MD_TABLE_MAPPING] lnk
-                                                            JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.LINK_NAME
-                                                            JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.SOURCE_NAME
-                                                            WHERE lnk.TARGET_TABLE like '" + lnkTablePrefix + @"'
-                                                            AND[PROCESS_INDICATOR] = 'Y'
-                                                            ");
+                                                            JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME
+                                                            JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.[SCHEMA_NAME]+'.'+stg_tbl.SOURCE_NAME
+                                                            WHERE lnk.TARGET_TABLE_TYPE = 'Link'
+                                                            AND[PROCESS_INDICATOR] = 'Y'");
+
                     var listHlXref = GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
 
                     foreach (DataRow tableName in listHlXref.Rows)
@@ -4762,131 +4844,144 @@ namespace TEAM
                         errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Link XREF metadata: \r\n\r\n" + ex);
                     }
                 }
-
                 #endregion
 
-                #region Attribute mapping 90%
-                //12. Prepare Attribute mapping
+                #region Manually mapped attributes for SAT and LSAT 90%
+                //12. Prepare Manual Attribute mapping for Satellites and Link Satellites
                 _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
 
+                var mappingCounter = 1;
 
                 try
                 {
                     var prepareMappingStatement = new StringBuilder();
-                    var mappingCounter = 1;
+                    
 
-                    if (checkBoxIgnoreVersion.Checked)
+   
+                    prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
+                    prepareMappingStatement.AppendLine("	   ,stg.SOURCE_NAME");
+                    prepareMappingStatement.AppendLine("       ,sat.SATELLITE_ID");
+                    prepareMappingStatement.AppendLine("	   ,sat.SATELLITE_NAME");
+                    prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
+                    prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME");
+                    prepareMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
+                    prepareMappingStatement.AppendLine("	   ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME");
+                    prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
+                    prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
+                    prepareMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
+                    prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SATELLITE sat on sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=mapping.TARGET_TABLE");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
+                    prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
+                    prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
+                    prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('Satellite', 'Link-Satellite')");
+                    prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
+
+                    var listMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+
+                    if (listMappings.Rows.Count == 0)
                     {
-                        _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata based on what's available in the database.\r\n");
-
-                        prepareMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS ");
-                        prepareMappingStatement.AppendLine("(");
-                        prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
-                        prepareMappingStatement.AppendLine("	   ,stg.SOURCE_NAME");
-                        prepareMappingStatement.AppendLine("       ,sat.SATELLITE_ID");
-                        prepareMappingStatement.AppendLine("	   ,sat.SATELLITE_NAME");
-                        prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
-                        prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME");
-                        prepareMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
-                        prepareMappingStatement.AppendLine("	   ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME");
-                        prepareMappingStatement.AppendLine("	   ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
-                        prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
-                        prepareMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
-                        prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_SATELLITE sat on sat.SATELLITE_NAME=mapping.TARGET_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.SOURCE_NAME = mapping.SOURCE_TABLE");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                        prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
-                        prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
-                        prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
-                        prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '"+ dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '"+lnkTablePrefix+"'");
-                        prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
-                        prepareMappingStatement.AppendLine("),");
-                        prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
-                        prepareMappingStatement.AppendLine("(");
-                        prepareMappingStatement.AppendLine("SELECT");
-                        prepareMappingStatement.AppendLine("	stg.SOURCE_ID,");
-                        prepareMappingStatement.AppendLine("	stg.SOURCE_NAME,");
-                        prepareMappingStatement.AppendLine("	sat.SATELLITE_ID,");
-                        prepareMappingStatement.AppendLine("	sat.SATELLITE_NAME,");
-                        prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
-                        prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME,");
-                        prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
-                        prepareMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME,");
-                        prepareMappingStatement.AppendLine("    'N' as MULTI_ACTIVE_KEY_INDICATOR,");
-                        prepareMappingStatement.AppendLine("    'automatically_mapped' AS VERIFICATION");
-                        prepareMappingStatement.AppendLine("    FROM (");
-
-                        // Adding STG and PSA columns for auto-mapping
-                        prepareMappingStatement.AppendLine("SELECT object_name(A.object_id, db_id('"+ConfigurationSettings.StagingDatabaseName+"')) as TABLE_NAME, A.[name] AS COLUMN_NAME");
-                        prepareMappingStatement.AppendLine("FROM " + linkedServer + stagingDatabase + ".sys.columns A");
-                        prepareMappingStatement.AppendLine("WHERE A.[object_id] IN (" + stgTableFilterObjects + ")");
-                        prepareMappingStatement.AppendLine("UNION ALL");
-                        prepareMappingStatement.AppendLine("SELECT object_name(B.object_id, db_id('"+ConfigurationSettings.PsaDatabaseName+"')) as TABLE_NAME, B.[name] AS COLUMN_NAME");
-                        prepareMappingStatement.AppendLine("FROM " + linkedServer + psaDatabase + ".sys.columns B");
-                        prepareMappingStatement.AppendLine("WHERE B.[object_id] IN (" + psaTableFilterObjects + ")");
-
-                        prepareMappingStatement.AppendLine("    ) mapping");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg ON stg.SOURCE_NAME = mapping.TABLE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareMappingStatement.AppendLine("JOIN MD_SOURCE_SATELLITE_XREF xref ON xref.SOURCE_ID = stg.SOURCE_ID");
-                        prepareMappingStatement.AppendLine("JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
-
-                        // Do the mapping to the target columns (Integration Layer)
-                        prepareMappingStatement.AppendLine("JOIN " + linkedServer + integrationDatabase + ".sys.columns satatts");
-                        prepareMappingStatement.AppendLine("on sat.SATELLITE_NAME = object_name(satatts.object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) COLLATE DATABASE_DEFAULT");
-                        prepareMappingStatement.AppendLine("and UPPER(mapping.COLUMN_NAME) = UPPER(satatts.[name])");
-                        prepareMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN");
-                        prepareMappingStatement.AppendLine("  ( ");
-                        prepareMappingStatement.AppendLine("  '" + recordSource + "',");
-                        prepareMappingStatement.AppendLine("  '" + alternativeRecordSource + "',");
-                        prepareMappingStatement.AppendLine("  '" + sourceRowId + "',");
-                        prepareMappingStatement.AppendLine("  '" + recordChecksum + "',");
-                        prepareMappingStatement.AppendLine("  '" + changeDataCaptureIndicator + "',");
-                        prepareMappingStatement.AppendLine("  '" + hubAlternativeLdts + "',");
-                        prepareMappingStatement.AppendLine("  '" + eventDateTimeAtttribute + "',");
-                        prepareMappingStatement.AppendLine("  '" + effectiveDateTimeAttribute + "',");
-                        prepareMappingStatement.AppendLine("  '" + etlProcessId + "',");
-                        prepareMappingStatement.AppendLine("  '" + loadDateTimeStamp + "',");
-                        prepareMappingStatement.AppendLine("  '" + currentRecordAttribute + "'"); //LBM 2018-08-06 - CURRENT_ROW_INDICATOR should be excluded from the list as well
-
-                        prepareMappingStatement.AppendLine("  ) ");
-                        prepareMappingStatement.AppendLine(")");
-                        prepareMappingStatement.AppendLine("SELECT ");
-                        prepareMappingStatement.AppendLine("	SOURCE_ID,");
-                        prepareMappingStatement.AppendLine("	SOURCE_NAME,");
-                        prepareMappingStatement.AppendLine("	SATELLITE_ID,");
-                        prepareMappingStatement.AppendLine("	SATELLITE_NAME,");
-                        prepareMappingStatement.AppendLine("	ATTRIBUTE_FROM_ID,");
-                        prepareMappingStatement.AppendLine("	ATTRIBUTE_FROM_NAME,");
-                        prepareMappingStatement.AppendLine("	ATTRIBUTE_TO_ID,");
-                        prepareMappingStatement.AppendLine("	ATTRIBUTE_TO_NAME,");
-                        prepareMappingStatement.AppendLine("	MULTI_ACTIVE_KEY_INDICATOR,");
-                        prepareMappingStatement.AppendLine("	VERIFICATION");
-                        prepareMappingStatement.AppendLine("FROM MAPPED_ATTRIBUTES");
-                        prepareMappingStatement.AppendLine("UNION");
-                        prepareMappingStatement.AppendLine("SELECT ");
-                        prepareMappingStatement.AppendLine("	a.SOURCE_ID,");
-                        prepareMappingStatement.AppendLine("	a.SOURCE_NAME,");
-                        prepareMappingStatement.AppendLine("	a.SATELLITE_ID,");
-                        prepareMappingStatement.AppendLine("	a.SATELLITE_NAME,");
-                        prepareMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_ID,");
-                        prepareMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_NAME,");
-                        prepareMappingStatement.AppendLine("	a.ATTRIBUTE_TO_ID,");
-                        prepareMappingStatement.AppendLine("	a.ATTRIBUTE_TO_NAME,");
-                        prepareMappingStatement.AppendLine("	a.MULTI_ACTIVE_KEY_INDICATOR,");
-                        prepareMappingStatement.AppendLine("	a.VERIFICATION");
-                        prepareMappingStatement.AppendLine("FROM ORIGINAL_ATTRIBUTES a");
-                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN MAPPED_ATTRIBUTES b ");
-                        prepareMappingStatement.AppendLine("	ON a.SOURCE_ID=b.SOURCE_ID ");
-                        prepareMappingStatement.AppendLine("  AND a.SATELLITE_ID=b.SATELLITE_ID");
-                        prepareMappingStatement.AppendLine("  AND a.ATTRIBUTE_FROM_ID=b.ATTRIBUTE_FROM_ID");
-                        prepareMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
+                        _alert.SetTextLogging("-->  No column-to-column mappings were detected.\r\n");
                     }
                     else
                     {
-                        _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata based on the model metadata.\r\n");
+                        foreach (DataRow tableName in listMappings.Rows)
+                        {
+                            using (var connection = new SqlConnection(metaDataConnection))
+                            {
+                                var insertMappingStatement = new StringBuilder();
 
+                                insertMappingStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+                                insertMappingStatement.AppendLine("( [SOURCE_ID],[SATELLITE_ID],[ATTRIBUTE_ID_FROM],[ATTRIBUTE_ID_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
+                                insertMappingStatement.AppendLine("VALUES ('" +
+                                                               tableName["SOURCE_ID"] + "'," +
+                                                               tableName["SATELLITE_ID"] + "," +
+                                                               tableName["ATTRIBUTE_FROM_ID"] + "," +
+                                                               tableName["ATTRIBUTE_TO_ID"] + ",'" +
+                                                               tableName["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
+
+                                var command = new SqlCommand(insertMappingStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                    mappingCounter++;
+                                }
+                                catch (Exception)
+                                {
+                                    _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["SATELLITE_NAME"] + ". \r\n");
+                                    if (tableName["ATTRIBUTE_FROM_ID"].ToString() == "")
+                                    {
+                                        _alert.SetTextLogging("Both attributes are NULL.");
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    worker.ReportProgress(90);
+                    _alert.SetTextLogging("-->  Processing " + mappingCounter + " attribute mappings\r\n");
+                    _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the manual Satellite attribute mapping metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the manual Satellite attribute mapping metadata: \r\n\r\n" + ex);
+                }
+                #endregion
+
+                #region Automatically mapped attributes for SAT and LSAT 93%
+                //12. Prepare Attribute mapping
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata for Satellites and Link-Satellites based on what's available in the database.\r\n");
+
+                try
+                {
+                    var prepareMappingStatement = new StringBuilder();
+
+                    if (checkBoxIgnoreVersion.Checked)
+                    {
+                        prepareMappingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
+                        prepareMappingStatement.AppendLine("(");
+                        prepareMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+                        prepareMappingStatement.AppendLine("),");
+                        prepareMappingStatement.AppendLine("XREF AS");
+                        prepareMappingStatement.AppendLine("(");
+                        prepareMappingStatement.AppendLine("  SELECT");
+                        prepareMappingStatement.AppendLine("    xref.*,");
+                        prepareMappingStatement.AppendLine("    src.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
+                        prepareMappingStatement.AppendLine("    src.SOURCE_NAME AS SOURCE_NAME,");
+                        prepareMappingStatement.AppendLine("    sat.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME,");
+                        prepareMappingStatement.AppendLine("    sat.SATELLITE_NAME AS TARGET_NAME");
+                        prepareMappingStatement.AppendLine("  FROM MD_SOURCE_SATELLITE_XREF xref");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_ID = src.SOURCE_ID");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
+                        prepareMappingStatement.AppendLine(") ");
+                        prepareMappingStatement.AppendLine("SELECT");
+                        prepareMappingStatement.AppendLine("  XREF.SOURCE_ID,");
+                        prepareMappingStatement.AppendLine("  XREF.SOURCE_NAME, ");
+                        prepareMappingStatement.AppendLine("  XREF.SATELLITE_ID,");
+                        prepareMappingStatement.AppendLine("  XREF.TARGET_NAME AS SATELLITE_NAME,");
+                        prepareMappingStatement.AppendLine("  stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
+                        prepareMappingStatement.AppendLine("  ADC_SOURCE.COLUMN_NAME AS ATTRIBUTE_FROM_NAME,");
+                        prepareMappingStatement.AppendLine("  tgt_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
+                        prepareMappingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_TO_NAME,");
+                        prepareMappingStatement.AppendLine("  'N' AS MULTI_ACTIVE_KEY_INDICATOR,");
+                        prepareMappingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
+                        prepareMappingStatement.AppendLine("FROM XREF");
+                        prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
+                        prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON UPPER(ADC_SOURCE.COLUMN_NAME) = UPPER(stg_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
+                        prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
+                        prepareMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_ID = tgt_attr.ATTRIBUTE_ID");
+                    }
+                    else
+                    {
                         prepareMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS ");
                         prepareMappingStatement.AppendLine("(");
                         prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
@@ -4907,7 +5002,7 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
                         prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
                         prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
-                        prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND mapping.TARGET_TABLE NOT LIKE '" + lnkTablePrefix + "'");
+                        prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE_TYPE NOT LIKE '" + hubTablePrefix + "' AND mapping.TARGET_TABLE NOT LIKE '" + lnkTablePrefix + "'");
                         prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
                         prepareMappingStatement.AppendLine("),");
                         prepareMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
@@ -4998,6 +5093,13 @@ namespace TEAM
 
                                 var insertMappingStatement = new StringBuilder();
 
+                                adsfasd 
+                                    // ROELANT: make sure a check is added that prevents inserting of values that are already there!!
+
+                                    // I.e. lookup in datatable or something like that.
+                                // Even better: adding the previous (manually mapped) section into a datatable and adding this here, inserting in one go.
+                                // Also needs to be done for degenerate fields.
+
                                 insertMappingStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                                 insertMappingStatement.AppendLine("( [SOURCE_ID],[SATELLITE_ID],[ATTRIBUTE_ID_FROM],[ATTRIBUTE_ID_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
                                 insertMappingStatement.AppendLine("VALUES ('" +
@@ -5029,125 +5131,154 @@ namespace TEAM
 
                     worker.ReportProgress(90);
                     _alert.SetTextLogging("-->  Processing " + mappingCounter + " attribute mappings\r\n");
-                    _alert.SetTextLogging("Preparation of the column-to-column mapping metadata completed.\r\n");
+                    _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
                 }
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Satellite Attribute mapping metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Satellite Attribute mapping metadata: \r\n\r\n" + ex);
+                    _alert.SetTextLogging("An issue has occured during preparation of the automatically mapped Satellite Attribute  metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the automatically mapped Satellite Attribute metadata: \r\n\r\n" + ex);
                 }
 
                 #endregion
 
-                #region Degenerate attribute mapping 95%
+                #region Manually mapped degenerate attributes for Links 95%
+                //12. Prepare Manual Attribute mapping for Link degenerate fields
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata based on the manual mappings for degenerate attributes.\r\n");
+
+                var degenerateAttributeCounter = 0;
+
+                try
+                {
+
+                    var prepareMappingStatement = new StringBuilder();
+
+                    prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
+                    prepareMappingStatement.AppendLine("	   ,stg.SOURCE_NAME");
+                    prepareMappingStatement.AppendLine("       ,lnk.LINK_ID");
+                    prepareMappingStatement.AppendLine("	   ,lnk.LINK_NAME");
+                    prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
+                    prepareMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_FROM_NAME");
+                    prepareMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
+                    prepareMappingStatement.AppendLine("	   ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_TO_NAME");
+                    prepareMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
+                    prepareMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
+                    prepareMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk on lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=mapping.TARGET_TABLE");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                    prepareMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
+                    prepareMappingStatement.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
+                    prepareMappingStatement.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
+                    prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('Link')");
+                    prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
+
+                    var listDegenerateMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+
+                    if (listDegenerateMappings.Rows.Count == 0)
+                    {
+                        _alert.SetTextLogging("-->  No degenerate columns were detected.\r\n");
+                    }
+                    else
+                    {
+                        foreach (DataRow tableName in listDegenerateMappings.Rows)
+                        {
+                            using (var connection = new SqlConnection(metaDataConnection))
+                            {
+                                // _alert.SetTextLogging("--> " + tableName["SATELLITE_NAME"] + "\r\n");
+
+                                var insertDegenerateMappingStatement = new StringBuilder();
+
+                                insertDegenerateMappingStatement.AppendLine("INSERT INTO [dbo].MD_SOURCE_LINK_ATTRIBUTE_XREF");
+                                insertDegenerateMappingStatement.AppendLine("( [SOURCE_ID] ,[LINK_ID] ,[ATTRIBUTE_ID_FROM] ,[ATTRIBUTE_ID_TO] )");
+                                insertDegenerateMappingStatement.AppendLine("VALUES ");
+                                insertDegenerateMappingStatement.AppendLine("(");
+                                insertDegenerateMappingStatement.AppendLine("  " + tableName["SOURCE_ID"] + ",");
+                                insertDegenerateMappingStatement.AppendLine("  " + tableName["LINK_ID"] + ",");
+                                insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_FROM_ID"] + ",");
+                                insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_TO_ID"]);
+                                insertDegenerateMappingStatement.AppendLine(")");
+
+                                var command = new SqlCommand(insertDegenerateMappingStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                    
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorCounter++;
+                                    _alert.SetTextLogging("An issue has occured during preparation of the degenerate attribute metadata. Please check the Error Log for more details.\r\n");
+                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the degenerate attribute metadata: \r\n\r\n" + ex);
+                                }
+
+                            }
+                            degenerateAttributeCounter++;
+                        }
+                        _alert.SetTextLogging("-->  Processing " + degenerateAttributeCounter + " degenerate columns\r\n");
+                        
+                    }
+
+                    worker.ReportProgress(95);
+
+                    _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the degenerate attribute metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the degenerate attribute metadata: \r\n\r\n" + ex);
+                }
+
+                #endregion
+
+                #region Automatically mapped degenerate attributes for Links 95%
                 //13. Prepare degenerate attribute mapping
                 _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the degenerate column metadata using the database.\r\n");
 
                 try
                 {
                     var prepareDegenerateMappingStatement = new StringBuilder();
-                    var degenerateMappingCounter = 1;
 
                     if (checkBoxIgnoreVersion.Checked)
                     {
-                        _alert.SetTextLogging("Commencing preparing the degenerate column metadata using the database.\r\n");
-
-                        prepareDegenerateMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS");
+                        prepareDegenerateMappingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                         prepareDegenerateMappingStatement.AppendLine("(");
-                        prepareDegenerateMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("       ,lnk.LINK_ID");
-                        prepareDegenerateMappingStatement.AppendLine("	   ,stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID");
-                        prepareDegenerateMappingStatement.AppendLine("       ,target_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID   ");
-                        prepareDegenerateMappingStatement.AppendLine("	   ,'manually_mapped' as VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
-                        prepareDegenerateMappingStatement.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk");
-                        prepareDegenerateMappingStatement.AppendLine("	     on lnk.LINK_NAME=mapping.TARGET_TABLE");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr");
-                        prepareDegenerateMappingStatement.AppendLine("	     on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg");
-                        prepareDegenerateMappingStatement.AppendLine("	     on stg.SOURCE_NAME = mapping.SOURCE_TABLE");
-                        prepareDegenerateMappingStatement.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr");
-                        prepareDegenerateMappingStatement.AppendLine("	     on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("WHERE TARGET_TABLE NOT LIKE '" + dwhKeyIdentifier + "' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
+                        prepareDegenerateMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
                         prepareDegenerateMappingStatement.AppendLine("),");
-                        prepareDegenerateMappingStatement.AppendLine("ORIGINAL_ATTRIBUTES AS");
+                        prepareDegenerateMappingStatement.AppendLine("XREF AS");
                         prepareDegenerateMappingStatement.AppendLine("(");
-                        prepareDegenerateMappingStatement.AppendLine("SELECT ");
-                        prepareDegenerateMappingStatement.AppendLine("	--TABLE_NAME, ");
-                        prepareDegenerateMappingStatement.AppendLine("	--COLUMN_NAME, ");
-                        prepareDegenerateMappingStatement.AppendLine("	stg.SOURCE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	lnk.LINK_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	'automatically_mapped' AS VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM");
-                        prepareDegenerateMappingStatement.AppendLine("(");
-                        // Making sure both STG and PSA are considered
-                        prepareDegenerateMappingStatement.AppendLine("  SELECT");                        
-                        prepareDegenerateMappingStatement.AppendLine("    object_name(object_id, db_id('" + ConfigurationSettings.StagingDatabaseName + "')) AS TABLE_NAME, [name] AS COLUMN_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("  FROM " + linkedServer + stagingDatabase + ".sys.columns");
-                        prepareDegenerateMappingStatement.AppendLine(  "WHERE [object_id] IN (" + stgTableFilterObjects + ")");
-                        prepareDegenerateMappingStatement.AppendLine("  UNION");
                         prepareDegenerateMappingStatement.AppendLine("  SELECT");
-                        prepareDegenerateMappingStatement.AppendLine("    object_name(object_id, db_id('" + ConfigurationSettings.PsaDatabaseName + "')) AS TABLE_NAME, [name] AS COLUMN_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("  FROM " + linkedServer + psaDatabase + ".sys.columns");
-                        prepareDegenerateMappingStatement.AppendLine("  WHERE [object_id] IN (" + psaTableFilterObjects + ")");
-                        prepareDegenerateMappingStatement.AppendLine(") mapping");
-
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg ON stg.SOURCE_NAME = mapping.TABLE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON mapping.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_SOURCE_LINK_ATTRIBUTE_XREF stglnk ON stg.SOURCE_ID = stglnk.SOURCE_ID");
-                        prepareDegenerateMappingStatement.AppendLine("JOIN MD_LINK lnk ON stglnk.LINK_ID = lnk.LINK_ID");
-
-                        prepareDegenerateMappingStatement.AppendLine("JOIN ");
-                        prepareDegenerateMappingStatement.AppendLine("(");
-                        // Making sure Integration is filtered
-                        prepareDegenerateMappingStatement.AppendLine("  SELECT");
-                        prepareDegenerateMappingStatement.AppendLine("    object_name(object_id, db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS TABLE_NAME, [name] AS COLUMN_NAME");
-                        prepareDegenerateMappingStatement.AppendLine("  FROM " + linkedServer + integrationDatabase + ".sys.columns");
-                        prepareDegenerateMappingStatement.AppendLine("  WHERE [object_id] IN (" + intTableFilterObjects + ")");
-                        prepareDegenerateMappingStatement.AppendLine(") lnkatts");
-
-                        prepareDegenerateMappingStatement.AppendLine("  ON lnk.LINK_NAME = lnkatts.TABLE_NAME COLLATE DATABASE_DEFAULT");
-                        prepareDegenerateMappingStatement.AppendLine("  AND UPPER(mapping.COLUMN_NAME) = UPPER(lnkatts.TABLE_NAME)");
-
-                        prepareDegenerateMappingStatement.AppendLine("WHERE mapping.COLUMN_NAME NOT IN ");
-                        prepareDegenerateMappingStatement.AppendLine("  ( ");
-
-                        prepareDegenerateMappingStatement.AppendLine("  '" + recordSource + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + alternativeRecordSource + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + sourceRowId + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + recordChecksum + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + changeDataCaptureIndicator + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + hubAlternativeLdts + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + eventDateTimeAtttribute + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + effectiveDateTimeAttribute + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + etlProcessId + "',");
-                        prepareDegenerateMappingStatement.AppendLine("  '" + loadDateTimeStamp + "'");
-
-                        prepareDegenerateMappingStatement.AppendLine("  ) ");
-                        prepareDegenerateMappingStatement.AppendLine(")");
-                        prepareDegenerateMappingStatement.AppendLine("SELECT ");
-                        prepareDegenerateMappingStatement.AppendLine("	SOURCE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	LINK_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	ATTRIBUTE_FROM_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	ATTRIBUTE_TO_ID");
-                        prepareDegenerateMappingStatement.AppendLine("	--VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM MAPPED_ATTRIBUTES");
-                        prepareDegenerateMappingStatement.AppendLine("UNION");
-                        prepareDegenerateMappingStatement.AppendLine("SELECT ");
-                        prepareDegenerateMappingStatement.AppendLine("	a.SOURCE_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	a.LINK_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	a.ATTRIBUTE_FROM_ID,");
-                        prepareDegenerateMappingStatement.AppendLine("	a.ATTRIBUTE_TO_ID");
-                        prepareDegenerateMappingStatement.AppendLine("	--a.VERIFICATION");
-                        prepareDegenerateMappingStatement.AppendLine("FROM ORIGINAL_ATTRIBUTES a");
-                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN MAPPED_ATTRIBUTES b ");
-                        prepareDegenerateMappingStatement.AppendLine("	ON a.SOURCE_ID=b.SOURCE_ID ");
-                        prepareDegenerateMappingStatement.AppendLine("  AND a.LINK_ID=b.LINK_ID");
-                        prepareDegenerateMappingStatement.AppendLine("  AND a.ATTRIBUTE_FROM_ID=b.ATTRIBUTE_FROM_ID");
-                        prepareDegenerateMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
+                        prepareDegenerateMappingStatement.AppendLine("    xref.*,");
+                        prepareDegenerateMappingStatement.AppendLine("    src.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
+                        prepareDegenerateMappingStatement.AppendLine("    src.SOURCE_NAME AS SOURCE_NAME,");
+                        prepareDegenerateMappingStatement.AppendLine("    lnk.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME,");
+                        prepareDegenerateMappingStatement.AppendLine("    lnk.LINK_NAME AS TARGET_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("  FROM MD_SOURCE_LINK_XREF xref");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_ID = src.SOURCE_ID");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_LINK lnk ON xref.LINK_ID = lnk.LINK_ID");
+                        prepareDegenerateMappingStatement.AppendLine(") ");
+                        prepareDegenerateMappingStatement.AppendLine("SELECT");
+                        prepareDegenerateMappingStatement.AppendLine("  XREF.SOURCE_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("  XREF.SOURCE_NAME, ");
+                        prepareDegenerateMappingStatement.AppendLine("  XREF.LINK_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("  XREF.TARGET_NAME AS LINK_NAME,");
+                        prepareDegenerateMappingStatement.AppendLine("  stg_attr.ATTRIBUTE_ID AS ATTRIBUTE_FROM_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("  ADC_SOURCE.COLUMN_NAME AS ATTRIBUTE_FROM_NAME,");
+                        prepareDegenerateMappingStatement.AppendLine("  tgt_attr.ATTRIBUTE_ID AS ATTRIBUTE_TO_ID,");
+                        prepareDegenerateMappingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_TO_NAME,");
+                        prepareDegenerateMappingStatement.AppendLine("  'N' AS MULTI_ACTIVE_INDICATOR,");
+                        prepareDegenerateMappingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
+                        prepareDegenerateMappingStatement.AppendLine("FROM XREF");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON UPPER(ADC_SOURCE.COLUMN_NAME) = UPPER(stg_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
+                        prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
+                        prepareDegenerateMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_ID = tgt_attr.ATTRIBUTE_ID");
                     }
                     else
                     {
@@ -5259,7 +5390,7 @@ namespace TEAM
                                 {
                                     connection.Open();
                                     command.ExecuteNonQuery();
-                                    degenerateMappingCounter++;
+                                    degenerateAttributeCounter++;
                                 }
                                 catch (Exception ex)
                                 {
@@ -5269,7 +5400,7 @@ namespace TEAM
                                 }
                             }
                         }
-                        _alert.SetTextLogging("-->  Processing " + degenerateMappingCounter + " degenerate columns\r\n");
+                        _alert.SetTextLogging("-->  Processing " + degenerateAttributeCounter + " degenerate columns\r\n");
                     }
 
                     worker.ReportProgress(95);
@@ -5284,6 +5415,7 @@ namespace TEAM
                 }
 
                 #endregion
+
 
                 #region 14. Multi-Active Key - 97%
 
