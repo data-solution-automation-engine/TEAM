@@ -4252,7 +4252,7 @@ namespace TEAM
 
                 worker.ReportProgress(35);
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Filter variables Created successfully.\r\n");
+                _alert.SetTextLogging("Filter variables created successfully.\r\n");
                 
                 #endregion
 
@@ -4260,88 +4260,125 @@ namespace TEAM
                 //7. Prepare Attributes
                 _alert.SetTextLogging("\r\n");
 
-                // Define the master attribute list for reuse many times later on
+                // Define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled)
                 var allDatabaseAttributes = new StringBuilder();
 
-                allDatabaseAttributes.AppendLine("  SELECT * FROM");
-                allDatabaseAttributes.AppendLine("  (");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" + ConfigurationSettings.StagingDatabaseName + "')) +']' AS [SCHEMA_NAME],");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" + ConfigurationSettings.StagingDatabaseName + "')) AS [TABLE_NAME],");
-                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                allDatabaseAttributes.AppendLine("    FROM");
-                allDatabaseAttributes.AppendLine("    (");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.StagingDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + stagingDatabase + ".sys.columns A");
-                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + stgTableFilterObjects + ")");
-                allDatabaseAttributes.AppendLine("    ) stg");
-                allDatabaseAttributes.AppendLine("    UNION ALL");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" + ConfigurationSettings.PsaDatabaseName + "')) +']' AS [SCHEMA_NAME],");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" + ConfigurationSettings.PsaDatabaseName + "')) AS [TABLE_NAME],");
-                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                allDatabaseAttributes.AppendLine("    FROM");
-                allDatabaseAttributes.AppendLine("    (");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.PsaDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + psaDatabase + ".sys.columns A");
-                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + psaTableFilterObjects + ")");
-                allDatabaseAttributes.AppendLine("    ) psa");
-                allDatabaseAttributes.AppendLine("    UNION ALL");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) +']' AS [SCHEMA_NAME],");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS [TABLE_NAME],");
-                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                allDatabaseAttributes.AppendLine("    FROM");
-                allDatabaseAttributes.AppendLine("    (");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + integrationDatabase + ".sys.columns A");
-                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + intTableFilterObjects + ")");
-                allDatabaseAttributes.AppendLine("    ) [int]");
-                allDatabaseAttributes.AppendLine("    UNION ALL");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" + ConfigurationSettings.PresentationDatabaseName + "')) +']' AS [SCHEMA_NAME],");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" + ConfigurationSettings.PresentationDatabaseName + "')) AS [TABLE_NAME],");
-                allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                allDatabaseAttributes.AppendLine("    FROM");
-                allDatabaseAttributes.AppendLine("    (");
-                allDatabaseAttributes.AppendLine("    SELECT");
-                allDatabaseAttributes.AppendLine("      A.object_id,");
-                allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" + ConfigurationSettings.PresentationDatabaseName + "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                allDatabaseAttributes.AppendLine("    FROM " + linkedServer + presentationDatabase + ".sys.columns A");
-                allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + presTableFilterObjects + ")");
-                allDatabaseAttributes.AppendLine("    ) pres");
-                allDatabaseAttributes.AppendLine("  ) mapping");
-                allDatabaseAttributes.AppendLine("  WHERE mapping.COLUMN_NAME NOT IN");
-                allDatabaseAttributes.AppendLine("  ( ");
-                allDatabaseAttributes.AppendLine("    '" + recordSource + "',");
-                allDatabaseAttributes.AppendLine("    '" + alternativeRecordSource + "',");
-                allDatabaseAttributes.AppendLine("    '" + sourceRowId + "',");
-                allDatabaseAttributes.AppendLine("    '" + recordChecksum + "',");
-                allDatabaseAttributes.AppendLine("    '" + changeDataCaptureIndicator + "',");
-                allDatabaseAttributes.AppendLine("    '" + hubAlternativeLdts + "',");
-                allDatabaseAttributes.AppendLine("    '" + eventDateTimeAtttribute + "',");
-                allDatabaseAttributes.AppendLine("    '" + effectiveDateTimeAttribute + "',");
-                allDatabaseAttributes.AppendLine("    '" + etlProcessId + "',");
-                allDatabaseAttributes.AppendLine("    '" + loadDateTimeStamp + "',");
-                allDatabaseAttributes.AppendLine("    '" + currentRecordAttribute + "'");
-                allDatabaseAttributes.AppendLine("  ) ");
+                if (checkBoxIgnoreVersion.Checked
+                ) // Get the attributes from the physical model / catalog. No virtualisation needed.
+                {
+                    allDatabaseAttributes.AppendLine("  SELECT * FROM");
+                    allDatabaseAttributes.AppendLine("  (");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" +
+                                                     ConfigurationSettings.StagingDatabaseName +
+                                                     "')) +']' AS [SCHEMA_NAME],");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" +
+                                                     ConfigurationSettings.StagingDatabaseName +
+                                                     "')) AS [TABLE_NAME],");
+                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                    allDatabaseAttributes.AppendLine("    FROM");
+                    allDatabaseAttributes.AppendLine("    (");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
+                                                     ConfigurationSettings.StagingDatabaseName +
+                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                    allDatabaseAttributes.AppendLine("    FROM " + linkedServer + stagingDatabase + ".sys.columns A");
+                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + stgTableFilterObjects + ")");
+                    allDatabaseAttributes.AppendLine("    ) stg");
+                    allDatabaseAttributes.AppendLine("    UNION ALL");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" +
+                                                     ConfigurationSettings.PsaDatabaseName +
+                                                     "')) +']' AS [SCHEMA_NAME],");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" +
+                                                     ConfigurationSettings.PsaDatabaseName + "')) AS [TABLE_NAME],");
+                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                    allDatabaseAttributes.AppendLine("    FROM");
+                    allDatabaseAttributes.AppendLine("    (");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
+                                                     ConfigurationSettings.PsaDatabaseName +
+                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                    allDatabaseAttributes.AppendLine("    FROM " + linkedServer + psaDatabase + ".sys.columns A");
+                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + psaTableFilterObjects + ")");
+                    allDatabaseAttributes.AppendLine("    ) psa");
+                    allDatabaseAttributes.AppendLine("    UNION ALL");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" +
+                                                     ConfigurationSettings.IntegrationDatabaseName +
+                                                     "')) +']' AS [SCHEMA_NAME],");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, db_id('" +
+                                                     ConfigurationSettings.IntegrationDatabaseName +
+                                                     "')) AS [TABLE_NAME],");
+                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                    allDatabaseAttributes.AppendLine("    FROM");
+                    allDatabaseAttributes.AppendLine("    (");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
+                                                     ConfigurationSettings.IntegrationDatabaseName +
+                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                    allDatabaseAttributes.AppendLine(
+                        "    FROM " + linkedServer + integrationDatabase + ".sys.columns A");
+                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + intTableFilterObjects + ")");
+                    allDatabaseAttributes.AppendLine("    ) [int]");
+                    allDatabaseAttributes.AppendLine("    UNION ALL");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" +
+                                                     ConfigurationSettings.PresentationDatabaseName +
+                                                     "')) +']' AS [SCHEMA_NAME],");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" +
+                                                     ConfigurationSettings.PresentationDatabaseName +
+                                                     "')) AS [TABLE_NAME],");
+                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
+                    allDatabaseAttributes.AppendLine("    FROM");
+                    allDatabaseAttributes.AppendLine("    (");
+                    allDatabaseAttributes.AppendLine("    SELECT");
+                    allDatabaseAttributes.AppendLine("      A.object_id,");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
+                                                     ConfigurationSettings.PresentationDatabaseName +
+                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
+                    allDatabaseAttributes.AppendLine("    FROM " + linkedServer + presentationDatabase +
+                                                     ".sys.columns A");
+                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + presTableFilterObjects + ")");
+                    allDatabaseAttributes.AppendLine("    ) pres");
+                    allDatabaseAttributes.AppendLine("  ) mapping");
+                    allDatabaseAttributes.AppendLine("  WHERE mapping.COLUMN_NAME NOT IN");
+                    allDatabaseAttributes.AppendLine("  ( ");
+                    allDatabaseAttributes.AppendLine("    '" + recordSource + "',");
+                    allDatabaseAttributes.AppendLine("    '" + alternativeRecordSource + "',");
+                    allDatabaseAttributes.AppendLine("    '" + sourceRowId + "',");
+                    allDatabaseAttributes.AppendLine("    '" + recordChecksum + "',");
+                    allDatabaseAttributes.AppendLine("    '" + changeDataCaptureIndicator + "',");
+                    allDatabaseAttributes.AppendLine("    '" + hubAlternativeLdts + "',");
+                    allDatabaseAttributes.AppendLine("    '" + eventDateTimeAtttribute + "',");
+                    allDatabaseAttributes.AppendLine("    '" + effectiveDateTimeAttribute + "',");
+                    allDatabaseAttributes.AppendLine("    '" + etlProcessId + "',");
+                    allDatabaseAttributes.AppendLine("    '" + loadDateTimeStamp + "',");
+                    allDatabaseAttributes.AppendLine("    '" + currentRecordAttribute + "'");
+                    allDatabaseAttributes.AppendLine("  ) ");
+                }
+                else // Get the values from the data grid or worker table (virtual mode)
+                {
+                    allDatabaseAttributes.AppendLine("SELECT ");
+                    allDatabaseAttributes.AppendLine("  '[dbo]' AS[SCHEMA_NAME],"); // RV: schema needs to be added!!!
+                    allDatabaseAttributes.AppendLine("  TABLE_NAME,");
+                    allDatabaseAttributes.AppendLine("  COLUMN_NAME");
+                    allDatabaseAttributes.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
+                }
 
                 try
                 {
                     var prepareAttStatement = new StringBuilder();
                     var attCounter = 1;
 
-                    // Insert Not Applicable attribute for FKs
+                    // Dummy row - insert 'Not Applicable' attribute to satisfy RI
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
                         var insertAttDummyStatement = new StringBuilder();
@@ -4367,10 +4404,10 @@ namespace TEAM
                         }
                     }
 
-                    // Regular processing
-
-                    // RV: there is an issue below where not all SQL version (i.e. SQL Server) are supporting cross database SQL.
-                    //     i.e. Azure. long term fix is to create individual queries to database without cross-db sql and add to single data table in the application
+                    /* Regular processing
+                       RV: there is an issue below where not all SQL version (i.e. SQL Server) are supporting cross database SQL.
+                       i.e. Azure. long term fix is to create individual queries to database without cross-db sql and add to single data table in the application
+                    */
                     if (checkBoxIgnoreVersion.Checked) // Read from live database
                     {
                         _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
@@ -4379,14 +4416,19 @@ namespace TEAM
                         prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
                         prepareAttStatement.AppendLine(") sub1");
                     }
-                    else
+                    else // Virtual processing
                     {
                         _alert.SetTextLogging("Commencing preparing the attributes from the metadata.\r\n");
-                        prepareAttStatement.AppendLine("SELECT DISTINCT COLUMN_NAME FROM TMP_MD_VERSION_ATTRIBUTE");
+                        prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM");
+                        prepareAttStatement.AppendLine("(");
+                        prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
+                        prepareAttStatement.AppendLine(") sub1");
                     }
 
+                    // Load the data table, get the attributes
                     var listAtt = GetDataTable(ref connOmd, prepareAttStatement.ToString());
 
+                    // Check if there are any attributes found, otherwise insert into the repository
                     if (listAtt.Rows.Count == 0)
                     {
                         _alert.SetTextLogging("-->  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
@@ -4425,7 +4467,6 @@ namespace TEAM
                         _alert.SetTextLogging("-->  Processing " + attCounter + " attributes.\r\n");
                     }
                     worker.ReportProgress(40);
-
                     _alert.SetTextLogging("Preparation of the attributes completed.\r\n");
                 }
                 catch (Exception ex)
@@ -4851,13 +4892,11 @@ namespace TEAM
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
 
-                var mappingCounter = 1;
+                var attributeMappings = new DataTable(); // Defined here to enable population from multiple steps, and inserted in one go.
 
                 try
                 {
                     var prepareMappingStatement = new StringBuilder();
-                    
-
    
                     prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
                     prepareMappingStatement.AppendLine("	   ,stg.SOURCE_NAME");
@@ -4880,51 +4919,15 @@ namespace TEAM
                     prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('Satellite', 'Link-Satellite')");
                     prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
 
-                    var listMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                    attributeMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
-                    if (listMappings.Rows.Count == 0)
+                    if (attributeMappings.Rows.Count == 0)
                     {
-                        _alert.SetTextLogging("-->  No column-to-column mappings were detected.\r\n");
-                    }
-                    else
-                    {
-                        foreach (DataRow tableName in listMappings.Rows)
-                        {
-                            using (var connection = new SqlConnection(metaDataConnection))
-                            {
-                                var insertMappingStatement = new StringBuilder();
-
-                                insertMappingStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
-                                insertMappingStatement.AppendLine("( [SOURCE_ID],[SATELLITE_ID],[ATTRIBUTE_ID_FROM],[ATTRIBUTE_ID_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
-                                insertMappingStatement.AppendLine("VALUES ('" +
-                                                               tableName["SOURCE_ID"] + "'," +
-                                                               tableName["SATELLITE_ID"] + "," +
-                                                               tableName["ATTRIBUTE_FROM_ID"] + "," +
-                                                               tableName["ATTRIBUTE_TO_ID"] + ",'" +
-                                                               tableName["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
-
-                                var command = new SqlCommand(insertMappingStatement.ToString(), connection);
-
-                                try
-                                {
-                                    connection.Open();
-                                    command.ExecuteNonQuery();
-                                    mappingCounter++;
-                                }
-                                catch (Exception)
-                                {
-                                    _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["SATELLITE_NAME"] + ". \r\n");
-                                    if (tableName["ATTRIBUTE_FROM_ID"].ToString() == "")
-                                    {
-                                        _alert.SetTextLogging("Both attributes are NULL.");
-                                    }
-                                }
-                            }
-                        }
+                        _alert.SetTextLogging("-->  No manual column-to-column mappings were detected.\r\n");
                     }
 
                     worker.ReportProgress(90);
-                    _alert.SetTextLogging("-->  Processing " + mappingCounter + " attribute mappings\r\n");
+                    _alert.SetTextLogging("-->  Processing " + attributeMappings.Rows.Count + " manual attribute mappings\r\n");
                     _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed.\r\n");
                 }
                 catch (Exception ex)
@@ -4936,15 +4939,16 @@ namespace TEAM
                 #endregion
 
                 #region Automatically mapped attributes for SAT and LSAT 93%
-                //12. Prepare Attribute mapping
+                //12. Prepare automatic attribute mapping
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata for Satellites and Link-Satellites based on what's available in the database.\r\n");
+                _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the physical model.\r\n");
 
                 try
                 {
+                    int automaticMappingCounter = 0;
                     var prepareMappingStatement = new StringBuilder();
 
-                    if (checkBoxIgnoreVersion.Checked)
+                    if (checkBoxIgnoreVersion.Checked) // Query the physical model (data dictionary / catalog) to map attributes
                     {
                         prepareMappingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                         prepareMappingStatement.AppendLine("(");
@@ -4980,7 +4984,7 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
                         prepareMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_ID = tgt_attr.ATTRIBUTE_ID");
                     }
-                    else
+                    else // Query the repository (physical model in TEAM) to map the attributes
                     {
                         prepareMappingStatement.AppendLine("WITH MAPPED_ATTRIBUTES AS ");
                         prepareMappingStatement.AppendLine("(");
@@ -5041,7 +5045,8 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("  '" + effectiveDateTimeAttribute + "',");
                         prepareMappingStatement.AppendLine("  '" + etlProcessId + "',");
                         prepareMappingStatement.AppendLine("  '" + loadDateTimeStamp + "',");
-                        prepareMappingStatement.AppendLine("  '" + currentRecordAttribute + "'");//LBM 2018-08-06 - CURRENT_ROW_INDICATOR should be excluded from the list as well
+                        prepareMappingStatement.AppendLine("  '" + currentRecordAttribute + "'");
+                        //LBM 2018-08-06 - CURRENT_ROW_INDICATOR should be excluded from the list as well
 
                         prepareMappingStatement.AppendLine("  ) ");
 
@@ -5078,27 +5083,48 @@ namespace TEAM
                         prepareMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
                     }
 
-                    var listMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                    var automaticAttributeMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
-                    if (listMappings.Rows.Count == 0)
+                    if (automaticAttributeMappings.Rows.Count == 0)
                     {
-                        _alert.SetTextLogging("-->  No column-to-column mappings were detected.\r\n");
+                        _alert.SetTextLogging("-->  No automatic column-to-column mappings were detected.\r\n");
                     }
                     else
                     {
-                        foreach (DataRow tableName in listMappings.Rows)
+                        // Prevent duplicates to be inserted into the data table, by only inserting new ones
+                        // Entries found in the automatic check which are not already in the manual datat able will be added
+                        foreach (DataRow automaticMapping in automaticAttributeMappings.Rows)
+                        {
+                            DataRow[] foundRow = attributeMappings.Select("SOURCE_ID = '" + automaticMapping["SOURCE_ID"] + "' AND SATELLITE_ID = '" + automaticMapping["SATELLITE_ID"] + "' AND ATTRIBUTE_FROM_ID = '" + automaticMapping["ATTRIBUTE_FROM_ID"] + "'AND ATTRIBUTE_TO_ID = '" + automaticMapping["ATTRIBUTE_TO_ID"] + "'");
+                            if (foundRow.Length == 0)
+                            {
+                                // If nothing is found, add to the overall data table that is inserted into SOURCE_SATELLITE_ATTRIBUTE_XREF
+                                attributeMappings.Rows.Add(
+                                    automaticMapping["SOURCE_ID"],
+                                    automaticMapping["SOURCE_NAME"],
+                                    automaticMapping["SATELLITE_ID"],
+                                    automaticMapping["SATELLITE_NAME"],
+                                    automaticMapping["ATTRIBUTE_FROM_ID"],
+                                    automaticMapping["ATTRIBUTE_FROM_NAME"],
+                                    automaticMapping["ATTRIBUTE_TO_ID"],
+                                    automaticMapping["ATTRIBUTE_TO_NAME"],
+                                    automaticMapping["MULTI_ACTIVE_KEY_INDICATOR"],
+                                    automaticMapping["VERIFICATION"]);
+
+                                    automaticMappingCounter++;
+                            }
+                        }
+                    }
+
+                    // Now the full data table can be processed
+                    if (attributeMappings.Rows.Count > 0)
+                    {
+                        foreach (DataRow tableName in attributeMappings.Rows)
                         {
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
 
                                 var insertMappingStatement = new StringBuilder();
-
-                                adsfasd 
-                                    // ROELANT: make sure a check is added that prevents inserting of values that are already there!!
-
-                                    // I.e. lookup in datatable or something like that.
-                                // Even better: adding the previous (manually mapped) section into a datatable and adding this here, inserting in one go.
-                                // Also needs to be done for degenerate fields.
 
                                 insertMappingStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                                 insertMappingStatement.AppendLine("( [SOURCE_ID],[SATELLITE_ID],[ATTRIBUTE_ID_FROM],[ATTRIBUTE_ID_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
@@ -5115,7 +5141,7 @@ namespace TEAM
                                 {
                                     connection.Open();
                                     command.ExecuteNonQuery();
-                                    mappingCounter++;
+                                    
                                 }
                                 catch (Exception)
                                 {
@@ -5130,7 +5156,7 @@ namespace TEAM
                     }
 
                     worker.ReportProgress(90);
-                    _alert.SetTextLogging("-->  Processing " + mappingCounter + " attribute mappings\r\n");
+                    _alert.SetTextLogging("-->  Processing " + automaticMappingCounter + " automatically added attribute mappings\r\n");
                     _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
                 }
                 catch (Exception ex)
@@ -5147,11 +5173,10 @@ namespace TEAM
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata based on the manual mappings for degenerate attributes.\r\n");
 
-                var degenerateAttributeCounter = 0;
+                var degenerateMappings = new DataTable();
 
                 try
                 {
-
                     var prepareMappingStatement = new StringBuilder();
 
                     prepareMappingStatement.AppendLine("SELECT  stg.SOURCE_ID");
@@ -5174,56 +5199,16 @@ namespace TEAM
                     prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('Link')");
                     prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
 
-                    var listDegenerateMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                    degenerateMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
-                    if (listDegenerateMappings.Rows.Count == 0)
+                    if (degenerateMappings.Rows.Count == 0)
                     {
-                        _alert.SetTextLogging("-->  No degenerate columns were detected.\r\n");
-                    }
-                    else
-                    {
-                        foreach (DataRow tableName in listDegenerateMappings.Rows)
-                        {
-                            using (var connection = new SqlConnection(metaDataConnection))
-                            {
-                                // _alert.SetTextLogging("--> " + tableName["SATELLITE_NAME"] + "\r\n");
-
-                                var insertDegenerateMappingStatement = new StringBuilder();
-
-                                insertDegenerateMappingStatement.AppendLine("INSERT INTO [dbo].MD_SOURCE_LINK_ATTRIBUTE_XREF");
-                                insertDegenerateMappingStatement.AppendLine("( [SOURCE_ID] ,[LINK_ID] ,[ATTRIBUTE_ID_FROM] ,[ATTRIBUTE_ID_TO] )");
-                                insertDegenerateMappingStatement.AppendLine("VALUES ");
-                                insertDegenerateMappingStatement.AppendLine("(");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["SOURCE_ID"] + ",");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["LINK_ID"] + ",");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_FROM_ID"] + ",");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_TO_ID"]);
-                                insertDegenerateMappingStatement.AppendLine(")");
-
-                                var command = new SqlCommand(insertDegenerateMappingStatement.ToString(), connection);
-
-                                try
-                                {
-                                    connection.Open();
-                                    command.ExecuteNonQuery();
-                                    
-                                }
-                                catch (Exception ex)
-                                {
-                                    errorCounter++;
-                                    _alert.SetTextLogging("An issue has occured during preparation of the degenerate attribute metadata. Please check the Error Log for more details.\r\n");
-                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the degenerate attribute metadata: \r\n\r\n" + ex);
-                                }
-
-                            }
-                            degenerateAttributeCounter++;
-                        }
-                        _alert.SetTextLogging("-->  Processing " + degenerateAttributeCounter + " degenerate columns\r\n");
-                        
+                        _alert.SetTextLogging("-->  No manually mapped degenerate columns were detected.\r\n");
                     }
 
                     worker.ReportProgress(95);
 
+                    _alert.SetTextLogging("-->  Processing " + degenerateMappings.Rows.Count + " manual degenerate attribute mappings\r\n");
                     _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
                 }
                 catch (Exception ex)
@@ -5232,16 +5217,16 @@ namespace TEAM
                     _alert.SetTextLogging("An issue has occured during preparation of the degenerate attribute metadata. Please check the Error Log for more details.\r\n");
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the degenerate attribute metadata: \r\n\r\n" + ex);
                 }
-
                 #endregion
 
                 #region Automatically mapped degenerate attributes for Links 95%
-                //13. Prepare degenerate attribute mapping
+                //13. Prepare the automatic degenerate attribute mapping
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the degenerate column metadata using the database.\r\n");
+                _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for degenerate attributes, based on what's available in the physical model..\r\n");
 
                 try
                 {
+                    int automaticDegenerateMappingCounter = 0;
                     var prepareDegenerateMappingStatement = new StringBuilder();
 
                     if (checkBoxIgnoreVersion.Checked)
@@ -5358,53 +5343,80 @@ namespace TEAM
                         prepareDegenerateMappingStatement.AppendLine("  AND a.ATTRIBUTE_FROM_ID=b.ATTRIBUTE_FROM_ID");
                         prepareDegenerateMappingStatement.AppendLine("WHERE b.ATTRIBUTE_TO_ID IS NULL");
                     }
-                    var listDegenerateMappings = GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
 
-                    if (listDegenerateMappings.Rows.Count == 0)
+                    var automaticDegenerateMappings = GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
+
+                    if (automaticDegenerateMappings.Rows.Count == 0)
                     {
-                        _alert.SetTextLogging("-->  No degenerate columns were detected.\r\n");
+                        _alert.SetTextLogging("-->  No automatic degenerate columns were detected.\r\n");
                     }
                     else
                     {
-                        foreach (DataRow tableName in listDegenerateMappings.Rows)
+                        // Prevent duplicates to be inserted into the datatable, by only inserting new ones
+                        // Entries found in the automatic check which are not already in the manual datatable will be added
+                        foreach (DataRow automaticMapping in automaticDegenerateMappings.Rows)
+                        {
+                            DataRow[] foundRow = degenerateMappings.Select("SOURCE_ID = '" + automaticMapping["SOURCE_ID"] + "' AND LINK_ID = '" + automaticMapping["LINK_ID"] + "' AND ATTRIBUTE_FROM_ID = '" + automaticMapping["ATTRIBUTE_FROM_ID"] + "'AND ATTRIBUTE_TO_ID = '" + automaticMapping["ATTRIBUTE_TO_ID"] + "'");
+                            if (foundRow.Length == 0)
+                            {
+                                // If nothing is found, add to the overall data table that is inserted into SOURCE_SATELLITE_ATTRIBUTE_XREF
+                                degenerateMappings.Rows.Add(
+                                    automaticMapping["SOURCE_ID"],
+                                    automaticMapping["SOURCE_NAME"],
+                                    automaticMapping["LINK_ID"],
+                                    automaticMapping["LINK_NAME"],
+                                    automaticMapping["ATTRIBUTE_FROM_ID"],
+                                    automaticMapping["ATTRIBUTE_FROM_NAME"],
+                                    automaticMapping["ATTRIBUTE_TO_ID"],
+                                    automaticMapping["ATTRIBUTE_TO_NAME"],
+                                    automaticMapping["VERIFICATION"]);
+
+                                automaticDegenerateMappingCounter++;
+                            }
+                        }
+                    }
+
+                    // Now the full data table can be processed
+                    if (degenerateMappings.Rows.Count > 0)
+                    {
+                        foreach (DataRow tableName in degenerateMappings.Rows)
                         {
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                // _alert.SetTextLogging("--> " + tableName["SATELLITE_NAME"] + "\r\n");
 
-                                var insertDegenerateMappingStatement = new StringBuilder();
+                                var insertMappingStatement = new StringBuilder();
 
-                                insertDegenerateMappingStatement.AppendLine("INSERT INTO [dbo].MD_SOURCE_LINK_ATTRIBUTE_XREF");
-                                insertDegenerateMappingStatement.AppendLine("( [SOURCE_ID] ,[LINK_ID] ,[ATTRIBUTE_ID_FROM] ,[ATTRIBUTE_ID_TO] )");
-                                insertDegenerateMappingStatement.AppendLine("VALUES ");
-                                insertDegenerateMappingStatement.AppendLine("(");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["SOURCE_ID"] + ",");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["LINK_ID"] + ",");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_FROM_ID"] + ",");
-                                insertDegenerateMappingStatement.AppendLine("  " + tableName["ATTRIBUTE_TO_ID"]);
-                                insertDegenerateMappingStatement.AppendLine(")");
+                                insertMappingStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_ATTRIBUTE_XREF]");
+                                insertMappingStatement.AppendLine("( [SOURCE_ID],[LINK_ID],[ATTRIBUTE_ID_FROM],[ATTRIBUTE_ID_TO])");
+                                insertMappingStatement.AppendLine("VALUES (" +
+                                                               tableName["SOURCE_ID"] + "," +
+                                                               tableName["LINK_ID"] + "," +
+                                                               tableName["ATTRIBUTE_FROM_ID"] + "," +
+                                                               tableName["ATTRIBUTE_TO_ID"] + ")");
 
-                                var command = new SqlCommand(insertDegenerateMappingStatement.ToString(), connection);
+                                var command = new SqlCommand(insertMappingStatement.ToString(), connection);
 
                                 try
                                 {
                                     connection.Open();
                                     command.ExecuteNonQuery();
-                                    degenerateAttributeCounter++;
+
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
-                                    errorCounter++;
-                                    _alert.SetTextLogging("An issue has occured during preparation of the degenerate attribute metadata. Please check the Error Log for more details.\r\n");
-                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the degenerate attribute metadata: \r\n\r\n" + ex);
+                                    _alert.SetTextLogging("-----> An issue has occurred mapping degenerate columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] + ". \r\n");
+                                    if (tableName["ATTRIBUTE_FROM_ID"].ToString() == "")
+                                    {
+                                        _alert.SetTextLogging("Both attributes are NULL.");
+                                    }
                                 }
                             }
                         }
-                        _alert.SetTextLogging("-->  Processing " + degenerateAttributeCounter + " degenerate columns\r\n");
                     }
 
                     worker.ReportProgress(95);
 
+                    _alert.SetTextLogging("-->  Processing " + automaticDegenerateMappingCounter + " automatically added degenerate attribute mappings\r\n");
                     _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
                 }
                 catch (Exception ex)
@@ -5415,7 +5427,6 @@ namespace TEAM
                 }
 
                 #endregion
-
 
                 #region 14. Multi-Active Key - 97%
 
@@ -5578,7 +5589,7 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("              (");
                         prepareDrivingKeyStatement.AppendLine("                     SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE");
                         prepareDrivingKeyStatement.AppendLine("                     FROM TMP_MD_TABLE_MAPPING");
-                        prepareDrivingKeyStatement.AppendLine("                     WHERE TARGET_TABLE LIKE '" + lsatTablePrefix +"' AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
+                        prepareDrivingKeyStatement.AppendLine("                     WHERE TARGET_TABLE_TYPE IN ('Link-Satellite') AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
                         prepareDrivingKeyStatement.AppendLine("                     AND [PROCESS_INDICATOR] = 'Y'");
                         prepareDrivingKeyStatement.AppendLine("              ) TableName");
                         prepareDrivingKeyStatement.AppendLine("       ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
@@ -5586,12 +5597,12 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("LEFT JOIN[dbo].[TMP_MD_TABLE_MAPPING]");
                         prepareDrivingKeyStatement.AppendLine("        hub");
                         prepareDrivingKeyStatement.AppendLine(" ON  base.SOURCE_TABLE=hub.SOURCE_TABLE");
-                        prepareDrivingKeyStatement.AppendLine(" AND hub.TARGET_TABLE LIKE '" + hubTablePrefix +"'");
+                        prepareDrivingKeyStatement.AppendLine(" AND hub.TARGET_TABLE_TYPE IN ('Hub')");
                         prepareDrivingKeyStatement.AppendLine("  AND base.BUSINESS_KEY_ATTRIBUTE=hub.BUSINESS_KEY_ATTRIBUTE");
                         prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_SATELLITE sat");
-                        prepareDrivingKeyStatement.AppendLine("  ON base.TARGET_TABLE = sat.SATELLITE_NAME");
+                        prepareDrivingKeyStatement.AppendLine("  ON base.TARGET_TABLE = sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME");
                         prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_HUB hubkey");
-                        prepareDrivingKeyStatement.AppendLine("  ON hub.TARGET_TABLE = hubkey.HUB_NAME");
+                        prepareDrivingKeyStatement.AppendLine("  ON hub.TARGET_TABLE = hubkey.[SCHEMA_NAME]+'.'+hubkey.HUB_NAME");
                         prepareDrivingKeyStatement.AppendLine("WHERE 1=1");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
                         prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE!=''");
@@ -5641,7 +5652,7 @@ namespace TEAM
                         }
 
                         worker.ReportProgress(95);
-                        _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
+                        _alert.SetTextLogging("Preparation of the Driving Key column metadata completed.\r\n");
 
                 }
                 catch (Exception ex)
@@ -5653,15 +5664,16 @@ namespace TEAM
 
                 #endregion
 
+                //Activation completed!
 
-                //Completed
 
+                // Error handling
                 if (errorCounter > 0)
                 {
                     _alert.SetTextLogging("\r\nWarning! There were "+errorCounter+" error(s) found while processing the metadata.\r\n");
                     _alert.SetTextLogging("Please check the Error Log for details \r\n");
                     _alert.SetTextLogging("\r\n");
-                    //_alert.SetTextLogging(errorLog.ToString());
+
                     using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
                     {
                         outfile.Write(errorLog.ToString());
@@ -5673,8 +5685,10 @@ namespace TEAM
                     _alert.SetTextLogging("\r\nNo errors were detected.\r\n");
                 }
 
+                // Remove the temporary tables that have beenused
                 droptemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
 
+                // Report completion
                 worker.ReportProgress(100);
             }
         }

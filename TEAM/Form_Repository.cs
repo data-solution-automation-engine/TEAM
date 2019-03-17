@@ -333,9 +333,9 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "IF OBJECT_ID('[FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
+                    "IF OBJECT_ID('[FK_MD_SOURCE_SOURCE_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_STAGING_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]");
+                    "ALTER TABLE [MD_SOURCE_SOURCE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SOURCE_XREF_MD_SOURCE_DATASET]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 4);
                 createStatement.Clear();
@@ -643,16 +643,16 @@ namespace TEAM
                 // Source CDC Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Source / Staging Xref");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_STAGING_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_STAGING_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_SOURCE_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_SOURCE_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_STAGING_XREF]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_SOURCE_XREF]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("	[SOURCE_NAME] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [SOURCE_DATASET_ID] int  NOT NULL,");
                 createStatement.AppendLine("    [CHANGE_DATETIME_DEFINITION] varchar(4000) NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_SOURCE_STAGING_XREF] PRIMARY KEY CLUSTERED ( [SOURCE_NAME] ASC)");
+                    "    CONSTRAINT [PK_MD_SOURCE_SOURCE_XREF] PRIMARY KEY CLUSTERED ( [SOURCE_NAME] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 43);
@@ -1114,7 +1114,7 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [dbo].[MD_SOURCE_STAGING_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
+                    "ALTER TABLE [dbo].[MD_SOURCE_SOURCE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SOURCE_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
                 createStatement.AppendLine("REFERENCES [dbo].[MD_SOURCE_DATASET] ([SOURCE_DATASET_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
@@ -1146,10 +1146,10 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 78);
                 createStatement.Clear();
 
-                createStatement.AppendLine("-- INTERFACE_STAGING_SATELLITE_ATTRIBUTE_XREF");
+                createStatement.AppendLine("-- INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF");
                 createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_STAGING_SATELLITE_ATTRIBUTE_XREF]', 'V') IS NOT NULL");
-                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_STAGING_SATELLITE_ATTRIBUTE_XREF]");
+                    "IF OBJECT_ID('[interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
                 createStatement.Clear();
@@ -1176,25 +1176,25 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
                 createStatement.Clear();
 
-                createStatement.AppendLine("-- INTERFACE_STAGING_SATELLITE_XREF");
+                createStatement.AppendLine("-- INTERFACE_SOURCE_SATELLITE_XREF");
                 createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_STAGING_SATELLITE_XREF]', 'V') IS NOT NULL");
-                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_STAGING_SATELLITE_XREF]");
+                    "IF OBJECT_ID('[interface].[INTERFACE_SOURCE_SATELLITE_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 81);
                 createStatement.Clear();
 
-                createStatement.AppendLine("-- INTERFACE_STAGING_HUB_XREF");
-                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_STAGING_HUB_XREF]', 'V') IS NOT NULL");
-                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_STAGING_HUB_XREF]");
+                createStatement.AppendLine("-- INTERFACE_SOURCE_HUB_XREF");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_HUB_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_HUB_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 81);
                 createStatement.Clear();
 
-                createStatement.AppendLine("-- INTERFACE_STAGING_LINK_XREF");
+                createStatement.AppendLine("-- INTERFACE_SOURCE_LINK_XREF");
                 createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_STAGING_LINK_XREF]', 'V') IS NOT NULL");
-                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_STAGING_LINK_XREF]");
+                    "IF OBJECT_ID('[interface].[INTERFACE_SOURCE_LINK_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_LINK_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 82);
                 createStatement.Clear();
@@ -1219,7 +1219,7 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
                 createStatement.AppendLine(" SOURCE_NAME,");
-                //createStatement.AppendLine(" SCHEMA_NAME,");
+                createStatement.AppendLine(" stg.SCHEMA_NAME AS SOURCE_SCHEMA_NAME,");
                 createStatement.AppendLine(" xref.HUB_ID,");
                 createStatement.AppendLine(" HUB_NAME,");
                 createStatement.AppendLine(" BUSINESS_KEY_DEFINITION,");
@@ -1286,7 +1286,7 @@ namespace TEAM
                 createStatement.AppendLine(" lnk.LINK_NAME,");
                 createStatement.AppendLine(" slxref.SOURCE_ID,");
                 createStatement.AppendLine(" stg.SOURCE_NAME,");
-                //createStatement.AppendLine(" stg.SCHEMA_NAME,");
+                createStatement.AppendLine(" stg.SCHEMA_NAME AS SOURCE_SCHEMA_NAME,");
                 createStatement.AppendLine(" hub.HUB_ID,");
                 createStatement.AppendLine(" hub.HUB_NAME,");
                 createStatement.AppendLine(" hlxref.HUB_ORDER,");
@@ -1342,7 +1342,7 @@ namespace TEAM
                 createStatement.AppendLine(" , COALESCE(naming_exception.CHANGE_DATETIME_DEFINITION, cdctype.CHANGE_DATETIME_DEFINITION) AS CHANGE_DATETIME_DEFINITION");
                 createStatement.AppendLine(" , cdctype.PROCESS_INDICATOR AS PROCESS_INDICATOR");
                 createStatement.AppendLine("FROM ["+ConfigurationSettings.StagingDatabaseName+"].INFORMATION_SCHEMA.TABLES as schema_stg_listing");
-                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_STAGING_XREF as naming_exception on naming_exception.SOURCE_NAME = schema_stg_listing.TABLE_NAME");
+                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_SOURCE_XREF as naming_exception on naming_exception.SOURCE_NAME = schema_stg_listing.TABLE_NAME");
                 createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.SOURCE_NAME");
                 createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_DATASET dataset ON naming_exception.SOURCE_DATASET_ID = dataset.SOURCE_DATASET_ID");
                 createStatement.AppendLine("WHERE TABLE_TYPE = 'BASE TABLE'");
@@ -1354,7 +1354,7 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 93);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_STAGING_HUB_XREF]");
+                createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
@@ -1371,7 +1371,7 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 95);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_STAGING_LINK_XREF]");
+                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_LINK_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine("  xref.[SOURCE_ID]");
@@ -1386,12 +1386,12 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 97);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_STAGING_SATELLITE_ATTRIBUTE_XREF]");
+                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine("  xref.[SOURCE_ID]");
                 createStatement.AppendLine(" ,stg.SOURCE_NAME");
-                //createStatement.AppendLine(" ,stg.SCHEMA_NAME");
+                createStatement.AppendLine(" ,stg.SCHEMA_NAME AS SOURCE_SCHEMA_NAME");
                 createStatement.AppendLine(" ,xref.[SATELLITE_ID]");
                 createStatement.AppendLine(" ,[SATELLITE_NAME]");
                 createStatement.AppendLine(" ,[ATTRIBUTE_ID_FROM]");
@@ -1408,7 +1408,7 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 98);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_STAGING_SATELLITE_XREF]");
+                createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
