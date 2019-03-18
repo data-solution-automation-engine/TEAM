@@ -185,7 +185,7 @@ namespace TEAM
             this.buttonSaveMetadataChanges.TabIndex = 1;
             this.buttonSaveMetadataChanges.Text = "&Save Metadata Changes";
             this.buttonSaveMetadataChanges.UseVisualStyleBackColor = true;
-            this.buttonSaveMetadataChanges.Click += new System.EventHandler(this.buttonActivateMetadata_Click);
+            this.buttonSaveMetadataChanges.Click += new System.EventHandler(this.buttonSaveMetadata_Click);
             // 
             // groupBox1
             // 

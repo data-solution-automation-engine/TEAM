@@ -102,7 +102,8 @@ namespace TEAM
             var selectedVersion = GetMaxVersionId(connOmd);
             
             // Set the version in memory
-            GlobalParameters.VersionId = selectedVersion;
+            GlobalParameters.currentVersionId = selectedVersion;
+            GlobalParameters.highestVersionId = selectedVersion; // On startup, the highest version is the same as the current version
             FileConfiguration.jsonVersionExtension = @"_v" + selectedVersion + ".json";
 
             trackBarVersioning.Maximum = selectedVersion;
@@ -839,7 +840,7 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
             FileConfiguration.jsonVersionExtension = @"_v" + trackBarVersioning.Value + ".json";
-            GlobalParameters.VersionId = trackBarVersioning.Value;
+            GlobalParameters.currentVersionId = trackBarVersioning.Value;
             
             PopulateTableMappingGridWithVersion(trackBarVersioning.Value);
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
@@ -862,80 +863,104 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonActivateMetadata_Click(object sender, EventArgs e)
+        private void buttonSaveMetadata_Click(object sender, EventArgs e)
         {
-            //Clear out the information textbox
+            // Clear out the information textbox
             richTextBoxInformation.Clear();
 
-            //Remove all metadata from repository
+            // Remove all metadata from repository
             if (checkBoxClearMetadata.Checked)
             {
                 TruncateMetadata();
             }
 
-            //Create a data table containing the changes, to check if there are changes made to begin with
-            var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
-            var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
-            var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
 
-            //Check if there are any rows available in the grid view, and if changes have been detected ata ll
-            if (
-                dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 || 
-                dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 || 
-                dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0
-                ) 
+            // Check if the current version is the maximum version. At this stage updates on earlier versions are not supported (and cause a NULLreference exception)
+            var highestVersion = GlobalParameters.highestVersionId;
+            var currentVersion = GlobalParameters.currentVersionId;
+
+            if (currentVersion < highestVersion)
             {
-                //Create new version, or retain the old one, depending on selection (version radiobuttons)
-                try
-                {
-                    // Capture the 'old ' current version in case the UI needs updating
-                    var oldVersionId = trackBarVersioning.Value;
-
-                    //Retrieve the current version, or create a new one
-                    int versionId = CreateOrRetrieveVersion();
-
-                    //Commit the save of the metadata, one for each grid
-                    if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
-                    {
-                        SaveTableMappingMetadataSql(versionId, dataTableTableMappingChanges);
-                    }
-                    else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
-                    {
-                        SaveTableMappingMetadataJson(versionId, dataTableTableMappingChanges);
-                    }
-                    else
-                    {
-                        richTextBoxInformation.Text = "There was an issue detecting the repository type. The in-use value is: "+ ConfigurationSettings.MetadataRepositoryType;
-                    }
-
-                    SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges, ConfigurationSettings.MetadataRepositoryType);
-
-                    SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges, ConfigurationSettings.MetadataRepositoryType);
-
-
-                    //Load the grids from the repository after being updated
-                    PopulateTableMappingGridWithVersion(versionId);
-                    PopulateAttributeGridWithVersion(versionId);
-                    PopulatePhysicalModelGridWithVersion(versionId);
-
-                    //Refresh the UI to display the newly created version
-                    if (oldVersionId != versionId)
-                    {
-                        var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
-                        trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
-                        trackBarVersioning.TickFrequency = GetVersionCount();
-                        trackBarVersioning.Value = GetMaxVersionId(connOmd);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    richTextBoxInformation.Text += "The metadata wasn't saved. There are errors saving the metadata version. The reported error is: "+exception;
-                }
-
+                richTextBoxInformation.Text += "Cannot save the metadata changes because these are applied to an earlier version. Only updates to the latest or newer version are supported in TEAM.";
             }
             else
             {
-                richTextBoxInformation.Text += "There is no metadata to save!";
+                // Create a data table containing the changes, to check if there are changes made to begin with
+                var dataTableTableMappingChanges = ((DataTable) _bindingSourceTableMetadata.DataSource).GetChanges();
+                var dataTableAttributeMappingChanges =
+                    ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
+                var dataTablePhysicalModelChanges =
+                    ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+
+                // Check if there are any rows available in the grid view, and if changes have been detected at all
+                if (
+                    dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null &&
+                    dataTableTableMappingChanges.Rows.Count > 0 ||
+                    dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null &&
+                    dataTableAttributeMappingChanges.Rows.Count > 0 ||
+                    dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null &&
+                    dataTablePhysicalModelChanges.Rows.Count > 0
+                )
+                {
+                    //Create new version, or retain the old one, depending on selection (version radiobuttons)
+                    try
+                    {
+                        // Capture the 'old ' current version in case the UI needs updating
+                        var oldVersionId = trackBarVersioning.Value;
+
+                        //Retrieve the current version, or create a new one
+                        int versionId = CreateOrRetrieveVersion();
+
+                        //Commit the save of the metadata, one for each grid
+                        if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+                        {
+                            SaveTableMappingMetadataSql(versionId, dataTableTableMappingChanges);
+                        }
+                        else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+                        {
+                            SaveTableMappingMetadataJson(versionId, dataTableTableMappingChanges);
+                        }
+                        else
+                        {
+                            richTextBoxInformation.Text =
+                                "There was an issue detecting the repository type. The in-use value is: " +
+                                ConfigurationSettings.MetadataRepositoryType;
+                        }
+
+                        SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges,
+                            ConfigurationSettings.MetadataRepositoryType);
+
+                        SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges,
+                            ConfigurationSettings.MetadataRepositoryType);
+
+
+                        //Load the grids from the repository after being updated
+                        PopulateTableMappingGridWithVersion(versionId);
+                        PopulateAttributeGridWithVersion(versionId);
+                        PopulatePhysicalModelGridWithVersion(versionId);
+
+                        //Refresh the UI to display the newly created version
+                        if (oldVersionId != versionId)
+                        {
+                            var connOmd = new SqlConnection
+                                {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
+                            trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
+                            trackBarVersioning.TickFrequency = GetVersionCount();
+                            trackBarVersioning.Value = GetMaxVersionId(connOmd);
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        richTextBoxInformation.Text +=
+                            "The metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
+                            exception;
+                    }
+
+                }
+                else
+                {
+                    richTextBoxInformation.Text += "There is no metadata to save!";
+                }
             }
         }
 
@@ -991,7 +1016,8 @@ namespace TEAM
             var versionId = GetMaxVersionId(connOmd);
 
             //Make sure the correct version is added to the global parameters
-            GlobalParameters.VersionId = versionId;
+            GlobalParameters.currentVersionId = versionId;
+            GlobalParameters.highestVersionId = versionId;
             FileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
 
             return versionId;
@@ -1741,7 +1767,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFileTableMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
                 FileConfiguration.newFileTableMapping = "false";
             }
@@ -2013,7 +2039,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFilePhysicalModel == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 FileConfiguration.newFilePhysicalModel = "false";
             }
@@ -2345,7 +2371,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFileAttributeMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
                 FileConfiguration.newFileAttributeMapping = "false";
             }
@@ -2802,7 +2828,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.VersionId +".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId +".json");
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -2985,7 +3011,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -6649,8 +6675,8 @@ namespace TEAM
             var sqlStatementForAttributeVersion = new StringBuilder();
 
             sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.VersionId + ") + '|' + object_name(main.object_id) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
-            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.VersionId + " AS [VERSION_ID],");
+            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.currentVersionId + ") + '|' + object_name(main.object_id) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
+            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.currentVersionId + " AS [VERSION_ID],");
             sqlStatementForAttributeVersion.AppendLine("  object_schema_name(main.object_id) AS [SCHEMA_NAME],");
             sqlStatementForAttributeVersion.AppendLine("  object_name(main.object_id) AS [TABLE_NAME], ");
             sqlStatementForAttributeVersion.AppendLine("  main.[name] AS [COLUMN_NAME], ");
@@ -7024,7 +7050,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7086,7 +7112,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.VersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7167,7 +7193,7 @@ namespace TEAM
             foreach (var sourceObject in objectListSTG)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.VersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.currentVersionId);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7185,7 +7211,7 @@ namespace TEAM
             foreach (var sourceObject in objectListPSA)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg, GlobalParameters.VersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg, GlobalParameters.currentVersionId);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7284,7 +7310,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.VersionId + ".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)

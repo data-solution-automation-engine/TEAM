@@ -15,7 +15,7 @@ namespace TEAM
         /// <param name="fileType"></param>
         internal static void CreateDummyJsonFile(string fileType)
         {
-            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.VersionId + ".json";
+            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.currentVersionId + ".json";
 
             JArray outputFileArray = new JArray();
             JObject dummyJsonFile = new JObject();
@@ -77,7 +77,7 @@ namespace TEAM
         /// <param name="fileType"></param>
         internal static void CreatePlaceholderJsonFile(string fileType)
         {
-            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.VersionId + ".json";
+            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.currentVersionId + ".json";
 
             File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileType + jsonVersionExtension, "");
         }

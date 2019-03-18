@@ -187,7 +187,9 @@ namespace TEAM
             public static string JsonExtension { get; set; } = ".json";
 
             // Version handling
-            public static int VersionId { get; set; } = 0;
+            public static int currentVersionId { get; set; } = 0;
+            public static int highestVersionId { get; set; } = 0;
+
         }
 
 
