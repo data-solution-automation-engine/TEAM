@@ -59,7 +59,7 @@ namespace TEAM
             this.checkBoxIntegrationLayer = new System.Windows.Forms.CheckBox();
             this.checkBoxStagingLayer = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
-            this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewTable();
+            this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewPhysicalModel();
             this.outputGroupBoxVersioning = new System.Windows.Forms.GroupBox();
             this.radioButtonMinorRelease = new System.Windows.Forms.RadioButton();
             this.radiobuttonMajorRelease = new System.Windows.Forms.RadioButton();
@@ -854,7 +854,7 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAttributeMappingAsJSONToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage3;
-        private CustomDataGridViewTable dataGridViewPhysicalModelMetadata;
+        private CustomDataGridViewPhysicalModel dataGridViewPhysicalModelMetadata;
         private System.Windows.Forms.ToolStripMenuItem physicalModelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openModelMetadataFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveModelMetadataFileAsJSONToolStripMenuItem;

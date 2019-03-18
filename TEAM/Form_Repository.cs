@@ -848,25 +848,20 @@ namespace TEAM
                     createStatement.AppendLine();
                     createStatement.AppendLine("-- Table Mapping");
                     createStatement.AppendLine("IF OBJECT_ID('[MD_TABLE_MAPPING]', 'U') IS NOT NULL");
-                    createStatement.AppendLine(" DROP TABLE[MD_TABLE_MAPPING]");
+                    createStatement.AppendLine(" DROP TABLE [MD_TABLE_MAPPING]");
                     createStatement.AppendLine("");
-                    createStatement.AppendLine("CREATE TABLE[MD_TABLE_MAPPING]");
+                    createStatement.AppendLine("CREATE TABLE [MD_TABLE_MAPPING]");
                     createStatement.AppendLine("( ");
                     createStatement.AppendLine("    [TABLE_MAPPING_HASH] AS(");
-                    createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[BUSINESS_KEY_ATTRIBUTE])),'NA')+'|'+");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DRIVING_KEY_ATTRIBUTE])),'NA')+'|'+");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[FILTER_CRITERIA])),'NA')+'|'");
-                    createStatement.AppendLine("			),(2)");
-                    createStatement.AppendLine("			)");
-                    createStatement.AppendLine("		) PERSISTED NOT NULL ,");
+                    createStatement.AppendLine("    CONVERT([CHAR](32),HASHBYTES('MD5',");
+                    createStatement.AppendLine("       ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("       ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("       ISNULL(RTRIM(CONVERT(VARCHAR(100),[BUSINESS_KEY_ATTRIBUTE])),'NA')+'|'+");
+                    createStatement.AppendLine("       ISNULL(RTRIM(CONVERT(VARCHAR(100),[DRIVING_KEY_ATTRIBUTE])),'NA')+'|'+");
+                    createStatement.AppendLine("       ISNULL(RTRIM(CONVERT(VARCHAR(100),[FILTER_CRITERIA])),'NA')+'|'");
+                    createStatement.AppendLine("),(2)");
+                    createStatement.AppendLine(")");
+                    createStatement.AppendLine(") PERSISTED NOT NULL ,");
                     createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
                     createStatement.AppendLine("	[SOURCE_TABLE] varchar(100)  NULL,");
                     createStatement.AppendLine("	[BUSINESS_KEY_ATTRIBUTE] varchar(4000)  NULL,");
@@ -874,8 +869,7 @@ namespace TEAM
                     createStatement.AppendLine("	[TARGET_TABLE] varchar(100)  NULL,");
                     createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
                     createStatement.AppendLine("	[PROCESS_INDICATOR] varchar(1)  NULL,");
-                    createStatement.AppendLine(
-                        "    CONSTRAINT[PK_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
+                    createStatement.AppendLine("    CONSTRAINT[PK_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
                     createStatement.AppendLine(")");
 
                     RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 55);
@@ -899,13 +893,13 @@ namespace TEAM
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("ALTER TABLE [MD_VERSION]");
-                createStatement.AppendLine("    ADD CONSTRAINT[PK_MD_VERSION] PRIMARY KEY CLUSTERED([VERSION_ID] ASC)");
+                createStatement.AppendLine("  ADD CONSTRAINT[PK_MD_VERSION] PRIMARY KEY CLUSTERED([VERSION_ID] ASC)");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX[IX_MD_VERSION] ON[MD_VERSION]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("    [MAJOR_RELEASE_NUMBER] ASC,");
-                createStatement.AppendLine("	[MINOR_RELEASE_NUMBER] ASC");
+                createStatement.AppendLine("  [MAJOR_RELEASE_NUMBER] ASC,");
+                createStatement.AppendLine("  [MINOR_RELEASE_NUMBER] ASC");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 58);
@@ -915,122 +909,105 @@ namespace TEAM
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Version Attribute");
                 createStatement.AppendLine("IF OBJECT_ID('[MD_VERSION_ATTRIBUTE]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_VERSION_ATTRIBUTE]");
+                createStatement.AppendLine(" DROP TABLE [MD_VERSION_ATTRIBUTE]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_VERSION_ATTRIBUTE]");
+                createStatement.AppendLine("CREATE TABLE [MD_VERSION_ATTRIBUTE]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("");
-                createStatement.AppendLine("    [VERSION_ATTRIBUTE_HASH] AS(");
-                createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
-                createStatement.AppendLine(
-                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TABLE_NAME])),'NA')+'|'+");
-                createStatement.AppendLine(
-                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[COLUMN_NAME])),'NA')+'|'+");
-                createStatement.AppendLine(
-                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[VERSION_ID])),'NA')+'|'");
-                createStatement.AppendLine("			),(2)");
-                createStatement.AppendLine("			)");
-                createStatement.AppendLine("		) PERSISTED NOT NULL ,");
-                createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
-                createStatement.AppendLine("	[TABLE_NAME]         varchar(100)  NULL ,");
-                createStatement.AppendLine("	[COLUMN_NAME]        varchar(100)  NOT NULL,");
-                createStatement.AppendLine("    [DATA_TYPE]          varchar(100)  NULL ,");
-                createStatement.AppendLine("	[CHARACTER_MAXIMUM_LENGTH] integer NULL,");
-                createStatement.AppendLine("    [NUMERIC_PRECISION]  integer NULL,");
-                createStatement.AppendLine("    [ORDINAL_POSITION]   integer NULL,");
-                createStatement.AppendLine("    [PRIMARY_KEY_INDICATOR] varchar(1)  NULL ,");
-                createStatement.AppendLine("	[MULTI_ACTIVE_INDICATOR] varchar(1)  NULL ");
+                createStatement.AppendLine("  [VERSION_ATTRIBUTE_HASH] AS (");
+                createStatement.AppendLine("  CONVERT([CHAR](32),HASHBYTES('MD5',");
+                createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[SCHEMA_NAME])),'NA')+'|'+");
+                createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[TABLE_NAME])),'NA')+'|'+");
+                createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[COLUMN_NAME])),'NA')+'|'+");
+                createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[VERSION_ID])),'NA')+'|'");
+                createStatement.AppendLine("  ),(2)");
+                createStatement.AppendLine(")");
+                createStatement.AppendLine(") PERSISTED NOT NULL ,");
+                createStatement.AppendLine("  [VERSION_ID] integer NOT NULL ,");
+                createStatement.AppendLine("  [SCHEMA_NAME] varchar(100)  NULL ,");
+                createStatement.AppendLine("  [TABLE_NAME] varchar(100)  NULL ,");
+                createStatement.AppendLine("  [COLUMN_NAME] varchar(100)  NOT NULL,");
+                createStatement.AppendLine("  [DATA_TYPE] varchar(100)  NULL ,");
+                createStatement.AppendLine("  [CHARACTER_MAXIMUM_LENGTH] integer NULL,");
+                createStatement.AppendLine("  [NUMERIC_PRECISION] integer NULL,");
+                createStatement.AppendLine("  [ORDINAL_POSITION] integer NULL,");
+                createStatement.AppendLine("  [PRIMARY_KEY_INDICATOR] varchar(1)  NULL ,");
+                createStatement.AppendLine("  [MULTI_ACTIVE_INDICATOR] varchar(1)  NULL ");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("ALTER TABLE[MD_VERSION_ATTRIBUTE]");
-                createStatement.AppendLine(
-                    "    ADD CONSTRAINT[PK_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([VERSION_ATTRIBUTE_HASH] ASC, [VERSION_ID] ASC)");
+                createStatement.AppendLine("  ADD CONSTRAINT[PK_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([VERSION_ATTRIBUTE_HASH] ASC, [VERSION_ID] ASC)");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 59);
                 createStatement.Clear();
 
                 // Create existing Foreign Key Constraints
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF] FOREIGN KEY([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION])");
-                createStatement.AppendLine(
-                    "REFERENCES  [MD_SOURCE_HUB_XREF] ([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION])");
+                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF] FOREIGN KEY([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION])");
+                createStatement.AppendLine("REFERENCES [MD_SOURCE_HUB_XREF] ([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 60);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATTRIBUTE] FOREIGN KEY([ATTRIBUTE_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_ATTRIBUTE] FOREIGN KEY([ATTRIBUTE_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 61);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT] FOREIGN KEY([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
-                createStatement.AppendLine(
-                    "REFERENCES  [MD_BUSINESS_KEY_COMPONENT]([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT] FOREIGN KEY([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
+                createStatement.AppendLine("REFERENCES  [MD_BUSINESS_KEY_COMPONENT]([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 62);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 63);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SATELLITE] FOREIGN KEY([SATELLITE_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_DRIVING_KEY_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_DRIVING_KEY_XREF_MD_SATELLITE] FOREIGN KEY([SATELLITE_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_SATELLITE] ([SATELLITE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 64);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 65);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_LINK] FOREIGN KEY([LINK_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_HUB_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_HUB_LINK_XREF_MD_LINK] FOREIGN KEY([LINK_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 66);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SATELLITE]  WITH CHECK ADD  CONSTRAINT [FK_MD_SATELLITE_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_SATELLITE]  WITH CHECK ADD  CONSTRAINT [FK_MD_SATELLITE_MD_HUB] FOREIGN KEY([HUB_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 67);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SATELLITE]  WITH CHECK ADD  CONSTRAINT [FK_MD_SATELLITE_MD_LINK] FOREIGN KEY([LINK_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_SATELLITE]  WITH CHECK ADD  CONSTRAINT [FK_MD_SATELLITE_MD_LINK] FOREIGN KEY([LINK_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 68);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_HUB] FOREIGN KEY([HUB_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_HUB] ([HUB_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 69);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_HUB_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_HUB_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 70);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_ID_FROM])");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_ID_FROM])");
                 createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
@@ -1043,15 +1020,13 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK] FOREIGN KEY([LINK_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK] FOREIGN KEY([LINK_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 72);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 73);

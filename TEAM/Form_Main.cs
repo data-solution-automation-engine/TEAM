@@ -423,11 +423,18 @@ namespace TEAM
                 }
                 else
                 {
-                    // No invoke required - same thread
-                    _myMetadataForm.FormClosed += CloseMetadataForm;
-                    _myMetadataForm = new FormManageMetadata(this);
+                    try
+                    {
+                        // No invoke required - same thread
+                        _myMetadataForm.FormClosed += CloseMetadataForm;
+                        _myMetadataForm = new FormManageMetadata(this);
 
-                    Application.Run(_myMetadataForm);
+                        Application.Run(_myMetadataForm);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Cannot close the form that is open. The reported reason is: " + ex);
+                    }
                 }
             }
         }

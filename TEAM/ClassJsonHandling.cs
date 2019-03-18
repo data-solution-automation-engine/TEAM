@@ -25,8 +25,8 @@ namespace TEAM
                 dummyJsonFile = new JObject(
                     new JProperty("tableMappingHash", "NewHash"),
                     new JProperty("versionId", "versionId"),
-                    new JProperty("stagingAreaTable", "STG_EXAMPLESYSTEM_EXAMPLETABLE"),
-                    new JProperty("integrationAreaTable", "HUB_EXAMPLE"),
+                    new JProperty("sourceTable", "STG_EXAMPLESYSTEM_EXAMPLETABLE"),
+                    new JProperty("targetTable", "HUB_EXAMPLE"),
                     new JProperty("businessKeyDefinition", "EXAMPLE"),
                     new JProperty("drivingKeyDefinition", ""),
                     new JProperty("filterCriteria", ""),
@@ -37,6 +37,7 @@ namespace TEAM
                 dummyJsonFile = new JObject(
                     new JProperty("versionAttributeHash", "NewHash"),
                     new JProperty("versionId", "versionId"),
+                    new JProperty("schemaName", "[dbo]"),
                     new JProperty("tableName", "Sample Table"),
                     new JProperty("columnName", "Sample Column"),
                     new JProperty("dataType", "nvarchar"),
@@ -53,8 +54,8 @@ namespace TEAM
                     new JProperty("versionId", "versionId"),
                     new JProperty("sourceTable", "SOURCE_TABLE"),
                     new JProperty("sourceAttribute", "EXAMPLE_FROM_ATTRIBUTE"),
-                    new JProperty("TargetTable", "TARGET_TABLE"),
-                    new JProperty("TargetAttribute", "EXAMPLE_TO_ATTRIBUTE"),
+                    new JProperty("targetTable", "TARGET_TABLE"),
+                    new JProperty("targetAttribute", "EXAMPLE_TO_ATTRIBUTE"),
                     new JProperty("transformationRule", "")
                 );
             }
