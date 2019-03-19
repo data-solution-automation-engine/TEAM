@@ -548,6 +548,7 @@ namespace TEAM
                 createStatement.AppendLine("    [HUB_ID]       integer NOT NULL ,");
                 createStatement.AppendLine("	[HUB_NAME]     varchar(100)  NOT NULL,");
                 createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
+                createStatement.AppendLine("	[BUSINESS_KEY] varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_HUB] PRIMARY KEY CLUSTERED ([HUB_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
@@ -1333,11 +1334,13 @@ namespace TEAM
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
-                createStatement.AppendLine(" SOURCE_NAME,");
-                //createStatement.AppendLine(" SCHEMA_NAME,");
+                createStatement.AppendLine(" stg.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME],");
+                createStatement.AppendLine(" stg.SOURCE_NAME,");
+                createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" xref.HUB_ID,");
+                createStatement.AppendLine(" hub.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine(" HUB_NAME,");
-                createStatement.AppendLine(" BUSINESS_KEY_DEFINITION,");
+                createStatement.AppendLine(" hub.BUSINESS_KEY AS TARGET_BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" FILTER_CRITERIA");
                 createStatement.AppendLine("FROM MD_SOURCE_HUB_XREF xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");

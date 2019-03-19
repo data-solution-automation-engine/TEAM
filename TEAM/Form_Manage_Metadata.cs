@@ -3558,21 +3558,21 @@ namespace TEAM
 
             if (ConfigurationSettings.TableNamingLocation=="Prefix")
             {
-                stagingPrefix = stagingPrefix + '%';
-                psaPrefix = psaPrefix + '%';
-                hubTablePrefix = hubTablePrefix + '%';
-                lnkTablePrefix = lnkTablePrefix + '%';
-                satTablePrefix = satTablePrefix + '%';
-                lsatTablePrefix = lsatTablePrefix + '%';
+                stagingPrefix = stagingPrefix + "_%";
+                psaPrefix = psaPrefix + "_%";
+                hubTablePrefix = hubTablePrefix + "_%";
+                lnkTablePrefix = lnkTablePrefix + "_%";
+                satTablePrefix = satTablePrefix + "_%";
+                lsatTablePrefix = lsatTablePrefix + "_%";
             }
             else
             {
-                stagingPrefix = '%' + stagingPrefix;
-                psaPrefix = '%' + psaPrefix;
-                hubTablePrefix = '%' + hubTablePrefix;
-                lnkTablePrefix = '%' + lnkTablePrefix;
-                satTablePrefix = '%' + satTablePrefix;
-                lsatTablePrefix = '%' + lsatTablePrefix;
+                stagingPrefix = "%_" + stagingPrefix;
+                psaPrefix = "%_" + psaPrefix;
+                hubTablePrefix = "%_" + hubTablePrefix;
+                lnkTablePrefix = "%_" + lnkTablePrefix;
+                satTablePrefix = "%_" + satTablePrefix;
+                lsatTablePrefix = "%_" + lsatTablePrefix;
             }
 
             var dwhKeyIdentifier = ConfigurationSettings.DwhKeyIdentifier;
@@ -3600,10 +3600,21 @@ namespace TEAM
                 var majorVersion = versionMajorMinor.Key;
                 var minorVersion = versionMajorMinor.Value;
 
+                // Determine the query type (physical or virtual)
+                var queryMode = "";
+                if (checkBoxIgnoreVersion.Checked)
+                {
+                    queryMode = "physical";
+                }
+                else
+                {
+                    queryMode = "virtual";
+                }
+
                 _alert.SetTextLogging("Commencing metadata preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n\r\n");
 
                 // Alerting the user what kind of metadata is prepared
-                _alert.SetTextLogging(checkBoxIgnoreVersion.Checked
+                _alert.SetTextLogging(queryMode == "physical"
                     ? "The 'ignore model version' option is selected. This means when possible the live database (tables and attributes) will be used in conjunction with the Data Vault metadata. In other words, the model versioning is ignored.\r\n\r\n"
                     : "Metadata is prepared using the selected version for both the Data Vault metadata as well as the model metadata.\r\n\r\n");
                 #endregion
@@ -3780,7 +3791,7 @@ namespace TEAM
                     var hubCounter = 1; 
 
                     // Getting the distinct list of tables to go into the MD_HUB table
-                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + hubTablePrefix + "'");
+                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
 
                     var distinctList = new List<string>();
 
@@ -3796,6 +3807,7 @@ namespace TEAM
                         }
                     }
 
+                    // Process the unique Hub records
                     foreach (var tableName in distinctList)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
@@ -3805,12 +3817,16 @@ namespace TEAM
                                 _alert.SetTextLogging("--> " + tableName + "\r\n");
                             }
 
+                            // Retrieve the business key
+                            var hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyList(tableName, versionId, queryMode);
+                            string businessKeyString = string.Join(",", hubBusinessKey);
+
                             var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
                             var insertHubStatement = new StringBuilder();
                             insertHubStatement.AppendLine("INSERT INTO [MD_HUB]");
-                            insertHubStatement.AppendLine("([HUB_NAME],[HUB_ID], [SCHEMA_NAME])");
-                            insertHubStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + hubCounter + ",'"+fullyQualifiedName.Key+"')");
+                            insertHubStatement.AppendLine("([HUB_NAME],[HUB_ID], [SCHEMA_NAME], [BUSINESS_KEY])");
+                            insertHubStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + hubCounter + ",'"+fullyQualifiedName.Key+"', '"+ businessKeyString + "')");
 
                             var command = new SqlCommand(insertHubStatement.ToString(), connection);
 
@@ -3850,7 +3866,7 @@ namespace TEAM
                     var linkCounter = 1;
 
                     // Getting the distinct list of tables to go into the MD_LINK table
-                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + lnkTablePrefix + "'");
+                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
 
                     var distinctList = new List<string>();
 
@@ -3871,7 +3887,7 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            if (tableName != "'Not applicable'")
+                            if (tableName != "Not applicable")
                             {
                                 _alert.SetTextLogging("--> " + tableName + "\r\n");
                             }
