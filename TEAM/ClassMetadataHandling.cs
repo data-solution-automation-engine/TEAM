@@ -16,7 +16,7 @@ namespace TEAM
             string localType ="";
 
             // Remove schema, if there
-            //tableName = tableName.Substring(tableName.IndexOf(']') + 2);
+            tableName = tableName.Substring(tableName.IndexOf('.') + 1);
 
             if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix") // I.e. HUB_CUSTOMER
             {
@@ -173,7 +173,7 @@ namespace TEAM
             return returnTableName;
         }
 
-        public static List<string> GetHubTargetBusinessKeyList(string hubTableName, int versionId, string queryMode)
+        public static List<string> GetHubTargetBusinessKeyList(string hubSchemaName, string hubTableName, int versionId, string queryMode)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys
             var conn = new SqlConnection();
@@ -202,13 +202,17 @@ namespace TEAM
             var localkeyLength = keyText.Length;
             var localkeySubstring = localkeyLength + 1;
 
+            // Make sure brackets are removed
+            hubSchemaName = hubSchemaName.Replace("[","").Replace("]","");
+            hubTableName = hubTableName.Replace("[", "").Replace("]", "");
+
             if (queryMode == "physical")
             {
                 // Make sure the live database is hit when the checkbox is ticked
                 sqlStatementForHubBusinessKeys.AppendLine("SELECT COLUMN_NAME");
                 sqlStatementForHubBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
                 sqlStatementForHubBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
-                sqlStatementForHubBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + FormBase.ConfigurationSettings.SchemaName + "'");
+                sqlStatementForHubBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + hubSchemaName + "'");
                 sqlStatementForHubBusinessKeys.AppendLine("  AND TABLE_NAME= '" + hubTableName + "'");
                 sqlStatementForHubBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
                                                           FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
@@ -220,6 +224,7 @@ namespace TEAM
                 sqlStatementForHubBusinessKeys.AppendLine("FROM MD_VERSION_ATTRIBUTE");
                 sqlStatementForHubBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
                 sqlStatementForHubBusinessKeys.AppendLine("  AND TABLE_NAME= '" + hubTableName + "'");
+                sqlStatementForHubBusinessKeys.AppendLine("  AND SCHEMA_NAME= '" + hubSchemaName + "'");
                 sqlStatementForHubBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
                                                           FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
                 sqlStatementForHubBusinessKeys.AppendLine("  AND VERSION_ID = " + versionId + "");

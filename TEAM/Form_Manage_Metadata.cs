@@ -3817,11 +3817,11 @@ namespace TEAM
                                 _alert.SetTextLogging("--> " + tableName + "\r\n");
                             }
 
-                            // Retrieve the business key
-                            var hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyList(tableName, versionId, queryMode);
-                            string businessKeyString = string.Join(",", hubBusinessKey);
-
                             var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
+
+                            // Retrieve the business key
+                            var hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, queryMode);
+                            string businessKeyString = string.Join(",", hubBusinessKey);
 
                             var insertHubStatement = new StringBuilder();
                             insertHubStatement.AppendLine("INSERT INTO [MD_HUB]");
