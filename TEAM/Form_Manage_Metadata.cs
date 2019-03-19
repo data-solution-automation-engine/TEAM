@@ -5924,7 +5924,7 @@ namespace TEAM
                             sqlStatementForHubCategories.AppendLine("SELECT ");
                             sqlStatementForHubCategories.AppendLine(" [SOURCE_ID]");
                             sqlStatementForHubCategories.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForHubCategories.AppendLine(",[SCHEMA_NAME]");
+                            //sqlStatementForHubCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
                             sqlStatementForHubCategories.AppendLine(",[FILTER_CRITERIA]");
                             sqlStatementForHubCategories.AppendLine(",[SATELLITE_ID]");
                             sqlStatementForHubCategories.AppendLine(",[SATELLITE_NAME]");
@@ -5934,7 +5934,7 @@ namespace TEAM
                             sqlStatementForHubCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
                             sqlStatementForHubCategories.AppendLine(",[LINK_ID]");
                             sqlStatementForHubCategories.AppendLine(",[LINK_NAME]");
-                            sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_STAGING_SATELLITE_XREF]");
+                            sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
                             sqlStatementForHubCategories.AppendLine("WHERE SATELLITE_TYPE = 'Normal'");
  
                             var modelRelationshipsHubDataTable = GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
@@ -5944,7 +5944,7 @@ namespace TEAM
                             sqlStatementForLinkCategories.AppendLine("SELECT ");
                             sqlStatementForLinkCategories.AppendLine(" [SOURCE_ID]");
                             sqlStatementForLinkCategories.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForLinkCategories.AppendLine(",[SCHEMA_NAME]");
+                            //sqlStatementForLinkCategories.AppendLine(",[SOURCE_SCHEMA_NAME]");
                             sqlStatementForLinkCategories.AppendLine(",[FILTER_CRITERIA]");
                             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_ID]");
                             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_NAME]");
@@ -5954,7 +5954,7 @@ namespace TEAM
                             sqlStatementForLinkCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
                             sqlStatementForLinkCategories.AppendLine(",[LINK_ID]");
                             sqlStatementForLinkCategories.AppendLine(",[LINK_NAME]");
-                            sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_STAGING_SATELLITE_XREF]");
+                            sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
                             sqlStatementForLinkCategories.AppendLine("WHERE SATELLITE_TYPE = 'Link Satellite'");
 
                             var modelRelationshipsLinksDataTable = GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
@@ -5967,7 +5967,7 @@ namespace TEAM
                             sqlStatementForRelationships.AppendLine(",[LINK_NAME]");
                             sqlStatementForRelationships.AppendLine(",[SOURCE_ID]");
                             sqlStatementForRelationships.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[SCHEMA_NAME]");
+                            sqlStatementForRelationships.AppendLine(",[SOURCE_SCHEMA_NAME]");
                             sqlStatementForRelationships.AppendLine(",[HUB_ID]");
                             sqlStatementForRelationships.AppendLine(",[HUB_NAME]");
                             sqlStatementForRelationships.AppendLine(",[BUSINESS_KEY_DEFINITION]");
@@ -5981,7 +5981,7 @@ namespace TEAM
                             sqlStatementForSatelliteAttributes.AppendLine("SELECT ");
                             sqlStatementForSatelliteAttributes.AppendLine(" [SOURCE_ID]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SCHEMA_NAME]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ID]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_NAME]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_FROM]");
@@ -5989,7 +5989,7 @@ namespace TEAM
                             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_TO]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_NAME_TO]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[MULTI_ACTIVE_KEY_INDICATOR]");
-                            sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_STAGING_SATELLITE_ATTRIBUTE_XREF]");
+                            sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
 
                             var satelliteAttributes = GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
 
