@@ -1168,8 +1168,7 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine("-- INTERFACE_SOURCE_LINK_XREF");
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_SOURCE_LINK_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_LINK_XREF]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_LINK_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 82);
@@ -1338,9 +1337,9 @@ namespace TEAM
                 createStatement.AppendLine(" stg.SOURCE_NAME,");
                 createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" xref.HUB_ID,");
-                createStatement.AppendLine(" hub.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine(" hub.[SCHEMA_NAME] AS [HUB_SCHEMA_NAME],");
                 createStatement.AppendLine(" HUB_NAME,");
-                createStatement.AppendLine(" hub.BUSINESS_KEY AS TARGET_BUSINESS_KEY_DEFINITION,");
+                createStatement.AppendLine(" hub.BUSINESS_KEY AS HUB_BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" FILTER_CRITERIA");
                 createStatement.AppendLine("FROM MD_SOURCE_HUB_XREF xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
@@ -1372,10 +1371,14 @@ namespace TEAM
                 createStatement.AppendLine(" ,stg.SCHEMA_NAME AS SOURCE_SCHEMA_NAME");
                 createStatement.AppendLine(" ,xref.[SATELLITE_ID]");
                 createStatement.AppendLine(" ,[SATELLITE_NAME]");
-                createStatement.AppendLine(" ,[ATTRIBUTE_ID_FROM]");
-                createStatement.AppendLine(" ,att_from.[ATTRIBUTE_NAME] AS ATTRIBUTE_NAME_FROM");
-                createStatement.AppendLine(" ,[ATTRIBUTE_ID_TO]");
-                createStatement.AppendLine(" ,UPPER(att_to.[ATTRIBUTE_NAME]) AS ATTRIBUTE_NAME_TO");
+                createStatement.AppendLine(" ,[ATTRIBUTE_ID_FROM] AS SOURCE_ATTRIBUTE_ID");
+                createStatement.AppendLine(" ,att_from.[ATTRIBUTE_NAME] AS SOURCE_ATTRIBUTE_NAME");
+                createStatement.AppendLine(" ,[ATTRIBUTE_ID_TO] AS SATELLITE_ATTRIBUTE_ID");
+                createStatement.AppendLine(" ,UPPER(att_to.[ATTRIBUTE_NAME]) AS SATELLITE_ATTRIBUTE_NAME");
+                //createStatement.AppendLine(" ,[ATTRIBUTE_ID_FROM]");
+                //createStatement.AppendLine(" ,att_from.[ATTRIBUTE_NAME] AS ATTRIBUTE_NAME_FROM");
+                //createStatement.AppendLine(" ,[ATTRIBUTE_ID_TO]");
+                //createStatement.AppendLine(" ,UPPER(att_to.[ATTRIBUTE_NAME]) AS ATTRIBUTE_NAME_TO");
                 createStatement.AppendLine(" ,[MULTI_ACTIVE_KEY_INDICATOR]");
                 createStatement.AppendLine("FROM [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
@@ -1391,6 +1394,7 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
                 createStatement.AppendLine(" SOURCE_NAME,");
+                createStatement.AppendLine(" stghubxref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
                 //createStatement.AppendLine(" SCHEMA_NAME,");
                 createStatement.AppendLine(" xref.FILTER_CRITERIA,");
                 createStatement.AppendLine(" xref.SATELLITE_ID,");
@@ -1398,7 +1402,6 @@ namespace TEAM
                 createStatement.AppendLine(" sat.SATELLITE_TYPE,");
                 createStatement.AppendLine(" sat.HUB_ID,");
                 createStatement.AppendLine(" hub.HUB_NAME,");
-                createStatement.AppendLine(" stghubxref.BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" sat.LINK_ID,");
                 createStatement.AppendLine(" lnk.LINK_NAME");
                 createStatement.AppendLine("FROM MD_SOURCE_SATELLITE_XREF xref");
