@@ -156,7 +156,7 @@ namespace TEAM
 
             var connOmdString = ConfigurationSettings.ConnectionStringOmd;
 
-            // Handle multithreading
+            // Handle multi-threading
             if (worker != null && worker.CancellationPending)
             {
                 e.Cancel = true;
@@ -758,8 +758,7 @@ namespace TEAM
                 createStatement.AppendLine("	[HUB_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] varchar(4000) NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA]  varchar(4000)  NULL");
-                createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_SOURCE_HUB_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC)");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_HUB_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 45);
@@ -777,8 +776,7 @@ namespace TEAM
                 createStatement.AppendLine("	[LINK_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_ID_FROM] integer NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_ID_TO] integer NOT NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_SOURCE_LINK_ATTRIBUTE_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [LINK_ID] ASC, [ATTRIBUTE_ID_FROM] ASC, [ATTRIBUTE_ID_TO] ASC)");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_LINK_ATTRIBUTE_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [LINK_ID] ASC, [ATTRIBUTE_ID_FROM] ASC, [ATTRIBUTE_ID_TO] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 46);
@@ -836,8 +834,7 @@ namespace TEAM
                 createStatement.AppendLine("    [BUSINESS_KEY_DEFINITION] [varchar](1000) NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
                 createStatement.AppendLine("	[AREA] varchar(100)  NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_SOURCE_SATELLITE_XREF] PRIMARY KEY CLUSTERED([SATELLITE_ID] ASC, [SOURCE_ID] ASC)");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_SATELLITE_XREF] PRIMARY KEY CLUSTERED([SATELLITE_ID] ASC, [SOURCE_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 50);
@@ -940,6 +937,34 @@ namespace TEAM
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 59);
                 createStatement.Clear();
+
+
+                // Physical Model
+                createStatement.AppendLine();
+                createStatement.AppendLine("-- Version Attribute");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_PHYSICAL_MODEL]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_PHYSICAL_MODEL]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE [MD_PHYSICAL_MODEL]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("  [DATABASE_NAME] varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("  [SCHEMA_NAME] varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("  [TABLE_NAME] varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("  [COLUMN_NAME] varchar(100)  NOT NULL,");
+                createStatement.AppendLine("  [DATA_TYPE] varchar(100)  NULL ,");
+                createStatement.AppendLine("  [CHARACTER_MAXIMUM_LENGTH] integer NULL,");
+                createStatement.AppendLine("  [NUMERIC_PRECISION] integer NULL,");
+                createStatement.AppendLine("  [ORDINAL_POSITION] integer NULL,");
+                createStatement.AppendLine("  [PRIMARY_KEY_INDICATOR] varchar(1)  NULL");
+                createStatement.AppendLine(")");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("ALTER TABLE[MD_PHYSICAL_MODEL]");
+                createStatement.AppendLine("  ADD CONSTRAINT [PK_MD_PHYSICAL_MODEL] PRIMARY KEY CLUSTERED ([SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [COLUMN_NAME] ASC)");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 59);
+                createStatement.Clear();
+
+
 
                 // Create existing Foreign Key Constraints
                 createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF] FOREIGN KEY([SOURCE_ID], [HUB_ID], [BUSINESS_KEY_DEFINITION])");
@@ -1955,15 +1980,15 @@ namespace TEAM
                             createStatement.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID]");
                             createStatement.AppendLine(" ,[OMD_INSERT_DATETIME]");
                             createStatement.AppendLine(" ,[OMD_EVENT_DATETIME]");
-                            createStatement.AppendLine(" ,[OMD_RECORD_SOURCE]");
+                            createStatement.AppendLine(" ,[OMD_RECORD_SOURCE_ID]");
                             createStatement.AppendLine(" ,[OMD_CDC_OPERATION]");
                             createStatement.AppendLine(" ,[OMD_HASH_FULL_RECORD]");
                             createStatement.AppendLine(" ,[Demographic_Segment_Code]");
                             createStatement.AppendLine(" ,[Demographic_Segment_Description])");
                             createStatement.AppendLine("VALUES");
-                            createStatement.AppendLine(" ( -1, GETDATE(), GETDATE(), 'Data Warehouse','Insert',0x00, 'LOW', 'Lower SES'),");
-                            createStatement.AppendLine(" ( -1,GETDATE(), GETDATE(), 'Data Warehouse','Insert',0x00, 'MED', 'Medium SES'),");
-                            createStatement.AppendLine(" ( -1,GETDATE(), GETDATE(), 'Data Warehouse','Insert',0x00, 'HIGH','High SES')");
+                            createStatement.AppendLine(" ( -1, GETDATE(), GETDATE(), '0','Insert',0x00, 'LOW', 'Lower SES'),");
+                            createStatement.AppendLine(" ( -1,GETDATE(), GETDATE(), '0','Insert',0x00, 'MED', 'Medium SES'),");
+                            createStatement.AppendLine(" ( -1,GETDATE(), GETDATE(), '0','Insert',0x00, 'HIGH','High SES')");
                         }
                         else
                         {

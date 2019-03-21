@@ -3640,6 +3640,7 @@ namespace TEAM
                                         DELETE FROM dbo.[MD_HUB];
                                         DELETE FROM dbo.[MD_LINK];
                                         DELETE FROM dbo.[MD_MODEL_METADATA];
+                                        DELETE FROM dbo.[MD_PHYSICAL_MODEL];
                                         ");
 
                 using (var connectionVersion = new SqlConnection(metaDataConnection))
@@ -4310,19 +4311,19 @@ namespace TEAM
 
                     if (databaseName == FormBase.ConfigurationSettings.StagingDatabaseName)
                     { // Staging filter
-                        stgTableFilterObjects = stgTableFilterObjects + "object_id(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                        stgTableFilterObjects = stgTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
                     else if (databaseName == FormBase.ConfigurationSettings.PsaDatabaseName)
                     { // Persistent Staging Area filter
-                        psaTableFilterObjects = psaTableFilterObjects + "object_id(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                        psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
                     else if (databaseName == FormBase.ConfigurationSettings.IntegrationDatabaseName)
                     { // Integration Layer filter
-                        intTableFilterObjects = intTableFilterObjects + "object_id(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                        intTableFilterObjects = intTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
                     else if (databaseName == FormBase.ConfigurationSettings.PresentationDatabaseName)
                     { // Presentation Layer filter
-                        presTableFilterObjects = presTableFilterObjects + "object_id(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                        presTableFilterObjects = presTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
 
                     objectCounter++;
@@ -4373,12 +4374,9 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("  SELECT * FROM");
                     allDatabaseAttributes.AppendLine("  (");
                     allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" +
-                                                     ConfigurationSettings.StagingDatabaseName +
-                                                     "')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" +
-                                                     ConfigurationSettings.StagingDatabaseName +
-                                                     "')) AS [TABLE_NAME],");
+                    //allDatabase
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +ConfigurationSettings.StagingDatabaseName +"')) +']' AS [SCHEMA_NAME],");
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +ConfigurationSettings.StagingDatabaseName +"')) AS [TABLE_NAME],");
                     allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
                     allDatabaseAttributes.AppendLine("      OBJECT_ID");
                     allDatabaseAttributes.AppendLine("    FROM");
@@ -4393,10 +4391,10 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("    ) stg");
                     allDatabaseAttributes.AppendLine("    UNION ALL");
                     allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" +
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
                                                      ConfigurationSettings.PsaDatabaseName +
                                                      "')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" +
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +
                                                      ConfigurationSettings.PsaDatabaseName + "')) AS [TABLE_NAME],");
                     allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
                     allDatabaseAttributes.AppendLine("      OBJECT_ID");
@@ -4412,10 +4410,10 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("    ) psa");
                     allDatabaseAttributes.AppendLine("    UNION ALL");
                     allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, db_id('" +
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
                                                      ConfigurationSettings.IntegrationDatabaseName +
                                                      "')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, db_id('" +
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +
                                                      ConfigurationSettings.IntegrationDatabaseName +
                                                      "')) AS [TABLE_NAME],");
                     allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
@@ -4433,10 +4431,10 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("    ) [int]");
                     allDatabaseAttributes.AppendLine("    UNION ALL");
                     allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(object_id, db_id('" +
+                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
                                                      ConfigurationSettings.PresentationDatabaseName +
                                                      "')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(object_id, db_id('" +
+                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +
                                                      ConfigurationSettings.PresentationDatabaseName +
                                                      "')) AS [TABLE_NAME],");
                     allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
@@ -4444,7 +4442,7 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("    FROM");
                     allDatabaseAttributes.AppendLine("    (");
                     allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      A.object_id,");
+                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
                     allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
                                                      ConfigurationSettings.PresentationDatabaseName +
                                                      "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
@@ -4862,13 +4860,13 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine(" JOIN ");
                     prepareHubLnkXrefStatement.AppendLine(" (");
                     prepareHubLnkXrefStatement.AppendLine(" SELECT ");
-                    prepareHubLnkXrefStatement.AppendLine("     '['+object_schema_name(object_id, db_id('DVI_200_Integration_Layer'))+']' AS LINK_SCHEMA,");
-                    prepareHubLnkXrefStatement.AppendLine("     object_name(object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
+                    prepareHubLnkXrefStatement.AppendLine("     '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('DVI_200_Integration_Layer'))+']' AS LINK_SCHEMA,");
+                    prepareHubLnkXrefStatement.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
                     prepareHubLnkXrefStatement.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    prepareHubLnkXrefStatement.AppendLine("     ROW_NUMBER() OVER(PARTITION BY object_name(object_id,db_id('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
+                    prepareHubLnkXrefStatement.AppendLine("     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
                     prepareHubLnkXrefStatement.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
                     prepareHubLnkXrefStatement.AppendLine(" WHERE [column_id]>4");
-                    prepareHubLnkXrefStatement.AppendLine(" AND object_name(object_id,db_id('"+ConfigurationSettings.IntegrationDatabaseName+"')) LIKE '" + lnkTablePrefix + @"'");
+                    prepareHubLnkXrefStatement.AppendLine(" AND OBJECT_NAME(OBJECT_ID,DB_ID('"+ConfigurationSettings.IntegrationDatabaseName+"')) LIKE '" + lnkTablePrefix + @"'");
                     prepareHubLnkXrefStatement.AppendLine(" ) lnk_target_model");
                     prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_SCHEMA+'.'+lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
                     prepareHubLnkXrefStatement.AppendLine(" AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
@@ -5409,10 +5407,10 @@ namespace TEAM
                         prepareMultiKeyStatement.AppendLine("  	C.name AS ATTRIBUTE_NAME");
                         prepareMultiKeyStatement.AppendLine("  FROM " + linkedServer + integrationDatabase + ".sys.index_columns A");
                         prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.indexes B");
-                        prepareMultiKeyStatement.AppendLine("    ON A.object_id=B.object_id AND A.index_id=B.index_id");
+                        prepareMultiKeyStatement.AppendLine("    ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
                         prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.columns C");
-                        prepareMultiKeyStatement.AppendLine("    ON A.column_id=C.column_id AND A.object_id=C.object_id");
-                        prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.tables sc on sc.object_id = A.object_id");
+                        prepareMultiKeyStatement.AppendLine("    ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+                        prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
                         prepareMultiKeyStatement.AppendLine("    WHERE is_primary_key=1");
                         prepareMultiKeyStatement.AppendLine("  AND C.name!='" + effectiveDateTimeAttribute + "' AND C.name!='" + currentRecordAttribute + "' AND C.name!='" + eventDateTimeAtttribute + "'");
                         prepareMultiKeyStatement.AppendLine("  AND C.name NOT LIKE '"+dwhKeyIdentifier+"'");
@@ -6691,10 +6689,10 @@ namespace TEAM
             var sqlStatementForAttributeVersion = new StringBuilder();
 
             sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.currentVersionId + ") + '|' + object_name(main.object_id) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
+            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.currentVersionId + ") + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
             sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.currentVersionId + " AS [VERSION_ID],");
-            sqlStatementForAttributeVersion.AppendLine("  object_schema_name(main.object_id) AS [SCHEMA_NAME],");
-            sqlStatementForAttributeVersion.AppendLine("  object_name(main.object_id) AS [TABLE_NAME], ");
+            sqlStatementForAttributeVersion.AppendLine("  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [SCHEMA_NAME],");
+            sqlStatementForAttributeVersion.AppendLine("  OBJECT_NAME(main.OBJECT_ID) AS [TABLE_NAME], ");
             sqlStatementForAttributeVersion.AppendLine("  main.[name] AS [COLUMN_NAME], ");
             sqlStatementForAttributeVersion.AppendLine("  t.[name] AS [DATA_TYPE], ");
             sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(");
@@ -6726,13 +6724,13 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("	  C.name AS COLUMN_NAME");
             sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
             sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1 ");
             sqlStatementForAttributeVersion.AppendLine(") keysub");
-            sqlStatementForAttributeVersion.AppendLine("   ON object_name(main.object_id) = keysub.TABLE_NAME");
+            sqlStatementForAttributeVersion.AppendLine("   ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
             sqlStatementForAttributeVersion.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
 
             //Multi-active
@@ -6743,10 +6741,10 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
             sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.object_id=B.object_id AND A.index_id=B.index_id");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.object_id=C.object_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.object_id = A.object_id");
+            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
             sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1");
             sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
 
@@ -6760,13 +6758,13 @@ namespace TEAM
             }
 
             sqlStatementForAttributeVersion.AppendLine("	) ma");
-            sqlStatementForAttributeVersion.AppendLine("	ON object_name(main.object_id) = ma.TABLE_NAME");
+            sqlStatementForAttributeVersion.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
             sqlStatementForAttributeVersion.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
 
-            sqlStatementForAttributeVersion.AppendLine("WHERE object_name(main.object_id) LIKE '" + prefix + "_%'");
+            sqlStatementForAttributeVersion.AppendLine("WHERE OBJECT_NAME(main.OBJECT_ID) LIKE '" + prefix + "_%'");
 
             // Retrieve (and apply) the list of tables to filter from the Table Mapping datagrid
-            sqlStatementForAttributeVersion.AppendLine("  AND object_name(main.object_id) IN (");
+            sqlStatementForAttributeVersion.AppendLine("  AND OBJECT_NAME(main.OBJECT_ID) IN (");
             var filterList = TableMetadataFilter((DataTable)_bindingSourceTableMetadata.DataSource);
             foreach (var filter in filterList)
             {
