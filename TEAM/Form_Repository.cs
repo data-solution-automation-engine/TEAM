@@ -913,6 +913,7 @@ namespace TEAM
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("  [VERSION_ATTRIBUTE_HASH] AS (");
                 createStatement.AppendLine("  CONVERT([CHAR](32),HASHBYTES('MD5',");
+                createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[DATABASE_NAME])),'NA')+'|'+");
                 createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[SCHEMA_NAME])),'NA')+'|'+");
                 createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[TABLE_NAME])),'NA')+'|'+");
                 createStatement.AppendLine("    ISNULL(RTRIM(CONVERT(VARCHAR(100),[COLUMN_NAME])),'NA')+'|'+");
@@ -921,6 +922,7 @@ namespace TEAM
                 createStatement.AppendLine(")");
                 createStatement.AppendLine(") PERSISTED NOT NULL ,");
                 createStatement.AppendLine("  [VERSION_ID] integer NOT NULL ,");
+                createStatement.AppendLine("  [DATABASE_NAME] varchar(100)  NULL ,");
                 createStatement.AppendLine("  [SCHEMA_NAME] varchar(100)  NULL ,");
                 createStatement.AppendLine("  [TABLE_NAME] varchar(100)  NULL ,");
                 createStatement.AppendLine("  [COLUMN_NAME] varchar(100)  NOT NULL,");
@@ -933,7 +935,7 @@ namespace TEAM
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("ALTER TABLE[MD_VERSION_ATTRIBUTE]");
-                createStatement.AppendLine("  ADD CONSTRAINT[PK_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([VERSION_ATTRIBUTE_HASH] ASC, [VERSION_ID] ASC)");
+                createStatement.AppendLine("  ADD CONSTRAINT[PK_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([DATABASE_NAME] ASC, [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [VERSION_ID] ASC)");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 59);
                 createStatement.Clear();

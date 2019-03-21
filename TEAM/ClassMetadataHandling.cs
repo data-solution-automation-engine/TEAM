@@ -249,5 +249,55 @@ namespace TEAM
 
             return businessKeyList;
         }
+
+
+    }
+
+    internal class AttributeSelection
+    {
+        internal StringBuilder CreatePhysicalModelSet(string databaseName, string filterObjects)
+        {
+            var returnValue = new StringBuilder();
+
+            returnValue.AppendLine("SELECT");
+            returnValue.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS[DATABASE_NAME],");
+            returnValue.AppendLine("  '[' + OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) + ']' AS[SCHEMA_NAME],");
+            returnValue.AppendLine("  OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) AS TABLE_NAME,");
+            returnValue.AppendLine("  A.OBJECT_ID,");
+            returnValue.AppendLine("  A.[name] AS COLUMN_NAME,");
+            returnValue.AppendLine("  t.[name] AS[DATA_TYPE], ");
+            returnValue.AppendLine("  CAST(COALESCE(");
+            returnValue.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN A.[max_length]/2 ");
+            returnValue.AppendLine("    ELSE A.[max_length]");
+            returnValue.AppendLine("    END");
+            returnValue.AppendLine("   ,0) AS VARCHAR(100)) AS[CHARACTER_MAXIMUM_LENGTH],");
+            returnValue.AppendLine("  CAST(COALESCE(A.[precision],0) AS VARCHAR(100)) AS[NUMERIC_PRECISION], ");
+            returnValue.AppendLine("  CAST(A.[column_id] AS VARCHAR(100)) AS[ORDINAL_POSITION],");
+            returnValue.AppendLine("  CASE");
+            returnValue.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL");
+            returnValue.AppendLine("    THEN 'N' ");
+            returnValue.AppendLine("    ELSE 'Y' ");
+            returnValue.AppendLine("  END AS PRIMARY_KEY_INDICATOR");
+            returnValue.AppendLine("FROM " + databaseName + ".sys.columns A");
+            returnValue.AppendLine("JOIN sys.types t ON A.user_type_id= t.user_type_id");
+            returnValue.AppendLine("-- Primary Key");
+            returnValue.AppendLine(" LEFT OUTER JOIN (");
+            returnValue.AppendLine("     SELECT");
+            returnValue.AppendLine("       sc.name AS TABLE_NAME,");
+            returnValue.AppendLine("       C.name AS COLUMN_NAME");
+            returnValue.AppendLine("     FROM " + databaseName + ".sys.index_columns A");
+            returnValue.AppendLine("     JOIN " + databaseName + ".sys.indexes B");
+            returnValue.AppendLine("     ON A.OBJECT_ID= B.OBJECT_ID AND A.index_id= B.index_id");
+            returnValue.AppendLine("     JOIN " + databaseName + ".sys.columns C");
+            returnValue.AppendLine("     ON A.column_id= C.column_id AND A.OBJECT_ID= C.OBJECT_ID");
+            returnValue.AppendLine("     JOIN " + databaseName + ".sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            returnValue.AppendLine("     WHERE is_primary_key = 1");
+            returnValue.AppendLine(" ) keysub");
+            returnValue.AppendLine("    ON OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) = keysub.[TABLE_NAME]");
+            returnValue.AppendLine("   AND A.[name] = keysub.COLUMN_NAME");
+            returnValue.AppendLine("    WHERE A.[OBJECT_ID] IN (" + filterObjects + ")");
+
+            return returnValue;
+        }
     }
 }

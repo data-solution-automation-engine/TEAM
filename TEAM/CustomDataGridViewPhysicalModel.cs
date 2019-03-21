@@ -24,26 +24,26 @@ namespace TEAM
 
             foreach (DataGridViewRow row in Rows)
             {
-                var integrationTable = row.Cells[3].Value;
+                var integrationTable = row.Cells[4].Value;
 
                 if (integrationTable != null && row.IsNewRow == false)
                 {
                    // Backcolour for Integration Layer tables
                     if (Regex.Matches(integrationTable.ToString(), hubIdentifier).Count>0)
                     {
-                        this[3, counter].Style.BackColor = Color.CadetBlue;
+                        this[4, counter].Style.BackColor = Color.CadetBlue;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), lsatIdentifier).Count > 0)
                     {
-                        this[3, counter].Style.BackColor = Color.Yellow;
+                        this[4, counter].Style.BackColor = Color.Yellow;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), satIdentifier).Count > 0)
                     {
-                        this[3, counter].Style.BackColor = Color.Gold;
+                        this[4, counter].Style.BackColor = Color.Gold;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), lnkIdentifier).Count > 0)
                     {
-                        this[3, counter].Style.BackColor = Color.Red;
+                        this[4, counter].Style.BackColor = Color.Red;
                     }
 
                 }

@@ -37,6 +37,7 @@ namespace TEAM
             //JSON representation of the physical model metadata
             public string versionAttributeHash { get; set; }
             public string versionId { get; set; }
+            public string databaseName { get; set; }
             public string schemaName { get; set; }
             public string tableName { get; set; }
             public string columnName { get; set; }
@@ -261,6 +262,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine("SELECT ");
                 sqlStatementForLatestVersion.AppendLine(" [VERSION_ATTRIBUTE_HASH],");
                 sqlStatementForLatestVersion.AppendLine(" CAST([VERSION_ID] AS VARCHAR(100)) AS VERSION_ID,");
+                sqlStatementForLatestVersion.AppendLine(" [DATABASE_NAME],");
                 sqlStatementForLatestVersion.AppendLine(" [SCHEMA_NAME],");
                 sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
                 sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
@@ -283,16 +285,17 @@ namespace TEAM
 
                 dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
                 dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Schema Name"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Table Name"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Column Name"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Data Type";
-                dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Length";
-                dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Precision";
-                dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Position";
-                dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Primary Key";
-                dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Multi-Active";
-
+                dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
+                dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
+                dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
+                dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
+                dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
+                dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
+                dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
+                dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
+                dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
+                dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
+            
             }
             else if (repositoryTarget == "JSON") //Update the JSON
             {
@@ -311,15 +314,16 @@ namespace TEAM
                 //Make sure the changes are seen as committed, so that changes can be detected later on
                 dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
                 dt.Columns[1].ColumnName = "VERSION_ID";
-                dt.Columns[2].ColumnName = "SCHEMA_NAME";
-                dt.Columns[3].ColumnName = "TABLE_NAME";
-                dt.Columns[4].ColumnName = "COLUMN_NAME";
-                dt.Columns[5].ColumnName = "DATA_TYPE";
-                dt.Columns[6].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
-                dt.Columns[7].ColumnName = "NUMERIC_PRECISION";
-                dt.Columns[8].ColumnName = "ORDINAL_POSITION";
-                dt.Columns[9].ColumnName = "PRIMARY_KEY_INDICATOR";
-                dt.Columns[10].ColumnName = "MULTI_ACTIVE_INDICATOR";
+                dt.Columns[2].ColumnName = "DATABASE_NAME";
+                dt.Columns[3].ColumnName = "SCHEMA_NAME";
+                dt.Columns[4].ColumnName = "TABLE_NAME";
+                dt.Columns[5].ColumnName = "COLUMN_NAME";
+                dt.Columns[6].ColumnName = "DATA_TYPE";
+                dt.Columns[7].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
+                dt.Columns[8].ColumnName = "NUMERIC_PRECISION";
+                dt.Columns[9].ColumnName = "ORDINAL_POSITION";
+                dt.Columns[10].ColumnName = "PRIMARY_KEY_INDICATOR";
+                dt.Columns[11].ColumnName = "MULTI_ACTIVE_INDICATOR";
 
                 _bindingSourcePhysicalModelMetadata.DataSource = dt;
 
@@ -333,15 +337,16 @@ namespace TEAM
 
                     dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
                     dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
-                    dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Schema Name"; //Key column
-                    dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Table Name"; //Key column
-                    dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Column Name"; //Key column
-                    dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Data Type";
-                    dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Length";
-                    dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Precision";
-                    dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Position";
-                    dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Primary Key";
-                    dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Multi-Active";
+                    dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
+                    dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
+                    dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
+                    dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
+                    dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
+                    dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
                 }
 
                 richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
@@ -1039,6 +1044,7 @@ namespace TEAM
                 {
                     if (!row.IsNewRow)
                     {
+                        string databaseName = "";
                         string schemaName = "";
                         string tableName = "";
                         string columnName = "";
@@ -1051,53 +1057,58 @@ namespace TEAM
 
                         if (row.Cells[2].Value != DBNull.Value)
                         {
-                            schemaName = (string)row.Cells[2].Value;
+                            databaseName = (string)row.Cells[2].Value;
                         }
 
                         if (row.Cells[3].Value != DBNull.Value)
                         {
-                            tableName = (string) row.Cells[3].Value;
+                            schemaName = (string)row.Cells[3].Value;
                         }
 
                         if (row.Cells[4].Value != DBNull.Value)
                         {
-                            columnName = (string) row.Cells[4].Value;
+                            tableName = (string) row.Cells[4].Value;
                         }
 
                         if (row.Cells[5].Value != DBNull.Value)
                         {
-                            dataType = (string) row.Cells[5].Value;
+                            columnName = (string) row.Cells[5].Value;
                         }
 
                         if (row.Cells[6].Value != DBNull.Value)
                         {
-                            maxLength = (string) row.Cells[6].Value;
+                            dataType = (string) row.Cells[6].Value;
                         }
 
                         if (row.Cells[7].Value != DBNull.Value)
                         {
-                            numericPrecision = (string) row.Cells[7].Value;
+                            maxLength = (string) row.Cells[7].Value;
                         }
 
                         if (row.Cells[8].Value != DBNull.Value)
                         {
-                            ordinalPosition = (string) row.Cells[8].Value;
+                            numericPrecision = (string) row.Cells[8].Value;
                         }
 
                         if (row.Cells[9].Value != DBNull.Value)
                         {
-                            primaryKeyIndicator = (string) row.Cells[9].Value;
+                            ordinalPosition = (string) row.Cells[9].Value;
                         }
 
                         if (row.Cells[10].Value != DBNull.Value)
                         {
-                            multiActiveIndicator = (string) row.Cells[10].Value;
+                            primaryKeyIndicator = (string) row.Cells[10].Value;
+                        }
+
+                        if (row.Cells[11].Value != DBNull.Value)
+                        {
+                            multiActiveIndicator = (string) row.Cells[11].Value;
                         }
 
                         insertQueryTables.AppendLine("INSERT INTO MD_VERSION_ATTRIBUTE");
-                        insertQueryTables.AppendLine("([VERSION_ID], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
+                        insertQueryTables.AppendLine("([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
                         insertQueryTables.AppendLine("VALUES");
-                        insertQueryTables.AppendLine("(" + versionId + ", '"+schemaName+"' ,'" + tableName + "','" + columnName + "','" +
+                        insertQueryTables.AppendLine("(" + versionId + ", '"+databaseName+"' ,'"+schemaName+"' ,'" + tableName + "','" + columnName + "','" +
                                                      dataType + "','" + maxLength + "','" + numericPrecision + "','" +
                                                      ordinalPosition + "','" + primaryKeyIndicator + "','" +
                                                      multiActiveIndicator + "')");
@@ -1154,6 +1165,7 @@ namespace TEAM
                 {
                     if (!row.IsNewRow)
                     {
+                        string databaseName = "";
                         string schemaName = "";
                         string tableName = "";
                         string columnName = "";
@@ -1166,47 +1178,52 @@ namespace TEAM
 
                         if (row.Cells[2].Value != DBNull.Value)
                         {
-                            schemaName = (string)row.Cells[2].Value;
+                            databaseName = (string)row.Cells[2].Value;
                         }
 
                         if (row.Cells[3].Value != DBNull.Value)
                         {
-                            tableName = (string) row.Cells[3].Value;
+                            schemaName = (string)row.Cells[3].Value;
                         }
 
                         if (row.Cells[4].Value != DBNull.Value)
                         {
-                            columnName = (string) row.Cells[4].Value;
+                            tableName = (string) row.Cells[4].Value;
                         }
 
                         if (row.Cells[5].Value != DBNull.Value)
                         {
-                            dataType = (string) row.Cells[5].Value;
+                            columnName = (string) row.Cells[5].Value;
                         }
 
                         if (row.Cells[6].Value != DBNull.Value)
                         {
-                            maxLength = (string) row.Cells[6].Value;
+                            dataType = (string) row.Cells[6].Value;
                         }
 
                         if (row.Cells[7].Value != DBNull.Value)
                         {
-                            numericPrecision = (string) row.Cells[7].Value;
+                            maxLength = (string) row.Cells[7].Value;
                         }
 
                         if (row.Cells[8].Value != DBNull.Value)
                         {
-                            ordinalPosition = (string) row.Cells[8].Value;
+                            numericPrecision = (string) row.Cells[8].Value;
                         }
 
                         if (row.Cells[9].Value != DBNull.Value)
                         {
-                            primaryKeyIndicator = (string) row.Cells[9].Value;
+                            ordinalPosition = (string) row.Cells[9].Value;
                         }
 
                         if (row.Cells[10].Value != DBNull.Value)
                         {
-                            multiActiveIndicator = (string) row.Cells[10].Value;
+                            primaryKeyIndicator = (string) row.Cells[10].Value;
+                        }
+
+                        if (row.Cells[11].Value != DBNull.Value)
+                        {
+                            multiActiveIndicator = (string) row.Cells[11].Value;
                         }
 
                         var hashKey = CreateMd5(versionId + '|' + tableName + '|' + columnName);
@@ -1214,6 +1231,7 @@ namespace TEAM
                         JObject newJsonSegment = new JObject(
                             new JProperty("versionAttributeHash", hashKey),
                             new JProperty("versionId", versionId),
+                            new JProperty("databaseName", databaseName),
                             new JProperty("schemaName", schemaName),
                             new JProperty("tableName", tableName),
                             new JProperty("columnName", columnName),
@@ -2072,6 +2090,7 @@ namespace TEAM
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
                             var hashKey = (string)row["VERSION_ATTRIBUTE_HASH"];
+                            var databaseName = (string)row["DATABASE_NAME"];
                             var schemaName = (string)row["SCHEMA_NAME"];
                             var tableName = (string)row["TABLE_NAME"];
                             var columnName = (string)row["COLUMN_NAME"];
@@ -2087,7 +2106,8 @@ namespace TEAM
                             {
                                 insertQueryTables.AppendLine("UPDATE MD_VERSION_ATTRIBUTE");
                                 insertQueryTables.AppendLine("SET " +
-                                                             "  [SCHEMA_NAME] = '" + schemaName +
+                                                             "  [DATABASE_NAME] = '" + databaseName +
+                                                             "' [SCHEMA_NAME] = '" + schemaName +
                                                              "',[TABLE_NAME] = '" + tableName +
                                                              "',[COLUMN_NAME] = '" + columnName +
                                                              "',[DATA_TYPE] = '" + dataType +
@@ -2116,6 +2136,7 @@ namespace TEAM
                                     else
                                     {
                                         // Update the values in the JSON segment
+                                        jsonHash.databaseName = databaseName;
                                         jsonHash.schemaName = schemaName;
                                         jsonHash.tableName = tableName;
                                         jsonHash.columnName = columnName;
@@ -2145,6 +2166,7 @@ namespace TEAM
                         // Insert new rows
                         if ((row.RowState & DataRowState.Added) != 0)
                         {
+                            string databaseName = "";
                             string schemaName = "";
                             string tableName = "";
                             string columnName = "";
@@ -2158,55 +2180,61 @@ namespace TEAM
 
                             if (row[0] != DBNull.Value)
                             {
-                                schemaName = (string)row[2];
+                                databaseName = (string)row[2];
                             }
+
                             if (row[1] != DBNull.Value)
                             {
-                                tableName = (string)row[3];
+                                schemaName = (string)row[3];
                             }
 
                             if (row[2] != DBNull.Value)
                             {
-                                columnName = (string)row[4];
+                                tableName = (string)row[4];
                             }
 
                             if (row[3] != DBNull.Value)
                             {
-                                dataType = (string)row[5];
+                                columnName = (string)row[5];
                             }
 
                             if (row[4] != DBNull.Value)
                             {
-                                maxLength = (string)row[6];
+                                dataType = (string)row[6];
                             }
 
                             if (row[5] != DBNull.Value)
                             {
-                                numericPrecision = (string)row[7];
+                                maxLength = (string)row[7];
                             }
 
                             if (row[6] != DBNull.Value)
                             {
-                                ordinalPosition = (string)row[8];
+                                numericPrecision = (string)row[8];
                             }
 
                             if (row[7] != DBNull.Value)
                             {
-                                primaryKeyIndicator = (string)row[9];
+                                ordinalPosition = (string)row[9];
                             }
 
                             if (row[8] != DBNull.Value)
                             {
-                                multiActiveIndicator = (string)row[10];
+                                primaryKeyIndicator = (string)row[10];
+                            }
+
+                            if (row[9] != DBNull.Value)
+                            {
+                                multiActiveIndicator = (string)row[11];
                             }
 
                             if (repositoryTarget == "SQLServer")
                             {
-                                insertQueryTables.AppendLine("IF NOT EXISTS (SELECT * FROM [MD_VERSION_ATTRIBUTE] WHERE [VERSION_ID]= " + versionId + " AND [SCHEMA_NAME]='" + schemaName + "' AND [TABLE_NAME]='" + tableName + "' AND [COLUMN_NAME]='" + columnName + "')");
+                                insertQueryTables.AppendLine("IF NOT EXISTS (SELECT * FROM [MD_VERSION_ATTRIBUTE] WHERE [VERSION_ID]= " + versionId + " AND [DATABASE_NAME] = '"+ databaseName+"' AND [SCHEMA_NAME]='" + schemaName + "' AND [TABLE_NAME]='" + tableName + "' AND [COLUMN_NAME]='" + columnName + "')");
                                 insertQueryTables.AppendLine("INSERT INTO [MD_VERSION_ATTRIBUTE]");
-                                insertQueryTables.AppendLine("([VERSION_ID], [SCHEMA_NAME], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
+                                insertQueryTables.AppendLine("([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME],[COLUMN_NAME],[DATA_TYPE],[CHARACTER_MAXIMUM_LENGTH],[NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR])");
                                 insertQueryTables.AppendLine("VALUES");
-                                insertQueryTables.AppendLine("(" + versionId + ", '"+schemaName+"' ,'" + tableName + "','" + columnName +
+                                insertQueryTables.AppendLine("(" + versionId + ", '"+databaseName+"' ,'"+schemaName+"' ,'" + tableName + "','" + columnName +
                                                              "','" + dataType + "','" + maxLength + "','" +
                                                              numericPrecision + "','" + ordinalPosition + "','" +
                                                              primaryKeyIndicator + "','" + multiActiveIndicator + "')");
@@ -2236,6 +2264,7 @@ namespace TEAM
                                     JObject newJsonSegment = new JObject(
                                             new JProperty("versionAttributeHash", hashKey),
                                             new JProperty("versionId", versionId),
+                                            new JProperty("databaseName", databaseName),
                                             new JProperty("schemaName", schemaName),
                                             new JProperty("tableName", tableName),
                                             new JProperty("columnName", columnName),
@@ -2774,15 +2803,16 @@ namespace TEAM
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
             dt.Columns[1].ColumnName = "VERSION_ID";
-            dt.Columns[2].ColumnName = "SCHEMA_NAME";
-            dt.Columns[3].ColumnName = "TABLE_NAME";
-            dt.Columns[4].ColumnName = "COLUMN_NAME";
-            dt.Columns[5].ColumnName = "DATA_TYPE";
-            dt.Columns[6].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
-            dt.Columns[7].ColumnName = "NUMERIC_PRECISION";
-            dt.Columns[8].ColumnName = "ORDINAL_POSITION";
-            dt.Columns[9].ColumnName = "PRIMARY_KEY_INDICATOR";
-            dt.Columns[10].ColumnName = "MULTI_ACTIVE_INDICATOR";
+            dt.Columns[2].ColumnName = "DATABASE_NAME";
+            dt.Columns[3].ColumnName = "SCHEMA_NAME";
+            dt.Columns[4].ColumnName = "TABLE_NAME";
+            dt.Columns[5].ColumnName = "COLUMN_NAME";
+            dt.Columns[6].ColumnName = "DATA_TYPE";
+            dt.Columns[7].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
+            dt.Columns[8].ColumnName = "NUMERIC_PRECISION";
+            dt.Columns[9].ColumnName = "ORDINAL_POSITION";
+            dt.Columns[10].ColumnName = "PRIMARY_KEY_INDICATOR";
+            dt.Columns[11].ColumnName = "MULTI_ACTIVE_INDICATOR";
             _bindingSourcePhysicalModelMetadata.DataSource = dt;
         }
 
@@ -3240,6 +3270,8 @@ namespace TEAM
             createStatement.AppendLine("");
             createStatement.AppendLine("    [VERSION_ATTRIBUTE_HASH] AS(");
             createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DATABASE_NAME])),'NA')+'|'+");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SCHEMA_NAME])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TABLE_NAME])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[COLUMN_NAME])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[VERSION_ID])),'NA')+'|'");
@@ -3247,6 +3279,7 @@ namespace TEAM
             createStatement.AppendLine("			)");
             createStatement.AppendLine("		) PERSISTED NOT NULL ,");
             createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
+            createStatement.AppendLine("	[DATABASE_NAME]      varchar(100)  NULL ,");
             createStatement.AppendLine("	[SCHEMA_NAME]        varchar(100)  NULL ,");
             createStatement.AppendLine("	[TABLE_NAME]         varchar(100)  NULL ,");
             createStatement.AppendLine("	[COLUMN_NAME]        varchar(100)  NOT NULL,");
@@ -3258,8 +3291,8 @@ namespace TEAM
             createStatement.AppendLine("	[MULTI_ACTIVE_INDICATOR] varchar(1)  NULL ");
             createStatement.AppendLine(")");
             createStatement.AppendLine("");
-            createStatement.AppendLine("ALTER TABLE [MD_VERSION_ATTRIBUTE]");
-            createStatement.AppendLine("    ADD CONSTRAINT[PK_TMP_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([VERSION_ATTRIBUTE_HASH] ASC, [VERSION_ID] ASC)");
+            createStatement.AppendLine("ALTER TABLE [TMP_MD_VERSION_ATTRIBUTE]");
+            createStatement.AppendLine("    ADD CONSTRAINT[PK_TMP_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([DATABASE_NAME] ASC, [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [VERSION_ID] ASC)");
             createStatement.AppendLine();
 
             executeSqlCommand(createStatement, connString);
@@ -3268,10 +3301,13 @@ namespace TEAM
             // Load the datatable into the worker table for the physical model 
             foreach (DataRow row in inputPhysicalModel.Rows)
             {
+                string databaseName = "";
                 string schemaName = "";
                 string tableName = "";
                 string columnName = "";
 
+                if (row["DATABASE_NAME"] != DBNull.Value)
+                    schemaName = (string)row["DATABASE_NAME"];
                 if (row["SCHEMA_NAME"] != DBNull.Value)
                     schemaName = (string)row["SCHEMA_NAME"];
                 if (row["TABLE_NAME"] != DBNull.Value) 
@@ -3281,6 +3317,7 @@ namespace TEAM
 
                 createStatement.AppendLine("INSERT[dbo].[TMP_MD_VERSION_ATTRIBUTE]" +
                                            " ([VERSION_ID], " +
+                                           "[DATABASE_NAME], " +
                                            "[SCHEMA_NAME], " +
                                            "[TABLE_NAME], " +
                                            "[COLUMN_NAME], " +
@@ -3292,6 +3329,7 @@ namespace TEAM
                                            "[MULTI_ACTIVE_INDICATOR]) " +
                                            "VALUES(" +
                                            "0, " +
+                                           "N'" + databaseName + "', " +
                                            "N'" + schemaName + "', " +
                                            "N'" + tableName + "', " +
                                            "N'" + columnName + "', " +
@@ -3351,7 +3389,7 @@ namespace TEAM
             // Physical Model
             createStatement.AppendLine("-- Version Attribute");
             createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_VERSION_ATTRIBUTE]', 'U') IS NOT NULL");
-            createStatement.AppendLine(" DROP TABLE[TMP_MD_VERSION_ATTRIBUTE]");
+            createStatement.AppendLine(" DROP TABLE [TMP_MD_VERSION_ATTRIBUTE]");
 
             executeSqlCommand(createStatement, connString);
             createStatement.Clear();
@@ -4371,122 +4409,29 @@ namespace TEAM
                 if (checkBoxIgnoreVersion.Checked
                 ) // Get the attributes from the physical model / catalog. No virtualisation needed.
                 {
+                    var physicalModelInstantiation = new AttributeSelection();
+
                     allDatabaseAttributes.AppendLine("  SELECT * FROM");
                     allDatabaseAttributes.AppendLine("  (");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    //allDatabase
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +ConfigurationSettings.StagingDatabaseName +"')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +ConfigurationSettings.StagingDatabaseName +"')) AS [TABLE_NAME],");
-                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                    allDatabaseAttributes.AppendLine("    FROM");
-                    allDatabaseAttributes.AppendLine("    (");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.StagingDatabaseName +
-                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                    allDatabaseAttributes.AppendLine("    FROM " + linkedServer + stagingDatabase + ".sys.columns A");
-                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + stgTableFilterObjects + ")");
-                    allDatabaseAttributes.AppendLine("    ) stg");
+
+                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
                     allDatabaseAttributes.AppendLine("    UNION ALL");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.PsaDatabaseName +
-                                                     "')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.PsaDatabaseName + "')) AS [TABLE_NAME],");
-                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                    allDatabaseAttributes.AppendLine("    FROM");
-                    allDatabaseAttributes.AppendLine("    (");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.PsaDatabaseName +
-                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                    allDatabaseAttributes.AppendLine("    FROM " + linkedServer + psaDatabase + ".sys.columns A");
-                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + psaTableFilterObjects + ")");
-                    allDatabaseAttributes.AppendLine("    ) psa");
+                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
                     allDatabaseAttributes.AppendLine("    UNION ALL");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.IntegrationDatabaseName +
-                                                     "')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.IntegrationDatabaseName +
-                                                     "')) AS [TABLE_NAME],");
-                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                    allDatabaseAttributes.AppendLine("    FROM");
-                    allDatabaseAttributes.AppendLine("    (");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.IntegrationDatabaseName +
-                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                    allDatabaseAttributes.AppendLine(
-                        "    FROM " + linkedServer + integrationDatabase + ".sys.columns A");
-                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + intTableFilterObjects + ")");
-                    allDatabaseAttributes.AppendLine("    ) [int]");
+                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
                     allDatabaseAttributes.AppendLine("    UNION ALL");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.PresentationDatabaseName +
-                                                     "')) +']' AS [SCHEMA_NAME],");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.PresentationDatabaseName +
-                                                     "')) AS [TABLE_NAME],");
-                    allDatabaseAttributes.AppendLine("      COLUMN_NAME,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_ID");
-                    allDatabaseAttributes.AppendLine("    FROM");
-                    allDatabaseAttributes.AppendLine("    (");
-                    allDatabaseAttributes.AppendLine("    SELECT");
-                    allDatabaseAttributes.AppendLine("      A.OBJECT_ID,");
-                    allDatabaseAttributes.AppendLine("      OBJECT_NAME(A.OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.PresentationDatabaseName +
-                                                     "')) AS TABLE_NAME, A.[name] AS COLUMN_NAME");
-                    allDatabaseAttributes.AppendLine("    FROM " + linkedServer + presentationDatabase +
-                                                     ".sys.columns A");
-                    allDatabaseAttributes.AppendLine("    WHERE A.[OBJECT_ID] IN (" + presTableFilterObjects + ")");
-                    allDatabaseAttributes.AppendLine("    ) pres");
+                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
+
                     allDatabaseAttributes.AppendLine("  ) mapping");
-                    allDatabaseAttributes.AppendLine("  WHERE mapping.COLUMN_NAME NOT IN");
-                    allDatabaseAttributes.AppendLine("  ( ");
-                    allDatabaseAttributes.AppendLine("    '" + recordSource + "',");
-                    allDatabaseAttributes.AppendLine("    '" + alternativeRecordSource + "',");
-                    allDatabaseAttributes.AppendLine("    '" + sourceRowId + "',");
-                    allDatabaseAttributes.AppendLine("    '" + recordChecksum + "',");
-                    allDatabaseAttributes.AppendLine("    '" + changeDataCaptureIndicator + "',");
-                    allDatabaseAttributes.AppendLine("    '" + hubAlternativeLdts + "',");
-                    allDatabaseAttributes.AppendLine("    '" + eventDateTimeAtttribute + "',");
-                    allDatabaseAttributes.AppendLine("    '" + effectiveDateTimeAttribute + "',");
-                    allDatabaseAttributes.AppendLine("    '" + etlProcessId + "',");
-                    allDatabaseAttributes.AppendLine("    '" + loadDateTimeStamp + "',");
-                    allDatabaseAttributes.AppendLine("    '" + currentRecordAttribute + "'");
-                    allDatabaseAttributes.AppendLine("  ) ");
                 }
                 else // Get the values from the data grid or worker table (virtual mode)
                 {
                     allDatabaseAttributes.AppendLine("SELECT ");
+                    allDatabaseAttributes.AppendLine("  [DATABASE_NAME],");
                     allDatabaseAttributes.AppendLine("  [SCHEMA_NAME],"); 
                     allDatabaseAttributes.AppendLine("  [TABLE_NAME],");
                     allDatabaseAttributes.AppendLine("  [COLUMN_NAME]");
                     allDatabaseAttributes.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE mapping");
-                    allDatabaseAttributes.AppendLine("WHERE mapping.COLUMN_NAME NOT IN");
-                    allDatabaseAttributes.AppendLine("( ");
-                    allDatabaseAttributes.AppendLine("  '" + recordSource + "',");
-                    allDatabaseAttributes.AppendLine("  '" + alternativeRecordSource + "',");
-                    allDatabaseAttributes.AppendLine("  '" + sourceRowId + "',");
-                    allDatabaseAttributes.AppendLine("  '" + recordChecksum + "',");
-                    allDatabaseAttributes.AppendLine("  '" + changeDataCaptureIndicator + "',");
-                    allDatabaseAttributes.AppendLine("  '" + hubAlternativeLdts + "',");
-                    allDatabaseAttributes.AppendLine("  '" + eventDateTimeAtttribute + "',");
-                    allDatabaseAttributes.AppendLine("  '" + effectiveDateTimeAttribute + "',");
-                    allDatabaseAttributes.AppendLine("  '" + etlProcessId + "',");
-                    allDatabaseAttributes.AppendLine("  '" + loadDateTimeStamp + "',");
-                    allDatabaseAttributes.AppendLine("  '" + currentRecordAttribute + "'");
-                    allDatabaseAttributes.AppendLine(") ");
                 }
 
                 try
@@ -4532,10 +4477,23 @@ namespace TEAM
                         _alert.SetTextLogging("Commencing preparing the attributes from the metadata.\r\n");
                     }
 
-                    prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM");
-                    prepareAttStatement.AppendLine("(");
+                    prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM (");
                     prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
-                    prepareAttStatement.AppendLine(") sub1");
+                    prepareAttStatement.AppendLine(") sub");
+                    prepareAttStatement.AppendLine("  WHERE sub.COLUMN_NAME NOT IN");
+                    prepareAttStatement.AppendLine("  ( ");
+                    prepareAttStatement.AppendLine("    '" + recordSource + "',");
+                    prepareAttStatement.AppendLine("    '" + alternativeRecordSource + "',");
+                    prepareAttStatement.AppendLine("    '" + sourceRowId + "',");
+                    prepareAttStatement.AppendLine("    '" + recordChecksum + "',");
+                    prepareAttStatement.AppendLine("    '" + changeDataCaptureIndicator + "',");
+                    prepareAttStatement.AppendLine("    '" + hubAlternativeLdts + "',");
+                    prepareAttStatement.AppendLine("    '" + eventDateTimeAtttribute + "',");
+                    prepareAttStatement.AppendLine("    '" + effectiveDateTimeAttribute + "',");
+                    prepareAttStatement.AppendLine("    '" + etlProcessId + "',");
+                    prepareAttStatement.AppendLine("    '" + loadDateTimeStamp + "',");
+                    prepareAttStatement.AppendLine("    '" + currentRecordAttribute + "'");
+                    prepareAttStatement.AppendLine("  ) ");
 
                     // Load the data table, get the attributes
                     var listAtt = GetDataTable(ref connOmd, prepareAttStatement.ToString());
@@ -4574,7 +4532,6 @@ namespace TEAM
                                     errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
                                 }
                             }
-
                         }
                         _alert.SetTextLogging("-->  Processing " + attCounter + " attributes.\r\n");
                     }
@@ -4586,6 +4543,93 @@ namespace TEAM
                     errorCounter++;
                     _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
+                }
+
+                #endregion
+
+                #region Physical Model dump- 50%
+                //7b - Creating a point-in-time snapshot of the physical model used for export to the interface schemas
+
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Creating a snapshot of the physical model.\r\n");
+
+                try
+                {
+                    var preparePhysicalModelStatement = new StringBuilder();
+
+                    preparePhysicalModelStatement.AppendLine("SELECT ");
+                    preparePhysicalModelStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelStatement.AppendLine("FROM");
+                    preparePhysicalModelStatement.AppendLine("(");
+                    preparePhysicalModelStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
+                    preparePhysicalModelStatement.AppendLine(") sub");
+
+                    var physicalModelDataTable = GetDataTable(ref connOmd, preparePhysicalModelStatement.ToString());
+
+                    if (physicalModelDataTable.Rows.Count == 0)
+                    {
+                        _alert.SetTextLogging("-->  No model information was found in the metadata.\r\n");
+                    }
+                    else
+                    {
+                        foreach (DataRow tableName in physicalModelDataTable.Rows)
+                        {
+                            using (var connection = new SqlConnection(metaDataConnection))
+                            {
+                                var insertKeyStatement = new StringBuilder();
+
+                                insertKeyStatement.AppendLine("INSERT INTO [MD_PHYSICAL_MODEL]");
+                                insertKeyStatement.AppendLine("([DATABASE_NAME], " +
+                                                              "[SCHEMA_NAME], " +
+                                                              "[TABLE_NAME], " +
+                                                              "[COLUMN_NAME], " +
+                                                              "[DATA_TYPE], " +
+                                                              "[CHARACTER_MAXIMUM_LENGTH], " +
+                                                              "[NUMERIC_PRECISION], " +
+                                                              "[ORDINAL_POSITION], " +
+                                                              "[PRIMARY_KEY_INDICATOR])");
+                                insertKeyStatement.AppendLine("VALUES ('" + tableName["DATABASE_NAME"] + 
+                                                              "','" + tableName["SCHEMA_NAME"] + 
+                                                              "','" + tableName["TABLE_NAME"] + 
+                                                              "','" + tableName["COLUMN_NAME"] + 
+                                                              "','" + tableName["DATA_TYPE"] +
+                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"] +
+                                                              "','" + tableName["NUMERIC_PRECISION"] +
+                                                              "','" + tableName["ORDINAL_POSITION"] +
+                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"] + "')");
+
+                                var command = new SqlCommand(insertKeyStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorCounter++;
+                                    _alert.SetTextLogging("An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
+                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
+                                }
+                            }
+                        }
+                    }
+                    worker.ReportProgress(50);
+                    _alert.SetTextLogging("Preparation of the physical model extract completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" + ex);
                 }
 
                 #endregion
@@ -6541,7 +6585,7 @@ namespace TEAM
 
                         DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
 
-                        gridDataTable.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+                        gridDataTable.DefaultView.Sort = "[DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
                         gridDataTable.TableName = "ModelMetadata";
 
@@ -6552,15 +6596,16 @@ namespace TEAM
                             {
                                 versionAttributeHash = singleRow[0].ToString(),
                                 versionId = singleRow[1].ToString(),
-                                schemaName = singleRow[2].ToString(),
-                                tableName = singleRow[3].ToString(),
-                                columnName = singleRow[4].ToString(),
-                                dataType = singleRow[5].ToString(),
-                                characterMaximumLength = singleRow[6].ToString(),
-                                numericPrecision = singleRow[7].ToString(),
-                                ordinalPosition = singleRow[8].ToString(),
-                                primaryKeyIndicator = singleRow[9].ToString(),
-                                multiActiveIndicator = singleRow[10].ToString()
+                                databaseName = singleRow[2].ToString(),
+                                schemaName = singleRow[3].ToString(),
+                                tableName = singleRow[4].ToString(),
+                                columnName = singleRow[5].ToString(),
+                                dataType = singleRow[6].ToString(),
+                                characterMaximumLength = singleRow[7].ToString(),
+                                numericPrecision = singleRow[8].ToString(),
+                                ordinalPosition = singleRow[9].ToString(),
+                                primaryKeyIndicator = singleRow[10].ToString(),
+                                multiActiveIndicator = singleRow[11].ToString()
                             });
                             outputFileArray.Add(individualRow);
                         }
@@ -6633,7 +6678,7 @@ namespace TEAM
             var completeDataTable = stagingReverseEngineerResults.Copy();
             completeDataTable.Merge(integrationReverseEngineerResults);
 
-            completeDataTable.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+            completeDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
             // Display the results on the datagrid
             _bindingSourcePhysicalModelMetadata.DataSource = completeDataTable;
@@ -6646,15 +6691,16 @@ namespace TEAM
 
             dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
             dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Schema Name"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Table Name"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Column Name"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Data Type";
-            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Length";
-            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Precision";
-            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Position";
-            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Primary Key";
-            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Multi-Active";
+            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
+            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
+            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
+            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
+            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
+            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
+            dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
 
             foreach (DataRow row in completeDataTable.Rows) //Flag as new row so it's detected by the save button
             {
@@ -6691,6 +6737,7 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("SELECT ");
             sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.currentVersionId + ") + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
             sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.currentVersionId + " AS [VERSION_ID],");
+            sqlStatementForAttributeVersion.AppendLine("  DB_NAME(DB_ID('"+databaseName+"')) AS [DATABASE_NAME],");
             sqlStatementForAttributeVersion.AppendLine("  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [SCHEMA_NAME],");
             sqlStatementForAttributeVersion.AppendLine("  OBJECT_NAME(main.OBJECT_ID) AS [TABLE_NAME], ");
             sqlStatementForAttributeVersion.AppendLine("  main.[name] AS [COLUMN_NAME], ");
@@ -7347,18 +7394,19 @@ namespace TEAM
                         // Setup the datatable with proper headings
                         dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
                         dt.Columns[1].ColumnName = "VERSION_ID";
-                        dt.Columns[2].ColumnName = "SCHEMA_NAME";
-                        dt.Columns[3].ColumnName = "TABLE_NAME";
-                        dt.Columns[4].ColumnName = "COLUMN_NAME";
-                        dt.Columns[5].ColumnName = "DATA_TYPE";
-                        dt.Columns[6].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
-                        dt.Columns[7].ColumnName = "NUMERIC_PRECISION";
-                        dt.Columns[8].ColumnName = "ORDINAL_POSITION";
-                        dt.Columns[9].ColumnName = "PRIMARY_KEY_INDICATOR";
-                        dt.Columns[10].ColumnName = "MULTI_ACTIVE_INDICATOR";
+                        dt.Columns[2].ColumnName = "DATABASE_NAME";
+                        dt.Columns[3].ColumnName = "SCHEMA_NAME";
+                        dt.Columns[4].ColumnName = "TABLE_NAME";
+                        dt.Columns[5].ColumnName = "COLUMN_NAME";
+                        dt.Columns[6].ColumnName = "DATA_TYPE";
+                        dt.Columns[7].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
+                        dt.Columns[8].ColumnName = "NUMERIC_PRECISION";
+                        dt.Columns[9].ColumnName = "ORDINAL_POSITION";
+                        dt.Columns[10].ColumnName = "PRIMARY_KEY_INDICATOR";
+                        dt.Columns[11].ColumnName = "MULTI_ACTIVE_INDICATOR";
 
                         // Sort the columns
-                        dt.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+                        dt.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
                         // Clear out the existing data from the grid
                         _bindingSourcePhysicalModelMetadata.DataSource = null;
@@ -7379,15 +7427,16 @@ namespace TEAM
 
                             dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
                             dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Schema Name"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Table Name"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Column Name"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Data Type";
-                            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Length";
-                            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Precision";
-                            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Position";
-                            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Primary Key";
-                            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Multi-Active";
+                            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
+                            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
+                            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
+                            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
+                            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
+                            dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
                         }
                     }
 
