@@ -376,7 +376,7 @@ namespace TEAM
             sqlStatementForHubCategories.AppendLine(",[SATELLITE_TYPE]");
             sqlStatementForHubCategories.AppendLine(",[HUB_ID]");
             sqlStatementForHubCategories.AppendLine(",[HUB_NAME]");
-            sqlStatementForHubCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
+            sqlStatementForHubCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
             sqlStatementForHubCategories.AppendLine(",[LINK_ID]");
             sqlStatementForHubCategories.AppendLine(",[LINK_NAME]");
             sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");

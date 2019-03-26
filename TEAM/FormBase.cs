@@ -178,7 +178,7 @@ namespace TEAM
             internal static string WorkingEnvironment { get; set; } = "Development";
             
             // Database defaults
-            public static string DefaultSchema { get; set; } = "[dbo]";
+            public static string DefaultSchema { get; set; } = "dbo";
 
             // Json file name parameters
             public static string JsonTableMappingFileName { get; set; } = "TEAM_Table_Mapping";

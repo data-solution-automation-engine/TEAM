@@ -140,6 +140,31 @@ namespace TEAM
             return localArea;
         }
 
+        /// <summary>
+        ///   Return just the table name, in case a fully qualified name is available (including schema etc.)
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        internal static string nonQualifiedTableName(string tableName)
+        {
+            string returnTableName = "";
+
+            if (tableName.Contains('.')) // Split the string, keep the table name (remove the schema prefix)
+            {
+                var splitName = tableName.Split('.').ToList();
+                returnTableName = splitName[1];
+
+            }
+            else // Return the default (e.g. just the table name)
+            {
+                returnTableName = tableName;
+            }
+
+            return returnTableName;
+        }
+
+
+
         internal static Dictionary<string, string> GetSchema(string tableName)
         {
             Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
@@ -261,7 +286,7 @@ namespace TEAM
 
             returnValue.AppendLine("SELECT");
             returnValue.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS[DATABASE_NAME],");
-            returnValue.AppendLine("  '[' + OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) + ']' AS[SCHEMA_NAME],");
+            returnValue.AppendLine("  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) AS[SCHEMA_NAME],");
             returnValue.AppendLine("  OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) AS TABLE_NAME,");
             returnValue.AppendLine("  A.OBJECT_ID,");
             returnValue.AppendLine("  A.[name] AS COLUMN_NAME,");

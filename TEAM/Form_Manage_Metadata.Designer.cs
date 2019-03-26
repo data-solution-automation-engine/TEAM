@@ -56,8 +56,10 @@ namespace TEAM
             this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.checkBoxPresentationLayer = new System.Windows.Forms.CheckBox();
+            this.checkBoxPsa = new System.Windows.Forms.CheckBox();
             this.checkBoxIntegrationLayer = new System.Windows.Forms.CheckBox();
-            this.checkBoxStagingLayer = new System.Windows.Forms.CheckBox();
+            this.checkBoxStagingArea = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewPhysicalModel();
             this.outputGroupBoxVersioning = new System.Windows.Forms.GroupBox();
@@ -92,6 +94,7 @@ namespace TEAM
             this.checkBoxMergeFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxBackupFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxResizeDataGrid = new System.Windows.Forms.CheckBox();
+            this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
             this.groupBox2.SuspendLayout();
@@ -361,38 +364,64 @@ namespace TEAM
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.checkBoxPresentationLayer);
+            this.groupBox3.Controls.Add(this.checkBoxPsa);
             this.groupBox3.Controls.Add(this.checkBoxIntegrationLayer);
-            this.groupBox3.Controls.Add(this.checkBoxStagingLayer);
+            this.groupBox3.Controls.Add(this.checkBoxStagingArea);
             this.groupBox3.Location = new System.Drawing.Point(1096, 52);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(120, 88);
+            this.groupBox3.Size = new System.Drawing.Size(120, 115);
             this.groupBox3.TabIndex = 26;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Target area";
+            // 
+            // checkBoxPresentationLayer
+            // 
+            this.checkBoxPresentationLayer.AutoSize = true;
+            this.checkBoxPresentationLayer.Checked = true;
+            this.checkBoxPresentationLayer.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxPresentationLayer.Location = new System.Drawing.Point(6, 88);
+            this.checkBoxPresentationLayer.Name = "checkBoxPresentationLayer";
+            this.checkBoxPresentationLayer.Size = new System.Drawing.Size(79, 17);
+            this.checkBoxPresentationLayer.TabIndex = 12;
+            this.checkBoxPresentationLayer.Text = "Pres. Layer";
+            this.checkBoxPresentationLayer.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxPsa
+            // 
+            this.checkBoxPsa.AutoSize = true;
+            this.checkBoxPsa.Checked = true;
+            this.checkBoxPsa.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxPsa.Location = new System.Drawing.Point(6, 42);
+            this.checkBoxPsa.Name = "checkBoxPsa";
+            this.checkBoxPsa.Size = new System.Drawing.Size(114, 17);
+            this.checkBoxPsa.TabIndex = 11;
+            this.checkBoxPsa.Text = "Pers. Staging Area";
+            this.checkBoxPsa.UseVisualStyleBackColor = true;
             // 
             // checkBoxIntegrationLayer
             // 
             this.checkBoxIntegrationLayer.AutoSize = true;
             this.checkBoxIntegrationLayer.Checked = true;
             this.checkBoxIntegrationLayer.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxIntegrationLayer.Location = new System.Drawing.Point(6, 42);
+            this.checkBoxIntegrationLayer.Location = new System.Drawing.Point(6, 65);
             this.checkBoxIntegrationLayer.Name = "checkBoxIntegrationLayer";
             this.checkBoxIntegrationLayer.Size = new System.Drawing.Size(105, 17);
             this.checkBoxIntegrationLayer.TabIndex = 10;
             this.checkBoxIntegrationLayer.Text = "Integration Layer";
             this.checkBoxIntegrationLayer.UseVisualStyleBackColor = true;
             // 
-            // checkBoxStagingLayer
+            // checkBoxStagingArea
             // 
-            this.checkBoxStagingLayer.AutoSize = true;
-            this.checkBoxStagingLayer.Checked = true;
-            this.checkBoxStagingLayer.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxStagingLayer.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxStagingLayer.Name = "checkBoxStagingLayer";
-            this.checkBoxStagingLayer.Size = new System.Drawing.Size(91, 17);
-            this.checkBoxStagingLayer.TabIndex = 9;
-            this.checkBoxStagingLayer.Text = "Staging Layer";
-            this.checkBoxStagingLayer.UseVisualStyleBackColor = true;
+            this.checkBoxStagingArea.AutoSize = true;
+            this.checkBoxStagingArea.Checked = true;
+            this.checkBoxStagingArea.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxStagingArea.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxStagingArea.Name = "checkBoxStagingArea";
+            this.checkBoxStagingArea.Size = new System.Drawing.Size(87, 17);
+            this.checkBoxStagingArea.TabIndex = 9;
+            this.checkBoxStagingArea.Text = "Staging Area";
+            this.checkBoxStagingArea.UseVisualStyleBackColor = true;
             // 
             // button2
             // 
@@ -717,7 +746,7 @@ namespace TEAM
             this.checkBoxResizeDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxResizeDataGrid.Checked = true;
             this.checkBoxResizeDataGrid.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxResizeDataGrid.Location = new System.Drawing.Point(1258, 476);
+            this.checkBoxResizeDataGrid.Location = new System.Drawing.Point(1258, 508);
             this.checkBoxResizeDataGrid.Name = "checkBoxResizeDataGrid";
             this.checkBoxResizeDataGrid.Size = new System.Drawing.Size(108, 17);
             this.checkBoxResizeDataGrid.TabIndex = 27;
@@ -726,6 +755,21 @@ namespace TEAM
         "t having this option checked will overwrite the mapping information for the sele" +
         "cted version (in the datagrid).");
             this.checkBoxResizeDataGrid.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSaveInterfaceToJson
+            // 
+            this.checkBoxSaveInterfaceToJson.AutoSize = true;
+            this.checkBoxSaveInterfaceToJson.Checked = true;
+            this.checkBoxSaveInterfaceToJson.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSaveInterfaceToJson.Location = new System.Drawing.Point(6, 65);
+            this.checkBoxSaveInterfaceToJson.Name = "checkBoxSaveInterfaceToJson";
+            this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(237, 17);
+            this.checkBoxSaveInterfaceToJson.TabIndex = 11;
+            this.checkBoxSaveInterfaceToJson.Text = "Automatically save interface to disk as JSON";
+            this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
+        "t having this option checked will overwrite the mapping information for the sele" +
+        "cted version (in the datagrid).");
+            this.checkBoxSaveInterfaceToJson.UseVisualStyleBackColor = true;
             // 
             // backgroundWorkerValidationOnly
             // 
@@ -738,11 +782,12 @@ namespace TEAM
             // groupBoxJsonOptions
             // 
             this.groupBoxJsonOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxJsonOptions.Controls.Add(this.checkBoxSaveInterfaceToJson);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxBackupFiles);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxMergeFiles);
             this.groupBoxJsonOptions.Location = new System.Drawing.Point(1252, 401);
             this.groupBoxJsonOptions.Name = "groupBoxJsonOptions";
-            this.groupBoxJsonOptions.Size = new System.Drawing.Size(243, 69);
+            this.groupBoxJsonOptions.Size = new System.Drawing.Size(243, 98);
             this.groupBoxJsonOptions.TabIndex = 26;
             this.groupBoxJsonOptions.TabStop = false;
             this.groupBoxJsonOptions.Text = "Json / XML load options";
@@ -861,7 +906,7 @@ namespace TEAM
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox checkBoxIntegrationLayer;
-        private System.Windows.Forms.CheckBox checkBoxStagingLayer;
+        private System.Windows.Forms.CheckBox checkBoxStagingArea;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripTableMapping;
         private System.Windows.Forms.ToolStripMenuItem exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem;
         private System.Windows.Forms.ToolTip toolTipMetadata;
@@ -870,5 +915,8 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxMergeFiles;
         private System.Windows.Forms.CheckBox checkBoxBackupFiles;
         private System.Windows.Forms.CheckBox checkBoxResizeDataGrid;
+        private System.Windows.Forms.CheckBox checkBoxSaveInterfaceToJson;
+        private System.Windows.Forms.CheckBox checkBoxPresentationLayer;
+        private System.Windows.Forms.CheckBox checkBoxPsa;
     }
 }

@@ -3252,7 +3252,7 @@ namespace TEAM
                 var fullyQualifiedTargetName = ClassMetadataHandling.getFullSchemaTable(targetTable);
                 var targetType = ClassMetadataHandling.GetTableType(targetTable);
 
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
+                createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3279,11 +3279,11 @@ namespace TEAM
             createStatement.AppendLine("			)");
             createStatement.AppendLine("		) PERSISTED NOT NULL ,");
             createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
-            createStatement.AppendLine("	[DATABASE_NAME]      varchar(100)  NULL ,");
-            createStatement.AppendLine("	[SCHEMA_NAME]        varchar(100)  NULL ,");
-            createStatement.AppendLine("	[TABLE_NAME]         varchar(100)  NULL ,");
+            createStatement.AppendLine("	[DATABASE_NAME]      varchar(100)  NOT NULL ,");
+            createStatement.AppendLine("	[SCHEMA_NAME]        varchar(100)  NOT NULL ,");
+            createStatement.AppendLine("	[TABLE_NAME]         varchar(100)  NOT NULL ,");
             createStatement.AppendLine("	[COLUMN_NAME]        varchar(100)  NOT NULL,");
-            createStatement.AppendLine("    [DATA_TYPE]          varchar(100)  NULL ,");
+            createStatement.AppendLine("    [DATA_TYPE]          varchar(100)  NOT NULL ,");
             createStatement.AppendLine("	[CHARACTER_MAXIMUM_LENGTH] integer NULL,");
             createStatement.AppendLine("    [NUMERIC_PRECISION]  integer NULL,");
             createStatement.AppendLine("    [ORDINAL_POSITION]   integer NULL,");
@@ -3307,7 +3307,7 @@ namespace TEAM
                 string columnName = "";
 
                 if (row["DATABASE_NAME"] != DBNull.Value)
-                    schemaName = (string)row["DATABASE_NAME"];
+                    databaseName = (string)row["DATABASE_NAME"];
                 if (row["SCHEMA_NAME"] != DBNull.Value)
                     schemaName = (string)row["SCHEMA_NAME"];
                 if (row["TABLE_NAME"] != DBNull.Value) 
@@ -3315,7 +3315,7 @@ namespace TEAM
                 if (row["COLUMN_NAME"] != DBNull.Value)
                     columnName = (string)row["COLUMN_NAME"];
 
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_VERSION_ATTRIBUTE]" +
+                createStatement.AppendLine("INSERT [dbo].[TMP_MD_VERSION_ATTRIBUTE]" +
                                            " ([VERSION_ID], " +
                                            "[DATABASE_NAME], " +
                                            "[SCHEMA_NAME], " +
@@ -4296,9 +4296,16 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
+                            var localArea = ClassMetadataHandling.GetArea(tableName["SOURCE_NAME"].ToString(), tableName["HUB_NAME"].ToString());
+
                             insertXrefStatement.AppendLine("INSERT INTO [MD_SOURCE_HUB_XREF]");
-                            insertXrefStatement.AppendLine("([HUB_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA])");
-                            insertXrefStatement.AppendLine("VALUES ('" + tableName["HUB_ID"] + "','" + tableName["SOURCE_ID"] + "','" + businessKeyDefinition + "','" + filterCriterion + "')");
+                            insertXrefStatement.AppendLine("([HUB_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [AREA])");
+                            insertXrefStatement.AppendLine("VALUES ('" + tableName["HUB_ID"] + 
+                                                           "','" + tableName["SOURCE_ID"] + 
+                                                           "','" + businessKeyDefinition + 
+                                                           "','" + filterCriterion +
+                                                           "','" + localArea +
+                                                           "')");
 
                             var command = new SqlCommand(insertXrefStatement.ToString(), connection);
 
@@ -4347,19 +4354,31 @@ namespace TEAM
                     // Get the right database for the table type (which can be anything including STG, PSA, base- and derived DV and Dimension or Facts)
                     string databaseName = ClassMetadataHandling.GetDatabaseForArea(tableRow["TABLE_TYPE"].ToString());
 
-                    if (databaseName == FormBase.ConfigurationSettings.StagingDatabaseName)
+                    // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
+                    // I.e. when there are no PSA tables defined, they will be derived from the STG
+                    var workingTableName = ClassMetadataHandling.nonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
+                    if (workingTableName.StartsWith(ConfigurationSettings.StgTablePrefixValue + "_") || workingTableName.EndsWith("_" + ConfigurationSettings.StgTablePrefixValue))
+                    {
+                        var tempTableName = tableRow["TABLE_NAME"].ToString().Replace(ConfigurationSettings.StgTablePrefixValue, ConfigurationSettings.PsaTablePrefixValue);
+                        var tempTableType = "Persistent Staging Area";
+                        string tempDatabaseName = ClassMetadataHandling.GetDatabaseForArea(tempTableType);
+                        psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + tempDatabaseName + "]." + tempTableName + "') ,";
+                    }
+
+                    // Regular processing
+                    if (databaseName == ConfigurationSettings.StagingDatabaseName)
                     { // Staging filter
                         stgTableFilterObjects = stgTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == FormBase.ConfigurationSettings.PsaDatabaseName)
+                    else if (databaseName == ConfigurationSettings.PsaDatabaseName)
                     { // Persistent Staging Area filter
                         psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == FormBase.ConfigurationSettings.IntegrationDatabaseName)
+                    else if (databaseName == ConfigurationSettings.IntegrationDatabaseName)
                     { // Integration Layer filter
                         intTableFilterObjects = intTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == FormBase.ConfigurationSettings.PresentationDatabaseName)
+                    else if (databaseName == ConfigurationSettings.PresentationDatabaseName)
                     { // Presentation Layer filter
                         presTableFilterObjects = presTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
@@ -4427,11 +4446,16 @@ namespace TEAM
                 else // Get the values from the data grid or worker table (virtual mode)
                 {
                     allDatabaseAttributes.AppendLine("SELECT ");
-                    allDatabaseAttributes.AppendLine("  [DATABASE_NAME],");
-                    allDatabaseAttributes.AppendLine("  [SCHEMA_NAME],"); 
-                    allDatabaseAttributes.AppendLine("  [TABLE_NAME],");
-                    allDatabaseAttributes.AppendLine("  [COLUMN_NAME]");
-                    allDatabaseAttributes.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE mapping");
+                    allDatabaseAttributes.AppendLine("  [DATABASE_NAME] ");
+                    allDatabaseAttributes.AppendLine(" ,[SCHEMA_NAME]");
+                    allDatabaseAttributes.AppendLine(" ,[TABLE_NAME]");
+                    allDatabaseAttributes.AppendLine(" ,[COLUMN_NAME]");
+                    allDatabaseAttributes.AppendLine(" ,[DATA_TYPE]");
+                    allDatabaseAttributes.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                    allDatabaseAttributes.AppendLine(" ,[NUMERIC_PRECISION]");
+                    allDatabaseAttributes.AppendLine(" ,[ORDINAL_POSITION]");
+                    allDatabaseAttributes.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                    allDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
                 }
 
                 try
@@ -4628,8 +4652,8 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" + ex);
+                    _alert.SetTextLogging("An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
                 }
 
                 #endregion
@@ -4904,7 +4928,7 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine(" JOIN ");
                     prepareHubLnkXrefStatement.AppendLine(" (");
                     prepareHubLnkXrefStatement.AppendLine(" SELECT ");
-                    prepareHubLnkXrefStatement.AppendLine("     '['+OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('DVI_200_Integration_Layer'))+']' AS LINK_SCHEMA,");
+                    prepareHubLnkXrefStatement.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('DVI_200_Integration_Layer')) AS LINK_SCHEMA,");
                     prepareHubLnkXrefStatement.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
                     prepareHubLnkXrefStatement.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
                     prepareHubLnkXrefStatement.AppendLine("     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
@@ -5010,9 +5034,16 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
+                            var localArea = ClassMetadataHandling.GetArea(tableName["SOURCE_NAME"].ToString(), tableName["LINK_NAME"].ToString());
+
                             insertStgLinkStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_XREF]");
-                            insertStgLinkStatement.AppendLine("([SOURCE_ID], [LINK_ID], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION])");
-                            insertStgLinkStatement.AppendLine("VALUES ('" + tableName["SOURCE_ID"] + "','" + tableName["LINK_ID"] + "','" + filterCriterion + "','" + businessKeyDefinition + "')");
+                            insertStgLinkStatement.AppendLine("([SOURCE_ID], [LINK_ID], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION], [AREA])");
+                            insertStgLinkStatement.AppendLine("VALUES ('" + tableName["SOURCE_ID"] +
+                                                              "','" + tableName["LINK_ID"] + 
+                                                              "','" + filterCriterion + 
+                                                              "','" + businessKeyDefinition +
+                                                              "','" + localArea +
+                                                              "')");
 
                             var command = new SqlCommand(insertStgLinkStatement.ToString(), connection);
 
@@ -5586,7 +5617,7 @@ namespace TEAM
                         prepareDrivingKeyStatement.AppendLine("              ) TableName");
                         prepareDrivingKeyStatement.AppendLine("       ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
                         prepareDrivingKeyStatement.AppendLine(")  base");
-                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN[dbo].[TMP_MD_TABLE_MAPPING]");
+                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN [dbo].[TMP_MD_TABLE_MAPPING]");
                         prepareDrivingKeyStatement.AppendLine("        hub");
                         prepareDrivingKeyStatement.AppendLine(" ON  base.SOURCE_TABLE=hub.SOURCE_TABLE");
                         prepareDrivingKeyStatement.AppendLine(" AND hub.TARGET_TABLE_TYPE IN ('Hub')");
@@ -5677,8 +5708,36 @@ namespace TEAM
                     _alert.SetTextLogging("\r\nNo errors were detected.\r\n");
                 }
 
-                // Remove the temporary tables that have beenused
+                // Remove the temporary tables that have been used
                 droptemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
+
+                if (checkBoxSaveInterfaceToJson.Checked)
+                {
+                    _alert.SetTextLogging("\r\nSaving interface output to disk.\r\n");
+
+                    // Business Key Component
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceBusinessKeyComponent();
+                        _alert.SetTextLogging("\r\n-->  Saving the Business Key Component interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Business Key Component interface file. The reported error is: "+ex);
+                    }
+
+                    // Business Key Component Part
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceBusinessKeyComponentPart();
+                        _alert.SetTextLogging("\r\n-->  Saving the Business Key Component Part interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Business Key Component Part interface file. The reported error is: " + ex);
+                    }
+
+                }
 
                 // Report completion
                 worker.ReportProgress(100);
@@ -6647,19 +6706,28 @@ namespace TEAM
             // Populate table / attribute version table
             var intDatabase = ConfigurationSettings.IntegrationDatabaseName;
             var stgDatabase = ConfigurationSettings.StagingDatabaseName;
+            var psaDatabase = ConfigurationSettings.PsaDatabaseName;
             var presDatabase = ConfigurationSettings.PresentationDatabaseName;
 
             var connStg = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringStg};
+            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg };
             var connInt = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringInt};
             var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringPres };
 
             var stgPrefix = ConfigurationSettings.StgTablePrefixValue;
+            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
 
             // Process changes
             var stagingReverseEngineerResults = new DataTable();
-            if (checkBoxStagingLayer.Checked)
+            if (checkBoxStagingArea.Checked)
             {
                 stagingReverseEngineerResults = ReverseEngineerModelMetadata(connStg, stgPrefix, stgDatabase); 
+            }
+
+            var psaReverseEngineerResults = new DataTable();
+            if (checkBoxPsa.Checked)
+            {
+                psaReverseEngineerResults = ReverseEngineerModelMetadata(connPsa, psaPrefix, psaDatabase);
             }
 
             var integrationReverseEngineerResults = new DataTable();
@@ -6668,15 +6736,17 @@ namespace TEAM
                 integrationReverseEngineerResults = ReverseEngineerModelMetadata(connInt, @"", intDatabase);
             }
 
-            //var presentationReverseEngineerResults = new DataTable();
-            //if (checkBoxIntegrationLayer.Checked)
-            //{
-            //    integrationReverseEngineerResults = ReverseEngineerModelMetadata(connInt, @"", intDatabase);
-            //}
+            var presentationReverseEngineerResults = new DataTable();
+            if (checkBoxPresentationLayer.Checked)
+            {
+                presentationReverseEngineerResults = ReverseEngineerModelMetadata(connPres, @"", presDatabase);
+            }
 
             // Merge the data tables
             var completeDataTable = stagingReverseEngineerResults.Copy();
             completeDataTable.Merge(integrationReverseEngineerResults);
+            completeDataTable.Merge(psaReverseEngineerResults);
+            completeDataTable.Merge(presentationReverseEngineerResults);
 
             completeDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
@@ -6815,7 +6885,15 @@ namespace TEAM
             var filterList = TableMetadataFilter((DataTable)_bindingSourceTableMetadata.DataSource);
             foreach (var filter in filterList)
             {
-                sqlStatementForAttributeVersion.AppendLine("  '"+filter+"',");
+                // Always add the 'regular' mapping.
+                sqlStatementForAttributeVersion.AppendLine("  '" + filter + "',");
+
+                // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
+                if (filter.StartsWith(ConfigurationSettings.StgTablePrefixValue+"_") || filter.EndsWith("_"+ConfigurationSettings.StgTablePrefixValue))
+                {
+                    var tempFilter = filter.Replace(ConfigurationSettings.StgTablePrefixValue,ConfigurationSettings.PsaTablePrefixValue);
+                    sqlStatementForAttributeVersion.AppendLine("  '" + tempFilter + "',");
+                }
             }
             sqlStatementForAttributeVersion.Remove(sqlStatementForAttributeVersion.Length - 3, 3);
             sqlStatementForAttributeVersion.AppendLine();
