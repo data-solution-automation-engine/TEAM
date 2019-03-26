@@ -15,8 +15,7 @@ namespace TEAM
         {
             InitializeComponent();
 
-            labelMetadataRepository.Text = "Repository type in configuration is set to " +
-                                           ConfigurationSettings.MetadataRepositoryType;
+            labelMetadataRepository.Text = "Repository type in configuration is set to " + ConfigurationSettings.MetadataRepositoryType;
         }
 
         private void buttonDeploy_Click(object sender, EventArgs e)
@@ -751,13 +750,13 @@ namespace TEAM
                 createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_HUB_XREF]', 'U') IS NOT NULL");
                 createStatement.AppendLine(" DROP TABLE[MD_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_SOURCE_HUB_XREF]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("    [SOURCE_ID]  integer NOT NULL,");
                 createStatement.AppendLine("	[HUB_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] varchar(4000) NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
-                createStatement.AppendLine("	[AREA] varchar(100) NULL,");
+                createStatement.AppendLine("	[LOAD_VECTOR] varchar(100) NULL,");
                 createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_HUB_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC)");
                 createStatement.AppendLine(")");
 
@@ -794,7 +793,7 @@ namespace TEAM
                 createStatement.AppendLine("	[LINK_ID] integer NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000) NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY_DEFINITION] varchar(4000) NOT NULL,");
-                createStatement.AppendLine("	[AREA] varchar(100)  NULL,");
+                createStatement.AppendLine("	[LOAD_VECTOR] varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_LINK_XREF] PRIMARY KEY CLUSTERED([SOURCE_ID] ASC, [LINK_ID] ASC)");
                 createStatement.AppendLine(")");
 
@@ -824,15 +823,15 @@ namespace TEAM
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Staging Satellite XREF");
                 createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_SATELLITE_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE[MD_SOURCE_SATELLITE_XREF]");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_SATELLITE_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE[MD_SOURCE_SATELLITE_XREF]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_SATELLITE_XREF]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("	[SATELLITE_ID] integer NOT NULL,");
                 createStatement.AppendLine("    [SOURCE_ID] integer NOT NULL,");
                 createStatement.AppendLine("    [BUSINESS_KEY_DEFINITION] [varchar](1000) NOT NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
-                createStatement.AppendLine("	[AREA] varchar(100)  NULL,");
+                createStatement.AppendLine("	[LOAD_VECTOR] varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_SATELLITE_XREF] PRIMARY KEY CLUSTERED([SATELLITE_ID] ASC, [SOURCE_ID] ASC)");
                 createStatement.AppendLine(")");
 
@@ -1368,7 +1367,7 @@ namespace TEAM
                 createStatement.AppendLine(" HUB_NAME,");
                 createStatement.AppendLine(" hub.BUSINESS_KEY AS HUB_BUSINESS_KEY_DEFINITION,");
                 createStatement.AppendLine(" FILTER_CRITERIA,");
-                createStatement.AppendLine(" xref.[AREA]");
+                createStatement.AppendLine(" xref.[LOAD_VECTOR]");
                 createStatement.AppendLine("FROM MD_SOURCE_HUB_XREF xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
                 createStatement.AppendLine("JOIN MD_HUB hub ON xref.HUB_ID = hub.HUB_ID");
@@ -1384,7 +1383,7 @@ namespace TEAM
                 createStatement.AppendLine(" ,xref.[LINK_ID]");
                 createStatement.AppendLine(" ,lnk.[LINK_NAME]");
                 createStatement.AppendLine(" ,[FILTER_CRITERIA]");
-                createStatement.AppendLine(" ,xref.[AREA]");
+                createStatement.AppendLine(" ,xref.[LOAD_VECTOR]");
                 createStatement.AppendLine("FROM[MD_SOURCE_LINK_XREF] xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
                 createStatement.AppendLine("JOIN MD_LINK lnk ON xref.LINK_ID = lnk.LINK_ID");
@@ -1467,7 +1466,7 @@ namespace TEAM
                 createStatement.AppendLine(" hub.HUB_NAME,");
                 createStatement.AppendLine(" sat.LINK_ID,");
                 createStatement.AppendLine(" lnk.LINK_NAME,");
-                createStatement.AppendLine(" xref.[AREA]");
+                createStatement.AppendLine(" xref.[LOAD_VECTOR]");
                 createStatement.AppendLine("FROM MD_SOURCE_SATELLITE_XREF xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
                 createStatement.AppendLine("JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");

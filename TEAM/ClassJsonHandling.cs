@@ -111,7 +111,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Saves a data set to disk as a JSON file in the default configuration directory
+        ///   Saves the Business Key Component data set to disk as a JSON file in the default configuration directory
         /// </summary>
         internal static void SaveJsonInterfaceBusinessKeyComponent()
         {
@@ -155,7 +155,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Saves a data set to disk as a JSON file in the default configuration directory
+        ///   Saves the Business Key Component Part data set to disk as a JSON file in the default configuration directory
         /// </summary>
         internal static void SaveJsonInterfaceBusinessKeyComponentPart()
         {
@@ -193,6 +193,325 @@ namespace TEAM
                     businessKeyComponentElementType = singleRow[10].ToString(),
                     businessKeyComponentElementAttributeId = singleRow[11].ToString(),
                     businessKeyComponentElementAttributeName = singleRow[12].ToString(),
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        /// <summary>
+        ///   Saves the Business Key Component Part data set to disk as a JSON file in the default configuration directory
+        /// </summary>
+        internal static void SaveJsonInterfaceDrivingKey()
+        {
+
+            const string fileName = "interfaceDrivingKey";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_DRIVING_KEY]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[SATELLITE_ID] ASC, [HUB_ID] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    satelliteId = singleRow[0].ToString(),
+                    satelliteName = singleRow[1].ToString(),
+                    hubId = singleRow[2].ToString(),
+                    hubName = singleRow[3].ToString()
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        internal static void SaveJsonInterfaceHubLinkXref()
+        {
+
+            const string fileName = "interfaceHubLinkXref";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_HUB_LINK_XREF]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[LINK_ID] ASC, [SOURCE_ID] ASC, [HUB_ID] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    linkId = singleRow[0].ToString(),
+                    linkName = singleRow[1].ToString(),
+                    sourceId = singleRow[2].ToString(),
+                    sourceName = singleRow[3].ToString(),
+                    sourceSchemaName = singleRow[4].ToString(),
+                    hubId = singleRow[5].ToString(),
+                    hubName = singleRow[6].ToString(),
+                    businessKeyDefinition = singleRow[7].ToString()
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        internal static void SaveJsonInterfacePhysicalModel()
+        {
+
+            const string fileName = "interfacePhysicalModel";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_PHYSICAL_MODEL]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    databaseName = singleRow[0].ToString(),
+                    schemaName = singleRow[1].ToString(),
+                    tableName = singleRow[2].ToString(),
+                    columnName = singleRow[3].ToString(),
+                    characterMaximumLength = singleRow[4].ToString(),
+                    numericPrecision = singleRow[5].ToString(),
+                    ordinalPosition = singleRow[6].ToString(),
+                    primaryKeyIndicator = singleRow[7].ToString()
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        internal static void SaveJsonInterfaceSourceHubXref()
+        {
+
+            const string fileName = "interfaceSourceHubXref";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_SOURCE_HUB_XREF]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[SOURCE_ID] ASC, [HUB_ID] ASC, [HUB_BUSINESS_KEY_DEFINITION] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    sourceId = singleRow[0].ToString(),
+                    sourceSchemaName = singleRow[1].ToString(),
+                    sourceName = singleRow[2].ToString(),
+                    sourceBusinessKeyDefinition = singleRow[3].ToString(),
+                    hubId = singleRow[4].ToString(),
+                    hubSchemaName = singleRow[5].ToString(),
+                    hubName = singleRow[6].ToString(),
+                    hubBusinessKeyDefinition = singleRow[7].ToString(),
+                    filterCriteria = singleRow[8].ToString(),
+                    loadVector = singleRow[9].ToString()
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        internal static void SaveJsonInterfaceSourceLinkAttributeXref()
+        {
+            const string fileName = "interfaceSourceLinkAttributeXref";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_SOURCE_LINK_ATTRIBUTE_XREF]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[SOURCE_ID] ASC, [LINK_ID] ASC, [SOURCE_ATTRIBUTE_ID] ASC, [LINK_ATTRIBUTE_ID] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    sourceId = singleRow[0].ToString(),
+                    sourceName = singleRow[1].ToString(),
+                    sourceSchemaName = singleRow[2].ToString(),
+                    linkId = singleRow[3].ToString(),
+                    linkName = singleRow[4].ToString(),
+                    sourceAttributeId = singleRow[5].ToString(),
+                    sourceAttributeName = singleRow[6].ToString(),
+                    linkAttributeId = singleRow[7].ToString(),
+                    linkAttributeName = singleRow[8].ToString()
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        internal static void SaveJsonInterfaceSourceLinkXref()
+        {
+
+            const string fileName = "interfaceSourceLinkXref";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_SOURCE_LINK_XREF]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[SOURCE_ID] ASC, [LINK_ID] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    sourceId = singleRow[0].ToString(),
+                    sourceName = singleRow[1].ToString(),
+                    linkId = singleRow[2].ToString(),
+                    linkName = singleRow[3].ToString(),
+                    filterCriteria = singleRow[4].ToString(),
+                    loadVector = singleRow[5].ToString()
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        internal static void SaveJsonInterfaceSourceSatelliteAttributeXref()
+        {
+            const string fileName = "interfaceSourceSatelliteAttributeXref";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[SOURCE_ID] ASC, [SATELLITE_ID] ASC, [SOURCE_ATTRIBUTE_ID] ASC, [SATELLITE_ATTRIBUTE_ID] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    sourceId = singleRow[0].ToString(),
+                    sourceName = singleRow[1].ToString(),
+                    sourceSchemaName = singleRow[2].ToString(),
+                    satelliteId = singleRow[3].ToString(),
+                    satelliteName = singleRow[4].ToString(),
+                    sourceAttributeId = singleRow[5].ToString(),
+                    sourceAttributeName = singleRow[6].ToString(),
+                    satelliteAttributeId = singleRow[7].ToString(),
+                    satelliteAttributeName = singleRow[8].ToString(),
+                    multiActiveKeyIndicator = singleRow[9].ToString()
+                });
+                outputFileArray.Add(individualRow);
+            }
+
+            string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+        }
+
+        internal static void SaveJsonInterfaceSourceSatelliteXref()
+        {
+            const string fileName = "interfaceSourceSatelliteXref";
+
+            // Get the information from the view
+            var sqlStatement = new StringBuilder();
+            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
+
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+
+            // Make sure the output is sorted to persist in JSON
+            inputDataTable.DefaultView.Sort = "[SOURCE_ID] ASC, [SATELLITE_ID] ASC, [HUB_ID] ASC, [LINK_ID] ASC";
+
+            inputDataTable.TableName = fileName;
+
+            JArray outputFileArray = new JArray();
+            foreach (DataRow singleRow in inputDataTable.DefaultView.ToTable().Rows)
+            {
+                JObject individualRow = JObject.FromObject(new
+                {
+                    sourceId = singleRow[0].ToString(),
+                    sourceName = singleRow[1].ToString(),
+                    sourceBusinessKeyDefinition = singleRow[2].ToString(),
+                    filterCriteria = singleRow[3].ToString(),
+                    satelliteId = singleRow[4].ToString(),
+                    satelliteName = singleRow[5].ToString(),
+                    satelliteType = singleRow[6].ToString(),
+                    hubId = singleRow[7].ToString(),
+                    hubName = singleRow[8].ToString(),
+                    linkId = singleRow[9].ToString(),
+                    linkName = singleRow[10].ToString(),
+                    loadVector = singleRow[11].ToString(),
                 });
                 outputFileArray.Add(individualRow);
             }

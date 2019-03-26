@@ -4197,16 +4197,16 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                            var localArea = ClassMetadataHandling.GetArea(tableName["SOURCE_NAME"].ToString(), tableName["SATELLITE_NAME"].ToString());
+                            var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["SATELLITE_NAME"].ToString());
                             
                             insertSatStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_XREF]");
-                            insertSatStatement.AppendLine("([SATELLITE_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [AREA])");
+                            insertSatStatement.AppendLine("([SATELLITE_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
                             insertSatStatement.AppendLine("VALUES ('" + 
                                                           tableName["SATELLITE_ID"] + "','" + 
                                                           tableName["SOURCE_ID"] + "','" + 
                                                           businessKeyDefinition + "','" +
                                                           filterCriterion + "','" +
-                                                          localArea + "')");
+                                                          loadVector + "')");
 
                             var command = new SqlCommand(insertSatStatement.ToString(), connection);
 
@@ -4296,15 +4296,15 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                            var localArea = ClassMetadataHandling.GetArea(tableName["SOURCE_NAME"].ToString(), tableName["HUB_NAME"].ToString());
+                            var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["HUB_NAME"].ToString());
 
                             insertXrefStatement.AppendLine("INSERT INTO [MD_SOURCE_HUB_XREF]");
-                            insertXrefStatement.AppendLine("([HUB_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [AREA])");
+                            insertXrefStatement.AppendLine("([HUB_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
                             insertXrefStatement.AppendLine("VALUES ('" + tableName["HUB_ID"] + 
                                                            "','" + tableName["SOURCE_ID"] + 
                                                            "','" + businessKeyDefinition + 
                                                            "','" + filterCriterion +
-                                                           "','" + localArea +
+                                                           "','" + loadVector +
                                                            "')");
 
                             var command = new SqlCommand(insertXrefStatement.ToString(), connection);
@@ -5034,15 +5034,15 @@ namespace TEAM
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                            var localArea = ClassMetadataHandling.GetArea(tableName["SOURCE_NAME"].ToString(), tableName["LINK_NAME"].ToString());
+                            var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["LINK_NAME"].ToString());
 
                             insertStgLinkStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_XREF]");
-                            insertStgLinkStatement.AppendLine("([SOURCE_ID], [LINK_ID], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION], [AREA])");
+                            insertStgLinkStatement.AppendLine("([SOURCE_ID], [LINK_ID], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION], [LOAD_VECTOR])");
                             insertStgLinkStatement.AppendLine("VALUES ('" + tableName["SOURCE_ID"] +
                                                               "','" + tableName["LINK_ID"] + 
                                                               "','" + filterCriterion + 
                                                               "','" + businessKeyDefinition +
-                                                              "','" + localArea +
+                                                              "','" + loadVector +
                                                               "')");
 
                             var command = new SqlCommand(insertStgLinkStatement.ToString(), connection);
@@ -5711,6 +5711,7 @@ namespace TEAM
                 // Remove the temporary tables that have been used
                 droptemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
 
+                // Saving the interfaces to Json
                 if (checkBoxSaveInterfaceToJson.Checked)
                 {
                     _alert.SetTextLogging("\r\nSaving interface output to disk.\r\n");
@@ -5735,6 +5736,94 @@ namespace TEAM
                     catch (Exception ex)
                     {
                         _alert.SetTextLogging("\r\n-->  An error has occured saving the Business Key Component Part interface file. The reported error is: " + ex);
+                    }
+
+                    // Driving Key
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceDrivingKey();
+                        _alert.SetTextLogging("\r\n-->  Saving the Driving Key interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Driving Key interface file. The reported error is: " + ex);
+                    }
+
+                    // Hub Link Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceHubLinkXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Hub to Link Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Hub to Link Xref interface file. The reported error is: " + ex);
+                    }
+
+                    // Physical Model
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfacePhysicalModel();
+                        _alert.SetTextLogging("\r\n-->  Saving the Physical Model interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Physical Model interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Hub Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourceHubXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Hub Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Hub interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Link Attribute Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourceLinkAttributeXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Link Attribute Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Link Attribute Xref interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Link Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourceLinkXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Link Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Link Xref interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Satellite Attribute Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourceSatelliteAttributeXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Satellite Attribute Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Satellite Attribute Xref interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Link Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourceSatelliteXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Satellite Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Satellite Xref interface file. The reported error is: " + ex);
                     }
 
                 }

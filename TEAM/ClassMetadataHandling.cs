@@ -125,16 +125,35 @@ namespace TEAM
             return localDatabase;
         }
 
-        internal static string GetArea(string sourceMapping, string targetMapping)
+        internal static string GetLoadVector(string sourceMapping, string targetMapping)
         {
+            // The following scenarios are supported:
+            // -> If the source is not a DV table, but the target is a DV table then it's a base ('Raw') Data Vault ETL (load vector). - 'Raw'.
+            // -> If the source is a DV table, and the target is a DV table then it's a Derived ('Business') Data Vault ETL - 'Interpreted'.
+            // -> If the source is a DV table, but target is not a DV table then it's a Presentation Layer ETL. - 'Presentation'.
+
+            // This is used to evaluate the correct connection for the generated ETL processes.
+
+            string evaluatedSource = GetTableType(sourceMapping);
+            string evaluatedTarget = GetTableType(targetMapping);
+
             string localArea = "";
-            if (targetMapping.Contains("BDV"))
+
+            if (!new[] {"Hub", "Satellite", "Link", "Link-Satellite"}.Contains(evaluatedSource) && new[] { "Hub", "Satellite", "Link", "Link-Satellite"}.Contains(evaluatedTarget))
             {
-                localArea = "Derived";
+                localArea = "Raw";
             }
-            else
+            else if (new[] { "Hub", "Satellite", "Link", "Link-Satellite"}.Contains(evaluatedSource) && new[] { "Hub", "Satellite", "Link", "Link-Satellite" }.Contains(evaluatedTarget))
             {
-                localArea = "Base";
+                localArea = "Interpreted";
+            }
+            else if (new[] { "Hub", "Satellite", "Link", "Link-Satellite" }.Contains(evaluatedSource) && !new[] { "Hub", "Satellite", "Link", "Link-Satellite" }.Contains(evaluatedTarget))
+            {
+                localArea = FormBase.ConfigurationSettings.PsaDatabaseName;
+            }
+            else // Return error
+            {
+                localArea = "Unknown - error - the load vector could not be derived from the objects '" + evaluatedSource+"' and '"+evaluatedTarget+"'";
             }
 
             return localArea;

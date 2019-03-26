@@ -763,9 +763,9 @@ namespace TEAM
             this.checkBoxSaveInterfaceToJson.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxSaveInterfaceToJson.Location = new System.Drawing.Point(6, 65);
             this.checkBoxSaveInterfaceToJson.Name = "checkBoxSaveInterfaceToJson";
-            this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(237, 17);
+            this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(192, 17);
             this.checkBoxSaveInterfaceToJson.TabIndex = 11;
-            this.checkBoxSaveInterfaceToJson.Text = "Automatically save interface to disk as JSON";
+            this.checkBoxSaveInterfaceToJson.Text = "Automatically save interface to disk";
             this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
         "t having this option checked will overwrite the mapping information for the sele" +
         "cted version (in the datagrid).");
