@@ -4928,7 +4928,7 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine(" JOIN ");
                     prepareHubLnkXrefStatement.AppendLine(" (");
                     prepareHubLnkXrefStatement.AppendLine(" SELECT ");
-                    prepareHubLnkXrefStatement.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('DVI_200_Integration_Layer')) AS LINK_SCHEMA,");
+                    prepareHubLnkXrefStatement.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
                     prepareHubLnkXrefStatement.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
                     prepareHubLnkXrefStatement.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
                     prepareHubLnkXrefStatement.AppendLine("     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
