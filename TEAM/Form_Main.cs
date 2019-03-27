@@ -16,7 +16,7 @@ namespace TEAM
         public FormMain()
         {
             // Set the version of the build for everything
-            string versionNumberforTeamApplication = "v1.5.4.2";
+            string versionNumberforTeamApplication = "v1.5.5.0";
 
             // Placeholder for the error handling
             var errorMessage = new StringBuilder();
@@ -423,11 +423,18 @@ namespace TEAM
                 }
                 else
                 {
-                    // No invoke required - same thread
-                    _myMetadataForm.FormClosed += CloseMetadataForm;
-                    _myMetadataForm = new FormManageMetadata(this);
+                    try
+                    {
+                        // No invoke required - same thread
+                        _myMetadataForm.FormClosed += CloseMetadataForm;
+                        _myMetadataForm = new FormManageMetadata(this);
 
-                    Application.Run(_myMetadataForm);
+                        Application.Run(_myMetadataForm);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Cannot close the form that is open. The reported reason is: " + ex);
+                    }
                 }
             }
         }

@@ -109,6 +109,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="Microsoft.CSharp" />
@@ -131,11 +132,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassMetadataHandling.cs" />
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ClassJsonHandling.cs" />
     <Compile Include="ClassEnvironmentConfiguration.cs" />
+    <Compile Include="CustomDataGridViewPhysicalModel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomTimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -46,6 +46,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.linkLabel4 = new System.Windows.Forms.LinkLabel();
             this.linkLabel3 = new System.Windows.Forms.LinkLabel();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
@@ -60,7 +61,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.linkLabel5 = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -238,6 +239,16 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Sample Schema";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(151, 256);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(561, 52);
+            this.label5.TabIndex = 87;
+            this.label5.Text = resources.GetString("label5.Text");
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
             // linkLabel4
             // 
             this.linkLabel4.AutoSize = true;
@@ -379,6 +390,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.linkLabel5);
             this.groupBox3.Controls.Add(this.buttonDeploy);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Location = new System.Drawing.Point(12, 12);
@@ -388,15 +400,15 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Create Metadata Repository";
             // 
-            // label5
+            // linkLabel5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(151, 256);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(561, 52);
-            this.label5.TabIndex = 87;
-            this.label5.Text = resources.GetString("label5.Text");
-            this.label5.Click += new System.EventHandler(this.label5_Click);
+            this.linkLabel5.AutoSize = true;
+            this.linkLabel5.Location = new System.Drawing.Point(625, 19);
+            this.linkLabel5.Name = "linkLabel5";
+            this.linkLabel5.Size = new System.Drawing.Size(111, 13);
+            this.linkLabel5.TabIndex = 83;
+            this.linkLabel5.TabStop = true;
+            this.linkLabel5.Text = "https://bit.ly/2OrAanq";
             // 
             // FormManageRepository
             // 
@@ -458,5 +470,6 @@
         internal System.Windows.Forms.CheckBox checkBoxConfigurationSettings;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.LinkLabel linkLabel5;
     }
 }

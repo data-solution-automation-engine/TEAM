@@ -11,21 +11,39 @@ namespace TEAM
     {
 
         /// <summary>
-        ///    This class ensures that a source object exists in the physical model
+        ///    This class ensures that a source object exists in the physical model against the catalog
         /// </summary>
-        internal static string ValidateObjectExistence (string validationObject, string connectionString)
+        internal static string ValidateObjectExistencePhysical (string validationObject, string connectionString)
         {
-            var conn = new SqlConnection { ConnectionString = connectionString };
+            string returnExistenceEvaluation = "False";
+
+            var conn = new SqlConnection {ConnectionString = connectionString};
             conn.Open();
 
             // Execute the check
-            var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM sys.objects WHERE [name] = '" + validationObject + "')) THEN 1 ELSE 0 END", conn);
+            var cmd = new SqlCommand(
+                "SELECT CASE WHEN EXISTS ((SELECT * FROM sys.objects WHERE [name] = '" + validationObject + "')) THEN 1 ELSE 0 END", conn);
+
             var exists = (int) cmd.ExecuteScalar() == 1;
+            returnExistenceEvaluation = exists.ToString();
 
             conn.Close();
 
             // return the result of the test;
-            return exists.ToString();
+            return returnExistenceEvaluation;
+        }
+
+        internal static string ValidateObjectExistenceVirtual (string validationObject, DataTable inputDataTable)
+        {
+            string returnExistenceEvaluation = "False";
+
+            DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
+            bool existenceCheck = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == validationObject));
+
+            returnExistenceEvaluation = existenceCheck.ToString();
+
+            // return the result of the test;
+            return returnExistenceEvaluation;
         }
 
         internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, string connectionString, int versionId, DataTable inputDataTable)
@@ -37,7 +55,7 @@ namespace TEAM
 
             // We need to manupulate the query to account for multiplicity in the model i.e. many Satellites linking to a single Hub.
             // The only interest is whether the Hub is there...
-            var tableInclusionFilterCriterion = "";
+            string tableInclusionFilterCriterion;
             var tableClassification = "";
             if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
             {
@@ -77,11 +95,11 @@ namespace TEAM
                     foreach (DataRow row in inputDataTable.Rows)
                     {
                         if (
-                             (string)row["GENERATE_INDICATOR"] == "Y" && // Only active generated objects
-                             (string)row["STAGING_AREA_TABLE"] == validationObject.Item1 &&
+                             (string)row["PROCESS_INDICATOR"] == "Y" && // Only active generated objects
+                             (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
                              (string)row["BUSINESS_KEY_ATTRIBUTE"] == businessKeyComponent.Trim() &&
-                             (string)row["INTEGRATION_AREA_TABLE"] != validationObject.Item2 && // Exclude itself
-                             row["INTEGRATION_AREA_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion) 
+                             (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself
+                             row["TARGET_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion) 
                            )
                         {
                             numberOfDependents++;
@@ -95,11 +113,11 @@ namespace TEAM
                 foreach (DataRow row in inputDataTable.Rows)
                 {
                     if (
-                         (string)row["GENERATE_INDICATOR"] == "Y" && // Only active generated objects
-                         (string)row["STAGING_AREA_TABLE"] == validationObject.Item1 &&
+                         (string)row["PROCESS_INDICATOR"] == "Y" && // Only active generated objects
+                         (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
                          (string)row["BUSINESS_KEY_ATTRIBUTE"] == validationObject.Item3.Trim() &&
-                         (string)row["INTEGRATION_AREA_TABLE"] != validationObject.Item2 && // Exclude itself
-                         row["INTEGRATION_AREA_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion)
+                         (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself
+                         row["TARGET_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion)
                        )
                     {
                         numberOfDependents++;
@@ -112,7 +130,7 @@ namespace TEAM
 
             // Run the comparison
             // Test for equality.
-            bool equal = false;
+            bool equal;
             if ((tableClassification == "SAT" || tableClassification == "LNK") && businessKeyCount == numberOfDependents) // For Sats and Links we can count the keys and rows
             {
                 equal = true;
@@ -132,8 +150,7 @@ namespace TEAM
             return result;
         }
 
-
-        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string> validationObject, string connectionString, int versionId, DataTable inputDataTable)
+        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string> validationObject, string connectionString, int versionId, DataTable inputDataTable, DataTable physicalModelDataTable, string evaluationMode)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to query the individual Hub information
@@ -141,8 +158,6 @@ namespace TEAM
 
             // Now iterate over each Hub, as identified by the business key.
             // Maintain the ordinal position of the business key
-            var conn = new SqlConnection { ConnectionString = connectionString };
-            conn.Open();
 
             var hubKeyOrder = new Dictionary<int, string>();
 
@@ -154,52 +169,88 @@ namespace TEAM
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select("STAGING_AREA_TABLE = '"+validationObject.Item1+ "' AND [BUSINESS_KEY_ATTRIBUTE] = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND [INTEGRATION_AREA_TABLE] NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select("SOURCE_TABLE = '"+validationObject.Item1+ "' AND [BUSINESS_KEY_ATTRIBUTE] = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND [TARGET_TABLE] NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
 
                 // Derive the Hub surrogate key name, as this can be compared against the Link
-                string hubSurrogateKeyName = "";
+                string hubSurrogateKeyName;
                 foreach (DataRow row in selectionRows)
                 {
-                    string hubTableName = row["INTEGRATION_AREA_TABLE"].ToString();
+                    string hubTableName = row["TARGET_TABLE"].ToString();
                     hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.ConfigurationSettings.DwhKeyIdentifier;
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
                 }
 
                 //hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
             }
-            conn.Close();
 
-            // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
-            var connTarget = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt };
-            connTarget.Open();
-
-            var sqlStatementForLink = new StringBuilder();
-
-            sqlStatementForLink.AppendLine("SELECT");
-            sqlStatementForLink.AppendLine("   OBJECT_NAME([object_id]) AS [TABLE_NAME]");
-            sqlStatementForLink.AppendLine("  ,[name] AS [COLUMN_NAME]");
-            sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
-            sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
-            sqlStatementForLink.AppendLine("FROM " + FormBase.ConfigurationSettings.IntegrationDatabaseName + ".sys.columns");
-            sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" + FormBase.ConfigurationSettings.LinkTablePrefixValue + "_%'");
-            sqlStatementForLink.AppendLine("AND column_id > 4");
-            sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
-
-            var linkList = FormBase.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
             // Derive the Hub surrogate key name, as this can be compared against the Link
             var linkKeyOrder = new Dictionary<int, string>();
 
-            foreach (DataRow row in linkList.Rows)
+            if (evaluationMode == "physical")
             {
-                var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
-                int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
+                var sqlStatementForLink = new StringBuilder();
+                sqlStatementForLink.AppendLine("SELECT");
+                sqlStatementForLink.AppendLine("   OBJECT_NAME([object_id]) AS [TABLE_NAME]");
+                sqlStatementForLink.AppendLine("  ,[name] AS [COLUMN_NAME]");
+                sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
+                sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
+                sqlStatementForLink.AppendLine("FROM " + FormBase.ConfigurationSettings.IntegrationDatabaseName +".sys.columns");
+                sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.ConfigurationSettings.LinkTablePrefixValue + "_%'");
+                sqlStatementForLink.AppendLine("AND column_id > 4");
+                sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
 
-                if (linkHubSurrogateKeyName.Contains(FormBase.ConfigurationSettings.DwhKeyIdentifier)) // Exclude degenerate attributes from the order
+                // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
+                var connTarget = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt };
+                connTarget.Open();
+                var linkList = FormBase.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
+                connTarget.Close();
+
+                foreach (DataRow row in linkList.Rows)
                 {
-                    linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
+                    var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
+                    int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
+
+                    if (linkHubSurrogateKeyName.Contains(FormBase.ConfigurationSettings.DwhKeyIdentifier)
+                    ) // Exclude degenerate attributes from the order
+                    {
+                        linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
+                    }
                 }
             }
-            connTarget.Close();
+            else // virtual
+            {
+                int linkHubSurrogateKeyPosition = 1;
+
+                var workingTable = new DataTable();
+
+                try
+                {
+                    workingTable = physicalModelDataTable
+                        .Select(
+                            "TABLE_NAME LIKE '" + FormBase.ConfigurationSettings.LinkTablePrefixValue +
+                            "_%' AND TABLE_NAME = '" + validationObject.Item2 + "' AND ORDINAL_POSITION > 4",
+                            "ORDINAL_POSITION ASC").CopyToDataTable();
+                }
+                catch
+                {
+                    //
+                }
+
+                if (workingTable.Rows.Count > 0)
+                {
+                    foreach (DataRow row in workingTable.Rows)
+                    {
+                        var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
+
+                        if (linkHubSurrogateKeyName.Contains(FormBase.ConfigurationSettings.DwhKeyIdentifier)
+                        ) // Exclude degenerate attributes from the order
+                        {
+                            linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
+                            linkHubSurrogateKeyPosition++;
+                        }
+                    }
+                }
+            }
 
             // Check for duplicates, which indicate a Same-As Link or Hierarchical Link
             var duplicateValues = hubKeyOrder.Where(i => hubKeyOrder.Any(t => t.Key != i.Key && t.Value == i.Value)).ToDictionary(i => i.Key, i => i.Value);
@@ -245,7 +296,7 @@ namespace TEAM
             return result;
         }
 
-        internal static Dictionary<Tuple<string,string>, bool> ValidateSourceBusinessKeyExistence(Tuple<string, string> validationObject, string connectionString, int versionId)
+        internal static Dictionary<Tuple<string,string>, bool> ValidateSourceBusinessKeyExistencePhysical(Tuple<string, string> validationObject, string connectionString, int versionId)
         {
             // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to validate if the attribute exists in that table.
@@ -289,7 +340,7 @@ namespace TEAM
                     }
                     else
                     {
-                        // Query the data dictionary to valdiate existence
+                        // Query the data dictionary to validate existence
                         var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM sys.columns WHERE OBJECT_NAME([object_id]) = '" + validationObject.Item1 + "' AND [name] = '" + businessKeyPart.Trim() + "')) THEN 1 ELSE 0 END", conn);
                         var exists = (int)cmd.ExecuteScalar() == 1;
                         result.Add(Tuple.Create(validationObject.Item1, businessKeyPart.Trim()), exists);
@@ -300,5 +351,67 @@ namespace TEAM
             // Return the result of the test;
             return result;
         }
+
+        internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(Tuple<string, string> validationObject, DataTable inputDataTable)
+        {
+            // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
+            // Every business key needs to be iterated over to validate if the attribute exists in that table.
+            List<string> businessKeys = validationObject.Item2.Split(',').ToList();
+
+            Dictionary<Tuple<string, string>, bool> result = new Dictionary<Tuple<string, string>, bool>();
+
+            foreach (string businessKey in businessKeys)
+            {
+                var trimBusinessKey = businessKey.Trim();
+
+                // Handle concatenate and composite
+                List<string> subKeys = new List<string>();
+
+                if (trimBusinessKey.StartsWith("CONCATENATE"))
+                {
+                    var localBusinessKey = trimBusinessKey.Replace("CONCATENATE(", "").Replace(")", "");
+
+                    subKeys = localBusinessKey.Split(';').ToList();
+                }
+                else if (trimBusinessKey.StartsWith("COMPOSITE"))
+                {
+                    var localBusinessKey = trimBusinessKey.Replace("COMPOSITE(", "").Replace(")", "");
+
+                    subKeys = localBusinessKey.Split(';').ToList();
+                }
+                else
+                {
+                    subKeys.Add(trimBusinessKey);
+                }
+
+                foreach (string businessKeyPart in subKeys)
+                {
+                    // Handle hard-coded business key values
+                    if (businessKeyPart.StartsWith("'") && businessKeyPart.EndsWith("'"))
+                    {
+                        // Do nothing
+                    }
+                    else
+                    {
+                        bool returnExistenceEvaluation = false;
+
+                        DataRow[] foundAuthors = inputDataTable.Select("TABLE_NAME = '" + validationObject.Item1 + "' AND COLUMN_NAME = '"+ businessKeyPart.Trim() + "'");
+                        if (foundAuthors.Length != 0)
+                        {
+                            returnExistenceEvaluation = true;
+                        }
+
+                        result.Add(Tuple.Create(validationObject.Item1, businessKeyPart.Trim()), returnExistenceEvaluation);
+                    }
+                }
+            }
+
+            // Return the result of the test;
+            return result;
+        }
+
+
     }
+
+
 }
