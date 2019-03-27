@@ -3402,17 +3402,24 @@ namespace TEAM
             // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
             if (checkBoxValidation.Checked)
             {
-                if (backgroundWorkerValidationOnly.IsBusy) return;
-                // create a new instance of the alert form
-                _alertValidation = new FormAlert();
-                // event handler for the Cancel button in AlertForm
-                _alertValidation.Canceled += buttonCancel_Click;
-                _alertValidation.Show();
-                // Start the asynchronous operation.
-                backgroundWorkerValidationOnly.RunWorkerAsync();
-                while (backgroundWorkerValidationOnly.IsBusy)
-                {                 
-                    Application.DoEvents();
+                if (checkBoxIgnoreVersion.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
+                {
+                    richTextBoxInformation.Text += "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
+                }
+                else
+                {
+                    if (backgroundWorkerValidationOnly.IsBusy) return;
+                    // create a new instance of the alert form
+                    _alertValidation = new FormAlert();
+                    // event handler for the Cancel button in AlertForm
+                    _alertValidation.Canceled += buttonCancel_Click;
+                    _alertValidation.Show();
+                    // Start the asynchronous operation.
+                    backgroundWorkerValidationOnly.RunWorkerAsync();
+                    while (backgroundWorkerValidationOnly.IsBusy)
+                    {
+                        Application.DoEvents();
+                    }
                 }
             }
             #endregion
@@ -4892,9 +4899,32 @@ namespace TEAM
 
                 try
                 {
+                    var virtualisationSnippet = new StringBuilder();
+                    if (checkBoxIgnoreVersion.Checked)
+                    {
+                        virtualisationSnippet.AppendLine(" SELECT ");
+                        virtualisationSnippet.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
+                        virtualisationSnippet.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
+                        virtualisationSnippet.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
+                        virtualisationSnippet.AppendLine("     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
+                        virtualisationSnippet.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
+                        virtualisationSnippet.AppendLine(" WHERE [column_id]>4");
+                        virtualisationSnippet.AppendLine(" AND OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" + lnkTablePrefix + @"'");
+                    }
+                    else
+                    {
+                        virtualisationSnippet.AppendLine("SELECT");
+                        virtualisationSnippet.AppendLine("  [SCHEMA_NAME] AS LINK_SCHEMA,");
+                        virtualisationSnippet.AppendLine("  [TABLE_NAME]  AS LINK_NAME,");
+                        virtualisationSnippet.AppendLine("  [COLUMN_NAME] AS HUB_TARGET_KEY_NAME_IN_LINK,");
+                        virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
+                        virtualisationSnippet.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
+                        virtualisationSnippet.AppendLine("WHERE[ORDINAL_POSITION] > 4");
+                        virtualisationSnippet.AppendLine("AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
+                    }
+
                     var prepareHubLnkXrefStatement = new StringBuilder();
-                    /*LBM 2019/01/10: Changing to use @ String*/
-                    /* RV changed it back, some bugs handling variables */
+
                     prepareHubLnkXrefStatement.AppendLine("SELECT");
                     prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_ID,");
                     prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_NAME,");
@@ -4927,14 +4957,7 @@ namespace TEAM
                     prepareHubLnkXrefStatement.AppendLine(" -- Adding the information required for the target model in the query");
                     prepareHubLnkXrefStatement.AppendLine(" JOIN ");
                     prepareHubLnkXrefStatement.AppendLine(" (");
-                    prepareHubLnkXrefStatement.AppendLine(" SELECT ");
-                    prepareHubLnkXrefStatement.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
-                    prepareHubLnkXrefStatement.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
-                    prepareHubLnkXrefStatement.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    prepareHubLnkXrefStatement.AppendLine("     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
-                    prepareHubLnkXrefStatement.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
-                    prepareHubLnkXrefStatement.AppendLine(" WHERE [column_id]>4");
-                    prepareHubLnkXrefStatement.AppendLine(" AND OBJECT_NAME(OBJECT_ID,DB_ID('"+ConfigurationSettings.IntegrationDatabaseName+"')) LIKE '" + lnkTablePrefix + @"'");
+                    prepareHubLnkXrefStatement.AppendLine(virtualisationSnippet.ToString());
                     prepareHubLnkXrefStatement.AppendLine(" ) lnk_target_model");
                     prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_SCHEMA+'.'+lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
                     prepareHubLnkXrefStatement.AppendLine(" AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
@@ -5174,8 +5197,8 @@ namespace TEAM
                     prepareMappingStatement.AppendLine("FROM XREF");
                     prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
                     prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
-                    prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON UPPER(ADC_SOURCE.COLUMN_NAME) = UPPER(stg_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
-                    prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
+                    prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON ADC_SOURCE.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                    prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
                     prepareMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_ID = tgt_attr.ATTRIBUTE_ID");
 
                     var automaticAttributeMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
@@ -5241,6 +5264,7 @@ namespace TEAM
                                 catch (Exception)
                                 {
                                     _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["SATELLITE_NAME"] + ". \r\n");
+                                    errorCounter++;
                                     if (tableName["ATTRIBUTE_FROM_ID"].ToString() == "")
                                     {
                                         _alert.SetTextLogging("Both attributes are NULL.");
@@ -6137,7 +6161,7 @@ namespace TEAM
                             sqlStatementForHubCategories.AppendLine(",[SATELLITE_TYPE]");
                             sqlStatementForHubCategories.AppendLine(",[HUB_ID]");
                             sqlStatementForHubCategories.AppendLine(",[HUB_NAME]");
-                            sqlStatementForHubCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
+                            sqlStatementForHubCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
                             sqlStatementForHubCategories.AppendLine(",[LINK_ID]");
                             sqlStatementForHubCategories.AppendLine(",[LINK_NAME]");
                             sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
@@ -6157,7 +6181,7 @@ namespace TEAM
                             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TYPE]");
                             sqlStatementForLinkCategories.AppendLine(",[HUB_ID]");
                             sqlStatementForLinkCategories.AppendLine(",[HUB_NAME]");
-                            sqlStatementForLinkCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
+                            sqlStatementForLinkCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
                             sqlStatementForLinkCategories.AppendLine(",[LINK_ID]");
                             sqlStatementForLinkCategories.AppendLine(",[LINK_NAME]");
                             sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
@@ -6190,10 +6214,10 @@ namespace TEAM
                             sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ID]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_FROM]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_NAME_FROM]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_TO]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_NAME_TO]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_ATTRIBUTE_ID]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_ATTRIBUTE_NAME]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ATTRIBUTE_ID]");
+                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ATTRIBUTE_NAME]");
                             sqlStatementForSatelliteAttributes.AppendLine(",[MULTI_ACTIVE_KEY_INDICATOR]");
                             sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
 
@@ -6304,9 +6328,9 @@ namespace TEAM
                             // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
                             foreach (DataRow row in satelliteAttributes.Rows)
                             {
-                                var sourceNodeLabel = (string)row["ATTRIBUTE_NAME_FROM"];
+                                var sourceNodeLabel = (string)row["SOURCE_ATTRIBUTE_NAME"];
                                 var sourceNode = "staging_" + sourceNodeLabel;
-                                var targetNodeLabel = (string)row["ATTRIBUTE_NAME_TO"];
+                                var targetNodeLabel = (string)row["SATELLITE_ATTRIBUTE_NAME"];
                                 var targetNode = "dwh_" + targetNodeLabel;
 
                                 // Add source tables to Node List
@@ -6387,9 +6411,9 @@ namespace TEAM
                             foreach (DataRow row in satelliteAttributes.Rows)
                             {
                                 var sourceNodeSat = (string)row["SATELLITE_NAME"];
-                                var targetNodeSat = "dwh_"+(string)row["ATTRIBUTE_NAME_TO"];
+                                var targetNodeSat = "dwh_"+(string)row["SATELLITE_ATTRIBUTE_NAME"];
                                 var sourceNodeStg = (string)row["SOURCE_NAME"];
-                                var targetNodeStg = "staging_"+(string)row["ATTRIBUTE_NAME_FROM"];
+                                var targetNodeStg = "staging_"+(string)row["SOURCE_ATTRIBUTE_NAME"];
 
                                 // This is adding the attributes to the tables
                                 dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeSat + "\" Target=\"" + targetNodeSat + "\" Category=\"Contains\" />");
@@ -6630,14 +6654,22 @@ namespace TEAM
         private void buttonValidation_Click(object sender, EventArgs e)
         {
             richTextBoxInformation.Clear();
-            if (backgroundWorkerValidationOnly.IsBusy) return;
-            // create a new instance of the alert form
-            _alertValidation = new FormAlert();
-            // event handler for the Cancel button in AlertForm
-            _alertValidation.Canceled += buttonCancel_Click;
-            _alertValidation.Show();
-            // Start the asynchronous operation.
-            backgroundWorkerValidationOnly.RunWorkerAsync();            
+
+            if (checkBoxIgnoreVersion.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
+            {
+                richTextBoxInformation.Text += "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
+            }
+            else
+            {
+                if (backgroundWorkerValidationOnly.IsBusy) return;
+                // create a new instance of the alert form
+                _alertValidation = new FormAlert();
+                // event handler for the Cancel button in AlertForm
+                _alertValidation.Canceled += buttonCancel_Click;
+                _alertValidation.Show();
+                // Start the asynchronous operation.
+                backgroundWorkerValidationOnly.RunWorkerAsync();
+            }
         }
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -7116,6 +7148,8 @@ namespace TEAM
 
         private void ValidateSourceObject()
         {
+            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+
             #region Validation for Source Object Existence
             // Informing the user.
             _alertValidation.SetTextLogging("--> Commencing the validation to determine if the sources as captured in metadata exists in the physical model.\r\n\r\n");
@@ -7159,17 +7193,44 @@ namespace TEAM
             //Validate STG Entries 
             foreach (string sourceObject in objectListSTG)
             {
-                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringStg);
+                string sourceObjectValidated = "False";
+                if (evaluationMode == "physical")
+                {
+                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject,ConfigurationSettings.ConnectionStringStg);
+                }
+                else if (evaluationMode == "virtual")
+                {
+                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(sourceObject,(DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                }
+                else
+                {
+                    sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
+                }
 
+                // Add negative results to dictionary
                 if (sourceObjectValidated == "False")
                 {
                     resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
                 }
             }
+
+
             //Validate PSA Entries
             foreach (string sourceObject in objectListPSA)
             {
-                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg);
+                string sourceObjectValidated = "False";
+                if (evaluationMode == "physical")
+                {
+                    sourceObjectValidated =ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject,ConfigurationSettings.ConnectionStringHstg);
+                }
+                else if (evaluationMode == "virtual")
+                {
+                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(sourceObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
+                }
+                else
+                {
+                    sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
+                }
 
                 if (sourceObjectValidated == "False")
                 {
@@ -7193,12 +7254,13 @@ namespace TEAM
                 _alertValidation.SetTextLogging("There were no validation issues related to the existence of the source table / object (Source table).\r\n");
             }
 
-
             #endregion
         }
 
         private void ValidateTargetObject()
         {
+            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+
             #region Validation for Source Object Existence
             // Informing the user.
             _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Integration Layer metadata exists in the physical model.\r\n\r\n");
@@ -7221,7 +7283,21 @@ namespace TEAM
             var resultList = new Dictionary<string, string>();
             foreach (string sourceObject in objectList)
             {
-                var sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistence(sourceObject, ConfigurationSettings.ConnectionStringInt);
+                string sourceObjectValidated = "False";
+                if (evaluationMode == "physical")
+                {
+                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringInt);
+                }
+                else if (evaluationMode == "virtual")
+                {
+                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(sourceObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
+                }
+                else
+                {
+                    sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
+                }
+
+
 
                 if (sourceObjectValidated == "False")
                 {
@@ -7253,6 +7329,8 @@ namespace TEAM
         /// </summary>
         internal void ValidateLinkKeyOrder()
         {
+            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+
             #region Retrieving the Links
             // Informing the user.
             _alertValidation.SetTextLogging("\r\n--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n\r\n");
@@ -7278,7 +7356,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7316,6 +7394,8 @@ namespace TEAM
 
         internal void ValidateLogicalGroup()
         {
+            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+
             #region Retrieving the Integration Layer tables
             // Informing the user.
             _alertValidation.SetTextLogging("\r\n--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n\r\n");
@@ -7374,7 +7454,6 @@ namespace TEAM
             }
 
 
-
         }
 
         /// <summary>
@@ -7382,6 +7461,8 @@ namespace TEAM
         /// </summary>
         private void ValidateBusinessKeyObject()
         {
+            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+
             #region Validation for source Business Key attribute existence
             // Informing the user.
             _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
@@ -7421,7 +7502,19 @@ namespace TEAM
             foreach (var sourceObject in objectListSTG)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.currentVersionId);
+                var sourceObjectValidated = new Dictionary<Tuple<string, string>, bool>();
+                if (evaluationMode == "physical")
+                {
+                    sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.currentVersionId);
+                }
+                else if (evaluationMode == "virtual")
+                {
+                    sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(sourceObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
+                }
+                else
+                {
+                    //sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
+                }
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7439,7 +7532,7 @@ namespace TEAM
             foreach (var sourceObject in objectListPSA)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistence(sourceObject, ConfigurationSettings.ConnectionStringHstg, GlobalParameters.currentVersionId);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringHstg, GlobalParameters.currentVersionId);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
