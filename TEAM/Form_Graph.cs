@@ -397,7 +397,7 @@ namespace TEAM
             sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TYPE]");
             sqlStatementForLinkCategories.AppendLine(",[HUB_ID]");
             sqlStatementForLinkCategories.AppendLine(",[HUB_NAME]");
-            sqlStatementForLinkCategories.AppendLine(",[BUSINESS_KEY_DEFINITION]");
+            sqlStatementForLinkCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
             sqlStatementForLinkCategories.AppendLine(",[LINK_ID]");
             sqlStatementForLinkCategories.AppendLine(",[LINK_NAME]");
             sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
@@ -430,10 +430,10 @@ namespace TEAM
             sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ID]");
             sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_NAME]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_FROM]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_NAME_FROM]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_ID_TO]");
-            sqlStatementForSatelliteAttributes.AppendLine(",[ATTRIBUTE_NAME_TO]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_ATTRIBUTE_NAME]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ATTRIBUTE_NAME]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_ATTRIBUTE_ID]");
+            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ATTRIBUTE_ID]");
             sqlStatementForSatelliteAttributes.AppendLine(",[MULTI_ACTIVE_KEY_INDICATOR]");
             sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
 
@@ -492,9 +492,9 @@ namespace TEAM
             // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
             foreach (DataRow row in satelliteAttributes.Rows)
             {
-                var sourceNodeLabel = (string)row["ATTRIBUTE_NAME_FROM"];
+                var sourceNodeLabel = (string)row["SOURCE_ATTRIBUTE_NAME"];
                 var sourceNode = "staging_" + sourceNodeLabel;
-                var targetNodeLabel = (string)row["ATTRIBUTE_NAME_TO"];
+                var targetNodeLabel = (string)row["SATELLITE_ATTRIBUTE_NAME"];
                 var targetNode = "dwh_" + targetNodeLabel;
 
                 //// Add source tables to Node List
@@ -527,9 +527,9 @@ namespace TEAM
             foreach (DataRow row in satelliteAttributes.Rows)
             {
                 var sourceNodeSat = (string)row["SATELLITE_NAME"];
-                var targetNodeSat = "dwh_" + (string)row["ATTRIBUTE_NAME_TO"];
+                var targetNodeSat = "dwh_" + (string)row["SATELLITE_ATTRIBUTE_NAME"];
                 var sourceNodeStg = (string)row["SOURCE_NAME"];
-                var targetNodeStg = "staging_" + (string)row["ATTRIBUTE_NAME_FROM"];
+                var targetNodeStg = "staging_" + (string)row["SOURCE_ATTRIBUTE_NAME"];
 
                 // This is adding the attributes to the tables
 

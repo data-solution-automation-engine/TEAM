@@ -351,7 +351,7 @@ namespace TEAM
 
                 richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
             }
-            GridAutoLayout();
+            GridAutoLayoutPhysicalModelMetadata();
         }
 
 
@@ -466,7 +466,7 @@ namespace TEAM
             }
 
             // Resize the grid
-            GridAutoLayout();
+            GridAutoLayoutTableMappingMetadata();
         }
 
 
@@ -574,7 +574,7 @@ namespace TEAM
             }
 
             // Resize the grid
-            GridAutoLayout();
+            GridAutoLayoutAttributeMetadata();
         }
 
         private DialogResult STAShowDialog(FileDialog dialog)
@@ -604,6 +604,17 @@ namespace TEAM
         {
             if (checkBoxResizeDataGrid.Checked == false)
                 return;
+    
+            GridAutoLayoutTableMappingMetadata();
+            GridAutoLayoutAttributeMetadata();
+            GridAutoLayoutPhysicalModelMetadata();
+        }
+
+        private void GridAutoLayoutTableMappingMetadata()
+        {
+            if (checkBoxResizeDataGrid.Checked == false)
+                return;
+
             //Table Mapping metadata grid - set the autosize based on all cells for each column
             for (var i = 0; i < dataGridViewTableMetadata.Columns.Count - 1; i++)
             {
@@ -620,6 +631,12 @@ namespace TEAM
                 dataGridViewTableMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                 dataGridViewTableMetadata.Columns[i].Width = columnWidth;
             }
+        }
+
+        private void GridAutoLayoutAttributeMetadata()
+        {
+            if (checkBoxResizeDataGrid.Checked == false)
+                return;
 
             //Set the autosize based on all cells for each column
             for (var i = 0; i < dataGridViewAttributeMetadata.Columns.Count - 1; i++)
@@ -638,6 +655,12 @@ namespace TEAM
                 dataGridViewAttributeMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                 dataGridViewAttributeMetadata.Columns[i].Width = columnWidth;
             }
+        }
+
+        private void GridAutoLayoutPhysicalModelMetadata()
+        {
+            if (checkBoxResizeDataGrid.Checked == false)
+                return;
 
             //Physical model metadata grid - set the autosize based on all cells for each column
             for (var i = 0; i < dataGridViewPhysicalModelMetadata.Columns.Count - 1; i++)
@@ -2918,7 +2941,7 @@ namespace TEAM
                         }
                     }
 
-                    GridAutoLayout();
+                    GridAutoLayoutTableMappingMetadata();
                     ContentCounter();
                     richTextBoxInformation.AppendText("The file " + chosenFile + " was loaded.\r\n");
                 }
@@ -3100,7 +3123,7 @@ namespace TEAM
                         }
                     }
 
-                    GridAutoLayout();
+                    GridAutoLayoutAttributeMetadata();
                     richTextBoxInformation.Text = "The metadata has been loaded from file.\r\n";
                     ContentCounter();
                 }
@@ -7700,7 +7723,7 @@ namespace TEAM
                         }
                     }
 
-                    GridAutoLayout();
+                    GridAutoLayoutPhysicalModelMetadata();
                     ContentCounter();
                     richTextBoxInformation.AppendText("The file " + chosenFile + " was loaded.\r\n");
                 }
