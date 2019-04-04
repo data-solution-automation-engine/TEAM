@@ -1171,16 +1171,14 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine("-- INTERFACE_SOURCE_TO_STAGING");
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_SOURCE_TO_STAGING]', 'V') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_TO_STAGING]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_TO_STAGING]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
                 createStatement.Clear();
 
                 createStatement.AppendLine("-- INTERFACE_SOURCE_SATELLITE_XREF");
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_SOURCE_SATELLITE_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_SATELLITE_XREF]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 81);
@@ -1196,6 +1194,13 @@ namespace TEAM
                 createStatement.AppendLine("-- INTERFACE_SOURCE_LINK_XREF");
                 createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_LINK_XREF]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_LINK_XREF]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 82);
+                createStatement.Clear();
+
+                createStatement.AppendLine("-- INTERFACE_PHYSICAL_MODEL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_PHYSICAL_MODEL]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_PHYSICAL_MODEL]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 82);
                 createStatement.Clear();
@@ -1329,7 +1334,8 @@ namespace TEAM
                 createStatement.AppendLine("*/");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" schema_stg_listing.TABLE_NAME AS SOURCE_NAME-- the Staging Area tables queried from the catalog");
+                createStatement.AppendLine("  schema_stg_listing.TABLE_NAME AS STAGING_AREA" +
+                                           "_NAME-- the Staging Area tables queried from the catalog");
                 createStatement.AppendLine(" , '[dbo]' AS SCHEMA_NAME");
                 createStatement.AppendLine(" , coalesce(dataset.SOURCE_DATASET_NAME");
                 createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
@@ -1338,7 +1344,6 @@ namespace TEAM
                 createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
                 createStatement.AppendLine(" , 5 -- always prefixed with STG_(length 4)");
                 createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) - 5) AS SOURCE_TABLE_SYSTEM_NAME");
-                createStatement.AppendLine(" ,'tbd' AS SCHEMA_NAME");
                 createStatement.AppendLine(" , COALESCE(cdctype.CHANGE_DATA_CAPTURE_TYPE, 'Undefined') AS CHANGE_DATA_CAPTURE_TYPE");
                 createStatement.AppendLine(" , COALESCE(naming_exception.CHANGE_DATETIME_DEFINITION, cdctype.CHANGE_DATETIME_DEFINITION) AS CHANGE_DATETIME_DEFINITION");
                 createStatement.AppendLine(" , cdctype.PROCESS_INDICATOR AS PROCESS_INDICATOR");
