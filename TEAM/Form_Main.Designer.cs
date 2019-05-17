@@ -31,6 +31,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.labelWorkingEnvironment = new System.Windows.Forms.Label();
             this.labelMetadataRepository = new System.Windows.Forms.Label();
             this.labelRepositoryDate = new System.Windows.Forms.Label();
             this.labelRepositoryUpdateDateTime = new System.Windows.Forms.Label();
@@ -61,7 +62,6 @@
             this.linksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.labelWorkingEnvironment = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBoxVersionSelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -83,6 +83,16 @@
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Repository version";
+            // 
+            // labelWorkingEnvironment
+            // 
+            this.labelWorkingEnvironment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelWorkingEnvironment.AutoSize = true;
+            this.labelWorkingEnvironment.Location = new System.Drawing.Point(6, 73);
+            this.labelWorkingEnvironment.Name = "labelWorkingEnvironment";
+            this.labelWorkingEnvironment.Size = new System.Drawing.Size(140, 13);
+            this.labelWorkingEnvironment.TabIndex = 65;
+            this.labelWorkingEnvironment.Text = "The working environment is:";
             // 
             // labelMetadataRepository
             // 
@@ -294,14 +304,14 @@
             this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generateTestDataToolStripMenuItem});
             this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
-            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
             this.testingToolStripMenuItem.Text = "&Testing";
             // 
             // generateTestDataToolStripMenuItem
             // 
             this.generateTestDataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generateTestDataToolStripMenuItem.Image")));
             this.generateTestDataToolStripMenuItem.Name = "generateTestDataToolStripMenuItem";
-            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.generateTestDataToolStripMenuItem.Text = "Generate Test Data";
             this.generateTestDataToolStripMenuItem.Click += new System.EventHandler(this.generateTestDataToolStripMenuItem_Click);
             // 
@@ -363,16 +373,6 @@
             this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // labelWorkingEnvironment
-            // 
-            this.labelWorkingEnvironment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelWorkingEnvironment.AutoSize = true;
-            this.labelWorkingEnvironment.Location = new System.Drawing.Point(6, 73);
-            this.labelWorkingEnvironment.Name = "labelWorkingEnvironment";
-            this.labelWorkingEnvironment.Size = new System.Drawing.Size(140, 13);
-            this.labelWorkingEnvironment.TabIndex = 65;
-            this.labelWorkingEnvironment.Text = "The working environment is:";
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -392,6 +392,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TEAM - Taxonomy for ETL Automation Metadata ";
             this.Activated += new System.EventHandler(this.FormMain_Activated);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBoxVersionSelection.ResumeLayout(false);

@@ -245,57 +245,66 @@ namespace TEAM
             if (repositoryTarget == "SQLServer") //Queries the tables in SQL Server
             {
                 // open latest version
+                //LBM: 17/05/2019 moving the code inside the catch for error handling
                 var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-
+                
                 try
                 {
                     connOmd.Open();
+                    var sqlStatementForLatestVersion = new StringBuilder();
+
+                    sqlStatementForLatestVersion.AppendLine("SELECT ");
+                    sqlStatementForLatestVersion.AppendLine(" [VERSION_ATTRIBUTE_HASH],");
+                    sqlStatementForLatestVersion.AppendLine(" CAST([VERSION_ID] AS VARCHAR(100)) AS VERSION_ID,");
+                    sqlStatementForLatestVersion.AppendLine(" [DATABASE_NAME],");
+                    sqlStatementForLatestVersion.AppendLine(" [SCHEMA_NAME],");
+                    sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
+                    sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
+                    sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
+                    sqlStatementForLatestVersion.AppendLine(" CAST([CHARACTER_MAXIMUM_LENGTH] AS VARCHAR(100)) AS CHARACTER_MAXIMUM_LENGTH,");
+                    sqlStatementForLatestVersion.AppendLine(" CAST([NUMERIC_PRECISION] AS VARCHAR(100)) AS NUMERIC_PRECISION,");
+                    sqlStatementForLatestVersion.AppendLine(" CAST([ORDINAL_POSITION] AS VARCHAR(100)) AS ORDINAL_POSITION,");
+                    sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
+                    sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
+                    sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
+
+                    var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+                    _bindingSourcePhysicalModelMetadata.DataSource = versionList;
+
+                    // Set the column header names.
+                    dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
+                    dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
+                    dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
+                    dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
+
+                    dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
+                    dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
+                    dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
+                    dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
+                    dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
+                    dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
+                    dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
                 }
                 catch (Exception exception)
                 {
                     richTextBoxInformation.Text += exception.Message;
                     return;
                 }
+                finally
+                {
+                    if (connOmd != null)
+                    {
+                        connOmd.Dispose();
+                    }
+                }
 
-                var sqlStatementForLatestVersion = new StringBuilder();
 
-                sqlStatementForLatestVersion.AppendLine("SELECT ");
-                sqlStatementForLatestVersion.AppendLine(" [VERSION_ATTRIBUTE_HASH],");
-                sqlStatementForLatestVersion.AppendLine(" CAST([VERSION_ID] AS VARCHAR(100)) AS VERSION_ID,");
-                sqlStatementForLatestVersion.AppendLine(" [DATABASE_NAME],");
-                sqlStatementForLatestVersion.AppendLine(" [SCHEMA_NAME],");
-                sqlStatementForLatestVersion.AppendLine(" [TABLE_NAME],");
-                sqlStatementForLatestVersion.AppendLine(" [COLUMN_NAME],");
-                sqlStatementForLatestVersion.AppendLine(" [DATA_TYPE],");
-                sqlStatementForLatestVersion.AppendLine(" CAST([CHARACTER_MAXIMUM_LENGTH] AS VARCHAR(100)) AS CHARACTER_MAXIMUM_LENGTH,");
-                sqlStatementForLatestVersion.AppendLine(" CAST([NUMERIC_PRECISION] AS VARCHAR(100)) AS NUMERIC_PRECISION,");
-                sqlStatementForLatestVersion.AppendLine(" CAST([ORDINAL_POSITION] AS VARCHAR(100)) AS ORDINAL_POSITION,");
-                sqlStatementForLatestVersion.AppendLine(" [PRIMARY_KEY_INDICATOR],");
-                sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
-                sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
 
-                var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-                _bindingSourcePhysicalModelMetadata.DataSource = versionList;
-
-                // Set the column header names.
-                dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
-                dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
-                dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
-                dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
-
-                dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
-                dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
-                dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
-                dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
-                dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
-                dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
-                dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
-            
             }
             else if (repositoryTarget == "JSON") //Update the JSON
             {
@@ -371,48 +380,53 @@ namespace TEAM
                 try
                 {
                     connOmd.Open();
+                    var sqlStatementForLatestVersion = new StringBuilder();
+                    sqlStatementForLatestVersion.AppendLine("SELECT ");
+                    sqlStatementForLatestVersion.AppendLine(" [TABLE_MAPPING_HASH],");
+                    sqlStatementForLatestVersion.AppendLine(" CAST([VERSION_ID] AS VARCHAR(100)) AS VERSION_ID,");
+                    sqlStatementForLatestVersion.AppendLine(" [SOURCE_TABLE],");
+                    sqlStatementForLatestVersion.AppendLine(" [TARGET_TABLE],");
+                    sqlStatementForLatestVersion.AppendLine(" [BUSINESS_KEY_ATTRIBUTE],");
+                    sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_ATTRIBUTE],");
+                    sqlStatementForLatestVersion.AppendLine(" [FILTER_CRITERIA],");
+                    sqlStatementForLatestVersion.AppendLine(" [PROCESS_INDICATOR]");
+                    sqlStatementForLatestVersion.AppendLine("FROM [MD_TABLE_MAPPING]");
+                    sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + versionId);
+
+                    var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+
+                    // Order by Source Table, Integration_Area table, Business Key Attribute
+                    //versionList.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+
+                    _bindingSourceTableMetadata.DataSource = versionList;
+
+                    if (versionList != null)
+                    {
+                        // Set the column header names.
+                        dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
+                        dataGridViewTableMetadata.ColumnHeadersVisible = true;
+                        dataGridViewTableMetadata.Columns[0].Visible = false;
+                        dataGridViewTableMetadata.Columns[1].Visible = false;
+
+                        dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
+                        dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
+                        dataGridViewTableMetadata.Columns[2].HeaderText = "Source Table";
+                        dataGridViewTableMetadata.Columns[3].HeaderText = "Target Table";
+                        dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
+                        dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
+                        dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
+                        dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
+                    }
                 }
                 catch (Exception exception)
                 {
                     richTextBoxInformation.Text += exception.Message;
                 }
-
-                var sqlStatementForLatestVersion = new StringBuilder();
-                sqlStatementForLatestVersion.AppendLine("SELECT ");
-                sqlStatementForLatestVersion.AppendLine(" [TABLE_MAPPING_HASH],");
-                sqlStatementForLatestVersion.AppendLine(" CAST([VERSION_ID] AS VARCHAR(100)) AS VERSION_ID,");
-                sqlStatementForLatestVersion.AppendLine(" [SOURCE_TABLE],");
-                sqlStatementForLatestVersion.AppendLine(" [TARGET_TABLE],");
-                sqlStatementForLatestVersion.AppendLine(" [BUSINESS_KEY_ATTRIBUTE],");
-                sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_ATTRIBUTE],");
-                sqlStatementForLatestVersion.AppendLine(" [FILTER_CRITERIA],");
-                sqlStatementForLatestVersion.AppendLine(" [PROCESS_INDICATOR]");
-                sqlStatementForLatestVersion.AppendLine("FROM [MD_TABLE_MAPPING]");
-                sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + versionId);
-
-                var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
-
-                // Order by Source Table, Integration_Area table, Business Key Attribute
-                //versionList.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
-
-                _bindingSourceTableMetadata.DataSource = versionList;
-
-                if (versionList != null)
+                finally
                 {
-                    // Set the column header names.
-                    dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
-                    dataGridViewTableMetadata.ColumnHeadersVisible = true;
-                    dataGridViewTableMetadata.Columns[0].Visible = false;
-                    dataGridViewTableMetadata.Columns[1].Visible = false;
-
-                    dataGridViewTableMetadata.Columns[0].HeaderText = "Hash Key";
-                    dataGridViewTableMetadata.Columns[1].HeaderText = "Version ID";
-                    dataGridViewTableMetadata.Columns[2].HeaderText = "Source Table";
-                    dataGridViewTableMetadata.Columns[3].HeaderText = "Target Table";
-                    dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
-                    dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
-                    dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
-                    dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
+                    connOmd.Close();
+                    if (connOmd!=null)
+                        connOmd.Dispose();
                 }
 
             }
@@ -7045,7 +7059,7 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("ORDER BY main.column_id");
 
             var reverseEngineerResults = GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
-
+            conn.Close();
             return reverseEngineerResults;
         }
         

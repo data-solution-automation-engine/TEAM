@@ -15,6 +15,8 @@ namespace TEAM
         internal bool RevalidateFlag = true;
         public FormMain()
         {
+            
+            
             // Set the version of the build for everything
             string versionNumberforTeamApplication = "v1.5.5.0";
 
@@ -40,7 +42,7 @@ namespace TEAM
 
             // Load the available configuration file
             ClassEnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-
+            
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
             richTextBoxInformation.AppendText("Version "+versionNumberforTeamApplication+"\r\n\r\n");
@@ -96,6 +98,8 @@ namespace TEAM
                 try
                 {
                     connStg.Open();
+                    connStg.Close();
+                    connStg.Dispose();
                 }
                 catch
                 {
@@ -113,6 +117,8 @@ namespace TEAM
                 try
                 {
                     connPsa.Open();
+                    connPsa.Close();
+                    connPsa.Dispose();
                 }
                 catch
                 {
@@ -134,10 +140,20 @@ namespace TEAM
                 DisplayMaxVersion(connOmd);
                 DisplayCurrentVersion(connOmd);
                 DisplayRepositoryVersion(connOmd);
+                maintainMetadataGraphToolStripMenuItem.Enabled = true;
+                openMetadataFormToolStripMenuItem.Enabled = true;
             }
             catch
             {
                 this.richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables  \r\n");
+                maintainMetadataGraphToolStripMenuItem.Enabled = false;
+                openMetadataFormToolStripMenuItem.Enabled = false;
+                RevalidateFlag = true;
+            }
+            finally
+            {
+                connOmd.Close();
+                connOmd.Dispose();
             }
 
         }
@@ -576,6 +592,11 @@ namespace TEAM
         private void FormMain_Activated(object sender, EventArgs e)
         {
             TestConnections();
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
