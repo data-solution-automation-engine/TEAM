@@ -3812,9 +3812,10 @@ namespace TEAM
                     // Create a distinct list of sources from the datagrid
                     foreach (DataRow row in selectionRows)
                     {
-                        if (!distinctList.Contains((string)row["SOURCE_TABLE"]))
+                        string source_table = row["SOURCE_TABLE"].ToString().Trim();
+                        if (!distinctList.Contains(source_table))
                         {
-                            distinctList.Add((string)row["SOURCE_TABLE"]);
+                            distinctList.Add(source_table);
                         }
                     }
 
@@ -3884,9 +3885,10 @@ namespace TEAM
                     // Create a distinct list of sources from the datagrid
                     foreach (DataRow row in selectionRows)
                     {
-                        if (!distinctList.Contains((string)row["TARGET_TABLE"]))
+                        string target_table = (string)row["TARGET_TABLE"].ToString().Trim();
+                        if (!distinctList.Contains(target_table))
                         {
-                            distinctList.Add((string)row["TARGET_TABLE"]);
+                            distinctList.Add(target_table);
                         }
                     }
 
@@ -3959,9 +3961,10 @@ namespace TEAM
                     // Create a distinct list of sources from the datagrid
                     foreach (DataRow row in selectionRows)
                     {
-                        if (!distinctList.Contains((string)row["TARGET_TABLE"]))
+                        string target_table = row["TARGET_TABLE"].ToString().Trim();
+                        if (!distinctList.Contains(target_table))
                         {
-                            distinctList.Add((string)row["TARGET_TABLE"]);
+                            distinctList.Add(target_table);
                         }
                     }
 
@@ -4051,8 +4054,8 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            var tableName = satelliteName["SATELLITE_NAME"].ToString();
-                            var tableType = satelliteName["SATELLITE_TYPE"];
+                            var tableName = satelliteName["SATELLITE_NAME"].ToString().Trim();
+                            var tableType = satelliteName["SATELLITE_TYPE"].ToString().Trim();
                             var hubId = satelliteName["HUB_ID"];
                             var linkId = satelliteName["LINK_ID"];
 
@@ -4141,8 +4144,8 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            var tableName = satelliteName["SATELLITE_NAME"].ToString();
-                            var tableType = satelliteName["SATELLITE_TYPE"];
+                            var tableName = satelliteName["SATELLITE_NAME"].ToString().Trim();
+                            var tableType = satelliteName["SATELLITE_TYPE"].ToString().Trim();
                             var hubId = satelliteName["HUB_ID"];
                             var linkId = satelliteName["LINK_ID"];
 
@@ -4235,10 +4238,10 @@ namespace TEAM
                             _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["SATELLITE_NAME"] + " relationship\r\n");
 
                             var insertSatStatement = new StringBuilder();
-                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString();
+                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
                             filterCriterion = filterCriterion.Replace("'", "''");
 
-                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
+                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                             var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["SATELLITE_NAME"].ToString());
@@ -4334,10 +4337,10 @@ namespace TEAM
                             _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["HUB_NAME"] + " relationship\r\n");
 
                             var insertXrefStatement = new StringBuilder();
-                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString();
+                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
                             filterCriterion = filterCriterion.Replace("'", "''");
 
-                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
+                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                             var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["HUB_NAME"].ToString());
@@ -4583,7 +4586,7 @@ namespace TEAM
 
                                 insertAttStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
                                 insertAttStatement.AppendLine("([ATTRIBUTE_ID], [ATTRIBUTE_NAME])");
-                                insertAttStatement.AppendLine("VALUES (" + attCounter + ",'" + tableName["COLUMN_NAME"] + "')");
+                                insertAttStatement.AppendLine("VALUES (" + attCounter + ",'" + tableName["COLUMN_NAME"].ToString().Trim() + "')");
 
                                 var command = new SqlCommand(insertAttStatement.ToString(), connection);
 
@@ -4664,15 +4667,15 @@ namespace TEAM
                                                               "[NUMERIC_PRECISION], " +
                                                               "[ORDINAL_POSITION], " +
                                                               "[PRIMARY_KEY_INDICATOR])");
-                                insertKeyStatement.AppendLine("VALUES ('" + tableName["DATABASE_NAME"] + 
-                                                              "','" + tableName["SCHEMA_NAME"] + 
-                                                              "','" + tableName["TABLE_NAME"] + 
-                                                              "','" + tableName["COLUMN_NAME"] + 
-                                                              "','" + tableName["DATA_TYPE"] +
-                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"] +
-                                                              "','" + tableName["NUMERIC_PRECISION"] +
-                                                              "','" + tableName["ORDINAL_POSITION"] +
-                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"] + "')");
+                                insertKeyStatement.AppendLine("VALUES ('" + tableName["DATABASE_NAME"].ToString().Trim() + 
+                                                              "','" + tableName["SCHEMA_NAME"].ToString().Trim() + 
+                                                              "','" + tableName["TABLE_NAME"].ToString().Trim() + 
+                                                              "','" + tableName["COLUMN_NAME"].ToString().Trim() + 
+                                                              "','" + tableName["DATA_TYPE"].ToString().Trim() +
+                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString().Trim() +
+                                                              "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
+                                                              "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
+                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString().Trim() + "')");
 
                                 var command = new SqlCommand(insertKeyStatement.ToString(), connection);
 
@@ -4795,7 +4798,7 @@ namespace TEAM
 
 
 
-                                var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
+                                var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                                 businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                                 insertKeyStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT]");
@@ -4887,10 +4890,10 @@ namespace TEAM
                                 var insertKeyPartStatement = new StringBuilder();
 
                                 var keyComponent = tableName["COMPONENT_ELEMENT_VALUE"]; //Handle quotes between SQL and C#
-                                keyComponent = keyComponent.ToString().Replace("'", "''");
+                                keyComponent = keyComponent.ToString().Trim().Replace("'", "''");
 
                                 var businessKeyDefinition = tableName["BUSINESS_KEY_DEFINITION"];
-                                businessKeyDefinition = businessKeyDefinition.ToString().Replace("'", "''");
+                                businessKeyDefinition = businessKeyDefinition.ToString().Trim().Replace("'", "''");
 
                                 insertKeyPartStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT_PART]");
                                 insertKeyPartStatement.AppendLine("(SOURCE_ID, HUB_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID,COMPONENT_ELEMENT_ID,COMPONENT_ELEMENT_ORDER,COMPONENT_ELEMENT_VALUE,COMPONENT_ELEMENT_TYPE,ATTRIBUTE_ID)");
@@ -5088,10 +5091,10 @@ namespace TEAM
 
                             var insertStgLinkStatement = new StringBuilder();
 
-                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString();
+                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
                             filterCriterion = filterCriterion.Replace("'", "''");
 
-                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString();
+                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                             var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["LINK_NAME"].ToString());
