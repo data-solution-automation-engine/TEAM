@@ -3277,7 +3277,10 @@ namespace TEAM
                 if (row["TARGET_TABLE"] != DBNull.Value)
                     targetTable = (string)row["TARGET_TABLE"];
                 if (row["FILTER_CRITERIA"] != DBNull.Value)
+                {
                     FILTER_CRITERIA = (string)row["FILTER_CRITERIA"];
+                    FILTER_CRITERIA = FILTER_CRITERIA.Replace("'", "''");
+                }
                 if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
                     DRIVING_KEY_ATTRIBUTE = (string)row["DRIVING_KEY_ATTRIBUTE"];
                 if (row["PROCESS_INDICATOR"] != DBNull.Value)
