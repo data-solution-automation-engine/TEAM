@@ -4133,7 +4133,7 @@ namespace TEAM
                                                            AND [PROCESS_INDICATOR] = 'Y'
                                                     ) lnkkeysub
                                                         ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
-                                                       AND spec.BUSINESS_KEY_ATTRIBUTE=lnkkeysub.BUSINESS_KEY_ATTRIBUTE
+                                                       AND REPLACE(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=REPLACE(lnkkeysub.BUSINESS_KEY_ATTRIBUTE,' ','')
 
                                                     -- Only select Link Satellites as the base / driving table (spec alias)
                                                     WHERE spec.TARGET_TABLE_TYPE LIKE 'Link-Satellite'
@@ -5244,6 +5244,9 @@ namespace TEAM
                     prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
                     prepareMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_ID = tgt_attr.ATTRIBUTE_ID");
 
+                    File.AppendAllText(@"C:\temp\SQL.txt", prepareMappingStatement.ToString());
+                    
+                    
                     var automaticAttributeMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
                     if (automaticAttributeMappings.Rows.Count == 0)
