@@ -7128,6 +7128,7 @@ namespace TEAM
         private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
             //LBM 2019-01-24 - We don't need to have the checked box marked when pressing Validation Only, removing the IF
+            //LBM 2109-05-25 - Need to create a validation to check if all Mapped Attibutes exists in the Target
             //if (checkBoxValidation.Checked)
             //{
             BackgroundWorker worker = sender as BackgroundWorker;
