@@ -194,7 +194,7 @@ namespace TEAM
                 sqlStatementForLink.AppendLine("  ,[name] AS [COLUMN_NAME]");
                 sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
                 sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
-                sqlStatementForLink.AppendLine("FROM " + FormBase.ConfigurationSettings.IntegrationDatabaseName +".sys.columns");
+                sqlStatementForLink.AppendLine("FROM [" + FormBase.ConfigurationSettings.IntegrationDatabaseName +"].sys.columns");
                 sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.ConfigurationSettings.LinkTablePrefixValue + "_%'");
                 sqlStatementForLink.AppendLine("AND column_id > 4");
                 sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
