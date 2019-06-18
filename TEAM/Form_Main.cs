@@ -18,7 +18,7 @@ namespace TEAM
             
             
             // Set the version of the build for everything
-            string versionNumberforTeamApplication = "v1.5.5.0";
+            string versionNumberforTeamApplication = "v1.5.5.2";
 
             // Placeholder for the error handling
             var errorMessage = new StringBuilder();
