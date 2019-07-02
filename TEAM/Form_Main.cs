@@ -140,13 +140,11 @@ namespace TEAM
                 DisplayMaxVersion(connOmd);
                 DisplayCurrentVersion(connOmd);
                 DisplayRepositoryVersion(connOmd);
-                maintainMetadataGraphToolStripMenuItem.Enabled = true;
                 openMetadataFormToolStripMenuItem.Enabled = true;
             }
             catch
             {
                 this.richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables  \r\n");
-                maintainMetadataGraphToolStripMenuItem.Enabled = false;
                 openMetadataFormToolStripMenuItem.Enabled = false;
                 RevalidateFlag = true;
             }
@@ -271,11 +269,6 @@ namespace TEAM
             _myAboutForm = null;
         }
 
-        private void CloseGraphForm(object sender, FormClosedEventArgs e)
-        {
-            _myGraphForm = null;
-        }
-
         private void CloseConfigurationForm(object sender, FormClosedEventArgs e)
         {
             _myConfigurationForm = null;
@@ -346,41 +339,6 @@ namespace TEAM
 
             }
         }
-
- 
-
-
-        private FormManageGraph _myGraphForm;
-        [STAThread]
-        public void ThreadProcGraph()
-        {
-            if (_myGraphForm == null)
-            {
-                _myGraphForm = new FormManageGraph(this);
-                Application.Run(_myGraphForm);
-            }
-            else
-            {
-                if (_myGraphForm.InvokeRequired)
-                {
-                    // Thread Error
-                    _myGraphForm.Invoke((MethodInvoker)delegate { _myGraphForm.Close(); });
-                    _myGraphForm.FormClosed += CloseGraphForm;
-
-                    _myGraphForm = new FormManageGraph(this);
-                    Application.Run(_myGraphForm);
-                }
-                else
-                {
-                    // No invoke required - same thread
-                    _myGraphForm.FormClosed += CloseGraphForm;
-                    _myGraphForm = new FormManageGraph(this);
-
-                    Application.Run(_myGraphForm);
-                }
-            }
-        }
-
 
         private FormManageConfiguration _myConfigurationForm;
         /// <summary>
@@ -568,13 +526,6 @@ namespace TEAM
         private void sourceSystemRegistryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("This feature is yet to be implemented.", "Upcoming!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        }
-
-        private void maintainMetadataGraphToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcGraph);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
         }
 
         private void generalSettingsToolStripMenuItem_Click(object sender, EventArgs e)

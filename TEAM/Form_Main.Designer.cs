@@ -49,7 +49,6 @@
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.maintainMetadataGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sourceSystemRegistryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createRebuildRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -257,22 +256,12 @@
             // metadataToolStripMenuItem
             // 
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.maintainMetadataGraphToolStripMenuItem,
             this.openMetadataFormToolStripMenuItem,
             this.sourceSystemRegistryToolStripMenuItem,
             this.createRebuildRepositoryToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
             this.metadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.metadataToolStripMenuItem.Text = "&Metadata";
-            // 
-            // maintainMetadataGraphToolStripMenuItem
-            // 
-            this.maintainMetadataGraphToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("maintainMetadataGraphToolStripMenuItem.Image")));
-            this.maintainMetadataGraphToolStripMenuItem.Name = "maintainMetadataGraphToolStripMenuItem";
-            this.maintainMetadataGraphToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.maintainMetadataGraphToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.maintainMetadataGraphToolStripMenuItem.Text = "Metadata &Graph";
-            this.maintainMetadataGraphToolStripMenuItem.Click += new System.EventHandler(this.maintainMetadataGraphToolStripMenuItem_Click);
             // 
             // openMetadataFormToolStripMenuItem
             // 
@@ -304,14 +293,14 @@
             this.testingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generateTestDataToolStripMenuItem});
             this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
-            this.testingToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.testingToolStripMenuItem.Text = "&Testing";
             // 
             // generateTestDataToolStripMenuItem
             // 
             this.generateTestDataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generateTestDataToolStripMenuItem.Image")));
             this.generateTestDataToolStripMenuItem.Name = "generateTestDataToolStripMenuItem";
-            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.generateTestDataToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.generateTestDataToolStripMenuItem.Text = "Generate Test Data";
             this.generateTestDataToolStripMenuItem.Click += new System.EventHandler(this.generateTestDataToolStripMenuItem_Click);
             // 
@@ -422,7 +411,6 @@
         private System.Windows.Forms.ToolStripMenuItem generateTestDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sourceSystemRegistryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem maintainMetadataGraphToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBoxVersionSelection;
