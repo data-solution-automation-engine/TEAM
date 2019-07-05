@@ -69,7 +69,7 @@ namespace TEAM
             if (RevalidateFlag == false)
                 return;
             RevalidateFlag = false;
-            //MessageBox.Show("Valildating Connections");
+            //MessageBox.Show("Validating Connections");
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
             var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
@@ -113,7 +113,7 @@ namespace TEAM
                 DisableMenu();
                 return;
             }
-            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>")
+            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>")
                 try
                 {
                     connPsa.Open();
