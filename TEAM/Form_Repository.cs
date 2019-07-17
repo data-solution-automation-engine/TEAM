@@ -1127,16 +1127,14 @@ namespace TEAM
                 // Drop the views
 
                 createStatement.AppendLine("-- INTERFACE_BUSINESS_KEY_COMPONENT");
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT]', 'V') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_BUSINESS_KEY_COMPONENT]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 78);
                 createStatement.Clear();
 
                 createStatement.AppendLine("-- INTERFACE_BUSINESS_KEY_COMPONENT_PART");
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]', 'V') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 78);
@@ -1360,22 +1358,23 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 93);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_SOURCE_HUB_XREF]");
+                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" xref.[SOURCE_ID],");
                 createStatement.AppendLine(" stg.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME],");
-                createStatement.AppendLine(" stg.SOURCE_NAME,");
-                createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
-                createStatement.AppendLine(" xref.HUB_ID,");
-                createStatement.AppendLine(" hub.[SCHEMA_NAME] AS [HUB_SCHEMA_NAME],");
-                createStatement.AppendLine(" HUB_NAME,");
-                createStatement.AppendLine(" hub.BUSINESS_KEY AS HUB_BUSINESS_KEY_DEFINITION,");
-                createStatement.AppendLine(" FILTER_CRITERIA,");
+                createStatement.AppendLine(" stg.[SOURCE_NAME],");
+                createStatement.AppendLine(" xref.[BUSINESS_KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" xref.[HUB_ID] AS [TARGET_ID],");
+                createStatement.AppendLine(" hub.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine(" [HUB_NAME] AS [TARGET_NAME],");
+                createStatement.AppendLine(" hub.[BUSINESS_KEY] AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" 'Hub' AS [TARGET_TYPE],");
+                createStatement.AppendLine(" [FILTER_CRITERIA],");
                 createStatement.AppendLine(" xref.[LOAD_VECTOR]");
-                createStatement.AppendLine("FROM MD_SOURCE_HUB_XREF xref");
-                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
-                createStatement.AppendLine("JOIN MD_HUB hub ON xref.HUB_ID = hub.HUB_ID");
+                createStatement.AppendLine("FROM [MD_SOURCE_HUB_XREF] xref");
+                createStatement.AppendLine("JOIN [MD_SOURCE] stg ON xref.[SOURCE_ID] = stg.[SOURCE_ID]");
+                createStatement.AppendLine("JOIN [MD_HUB] hub ON xref.HUB_ID = hub.[HUB_ID]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 95);
                 createStatement.Clear();

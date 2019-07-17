@@ -335,7 +335,7 @@ namespace TEAM
 
 
             // Make sure the output is sorted to persist in JSON
-            inputDataTable.DefaultView.Sort = "[SOURCE_ID] ASC, [HUB_ID] ASC, [HUB_BUSINESS_KEY_DEFINITION] ASC";
+            inputDataTable.DefaultView.Sort = "[SOURCE_ID] ASC, [TARGET_ID] ASC, [TARGET_BUSINESS_KEY_DEFINITION] ASC";
 
             inputDataTable.TableName = fileName;
 
@@ -348,12 +348,13 @@ namespace TEAM
                     sourceSchemaName = singleRow[1].ToString(),
                     sourceName = singleRow[2].ToString(),
                     sourceBusinessKeyDefinition = singleRow[3].ToString(),
-                    hubId = singleRow[4].ToString(),
-                    hubSchemaName = singleRow[5].ToString(),
-                    hubName = singleRow[6].ToString(),
-                    hubBusinessKeyDefinition = singleRow[7].ToString(),
-                    filterCriteria = singleRow[8].ToString(),
-                    loadVector = singleRow[9].ToString()
+                    targetId = singleRow[4].ToString(),
+                    targetSchemaName = singleRow[5].ToString(),
+                    targetName = singleRow[6].ToString(),
+                    targetBusinessKeyDefinition = singleRow[7].ToString(),
+                    targetType = singleRow[8].ToString(),
+                    filterCriteria = singleRow[9].ToString(),
+                    loadVector = singleRow[10].ToString()
                 });
                 outputFileArray.Add(individualRow);
             }
