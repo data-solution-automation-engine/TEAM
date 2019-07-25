@@ -3910,11 +3910,12 @@ namespace TEAM
                             // Retrieve the business key
                             var hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, queryMode);
                             string businessKeyString = string.Join(",", hubBusinessKey);
+                            string surrogateKey = ClassMetadataHandling.GetSurrogateKey(tableName);
 
                             var insertHubStatement = new StringBuilder();
                             insertHubStatement.AppendLine("INSERT INTO [MD_HUB]");
-                            insertHubStatement.AppendLine("([HUB_NAME],[HUB_ID], [SCHEMA_NAME], [BUSINESS_KEY])");
-                            insertHubStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + hubCounter + ",'"+fullyQualifiedName.Key+"', '"+ businessKeyString + "')");
+                            insertHubStatement.AppendLine("([HUB_NAME],[HUB_ID], [SCHEMA_NAME], [BUSINESS_KEY], [SURROGATE_KEY])");
+                            insertHubStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + hubCounter + ",'"+fullyQualifiedName.Key+"', '"+ businessKeyString + "', '" + surrogateKey + "')");
 
                             var command = new SqlCommand(insertHubStatement.ToString(), connection);
 
@@ -3983,11 +3984,14 @@ namespace TEAM
 
                             var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
+                            // Retrieve the surrogate key
+                            string surrogateKey = ClassMetadataHandling.GetSurrogateKey(tableName);
+
                             var insertLinkStatement = new StringBuilder();
 
                             insertLinkStatement.AppendLine("INSERT INTO [MD_LINK]");
-                            insertLinkStatement.AppendLine("([LINK_NAME],[LINK_ID], [SCHEMA_NAME])");
-                            insertLinkStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + linkCounter + ",'"+fullyQualifiedName.Key+"')");
+                            insertLinkStatement.AppendLine("([LINK_NAME], [LINK_ID], [SCHEMA_NAME], [SURROGATE_KEY])");
+                            insertLinkStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + linkCounter + ",'"+fullyQualifiedName.Key+ "','" + surrogateKey + "')");
 
                             var command = new SqlCommand(insertLinkStatement.ToString(), connection);
 

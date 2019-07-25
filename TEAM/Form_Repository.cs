@@ -548,6 +548,7 @@ namespace TEAM
                 createStatement.AppendLine("	[HUB_NAME]     varchar(100)  NOT NULL,");
                 createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY] varchar(100)  NULL,");
+                createStatement.AppendLine("	[SURROGATE_KEY] varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_HUB] PRIMARY KEY CLUSTERED ([HUB_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
@@ -589,6 +590,7 @@ namespace TEAM
                 createStatement.AppendLine("    [LINK_ID]      integer NOT NULL,");
                 createStatement.AppendLine("	[LINK_NAME]    varchar(100)  NOT NULL,");
                 createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
+                createStatement.AppendLine("	[SURROGATE_KEY]  varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_LINK] PRIMARY KEY CLUSTERED ( [LINK_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
@@ -1370,6 +1372,7 @@ namespace TEAM
                 createStatement.AppendLine(" [HUB_NAME] AS [TARGET_NAME],");
                 createStatement.AppendLine(" hub.[BUSINESS_KEY] AS [TARGET_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine(" 'Hub' AS [TARGET_TYPE],");
+                createStatement.AppendLine(" [SURROGATE_KEY],");
                 createStatement.AppendLine(" [FILTER_CRITERIA],");
                 createStatement.AppendLine(" xref.[LOAD_VECTOR]");
                 createStatement.AppendLine("FROM [MD_SOURCE_HUB_XREF] xref");
@@ -1459,17 +1462,41 @@ namespace TEAM
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" stg.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
                 createStatement.AppendLine(" SOURCE_NAME,");
-                createStatement.AppendLine(" stghubxref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
-                //createStatement.AppendLine(" SCHEMA_NAME,");
+                createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
+                createStatement.AppendLine(" xref.SATELLITE_ID AS[TARGET_ID],");
+                createStatement.AppendLine(" sat.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine(" sat.SATELLITE_NAME AS[TARGET_NAME],");
+                createStatement.AppendLine(" NULL AS[TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" sat.SATELLITE_TYPE AS[TARGET_TYPE],");
+                createStatement.AppendLine(" hub.SURROGATE_KEY,");
                 createStatement.AppendLine(" xref.FILTER_CRITERIA,");
-                createStatement.AppendLine(" xref.SATELLITE_ID,");
-                createStatement.AppendLine(" sat.SATELLITE_NAME,");
-                createStatement.AppendLine(" sat.SATELLITE_TYPE,");
-                createStatement.AppendLine(" sat.HUB_ID,");
-                createStatement.AppendLine(" hub.HUB_NAME,");
-                createStatement.AppendLine(" sat.LINK_ID,");
-                createStatement.AppendLine(" lnk.LINK_NAME,");
+                createStatement.AppendLine(" xref.[LOAD_VECTOR]");
+                createStatement.AppendLine("FROM MD_SOURCE_SATELLITE_XREF xref");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
+                createStatement.AppendLine("JOIN MD_HUB hub ON sat.HUB_ID = hub.HUB_ID");
+                createStatement.AppendLine("LEFT JOIN MD_SOURCE_HUB_XREF stghubxref");
+                createStatement.AppendLine("  ON xref.SOURCE_ID = stghubxref.SOURCE_ID");
+                createStatement.AppendLine("  AND hub.HUB_ID = stghubxref.HUB_ID");
+                createStatement.AppendLine("  AND xref.BUSINESS_KEY_DEFINITION = stghubxref.BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine("WHERE sat.SATELLITE_TYPE= 'Normal'");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("UNION");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("SELECT");
+                createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" stg.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
+                createStatement.AppendLine(" SOURCE_NAME,");
+                createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,"); 
+                createStatement.AppendLine(" xref.SATELLITE_ID AS [TARGET_ID],");
+                createStatement.AppendLine(" sat.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine(" sat.SATELLITE_NAME AS [TARGET_NAME],");
+                createStatement.AppendLine(" NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" sat.SATELLITE_TYPE AS [TARGET_TYPE],");
+                createStatement.AppendLine(" lnk.SURROGATE_KEY,");
+                createStatement.AppendLine(" xref.FILTER_CRITERIA,");
                 createStatement.AppendLine(" xref.[LOAD_VECTOR]");
                 createStatement.AppendLine("FROM MD_SOURCE_SATELLITE_XREF xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
@@ -1480,10 +1507,11 @@ namespace TEAM
                 createStatement.AppendLine("  ON xref.SOURCE_ID = stghubxref.SOURCE_ID");
                 createStatement.AppendLine("  AND hub.HUB_ID = stghubxref.HUB_ID");
                 createStatement.AppendLine("  AND xref.BUSINESS_KEY_DEFINITION = stghubxref.BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine("WHERE sat.SATELLITE_TYPE= 'Link Satellite'");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 100);
                 createStatement.Clear();
-
+                
             }
         }
 
