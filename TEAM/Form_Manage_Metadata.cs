@@ -3206,7 +3206,7 @@ namespace TEAM
 
                 if (row["SOURCE_TABLE"] != DBNull.Value)
                     sourceTable = (string)row["SOURCE_TABLE"];
-                if (row["SOURCE_COLUMN"] != DBNull.Value);
+                if (row["SOURCE_COLUMN"] != DBNull.Value)
                     SOURCE_COLUMN = (string)row["SOURCE_COLUMN"];
                 if (row["TARGET_TABLE"] != DBNull.Value)
                     targetTable = (string)row["TARGET_TABLE"];
@@ -3272,7 +3272,7 @@ namespace TEAM
 
                 if (row["SOURCE_TABLE"] != DBNull.Value)
                     sourceTable = (string)row["SOURCE_TABLE"];
-                if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value) ;
+                if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value) 
                     BUSINESS_KEY_ATTRIBUTE = (string)row["BUSINESS_KEY_ATTRIBUTE"];
                 if (row["TARGET_TABLE"] != DBNull.Value)
                     targetTable = (string)row["TARGET_TABLE"];
