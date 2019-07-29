@@ -332,9 +332,9 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "IF OBJECT_ID('[FK_MD_SOURCE_SOURCE_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
+                    "IF OBJECT_ID('[FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_SOURCE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SOURCE_XREF_MD_SOURCE_DATASET]");
+                    "ALTER TABLE [MD_SOURCE_STAGING_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 4);
                 createStatement.Clear();
@@ -548,6 +548,7 @@ namespace TEAM
                 createStatement.AppendLine("	[HUB_NAME]     varchar(100)  NOT NULL,");
                 createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
                 createStatement.AppendLine("	[BUSINESS_KEY] varchar(100)  NULL,");
+                createStatement.AppendLine("	[SURROGATE_KEY] varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_HUB] PRIMARY KEY CLUSTERED ([HUB_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
@@ -589,6 +590,7 @@ namespace TEAM
                 createStatement.AppendLine("    [LINK_ID]      integer NOT NULL,");
                 createStatement.AppendLine("	[LINK_NAME]    varchar(100)  NOT NULL,");
                 createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
+                createStatement.AppendLine("	[SURROGATE_KEY]  varchar(100)  NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_LINK] PRIMARY KEY CLUSTERED ( [LINK_ID] ASC)");
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
@@ -643,16 +645,16 @@ namespace TEAM
                 // Source CDC Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Source / Staging Xref");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_SOURCE_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_SOURCE_XREF]");
+                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_STAGING_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_SOURCE_XREF]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("	[SOURCE_NAME] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [SOURCE_DATASET_ID] int  NOT NULL,");
                 createStatement.AppendLine("    [CHANGE_DATETIME_DEFINITION] varchar(4000) NULL,");
                 createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_SOURCE_SOURCE_XREF] PRIMARY KEY CLUSTERED ( [SOURCE_NAME] ASC)");
+                    "    CONSTRAINT [PK_MD_SOURCE_STAGING_XREF] PRIMARY KEY CLUSTERED ( [SOURCE_NAME] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 43);
@@ -1110,7 +1112,7 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine(
-                    "ALTER TABLE [dbo].[MD_SOURCE_SOURCE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_SOURCE_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
+                    "ALTER TABLE [dbo].[MD_SOURCE_STAGING_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
                 createStatement.AppendLine("REFERENCES [dbo].[MD_SOURCE_DATASET] ([SOURCE_DATASET_ID])");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
@@ -1127,16 +1129,14 @@ namespace TEAM
                 // Drop the views
 
                 createStatement.AppendLine("-- INTERFACE_BUSINESS_KEY_COMPONENT");
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT]', 'V') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_BUSINESS_KEY_COMPONENT]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 78);
                 createStatement.Clear();
 
                 createStatement.AppendLine("-- INTERFACE_BUSINESS_KEY_COMPONENT_PART");
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]', 'V') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 78);
@@ -1170,9 +1170,9 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
                 createStatement.Clear();
 
-                createStatement.AppendLine("-- INTERFACE_SOURCE_TO_STAGING");
-                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_TO_STAGING]', 'V') IS NOT NULL");
-                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_TO_STAGING]");
+                createStatement.AppendLine("-- INTERFACE_SOURCE_STAGING_XREF");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_STAGING_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
                 createStatement.Clear();
@@ -1326,56 +1326,61 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 91);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_TO_STAGING]");
+                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("/*");
                 createStatement.AppendLine("This view combines the staging area listing / interfaces with the exceptions where a single source file/table is mapped to more than one Staging Area tables.");
                 createStatement.AppendLine("This is the default source for source-to-staging interfaces.");
                 createStatement.AppendLine("*/");
                 createStatement.AppendLine("");
+
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("  schema_stg_listing.TABLE_NAME AS STAGING_AREA" +
-                                           "_NAME-- the Staging Area tables queried from the catalog");
-                createStatement.AppendLine(" , '[dbo]' AS SCHEMA_NAME");
-                createStatement.AppendLine(" , coalesce(dataset.SOURCE_DATASET_NAME");
-                createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
-                createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1 -- always prefixed with STG_(length 4)");
-                createStatement.AppendLine(" , len(schema_stg_listing.TABLE_NAME))) AS SOURCE_TABLE_NAME");
-                createStatement.AppendLine(" , substring(schema_stg_listing.TABLE_NAME");
-                createStatement.AppendLine(" , 5 -- always prefixed with STG_(length 4)");
-                createStatement.AppendLine(" , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) - 5) AS SOURCE_TABLE_SYSTEM_NAME");
-                createStatement.AppendLine(" , COALESCE(cdctype.CHANGE_DATA_CAPTURE_TYPE, 'Undefined') AS CHANGE_DATA_CAPTURE_TYPE");
-                createStatement.AppendLine(" , COALESCE(naming_exception.CHANGE_DATETIME_DEFINITION, cdctype.CHANGE_DATETIME_DEFINITION) AS CHANGE_DATETIME_DEFINITION");
-                createStatement.AppendLine(" , cdctype.PROCESS_INDICATOR AS PROCESS_INDICATOR");
-                createStatement.AppendLine("FROM ["+ConfigurationSettings.StagingDatabaseName+"].INFORMATION_SCHEMA.TABLES as schema_stg_listing");
-                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_SOURCE_XREF as naming_exception on naming_exception.SOURCE_NAME = schema_stg_listing.TABLE_NAME");
+                createStatement.AppendLine("    NULL AS SOURCE_ID");
+                createStatement.AppendLine("    ,'[dbo]' AS SOURCE_SCHEMA_NAME");
+                createStatement.AppendLine("    , coalesce(dataset.SOURCE_DATASET_NAME");
+                createStatement.AppendLine("    , substring(schema_stg_listing.TABLE_NAME");
+                createStatement.AppendLine("        , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1-- always prefixed with STG_(length 4)");
+                createStatement.AppendLine("    , len(schema_stg_listing.TABLE_NAME))) AS SOURCE_NAME");
+                createStatement.AppendLine("    , NULL AS SOURCE_BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine("    , NULL AS TARGET_ID");
+                createStatement.AppendLine("    ,'[dbo]' AS TARGET_SCHEMA_NAME");
+                createStatement.AppendLine("    , schema_stg_listing.TABLE_NAME AS TARGET_NAME-- the Staging Area tables queried from the catalog");
+                createStatement.AppendLine("    , NULL AS TARGET_BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine("    ,'StagingArea' AS TARGET_TYPE");
+                createStatement.AppendLine("    , NULL AS SURROGATE_KEY");
+                createStatement.AppendLine("    , NULL AS FILTER_CRITERIA");
+                createStatement.AppendLine("    , NULL AS LOAD_VECTOR");
+                createStatement.AppendLine("FROM [" + ConfigurationSettings.StagingDatabaseName + "].INFORMATION_SCHEMA.TABLES as schema_stg_listing");
+                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_STAGING_XREF as naming_exception on naming_exception.SOURCE_NAME = schema_stg_listing.TABLE_NAME");
                 createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.SOURCE_NAME");
                 createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_DATASET dataset ON naming_exception.SOURCE_DATASET_ID = dataset.SOURCE_DATASET_ID");
                 createStatement.AppendLine("WHERE TABLE_TYPE = 'BASE TABLE'");
                 createStatement.AppendLine("AND TABLE_NAME not like '%LANDING%'");
                 createStatement.AppendLine("AND TABLE_NAME not like '%USERMANAGED%'");
-                createStatement.AppendLine("AND TABLE_SCHEMA = '" + ConfigurationSettings.SchemaName + "'");
+                createStatement.AppendLine("AND TABLE_SCHEMA = 'dbo'");
                 createStatement.AppendLine("AND schema_stg_listing.TABLE_NAME LIKE 'STG_%'");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 93);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_SOURCE_HUB_XREF]");
+                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" xref.[SOURCE_ID],");
                 createStatement.AppendLine(" stg.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME],");
-                createStatement.AppendLine(" stg.SOURCE_NAME,");
-                createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
-                createStatement.AppendLine(" xref.HUB_ID,");
-                createStatement.AppendLine(" hub.[SCHEMA_NAME] AS [HUB_SCHEMA_NAME],");
-                createStatement.AppendLine(" HUB_NAME,");
-                createStatement.AppendLine(" hub.BUSINESS_KEY AS HUB_BUSINESS_KEY_DEFINITION,");
-                createStatement.AppendLine(" FILTER_CRITERIA,");
+                createStatement.AppendLine(" stg.[SOURCE_NAME],");
+                createStatement.AppendLine(" xref.[BUSINESS_KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" xref.[HUB_ID] AS [TARGET_ID],");
+                createStatement.AppendLine(" hub.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine(" [HUB_NAME] AS [TARGET_NAME],");
+                createStatement.AppendLine(" hub.[BUSINESS_KEY] AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" 'Hub' AS [TARGET_TYPE],");
+                createStatement.AppendLine(" [SURROGATE_KEY],");
+                createStatement.AppendLine(" [FILTER_CRITERIA],");
                 createStatement.AppendLine(" xref.[LOAD_VECTOR]");
-                createStatement.AppendLine("FROM MD_SOURCE_HUB_XREF xref");
-                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
-                createStatement.AppendLine("JOIN MD_HUB hub ON xref.HUB_ID = hub.HUB_ID");
+                createStatement.AppendLine("FROM [MD_SOURCE_HUB_XREF] xref");
+                createStatement.AppendLine("JOIN [MD_SOURCE] stg ON xref.[SOURCE_ID] = stg.[SOURCE_ID]");
+                createStatement.AppendLine("JOIN [MD_HUB] hub ON xref.HUB_ID = hub.[HUB_ID]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 95);
                 createStatement.Clear();
@@ -1460,17 +1465,41 @@ namespace TEAM
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" stg.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
                 createStatement.AppendLine(" SOURCE_NAME,");
-                createStatement.AppendLine(" stghubxref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
-                //createStatement.AppendLine(" SCHEMA_NAME,");
+                createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
+                createStatement.AppendLine(" xref.SATELLITE_ID AS[TARGET_ID],");
+                createStatement.AppendLine(" sat.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine(" sat.SATELLITE_NAME AS[TARGET_NAME],");
+                createStatement.AppendLine(" NULL AS[TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" sat.SATELLITE_TYPE AS[TARGET_TYPE],");
+                createStatement.AppendLine(" hub.SURROGATE_KEY,");
                 createStatement.AppendLine(" xref.FILTER_CRITERIA,");
-                createStatement.AppendLine(" xref.SATELLITE_ID,");
-                createStatement.AppendLine(" sat.SATELLITE_NAME,");
-                createStatement.AppendLine(" sat.SATELLITE_TYPE,");
-                createStatement.AppendLine(" sat.HUB_ID,");
-                createStatement.AppendLine(" hub.HUB_NAME,");
-                createStatement.AppendLine(" sat.LINK_ID,");
-                createStatement.AppendLine(" lnk.LINK_NAME,");
+                createStatement.AppendLine(" xref.[LOAD_VECTOR]");
+                createStatement.AppendLine("FROM MD_SOURCE_SATELLITE_XREF xref");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
+                createStatement.AppendLine("JOIN MD_SATELLITE sat ON xref.SATELLITE_ID = sat.SATELLITE_ID");
+                createStatement.AppendLine("JOIN MD_HUB hub ON sat.HUB_ID = hub.HUB_ID");
+                createStatement.AppendLine("LEFT JOIN MD_SOURCE_HUB_XREF stghubxref");
+                createStatement.AppendLine("  ON xref.SOURCE_ID = stghubxref.SOURCE_ID");
+                createStatement.AppendLine("  AND hub.HUB_ID = stghubxref.HUB_ID");
+                createStatement.AppendLine("  AND xref.BUSINESS_KEY_DEFINITION = stghubxref.BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine("WHERE sat.SATELLITE_TYPE= 'Normal'");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("UNION");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("SELECT");
+                createStatement.AppendLine(" xref.SOURCE_ID,");
+                createStatement.AppendLine(" stg.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
+                createStatement.AppendLine(" SOURCE_NAME,");
+                createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,"); 
+                createStatement.AppendLine(" xref.SATELLITE_ID AS [TARGET_ID],");
+                createStatement.AppendLine(" sat.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine(" sat.SATELLITE_NAME AS [TARGET_NAME],");
+                createStatement.AppendLine(" NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" sat.SATELLITE_TYPE AS [TARGET_TYPE],");
+                createStatement.AppendLine(" lnk.SURROGATE_KEY,");
+                createStatement.AppendLine(" xref.FILTER_CRITERIA,");
                 createStatement.AppendLine(" xref.[LOAD_VECTOR]");
                 createStatement.AppendLine("FROM MD_SOURCE_SATELLITE_XREF xref");
                 createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_ID = stg.SOURCE_ID");
@@ -1481,10 +1510,11 @@ namespace TEAM
                 createStatement.AppendLine("  ON xref.SOURCE_ID = stghubxref.SOURCE_ID");
                 createStatement.AppendLine("  AND hub.HUB_ID = stghubxref.HUB_ID");
                 createStatement.AppendLine("  AND xref.BUSINESS_KEY_DEFINITION = stghubxref.BUSINESS_KEY_DEFINITION");
+                createStatement.AppendLine("WHERE sat.SATELLITE_TYPE= 'Link Satellite'");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 100);
                 createStatement.Clear();
-
+                
             }
         }
 

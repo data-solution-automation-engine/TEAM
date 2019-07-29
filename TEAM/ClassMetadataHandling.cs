@@ -11,6 +11,70 @@ namespace TEAM
 {
     internal class ClassMetadataHandling
     {
+        /// <summary>
+        /// Return the Surrogate Key for a given table using the TEAM settings (i.e. prefix/suffix settings etc.).
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns>surrogateKey</returns>
+        internal static string GetSurrogateKey(string tableName)
+        {
+            // Initialise the return value
+            string surrogateKey = "";
+
+            string keyLocation = FormBase.ConfigurationSettings.DwhKeyIdentifier;
+
+            string[] prefixSuffixAray = {
+                FormBase.ConfigurationSettings.HubTablePrefixValue,
+                FormBase.ConfigurationSettings.SatTablePrefixValue,
+                FormBase.ConfigurationSettings.LinkTablePrefixValue,
+                FormBase.ConfigurationSettings.LsatPrefixValue
+            };
+
+
+            if (tableName != "Not applicable")
+            {
+
+                // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
+                if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix")
+                {
+                    foreach (string prefixValue in prefixSuffixAray)
+                    {
+                        string prefixValueWithUnderscore = prefixValue + '_';
+                        if (tableName.StartsWith(prefixValueWithUnderscore))
+                        {
+                            tableName = tableName.Replace(prefixValueWithUnderscore, "");
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (string suffixValue in prefixSuffixAray)
+                    {
+                        string suffixValueWithUnderscore = '_'+suffixValue;
+                        if (tableName.EndsWith(suffixValueWithUnderscore))
+                        {
+                            tableName = tableName.Replace(suffixValueWithUnderscore, "");
+                        }
+                    }
+                }
+
+
+                // Define the surrogate key using the table name and key prefix/suffix settings.
+                if (FormBase.ConfigurationSettings.KeyNamingLocation == "Prefix")
+                {
+                    surrogateKey = keyLocation + '_' + tableName;
+                }
+                else
+                {
+                    surrogateKey = tableName + '_' + keyLocation;
+                }
+            }
+
+
+            return surrogateKey;
+        }
+
+
         internal static string GetTableType(string tableName)
         {
             string localType ="";
@@ -293,8 +357,6 @@ namespace TEAM
 
             return businessKeyList;
         }
-
-
     }
 
     internal class AttributeSelection
