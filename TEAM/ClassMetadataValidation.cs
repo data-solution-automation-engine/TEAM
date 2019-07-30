@@ -67,7 +67,7 @@ namespace TEAM
                 tableInclusionFilterCriterion = FormBase.ConfigurationSettings.HubTablePrefixValue;
                 tableClassification = "LNK";
             }
-            else if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.LsatPrefixValue)) // If the table is a Link-Satellite, only the Link is required
+            else if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue)) // If the table is a Link-Satellite, only the Link is required
             {
                 tableInclusionFilterCriterion = FormBase.ConfigurationSettings.LinkTablePrefixValue;
                 tableClassification = "LSAT";

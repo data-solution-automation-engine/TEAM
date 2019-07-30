@@ -27,13 +27,11 @@ namespace TEAM
                 FormBase.ConfigurationSettings.HubTablePrefixValue,
                 FormBase.ConfigurationSettings.SatTablePrefixValue,
                 FormBase.ConfigurationSettings.LinkTablePrefixValue,
-                FormBase.ConfigurationSettings.LsatPrefixValue
+                FormBase.ConfigurationSettings.LsatTablePrefixValue
             };
-
 
             if (tableName != "Not applicable")
             {
-
                 // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
                 if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
@@ -96,7 +94,7 @@ namespace TEAM
                 {
                     localType = "Link";
                 }
-                else if (tableName.StartsWith(FormBase.ConfigurationSettings.LsatPrefixValue))
+                else if (tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue))
                 {
                     localType = "Link-Satellite";
                 }
@@ -131,7 +129,7 @@ namespace TEAM
                 {
                     localType = "Link";
                 }
-                else if (tableName.EndsWith(FormBase.ConfigurationSettings.LsatPrefixValue))
+                else if (tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue))
                 {
                     localType = "Link-Satellite";
                 }
@@ -224,7 +222,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Return just the table name, in case a fully qualified name is available (including schema etc.)
+        ///   Return just the table name, in case a fully qualified name is available (including schema etc.).
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
@@ -247,7 +245,11 @@ namespace TEAM
         }
 
 
-
+        /// <summary>
+        ///  Separates the schema from the table name, and returns both as individual values.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         internal static Dictionary<string, string> GetSchema(string tableName)
         {
             Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
@@ -272,6 +274,11 @@ namespace TEAM
             return fullyQualifiedTableName;
         }
 
+        /// <summary>
+        /// Retrieve the fully qualified name (including schema) for a given input table name.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         internal static string getFullSchemaTable(string tableName)
         {
             var fullyQualifiedSourceName = GetSchema(tableName).FirstOrDefault();
@@ -281,9 +288,18 @@ namespace TEAM
             return returnTableName;
         }
 
+
+        /// <summary>
+        /// Returns a list of Business Key attributes as they are defined in the target Hub table.
+        /// </summary>
+        /// <param name="hubSchemaName"></param>
+        /// <param name="hubTableName"></param>
+        /// <param name="versionId"></param>
+        /// <param name="queryMode"></param>
+        /// <returns></returns>
         public static List<string> GetHubTargetBusinessKeyList(string hubSchemaName, string hubTableName, int versionId, string queryMode)
         {
-            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys
+            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
             var conn = new SqlConnection();
 
             if (queryMode == "physical")

@@ -626,7 +626,7 @@ namespace TEAM
             ConfigurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
             ConfigurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
             ConfigurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
-            ConfigurationSettings.LsatPrefixValue = textBoxLinkSatPrefix.Text;
+            ConfigurationSettings.LsatTablePrefixValue = textBoxLinkSatPrefix.Text;
 
             if (keyPrefixRadiobutton.Checked)
             {

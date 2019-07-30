@@ -116,6 +116,8 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_SOURCE_HUB_XREF];");
             commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE];");
+            commandText.AppendLine("DELETE FROM [MD_STAGING];");
+            commandText.AppendLine("DELETE FROM [MD_PERSISTENT_STAGING];");
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
@@ -356,8 +358,7 @@ namespace TEAM
                 createStatement.AppendLine("(");
                 createStatement.AppendLine("    [VERSION_NAME]       varchar(100)  NOT NULL ,");
                 createStatement.AppendLine("    [ACTIVATION_DATETIME]     datetime2(7) NOT NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_MODEL_METADATA] PRIMARY KEY CLUSTERED ( [VERSION_NAME] ASC)");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_MODEL_METADATA] PRIMARY KEY CLUSTERED ( [VERSION_NAME] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 5);
@@ -375,8 +376,7 @@ namespace TEAM
                 createStatement.AppendLine("    [REPOSITORY_VERSION_NOTES]       varchar(4000)  NOT NULL ,");
                 createStatement.AppendLine("    [REPOSITORY_CREATION_DATETIME]     datetime2(7) NOT NULL,");
                 createStatement.AppendLine("    [REPOSITORY_UPDATE_DATETIME]     datetime2(7) NOT NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT[PK_MD_REPOSITORY_VERSION] PRIMARY KEY CLUSTERED ( [REPOSITORY_VERSION] ASC)");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_REPOSITORY_VERSION] PRIMARY KEY CLUSTERED ( [REPOSITORY_VERSION] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 5);
@@ -393,7 +393,7 @@ namespace TEAM
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("VALUES");
                 createStatement.AppendLine("(");
-                createStatement.AppendLine("'1.5',");
+                createStatement.AppendLine("'1.6',");
                 createStatement.AppendLine("'Changed STG to SOURCE and removed the TABLE part in attribute names.',");
                 createStatement.AppendLine("SYSDATETIME(),");
                 createStatement.AppendLine("SYSDATETIME()");
@@ -435,16 +435,11 @@ namespace TEAM
                     createStatement.AppendLine("( ");
                     createStatement.AppendLine("    [ATTRIBUTE_MAPPING_HASH] AS(");
                     createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_COLUMN])),'NA')+'|'+");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_COLUMN])),'NA')+'|' +");
-                    createStatement.AppendLine(
-                        "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TRANSFORMATION_RULE])),'NA')+'|'");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_COLUMN])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_COLUMN])),'NA')+'|' +");
+                    createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TRANSFORMATION_RULE])),'NA')+'|'");
                     createStatement.AppendLine("			),(2)");
                     createStatement.AppendLine("			)");
                     createStatement.AppendLine("		) PERSISTED NOT NULL,");
@@ -522,7 +517,7 @@ namespace TEAM
                 // Driving Key Xref
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Driving Key Xref");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_DRIVING_KEY_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine("IF OBJECT_ID ('[MD_DRIVING_KEY_XREF]', 'U') IS NOT NULL");
                 createStatement.AppendLine(" DROP TABLE [MD_DRIVING_KEY_XREF]");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_DRIVING_KEY_XREF]");
@@ -534,6 +529,50 @@ namespace TEAM
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 25);
+                createStatement.Clear();
+
+                // Staging
+                createStatement.AppendLine();
+                createStatement.AppendLine("-- Staging");
+                createStatement.AppendLine("IF OBJECT_ID ('[MD_STAGING]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_STAGING]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE [MD_STAGING]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("    [STAGING_ID]   integer NOT NULL ,");
+                createStatement.AppendLine("	[STAGING_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_STAGING] PRIMARY KEY CLUSTERED ([STAGING_ID] ASC)");
+                createStatement.AppendLine(")");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_STAGING] ON [MD_STAGING]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("    [STAGING_NAME] ASC");
+                createStatement.AppendLine(")");
+
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 27);
+                createStatement.Clear();
+
+                // Persistent Staging
+                createStatement.AppendLine();
+                createStatement.AppendLine("-- Persistent Staging");
+                createStatement.AppendLine("IF OBJECT_ID ('[MD_PERSISTENT_STAGING]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_PERSISTENT_STAGING]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE [MD_PERSISTENT_STAGING]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("    [PERSISTENT_STAGING_ID]   integer NOT NULL ,");
+                createStatement.AppendLine("	[PERSISTENT_STAGING_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_PERSISTENT_STAGING] PRIMARY KEY CLUSTERED ([PERSISTENT_STAGING_ID] ASC)");
+                createStatement.AppendLine(")");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_PERSISTENT_STAGING] ON [MD_PERSISTENT_STAGING]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("    [PERSISTENT_STAGING_NAME] ASC");
+                createStatement.AppendLine(")");
+
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 28);
                 createStatement.Clear();
 
                 // Hub
@@ -2997,7 +3036,7 @@ namespace TEAM
                 ConfigurationSettings.HubTablePrefixValue = hubTablePrefix;
                 ConfigurationSettings.SatTablePrefixValue = satTablePrefix;
                 ConfigurationSettings.LinkTablePrefixValue = linkTablePrefix;
-                ConfigurationSettings.LsatPrefixValue = linkSatTablePrefix;
+                ConfigurationSettings.LsatTablePrefixValue = linkSatTablePrefix;
                 ConfigurationSettings.DwhKeyIdentifier = keyIdentifier;
                 ConfigurationSettings.PsaKeyLocation = psaKeyLocation;
                 ConfigurationSettings.TableNamingLocation = tableNamingLocation;

@@ -3639,7 +3639,7 @@ namespace TEAM
             var hubTablePrefix = ConfigurationSettings.HubTablePrefixValue;
             var lnkTablePrefix = ConfigurationSettings.LinkTablePrefixValue;
             var satTablePrefix = ConfigurationSettings.SatTablePrefixValue;
-            var lsatTablePrefix = ConfigurationSettings.LsatPrefixValue;
+            var lsatTablePrefix = ConfigurationSettings.LsatTablePrefixValue;
 
             if (ConfigurationSettings.TableNamingLocation=="Prefix")
             {
@@ -3710,6 +3710,8 @@ namespace TEAM
 
                 var deleteStatement = new StringBuilder();
                 deleteStatement.AppendLine( @"
+                                        DELETE FROM dbo.[MD_STAGING];
+                                        DELETE FROM dbo.[MD_PERSISTENT_STAGING];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_XREF];
@@ -3795,7 +3797,7 @@ namespace TEAM
                 #endregion
 
                 # region Prepare Source - 10%
-                // 2. Prepare STG
+                // 2. Prepare the generic sources
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the source metadata.\r\n");
 
@@ -3866,6 +3868,150 @@ namespace TEAM
                     errorLog.AppendLine("\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
                 }
 
+                #endregion
+
+                # region Prepare Staging Area - 12%
+                //3. Prepare the Staging Area
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the Staging Area metadata.\r\n");
+
+                try
+                {
+                    var stgCounter = 1;
+
+                    // Getting the distinct list of tables to go into the MD_STAGING table
+                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
+
+                    var distinctList = new List<string>();
+
+                    // Create a dummy row
+                    distinctList.Add("Not applicable");
+
+                    // Create a distinct list of sources from the datagrid
+                    foreach (DataRow row in selectionRows)
+                    {
+                        string target_table = (string)row["TARGET_TABLE"].ToString().Trim();
+                        if (!distinctList.Contains(target_table))
+                        {
+                            distinctList.Add(target_table);
+                        }
+                    }
+
+                    // Process the unique Staging Area records
+                    foreach (var tableName in distinctList)
+                    {
+                        using (var connection = new SqlConnection(metaDataConnection))
+                        {
+                            if (tableName != "Not applicable")
+                            {
+                                _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            }
+
+                            var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
+
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_STAGING]");
+                            insertStatement.AppendLine("([STAGING_NAME],[STAGING_ID], [SCHEMA_NAME])");
+                            insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + stgCounter + ",'" + fullyQualifiedName.Key + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                                stgCounter++;
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the Staging Area. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging Area: \r\n\r\n" + ex);
+                            }
+                        }
+                    }
+
+                    if (worker != null) worker.ReportProgress(15);
+                    _alert.SetTextLogging("Preparation of the Staging Area metadata completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the Staging Area. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging Area: \r\n\r\n" + ex);
+                }
+                #endregion
+
+                # region Prepare Persistent Staging Area - 15%
+                //3. Prepare Persistent Staging Area
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the Persistent Staging Area metadata.\r\n");
+
+                try
+                {
+                    var psaCounter = 1;
+
+                    // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
+                    DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + psaPrefix + "%'");
+
+                    var distinctList = new List<string>();
+
+                    // Create a dummy row
+                    distinctList.Add("Not applicable");
+
+                    // Create a distinct list of sources from the datagrid
+                    foreach (DataRow row in selectionRows)
+                    {
+                        string target_table = (string)row["TARGET_TABLE"].ToString().Trim();
+                        if (!distinctList.Contains(target_table))
+                        {
+                            distinctList.Add(target_table);
+                        }
+                    }
+
+                    // Process the unique Persistent Staging Area records
+                    foreach (var tableName in distinctList)
+                    {
+                        using (var connection = new SqlConnection(metaDataConnection))
+                        {
+                            if (tableName != "Not applicable")
+                            {
+                                _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            }
+
+                            var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
+
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_PERSISTENT_STAGING]");
+                            insertStatement.AppendLine("([PERSISTENT_STAGING_NAME], [PERSISTENT_STAGING_ID], [SCHEMA_NAME])");
+                            insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + psaCounter + ",'" + fullyQualifiedName.Key + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                                psaCounter++;
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Persistent Staging Area: \r\n\r\n" + ex);
+                            }
+                        }
+                    }
+
+                    if (worker != null) worker.ReportProgress(15);
+                    _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Persistent Staging Area: \r\n\r\n" + ex);
+                }
                 #endregion
 
                 # region Prepare Hubs - 15%
@@ -4488,11 +4634,11 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("  (");
 
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ALL");
+                    allDatabaseAttributes.AppendLine("    UNION ");
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ALL");
+                    allDatabaseAttributes.AppendLine("    UNION ");
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ALL");
+                    allDatabaseAttributes.AppendLine("    UNION ");
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
 
                     allDatabaseAttributes.AppendLine("  ) mapping");
@@ -7452,7 +7598,7 @@ namespace TEAM
             var objectList = new List<Tuple<string, string, string>>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow && (row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LsatPrefixValue))  )
+                if (!row.IsNewRow && (row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LsatTablePrefixValue))  )
                 {
                     var businessKey = row.Cells[4].Value.ToString().Replace("''''", "'");
                     if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey)))
