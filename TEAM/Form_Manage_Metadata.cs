@@ -3715,6 +3715,7 @@ namespace TEAM
                                         DELETE FROM dbo.[MD_SOURCE_STAGING_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_PERSISTENT_STAGING];
                                         DELETE FROM dbo.[MD_SOURCE_PERSISTENT_STAGING_XREF];
+                                        DELETE FROM dbo.[MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_XREF];
@@ -5367,7 +5368,7 @@ namespace TEAM
 
 
                 # region Manually mapped Source to Staging Area Attribute XREF - 81%
-                // Prepare the Source to Persistent Staging Area XREF
+                // Prepare the Source to Staging Area XREF
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.\r\n");
 
@@ -5376,7 +5377,7 @@ namespace TEAM
 
                 if (selectionRows.Length == 0)
                 {
-                    _alert.SetTextLogging("No manual column-to-column mappings for Source-to-Staging attributes were detected.\r\n");
+                    _alert.SetTextLogging("No manual column-to-column mappings for Source-to-Staging were detected.\r\n");
                 }
                 else
                 {
@@ -5521,6 +5522,160 @@ namespace TEAM
 
                 #endregion
 
+                # region Manually mapped Source to Persistent Staging Area Attribute XREF - 81%
+                // Prepare the Source to Persistent Staging Area XREF
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the Source to Persistent Staging column-to-column mapping metadata based on the manual mappings.\r\n");
+
+                // Getting the distinct list of row from the data table
+                selectionRows = inputAttributeMetadata.Select("TARGET_TABLE LIKE '%" + psaPrefix + "%'");
+
+                if (selectionRows.Length == 0)
+                {
+                    _alert.SetTextLogging("No manual column-to-column mappings for Source to Persistent Staging were detected.\r\n");
+                }
+                else
+                {
+                    // Process the unique Persistent Staging Area records
+                    foreach (var row in selectionRows)
+                    {
+                        using (var connection = new SqlConnection(metaDataConnection))
+                        {
+                            _alert.SetTextLogging("-->  Processing the mapping from " + row["SOURCE_TABLE"] + " - " + (string)row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " + (string)row["TARGET_COLUMN"] + ".\r\n");
+
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
+                            insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
+                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_TABLE"] + "','" + row["TARGET_TABLE"] + "', '" + (string)row["SOURCE_COLUMN"] + "', '" + (string)row["TARGET_COLUMN"] + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" + ex);
+                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            }
+                        }
+                    }
+                }
+
+                worker?.ReportProgress(87);
+                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed.\r\n");
+                #endregion
+
+                #region Automatically mapped Source to Persistent Staging Area Attribute XREF 93%
+                // Prepare automatic attribute mapping
+                _alert.SetTextLogging("\r\n");
+
+                var prepareMappingPersistentStagingStatement = new StringBuilder();
+
+                try
+                {
+                    int automaticMappingCounter = 0;
+
+                    if (checkBoxIgnoreVersion.Checked)
+                    {
+                        _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the database.\r\n");
+                    }
+                    else
+                    {
+                        _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the physical model metadata.\r\n");
+                    }
+
+                    // Run the statement, the virtual vs. physical lookups are embedded in allDatabaseAttributes
+
+                    prepareMappingPersistentStagingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
+                    prepareMappingPersistentStagingStatement.AppendLine("(");
+                    prepareMappingPersistentStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+                    prepareMappingPersistentStagingStatement.AppendLine("),");
+                    prepareMappingPersistentStagingStatement.AppendLine("XREF AS");
+                    prepareMappingPersistentStagingStatement.AppendLine("(");
+                    prepareMappingPersistentStagingStatement.AppendLine("  SELECT");
+                    prepareMappingPersistentStagingStatement.AppendLine("    xref.*,");
+                    prepareMappingPersistentStagingStatement.AppendLine("    src.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
+                    prepareMappingPersistentStagingStatement.AppendLine("    tgt.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME");
+                    prepareMappingPersistentStagingStatement.AppendLine("  FROM MD_SOURCE_PERSISTENT_STAGING_XREF xref");
+                    prepareMappingPersistentStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                    prepareMappingPersistentStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_PERSISTENT_STAGING tgt ON xref.PERSISTENT_STAGING_NAME = tgt.PERSISTENT_STAGING_NAME");
+                    prepareMappingPersistentStagingStatement.AppendLine(") ");
+                    prepareMappingPersistentStagingStatement.AppendLine("SELECT");
+                    prepareMappingPersistentStagingStatement.AppendLine("  XREF.SOURCE_NAME, ");
+                    prepareMappingPersistentStagingStatement.AppendLine("  XREF.PERSISTENT_STAGING_NAME,");
+                    prepareMappingPersistentStagingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_FROM,");
+                    prepareMappingPersistentStagingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_TO,");
+                    prepareMappingPersistentStagingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
+                    prepareMappingPersistentStagingStatement.AppendLine("FROM XREF");
+                    prepareMappingPersistentStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.PERSISTENT_STAGING_NAME = ADC_TARGET.TABLE_NAME");
+                    prepareMappingPersistentStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
+                    prepareMappingPersistentStagingStatement.AppendLine("WHERE NOT EXISTS (");
+                    prepareMappingPersistentStagingStatement.AppendLine("  SELECT SOURCE_NAME, PERSISTENT_STAGING_NAME, ATTRIBUTE_NAME_FROM");
+                    prepareMappingPersistentStagingStatement.AppendLine("  FROM MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF manualmapping");
+                    prepareMappingPersistentStagingStatement.AppendLine("WHERE");
+                    prepareMappingPersistentStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
+                    prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.PERSISTENT_STAGING_NAME = XREF.PERSISTENT_STAGING_NAME");
+                    prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
+                    prepareMappingPersistentStagingStatement.AppendLine(")");
+
+                    var automaticAttributeMappings = GetDataTable(ref connOmd, prepareMappingPersistentStagingStatement.ToString());
+
+                    if (automaticAttributeMappings.Rows.Count == 0)
+                    {
+                        _alert.SetTextLogging("-->  No automatic column-to-column mappings were detected.\r\n");
+                    }
+                    else
+                    {
+                        // Process the unique attribute mappings
+                        foreach (DataRow row in automaticAttributeMappings.Rows)
+                        {
+                            using (var connection = new SqlConnection(metaDataConnection))
+                            {
+                                _alert.SetTextLogging("-->  Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["PERSISTENT_STAGING_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+
+                                var insertStatement = new StringBuilder();
+                                insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
+                                insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
+                                insertStatement.AppendLine("VALUES ('" + (string)row["SOURCE_NAME"] + "','" + (string)row["PERSISTENT_STAGING_NAME"] + "', '" + (string)row["ATTRIBUTE_NAME_FROM"] + "', '" + (string)row["ATTRIBUTE_NAME_TO"] + "')");
+
+                                var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorCounter++;
+                                    _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+
+                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" + ex);
+                                    errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                }
+                            }
+                        }
+                    }
+
+                    worker.ReportProgress(90);
+                    _alert.SetTextLogging("-->  Processing " + automaticMappingCounter + " automatically added attribute mappings\r\n");
+                    _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the automatically mapped attribute metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the automatically mapped attribute metadata: \r\n\r\n" + ex);
+                    errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + prepareMappingPersistentStagingStatement.ToString());
+                }
+
+                #endregion
 
                 #region Manually mapped attributes for SAT and LSAT 90%
                 //12. Prepare Manual Attribute mapping for Satellites and Link Satellites
