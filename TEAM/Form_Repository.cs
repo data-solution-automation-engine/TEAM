@@ -44,10 +44,13 @@ namespace TEAM
             }
         }
 
-  
-
-
-
+        /// <summary>
+        /// Run a SQL command against the provided database connection, capture any errors and report feedback to the Repository screen.
+        /// </summary>
+        /// <param name="connString"></param>
+        /// <param name="createStatement"></param>
+        /// <param name="worker"></param>
+        /// <param name="progressCounter"></param>
         private void RunSqlCommandRepositoryForm(string connString, StringBuilder createStatement, BackgroundWorker worker, int progressCounter)
         {
             using (var connectionVersion = new SqlConnection(connString))
@@ -73,7 +76,13 @@ namespace TEAM
             createStatement.Clear();
         }
 
-
+        /// <summary>
+        /// /// Run a SQL command against the provided database connection, capture any errors and report feedback to the Sample data screen.
+        /// </summary>
+        /// <param name="connString"></param>
+        /// <param name="createStatement"></param>
+        /// <param name="worker"></param>
+        /// <param name="progressCounter"></param>
         private void RunSqlCommandSampleDataForm(string connString, StringBuilder createStatement, BackgroundWorker worker, int progressCounter)
         {
             using (var connectionVersion = new SqlConnection(connString))
@@ -99,6 +108,11 @@ namespace TEAM
             createStatement.Clear();
         }
 
+        /// <summary>
+        /// Event to truncate the existing MD schema
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonTruncate_Click(object sender, EventArgs e)
         {
             // Retrieving the required parameters
@@ -177,6 +191,7 @@ namespace TEAM
 
                 var createStatement = new StringBuilder();
 
+                #region Drop Foreign Key Constraints
                 // Drop any existing Foreign Key Constraints
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF]', 'F') IS NOT NULL");
                 createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF]");
@@ -296,15 +311,13 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SATELLITE]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SATELLITE]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SATELLITE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SOURCE]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_SOURCE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
@@ -328,31 +341,24 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_XREF_MD_LINK]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_LINK]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_LINK]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_XREF_MD_SOURCE]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_SOURCE]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_SOURCE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                //createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
-                //createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]");
-                //createStatement.AppendLine();
-                //RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 4);
-                //createStatement.Clear();
-
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_DATASET] DROP CONSTRAINT [FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_DATASET] DROP CONSTRAINT [FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 4);
                 createStatement.Clear();
+                #endregion
+
 
                 // Metadata, well, metadata
                 createStatement.AppendLine();
