@@ -1263,9 +1263,23 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
                 createStatement.Clear();
 
+                createStatement.AppendLine("-- INTERFACE_SOURCE_STAGING_ATTRIBUTE_XREF");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_STAGING_ATTRIBUTE_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_STAGING_ATTRIBUTE_XREF]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
+                createStatement.Clear();
+
                 createStatement.AppendLine("-- INTERFACE_SOURCE_PERSISTENT_STAGING_XREF");
                 createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]', 'V') IS NOT NULL");
                 createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
+                createStatement.Clear();
+
+                createStatement.AppendLine("-- INTERFACE_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF");
+                createStatement.AppendLine("IF OBJECT_ID('[interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]', 'V') IS NOT NULL");
+                createStatement.AppendLine(" DROP VIEW [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 80);
                 createStatement.Clear();
@@ -1445,14 +1459,32 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 93);
                 createStatement.Clear();
 
+                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_STAGING_ATTRIBUTE_XREF]");
+                createStatement.AppendLine("AS");
+                createStatement.AppendLine("SELECT");
+                createStatement.AppendLine("  NULL AS[SOURCE_ID]");
+                createStatement.AppendLine("  ,src.SCHEMA_NAME AS SOURCE_SCHEMA_NAME");
+                createStatement.AppendLine("  ,src.SOURCE_NAME");
+                createStatement.AppendLine("  ,NULL AS TARGET_ID");
+                createStatement.AppendLine("  ,tgt.SCHEMA_NAME AS TARGET_SCHEMA_NAME");
+                createStatement.AppendLine("  ,xref.[STAGING_NAME] AS TARGET_NAME");
+                createStatement.AppendLine("  ,NULL AS SOURCE_ATTRIBUTE_ID");
+                createStatement.AppendLine("  ,att_from.[ATTRIBUTE_NAME] AS SOURCE_ATTRIBUTE_NAME");
+                createStatement.AppendLine("  ,NULL AS TARGET_ATTRIBUTE_ID");
+                createStatement.AppendLine("  ,att_to.[ATTRIBUTE_NAME] AS TARGET_ATTRIBUTE_NAME");
+                createStatement.AppendLine("FROM[MD_SOURCE_STAGING_ATTRIBUTE_XREF] xref");
+                createStatement.AppendLine("JOIN MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                createStatement.AppendLine("JOIN MD_STAGING tgt ON xref.STAGING_NAME = tgt.STAGING_NAME");
+                createStatement.AppendLine("JOIN MD_ATTRIBUTE att_from ON xref.ATTRIBUTE_NAME_FROM = att_from.ATTRIBUTE_NAME");
+                createStatement.AppendLine("JOIN MD_ATTRIBUTE att_to ON xref.ATTRIBUTE_NAME_TO = att_to.ATTRIBUTE_NAME");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 92);
+                createStatement.Clear();
+
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]");
                 createStatement.AppendLine("AS");
-                createStatement.AppendLine("/*");
-                createStatement.AppendLine("This view combines the staging area listing / interfaces with the exceptions where a single source file/table is mapped to more than one Staging Area tables.");
-                createStatement.AppendLine("This is the default source for source-to-staging interfaces.");
-                createStatement.AppendLine("*/");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("    NULL AS[SOURCE_ID],");
+                createStatement.AppendLine("  NULL AS[SOURCE_ID],");
                 createStatement.AppendLine("src.[SCHEMA_NAME] AS[SOURCE_SCHEMA_NAME],");
                 createStatement.AppendLine("xref.[SOURCE_NAME],");
                 createStatement.AppendLine("xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
@@ -1469,6 +1501,28 @@ namespace TEAM
                 createStatement.AppendLine("JOIN[MD_PERSISTENT_STAGING] tgt ON xref.[PERSISTENT_STAGING_NAME] = tgt.[PERSISTENT_STAGING_NAME]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 94);
+                createStatement.Clear();
+
+                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
+                createStatement.AppendLine("AS");
+                createStatement.AppendLine("SELECT");
+                createStatement.AppendLine("  NULL AS[SOURCE_ID]");
+                createStatement.AppendLine("  ,src.SCHEMA_NAME AS SOURCE_SCHEMA_NAME");
+                createStatement.AppendLine("  ,src.SOURCE_NAME");
+                createStatement.AppendLine("  ,NULL AS TARGET_ID");
+                createStatement.AppendLine("  ,tgt.SCHEMA_NAME AS TARGET_SCHEMA_NAME");
+                createStatement.AppendLine("  ,xref.[PERSISTENT_STAGING_NAME] AS TARGET_NAME");
+                createStatement.AppendLine("  ,NULL AS SOURCE_ATTRIBUTE_ID");
+                createStatement.AppendLine("  ,att_from.[ATTRIBUTE_NAME] AS SOURCE_ATTRIBUTE_NAME");
+                createStatement.AppendLine("  ,NULL AS TARGET_ATTRIBUTE_ID");
+                createStatement.AppendLine("  ,att_to.[ATTRIBUTE_NAME] AS TARGET_ATTRIBUTE_NAME");
+                createStatement.AppendLine("FROM[MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF] xref");
+                createStatement.AppendLine("JOIN MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                createStatement.AppendLine("JOIN MD_PERSISTENT_STAGING tgt ON xref.PERSISTENT_STAGING_NAME = tgt.PERSISTENT_STAGING_NAME");
+                createStatement.AppendLine("JOIN MD_ATTRIBUTE att_from ON xref.ATTRIBUTE_NAME_FROM = att_from.ATTRIBUTE_NAME");
+                createStatement.AppendLine("JOIN MD_ATTRIBUTE att_to ON xref.ATTRIBUTE_NAME_TO = att_to.ATTRIBUTE_NAME");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 92);
                 createStatement.Clear();
 
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_HUB_XREF]");
