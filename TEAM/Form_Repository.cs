@@ -66,11 +66,13 @@ namespace TEAM
                 {
                     _alertRepository.SetTextLogging("An issue has occured " + ex);
                     _alertRepository.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
+                    ErrorHandlingParameters.ErrorCatcher++;
                 }
             }
 
             createStatement.Clear();
         }
+
 
         private void RunSqlCommandSampleDataForm(string connString, StringBuilder createStatement, BackgroundWorker worker, int progressCounter)
         {
@@ -118,6 +120,7 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_SOURCE];");
             commandText.AppendLine("DELETE FROM [MD_STAGING];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_ATTRIBUTE_XREF];");
             commandText.AppendLine("DELETE FROM [MD_PERSISTENT_STAGING];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_XREF];");
             commandText.AppendLine("DELETE FROM [MD_HUB];");
@@ -157,6 +160,8 @@ namespace TEAM
             // Instantiate the thread / background worker
             BackgroundWorker worker = sender as BackgroundWorker;
 
+            ErrorHandlingParameters.ErrorCatcher = 0;
+
             var connOmdString = ConfigurationSettings.ConnectionStringOmd;
 
             // Handle multi-threading
@@ -167,7 +172,7 @@ namespace TEAM
             else
             {
                 // Create the repository
-                _alertRepository.SetTextLogging("Commencing metadata repository creation.\r\n\r\n");
+                _alertRepository.SetTextLogging("--Commencing metadata repository creation.\r\n\r\n");
 
                 var createStatement = new StringBuilder();
 
@@ -497,8 +502,7 @@ namespace TEAM
                 createStatement.AppendLine("    [COMPONENT_ELEMENT_VALUE] varchar(1000)  NULL,");
                 createStatement.AppendLine("	[COMPONENT_ELEMENT_TYPE] varchar(100)  NOT NULL,");
                 createStatement.AppendLine("    [ATTRIBUTE_ID]       integer NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_BUSINESS_KEY_COMPONENT_PART] PRIMARY KEY CLUSTERED ([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC, [COMPONENT_ID] ASC, [COMPONENT_ELEMENT_ID] ASC)");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_BUSINESS_KEY_COMPONENT_PART] PRIMARY KEY CLUSTERED ([SOURCE_ID] ASC, [HUB_ID] ASC, [BUSINESS_KEY_DEFINITION] ASC, [COMPONENT_ID] ASC, [COMPONENT_ELEMENT_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 try
@@ -507,9 +511,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    _alertRepository.SetTextLogging(
-                        "An issue has occured creating the Business Key Component Part. The full error message is: " +
-                        ex);
+                    _alertRepository.SetTextLogging("An issue has occured creating the Business Key Component Part. The full error message is: " + ex);
                 }
 
                 createStatement.Clear();
@@ -524,8 +526,7 @@ namespace TEAM
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("    [SATELLITE_ID]  integer NOT NULL,");
                 createStatement.AppendLine("	[HUB_ID]       integer NOT NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_DRIVING_KEY_XREF] PRIMARY KEY CLUSTERED ([SATELLITE_ID] ASC, [HUB_ID] ASC)");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_DRIVING_KEY_XREF] PRIMARY KEY CLUSTERED ([SATELLITE_ID] ASC, [HUB_ID] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 25);
@@ -597,6 +598,24 @@ namespace TEAM
                 createStatement.AppendLine("	[KEY_DEFINITION]  varchar(4000) NULL,");
                 createStatement.AppendLine("	[FILTER_CRITERIA]  varchar(4000) NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_SOURCE_PERSISTENT_STAGING_XREF] PRIMARY KEY CLUSTERED ([SOURCE_NAME],[PERSISTENT_STAGING_NAME] ASC)");
+                createStatement.AppendLine(")");
+
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 27);
+                createStatement.Clear();
+
+                // Source Staging Attribute XREF
+                createStatement.AppendLine();
+                createStatement.AppendLine("-- Source Persistent Staging Attribute XREF");
+                createStatement.AppendLine("IF OBJECT_ID ('[MD_SOURCE_STAGING_ATTRIBUTE_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("	[SOURCE_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[STAGING_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[ATTRIBUTE_NAME_FROM]  varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[ATTRIBUTE_NAME_TO]  varchar(100) NOT NULL,");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_SOURCE_STAGING_ATTRIBUTE_XREF] PRIMARY KEY CLUSTERED ([SOURCE_NAME],[STAGING_NAME], [ATTRIBUTE_NAME_FROM] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 27);
@@ -1374,42 +1393,41 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 91);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_STAGING_XREF]");
-                createStatement.AppendLine("AS");
-                createStatement.AppendLine("/*");
-                createStatement.AppendLine("This view combines the staging area listing / interfaces with the exceptions where a single source file/table is mapped to more than one Staging Area tables.");
-                createStatement.AppendLine("This is the default source for source-to-staging interfaces.");
-                createStatement.AppendLine("*/");
-                createStatement.AppendLine("");
-
-                createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("    NULL AS SOURCE_ID");
-                createStatement.AppendLine("    ,'[dbo]' AS SOURCE_SCHEMA_NAME");
-                createStatement.AppendLine("    , coalesce(dataset.SOURCE_DATASET_NAME");
-                createStatement.AppendLine("    , substring(schema_stg_listing.TABLE_NAME");
-                createStatement.AppendLine("        , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1-- always prefixed with STG_(length 4)");
-                createStatement.AppendLine("    , len(schema_stg_listing.TABLE_NAME))) AS SOURCE_NAME");
-                createStatement.AppendLine("    , NULL AS SOURCE_BUSINESS_KEY_DEFINITION");
-                createStatement.AppendLine("    , NULL AS TARGET_ID");
-                createStatement.AppendLine("    ,'[dbo]' AS TARGET_SCHEMA_NAME");
-                createStatement.AppendLine("    , schema_stg_listing.TABLE_NAME AS TARGET_NAME-- the Staging Area tables queried from the catalog");
-                createStatement.AppendLine("    , NULL AS TARGET_BUSINESS_KEY_DEFINITION");
-                createStatement.AppendLine("    ,'StagingArea' AS TARGET_TYPE");
-                createStatement.AppendLine("    , NULL AS SURROGATE_KEY");
-                createStatement.AppendLine("    , NULL AS FILTER_CRITERIA");
-                createStatement.AppendLine("    , NULL AS LOAD_VECTOR");
-                createStatement.AppendLine("FROM [" + ConfigurationSettings.StagingDatabaseName + "].INFORMATION_SCHEMA.TABLES as schema_stg_listing");
-                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_STAGING_XREF as naming_exception on naming_exception.SOURCE_NAME = schema_stg_listing.TABLE_NAME");
-                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.SOURCE_NAME");
-                createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_DATASET dataset ON naming_exception.SOURCE_DATASET_ID = dataset.SOURCE_DATASET_ID");
-                createStatement.AppendLine("WHERE TABLE_TYPE = 'BASE TABLE'");
-                createStatement.AppendLine("AND TABLE_NAME not like '%LANDING%'");
-                createStatement.AppendLine("AND TABLE_NAME not like '%USERMANAGED%'");
-                createStatement.AppendLine("AND TABLE_SCHEMA = 'dbo'");
-                createStatement.AppendLine("AND schema_stg_listing.TABLE_NAME LIKE 'STG_%'");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 93);
-                createStatement.Clear();
+                //createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_STAGING_XREF]");
+                //createStatement.AppendLine("AS");
+                //createStatement.AppendLine("/*");
+                //createStatement.AppendLine("This view combines the staging area listing / interfaces with the exceptions where a single source file/table is mapped to more than one Staging Area tables.");
+                //createStatement.AppendLine("This is the default source for source-to-staging interfaces.");
+                //createStatement.AppendLine("*/");
+                //createStatement.AppendLine("");
+                //createStatement.AppendLine("SELECT");
+                //createStatement.AppendLine("    NULL AS SOURCE_ID");
+                //createStatement.AppendLine("    ,'[dbo]' AS SOURCE_SCHEMA_NAME");
+                //createStatement.AppendLine("    , coalesce(dataset.SOURCE_DATASET_NAME");
+                //createStatement.AppendLine("    , substring(schema_stg_listing.TABLE_NAME");
+                //createStatement.AppendLine("        , charindex(N'_', schema_stg_listing.TABLE_NAME, 5) + 1-- always prefixed with STG_(length 4)");
+                //createStatement.AppendLine("    , len(schema_stg_listing.TABLE_NAME))) AS SOURCE_NAME");
+                //createStatement.AppendLine("    , NULL AS SOURCE_BUSINESS_KEY_DEFINITION");
+                //createStatement.AppendLine("    , NULL AS TARGET_ID");
+                //createStatement.AppendLine("    ,'[dbo]' AS TARGET_SCHEMA_NAME");
+                //createStatement.AppendLine("    , schema_stg_listing.TABLE_NAME AS TARGET_NAME-- the Staging Area tables queried from the catalog");
+                //createStatement.AppendLine("    , NULL AS TARGET_BUSINESS_KEY_DEFINITION");
+                //createStatement.AppendLine("    ,'StagingArea' AS TARGET_TYPE");
+                //createStatement.AppendLine("    , NULL AS SURROGATE_KEY");
+                //createStatement.AppendLine("    , NULL AS FILTER_CRITERIA");
+                //createStatement.AppendLine("    , NULL AS LOAD_VECTOR");
+                //createStatement.AppendLine("FROM [" + ConfigurationSettings.StagingDatabaseName + "].INFORMATION_SCHEMA.TABLES as schema_stg_listing");
+                //createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_STAGING_XREF as naming_exception on naming_exception.SOURCE_NAME = schema_stg_listing.TABLE_NAME");
+                //createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_CDC_TYPE_XREF as cdctype on schema_stg_listing.TABLE_NAME = cdctype.SOURCE_NAME");
+                //createStatement.AppendLine("LEFT JOIN dbo.MD_SOURCE_DATASET dataset ON naming_exception.SOURCE_DATASET_ID = dataset.SOURCE_DATASET_ID");
+                //createStatement.AppendLine("WHERE TABLE_TYPE = 'BASE TABLE'");
+                //createStatement.AppendLine("AND TABLE_NAME not like '%LANDING%'");
+                //createStatement.AppendLine("AND TABLE_NAME not like '%USERMANAGED%'");
+                //createStatement.AppendLine("AND TABLE_SCHEMA = 'dbo'");
+                //createStatement.AppendLine("AND schema_stg_listing.TABLE_NAME LIKE 'STG_%'");
+                //createStatement.AppendLine();
+                //RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 93);
+                //createStatement.Clear();
 
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_HUB_XREF]");
                 createStatement.AppendLine("AS");
@@ -1574,8 +1592,6 @@ namespace TEAM
             // Pass the progress to AlertForm label and progressbar
             _alertRepository.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
             _alertRepository.ProgressValue = e.ProgressPercentage;
-
-            // Manage the logging
         }
 
         private void backgroundWorkerRepository_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -1591,9 +1607,21 @@ namespace TEAM
             else
             {
                 labelResult.Text = "Done!";
-                MessageBox.Show("The metadata repository has been created.", "Completed", MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                if (ErrorHandlingParameters.ErrorCatcher == 0)
+                {
+                    MessageBox.Show("The metadata repository has been created.", "Completed", MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("The metadata repository has been created with " + ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    ErrorHandlingParameters.ErrorCatcher = 0;
+                }
             }
+
+
+
         }
 
         internal static class ErrorHandlingParameters
@@ -3105,7 +3133,7 @@ namespace TEAM
             }
         }
 
- private void button1_Click_1(object sender, EventArgs e)
+        private void button1_Click_1(object sender, EventArgs e)
         {
             if (backgroundWorkerSampleData.IsBusy != true)
             {
@@ -3119,25 +3147,12 @@ namespace TEAM
             }
         }
 
-        private void labelMetadataRepository_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void labelResult_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
             SetStandardConfigurationSettings();
         }
 
-        private void label5_Click(object sender, EventArgs e)
-        {
 
-        }
     }
 }
 

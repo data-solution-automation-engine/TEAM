@@ -3599,7 +3599,9 @@ namespace TEAM
             #region Generic
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var inputTable = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var inputTableMetadata = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var inputAttributeMetadata = (DataTable)_bindingSourceAttributeMetadata.DataSource;
+
             DataRow[] selectionRows;
 
             var errorLog = new StringBuilder();
@@ -3710,7 +3712,9 @@ namespace TEAM
                 deleteStatement.AppendLine(@"
                                         DELETE FROM dbo.[MD_STAGING];
                                         DELETE FROM dbo.[MD_SOURCE_STAGING_XREF];
+                                        DELETE FROM dbo.[MD_SOURCE_STAGING_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_PERSISTENT_STAGING];
+                                        DELETE FROM dbo.[MD_SOURCE_PERSISTENT_STAGING_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_XREF];
@@ -3746,6 +3750,7 @@ namespace TEAM
                         errorCounter++;
                         _alert.SetTextLogging("An issue has occured during removal of old metadata. Please check the Error Log for more details.\r\n");
                         errorLog.AppendLine("\r\nAn issue has occured during removal of old metadata: \r\n\r\n" + ex);
+                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + deleteStatement);
                     }
                 }
                 # endregion
@@ -3798,7 +3803,7 @@ namespace TEAM
 
                 // Getting the distinct list of tables to go into the 'source'
                 //DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND (SOURCE_TABLE LIKE '" + stagingPrefix + "' OR SOURCE_TABLE LIKE '" + psaPrefix + "')");
-                selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y'");
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y'");
 
                 var distinctListSource = new List<string>();
 
@@ -3862,7 +3867,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Staging Area metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_STAGING table
-                selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
 
                 var distinctListStg = new List<string>
                 {
@@ -3927,7 +3932,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Staging Area.\r\n");
 
                 // Getting the distinct list of row from the data table
-                selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
 
                 // Process the unique Staging Area records
                 foreach (var row in selectionRows)
@@ -3979,7 +3984,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Persistent Staging Area metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
-                selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + psaPrefix + "%'");
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + psaPrefix + "%'");
 
                 var distinctListPsa = new List<string>
                 {
@@ -4044,7 +4049,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Persistent Staging Area.\r\n");
 
                 // Getting the distinct list of row from the data table
-                selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + psaPrefix + "%'");
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + psaPrefix + "%'");
 
                 // Process the unique Staging Area records
                 foreach (var row in selectionRows)
@@ -4099,7 +4104,7 @@ namespace TEAM
                 var hubCounter = 1; 
 
                 // Getting the distinct list of tables to go into the MD_HUB table
-                selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
 
                 var distinctListHub = new List<string>();
 
@@ -4171,7 +4176,7 @@ namespace TEAM
                     var linkCounter = 1;
 
                     // Getting the distinct list of tables to go into the MD_LINK table
-                    selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
 
                     var distinctListLinks = new List<string>();
 
@@ -5360,6 +5365,61 @@ namespace TEAM
                 }
                 #endregion
 
+
+                # region Prepare Source to Staging Area Attribute XREF - 81%
+                // Prepare the Source to Persistent Staging Area XREF
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.\r\n");
+
+                // Getting the distinct list of row from the data table
+                selectionRows = inputAttributeMetadata.Select("TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
+
+                if (selectionRows.Length == 0)
+                {
+                    _alert.SetTextLogging("No manual column-to-column mappings for Source-to-Staging attributes were detected.\r\n");
+                }
+                else
+                {
+
+                    // Process the unique Staging Area records
+                    foreach (var row in selectionRows)
+                    {
+                        using (var connection = new SqlConnection(metaDataConnection))
+                        {
+                            var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema((string) row["SOURCE_TABLE"].ToString()).FirstOrDefault();
+                            var targetFullyQualifiedName = ClassMetadataHandling.GetSchema((string) row["TARGET_TABLE"].ToString()).FirstOrDefault();
+
+                            _alert.SetTextLogging("-->  Processing the mapping from " + sourceFullyQualifiedName.Value +" - " + (string) row["SOURCE_COLUMN"] + " to " +targetFullyQualifiedName.Value + " - " +(string) row["TARGET_COLUMN"] + ".\r\n");
+
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
+                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_FROM_NAME], [ATTRIBUTE_TO_NAME])");
+                            insertStatement.AppendLine("VALUES ('" + sourceFullyQualifiedName.Value + "','" + targetFullyQualifiedName.Value + "', '" + (string)row["SOURCE_COLUMN"] + "', '" + (string)row["TARGET_COLUMN"] + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
+
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" + ex);
+                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            }
+                        }
+                    }
+                }
+
+                worker?.ReportProgress(87);
+                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed.\r\n");
+                #endregion
+
+
                 #region Manually mapped attributes for SAT and LSAT 90%
                 //12. Prepare Manual Attribute mapping for Satellites and Link Satellites
                 _alert.SetTextLogging("\r\n");
@@ -5738,7 +5798,7 @@ namespace TEAM
 
                 #endregion
 
-                #region 14. Multi-Active Key - 97%
+                #region Multi-Active Key - 97%
 
                 //14. Handle the Multi-Active Key
                 _alert.SetTextLogging("\r\n");
