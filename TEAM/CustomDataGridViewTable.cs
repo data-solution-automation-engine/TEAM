@@ -76,7 +76,7 @@ namespace TEAM
                     }
                     else if (Regex.Matches(integrationTable.ToString(), stgIdentifier).Count > 0)
                     {
-                        this[3, counter].Style.BackColor = Color.NavajoWhite;
+                        this[3, counter].Style.BackColor = Color.WhiteSmoke;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = Color.LightGray;
                     }

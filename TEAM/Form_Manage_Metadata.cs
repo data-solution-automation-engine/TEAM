@@ -51,7 +51,7 @@ namespace TEAM
 
         public class TableMappingJson
         {
-            //JSON represenation of the table mapping metadata
+            //JSON representation of the table mapping metadata
             public string tableMappingHash { get; set; }
             public string versionId { get; set; }
             public string sourceTable { get; set; }
@@ -64,7 +64,7 @@ namespace TEAM
 
         public class AttributeMappingJson
         {
-            //JSON represenation of the attribute mapping metadata
+            //JSON representation of the attribute mapping metadata
             public string attributeMappingHash { get; set; }
             public string versionId { get; set; }
             public string sourceTable { get; set; }
@@ -5366,7 +5366,7 @@ namespace TEAM
                 #endregion
 
 
-                # region Prepare Source to Staging Area Attribute XREF - 81%
+                # region Manually mapped Source to Staging Area Attribute XREF - 81%
                 // Prepare the Source to Persistent Staging Area XREF
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.\r\n");
@@ -5380,21 +5380,17 @@ namespace TEAM
                 }
                 else
                 {
-
                     // Process the unique Staging Area records
                     foreach (var row in selectionRows)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema((string) row["SOURCE_TABLE"].ToString()).FirstOrDefault();
-                            var targetFullyQualifiedName = ClassMetadataHandling.GetSchema((string) row["TARGET_TABLE"].ToString()).FirstOrDefault();
-
-                            _alert.SetTextLogging("-->  Processing the mapping from " + sourceFullyQualifiedName.Value +" - " + (string) row["SOURCE_COLUMN"] + " to " +targetFullyQualifiedName.Value + " - " +(string) row["TARGET_COLUMN"] + ".\r\n");
+                            _alert.SetTextLogging("-->  Processing the mapping from " + row["SOURCE_TABLE"] + " - " + (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " +(string) row["TARGET_COLUMN"] + ".\r\n");
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_FROM_NAME], [ATTRIBUTE_TO_NAME])");
-                            insertStatement.AppendLine("VALUES ('" + sourceFullyQualifiedName.Value + "','" + targetFullyQualifiedName.Value + "', '" + (string)row["SOURCE_COLUMN"] + "', '" + (string)row["TARGET_COLUMN"] + "')");
+                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
+                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_TABLE"] + "','" + row["TARGET_TABLE"] + "', '" + (string)row["SOURCE_COLUMN"] + "', '" + (string)row["TARGET_COLUMN"] + "')");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5419,13 +5415,119 @@ namespace TEAM
                 _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed.\r\n");
                 #endregion
 
+                #region Automatically mapped Source to Staging Area Attribute XREF 93%
+                //12. Prepare automatic attribute mapping
+                _alert.SetTextLogging("\r\n");
+
+                var prepareMappingStagingStatement = new StringBuilder();
+
+                try
+                {
+                    int automaticMappingCounter = 0;
+
+                    if (checkBoxIgnoreVersion.Checked)
+                    {
+                        _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the database.\r\n");
+                    }
+                    else
+                    {
+                        _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the physical model metadata.\r\n");
+                    }
+
+                    // Run the statement, the virtual vs. physical lookups are embedded in allDatabaseAttributes
+
+                    prepareMappingStagingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
+                    prepareMappingStagingStatement.AppendLine("(");
+                    prepareMappingStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+                    prepareMappingStagingStatement.AppendLine("),");
+                    prepareMappingStagingStatement.AppendLine("XREF AS");
+                    prepareMappingStagingStatement.AppendLine("(");
+                    prepareMappingStagingStatement.AppendLine("  SELECT");
+                    prepareMappingStagingStatement.AppendLine("    xref.*,");
+                    prepareMappingStagingStatement.AppendLine("    src.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
+                    prepareMappingStagingStatement.AppendLine("    tgt.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME");
+                    prepareMappingStagingStatement.AppendLine("  FROM MD_SOURCE_STAGING_XREF xref");
+                    prepareMappingStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                    prepareMappingStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STAGING tgt ON xref.STAGING_NAME = tgt.STAGING_NAME");
+                    prepareMappingStagingStatement.AppendLine(") ");
+                    prepareMappingStagingStatement.AppendLine("SELECT");
+                    prepareMappingStagingStatement.AppendLine("  XREF.SOURCE_NAME, ");
+                    prepareMappingStagingStatement.AppendLine("  XREF.STAGING_NAME,");
+                    prepareMappingStagingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_FROM,");
+                    prepareMappingStagingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_TO,");
+                    prepareMappingStagingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
+                    prepareMappingStagingStatement.AppendLine("FROM XREF");
+                    prepareMappingStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.STAGING_NAME = ADC_TARGET.TABLE_NAME");
+                    prepareMappingStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
+                    prepareMappingStagingStatement.AppendLine("WHERE NOT EXISTS (");
+                    prepareMappingStagingStatement.AppendLine("  SELECT SOURCE_NAME, STAGING_NAME, ATTRIBUTE_NAME_FROM");
+                    prepareMappingStagingStatement.AppendLine("  FROM MD_SOURCE_STAGING_ATTRIBUTE_XREF manualmapping");
+                    prepareMappingStagingStatement.AppendLine("WHERE");
+                    prepareMappingStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
+                    prepareMappingStagingStatement.AppendLine("  AND manualmapping.STAGING_NAME = XREF.STAGING_NAME");
+                    prepareMappingStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
+                    prepareMappingStagingStatement.AppendLine(")");
+
+                    var automaticAttributeMappings = GetDataTable(ref connOmd, prepareMappingStagingStatement.ToString());
+
+                    if (automaticAttributeMappings.Rows.Count == 0)
+                    {
+                        _alert.SetTextLogging("-->  No automatic column-to-column mappings were detected.\r\n");
+                    }
+                    else
+                    {
+                        // Process the unique attribute mappings
+                        foreach (DataRow row in automaticAttributeMappings.Rows)
+                        {
+                            using (var connection = new SqlConnection(metaDataConnection))
+                            {
+                                _alert.SetTextLogging("-->  Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["STAGING_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+
+                                var insertStatement = new StringBuilder();
+                                insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
+                                insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
+                                insertStatement.AppendLine("VALUES ('" + (string)row["SOURCE_NAME"] + "','" + (string)row["STAGING_NAME"] + "', '" + (string)row["ATTRIBUTE_NAME_FROM"] + "', '" + (string)row["ATTRIBUTE_NAME_TO"] + "')");
+
+                                var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorCounter++;
+                                    _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
+
+                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" + ex);
+                                    errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                }
+                            }
+                        }
+                    }
+
+                    worker.ReportProgress(90);
+                    _alert.SetTextLogging("-->  Processing " + automaticMappingCounter + " automatically added attribute mappings\r\n");
+                    _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the automatically mapped attribute metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the automatically mapped attribute metadata: \r\n\r\n" + ex);
+                    errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + prepareMappingStagingStatement.ToString());
+                }
+
+                #endregion
+
 
                 #region Manually mapped attributes for SAT and LSAT 90%
                 //12. Prepare Manual Attribute mapping for Satellites and Link Satellites
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
 
-                var attributeMappings = new DataTable(); // Defined here to enable population from multiple steps, and inserted in one go.
+                var attributeMappingsSatellites = new DataTable(); // Defined here to enable population from multiple steps, and inserted in one go.
 
                 try
                 {
@@ -5452,15 +5554,15 @@ namespace TEAM
                     prepareMappingStatement.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('Satellite', 'Link-Satellite')");
                     prepareMappingStatement.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
 
-                    attributeMappings = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                    attributeMappingsSatellites = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
-                    if (attributeMappings.Rows.Count == 0)
+                    if (attributeMappingsSatellites.Rows.Count == 0)
                     {
                         _alert.SetTextLogging("-->  No manual column-to-column mappings were detected.\r\n");
                     }
 
                     worker.ReportProgress(90);
-                    _alert.SetTextLogging("-->  Processing " + attributeMappings.Rows.Count + " manual attribute mappings\r\n");
+                    _alert.SetTextLogging("-->  Processing " + attributeMappingsSatellites.Rows.Count + " manual attribute mappings\r\n");
                     _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed.\r\n");
                 }
                 catch (Exception ex)
@@ -5533,14 +5635,14 @@ namespace TEAM
                     else
                     {
                         // Prevent duplicates to be inserted into the data table, by only inserting new ones
-                        // Entries found in the automatic check which are not already in the manual datat able will be added
+                        // Entries found in the automatic check which are not already in the manual data table will be added
                         foreach (DataRow automaticMapping in automaticAttributeMappings.Rows)
                         {
-                            DataRow[] foundRow = attributeMappings.Select("SOURCE_ID = '" + automaticMapping["SOURCE_ID"] + "' AND SATELLITE_ID = '" + automaticMapping["SATELLITE_ID"] + "' AND ATTRIBUTE_FROM_ID = '" + automaticMapping["ATTRIBUTE_FROM_ID"] + "'AND ATTRIBUTE_TO_ID = '" + automaticMapping["ATTRIBUTE_TO_ID"] + "'");
+                            DataRow[] foundRow = attributeMappingsSatellites.Select("SOURCE_ID = '" + automaticMapping["SOURCE_ID"] + "' AND SATELLITE_ID = '" + automaticMapping["SATELLITE_ID"] + "' AND ATTRIBUTE_FROM_ID = '" + automaticMapping["ATTRIBUTE_FROM_ID"] + "'AND ATTRIBUTE_TO_ID = '" + automaticMapping["ATTRIBUTE_TO_ID"] + "'");
                             if (foundRow.Length == 0)
                             {
                                 // If nothing is found, add to the overall data table that is inserted into SOURCE_SATELLITE_ATTRIBUTE_XREF
-                                attributeMappings.Rows.Add(
+                                attributeMappingsSatellites.Rows.Add(
                                     automaticMapping["SOURCE_ID"],
                                     automaticMapping["SOURCE_NAME"],
                                     automaticMapping["SATELLITE_ID"],
@@ -5558,9 +5660,9 @@ namespace TEAM
                     }
 
                     // Now the full data table can be processed
-                    if (attributeMappings.Rows.Count > 0)
+                    if (attributeMappingsSatellites.Rows.Count > 0)
                     {
-                        foreach (DataRow tableName in attributeMappings.Rows)
+                        foreach (DataRow tableName in attributeMappingsSatellites.Rows)
                         {
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
