@@ -117,7 +117,9 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE];");
             commandText.AppendLine("DELETE FROM [MD_STAGING];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_XREF];");
             commandText.AppendLine("DELETE FROM [MD_PERSISTENT_STAGING];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_XREF];");
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
@@ -333,13 +335,11 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "IF OBJECT_ID('[FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_STAGING_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 4);
-                createStatement.Clear();
+                //createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]', 'F') IS NOT NULL");
+                //createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET]");
+                //createStatement.AppendLine();
+                //RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 4);
+                //createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM]', 'F') IS NOT NULL");
                 createStatement.AppendLine(
@@ -539,15 +539,29 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_STAGING]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_ID]   integer NOT NULL ,");
                 createStatement.AppendLine("	[STAGING_NAME] varchar(100) NOT NULL,");
                 createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
-                createStatement.AppendLine("    CONSTRAINT [PK_MD_STAGING] PRIMARY KEY CLUSTERED ([STAGING_ID] ASC)");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_STAGING] PRIMARY KEY CLUSTERED ([STAGING_NAME] ASC)");
                 createStatement.AppendLine(")");
+
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 27);
+                createStatement.Clear();
+
+                // Source-Staging XREF
+                createStatement.AppendLine();
+                createStatement.AppendLine("-- Source Staging XREF");
+                createStatement.AppendLine("IF OBJECT_ID ('[MD_SOURCE_STAGING_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_STAGING] ON [MD_STAGING]");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_STAGING_XREF]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [STAGING_NAME] ASC");
+                createStatement.AppendLine("	[SOURCE_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[STAGING_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[CHANGE_DATETIME_DEFINITION]  varchar(4000) NULL,");
+                createStatement.AppendLine("	[CHANGE_DATA_CAPTURE_DEFINITION]  varchar(100) NULL,");
+                createStatement.AppendLine("	[KEY_DEFINITION]  varchar(4000) NULL,");
+                createStatement.AppendLine("	[FILTER_CRITERIA]  varchar(4000) NULL,");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_SOURCE_STAGING_XREF] PRIMARY KEY CLUSTERED ([SOURCE_NAME],[STAGING_NAME] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 27);
@@ -561,18 +575,31 @@ namespace TEAM
                 createStatement.AppendLine("");
                 createStatement.AppendLine("CREATE TABLE [MD_PERSISTENT_STAGING]");
                 createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [PERSISTENT_STAGING_ID]   integer NOT NULL ,");
                 createStatement.AppendLine("	[PERSISTENT_STAGING_NAME] varchar(100) NOT NULL,");
                 createStatement.AppendLine("	[SCHEMA_NAME]  varchar(100)  NULL,");
-                createStatement.AppendLine("    CONSTRAINT [PK_MD_PERSISTENT_STAGING] PRIMARY KEY CLUSTERED ([PERSISTENT_STAGING_ID] ASC)");
-                createStatement.AppendLine(")");
-                createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE UNIQUE NONCLUSTERED INDEX [IX_MD_PERSISTENT_STAGING] ON [MD_PERSISTENT_STAGING]");
-                createStatement.AppendLine("( ");
-                createStatement.AppendLine("    [PERSISTENT_STAGING_NAME] ASC");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_PERSISTENT_STAGING] PRIMARY KEY CLUSTERED ([PERSISTENT_STAGING_NAME] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 28);
+                createStatement.Clear();
+
+                // Source-Persistent Staging XREF
+                createStatement.AppendLine();
+                createStatement.AppendLine("-- Source Persistent Staging XREF");
+                createStatement.AppendLine("IF OBJECT_ID ('[MD_SOURCE_PERSISTENT_STAGING_XREF]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_PERSISTENT_STAGING_XREF]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_PERSISTENT_STAGING_XREF]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("	[SOURCE_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[PERSISTENT_STAGING_NAME] varchar(100) NOT NULL,");
+                createStatement.AppendLine("	[CHANGE_DATETIME_DEFINITION]  varchar(4000) NULL,");
+                createStatement.AppendLine("	[KEY_DEFINITION]  varchar(4000) NULL,");
+                createStatement.AppendLine("	[FILTER_CRITERIA]  varchar(4000) NULL,");
+                createStatement.AppendLine("    CONSTRAINT [PK_MD_SOURCE_PERSISTENT_STAGING_XREF] PRIMARY KEY CLUSTERED ([SOURCE_NAME],[PERSISTENT_STAGING_NAME] ASC)");
+                createStatement.AppendLine(")");
+
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 27);
                 createStatement.Clear();
 
                 // Hub
@@ -679,24 +706,6 @@ namespace TEAM
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 42);
-                createStatement.Clear();
-
-                // Source CDC Xref
-                createStatement.AppendLine();
-                createStatement.AppendLine("-- Source / Staging Xref");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_STAGING_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_STAGING_XREF]");
-                createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_STAGING_XREF]");
-                createStatement.AppendLine("( ");
-                createStatement.AppendLine("	[SOURCE_NAME] varchar(100)  NOT NULL,");
-                createStatement.AppendLine("    [SOURCE_DATASET_ID] int  NOT NULL,");
-                createStatement.AppendLine("    [CHANGE_DATETIME_DEFINITION] varchar(4000) NULL,");
-                createStatement.AppendLine(
-                    "    CONSTRAINT [PK_MD_SOURCE_STAGING_XREF] PRIMARY KEY CLUSTERED ( [SOURCE_NAME] ASC)");
-                createStatement.AppendLine(")");
-
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 43);
                 createStatement.Clear();
 
                 // Source Datasest
@@ -1150,12 +1159,12 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
                 createStatement.Clear();
 
-                createStatement.AppendLine(
-                    "ALTER TABLE [dbo].[MD_SOURCE_STAGING_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
-                createStatement.AppendLine("REFERENCES [dbo].[MD_SOURCE_DATASET] ([SOURCE_DATASET_ID])");
-                createStatement.AppendLine();
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
-                createStatement.Clear();
+                //createStatement.AppendLine(
+                //    "ALTER TABLE [dbo].[MD_SOURCE_STAGING_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_XREF_MD_SOURCE_DATASET] FOREIGN KEY([SOURCE_DATASET_ID])");
+                //createStatement.AppendLine("REFERENCES [dbo].[MD_SOURCE_DATASET] ([SOURCE_DATASET_ID])");
+                //createStatement.AppendLine();
+                //RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
+                //createStatement.Clear();
 
                 createStatement.AppendLine(
                     "ALTER TABLE [dbo].[MD_SOURCE_DATASET]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM] FOREIGN KEY([SOURCE_SYSTEM_ID])");
