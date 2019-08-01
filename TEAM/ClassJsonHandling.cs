@@ -120,7 +120,18 @@ namespace TEAM
 
             // Get the information from the view
             var sqlStatement = new StringBuilder();
-            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT]");
+            sqlStatement.AppendLine(@"
+            SELECT 
+               [SOURCE_SCHEMA_NAME]
+              ,[SOURCE_NAME]
+              ,[TARGET_SCHEMA_NAME]
+              ,[TARGET_NAME]
+              ,[BUSINESS_KEY_DEFINITION]
+              ,[BUSINESS_KEY_COMPONENT_ID]
+              ,[BUSINESS_KEY_COMPONENT_ORDER]
+              ,[BUSINESS_KEY_COMPONENT_VALUE]
+            FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT]
+            ");
 
             var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
             var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
@@ -136,15 +147,14 @@ namespace TEAM
             {
                 JObject individualRow = JObject.FromObject(new
                 {
-                    sourceId = singleRow[0].ToString(),
+                    sourceSchemaName = singleRow[0].ToString(),
                     sourceName = singleRow[1].ToString(),
-                    sourceSchemaName = singleRow[2].ToString(),
-                    hubId = singleRow[3].ToString(),
-                    hubName = singleRow[4].ToString(),
-                    businessKeyDefinition = singleRow[5].ToString(),
-                    businessKeyComponentId = singleRow[6].ToString(),
-                    businessKeyComponentOrder = singleRow[7].ToString(),
-                    businessKeyComponentValue = singleRow[8].ToString()
+                    targetSchemaName = singleRow[2].ToString(),
+                    targetName = singleRow[3].ToString(),
+                    businessKeyDefinition = singleRow[4].ToString(),
+                    businessKeyComponentId = singleRow[5].ToString(),
+                    businessKeyComponentOrder = singleRow[6].ToString(),
+                    businessKeyComponentValue = singleRow[7].ToString()
                 });
                 outputFileArray.Add(individualRow);
             }
@@ -159,12 +169,26 @@ namespace TEAM
         /// </summary>
         internal static void SaveJsonInterfaceBusinessKeyComponentPart()
         {
-
             const string fileName = "interfaceBusinessKeyComponentPart";
 
             // Get the information from the view
             var sqlStatement = new StringBuilder();
-            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]");
+            sqlStatement.AppendLine(@"
+             SELECT 
+            	[SOURCE_SCHEMA_NAME]
+               ,[SOURCE_NAME]
+               ,[TARGET_SCHEMA_NAME]
+               ,[TARGET_NAME]
+               ,[BUSINESS_KEY_DEFINITION]
+               ,[BUSINESS_KEY_COMPONENT_ID]
+               ,[BUSINESS_KEY_COMPONENT_ORDER]
+               ,[BUSINESS_KEY_COMPONENT_ELEMENT_ID]
+               ,[BUSINESS_KEY_COMPONENT_ELEMENT_ORDER]
+               ,[BUSINESS_KEY_COMPONENT_ELEMENT_VALUE]
+               ,[BUSINESS_KEY_COMPONENT_ELEMENT_TYPE]
+               ,[BUSINESS_KEY_COMPONENT_ELEMENT_ATTRIBUTE_NAME]
+            FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]
+            ");
 
             var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
             var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
@@ -180,10 +204,10 @@ namespace TEAM
             {
                 JObject individualRow = JObject.FromObject(new
                 {
-                    sourceId = singleRow[0].ToString(),
+                    sourceSchemaName = singleRow[0].ToString(),
                     sourceName = singleRow[1].ToString(),
-                    hubId = singleRow[2].ToString(),
-                    hubName = singleRow[3].ToString(),
+                    targetSchemaName = singleRow[2].ToString(),
+                    targetName = singleRow[3].ToString(),
                     businessKeyDefinition = singleRow[4].ToString(),
                     businessKeyComponentId = singleRow[5].ToString(),
                     businessKeyComponentOrder = singleRow[6].ToString(),
@@ -191,8 +215,7 @@ namespace TEAM
                     businessKeyComponentElementOrder = singleRow[8].ToString(),
                     businessKeyComponentElementValue = singleRow[9].ToString(),
                     businessKeyComponentElementType = singleRow[10].ToString(),
-                    businessKeyComponentElementAttributeId = singleRow[11].ToString(),
-                    businessKeyComponentElementAttributeName = singleRow[12].ToString(),
+                    businessKeyComponentElementAttributeName = singleRow[11].ToString(),
                 });
                 outputFileArray.Add(individualRow);
             }
@@ -207,19 +230,23 @@ namespace TEAM
         /// </summary>
         internal static void SaveJsonInterfaceDrivingKey()
         {
-
             const string fileName = "interfaceDrivingKey";
 
             // Get the information from the view
             var sqlStatement = new StringBuilder();
-            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_DRIVING_KEY]");
+            sqlStatement.AppendLine(@"
+            SELECT
+	           [SATELLITE_NAME]
+              ,[HUB_NAME]
+            FROM [interface].[INTERFACE_DRIVING_KEY]
+            ");
 
             var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
             var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
 
 
             // Make sure the output is sorted to persist in JSON
-            inputDataTable.DefaultView.Sort = "[SATELLITE_ID] ASC, [HUB_ID] ASC";
+            inputDataTable.DefaultView.Sort = "[SATELLITE_NAME] ASC, [HUB_NAME] ASC";
 
             inputDataTable.TableName = fileName;
 
@@ -228,10 +255,8 @@ namespace TEAM
             {
                 JObject individualRow = JObject.FromObject(new
                 {
-                    satelliteId = singleRow[0].ToString(),
-                    satelliteName = singleRow[1].ToString(),
-                    hubId = singleRow[2].ToString(),
-                    hubName = singleRow[3].ToString()
+                    satelliteName = singleRow[0].ToString(),
+                    hubName = singleRow[1].ToString()
                 });
                 outputFileArray.Add(individualRow);
             }
