@@ -3704,7 +3704,7 @@ namespace TEAM
                     : "Metadata is prepared using the selected version for both the Data Vault metadata as well as the model metadata.\r\n\r\n");
                 #endregion
 
-                #region Delete Metadata - 5%
+                #region Delete Metadata - 2%
                 // 1. Deleting metadata
                 _alert.SetTextLogging("Commencing removal of existing metadata.\r\n");
 
@@ -3743,7 +3743,7 @@ namespace TEAM
                         connectionVersion.Open();
                         commandVersion.ExecuteNonQuery();
 
-                        if (worker != null) worker.ReportProgress(5);
+                        if (worker != null) worker.ReportProgress(2);
                         _alert.SetTextLogging("Removal of existing metadata completed.\r\n");
                     }
                     catch (Exception ex)
@@ -3757,7 +3757,7 @@ namespace TEAM
                 # endregion
 
 
-                # region Prepare Version Information - 7%
+                # region Prepare Version Information - 3%
                 // 2. Prepare Version
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the version metadata.\r\n");
@@ -3788,29 +3788,27 @@ namespace TEAM
                     }
                 }
 
-                if (worker != null) worker.ReportProgress(10);
+                if (worker != null) worker.ReportProgress(3);
                 _alert.SetTextLogging("Preparation of the version details completed.\r\n");
 
 
                 #endregion
 
 
-                # region Prepare Source - 10%
+                # region Prepare Source - 5%
                 // Prepare the generic sources
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the source metadata.\r\n");
 
-                var stgCounter = 1;
-
                 // Getting the distinct list of tables to go into the 'source'
-                //DataRow[] selectionRows = inputTable.Select("PROCESS_INDICATOR = 'Y' AND (SOURCE_TABLE LIKE '" + stagingPrefix + "' OR SOURCE_TABLE LIKE '" + psaPrefix + "')");
                 selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y'");
 
-                var distinctListSource = new List<string>();
-
-                // Create a dummy row
-                distinctListSource.Add("Not applicable");
-
+                var distinctListSource = new List<string>
+                {
+                    // Create a dummy row
+                    "Not applicable"
+                };
+ 
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
@@ -3833,36 +3831,34 @@ namespace TEAM
 
                         var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
-                        var insertStgStatement = new StringBuilder();
-                        insertStgStatement.AppendLine("INSERT INTO [MD_SOURCE]");
-                        insertStgStatement.AppendLine("([SOURCE_NAME],[SOURCE_ID], [SCHEMA_NAME])");
-                        insertStgStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + stgCounter + ", '"+ fullyQualifiedName.Key + "')");
+                        var insertStatement = new StringBuilder();
+                        insertStatement.AppendLine("INSERT INTO [MD_SOURCE]");
+                        insertStatement.AppendLine("([SOURCE_NAME], [SCHEMA_NAME])");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + fullyQualifiedName.Key + "')");
 
-                        var command = new SqlCommand(insertStgStatement.ToString(), connection);
+                        var command = new SqlCommand(insertStatement.ToString(), connection);
 
                         try
                         {
                             connection.Open();
                             command.ExecuteNonQuery();
-                            stgCounter++;
                         }
                         catch (Exception ex)
                         {
                             errorCounter++;
                             _alert.SetTextLogging("An issue has occured during preparation of the source metadata. Please check the Error Log for more details.\r\n");
                             errorLog.AppendLine("\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
                 }
 
-                if (worker != null) worker.ReportProgress(10);
+                worker?.ReportProgress(5);
                 _alert.SetTextLogging("Preparation of the source metadata completed.\r\n");
-
-
                 #endregion
 
 
-                # region Prepare Staging Area - 12%
+                # region Prepare Staging Area - 7%
                 //3. Prepare the Staging Area
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Staging Area metadata.\r\n");
@@ -3872,7 +3868,6 @@ namespace TEAM
 
                 var distinctListStg = new List<string>
                 {
-
                     // Create a dummy row
                     "Not applicable"
                 };
@@ -3922,12 +3917,12 @@ namespace TEAM
                     }
                 }
 
-                worker?.ReportProgress(12);
+                worker?.ReportProgress(7);
                 _alert.SetTextLogging("Preparation of the Staging Area metadata completed.\r\n");
                 #endregion
 
 
-                # region Prepare Source to Staging Area XREF - 13%
+                # region Prepare Source to Staging Area XREF - 10%
                 // Prepare the Source to Staging Area XREF
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Staging Area.\r\n");
@@ -3974,12 +3969,12 @@ namespace TEAM
                     }
                 }
 
-                worker?.ReportProgress(13);
+                worker?.ReportProgress(10);
                 _alert.SetTextLogging("Preparation of the Source / Staging Area XREF metadata completed.\r\n");
                 #endregion
                 
 
-                # region Prepare Persistent Staging Area - 15%
+                # region Prepare Persistent Staging Area - 13%
                 //3. Prepare Persistent Staging Area
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Persistent Staging Area metadata.\r\n");
@@ -4038,13 +4033,13 @@ namespace TEAM
                     }
                 }
 
-                if (worker != null) worker.ReportProgress(15);
+                if (worker != null) worker.ReportProgress(13);
                 _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed.\r\n");
 
                 #endregion
 
 
-                # region Prepare Source to Staging Area XREF - 16%
+                # region Prepare Source to Staging Area XREF - 15%
                 // Prepare the Source to Persistent Staging Area XREF
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Persistent Staging Area.\r\n");
@@ -4091,7 +4086,7 @@ namespace TEAM
                     }
                 }
 
-                worker?.ReportProgress(16);
+                worker?.ReportProgress(15);
                 _alert.SetTextLogging("Preparation of the Source / Persistent Staging Area XREF metadata completed.\r\n");
                 #endregion
 
@@ -4100,9 +4095,6 @@ namespace TEAM
                 //3. Prepare Hubs
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Hub metadata.\r\n");
-
-
-                var hubCounter = 1; 
 
                 // Getting the distinct list of tables to go into the MD_HUB table
                 selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
@@ -4139,31 +4131,31 @@ namespace TEAM
                         string businessKeyString = string.Join(",", hubBusinessKey);
                         string surrogateKey = ClassMetadataHandling.GetSurrogateKey(tableName);
 
-                        var insertHubStatement = new StringBuilder();
-                        insertHubStatement.AppendLine("INSERT INTO [MD_HUB]");
-                        insertHubStatement.AppendLine("([HUB_NAME],[HUB_ID], [SCHEMA_NAME], [BUSINESS_KEY], [SURROGATE_KEY])");
-                        insertHubStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + hubCounter + ",'"+fullyQualifiedName.Key+"', '"+ businessKeyString + "', '" + surrogateKey + "')");
+                        var insertStatement = new StringBuilder();
+                        insertStatement.AppendLine("INSERT INTO [MD_HUB]");
+                        insertStatement.AppendLine("([HUB_NAME], [SCHEMA_NAME], [BUSINESS_KEY], [SURROGATE_KEY])");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','"+fullyQualifiedName.Key+"', '"+ businessKeyString + "', '" + surrogateKey + "')");
 
-                        var command = new SqlCommand(insertHubStatement.ToString(), connection);
+                        var command = new SqlCommand(insertStatement.ToString(), connection);
 
                         try
                         {
                             connection.Open();
                             command.ExecuteNonQuery();
-                            hubCounter++;
                         }
                         catch (Exception ex)
                         {
                             errorCounter++;
                             _alert.SetTextLogging("An issue has occured during preparation of the Hubs. Please check the Error Log for more details.\r\n");
+
                             errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
                 }
 
                 if (worker != null) worker.ReportProgress(17);
                 _alert.SetTextLogging("Preparation of the Hub metadata completed.\r\n");
-
                 #endregion
 
 
@@ -4172,443 +4164,390 @@ namespace TEAM
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Link metadata.\r\n");
 
-                try
+                // Getting the distinct list of tables to go into the MD_LINK table
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+
+                var distinctListLinks = new List<string>();
+
+                // Create a dummy row
+                distinctListLinks.Add("Not applicable");
+
+                // Create a distinct list of sources from the datagrid
+                foreach (DataRow row in selectionRows)
                 {
-                    var linkCounter = 1;
-
-                    // Getting the distinct list of tables to go into the MD_LINK table
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
-
-                    var distinctListLinks = new List<string>();
-
-                    // Create a dummy row
-                    distinctListLinks.Add("Not applicable");
-
-                    // Create a distinct list of sources from the datagrid
-                    foreach (DataRow row in selectionRows)
+                    string target_table = row["TARGET_TABLE"].ToString().Trim();
+                    if (!distinctListLinks.Contains(target_table))
                     {
-                        string target_table = row["TARGET_TABLE"].ToString().Trim();
-                        if (!distinctListLinks.Contains(target_table))
+                        distinctListLinks.Add(target_table);
+                    }
+                }
+
+                // Insert the rest of the rows
+                foreach (var tableName in distinctListLinks)
+                {
+                    using (var connection = new SqlConnection(metaDataConnection))
+                    {
+                        if (tableName != "Not applicable")
                         {
-                            distinctListLinks.Add(target_table);
+                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                        }
+
+                        var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
+
+                        // Retrieve the surrogate key
+                        string surrogateKey = ClassMetadataHandling.GetSurrogateKey(tableName);
+
+                        var insertStatement = new StringBuilder();
+
+                        insertStatement.AppendLine("INSERT INTO [MD_LINK]");
+                        insertStatement.AppendLine("([LINK_NAME], [SCHEMA_NAME], [SURROGATE_KEY])");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','"+fullyQualifiedName.Key+ "','" + surrogateKey + "')");
+
+                        var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the Links. Please check the Error Log for more details.\r\n");
+
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Links: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
-
-                    // Insert the rest of the rows
-                    foreach (var tableName in distinctListLinks)
-                    {
-                        using (var connection = new SqlConnection(metaDataConnection))
-                        {
-                            if (tableName != "Not applicable")
-                            {
-                                _alert.SetTextLogging("--> " + tableName + "\r\n");
-                            }
-
-                            var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
-
-                            // Retrieve the surrogate key
-                            string surrogateKey = ClassMetadataHandling.GetSurrogateKey(tableName);
-
-                            var insertLinkStatement = new StringBuilder();
-
-                            insertLinkStatement.AppendLine("INSERT INTO [MD_LINK]");
-                            insertLinkStatement.AppendLine("([LINK_NAME], [LINK_ID], [SCHEMA_NAME], [SURROGATE_KEY])");
-                            insertLinkStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + linkCounter + ",'"+fullyQualifiedName.Key+ "','" + surrogateKey + "')");
-
-                            var command = new SqlCommand(insertLinkStatement.ToString(), connection);
-
-                            try
-                            {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                                linkCounter++;
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Links. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Links: \r\n\r\n" + ex);
-                            }
-                        }
-                    }
-
-                    if (worker != null) worker.ReportProgress(20);
-                    _alert.SetTextLogging("Preparation of the Link metadata completed.\r\n");
                 }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Links. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Links: \r\n\r\n" + ex);
-                }
+
+                if (worker != null) worker.ReportProgress(20);
+                _alert.SetTextLogging("Preparation of the Link metadata completed.\r\n");
                 #endregion
 
+
                 #region Prepare Satellites - 24%
-                //5.1 Prepare Satellites
+                // Prepare Satellites
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Satellite metadata.\r\n");
 
-                var satCounter = 1;
+                var prepareSatStatement = new StringBuilder();
 
-                try
+                prepareSatStatement.AppendLine(@"
+                                                SELECT DISTINCT
+                                                        spec.TARGET_TABLE AS SATELLITE_NAME,
+                                                        hubkeysub.HUB_NAME,
+                                                        'Normal' AS SATELLITE_TYPE,
+                                                        (SELECT LINK_NAME FROM MD_LINK WHERE LINK_NAME='Not applicable') AS LINK_NAME -- No link for normal Satellites 
+                                                FROM TMP_MD_TABLE_MAPPING spec 
+                                                LEFT OUTER JOIN 
+                                                ( 
+                                                        SELECT DISTINCT TARGET_TABLE, hub.HUB_NAME, SOURCE_TABLE, BUSINESS_KEY_ATTRIBUTE 
+                                                        FROM TMP_MD_TABLE_MAPPING spec2 
+                                                        LEFT OUTER JOIN -- Join in the Hub NAME from the MD table 
+                                                                MD_HUB hub ON hub.[SCHEMA_NAME]+'.'+hub.HUB_NAME=spec2.TARGET_TABLE 
+                                                    WHERE TARGET_TABLE_TYPE = 'Hub'
+                                                    AND [PROCESS_INDICATOR] = 'Y'                                                        
+                                                ) hubkeysub 
+                                                        ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE 
+                                                        AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') 
+                                                WHERE spec.TARGET_TABLE_TYPE = 'Satellite'
+                                                AND [PROCESS_INDICATOR] = 'Y'
+                                                ");
+
+                var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
+
+                foreach (DataRow satelliteName in listSat.Rows)
                 {
-                    var prepareSatStatement = new StringBuilder();
-
-                    // STILL NOT USING DATAGRID
-                    prepareSatStatement.AppendLine(@"
-                                                    SELECT DISTINCT
-                                                           spec.TARGET_TABLE AS SATELLITE_NAME,
-                                                           hubkeysub.HUB_ID,
-                                                           'Normal' AS SATELLITE_TYPE,
-                                                           (SELECT LINK_ID FROM MD_LINK WHERE LINK_NAME='Not applicable') AS LINK_ID -- No link for normal Satellites 
-                                                    FROM TMP_MD_TABLE_MAPPING spec 
-                                                    LEFT OUTER JOIN 
-                                                    ( 
-                                                           SELECT DISTINCT TARGET_TABLE, hub.HUB_ID, SOURCE_TABLE, BUSINESS_KEY_ATTRIBUTE 
-                                                           FROM TMP_MD_TABLE_MAPPING spec2 
-                                                           LEFT OUTER JOIN -- Join in the Hub ID from the MD table 
-                                                                 MD_HUB hub ON hub.[SCHEMA_NAME]+'.'+hub.HUB_NAME=spec2.TARGET_TABLE 
-                                                        WHERE TARGET_TABLE_TYPE = 'Hub'
-                                                        AND [PROCESS_INDICATOR] = 'Y'                                                        
-                                                    ) hubkeysub 
-                                                           ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE 
-                                                           AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') 
-                                                    WHERE spec.TARGET_TABLE_TYPE = 'Satellite'
-                                                    AND [PROCESS_INDICATOR] = 'Y'
-                                                    ");
-
-                    var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
-
-                    foreach (DataRow satelliteName in listSat.Rows)
+                    using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        using (var connection = new SqlConnection(metaDataConnection))
+                        var tableName = satelliteName["SATELLITE_NAME"].ToString().Trim();
+                        var tableType = satelliteName["SATELLITE_TYPE"].ToString().Trim();
+                        var hubName = satelliteName["HUB_NAME"];
+                        var linkName = satelliteName["LINK_NAME"];
+
+                        if (tableName != "Not applicable")
                         {
-                            var tableName = satelliteName["SATELLITE_NAME"].ToString().Trim();
-                            var tableType = satelliteName["SATELLITE_TYPE"].ToString().Trim();
-                            var hubId = satelliteName["HUB_ID"];
-                            var linkId = satelliteName["LINK_ID"];
+                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                        }
 
-                            if (tableName != "Not applicable")
-                            {
-                                _alert.SetTextLogging("--> " + tableName + "\r\n");
-                            }
+                        var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
-                            var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
+                        var insertStatement = new StringBuilder();
+                        insertStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
+                        insertStatement.AppendLine("([SATELLITE_NAME], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_NAME], [LINK_NAME])");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value +"','" + tableType + "', '"+fullyQualifiedName.Key+"', '" + hubName + "','" + linkName + "')");
 
-                            var insertSatStatement = new StringBuilder();
-                            insertSatStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
-                            insertSatStatement.AppendLine("([SATELLITE_NAME],[SATELLITE_ID], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_ID], [LINK_ID])");
-                            insertSatStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value+ "'," + satCounter + ",'" + tableType + "', '"+fullyQualifiedName.Key+"', " + hubId + "," + linkId + ")");
+                        var command = new SqlCommand(insertStatement.ToString(), connection);
 
-                            var command = new SqlCommand(insertSatStatement.ToString(), connection);
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the Satellites. Please check the Error Log for more details.\r\n");
 
-                            try
-                            {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                                satCounter++;
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Satellites. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
-                            }
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
+                }
 
-                    worker.ReportProgress(24);
-                    _alert.SetTextLogging("Preparation of the Satellite metadata completed.\r\n");
-                }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Satellites. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
-                }
+                worker.ReportProgress(24);
+                _alert.SetTextLogging("Preparation of the Satellite metadata completed.\r\n");
                 #endregion
+
 
                 #region Prepare Link Satellites - 28%
-                //5.2 Prepare Link Satellites
+                //Prepare Link Satellites
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Link Satellite metadata.\r\n");
-                //satCounter = 1;
 
-                try
-                {
-                    var prepareSatStatement = new StringBuilder();
-                    /*LBM 2019/01/10 - Changing to use @ Strings*/
-                    prepareSatStatement.AppendLine(@"
-                                                    SELECT DISTINCT
-                                                           spec.TARGET_TABLE AS SATELLITE_NAME, 
-                                                           (SELECT HUB_ID FROM MD_HUB WHERE HUB_NAME='Not applicable') AS HUB_ID, -- No Hub for Link Satellites
-                                                           'Link Satellite' AS SATELLITE_TYPE,
-                                                           lnkkeysub.LINK_ID
-                                                    FROM TMP_MD_TABLE_MAPPING spec
-                                                    LEFT OUTER JOIN  -- Get the Link ID that belongs to this LSAT
-                                                    (
-                                                           SELECT DISTINCT 
-                                                                 TARGET_TABLE AS LINK_NAME,
-                                                                 SOURCE_TABLE,
-                                                                 BUSINESS_KEY_ATTRIBUTE,
-                                                           lnk.LINK_ID
-                                                           FROM TMP_MD_TABLE_MAPPING spec2
-                                                           LEFT OUTER JOIN -- Join in the Link ID from the MD table
-                                                                 MD_LINK lnk ON lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=spec2.TARGET_TABLE
-                                                           WHERE TARGET_TABLE_TYPE = 'Link'
-                                                           AND [PROCESS_INDICATOR] = 'Y'
-                                                    ) lnkkeysub
-                                                        ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
-                                                       AND REPLACE(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=REPLACE(lnkkeysub.BUSINESS_KEY_ATTRIBUTE,' ','')
+                var prepareLsatStatement = new StringBuilder();
+                prepareLsatStatement.AppendLine(@"
+                                                SELECT DISTINCT
+                                                        spec.TARGET_TABLE AS SATELLITE_NAME, 
+                                                        (SELECT HUB_NAME FROM MD_HUB WHERE HUB_NAME='Not applicable') AS HUB_NAME, -- No Hub for Link Satellites
+                                                        'Link Satellite' AS SATELLITE_TYPE,
+                                                        lnkkeysub.LINK_NAME
+                                                FROM TMP_MD_TABLE_MAPPING spec
+                                                LEFT OUTER JOIN  -- Get the Link ID that belongs to this LSAT
+                                                (
+                                                        SELECT DISTINCT 
+                                                                lnk.LINK_NAME AS LINK_NAME,
+                                                                SOURCE_TABLE,
+                                                                BUSINESS_KEY_ATTRIBUTE
+                                                        FROM TMP_MD_TABLE_MAPPING spec2
+                                                        LEFT OUTER JOIN -- Join in the Link Name from the MD table
+                                                                MD_LINK lnk ON lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=spec2.TARGET_TABLE
+                                                        WHERE TARGET_TABLE_TYPE = 'Link'
+                                                        AND [PROCESS_INDICATOR] = 'Y'
+                                                ) lnkkeysub
+                                                    ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
+                                                    AND REPLACE(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=REPLACE(lnkkeysub.BUSINESS_KEY_ATTRIBUTE,' ','')
 
-                                                    -- Only select Link Satellites as the base / driving table (spec alias)
-                                                    WHERE spec.TARGET_TABLE_TYPE LIKE 'Link-Satellite'
-                                                    AND [PROCESS_INDICATOR] = 'Y'
-                                                    ");
+                                                -- Only select Link Satellites as the base / driving table (spec alias)
+                                                WHERE spec.TARGET_TABLE_TYPE LIKE 'Link-Satellite'
+                                                AND [PROCESS_INDICATOR] = 'Y'
+                                                ");
  
 
-                     var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
+                    var listLsat = GetDataTable(ref connOmd, prepareLsatStatement.ToString());
 
-                    foreach (DataRow satelliteName in listSat.Rows)
+                foreach (DataRow satelliteName in listLsat.Rows)
+                {
+                    using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        using (var connection = new SqlConnection(metaDataConnection))
+                        var tableName = satelliteName["SATELLITE_NAME"].ToString().Trim();
+                        var tableType = satelliteName["SATELLITE_TYPE"].ToString().Trim();
+                        var hubName = satelliteName["HUB_NAME"];
+                        var linkName = satelliteName["LINK_NAME"];
+
+                        _alert.SetTextLogging("--> " + tableName + "\r\n");
+
+                        var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
+
+                        var insertStatement = new StringBuilder();
+                        insertStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
+                        insertStatement.AppendLine("([SATELLITE_NAME], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_NAME], [LINK_NAME])");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + tableType + "', '" + fullyQualifiedName.Key + "', '" + hubName + "','" + linkName + "')");
+
+                        var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                        try
                         {
-                            var tableName = satelliteName["SATELLITE_NAME"].ToString().Trim();
-                            var tableType = satelliteName["SATELLITE_TYPE"].ToString().Trim();
-                            var hubId = satelliteName["HUB_ID"];
-                            var linkId = satelliteName["LINK_ID"];
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the Link Satellites. Please check the Error Log for more details.\r\n");
 
-                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link Satellites: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
 
-                            var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
-
-                            var insertSatStatement = new StringBuilder();
-                            insertSatStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
-                            insertSatStatement.AppendLine("([SATELLITE_NAME],[SATELLITE_ID], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_ID], [LINK_ID])");
-                            insertSatStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "'," + satCounter + ",'" + tableType + "', '" + fullyQualifiedName.Key + "', " + hubId + "," + linkId + ")");
-
-                            var command = new SqlCommand(insertSatStatement.ToString(), connection);
-
-                            try
-                            {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                                satCounter++;
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Link Satellites. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link Satellites: \r\n\r\n" + ex);
-                            }
                         }
                     }
-
-                    worker.ReportProgress(28);
-                    _alert.SetTextLogging("Preparation of the Link Satellite metadata completed.\r\n");
                 }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Link Satellites. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link Satellites: \r\n\r\n" + ex);
-                }
+                worker.ReportProgress(28);
+                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed.\r\n");
                 #endregion
 
-                #region Prepare STG / SAT Xref - 28%
-                //5.3 Prepare STG / Sat XREF
+
+                #region Prepare Source / SAT Xref - 28%
+                //Prepare Source / Sat XREF
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between (Link) Satellites and the Source tables.\r\n");
-                var srcSatXrefCounter = 1;
 
-                try
+                var prepareSatXrefStatement = new StringBuilder();
+                prepareSatXrefStatement.AppendLine(@"
+                                                    SELECT
+	                                                        sat.SATELLITE_NAME,
+	                                                        stg.SOURCE_NAME,
+	                                                        spec.BUSINESS_KEY_ATTRIBUTE,
+                                                            spec.FILTER_CRITERIA
+                                                    FROM TMP_MD_TABLE_MAPPING spec
+                                                    LEFT OUTER JOIN -- Join in the Source_ID from the MD_SOURCE table
+                                                            MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE
+                                                    LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
+                                                            MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE
+                                                    WHERE spec.TARGET_TABLE_TYPE = 'Satellite'
+                                                    AND [PROCESS_INDICATOR] = 'Y'
+                                                    UNION
+                                                    SELECT
+	                                                        sat.SATELLITE_NAME,
+	                                                        stg.SOURCE_NAME,
+	                                                        spec.BUSINESS_KEY_ATTRIBUTE,
+                                                            spec.FILTER_CRITERIA
+                                                    FROM TMP_MD_TABLE_MAPPING spec
+                                                    LEFT OUTER JOIN -- Join in the Source from the MD_SOURCE table
+                                                            MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE
+                                                    LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
+                                                            MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE
+                                                    WHERE spec.TARGET_TABLE_TYPE = 'Link-Satellite'
+                                                    AND [PROCESS_INDICATOR] = 'Y'
+                                                    ");
+
+                var listSatXref = GetDataTable(ref connOmd, prepareSatXrefStatement.ToString());
+
+                foreach (DataRow tableName in listSatXref.Rows)
                 {
-                    var prepareSatXrefStatement = new StringBuilder();
-                    /*LBM 2019/01/10 - Changing to use @ Strings*/
-                    prepareSatXrefStatement.AppendLine(@"
-                                                        SELECT
-                                                               sat.SATELLITE_ID,
-	                                                           sat.SATELLITE_NAME,
-                                                               stg.SOURCE_ID, 
-	                                                           stg.SOURCE_NAME,
-	                                                           spec.BUSINESS_KEY_ATTRIBUTE,
-                                                               spec.FILTER_CRITERIA
-                                                        FROM TMP_MD_TABLE_MAPPING spec
-                                                        LEFT OUTER JOIN -- Join in the Source_ID from the MD_SOURCE table
-                                                               MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE
-                                                        LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
-                                                               MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE
-                                                        WHERE spec.TARGET_TABLE_TYPE = 'Satellite'
-                                                        AND [PROCESS_INDICATOR] = 'Y'
-                                                        UNION
-                                                        SELECT
-                                                               sat.SATELLITE_ID,
-	                                                           sat.SATELLITE_NAME,
-                                                               stg.SOURCE_ID, 
-	                                                           stg.SOURCE_NAME,
-	                                                           spec.BUSINESS_KEY_ATTRIBUTE,
-                                                               spec.FILTER_CRITERIA
-                                                        FROM TMP_MD_TABLE_MAPPING spec
-                                                        LEFT OUTER JOIN -- Join in the Source_ID from the MD_SOURCE table
-                                                               MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE
-                                                        LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
-                                                               MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE
-                                                        WHERE spec.TARGET_TABLE_TYPE = 'Link-Satellite'
-                                                        AND [PROCESS_INDICATOR] = 'Y'
-                                                        ");
-
-
-                    var listSat = GetDataTable(ref connOmd, prepareSatXrefStatement.ToString());
-
-                    foreach (DataRow tableName in listSat.Rows)
+                    using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        using (var connection = new SqlConnection(metaDataConnection))
+                        _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["SATELLITE_NAME"] + " relationship\r\n");
+
+                        var insertStatement = new StringBuilder();
+                        var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
+                        filterCriterion = filterCriterion.Replace("'", "''");
+
+                        var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
+                        businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+
+                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["SATELLITE_NAME"].ToString());
+
+                        insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_XREF]");
+                        insertStatement.AppendLine("([SATELLITE_NAME], [SOURCE_NAME], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
+                        insertStatement.AppendLine("VALUES ('" + 
+                                                        tableName["SATELLITE_NAME"] + "','" + 
+                                                        tableName["SOURCE_NAME"] + "','" + 
+                                                        businessKeyDefinition + "','" +
+                                                        filterCriterion + "','" +
+                                                        loadVector + "')");
+
+                        var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                        try
                         {
-                            _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["SATELLITE_NAME"] + " relationship\r\n");
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
 
-                            var insertSatStatement = new StringBuilder();
-                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
-                            filterCriterion = filterCriterion.Replace("'", "''");
-
-                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
-                            businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
-
-                            var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["SATELLITE_NAME"].ToString());
-                            
-                            insertSatStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_XREF]");
-                            insertSatStatement.AppendLine("([SATELLITE_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
-                            insertSatStatement.AppendLine("VALUES ('" + 
-                                                          tableName["SATELLITE_ID"] + "','" + 
-                                                          tableName["SOURCE_ID"] + "','" + 
-                                                          businessKeyDefinition + "','" +
-                                                          filterCriterion + "','" +
-                                                          loadVector + "')");
-
-                            var command = new SqlCommand(insertSatStatement.ToString(), connection);
-
-                            try
-                            {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                                srcSatXrefCounter++;
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" + ex);
-                            }
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
-
-                    worker.ReportProgress(28);
-                    _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed.\r\n");
-                }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" + ex);
                 }
 
+                worker.ReportProgress(28);
+                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed.\r\n");
                 #endregion
 
-                #region Staging / Hub relationship - 30%
-                //6. Prepare STG / HUB xref
+
+                #region Source / Hub relationship - 30%
+                //Prepare Source / HUB xref
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Hubs.\r\n");
 
-                try
+                var prepareStgHubXrefStatement = new StringBuilder();
+                prepareStgHubXrefStatement.AppendLine(@"
+                SELECT
+                    HUB_NAME,
+	                SOURCE_NAME,
+	                BUSINESS_KEY_ATTRIBUTE,
+                    FILTER_CRITERIA
+                FROM
+                (      
+                    SELECT DISTINCT 
+                    SOURCE_TABLE,
+                    TARGET_TABLE,
+					BUSINESS_KEY_ATTRIBUTE,
+                    FILTER_CRITERIA
+                    FROM TMP_MD_TABLE_MAPPING
+                    WHERE 
+                        TARGET_TABLE_TYPE = 'Hub'
+                    AND [PROCESS_INDICATOR] = 'Y'
+                ) hub
+                LEFT OUTER JOIN
+                ( 
+                    SELECT SOURCE_NAME, [SCHEMA_NAME]
+                    FROM MD_SOURCE
+                ) stgsub
+                ON hub.SOURCE_TABLE=stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME
+                LEFT OUTER JOIN
+                ( 
+                    SELECT HUB_NAME, [SCHEMA_NAME]
+                    FROM MD_HUB
+                ) hubsub
+                ON hub.TARGET_TABLE=hubsub.[SCHEMA_NAME]+'.'+hubsub.HUB_NAME
+                ");
+
+
+                var listXref = GetDataTable(ref connOmd, prepareStgHubXrefStatement.ToString());
+
+                foreach (DataRow tableName in listXref.Rows)
                 {
-                    var prepareStgHubXrefStatement = new StringBuilder();
-                    /*LBM 2019/01/10 - Changing to use @ Strings*/
-                    prepareStgHubXrefStatement.AppendLine(@"
-                    SELECT
-                      HUB_ID,
-                      HUB_NAME,
-                      SOURCE_ID,
-	                  SOURCE_NAME,
-	                  BUSINESS_KEY_ATTRIBUTE,
-                      FILTER_CRITERIA
-                    FROM
-                    (      
-                      SELECT DISTINCT 
-                        SOURCE_TABLE,
-                        TARGET_TABLE,
-					    BUSINESS_KEY_ATTRIBUTE,
-                        FILTER_CRITERIA
-                      FROM TMP_MD_TABLE_MAPPING
-                      WHERE 
-                           TARGET_TABLE_TYPE = 'Hub'
-                       AND [PROCESS_INDICATOR] = 'Y'
-                    ) hub
-                    LEFT OUTER JOIN
-                    ( 
-                      SELECT SOURCE_ID, [SCHEMA_NAME]+'.'+SOURCE_NAME AS SOURCE_NAME
-                      FROM MD_SOURCE
-                    ) stgsub
-                    ON hub.SOURCE_TABLE=stgsub.SOURCE_NAME
-                    LEFT OUTER JOIN
-                    ( 
-                      SELECT HUB_ID, [SCHEMA_NAME]+'.'+HUB_NAME AS HUB_NAME
-                      FROM MD_HUB
-                    ) hubsub
-                    ON hub.TARGET_TABLE=hubsub.HUB_NAME
-                    ");
-
-
-                    var listXref = GetDataTable(ref connOmd, prepareStgHubXrefStatement.ToString());
-
-                    foreach (DataRow tableName in listXref.Rows)
+                    using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        using (var connection = new SqlConnection(metaDataConnection))
+                        _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["HUB_NAME"] + " relationship\r\n");
+
+                        var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
+                        filterCriterion = filterCriterion.Replace("'", "''");
+
+                        var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
+                        businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+
+                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["HUB_NAME"].ToString());
+
+                        var insertStatement = new StringBuilder();
+                        insertStatement.AppendLine("INSERT INTO [MD_SOURCE_HUB_XREF]");
+                        insertStatement.AppendLine("([HUB_NAME], [SOURCE_NAME], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
+                        insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + 
+                                                        "','" + tableName["SOURCE_NAME"] + 
+                                                        "','" + businessKeyDefinition + 
+                                                        "','" + filterCriterion +
+                                                        "','" + loadVector +
+                                                        "')");
+
+                        var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                        try
                         {
-                            _alert.SetTextLogging("-->  Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["HUB_NAME"] + " relationship\r\n");
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCounter++;
+                            _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
 
-                            var insertXrefStatement = new StringBuilder();
-                            var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
-                            filterCriterion = filterCriterion.Replace("'", "''");
-
-                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
-                            businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
-
-                            var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["HUB_NAME"].ToString());
-
-                            insertXrefStatement.AppendLine("INSERT INTO [MD_SOURCE_HUB_XREF]");
-                            insertXrefStatement.AppendLine("([HUB_ID], [SOURCE_ID], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
-                            insertXrefStatement.AppendLine("VALUES ('" + tableName["HUB_ID"] + 
-                                                           "','" + tableName["SOURCE_ID"] + 
-                                                           "','" + businessKeyDefinition + 
-                                                           "','" + filterCriterion +
-                                                           "','" + loadVector +
-                                                           "')");
-
-                            var command = new SqlCommand(insertXrefStatement.ToString(), connection);
-
-                            try
-                            {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
-                            }
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
+                }
 
-                    worker.ReportProgress(30);
-                    _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed.\r\n");
-                }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
-                }
+                worker.ReportProgress(30);
+                _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed.\r\n");
                 #endregion
+
 
                 #region Filter Variables  - 35%
                 string tableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
@@ -4696,10 +4635,10 @@ namespace TEAM
                 #endregion
 
                 #region Prepare attributes - 40%
-                //7. Prepare Attributes
+                //Prepare Attributes
                 _alert.SetTextLogging("\r\n");
 
-                // Define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled)
+                // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
                 var allDatabaseAttributes = new StringBuilder();
                 if (checkBoxIgnoreVersion.Checked
                 ) // Get the attributes from the physical model / catalog. No virtualisation needed.
@@ -4708,7 +4647,6 @@ namespace TEAM
 
                     allDatabaseAttributes.AppendLine("  SELECT * FROM");
                     allDatabaseAttributes.AppendLine("  (");
-
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
                     allDatabaseAttributes.AppendLine("    UNION ");
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
@@ -4716,7 +4654,6 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
                     allDatabaseAttributes.AppendLine("    UNION ");
                     allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
-
                     allDatabaseAttributes.AppendLine("  ) mapping");
                 }
                 else // Get the values from the data grid or worker table (virtual mode)
@@ -4734,116 +4671,112 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
                 }
 
-                try
+
+                var prepareAttStatement = new StringBuilder();
+                var attCounter = 1;
+
+                // Dummy row - insert 'Not Applicable' attribute to satisfy RI
+                using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    var prepareAttStatement = new StringBuilder();
-                    var attCounter = 1;
+                    var insertStatement = new StringBuilder();
 
-                    // Dummy row - insert 'Not Applicable' attribute to satisfy RI
-                    using (var connection = new SqlConnection(metaDataConnection))
+                    insertStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
+                    insertStatement.AppendLine("([ATTRIBUTE_NAME])");
+                    insertStatement.AppendLine("VALUES ('Not applicable')");
+
+                    var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                    try
                     {
-                        var insertAttDummyStatement = new StringBuilder();
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        attCounter++;
+                    }
+                    catch (Exception ex)
+                    {
+                        errorCounter++;
+                        _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
 
-                        insertAttDummyStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
-                        insertAttDummyStatement.AppendLine("([ATTRIBUTE_ID], [ATTRIBUTE_NAME])");
-                        insertAttDummyStatement.AppendLine("VALUES ("+attCounter+",'Not applicable')");
+                        errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
+                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                    }
+                }
 
-                        var command = new SqlCommand(insertAttDummyStatement.ToString(), connection);
+                /* Regular processing
+                    RV: there is an issue below where not all SQL version (i.e. SQL Server) are supporting cross database SQL.
+                    i.e. Azure. long term fix is to create individual queries to database without cross-db sql and add to single data table in the application
+                */
+                if (checkBoxIgnoreVersion.Checked) // Read from live database
+                {
+                    _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
+                }
+                else // Virtual processing
+                {
+                    _alert.SetTextLogging("Commencing preparing the attributes from the metadata.\r\n");
+                }
 
-                        try
+                prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM (");
+                prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
+                prepareAttStatement.AppendLine(") sub");
+                prepareAttStatement.AppendLine("  WHERE sub.COLUMN_NAME NOT IN");
+                prepareAttStatement.AppendLine("  ( ");
+                prepareAttStatement.AppendLine("    '" + recordSource + "',");
+                prepareAttStatement.AppendLine("    '" + alternativeRecordSource + "',");
+                prepareAttStatement.AppendLine("    '" + sourceRowId + "',");
+                prepareAttStatement.AppendLine("    '" + recordChecksum + "',");
+                prepareAttStatement.AppendLine("    '" + changeDataCaptureIndicator + "',");
+                prepareAttStatement.AppendLine("    '" + hubAlternativeLdts + "',");
+                prepareAttStatement.AppendLine("    '" + eventDateTimeAtttribute + "',");
+                prepareAttStatement.AppendLine("    '" + effectiveDateTimeAttribute + "',");
+                prepareAttStatement.AppendLine("    '" + etlProcessId + "',");
+                prepareAttStatement.AppendLine("    '" + loadDateTimeStamp + "',");
+                prepareAttStatement.AppendLine("    '" + currentRecordAttribute + "'");
+                prepareAttStatement.AppendLine("  ) ");
+
+                // Load the data table, get the attributes
+                var listAtt = GetDataTable(ref connOmd, prepareAttStatement.ToString());
+
+                // Check if there are any attributes found, otherwise insert into the repository
+                if (listAtt.Rows.Count == 0)
+                {
+                    _alert.SetTextLogging("-->  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                }
+                else
+                {
+                    foreach (DataRow tableName in listAtt.Rows)
+                    {
+                        using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                            attCounter++;
-                        }
-                        catch (Exception ex)
-                        {
-                            errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                        }
-                    }
+                            //_alert.SetTextLogging("-->  Processing " + tableName["COLUMN_NAME"] + ".\r\n");
 
-                    /* Regular processing
-                       RV: there is an issue below where not all SQL version (i.e. SQL Server) are supporting cross database SQL.
-                       i.e. Azure. long term fix is to create individual queries to database without cross-db sql and add to single data table in the application
-                    */
-                    if (checkBoxIgnoreVersion.Checked) // Read from live database
-                    {
-                        _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
-                    }
-                    else // Virtual processing
-                    {
-                        _alert.SetTextLogging("Commencing preparing the attributes from the metadata.\r\n");
-                    }
+                            var insertStatement = new StringBuilder();
 
-                    prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM (");
-                    prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
-                    prepareAttStatement.AppendLine(") sub");
-                    prepareAttStatement.AppendLine("  WHERE sub.COLUMN_NAME NOT IN");
-                    prepareAttStatement.AppendLine("  ( ");
-                    prepareAttStatement.AppendLine("    '" + recordSource + "',");
-                    prepareAttStatement.AppendLine("    '" + alternativeRecordSource + "',");
-                    prepareAttStatement.AppendLine("    '" + sourceRowId + "',");
-                    prepareAttStatement.AppendLine("    '" + recordChecksum + "',");
-                    prepareAttStatement.AppendLine("    '" + changeDataCaptureIndicator + "',");
-                    prepareAttStatement.AppendLine("    '" + hubAlternativeLdts + "',");
-                    prepareAttStatement.AppendLine("    '" + eventDateTimeAtttribute + "',");
-                    prepareAttStatement.AppendLine("    '" + effectiveDateTimeAttribute + "',");
-                    prepareAttStatement.AppendLine("    '" + etlProcessId + "',");
-                    prepareAttStatement.AppendLine("    '" + loadDateTimeStamp + "',");
-                    prepareAttStatement.AppendLine("    '" + currentRecordAttribute + "'");
-                    prepareAttStatement.AppendLine("  ) ");
+                            insertStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
+                            insertStatement.AppendLine("([ATTRIBUTE_NAME])");
+                            insertStatement.AppendLine("VALUES ('" + tableName["COLUMN_NAME"].ToString().Trim() + "')");
 
-                    // Load the data table, get the attributes
-                    var listAtt = GetDataTable(ref connOmd, prepareAttStatement.ToString());
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
 
-                    // Check if there are any attributes found, otherwise insert into the repository
-                    if (listAtt.Rows.Count == 0)
-                    {
-                        _alert.SetTextLogging("-->  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
-                    }
-                    else
-                    {
-                        foreach (DataRow tableName in listAtt.Rows)
-                        {
-                            using (var connection = new SqlConnection(metaDataConnection))
+                            try
                             {
-                                //_alert.SetTextLogging("-->  Processing " + tableName["COLUMN_NAME"] + ".\r\n");
-
-                                var insertAttStatement = new StringBuilder();
-
-                                insertAttStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
-                                insertAttStatement.AppendLine("([ATTRIBUTE_ID], [ATTRIBUTE_NAME])");
-                                insertAttStatement.AppendLine("VALUES (" + attCounter + ",'" + tableName["COLUMN_NAME"].ToString().Trim() + "')");
-
-                                var command = new SqlCommand(insertAttStatement.ToString(), connection);
-
-                                try
-                                {
-                                    connection.Open();
-                                    command.ExecuteNonQuery();
-                                    attCounter++;
-                                }
-                                catch (Exception ex)
-                                {
-                                    errorCounter++;
-                                    _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
-                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                                }
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                                attCounter++;
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
+                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
-                        _alert.SetTextLogging("-->  Processing " + attCounter + " attributes.\r\n");
                     }
-                    worker.ReportProgress(40);
-                    _alert.SetTextLogging("Preparation of the attributes completed.\r\n");
+                    _alert.SetTextLogging("-->  Processing " + attCounter + " attributes.\r\n");
                 }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                }
+                worker.ReportProgress(40);
+                _alert.SetTextLogging("Preparation of the attributes completed.\r\n");
+
 
                 #endregion
 
@@ -4935,133 +4868,123 @@ namespace TEAM
                 #endregion
 
                 #region Business Key - 50%
-                //8. Understanding the Business Key (MD_BUSINESS_KEY_COMPONENT)
+                //Understanding the Business Key (MD_BUSINESS_KEY_COMPONENT)
 
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing the definition of the Business Key.\r\n");
 
-                try
+                var prepareKeyStatement = new StringBuilder();
+
+                prepareKeyStatement.AppendLine(@"
+                SELECT 
+                  SOURCE_NAME,
+                  TARGET_NAME,
+                  BUSINESS_KEY_ATTRIBUTE,
+                  ROW_NUMBER() OVER(PARTITION BY SOURCE_NAME, TARGET_NAME, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_NAME, TARGET_NAME, COMPONENT_ORDER ASC) AS COMPONENT_ID,
+                  COMPONENT_ORDER,
+                  REPLACE(COMPONENT_VALUE,'COMPOSITE(', '') AS COMPONENT_VALUE,
+                    CASE
+                            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 11)= 'CONCATENATE' THEN 'CONCATENATE()'
+                            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 6)= 'PIVOT' THEN 'PIVOT()'
+                            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 9)= 'COMPOSITE' THEN 'COMPOSITE()'
+                            ELSE 'NORMAL'
+                    END AS COMPONENT_TYPE
+                FROM
+                (
+                    SELECT DISTINCT
+                        A.SOURCE_TABLE,
+                        A.BUSINESS_KEY_ATTRIBUTE,
+                        A.TARGET_TABLE,
+                        CASE
+                            WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0
+                            THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))
+                            ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')
+                        END AS COMPONENT_VALUE,
+                        ROW_NUMBER() OVER(PARTITION BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER
+                    FROM
+                    (
+                      SELECT
+                          SOURCE_TABLE, 
+                          TARGET_TABLE, 
+                          BUSINESS_KEY_ATTRIBUTE,
+                          CASE SUBSTRING(BUSINESS_KEY_ATTRIBUTE, 0, CHARINDEX('(', BUSINESS_KEY_ATTRIBUTE))
+        	                 WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') 
+        	                 ELSE CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') 
+                          END AS BUSINESS_KEY_ATTRIBUTE_XML
+                        FROM
+                        (
+                            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE
+                            FROM TMP_MD_TABLE_MAPPING
+                            WHERE TARGET_TABLE_TYPE = 'Hub'
+                              AND [PROCESS_INDICATOR] = 'Y'
+                        ) TableName
+                    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)
+                    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''
+                ) pivotsub
+                LEFT OUTER JOIN
+                       (
+                              SELECT SOURCE_NAME, [SCHEMA_NAME]
+                              FROM MD_SOURCE
+                       ) stgsub
+                ON pivotsub.SOURCE_TABLE = stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME
+                LEFT OUTER JOIN
+                       (
+                              SELECT HUB_NAME AS TARGET_NAME, [SCHEMA_NAME]
+                              FROM MD_HUB
+                       ) hubsub
+                ON pivotsub.TARGET_TABLE = hubsub.[SCHEMA_NAME]+'.'+hubsub.TARGET_NAME
+                ORDER BY stgsub.SOURCE_NAME, hubsub.TARGET_NAME, COMPONENT_ORDER
+                ");
+
+                var listKeys = GetDataTable(ref connOmd, prepareKeyStatement.ToString());
+
+                if (listKeys.Rows.Count == 0)
                 {
-                    var prepareKeyStatement = new StringBuilder();
-
-                    prepareKeyStatement.AppendLine("SELECT ");
-                    prepareKeyStatement.AppendLine("  SOURCE_ID,");
-                    prepareKeyStatement.AppendLine("  SOURCE_NAME,");
-                    prepareKeyStatement.AppendLine("  HUB_ID,");
-                    prepareKeyStatement.AppendLine("  HUB_NAME,");
-                    prepareKeyStatement.AppendLine("  BUSINESS_KEY_ATTRIBUTE,");
-                    prepareKeyStatement.AppendLine("  ROW_NUMBER() OVER(PARTITION BY SOURCE_ID, HUB_ID, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_ID, HUB_ID, COMPONENT_ORDER ASC) AS COMPONENT_ID,");
-                    prepareKeyStatement.AppendLine("  COMPONENT_ORDER,");
-                    prepareKeyStatement.AppendLine("  REPLACE(COMPONENT_VALUE,'COMPOSITE(', '') AS COMPONENT_VALUE,");
-                    prepareKeyStatement.AppendLine("    CASE");
-                    prepareKeyStatement.AppendLine("            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 11)= 'CONCATENATE' THEN 'CONCATENATE()'");
-                    prepareKeyStatement.AppendLine("            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 6)= 'PIVOT' THEN 'PIVOT()'");
-                    prepareKeyStatement.AppendLine("            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 9)= 'COMPOSITE' THEN 'COMPOSITE()'");
-                    prepareKeyStatement.AppendLine("            ELSE 'NORMAL'");
-                    prepareKeyStatement.AppendLine("    END AS COMPONENT_TYPE");
-                    prepareKeyStatement.AppendLine("FROM");
-                    prepareKeyStatement.AppendLine("(");
-                    prepareKeyStatement.AppendLine("    SELECT DISTINCT");
-                    prepareKeyStatement.AppendLine("        A.SOURCE_TABLE,");
-                    prepareKeyStatement.AppendLine("        A.BUSINESS_KEY_ATTRIBUTE,");
-                    prepareKeyStatement.AppendLine("        A.TARGET_TABLE,");
-                    prepareKeyStatement.AppendLine("        CASE");
-                    prepareKeyStatement.AppendLine("            WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
-                    prepareKeyStatement.AppendLine("            THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))");
-                    prepareKeyStatement.AppendLine("            ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')");
-                    prepareKeyStatement.AppendLine("        END AS COMPONENT_VALUE,");
-                    prepareKeyStatement.AppendLine("        ROW_NUMBER() OVER(PARTITION BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER");
-                    prepareKeyStatement.AppendLine("    FROM");
-                    prepareKeyStatement.AppendLine("    (");
-
-                    // Change to move from comma separate to semicolon separation for composite keys
-                    prepareKeyStatement.AppendLine("      SELECT");
-                    prepareKeyStatement.AppendLine("          SOURCE_TABLE, ");
-                    prepareKeyStatement.AppendLine("          TARGET_TABLE, ");
-                    prepareKeyStatement.AppendLine("          BUSINESS_KEY_ATTRIBUTE,");
-                    prepareKeyStatement.AppendLine("          CASE SUBSTRING(BUSINESS_KEY_ATTRIBUTE, 0, CHARINDEX('(', BUSINESS_KEY_ATTRIBUTE))");
-                    prepareKeyStatement.AppendLine("        	 WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') ");
-                    prepareKeyStatement.AppendLine("        	 ELSE CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') ");
-                    prepareKeyStatement.AppendLine("          END AS BUSINESS_KEY_ATTRIBUTE_XML");
-                    prepareKeyStatement.AppendLine("        FROM");
-                    prepareKeyStatement.AppendLine("        (");
-                    prepareKeyStatement.AppendLine("            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
-                    prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
-                    prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE_TYPE = 'Hub'");
-                    prepareKeyStatement.AppendLine("              AND [PROCESS_INDICATOR] = 'Y'");
-                    prepareKeyStatement.AppendLine("        ) TableName");
-                    prepareKeyStatement.AppendLine("    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
-                    prepareKeyStatement.AppendLine("    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''");
-                    prepareKeyStatement.AppendLine(") pivotsub");
-                    prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
-                    prepareKeyStatement.AppendLine("       (");
-                    prepareKeyStatement.AppendLine("              SELECT SOURCE_ID, [SCHEMA_NAME]+'.'+SOURCE_NAME AS SOURCE_NAME");
-                    prepareKeyStatement.AppendLine("              FROM MD_SOURCE");
-                    prepareKeyStatement.AppendLine("       ) stgsub");
-                    prepareKeyStatement.AppendLine("ON pivotsub.SOURCE_TABLE = stgsub.SOURCE_NAME");
-                    prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
-                    prepareKeyStatement.AppendLine("       (");
-                    prepareKeyStatement.AppendLine("              SELECT HUB_ID, [SCHEMA_NAME]+'.'+HUB_NAME AS HUB_NAME");
-                    prepareKeyStatement.AppendLine("              FROM MD_HUB");
-                    prepareKeyStatement.AppendLine("       ) hubsub");
-                    prepareKeyStatement.AppendLine("ON pivotsub.TARGET_TABLE = hubsub.HUB_NAME");
-                    prepareKeyStatement.AppendLine("ORDER BY stgsub.SOURCE_ID, hubsub.HUB_ID, COMPONENT_ORDER");
-
-                    var listKeys = GetDataTable(ref connOmd, prepareKeyStatement.ToString());
-
-                    if (listKeys.Rows.Count == 0)
+                    _alert.SetTextLogging("-- >  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                }
+                else
+                {
+                    foreach (DataRow tableName in listKeys.Rows)
                     {
-                        _alert.SetTextLogging("-->  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
-                    }
-                    else
-                    {
-                        foreach (DataRow tableName in listKeys.Rows)
+                        using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            using (var connection = new SqlConnection(metaDataConnection))
+
+                            var keyComponent = tableName["COMPONENT_VALUE"]; //Handle quotes between SQL and C%
+                            keyComponent = keyComponent.ToString().Replace("'", "''");
+
+                            _alert.SetTextLogging("-->  Processing the Business Key "+ tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component "+ keyComponent + ") from " + tableName["SOURCE_NAME"] + " to " + tableName["TARGET_NAME"] + "\r\n");
+
+                            var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
+                            businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+
+
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT]");
+                            insertStatement.AppendLine("(SOURCE_NAME, HUB_NAME, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
+                            insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] + "','" + tableName["TARGET_NAME"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_TYPE"] + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
                             {
-                                var insertKeyStatement = new StringBuilder();
-                                var keyComponent = tableName["COMPONENT_VALUE"]; //Handle quotes between SQL and C%
-                                keyComponent = keyComponent.ToString().Replace("'", "''");
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
 
-                                _alert.SetTextLogging("-->  Processing the Business Key "+ tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component "+ keyComponent + ") from " + tableName["SOURCE_NAME"] + " to " + tableName["HUB_NAME"] + "\r\n");
-
-
-
-                                var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
-                                businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
-
-                                insertKeyStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT]");
-                                insertKeyStatement.AppendLine("(SOURCE_ID, HUB_ID, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
-                                insertKeyStatement.AppendLine("VALUES ('" + tableName["SOURCE_ID"] + "','" + tableName["HUB_ID"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_TYPE"] + "')");
-
-                                var command = new SqlCommand(insertKeyStatement.ToString(), connection);
-
-                                try
-                                {
-                                    connection.Open();
-                                    command.ExecuteNonQuery();
-                                }
-                                catch (Exception ex)
-                                {
-                                    errorCounter++;
-                                    _alert.SetTextLogging("An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
-                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" + ex);
-                                }
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" + ex);
+                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
-                    worker.ReportProgress(50);
-                    // _alert.SetTextLogging("-->  Processing " + keyCounter + " attributes.\r\n");
-                    _alert.SetTextLogging("Preparation of the Business Key definition completed.\r\n");
                 }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" + ex);
-                }
-
+                worker.ReportProgress(50);
+                _alert.SetTextLogging("Preparation of the Business Key definition completed.\r\n");
                 #endregion
+
 
                 #region Business Key components - 60%
                 //9. Understanding the Business Key component parts
