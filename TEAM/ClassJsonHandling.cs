@@ -138,7 +138,7 @@ namespace TEAM
 
 
             // Make sure the output is sorted to persist in JSON
-            inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [HUB_NAME] ASC, [BUSINESS_KEY_COMPONENT_ID] ASC, [BUSINESS_KEY_COMPONENT_ORDER] ASC";
+            inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [BUSINESS_KEY_COMPONENT_ID] ASC, [BUSINESS_KEY_COMPONENT_ORDER] ASC";
 
             inputDataTable.TableName = fileName;
 
@@ -195,7 +195,7 @@ namespace TEAM
 
 
             // Make sure the output is sorted to persist in JSON
-            inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [HUB_NAME] ASC, [BUSINESS_KEY_COMPONENT_ID] ASC, [BUSINESS_KEY_COMPONENT_ORDER] ASC, [BUSINESS_KEY_COMPONENT_ELEMENT_ID] ASC, [BUSINESS_KEY_COMPONENT_ELEMENT_ORDER] ASC";
+            inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [BUSINESS_KEY_COMPONENT_ID] ASC, [BUSINESS_KEY_COMPONENT_ORDER] ASC, [BUSINESS_KEY_COMPONENT_ELEMENT_ID] ASC, [BUSINESS_KEY_COMPONENT_ELEMENT_ORDER] ASC";
 
             inputDataTable.TableName = fileName;
 
@@ -268,19 +268,26 @@ namespace TEAM
 
         internal static void SaveJsonInterfaceHubLinkXref()
         {
-
             const string fileName = "interfaceHubLinkXref";
 
             // Get the information from the view
             var sqlStatement = new StringBuilder();
-            sqlStatement.AppendLine("SELECT * FROM [interface].[INTERFACE_HUB_LINK_XREF]");
+            sqlStatement.AppendLine(@"
+            SELECT 
+                 [LINK_NAME]
+                ,[SOURCE_NAME]
+                ,[SOURCE_SCHEMA_NAME]
+                ,[HUB_NAME]
+                ,[HUB_ORDER]
+                ,[BUSINESS_KEY_DEFINITION]
+            FROM [interface].[INTERFACE_HUB_LINK_XREF]
+            ");
 
             var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
             var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
 
-
             // Make sure the output is sorted to persist in JSON
-            inputDataTable.DefaultView.Sort = "[LINK_ID] ASC, [SOURCE_ID] ASC, [HUB_ID] ASC";
+            inputDataTable.DefaultView.Sort = "[LINK_NAME] ASC, [SOURCE_NAME] ASC, [HUB_NAME] ASC";
 
             inputDataTable.TableName = fileName;
 
@@ -289,14 +296,12 @@ namespace TEAM
             {
                 JObject individualRow = JObject.FromObject(new
                 {
-                    linkId = singleRow[0].ToString(),
-                    linkName = singleRow[1].ToString(),
-                    sourceId = singleRow[2].ToString(),
-                    sourceName = singleRow[3].ToString(),
-                    sourceSchemaName = singleRow[4].ToString(),
-                    hubId = singleRow[5].ToString(),
-                    hubName = singleRow[6].ToString(),
-                    businessKeyDefinition = singleRow[7].ToString()
+                    linkName = singleRow[0].ToString(),
+                    sourceName = singleRow[1].ToString(),
+                    sourceSchemaName = singleRow[2].ToString(),
+                    hubName = singleRow[3].ToString(),
+                    hubOrder = singleRow[4].ToString(),
+                    businessKeyDefinition = singleRow[5].ToString()
                 });
                 outputFileArray.Add(individualRow);
             }
