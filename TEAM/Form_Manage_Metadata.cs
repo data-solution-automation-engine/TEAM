@@ -5857,7 +5857,7 @@ namespace TEAM
                             var insertStatement = new StringBuilder();
 
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("( [SOURCE_NAME],[LINK_NAME],[ATTRIBUTE_FROM_NAME],[ATTRIBUTE_NAME_TO])");
+                            insertStatement.AppendLine("( [SOURCE_NAME],[LINK_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO])");
                             insertStatement.AppendLine("VALUES ('" +
                                                            tableName["SOURCE_NAME"] + "','" +
                                                            tableName["LINK_NAME"] + "','" +
@@ -5893,8 +5893,7 @@ namespace TEAM
                 #endregion
 
                 #region Multi-Active Key - 97%
-
-                //14. Handle the Multi-Active Key
+                //Handle the Multi-Active Key
                 _alert.SetTextLogging("\r\n");
 
 
@@ -5969,7 +5968,7 @@ namespace TEAM
                         {
                             _alert.SetTextLogging("--> Processing the Multi-Active Key attribute " +
                                                   tableName["ATTRIBUTE_NAME_TO"] + " for " +
-                                                  tableName["SATELLITE_NAME"] + "\r\n");
+                                                  tableName["SATELLITE_NAME"] + ".\r\n");
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("UPDATE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
@@ -6005,120 +6004,104 @@ namespace TEAM
                 #endregion
 
                 #region Driving Key preparation
-                //13. Prepare driving keys
+                //Prepare driving keys
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Driving Key metadata.\r\n");
 
-                try
+
+                var prepareDrivingKeyStatement = new StringBuilder();
+                prepareDrivingKeyStatement.AppendLine(@"
+                SELECT DISTINCT
+                        sat.SATELLITE_NAME
+                        ,COALESCE(hubkey.HUB_NAME, (SELECT HUB_NAME FROM MD_HUB WHERE HUB_NAME = 'Not applicable')) AS HUB_NAME
+                FROM
+                (
+                        SELECT
+                                SOURCE_TABLE,
+                                TARGET_TABLE,
+                                VERSION_ID,
+                                CASE
+                                        WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0
+                                        THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))
+                                        ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')
+                                END AS BUSINESS_KEY_ATTRIBUTE--For Driving Key
+                        FROM
+                        (
+                                SELECT SOURCE_TABLE, TARGET_TABLE, DRIVING_KEY_ATTRIBUTE, VERSION_ID, CONVERT(XML, '<M>' + REPLACE(DRIVING_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') AS DRIVING_KEY_ATTRIBUTE_XML
+                                FROM
+                                (
+                                        SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE
+                                        FROM TMP_MD_TABLE_MAPPING
+                                        WHERE TARGET_TABLE_TYPE IN ('Link-Satellite') AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''
+                                        AND [PROCESS_INDICATOR] = 'Y'
+                                ) TableName
+                        ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)
+                )  base
+                LEFT JOIN [dbo].[TMP_MD_TABLE_MAPPING]
+                        hub
+                    ON  base.SOURCE_TABLE=hub.SOURCE_TABLE
+                    AND hub.TARGET_TABLE_TYPE IN ('Hub')
+                    AND base.BUSINESS_KEY_ATTRIBUTE=hub.BUSINESS_KEY_ATTRIBUTE
+                LEFT JOIN MD_SATELLITE sat
+                    ON base.TARGET_TABLE = sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME
+                LEFT JOIN MD_HUB hubkey
+                    ON hub.TARGET_TABLE = hubkey.[SCHEMA_NAME]+'.'+hubkey.HUB_NAME
+                WHERE 1=1
+                AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL
+                AND base.BUSINESS_KEY_ATTRIBUTE!=''
+                AND [PROCESS_INDICATOR] = 'Y'
+                ");               
+
+
+                var listDrivingKeys = GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
+
+                if (listDrivingKeys.Rows.Count == 0)
                 {
-                    var prepareDrivingKeyStatement = new StringBuilder();
-
-                        prepareDrivingKeyStatement.AppendLine("SELECT DISTINCT");
-                        prepareDrivingKeyStatement.AppendLine("    -- base.[TABLE_MAPPING_HASH]");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[VERSION_ID]");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[SOURCE_TABLE]");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[BUSINESS_KEY_ATTRIBUTE]");
-                        prepareDrivingKeyStatement.AppendLine("       sat.SATELLITE_ID");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[TARGET_TABLE] AS LINK_SATELLITE_NAME");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[FILTER_CRITERIA]");
-                        prepareDrivingKeyStatement.AppendLine("    --,base.[DRIVING_KEY_ATTRIBUTE]");
-                        prepareDrivingKeyStatement.AppendLine("      ,COALESCE(hubkey.HUB_ID, (SELECT HUB_ID FROM MD_HUB WHERE HUB_NAME = 'Not applicable')) AS HUB_ID");
-                        prepareDrivingKeyStatement.AppendLine("    --,hub.[TARGET_TABLE] AS [HUB_TABLE]");
-                        prepareDrivingKeyStatement.AppendLine("FROM");
-                        prepareDrivingKeyStatement.AppendLine("(");
-                        prepareDrivingKeyStatement.AppendLine("       SELECT");
-                        prepareDrivingKeyStatement.AppendLine("              SOURCE_TABLE,");
-                        prepareDrivingKeyStatement.AppendLine("              TARGET_TABLE,");
-                        prepareDrivingKeyStatement.AppendLine("              VERSION_ID,");
-                        prepareDrivingKeyStatement.AppendLine("              CASE");
-                        prepareDrivingKeyStatement.AppendLine("                     WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
-                        prepareDrivingKeyStatement.AppendLine("                     THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))");
-                        prepareDrivingKeyStatement.AppendLine("                     ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')");
-                        prepareDrivingKeyStatement.AppendLine("              END AS BUSINESS_KEY_ATTRIBUTE--For Driving Key");
-                        prepareDrivingKeyStatement.AppendLine("       FROM");
-                        prepareDrivingKeyStatement.AppendLine("       (");
-                        prepareDrivingKeyStatement.AppendLine("              SELECT SOURCE_TABLE, TARGET_TABLE, DRIVING_KEY_ATTRIBUTE, VERSION_ID, CONVERT(XML, '<M>' + REPLACE(DRIVING_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') AS DRIVING_KEY_ATTRIBUTE_XML");
-                        prepareDrivingKeyStatement.AppendLine("              FROM");
-                        prepareDrivingKeyStatement.AppendLine("              (");
-                        prepareDrivingKeyStatement.AppendLine("                     SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE");
-                        prepareDrivingKeyStatement.AppendLine("                     FROM TMP_MD_TABLE_MAPPING");
-                        prepareDrivingKeyStatement.AppendLine("                     WHERE TARGET_TABLE_TYPE IN ('Link-Satellite') AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
-                        prepareDrivingKeyStatement.AppendLine("                     AND [PROCESS_INDICATOR] = 'Y'");
-                        prepareDrivingKeyStatement.AppendLine("              ) TableName");
-                        prepareDrivingKeyStatement.AppendLine("       ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
-                        prepareDrivingKeyStatement.AppendLine(")  base");
-                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN [dbo].[TMP_MD_TABLE_MAPPING]");
-                        prepareDrivingKeyStatement.AppendLine("        hub");
-                        prepareDrivingKeyStatement.AppendLine(" ON  base.SOURCE_TABLE=hub.SOURCE_TABLE");
-                        prepareDrivingKeyStatement.AppendLine(" AND hub.TARGET_TABLE_TYPE IN ('Hub')");
-                        prepareDrivingKeyStatement.AppendLine("  AND base.BUSINESS_KEY_ATTRIBUTE=hub.BUSINESS_KEY_ATTRIBUTE");
-                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_SATELLITE sat");
-                        prepareDrivingKeyStatement.AppendLine("  ON base.TARGET_TABLE = sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME");
-                        prepareDrivingKeyStatement.AppendLine("LEFT JOIN MD_HUB hubkey");
-                        prepareDrivingKeyStatement.AppendLine("  ON hub.TARGET_TABLE = hubkey.[SCHEMA_NAME]+'.'+hubkey.HUB_NAME");
-                        prepareDrivingKeyStatement.AppendLine("WHERE 1=1");
-                        prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
-                        prepareDrivingKeyStatement.AppendLine("AND base.BUSINESS_KEY_ATTRIBUTE!=''");
-                        prepareDrivingKeyStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
-
-
-                    var listDrivingKeys = GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
-
-                        if (listDrivingKeys.Rows.Count == 0)
+                    _alert.SetTextLogging("--> No Driving Key based Link-Satellites were detected.\r\n");
+                }
+                else
+                {
+                    foreach (DataRow tableName in listDrivingKeys.Rows)
+                    {
+                        using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> No Driving Key based Link-Satellites were detected.\r\n");
-                        }
-                        else
-                        {
-                            foreach (DataRow tableName in listDrivingKeys.Rows)
+                            var insertStatement = new StringBuilder();
+
+                            insertStatement.AppendLine("INSERT INTO [MD_DRIVING_KEY_XREF]");
+                            insertStatement.AppendLine("( [SATELLITE_NAME] ,[HUB_NAME] )");
+                            insertStatement.AppendLine("VALUES ");
+                            insertStatement.AppendLine("(");
+                            insertStatement.AppendLine("  '" + tableName["SATELLITE_NAME"] + "',");
+                            insertStatement.AppendLine("  '" + tableName["HUB_NAME"] + "'");
+                            insertStatement.AppendLine(")");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
                             {
-                                using (var connection = new SqlConnection(metaDataConnection))
-                                {
-                                    var insertDrivingKeyStatement = new StringBuilder();
-
-                                    insertDrivingKeyStatement.AppendLine("INSERT INTO [MD_DRIVING_KEY_XREF]");
-                                    insertDrivingKeyStatement.AppendLine("( [SATELLITE_NAME] ,[HUB_NAME] )");
-                                    insertDrivingKeyStatement.AppendLine("VALUES ");
-                                    insertDrivingKeyStatement.AppendLine("(");
-                                    insertDrivingKeyStatement.AppendLine("  '" + tableName["SATELLITE_NAME"] + "',");
-                                    insertDrivingKeyStatement.AppendLine("  '" + tableName["HUB_NAME"] + "'");
-                                    insertDrivingKeyStatement.AppendLine(")");
-
-                                    var command = new SqlCommand(insertDrivingKeyStatement.ToString(), connection);
-
-                                    try
-                                    {
-                                        connection.Open();
-                                        command.ExecuteNonQuery();
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        errorCounter++;
-                                        _alert.SetTextLogging(
-                                            "An issue has occured during preparation of the Driving Key metadata. Please check the Error Log for more details.\r\n");
-                                        errorLog.AppendLine(
-                                            "\r\nAn issue has occured during preparation of the Driving Key metadata: \r\n\r\n" +
-                                            ex);
-                                    }
-                                }
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the Driving Key metadata. Please check the Error Log for more details.\r\n");
+                                
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Driving Key metadata: \r\n\r\n" +ex);
+                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
-
-                        worker.ReportProgress(95);
-                        _alert.SetTextLogging("Preparation of the Driving Key column metadata completed.\r\n");
-
+                    }
                 }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the Driving Key metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of the Driving Key metadata: \r\n\r\n" + ex);
-                }
-
+                worker.ReportProgress(95);
+                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed.\r\n");
                 #endregion
 
-                //Activation completed!
-
+                //
+                //
+                // Activation completed!
+                //
+                //
 
                 // Error handling
                 if (errorCounter > 0)
@@ -6257,9 +6240,54 @@ namespace TEAM
                         _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Satellite Xref interface file. The reported error is: " + ex);
                     }
 
+                    // Source Staging Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourceStgXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Staging Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Staging Xref interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Persistent Staging Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourcePsaXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Persistent Staging Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Persistent Staging Xref interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Staging Attribute Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourceStagingAttributeXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Staging Attribute Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Staging Attribute Xref interface file. The reported error is: " + ex);
+                    }
+
+                    // Source Staging Attribute Xref
+                    try
+                    {
+                        ClassJsonHandling.SaveJsonInterfaceSourcePersistentStagingAttributeXref();
+                        _alert.SetTextLogging("\r\n-->  Saving the Source to Persistent Staging Attribute Xref interface file.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Persistent Staging Attribute Xref interface file. The reported error is: " + ex);
+                    }
+
+
                 }
                 #endregion
-                
+
                 // Report completion
                 worker.ReportProgress(100);
             }

@@ -70,6 +70,7 @@ namespace TEAM
                     _alertRepository.SetTextLogging("An issue has occured " + ex);
                     _alertRepository.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
                     ErrorHandlingParameters.ErrorCatcher++;
+                    ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
                 }
             }
 
@@ -100,8 +101,9 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     _alertSampleData.SetTextLogging("An issue has occured " + ex);
-                    _alertSampleData.SetTextLogging("This occurred with the following query: " + createStatement +"\r\n\r\n");
+                    _alertSampleData.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
                     ErrorHandlingParameters.ErrorCatcher++;
+                    ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
                 }
             }
 
@@ -176,6 +178,7 @@ namespace TEAM
             BackgroundWorker worker = sender as BackgroundWorker;
 
             ErrorHandlingParameters.ErrorCatcher = 0;
+            ErrorHandlingParameters.ErrorLog = new StringBuilder();
 
             var connOmdString = ConfigurationSettings.ConnectionStringOmd;
 
@@ -1192,12 +1195,6 @@ namespace TEAM
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
                 createStatement.Clear();
-
-                //createStatement.AppendLine("ALTER TABLE [dbo].[MD_SOURCE_DATASET]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM] FOREIGN KEY([SOURCE_SYSTEM_NAME])");
-                //createStatement.AppendLine("REFERENCES [dbo].[MD_SOURCE_SYSTEM] ([SOURCE_SYSTEM_NAME])");
-                //createStatement.AppendLine();
-                //RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 79);
-                //createStatement.Clear();
                 #endregion
 
                 #region Drop [interface] Views
@@ -1301,7 +1298,7 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 82);
                 createStatement.Clear();
                 #endregion
-              
+
                 #region Create the [interface] schema
                 // Create the schemas
 
@@ -1493,9 +1490,9 @@ namespace TEAM
                 createStatement.AppendLine("SELECT");
                 createStatement.AppendLine("  src.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME]");
                 createStatement.AppendLine(" ,src.[SOURCE_NAME]");
-                createStatement.AppendLine(" ,xref.[BUSINESS_KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION]");
                 createStatement.AppendLine(" ,tgt.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME]");
                 createStatement.AppendLine(" ,xref.[HUB_NAME] AS [TARGET_NAME]");
+                createStatement.AppendLine(" ,xref.[BUSINESS_KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION]");
                 createStatement.AppendLine(" ,tgt.[BUSINESS_KEY] AS [TARGET_BUSINESS_KEY_DEFINITION]");
                 createStatement.AppendLine(" ,'Hub' AS [TARGET_TYPE]");
                 createStatement.AppendLine(" ,[SURROGATE_KEY]");
@@ -1508,16 +1505,20 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 95);
                 createStatement.Clear();
 
-                createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_LINK_XREF]");
-                createStatement.AppendLine("AS");
-                createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("  stg.[SOURCE_NAME]");
-                createStatement.AppendLine(" ,lnk.[LINK_NAME]");
-                createStatement.AppendLine(" ,[FILTER_CRITERIA]");
-                createStatement.AppendLine(" ,xref.[LOAD_VECTOR]");
-                createStatement.AppendLine("FROM[MD_SOURCE_LINK_XREF] xref");
-                createStatement.AppendLine("JOIN MD_SOURCE stg ON xref.SOURCE_NAME = stg.SOURCE_NAME");
-                createStatement.AppendLine("JOIN MD_LINK lnk ON xref.LINK_NAME = lnk.LINK_NAME");
+                createStatement.AppendLine(@"
+                CREATE VIEW [interface].[INTERFACE_SOURCE_LINK_XREF]
+                AS
+                SELECT
+                  src.[SCHEMA_NAME] AS[SOURCE_SCHEMA_NAME]
+                 ,src.[SOURCE_NAME]
+                 ,tgt.[LINK_NAME] AS[TARGET_SCHEMA_NAME]
+                 ,tgt.[LINK_NAME] AS[TARGET_NAME]
+                 ,[FILTER_CRITERIA]
+                 ,xref.[LOAD_VECTOR]
+                FROM [MD_SOURCE_LINK_XREF] xref
+                JOIN [MD_SOURCE] src ON xref.[SOURCE_NAME] = src.[SOURCE_NAME]
+                JOIN [MD_LINK] tgt ON xref.[LINK_NAME] = tgt.[LINK_NAME]
+                ");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 97);
                 createStatement.Clear();
@@ -1545,7 +1546,7 @@ namespace TEAM
                 createStatement.AppendLine("  src.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME]");
                 createStatement.AppendLine(" ,xref.[SOURCE_NAME]");
                 createStatement.AppendLine(" ,tgt.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME]");
-                createStatement.AppendLine(" ,xref.[LINK_NAME]");
+                createStatement.AppendLine(" ,xref.[LINK_NAME] AS [TARGET_NAME]");
                 createStatement.AppendLine(" ,[ATTRIBUTE_NAME_FROM] AS [SOURCE_ATTRIBUTE_NAME]");
                 createStatement.AppendLine(" ,[ATTRIBUTE_NAME_TO] AS [TARGET_ATTRIBUTE_NAME]");
                 createStatement.AppendLine("FROM [MD_SOURCE_LINK_ATTRIBUTE_XREF] xref");
@@ -1621,7 +1622,27 @@ namespace TEAM
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 100);
                 createStatement.Clear();
-                #endregion            
+                #endregion
+
+
+                // Error handling
+                if (ErrorHandlingParameters.ErrorCatcher > 0)
+                {
+                    _alertRepository.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the metadata.\r\n");
+                    _alertRepository.SetTextLogging("Please check the Error Log for details \r\n");
+                    _alertRepository.SetTextLogging("\r\n");
+
+                    using (var outfile = new System.IO.StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+                    {
+                        outfile.Write(ErrorHandlingParameters.ErrorLog);
+                        outfile.Close();
+                    }
+                }
+                else
+                {
+                    _alertRepository.SetTextLogging("\r\nNo errors were detected.\r\n");
+                }
+
             }
         }
 
@@ -1668,13 +1689,17 @@ namespace TEAM
         internal static class ErrorHandlingParameters
         {
             public static int ErrorCatcher { get; set; }
+            public static StringBuilder ErrorLog { get; set; }
         }
+
+
 
         private void backgroundWorkerSampleData_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
             ErrorHandlingParameters.ErrorCatcher = 0;
+            ErrorHandlingParameters.ErrorLog = new StringBuilder();
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -3002,7 +3027,25 @@ namespace TEAM
                 {
                     MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-                                
+
+                // Error handling
+                if (ErrorHandlingParameters.ErrorCatcher > 0)
+                {
+                    _alertSampleData.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the sample data.\r\n");
+                    _alertSampleData.SetTextLogging("Please check the Error Log for details \r\n");
+                    _alertSampleData.SetTextLogging("\r\n");
+
+                    using (var outfile = new System.IO.StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+                    {
+                        outfile.Write(ErrorHandlingParameters.ErrorLog);
+                        outfile.Close();
+                    }
+                }
+                else
+                {
+                    _alertSampleData.SetTextLogging("\r\nNo errors were detected.\r\n");
+                }
+
                 backgroundWorkerSampleData.ReportProgress(100);
             }
         }
