@@ -3938,7 +3938,7 @@ namespace TEAM
                         var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["SOURCE_TABLE"].ToString()).FirstOrDefault();
                         var targetFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["TARGET_TABLE"].ToString()).FirstOrDefault();
 
-                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " / " + targetFullyQualifiedName.Value + " relationship\r\n");
+                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
 
                         var filterCriterion = (string)row["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -4055,7 +4055,7 @@ namespace TEAM
                         var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["SOURCE_TABLE"].ToString()).FirstOrDefault();
                         var targetFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["TARGET_TABLE"].ToString()).FirstOrDefault();
 
-                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " / " + targetFullyQualifiedName.Value + " relationship\r\n");
+                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
 
                         var filterCriterion = (string)row["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -4418,7 +4418,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["SATELLITE_NAME"] + " relationship\r\n");
+                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["SATELLITE_NAME"] + " relationship.\r\n");
 
                         var insertStatement = new StringBuilder();
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
@@ -4506,7 +4506,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["HUB_NAME"] + " relationship\r\n");
+                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["HUB_NAME"] + " relationship.\r\n");
 
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -4739,7 +4739,7 @@ namespace TEAM
                 // Check if there are any attributes found, otherwise insert into the repository
                 if (listAtt.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    _alert.SetTextLogging("--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
                 }
                 else
                 {
@@ -4809,7 +4809,7 @@ namespace TEAM
 
                     if (physicalModelDataTable.Rows.Count == 0)
                     {
-                        _alert.SetTextLogging("-->  No model information was found in the metadata.\r\n");
+                        _alert.SetTextLogging("--> No model information was found in the metadata.\r\n");
                     }
                     else
                     {
@@ -5029,7 +5029,7 @@ namespace TEAM
 
                 if (listKeyParts.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    _alert.SetTextLogging("--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
                 }
                 else
                 {
@@ -5070,7 +5070,7 @@ namespace TEAM
                     }
                 }
                 worker.ReportProgress(60);
-                _alert.SetTextLogging("--> Processing " + keyPartCounter + " Business Key component attributes\r\n");
+                _alert.SetTextLogging("--> Processing " + keyPartCounter + " Business Key component attributes.\r\n");
                 _alert.SetTextLogging("Preparation of the Business Key components completed.\r\n");
 
 
@@ -5160,7 +5160,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["HUB_NAME"] + " / " + tableName["LINK_NAME"] + " relationship\r\n");
+                        _alert.SetTextLogging("--> Processing the " + tableName["HUB_NAME"] + " to " + tableName["LINK_NAME"] + " relationship.\r\n");
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
@@ -5214,7 +5214,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " / " + tableName["LINK_NAME"] + " relationship\r\n");
+                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] + " relationship.\r\n");
 
 
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
@@ -5362,7 +5362,7 @@ namespace TEAM
 
                 if (automaticAttributeMappings.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No automatic column-to-column mappings were detected.\r\n");
+                    _alert.SetTextLogging("--> No automatic column-to-column mappings were detected.\r\n");
                 }
                 else
                 {
@@ -5399,7 +5399,7 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(90);
-                _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings\r\n");
+                _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings.\r\n");
                 _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
 
 
@@ -5499,7 +5499,7 @@ namespace TEAM
                 prepareMappingPersistentStagingStatement.AppendLine("WHERE NOT EXISTS (");
                 prepareMappingPersistentStagingStatement.AppendLine("  SELECT SOURCE_NAME, PERSISTENT_STAGING_NAME, ATTRIBUTE_NAME_FROM");
                 prepareMappingPersistentStagingStatement.AppendLine("  FROM MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF manualmapping");
-                prepareMappingPersistentStagingStatement.AppendLine("WHERE");
+                prepareMappingPersistentStagingStatement.AppendLine("  WHERE");
                 prepareMappingPersistentStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
                 prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.PERSISTENT_STAGING_NAME = XREF.PERSISTENT_STAGING_NAME");
                 prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
@@ -5510,7 +5510,7 @@ namespace TEAM
 
                 if (automaticAttributeMappingsPsa.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No automatic column-to-column mappings were detected.\r\n");
+                    _alert.SetTextLogging("--> No automatic column-to-column mappings were detected.\r\n");
                 }
                 else
                 {
@@ -5546,7 +5546,7 @@ namespace TEAM
                     }
                 }
                 worker.ReportProgress(90);
-                _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings\r\n");
+                _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings.\r\n");
                 _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
 
 
@@ -5557,7 +5557,7 @@ namespace TEAM
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
 
-                var attributeMappingsSatellites = new DataTable(); // Defined here to enable population from multiple steps, and inserted in one go.
+                int manualSatMappingCounter = 0;
 
                 var prepareMappingStatementManual = new StringBuilder();
                 prepareMappingStatementManual.AppendLine(@"
@@ -5580,15 +5580,52 @@ namespace TEAM
                        AND table_mapping.PROCESS_INDICATOR = 'Y' 
                     ");
 
+                var attributeMappingsSatellites = new DataTable();
                 attributeMappingsSatellites = GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
 
                 if (attributeMappingsSatellites.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No manual column-to-column mappings were detected.\r\n");
+                    _alert.SetTextLogging("--> No manual column-to-column mappings were detected.\r\n");
                 }
+                else
+                {
+                    foreach (DataRow row in attributeMappingsSatellites.Rows)
+                    {
+                        using (var connection = new SqlConnection(metaDataConnection))
+                        {
+                            _alert.SetTextLogging("--> Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["SATELLITE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
 
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+                            insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
+                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_NAME"] + "','" + row["SATELLITE_NAME"] + "','" + row["ATTRIBUTE_NAME_FROM"] + "','" + row["ATTRIBUTE_NAME_TO"] + "','" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                                manualSatMappingCounter++;
+
+                            }
+                            catch (Exception ex)
+                            {
+                                _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + row["SOURCE_NAME"] + " to " + row["SATELLITE_NAME"] + ". Please check the Error Log for more details.\r\n");
+                                errorCounter++;
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Satellite attribute mapping: \r\n\r\n" + ex);
+                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+
+                                if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
+                                {
+                                    _alert.SetTextLogging("Both attributes are NULL.");
+                                }
+                            }
+                        }
+                    }
+                }
                 worker.ReportProgress(90);
-                _alert.SetTextLogging("--> Processing " + attributeMappingsSatellites.Rows.Count + " manual attribute mappings\r\n");
+                _alert.SetTextLogging("--> Processing " + manualSatMappingCounter + " manual attribute mappings.\r\n");
                 _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed.\r\n");
                 #endregion
 
@@ -5596,7 +5633,6 @@ namespace TEAM
                 //Prepare automatic attribute mapping
                 _alert.SetTextLogging("\r\n");
 
-                automaticMappingCounter = 0;
                 var prepareMappingStatement = new StringBuilder();
 
                 if (checkBoxIgnoreVersion.Checked)
@@ -5637,40 +5673,26 @@ namespace TEAM
                 prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE stg_attr ON ADC_SOURCE.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
                 prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
                 prepareMappingStatement.AppendLine("WHERE UPPER(stg_attr.ATTRIBUTE_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME)");
+                prepareMappingStatement.AppendLine("AND NOT EXISTS (");
+                prepareMappingStatement.AppendLine("  SELECT SOURCE_NAME, SATELLITE_NAME, ATTRIBUTE_NAME_FROM");
+                prepareMappingStatement.AppendLine("  FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF manualmapping");
+                prepareMappingStatement.AppendLine("  WHERE");
+                prepareMappingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
+                prepareMappingStatement.AppendLine("  AND manualmapping.SATELLITE_NAME = XREF.TARGET_NAME");
+                prepareMappingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_SOURCE.COLUMN_NAME");
+                prepareMappingStatement.AppendLine(")");
                 prepareMappingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
                 var automaticAttributeMappingsSatellites = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
                 if (automaticAttributeMappingsSatellites.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No automatic column-to-column mappings were detected.\r\n");
+                    _alert.SetTextLogging("--> No automatic column-to-column mappings were detected.\r\n");
                 }
                 else
                 {
-                    // Prevent duplicates to be inserted into the data table, by only inserting new ones
-                    // Entries found in the automatic check which are not already in the manual data table will be added
-                    foreach (DataRow automaticMapping in automaticAttributeMappingsSatellites.Rows)
-                    {
-                        DataRow[] foundRow = attributeMappingsSatellites.Select("SOURCE_NAME = '" + automaticMapping["SOURCE_NAME"] + "' AND SATELLITE_NAME = '" + automaticMapping["SATELLITE_NAME"] + "' AND ATTRIBUTE_NAME_FROM = '" + automaticMapping["ATTRIBUTE_NAME_FROM"] + "'AND ATTRIBUTE_NAME_TO = '" + automaticMapping["ATTRIBUTE_NAME_TO"] + "'");
-                        if (foundRow.Length == 0)
-                        {
-                            // If nothing is found, add to the overall data table that is inserted into SOURCE_SATELLITE_ATTRIBUTE_XREF
-                            attributeMappingsSatellites.Rows.Add(
-                                automaticMapping["SOURCE_NAME"],
-                                automaticMapping["SATELLITE_NAME"],
-                                automaticMapping["ATTRIBUTE_NAME_FROM"],
-                                automaticMapping["ATTRIBUTE_NAME_TO"],
-                                automaticMapping["MULTI_ACTIVE_KEY_INDICATOR"],
-                                automaticMapping["VERIFICATION"]);
+                    int automaticSatMappingCounter = 0;
 
-                                automaticMappingCounter++;
-                        }
-                    }
-                }
-
-                // Now the full data table can be processed
-                if (attributeMappingsSatellites.Rows.Count > 0)
-                {
                     foreach (DataRow row in attributeMappingsSatellites.Rows)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
@@ -5680,7 +5702,7 @@ namespace TEAM
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                             insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
-                            insertStatement.AppendLine("VALUES ('" +row["SOURCE_NAME"] + "','" +row["SATELLITE_NAME"] + "','" +row["ATTRIBUTE_NAME_FROM"] + "','" +row["ATTRIBUTE_NAME_TO"] + "','" +row["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
+                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_NAME"] + "','" + row["SATELLITE_NAME"] + "','" + row["ATTRIBUTE_NAME_FROM"] + "','" + row["ATTRIBUTE_NAME_TO"] + "','" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5704,14 +5726,12 @@ namespace TEAM
                                 }
                             }
                         }
-                    }
+                    }                    
                 }
 
                 worker.ReportProgress(90);
-                _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings\r\n");
+                _alert.SetTextLogging("--> Processing " + automaticAttributeMappingsSatellites.Rows.Count + " automatically added attribute mappings.\r\n");
                 _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
-
-
                 #endregion
 
                 #region Manually mapped degenerate attributes for Links 95%
@@ -5743,11 +5763,11 @@ namespace TEAM
 
                 if (degenerateMappings.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No manually mapped degenerate columns were detected.\r\n");
+                    _alert.SetTextLogging("--> No manually mapped degenerate columns were detected.\r\n");
                 }
 
                 worker.ReportProgress(95);
-                _alert.SetTextLogging("--> Processing " + degenerateMappings.Rows.Count + " manual degenerate attribute mappings\r\n");
+                _alert.SetTextLogging("--> Processing " + degenerateMappings.Rows.Count + " manual degenerate attribute mappings.\r\n");
                 _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
                 #endregion
 
@@ -5802,7 +5822,7 @@ namespace TEAM
 
                 if (automaticDegenerateMappings.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No automatic degenerate columns were detected.\r\n");
+                    _alert.SetTextLogging("--> No automatic degenerate columns were detected.\r\n");
                 }
                 else
                 {
@@ -5838,11 +5858,11 @@ namespace TEAM
 
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_ATTRIBUTE_XREF]");
                             insertStatement.AppendLine("( [SOURCE_NAME],[LINK_NAME],[ATTRIBUTE_FROM_NAME],[ATTRIBUTE_NAME_TO])");
-                            insertStatement.AppendLine("VALUES (" +
-                                                           tableName["SOURCE_NAME"] + "," +
-                                                           tableName["LINK_NAME"] + "," +
-                                                           tableName["ATTRIBUTE_NAME_FROM"] + "," +
-                                                           tableName["ATTRIBUTE_NAME_TO"] + ")");
+                            insertStatement.AppendLine("VALUES ('" +
+                                                           tableName["SOURCE_NAME"] + "','" +
+                                                           tableName["LINK_NAME"] + "','" +
+                                                           tableName["ATTRIBUTE_NAME_FROM"] + "','" +
+                                                           tableName["ATTRIBUTE_NAME_TO"] + "')");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5854,7 +5874,7 @@ namespace TEAM
                             }
                             catch (Exception)
                             {
-                                _alert.SetTextLogging("-----> An issue has occurred mapping degenerate columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] + ". \r\n");
+                                _alert.SetTextLogging("-----> An issue has occurred mapping degenerate columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] + ". Please check the Error Log for more details.\r\n");
                                 errorCounter++;
                                 errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                                 if (tableName["ATTRIBUTE_NAME_FROM"].ToString() == "")
@@ -5868,7 +5888,7 @@ namespace TEAM
 
                 worker.ReportProgress(95);
 
-                _alert.SetTextLogging("--> Processing " + automaticDegenerateMappingCounter + " automatically added degenerate attribute mappings\r\n");
+                _alert.SetTextLogging("--> Processing " + automaticDegenerateMappingCounter + " automatically added degenerate attribute mappings.\r\n");
                 _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
                 #endregion
 
@@ -5939,7 +5959,7 @@ namespace TEAM
 
                 if (listMultiKeys.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-->  No Multi-Active Keys were detected.\r\n");
+                    _alert.SetTextLogging("--> No Multi-Active Keys were detected.\r\n");
                 }
                 else
                 {
@@ -5954,10 +5974,10 @@ namespace TEAM
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("UPDATE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                             insertStatement.AppendLine("SET MULTI_ACTIVE_KEY_INDICATOR='Y'");
-                            insertStatement.AppendLine("WHERE SOURCE_NAME = " + tableName["SOURCE_NAME"]);
-                            insertStatement.AppendLine("AND SATELLITE_NAME = " + tableName["SATELLITE_NAME"]);
-                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_FROM = " + tableName["ATTRIBUTE_NAME_FROM"]);
-                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_TO = " + tableName["ATTRIBUTE_NAME_TO"]);
+                            insertStatement.AppendLine("WHERE SOURCE_NAME = '" + tableName["SOURCE_NAME"] + "'");
+                            insertStatement.AppendLine("AND SATELLITE_NAME = '" + tableName["SATELLITE_NAME"] + "'");
+                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_FROM = '" + tableName["ATTRIBUTE_NAME_FROM"] + "'");
+                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_TO = '" + tableName["ATTRIBUTE_NAME_TO"] + "'");
 
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
@@ -6046,7 +6066,7 @@ namespace TEAM
 
                         if (listDrivingKeys.Rows.Count == 0)
                         {
-                            _alert.SetTextLogging("-->  No Driving Key based Link-Satellites were detected.\r\n");
+                            _alert.SetTextLogging("--> No Driving Key based Link-Satellites were detected.\r\n");
                         }
                         else
                         {
@@ -6060,8 +6080,8 @@ namespace TEAM
                                     insertDrivingKeyStatement.AppendLine("( [SATELLITE_NAME] ,[HUB_NAME] )");
                                     insertDrivingKeyStatement.AppendLine("VALUES ");
                                     insertDrivingKeyStatement.AppendLine("(");
-                                    insertDrivingKeyStatement.AppendLine("  " + tableName["SATELLITE_NAME"] + ",");
-                                    insertDrivingKeyStatement.AppendLine("  " + tableName["HUB_NAME"]);
+                                    insertDrivingKeyStatement.AppendLine("  '" + tableName["SATELLITE_NAME"] + "',");
+                                    insertDrivingKeyStatement.AppendLine("  '" + tableName["HUB_NAME"] + "'");
                                     insertDrivingKeyStatement.AppendLine(")");
 
                                     var command = new SqlCommand(insertDrivingKeyStatement.ToString(), connection);
