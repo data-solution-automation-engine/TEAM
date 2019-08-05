@@ -3686,7 +3686,7 @@ namespace TEAM
                 var minorVersion = versionMajorMinor.Value;
 
                 // Determine the query type (physical or virtual)
-                var queryMode = "";
+                string queryMode;
                 if (checkBoxIgnoreVersion.Checked)
                 {
                     queryMode = "physical";
@@ -3875,7 +3875,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = (string)row["TARGET_TABLE"].ToString().Trim();
+                    string target_table = row["TARGET_TABLE"].ToString().Trim();
                     if (!distinctListStg.Contains(target_table))
                     {
                         distinctListStg.Add(target_table);
@@ -3935,15 +3935,15 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["SOURCE_TABLE"].ToString()).FirstOrDefault();
-                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["TARGET_TABLE"].ToString()).FirstOrDefault();
+                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row["SOURCE_TABLE"].ToString()).FirstOrDefault();
+                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row["TARGET_TABLE"].ToString()).FirstOrDefault();
 
                         _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
 
-                        var filterCriterion = (string)row["FILTER_CRITERIA"].ToString().Trim();
+                        var filterCriterion = row["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
 
-                        var businessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
+                        var businessKeyDefinition = row["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                         var insertStatement = new StringBuilder();
@@ -3991,7 +3991,7 @@ namespace TEAM
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = (string)row["TARGET_TABLE"].ToString().Trim();
+                    var target_table = row["TARGET_TABLE"].ToString().Trim();
                     if (!distinctListPsa.Contains(target_table))
                     {
                         distinctListPsa.Add(target_table);
@@ -4052,15 +4052,15 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["SOURCE_TABLE"].ToString()).FirstOrDefault();
-                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema((string)row["TARGET_TABLE"].ToString()).FirstOrDefault();
+                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row["SOURCE_TABLE"].ToString()).FirstOrDefault();
+                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row["TARGET_TABLE"].ToString()).FirstOrDefault();
 
                         _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
 
-                        var filterCriterion = (string)row["FILTER_CRITERIA"].ToString().Trim();
+                        var filterCriterion = row["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
 
-                        var businessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
+                        var businessKeyDefinition = row["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                         var insertStatement = new StringBuilder();
@@ -4107,7 +4107,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = (string)row["TARGET_TABLE"].ToString().Trim();
+                    string target_table = row["TARGET_TABLE"].ToString().Trim();
                     if (!distinctListHub.Contains(target_table))
                     {
                         distinctListHub.Add(target_table);
@@ -4634,6 +4634,7 @@ namespace TEAM
                 
                 #endregion
 
+
                 #region Prepare attributes - 40%
                 //Prepare Attributes
                 _alert.SetTextLogging("\r\n");
@@ -4780,6 +4781,7 @@ namespace TEAM
 
                 #endregion
 
+
                 #region Physical Model dump- 50%
                 //7b - Creating a point-in-time snapshot of the physical model used for export to the interface schemas
 
@@ -4866,6 +4868,7 @@ namespace TEAM
                 }
 
                 #endregion
+
 
                 #region Business Key - 50%
                 //Understanding the Business Key (MD_BUSINESS_KEY_COMPONENT)
@@ -5075,6 +5078,7 @@ namespace TEAM
 
 
                 #endregion
+
 
                 #region Hub / Link relationship - 75%
 
@@ -5693,7 +5697,7 @@ namespace TEAM
                 {
                     int automaticSatMappingCounter = 0;
 
-                    foreach (DataRow row in attributeMappingsSatellites.Rows)
+                    foreach (DataRow row in automaticAttributeMappingsSatellites.Rows)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
@@ -5758,7 +5762,7 @@ namespace TEAM
                 prepareMappingStatementLink.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('Link')");
                 prepareMappingStatementLink.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
 
-                var degenerateMappings = new DataTable();
+                DataTable degenerateMappings;
                 degenerateMappings = GetDataTable(ref connOmd, prepareMappingStatementLink.ToString());
 
                 if (degenerateMappings.Rows.Count == 0)
@@ -5904,10 +5908,10 @@ namespace TEAM
                     _alert.SetTextLogging("Commencing Multi-Active Key handling using database.\r\n");
 
                     prepareMultiKeyStatement.AppendLine("SELECT");
-                    prepareMultiKeyStatement.AppendLine("xref.SOURCE_NAME");
-                    prepareMultiKeyStatement.AppendLine("    ,xref.SATELLITE_NAME");
-                    prepareMultiKeyStatement.AppendLine("    ,xref.ATTRIBUTE_NAME_FROM");
-                    prepareMultiKeyStatement.AppendLine("    ,xref.ATTRIBUTE_NAME_TO");
+                    prepareMultiKeyStatement.AppendLine("   xref.SOURCE_NAME");
+                    prepareMultiKeyStatement.AppendLine("  ,xref.SATELLITE_NAME");
+                    prepareMultiKeyStatement.AppendLine("  ,xref.ATTRIBUTE_NAME_FROM");
+                    prepareMultiKeyStatement.AppendLine("  ,xref.ATTRIBUTE_NAME_TO");
                     prepareMultiKeyStatement.AppendLine("FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF xref");
                     prepareMultiKeyStatement.AppendLine("INNER JOIN ");
                     prepareMultiKeyStatement.AppendLine("(");
@@ -5933,15 +5937,11 @@ namespace TEAM
                     _alert.SetTextLogging("Commencing Multi-Active Key handling using model metadata.\r\n");
 
                     prepareMultiKeyStatement.AppendLine("SELECT ");
-                    prepareMultiKeyStatement.AppendLine("   u.SOURCE_ID,");
-                    prepareMultiKeyStatement.AppendLine("	u.SATELLITE_ID,");
-                    prepareMultiKeyStatement.AppendLine("	sat.SATELLITE_NAME,");
-                    prepareMultiKeyStatement.AppendLine("	u.ATTRIBUTE_ID_FROM,");
-                    prepareMultiKeyStatement.AppendLine("	u.ATTRIBUTE_ID_TO,");
-                    prepareMultiKeyStatement.AppendLine("	att.ATTRIBUTE_NAME");
-                    prepareMultiKeyStatement.AppendLine("FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF u");
-                    prepareMultiKeyStatement.AppendLine("INNER JOIN MD_SATELLITE sat ON sat.SATELLITE_ID=u.SATELLITE_ID");
-                    prepareMultiKeyStatement.AppendLine("INNER JOIN MD_ATTRIBUTE att ON att.ATTRIBUTE_ID = u.ATTRIBUTE_ID_TO");
+                    prepareMultiKeyStatement.AppendLine("   xref.SOURCE_NAME");
+                    prepareMultiKeyStatement.AppendLine("  ,xref.SATELLITE_NAME");
+                    prepareMultiKeyStatement.AppendLine("  ,xref.ATTRIBUTE_NAME_FROM");
+                    prepareMultiKeyStatement.AppendLine("  ,xref.ATTRIBUTE_NAME_TO");
+                    prepareMultiKeyStatement.AppendLine("FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF xref");
                     prepareMultiKeyStatement.AppendLine("INNER JOIN ");
                     prepareMultiKeyStatement.AppendLine("(");
                     prepareMultiKeyStatement.AppendLine("	SELECT");
@@ -5950,8 +5950,8 @@ namespace TEAM
                     prepareMultiKeyStatement.AppendLine("	FROM TMP_MD_VERSION_ATTRIBUTE");
                     prepareMultiKeyStatement.AppendLine("	WHERE MULTI_ACTIVE_INDICATOR='Y'");
                     prepareMultiKeyStatement.AppendLine(") sub");
-                    prepareMultiKeyStatement.AppendLine("ON sat.SATELLITE_NAME=sub.SATELLITE_NAME");
-                    prepareMultiKeyStatement.AppendLine("AND att.ATTRIBUTE_NAME=sub.ATTRIBUTE_NAME");
+                    prepareMultiKeyStatement.AppendLine("ON xref.SATELLITE_NAME = sub.SATELLITE_NAME");
+                    prepareMultiKeyStatement.AppendLine("AND xref.ATTRIBUTE_NAME_TO = sub.ATTRIBUTE_NAME");
                 }
 
                 var listMultiKeys = GetDataTable(ref connOmd, prepareMultiKeyStatement.ToString());
@@ -6460,7 +6460,7 @@ namespace TEAM
             }
             catch (FormatException)
             {
-                MessageBox.Show("There is an issue with the data formate for this cell!");
+                MessageBox.Show("There is an issue with the data format for this cell!");
             }
         }
 
@@ -6564,421 +6564,516 @@ namespace TEAM
 
         private void saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
+
+            var theDialog = new SaveFileDialog
             {
-                var theDialog = new SaveFileDialog
-                {
-                    Title = @"Save Metadata As Directional Graph File",
-                    Filter = @"DGML files|*.dgml",
-                    InitialDirectory = Application.StartupPath + @"\Configuration\"
-                };
+                Title = @"Save Metadata As Directional Graph File",
+                Filter = @"DGML files|*.dgml",
+                InitialDirectory = Application.StartupPath + @"\Configuration\"
+            };
 
-                var ret = STAShowDialog(theDialog);
+            var ret = STAShowDialog(theDialog);
 
-                if (ret == DialogResult.OK)
+            if (ret == DialogResult.OK)
+            {
+                var chosenFile = theDialog.FileName;
+
+                var errorLog = new StringBuilder();
+                int errorCounter;
+                errorCounter = 0;
+
+                if (dataGridViewTableMetadata != null) // There needs to be metadata available
                 {
+                    var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
+
+                    //For later, get the source/target model relationships for Hubs and Satellites
+
+                    var modelRelationshipsHubDataTable = new DataTable();
+                    var sqlStatementForHubCategories = new StringBuilder();
                     try
                     {
-                        var chosenFile = theDialog.FileName;
 
-                        if (dataGridViewTableMetadata != null) // There needs to be metadata available
+                        sqlStatementForHubCategories.AppendLine("SELECT ");
+                        sqlStatementForHubCategories.AppendLine(" [SOURCE_SCHEMA_NAME]");
+                        sqlStatementForHubCategories.AppendLine(" [SOURCE_NAME]");
+                        sqlStatementForHubCategories.AppendLine(",[TARGET_SCHEMA_NAME]");
+                        sqlStatementForHubCategories.AppendLine(",[TARGET_NAME]");
+                        sqlStatementForHubCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
+                        sqlStatementForHubCategories.AppendLine(",[TARGET_BUSINESS_KEY_DEFINITION]");
+                        sqlStatementForHubCategories.AppendLine(",[TARGET_TYPE]");
+                        sqlStatementForHubCategories.AppendLine(",[SURROGATE_KEY]");
+                        sqlStatementForHubCategories.AppendLine(",[FILTER_CRITERIA]");
+                        sqlStatementForHubCategories.AppendLine(",[LOAD_VECTOR]");
+                        sqlStatementForHubCategories.AppendLine(
+                            "FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
+                        sqlStatementForHubCategories.AppendLine("WHERE TARGET_TYPE = 'Normal'");
+
+                        modelRelationshipsHubDataTable =
+                            GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
+                    }
+                    catch
+                    {
+                        errorCounter++;
+                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
+                                            sqlStatementForHubCategories);
+                    }
+
+                    //For later, get the source/target model relationships for Links and Link Satellites
+                    var sqlStatementForLinkCategories = new StringBuilder();
+                    sqlStatementForLinkCategories.AppendLine("SELECT ");
+                    sqlStatementForLinkCategories.AppendLine(" [SOURCE_SCHEMA_NAME]");
+                    sqlStatementForLinkCategories.AppendLine(" [SOURCE_NAME]");
+                    sqlStatementForLinkCategories.AppendLine(",[TARGET_SCHEMA_NAME]");
+                    sqlStatementForLinkCategories.AppendLine(",[TARGET_NAME]");
+                    sqlStatementForLinkCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
+                    sqlStatementForLinkCategories.AppendLine(",[TARGET_BUSINESS_KEY_DEFINITION]");
+                    sqlStatementForLinkCategories.AppendLine(",[TARGET_TYPE]");
+                    sqlStatementForLinkCategories.AppendLine(",[SURROGATE_KEY]");
+                    sqlStatementForLinkCategories.AppendLine(",[FILTER_CRITERIA]");
+                    sqlStatementForLinkCategories.AppendLine(",[LOAD_VECTOR]");
+                    sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
+                    sqlStatementForLinkCategories.AppendLine("WHERE TARGET_TYPE = 'Link Satellite'");
+
+                    var modelRelationshipsLinksDataTable =
+                        GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
+
+
+                    //Create the relationships between business concepts (Hubs, Links)
+                    var businessConceptsRelationships = new DataTable();
+                    var sqlStatementForRelationships = new StringBuilder();
+                    try
+                    {
+
+                        sqlStatementForRelationships.AppendLine("SELECT ");
+                        sqlStatementForRelationships.AppendLine(" [LINK_NAME]");
+                        sqlStatementForRelationships.AppendLine(",[SOURCE_NAME]");
+                        sqlStatementForRelationships.AppendLine(",[SOURCE_SCHEMA_NAME]");
+                        sqlStatementForRelationships.AppendLine(",[HUB_NAME]");
+                        sqlStatementForRelationships.AppendLine(",[BUSINESS_KEY_DEFINITION]");
+                        sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
+
+                        businessConceptsRelationships =
+                            GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
+                    }
+                    catch
+                    {
+                        errorCounter++;
+                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
+                                            sqlStatementForRelationships);
+                    }
+
+                    //Make sure the source-to-target mappings are created for the attributes (STG->SAT)
+                    var sqlStatementForSatelliteAttributes = new StringBuilder();
+                    sqlStatementForSatelliteAttributes.AppendLine("SELECT ");
+                    sqlStatementForSatelliteAttributes.AppendLine(" [SOURCE_NAME]");
+                    sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
+                    sqlStatementForSatelliteAttributes.AppendLine(",[TARGET_NAME]");
+                    sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_ATTRIBUTE_NAME]");
+                    sqlStatementForSatelliteAttributes.AppendLine(",[TARGET_ATTRIBUTE_NAME]");
+                    sqlStatementForSatelliteAttributes.AppendLine(",[MULTI_ACTIVE_KEY_INDICATOR]");
+                    sqlStatementForSatelliteAttributes.AppendLine(
+                        "FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+
+                    var satelliteAttributes =
+                        GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
+
+
+                    //Create a list of segments to create, based on nodes (Hubs and Sats)
+                    List<string> segmentNodeList = new List<string>();
+
+                    foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
+                    {
+                        var modelRelationshipsHub = (string) row["TARGET_NAME"];
+
+                        if (!segmentNodeList.Contains(modelRelationshipsHub))
                         {
-                            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-
-                            //For later, get the source/target model relationships for Hubs and Sats
-                            var sqlStatementForHubCategories = new StringBuilder();
-                            sqlStatementForHubCategories.AppendLine("SELECT ");
-                            sqlStatementForHubCategories.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForHubCategories.AppendLine(",[FILTER_CRITERIA]");
-                            sqlStatementForHubCategories.AppendLine(",[SATELLITE_NAME]");
-                            sqlStatementForHubCategories.AppendLine(",[SATELLITE_TYPE]");
-                            sqlStatementForHubCategories.AppendLine(",[HUB_NAME]");
-                            sqlStatementForHubCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
-                            sqlStatementForHubCategories.AppendLine(",[LINK_NAME]");
-                            sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
-                            sqlStatementForHubCategories.AppendLine("WHERE SATELLITE_TYPE = 'Normal'");
- 
-                            var modelRelationshipsHubDataTable = GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
-
-                            //For later, get the source/target model relationships for Links and Link Satellites
-                            var sqlStatementForLinkCategories = new StringBuilder();
-                            sqlStatementForLinkCategories.AppendLine("SELECT ");
-                            sqlStatementForLinkCategories.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForLinkCategories.AppendLine(",[FILTER_CRITERIA]");
-                            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_NAME]");
-                            sqlStatementForLinkCategories.AppendLine(",[SATELLITE_TYPE]");
-                            sqlStatementForLinkCategories.AppendLine(",[HUB_NAME]");
-                            sqlStatementForLinkCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
-                            sqlStatementForLinkCategories.AppendLine(",[LINK_NAME]");
-                            sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
-                            sqlStatementForLinkCategories.AppendLine("WHERE SATELLITE_TYPE = 'Link Satellite'");
-
-                            var modelRelationshipsLinksDataTable = GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
-
-
-                            //Create the relationships between business concepts (Hubs, Links)
-                            var sqlStatementForRelationships = new StringBuilder();
-                            sqlStatementForRelationships.AppendLine("SELECT ");
-                            sqlStatementForRelationships.AppendLine(",[LINK_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[SOURCE_SCHEMA_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[HUB_NAME]");
-                            sqlStatementForRelationships.AppendLine(",[BUSINESS_KEY_DEFINITION]");
-                            sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
-
-                            var businessConceptsRelationships = GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
-
-
-                            //Make sure the source-to-target mappings are created for the attributes (STG->SAT)
-                            var sqlStatementForSatelliteAttributes = new StringBuilder();
-                            sqlStatementForSatelliteAttributes.AppendLine("SELECT ");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_ATTRIBUTE_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[SATELLITE_ATTRIBUTE_NAME]");
-                            sqlStatementForSatelliteAttributes.AppendLine(",[MULTI_ACTIVE_KEY_INDICATOR]");
-                            sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
-
-                            var satelliteAttributes = GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
-
-                            
-                            //Create a list of segments to create, based on nodes (Hubs and Sats)
-                            List<string> segmentNodeList = new List<string>();
-
-                            foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
-                            {
-                                var modelRelationshipsHub = (string)row["HUB_NAME"];
-
-                                if (!segmentNodeList.Contains(modelRelationshipsHub))
-                                {
-                                    segmentNodeList.Add(modelRelationshipsHub);
-                                }
-                            }
-                            
-                            // ... and the Links / LSATs
-                            foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
-                            {
-                                var modelRelationshipsLink = (string)row["LINK_NAME"];
-
-                                if (!segmentNodeList.Contains(modelRelationshipsLink))
-                                {
-                                    segmentNodeList.Add(modelRelationshipsLink);
-                                }
-                            }
-
-                            // ... and for any orphan Hubs or Links (without Satellites)
-                            foreach (DataRow row in businessConceptsRelationships.Rows)
-                            {
-                                var modelRelationshipsLink = (string)row["LINK_NAME"];
-                                var modelRelationshipsHub = (string)row["HUB_NAME"];
-
-                                if (!segmentNodeList.Contains(modelRelationshipsLink))
-                                {
-                                    segmentNodeList.Add(modelRelationshipsLink);
-                                }
-
-                                if (!segmentNodeList.Contains(modelRelationshipsHub))
-                                {
-                                    segmentNodeList.Add(modelRelationshipsHub);
-                                }
-                            }
-
-                            //Build up the list of nodes
-                            List<string> nodeList = new List<string>();
-                            List<string> systemList = new List<string>();
-
-                            for (int i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-                            {
-                                DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
-                                string sourceNode = row.Cells[2].Value.ToString();
-                                var systemName = sourceNode.Split('_')[1];
-                                string targetNode = row.Cells[3].Value.ToString();
-
-                                // Add source tables to Node List
-                                if (!nodeList.Contains(sourceNode))
-                                {
-                                    nodeList.Add(sourceNode);
-                                }
-
-                                // Add target tables to Node List
-                                if (!nodeList.Contains(targetNode))
-                                {
-                                    nodeList.Add(targetNode);
-                                }
-
-                                // Create a system list
-                                if (!systemList.Contains(systemName))
-                                {
-                                    systemList.Add(systemName);
-                                }
-                            }
-
-                            //Write the nodes to DGML
-                            var dgmlExtract = new StringBuilder();
-                            dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
-                            dgmlExtract.AppendLine("<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
-                            dgmlExtract.AppendLine("  <Nodes>");
-
-                            foreach (string node in nodeList)
-                            {
-                                if (node.Contains("STG_"))
-                                {
-                                    dgmlExtract.AppendLine("    <Node Id=\"" + node + "\"  Category=\"Source System\" Group=\"Collapsed\" Label=\"" + node +"\" />");
-                                }
-                                else if (node.Contains("HUB_"))
-                                {
-                                    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
-                                }
-                                else if (node.Contains("LNK_"))
-                                {
-                                    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" + node + "\" />");
-                                }
-                                else if (node.Contains("SAT_") || node.Contains("LSAT_"))
-                                {
-                                    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                                }
-                                else // The others
-                                {
-                                    dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Unknown\" Label=\"" + node + "\" />");
-                                }
-                            }
-
-                            // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
-                            foreach (DataRow row in satelliteAttributes.Rows)
-                            {
-                                var sourceNodeLabel = (string)row["SOURCE_ATTRIBUTE_NAME"];
-                                var sourceNode = "staging_" + sourceNodeLabel;
-                                var targetNodeLabel = (string)row["SATELLITE_ATTRIBUTE_NAME"];
-                                var targetNode = "dwh_" + targetNodeLabel;
-
-                                // Add source tables to Node List
-                                if (!nodeList.Contains(sourceNode))
-                                {
-                                    nodeList.Add(sourceNode);
-                                }
-
-                                // Add target tables to Node List
-                                if (!nodeList.Contains(targetNode))
-                                {
-                                    nodeList.Add(targetNode);
-                                }
-
-                                dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode + "\"  Category=\"Unknown\" Label=\"" + sourceNodeLabel + "\" />");
-                                dgmlExtract.AppendLine("     <Node Id=\"" + targetNode + "\"  Category=\"Unknown\" Label=\"" + targetNodeLabel + "\" />");
-                            }
-
-
-
-
-                            //Adding the category nodes
-                            dgmlExtract.AppendLine("    <Node Id=\"Source\" Group=\"Expanded\" Label=\"Source\"/>");
-                            dgmlExtract.AppendLine("    <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
-
-                            //Adding the source system containers as nodes
-                            foreach (var node in systemList)
-                            {
-                                dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Group=\"Expanded\" Category=\"Source System\" Label=\"" + node + "\" />");
-                            }
-
-                            //Adding the CBC nodes (Hubs and Links)
-                            foreach (string node in segmentNodeList)
-                            {
-                                string segmentName = node.Remove(0, 4).ToLower();
-                                TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-                                segmentName = textInfo.ToTitleCase(segmentName);
-
-                                dgmlExtract.AppendLine("    <Node Id=\"" + segmentName + "\" Group=\"Expanded\" Label=\""+ segmentName + "\" IsHubContainer=\"True\" />");
-                            }
-                            
-                            dgmlExtract.AppendLine("  </Nodes>");
-                            //End of Nodes
-
-                            //Edges and containers
-                            dgmlExtract.AppendLine("  <Links>");
-
-                            for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-                            {
-                                var row = dataGridViewTableMetadata.Rows[i];
-                                var sourceNode = row.Cells[2].Value.ToString();
-                                var targetNode = row.Cells[3].Value.ToString();
-                                var businessKey = row.Cells[4].Value.ToString();
-
-                                dgmlExtract.AppendLine("    <Link Source=\"" + sourceNode + "\" Target=\""+targetNode+"\" BusinessKeyDefintion=\""+ businessKey +"\"/>");
-                            }
-
-                            //Add container groupings (node-based) - adding source system containers to 'Source'
-                            foreach (var node in systemList)
-                            {
-                                dgmlExtract.AppendLine("     <Link Source=\"Source\" Target=\"" + node + "\" Category=\"Contains\" />");
-                            }
-
-                            // Adding the Source table to the source system container
-                            for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-                            {
-                                var row = dataGridViewTableMetadata.Rows[i];
-                                var node = row.Cells[2].Value.ToString();
-                                var systemName = node.Split('_')[1];
-
-                                if (node.Contains("STG_"))
-                                {
-                                    dgmlExtract.AppendLine("    <Link Source=\""+systemName+"\" Target=\"" + node + "\" Category=\"Contains\" />");
-                                }
-                            }
-
-                            // Separate routine to create STG/ATT and SAT/ATT relationships
-                            foreach (DataRow row in satelliteAttributes.Rows)
-                            {
-                                var sourceNodeSat = (string)row["SATELLITE_NAME"];
-                                var targetNodeSat = "dwh_"+(string)row["SATELLITE_ATTRIBUTE_NAME"];
-                                var sourceNodeStg = (string)row["SOURCE_NAME"];
-                                var targetNodeStg = "staging_"+(string)row["SOURCE_ATTRIBUTE_NAME"];
-
-                                // This is adding the attributes to the tables
-                                dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeSat + "\" Target=\"" + targetNodeSat + "\" Category=\"Contains\" />");
-                                dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeStg + "\" Target=\"" + targetNodeStg + "\" Category=\"Contains\" />");
-
-                                // This is adding the edge between the attributes
-                                dgmlExtract.AppendLine("    <Link Source=\"" + targetNodeStg + "\" Target=\"" + targetNodeSat + "\" />");
-                            }
-
-                            //Add Data Vault objects to Segment
-                            foreach (var node in segmentNodeList)
-                            {
-                                var segmentName = node.Remove(0, 4).ToLower();
-                                var textInfo = new CultureInfo("en-US", false).TextInfo;
-                                segmentName = textInfo.ToTitleCase(segmentName);
-                                   // <Link Source="Renewal_Membership" Target="LNK_RENEWAL_MEMBERSHIP" Category="Contains" />
-                                dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + node + "\" Category=\"Contains\" />");
-                                dgmlExtract.AppendLine("    <Link Source=\"Data Vault\" Target=\"" + segmentName + "\" Category=\"Contains\" />");
-                            }
-
-                            //Add groupings to a Hub (CBC), if there is a Satellite
-                            foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
-                            {
-                                if (row["SATELLITE_NAME"] == DBNull.Value || row["HUB_NAME"] == DBNull.Value)
-                                    continue;
-                                var modelRelationshipsHub = (string) row["HUB_NAME"];
-                                var modelRelationshipsSat = (string) row["SATELLITE_NAME"];
-
-                                var segmentName = modelRelationshipsHub.Remove(0, 4).ToLower();
-                                var textInfo = new CultureInfo("en-US", false).TextInfo;
-                                segmentName = textInfo.ToTitleCase(segmentName);
-
-                                //Map the Satellite to the Hub and CBC
-                                dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" +
-                                                       modelRelationshipsSat + "\" Category=\"Contains\" />");
-                                dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsHub +
-                                                       "\" Target=\"" + modelRelationshipsSat + "\" />");
-                            }
-
-                            //Add groupings per Link (CBC), if there is a Satellite
-                            foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
-                            {
-                                if (row["SATELLITE_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
-                                    continue;
-                                var modelRelationshipsLink = (string)row["LINK_NAME"];
-                                var modelRelationshipsSat = (string)row["SATELLITE_NAME"];
-
-                                var segmentName = modelRelationshipsLink.Remove(0, 4).ToLower();
-                                var textInfo = new CultureInfo("en-US", false).TextInfo;
-                                segmentName = textInfo.ToTitleCase(segmentName);
-
-                                //Map the Satellite to the Link and CBC
-                                dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + modelRelationshipsSat + "\" Category=\"Contains\" />");
-                                dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsLink + "\" Target=\"" + modelRelationshipsSat + "\" />");
-                            }
-
-
-
-                            //Add the relationships between groupings (core business concepts) - from Hub to Link
-                            foreach (DataRow row in businessConceptsRelationships.Rows)
-                            {
-                                if (row["HUB_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
-                                    continue;
-                                var modelRelationshipsHub = (string)row["HUB_NAME"];
-                                var modelRelationshipsLink = (string)row["LINK_NAME"];
-
-                                var segmentNameFrom = modelRelationshipsHub.Remove(0, 4).ToLower();
-                                var textInfoFrom = new CultureInfo("en-US", false).TextInfo;
-                                segmentNameFrom = textInfoFrom.ToTitleCase(segmentNameFrom);
-
-                                var segmentNameTo = modelRelationshipsLink.Remove(0, 4).ToLower();
-                                var textInfoTo = new CultureInfo("en-US", false).TextInfo;
-                                segmentNameTo = textInfoTo.ToTitleCase(segmentNameTo);
-
-                                dgmlExtract.AppendLine("    <Link Source=\"" + segmentNameFrom + "\" Target=\"" + segmentNameTo + "\" />");
-                            }
-
-                            dgmlExtract.AppendLine("  </Links>");
-
-                            //Add containers
-                            dgmlExtract.AppendLine("  <Categories>");
-                            dgmlExtract.AppendLine("    <Category Id = \"Source System\" Label = \"Source System\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
-                            dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
-                            dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
-                            dgmlExtract.AppendLine("    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
-                            dgmlExtract.AppendLine("  </Categories>");
-
-                            //Add styles 
-                            dgmlExtract.AppendLine("  <Styles >");
-
-                            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Source System\" ValueLabel = \"Has category\" >");
-                            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Source System')\" />");
-                            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6E6A69\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                            dgmlExtract.AppendLine("    </Style >");
-
-                            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
-                            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Hub')\" />");
-                            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6495ED\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                            dgmlExtract.AppendLine("    </Style >");
-
-                            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
-                            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Link')\" />");
-                            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFB22222\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                            dgmlExtract.AppendLine("    </Style >");
-
-                            dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
-                            dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Satellite')\" />");
-                            dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFC0A000\" />");
-                            dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                            dgmlExtract.AppendLine("    </Style >");
-
-                            dgmlExtract.AppendLine("  </Styles >");
-
-
-
-                            dgmlExtract.AppendLine("</DirectedGraph>");
-
-                            using (StreamWriter outfile = new StreamWriter(chosenFile))
-                            {
-                                outfile.Write(dgmlExtract.ToString());
-                                outfile.Close();
-                            }
-
-                            richTextBoxInformation.Text = "The DGML metadata file file://" + chosenFile + " has been saved successfully.";
-                        } 
-                        else
-                        {
-                            richTextBoxInformation.Text = "There was no metadata to save, is the grid view empty?";
+                            segmentNodeList.Add(modelRelationshipsHub);
                         }
                     }
-                    catch (Exception ex)
+
+                    // ... and the Links / LSATs
+                    foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
                     {
-                        MessageBox.Show(ex.ToString());
+                        var modelRelationshipsLink = (string) row["TARGET_NAME"];
+
+                        if (!segmentNodeList.Contains(modelRelationshipsLink))
+                        {
+                            segmentNodeList.Add(modelRelationshipsLink);
+                        }
                     }
+
+                    // ... and for any orphan Hubs or Links (without Satellites)
+                    foreach (DataRow row in businessConceptsRelationships.Rows)
+                    {
+                        var modelRelationshipsLink = (string) row["LINK_NAME"];
+                        var modelRelationshipsHub = (string) row["HUB_NAME"];
+
+                        if (!segmentNodeList.Contains(modelRelationshipsLink))
+                        {
+                            segmentNodeList.Add(modelRelationshipsLink);
+                        }
+
+                        if (!segmentNodeList.Contains(modelRelationshipsHub))
+                        {
+                            segmentNodeList.Add(modelRelationshipsHub);
+                        }
+                    }
+
+                    //Build up the list of nodes
+                    List<string> nodeList = new List<string>();
+                    List<string> systemList = new List<string>();
+
+                    for (int i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
+                    {
+                        DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
+                        string sourceNode = row.Cells[2].Value.ToString();
+                        string targetNode = row.Cells[3].Value.ToString();
+
+                        var systemName = "Undefined";
+                        if (sourceNode.Contains('_'))
+                        {
+                            systemName = sourceNode.Split('_')[1];
+                        }
+                        else
+                        {
+                            systemName = targetNode.Split('_')[1];
+                        }
+
+
+                        // Add source tables to Node List
+                        if (!nodeList.Contains(sourceNode))
+                        {
+                            nodeList.Add(sourceNode);
+                        }
+
+                        // Add target tables to Node List
+                        if (!nodeList.Contains(targetNode))
+                        {
+                            nodeList.Add(targetNode);
+                        }
+
+                        // Create a system list
+                        if (!systemList.Contains(systemName))
+                        {
+                            systemList.Add(systemName);
+                        }
+                    }
+
+                    //Write the nodes to DGML
+                    var dgmlExtract = new StringBuilder();
+                    dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
+                    dgmlExtract.AppendLine(
+                        "<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
+                    dgmlExtract.AppendLine("  <Nodes>");
+
+                    foreach (string node in nodeList)
+                    {
+                        if (node.Contains("STG_"))
+                        {
+                            dgmlExtract.AppendLine("    <Node Id=\"" + node +
+                                                   "\"  Category=\"Source System\" Group=\"Collapsed\" Label=\"" +
+                                                   node + "\" />");
+                        }
+                        else if (node.Contains("HUB_"))
+                        {
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" +
+                                                   node + "\" />");
+                        }
+                        else if (node.Contains("LNK_"))
+                        {
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" +
+                                                   node + "\" />");
+                        }
+                        else if (node.Contains("SAT_") || node.Contains("LSAT_"))
+                        {
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node +
+                                                   "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" +
+                                                   node + "\" />");
+                        }
+                        else // The others
+                        {
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Unknown\" Label=\"" +
+                                                   node + "\" />");
+                        }
+                    }
+
+                    // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
+                    foreach (DataRow row in satelliteAttributes.Rows)
+                    {
+                        var sourceNodeLabel = (string) row["SOURCE_ATTRIBUTE_NAME"];
+                        var sourceNode = "staging_" + sourceNodeLabel;
+                        var targetNodeLabel = (string) row["TARGET_ATTRIBUTE_NAME"];
+                        var targetNode = "dwh_" + targetNodeLabel;
+
+                        // Add source tables to Node List
+                        if (!nodeList.Contains(sourceNode))
+                        {
+                            nodeList.Add(sourceNode);
+                        }
+
+                        // Add target tables to Node List
+                        if (!nodeList.Contains(targetNode))
+                        {
+                            nodeList.Add(targetNode);
+                        }
+
+                        dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode +
+                                               "\"  Category=\"Unknown\" Label=\"" + sourceNodeLabel + "\" />");
+                        dgmlExtract.AppendLine("     <Node Id=\"" + targetNode +
+                                               "\"  Category=\"Unknown\" Label=\"" + targetNodeLabel + "\" />");
+                    }
+
+                    //Adding the category nodes
+                    dgmlExtract.AppendLine("    <Node Id=\"Source\" Group=\"Expanded\" Label=\"Source\"/>");
+                    dgmlExtract.AppendLine("    <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
+
+                    //Adding the source system containers as nodes
+                    foreach (var node in systemList)
+                    {
+                        dgmlExtract.AppendLine("     <Node Id=\"" + node +
+                                               "\"  Group=\"Expanded\" Category=\"Source System\" Label=\"" + node +
+                                               "\" />");
+                    }
+
+                    //Adding the CBC nodes (Hubs and Links)
+                    foreach (string node in segmentNodeList)
+                    {
+                        string segmentName = node.Remove(0, 4).ToLower();
+                        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+                        segmentName = textInfo.ToTitleCase(segmentName);
+
+                        dgmlExtract.AppendLine("    <Node Id=\"" + segmentName + "\" Group=\"Expanded\" Label=\"" +
+                                               segmentName + "\" IsHubContainer=\"True\" />");
+                    }
+
+                    dgmlExtract.AppendLine("  </Nodes>");
+                    //End of Nodes
+
+                    //Edges and containers
+                    dgmlExtract.AppendLine("  <Links>");
+
+                    for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
+                    {
+                        var row = dataGridViewTableMetadata.Rows[i];
+                        var sourceNode = row.Cells[2].Value.ToString();
+                        var targetNode = row.Cells[3].Value.ToString();
+                        var businessKey = row.Cells[4].Value.ToString();
+
+                        dgmlExtract.AppendLine("    <Link Source=\"" + sourceNode + "\" Target=\"" + targetNode +
+                                               "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
+                    }
+
+                    //Add container groupings (node-based) - adding source system containers to 'Source'
+                    foreach (var node in systemList)
+                    {
+                        dgmlExtract.AppendLine("     <Link Source=\"Source\" Target=\"" + node +
+                                               "\" Category=\"Contains\" />");
+                    }
+
+                    // Adding the Source table to the source system container
+                    for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
+                    {
+                        var row = dataGridViewTableMetadata.Rows[i];
+                        var sourceNode = row.Cells[2].Value.ToString();
+                        var targetNode = row.Cells[3].Value.ToString();
+
+                        var systemName = "Undefined";
+                        if (sourceNode.Contains('_'))
+                        {
+                            systemName = sourceNode.Split('_')[1];
+                        }
+                        else
+                        {
+                            systemName = targetNode.Split('_')[1];
+                        }
+
+                        if (sourceNode.Contains("STG_"))
+                        {
+                            dgmlExtract.AppendLine("    <Link Source=\"" + systemName + "\" Target=\"" + sourceNode +
+                                                   "\" Category=\"Contains\" />");
+                        }
+                    }
+
+                    // Separate routine to create STG/ATT and SAT/ATT relationships
+                    foreach (DataRow row in satelliteAttributes.Rows)
+                    {
+                        var sourceNodeSat = (string) row["TARGET_NAME"];
+                        var targetNodeSat = "dwh_" + (string) row["TARGET_ATTRIBUTE_NAME"];
+                        var sourceNodeStg = (string) row["SOURCE_NAME"];
+                        var targetNodeStg = "staging_" + (string) row["SOURCE_ATTRIBUTE_NAME"];
+
+                        // This is adding the attributes to the tables
+                        dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeSat + "\" Target=\"" +
+                                               targetNodeSat + "\" Category=\"Contains\" />");
+                        dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeStg + "\" Target=\"" +
+                                               targetNodeStg + "\" Category=\"Contains\" />");
+
+                        // This is adding the edge between the attributes
+                        dgmlExtract.AppendLine("    <Link Source=\"" + targetNodeStg + "\" Target=\"" +
+                                               targetNodeSat + "\" />");
+                    }
+
+                    //Add Data Vault objects to Segment
+                    foreach (var node in segmentNodeList)
+                    {
+                        var segmentName = node.Remove(0, 4).ToLower();
+                        var textInfo = new CultureInfo("en-US", false).TextInfo;
+                        segmentName = textInfo.ToTitleCase(segmentName);
+                        // <Link Source="Renewal_Membership" Target="LNK_RENEWAL_MEMBERSHIP" Category="Contains" />
+                        dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + node +
+                                               "\" Category=\"Contains\" />");
+                        dgmlExtract.AppendLine("    <Link Source=\"Data Vault\" Target=\"" + segmentName +
+                                               "\" Category=\"Contains\" />");
+                    }
+
+                    ////Add groupings to a Hub (CBC), if there is a Satellite
+                    //foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
+                    //{
+                    //    if (row["TARGET_NAME"] == DBNull.Value || row["HUB_NAME"] == DBNull.Value)
+                    //        continue;
+                    //    var modelRelationshipsHub = (string) row["HUB_NAME"];
+                    //    var modelRelationshipsSat = (string) row["TARGET_NAME"];
+
+                    //    var segmentName = modelRelationshipsHub.Remove(0, 4).ToLower();
+                    //    var textInfo = new CultureInfo("en-US", false).TextInfo;
+                    //    segmentName = textInfo.ToTitleCase(segmentName);
+
+                    //    //Map the Satellite to the Hub and CBC
+                    //    dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" +
+                    //                           modelRelationshipsSat + "\" Category=\"Contains\" />");
+                    //    dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsHub +
+                    //                           "\" Target=\"" + modelRelationshipsSat + "\" />");
+                    //}
+
+                    ////Add groupings per Link (CBC), if there is a Satellite
+                    //foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
+                    //{
+                    //    if (row["SATELLITE_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
+                    //        continue;
+                    //    var modelRelationshipsLink = (string)row["LINK_NAME"];
+                    //    var modelRelationshipsSat = (string)row["SATELLITE_NAME"];
+
+                    //    var segmentName = modelRelationshipsLink.Remove(0, 4).ToLower();
+                    //    var textInfo = new CultureInfo("en-US", false).TextInfo;
+                    //    segmentName = textInfo.ToTitleCase(segmentName);
+
+                    //    //Map the Satellite to the Link and CBC
+                    //    dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + modelRelationshipsSat + "\" Category=\"Contains\" />");
+                    //    dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsLink + "\" Target=\"" + modelRelationshipsSat + "\" />");
+                    //}
+
+
+
+                    //Add the relationships between groupings (core business concepts) - from Hub to Link
+                    foreach (DataRow row in businessConceptsRelationships.Rows)
+                    {
+                        if (row["HUB_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
+                            continue;
+                        var modelRelationshipsHub = (string) row["HUB_NAME"];
+                        var modelRelationshipsLink = (string) row["LINK_NAME"];
+
+                        var segmentNameFrom = modelRelationshipsHub.Remove(0, 4).ToLower();
+                        var textInfoFrom = new CultureInfo("en-US", false).TextInfo;
+                        segmentNameFrom = textInfoFrom.ToTitleCase(segmentNameFrom);
+
+                        var segmentNameTo = modelRelationshipsLink.Remove(0, 4).ToLower();
+                        var textInfoTo = new CultureInfo("en-US", false).TextInfo;
+                        segmentNameTo = textInfoTo.ToTitleCase(segmentNameTo);
+
+                        dgmlExtract.AppendLine("    <Link Source=\"" + segmentNameFrom + "\" Target=\"" +
+                                               segmentNameTo + "\" />");
+                    }
+
+                    dgmlExtract.AppendLine("  </Links>");
+
+                    //Add containers
+                    dgmlExtract.AppendLine("  <Categories>");
+                    dgmlExtract.AppendLine(
+                        "    <Category Id = \"Source System\" Label = \"Source System\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine(
+                        "    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("  </Categories>");
+
+                    //Add styles 
+                    dgmlExtract.AppendLine("  <Styles >");
+
+                    dgmlExtract.AppendLine(
+                        "    <Style TargetType = \"Node\" GroupLabel = \"Source System\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Source System')\" />");
+                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6E6A69\" />");
+                    dgmlExtract.AppendLine(
+                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("    </Style >");
+
+                    dgmlExtract.AppendLine(
+                        "    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Hub')\" />");
+                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6495ED\" />");
+                    dgmlExtract.AppendLine(
+                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("    </Style >");
+
+                    dgmlExtract.AppendLine(
+                        "    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Link')\" />");
+                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFB22222\" />");
+                    dgmlExtract.AppendLine(
+                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("    </Style >");
+
+                    dgmlExtract.AppendLine(
+                        "    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Satellite')\" />");
+                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFC0A000\" />");
+                    dgmlExtract.AppendLine(
+                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("    </Style >");
+
+                    dgmlExtract.AppendLine("  </Styles >");
+
+                    dgmlExtract.AppendLine("</DirectedGraph>");
+
+                    // Error handling
+                    if (errorCounter > 0)
+                    {
+                        richTextBoxInformation.AppendText("\r\nWarning! There were " + errorCounter +
+                                                          " error(s) found while generating the DGML file.\r\n");
+                        richTextBoxInformation.AppendText("Please check the Error Log for details \r\n");
+                        richTextBoxInformation.AppendText("\r\n");
+
+                        using (var outfile =
+                            new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+                        {
+                            outfile.Write(errorLog.ToString());
+                            outfile.Close();
+                        }
+                    }
+                    else
+                    {
+                        richTextBoxInformation.AppendText("\r\nNo errors were detected.\r\n");
+                    }
+
+
+                    // Writing the output
+                    using (StreamWriter outfile = new StreamWriter(chosenFile))
+                    {
+                        outfile.Write(dgmlExtract.ToString());
+                        outfile.Close();
+                    }
+
+                    richTextBoxInformation.Text =
+                        "The DGML metadata file file://" + chosenFile + " has been saved successfully.";
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
+                else
+                {
+                    richTextBoxInformation.Text = "There was no metadata to save, is the grid view empty?";
+                }
             }
         }
 
@@ -7613,7 +7708,7 @@ namespace TEAM
             //Validate STG Entries 
             foreach (string sourceObject in objectListSTG)
             {
-                string sourceObjectValidated = "False";
+                string sourceObjectValidated;
                 if (evaluationMode == "physical")
                 {
                     sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject,ConfigurationSettings.ConnectionStringStg);
@@ -7638,7 +7733,7 @@ namespace TEAM
             //Validate PSA Entries
             foreach (string sourceObject in objectListPSA)
             {
-                string sourceObjectValidated = "False";
+                string sourceObjectValidated;
                 if (evaluationMode == "physical")
                 {
                     sourceObjectValidated =ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject,ConfigurationSettings.ConnectionStringHstg);
@@ -7703,7 +7798,7 @@ namespace TEAM
             var resultList = new Dictionary<string, string>();
             foreach (string sourceObject in objectList)
             {
-                string sourceObjectValidated = "False";
+                string sourceObjectValidated;
                 if (evaluationMode == "physical")
                 {
                     sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringInt);

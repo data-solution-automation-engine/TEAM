@@ -1422,10 +1422,10 @@ namespace TEAM
                 createStatement.AppendLine("tgt.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine("xref.[STAGING_NAME] AS [TARGET_NAME],");
                 createStatement.AppendLine("NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("'PersistentStagingArea' AS [TARGET_TYPE],");
+                createStatement.AppendLine("'StagingArea' AS [TARGET_TYPE],");
                 createStatement.AppendLine("NULL AS [SURROGATE_KEY],");
                 createStatement.AppendLine("    [FILTER_CRITERIA],");
-                createStatement.AppendLine("'Raw' AS[LOAD_VECTOR]");
+                createStatement.AppendLine("'Raw' AS[ LOAD_VECTOR]");
                 createStatement.AppendLine("FROM[MD_SOURCE_STAGING_XREF] xref");
                 createStatement.AppendLine("JOIN[MD_SOURCE] src ON xref.[SOURCE_NAME] = src.[SOURCE_NAME]");
                 createStatement.AppendLine("JOIN[MD_STAGING] tgt ON xref.[STAGING_NAME] = tgt.[STAGING_NAME]");
@@ -1458,10 +1458,10 @@ namespace TEAM
                 createStatement.AppendLine("tgt.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine("xref.[PERSISTENT_STAGING_NAME] AS[TARGET_NAME],");
                 createStatement.AppendLine("NULL AS[TARGET_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("'StagingArea' AS[TARGET_TYPE],");
+                createStatement.AppendLine("'PersistentStagingArea' AS[TARGET_TYPE],");
                 createStatement.AppendLine("NULL AS[SURROGATE_KEY],");
                 createStatement.AppendLine("    [FILTER_CRITERIA],");
-                createStatement.AppendLine("'Raw' AS[LOAD_VECTOR]");
+                createStatement.AppendLine("'Raw' AS [LOAD_VECTOR]");
                 createStatement.AppendLine("FROM [MD_SOURCE_PERSISTENT_STAGING_XREF] xref");
                 createStatement.AppendLine("JOIN [MD_SOURCE] src ON xref.[SOURCE_NAME] = src.[SOURCE_NAME]");
                 createStatement.AppendLine("JOIN [MD_PERSISTENT_STAGING] tgt ON xref.[PERSISTENT_STAGING_NAME] = tgt.[PERSISTENT_STAGING_NAME]");
@@ -1724,8 +1724,8 @@ namespace TEAM
                     var etlFrameworkIncludeSat = new StringBuilder();
                     var etlFrameworkIncludeSatKey = new StringBuilder();
 
-                    string dwhKeyName = "";
-                    string psaPrefixName = "";
+                    string dwhKeyName;
+                    string psaPrefixName;
 
                     if (checkBoxDIRECT.Checked)
                     {
