@@ -23,6 +23,8 @@ namespace TEAM
             var lsatIdentifier = "";
             var stgIdentifier = "";
             var psaIdentifier = "";
+            var dimIdentifier = "";
+            var factIdentifier = "";
 
             if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix")
             {
@@ -32,6 +34,8 @@ namespace TEAM
                 lsatIdentifier = FormBase.ConfigurationSettings.LsatTablePrefixValue + "_";
                 stgIdentifier = FormBase.ConfigurationSettings.StgTablePrefixValue + "_";
                 psaIdentifier = FormBase.ConfigurationSettings.PsaTablePrefixValue + "_";
+                dimIdentifier = "DIM_";
+                factIdentifier = "FACT_";
             }
             else
             {
@@ -41,6 +45,8 @@ namespace TEAM
                 lsatIdentifier = '_' + FormBase.ConfigurationSettings.LsatTablePrefixValue;
                 stgIdentifier = '_' + FormBase.ConfigurationSettings.StgTablePrefixValue;
                 psaIdentifier = '_' + FormBase.ConfigurationSettings.PsaTablePrefixValue;
+                dimIdentifier = "_DIM";
+                factIdentifier = "_FACT";
             }
 
             foreach (DataGridViewRow row in Rows)
@@ -73,6 +79,14 @@ namespace TEAM
                     else if (Regex.Matches(integrationTable.ToString(), psaIdentifier).Count > 0)
                     {
                         this[4, counter].Style.BackColor = Color.AntiqueWhite;
+                    }
+                    else if (Regex.Matches(integrationTable.ToString(), dimIdentifier).Count > 0)
+                    {
+                        this[4, counter].Style.BackColor = Color.Aqua;
+                    }
+                    else if (Regex.Matches(integrationTable.ToString(), factIdentifier).Count > 0)
+                    {
+                        this[4, counter].Style.BackColor = Color.MediumAquamarine;
                     }
 
                 }
