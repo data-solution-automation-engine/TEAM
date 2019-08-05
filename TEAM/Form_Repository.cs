@@ -122,8 +122,12 @@ namespace TEAM
             // Truncating the entire repository
             StringBuilder commandText = new StringBuilder();
 
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_ATTRIBUTE_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE_LINK_ATTRIBUTE_XREF];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_XREF];");
+            commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_XREF];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE_LINK_XREF];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE_SATELLITE_XREF];");
             commandText.AppendLine("DELETE FROM [MD_DRIVING_KEY_XREF];");
@@ -135,11 +139,7 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE];");
             commandText.AppendLine("DELETE FROM [MD_SOURCE];");
             commandText.AppendLine("DELETE FROM [MD_STAGING];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_ATTRIBUTE_XREF];");
             commandText.AppendLine("DELETE FROM [MD_PERSISTENT_STAGING];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF];");
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
@@ -196,6 +196,13 @@ namespace TEAM
 
                 #region Drop Foreign Key Constraints
                 // Drop any existing Foreign Key Constraints
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_DATASET] DROP CONSTRAINT [FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 0);
+                createStatement.Clear();
+
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF]', 'F') IS NOT NULL");
                 createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] DROP CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF]");
                 createStatement.AppendLine();
@@ -277,25 +284,108 @@ namespace TEAM
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_SOURCE]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
 
                 createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK]', 'F') IS NOT NULL");
-                createStatement.AppendLine(
-                    "ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK]");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK]");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
                 createStatement.Clear();
+
+
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_SOURCE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_PERSISTENT_STAGING]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_PERSISTENT_STAGING]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+
+
+
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_SOURCE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_STAGING]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_STAGING]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+
+
+
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_SOURCE]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_SOURCE]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+                createStatement.AppendLine("IF OBJECT_ID('[FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_LINK]', 'F') IS NOT NULL");
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF] DROP CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_LINK]");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 3);
+                createStatement.Clear();
+
+
+
+
 
                 createStatement.AppendLine(
                     "IF OBJECT_ID('[FK_MD_SOURCE_SATELLITE_ATTRIBUTE_XREF_MD_ATTRIBUTERIBUTE_FROM]', 'F') IS NOT NULL");
@@ -728,24 +818,6 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 41);
                 createStatement.Clear();
 
-                // Source CDC Xref
-                createStatement.AppendLine();
-                createStatement.AppendLine("-- Source / CDC Xref");
-                createStatement.AppendLine("IF OBJECT_ID('[MD_SOURCE_CDC_TYPE_XREF]', 'U') IS NOT NULL");
-                createStatement.AppendLine(" DROP TABLE [MD_SOURCE_CDC_TYPE_XREF]");
-                createStatement.AppendLine("");
-                createStatement.AppendLine("CREATE TABLE [MD_SOURCE_CDC_TYPE_XREF]");
-                createStatement.AppendLine("( ");
-                createStatement.AppendLine("  [SOURCE_NAME] varchar(100)  NOT NULL,");
-                createStatement.AppendLine("  [CHANGE_DATA_CAPTURE_TYPE] varchar(100)  NOT NULL,");
-                createStatement.AppendLine("  [CHANGE_DATETIME_DEFINITION] varchar(4000) NULL,");
-                createStatement.AppendLine("  [PROCESS_INDICATOR] varchar(1) NULL,");
-                createStatement.AppendLine("  CONSTRAINT [PK_MD_SOURCE_CDC_TYPE_XREF] PRIMARY KEY CLUSTERED ( [SOURCE_NAME], [CHANGE_DATA_CAPTURE_TYPE] ASC)");
-                createStatement.AppendLine(")");
-
-                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 42);
-                createStatement.Clear();
-
                 // Source Datasest
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Source dataset");
@@ -755,6 +827,7 @@ namespace TEAM
                 createStatement.AppendLine("CREATE TABLE [MD_SOURCE_DATASET]");
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("        [SOURCE_DATASET_ID] [int] IDENTITY(1,1) NOT NULL,");
+                createStatement.AppendLine("    	[SOURCE_SYSTEM_ID] [int] NULL,");
                 createStatement.AppendLine("        [SOURCE_DATASET_NAME] [varchar] (100) NOT NULL, ");
                 createStatement.AppendLine("        [SOURCE_DATASET_TYPE] [varchar] (100) NULL,");
                 createStatement.AppendLine("    	[SCHEMA_NAME] [varchar] (100) NULL,");
@@ -767,7 +840,6 @@ namespace TEAM
                 createStatement.AppendLine("    	[FILE_ROW_DELIMITER_TYPE] [varchar] (100) NULL,");
                 createStatement.AppendLine("    	[FILE_LAST_ROW_DELIMITER_TYPE] [varchar] (100) NULL,");
                 createStatement.AppendLine("    	[ARCHIVE_REQUIRED_INDICATOR] [varchar] (1) NULL,");
-                createStatement.AppendLine("    	[SOURCE_SYSTEM_ID] [int] NULL,");
                 createStatement.AppendLine("    CONSTRAINT [PK_MD_SOURCE_DATASET] PRIMARY KEY CLUSTERED ( [SOURCE_DATASET_ID] ASC)");
                 createStatement.AppendLine(")");
 
@@ -861,7 +933,7 @@ namespace TEAM
                 createStatement.AppendLine("	[LINK_NAME]             varchar(100) NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_NAME_FROM]   varchar(100) NOT NULL,");
                 createStatement.AppendLine("	[ATTRIBUTE_NAME_TO]     varchar(100) NOT NULL,");
-                createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_LINK_ATTRIBUTE_XREF] PRIMARY KEY CLUSTERED([SOURCE_NAME] ASC, [LINK_NAME] ASC, [ATTRIBUTE_NAME_FROM] ASC, [ATTRIBUTE_NAME_TO] ASC)");
+                createStatement.AppendLine("    CONSTRAINT[PK_MD_SOURCE_LINK_ATTRIBUTE_XREF] PRIMARY KEY CLUSTERED([SOURCE_NAME] ASC, [LINK_NAME] ASC, [ATTRIBUTE_NAME_FROM] ASC)");
                 createStatement.AppendLine(")");
 
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 46);
@@ -1045,7 +1117,7 @@ namespace TEAM
                 createStatement.AppendLine(")");
                 createStatement.AppendLine("");
                 createStatement.AppendLine("ALTER TABLE[MD_PHYSICAL_MODEL]");
-                createStatement.AppendLine("  ADD CONSTRAINT [PK_MD_PHYSICAL_MODEL] PRIMARY KEY CLUSTERED ([SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [COLUMN_NAME] ASC)");
+                createStatement.AppendLine("  ADD CONSTRAINT [PK_MD_PHYSICAL_MODEL] PRIMARY KEY CLUSTERED ([DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [COLUMN_NAME] ASC)");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 59);
                 createStatement.Clear();
@@ -1054,7 +1126,14 @@ namespace TEAM
                 #region Create Foreign Key constraints
                 // Create existing Foreign Key Constraints
 
-                // Business Key Component -> Source Hub Xref
+                // Source System  -> Source Data Set
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_DATASET] WITH CHECK ADD CONSTRAINT [FK_MD_SOURCE_DATASET_MD_SOURCE_SYSTEM] FOREIGN KEY ([SOURCE_SYSTEM_ID])");
+                createStatement.AppendLine("REFERENCES [MD_SOURCE_SYSTEM] ([SOURCE_SYSTEM_ID])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 60);
+                createStatement.Clear();
+
+                // Source Hub Xref -> Business Key Component
                 createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_MD_SOURCE_HUB_XREF] FOREIGN KEY ([SOURCE_NAME], [HUB_NAME], [BUSINESS_KEY_DEFINITION])");
                 createStatement.AppendLine("REFERENCES [MD_SOURCE_HUB_XREF] ([SOURCE_NAME], [HUB_NAME], [BUSINESS_KEY_DEFINITION])");
                 createStatement.AppendLine();
@@ -1067,7 +1146,7 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 61);
                 createStatement.Clear();
 
-                // Business Key Component Part -> Business Key Component
+                // Business Key Component -> Business Key Component Part
                 createStatement.AppendLine("ALTER TABLE [MD_BUSINESS_KEY_COMPONENT_PART] WITH CHECK ADD CONSTRAINT [FK_MD_BUSINESS_KEY_COMPONENT_PART_MD_BUSINESS_KEY_COMPONENT] FOREIGN KEY ([SOURCE_NAME], [HUB_NAME], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
                 createStatement.AppendLine("REFERENCES  [MD_BUSINESS_KEY_COMPONENT] ([SOURCE_NAME], [HUB_NAME], [BUSINESS_KEY_DEFINITION], [COMPONENT_ID])");
                 createStatement.AppendLine();
@@ -1124,6 +1203,7 @@ namespace TEAM
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 70);
                 createStatement.Clear();
 
+                // Source Link Attribute Xref
                 createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_NAME_FROM])");
                 createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_NAME])");
                 createStatement.AppendLine();
@@ -1147,6 +1227,60 @@ namespace TEAM
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 73);
                 createStatement.Clear();
+
+                // Source Persistent Staging Attribute Xref
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_NAME_FROM])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
+                createStatement.Clear();
+
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO] FOREIGN KEY([ATTRIBUTE_NAME_TO])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
+                createStatement.Clear();
+
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_PERSISTENT_STAGING] FOREIGN KEY([PERSISTENT_STAGING_NAME])");
+                createStatement.AppendLine("REFERENCES  [MD_PERSISTENT_STAGING] ([PERSISTENT_STAGING_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 72);
+                createStatement.Clear();
+
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_NAME])");
+                createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 73);
+                createStatement.Clear();
+
+
+                // Source Staging Attribute Xref
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_FROM] FOREIGN KEY([ATTRIBUTE_NAME_FROM])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
+                createStatement.Clear();
+
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_ATTRIBUTE_TO] FOREIGN KEY([ATTRIBUTE_NAME_TO])");
+                createStatement.AppendLine("REFERENCES  [MD_ATTRIBUTE] ([ATTRIBUTE_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 71);
+                createStatement.Clear();
+
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_STAGING] FOREIGN KEY([STAGING_NAME])");
+                createStatement.AppendLine("REFERENCES  [MD_STAGING] ([STAGING_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 72);
+                createStatement.Clear();
+
+                createStatement.AppendLine("ALTER TABLE [MD_SOURCE_STAGING_ATTRIBUTE_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_STAGING_ATTRIBUTE_XREF_MD_SOURCE] FOREIGN KEY([SOURCE_NAME])");
+                createStatement.AppendLine("REFERENCES  [MD_SOURCE] ([SOURCE_NAME])");
+                createStatement.AppendLine();
+                RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 73);
+                createStatement.Clear();
+
+
+
 
                 createStatement.AppendLine("ALTER TABLE [MD_SOURCE_LINK_XREF]  WITH CHECK ADD  CONSTRAINT [FK_MD_SOURCE_LINK_XREF_MD_LINK] FOREIGN KEY([LINK_NAME])");
                 createStatement.AppendLine("REFERENCES  [MD_LINK] ([LINK_NAME])");
@@ -1416,16 +1550,16 @@ namespace TEAM
                 createStatement.AppendLine("This is the default source for source-to-staging interfaces.");
                 createStatement.AppendLine("*/");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("src.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME],");
-                createStatement.AppendLine("xref.[SOURCE_NAME],");
-                createStatement.AppendLine("xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("tgt.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
-                createStatement.AppendLine("xref.[STAGING_NAME] AS [TARGET_NAME],");
-                createStatement.AppendLine("NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("'StagingArea' AS [TARGET_TYPE],");
-                createStatement.AppendLine("NULL AS [SURROGATE_KEY],");
-                createStatement.AppendLine("    [FILTER_CRITERIA],");
-                createStatement.AppendLine("'Raw' AS[ LOAD_VECTOR]");
+                createStatement.AppendLine("  src.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME],");
+                createStatement.AppendLine("  xref.[SOURCE_NAME],");
+                createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  tgt.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine("  xref.[STAGING_NAME] AS [TARGET_NAME],");
+                createStatement.AppendLine("  NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  'StagingArea' AS [TARGET_TYPE],");
+                createStatement.AppendLine("  NULL AS [SURROGATE_KEY],");
+                createStatement.AppendLine("  [FILTER_CRITERIA],");
+                createStatement.AppendLine("  'Raw' AS [LOAD_VECTOR]");
                 createStatement.AppendLine("FROM[MD_SOURCE_STAGING_XREF] xref");
                 createStatement.AppendLine("JOIN[MD_SOURCE] src ON xref.[SOURCE_NAME] = src.[SOURCE_NAME]");
                 createStatement.AppendLine("JOIN[MD_STAGING] tgt ON xref.[STAGING_NAME] = tgt.[STAGING_NAME]");
@@ -1452,16 +1586,16 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("src.[SCHEMA_NAME] AS[SOURCE_SCHEMA_NAME],");
-                createStatement.AppendLine("xref.[SOURCE_NAME],");
-                createStatement.AppendLine("xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("tgt.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME],");
-                createStatement.AppendLine("xref.[PERSISTENT_STAGING_NAME] AS[TARGET_NAME],");
-                createStatement.AppendLine("NULL AS[TARGET_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("'PersistentStagingArea' AS[TARGET_TYPE],");
-                createStatement.AppendLine("NULL AS[SURROGATE_KEY],");
-                createStatement.AppendLine("    [FILTER_CRITERIA],");
-                createStatement.AppendLine("'Raw' AS [LOAD_VECTOR]");
+                createStatement.AppendLine("  src.[SCHEMA_NAME] AS[SOURCE_SCHEMA_NAME],");
+                createStatement.AppendLine("  xref.[SOURCE_NAME],");
+                createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  tgt.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine("  xref.[PERSISTENT_STAGING_NAME] AS[TARGET_NAME],");
+                createStatement.AppendLine("  NULL AS[TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  'PersistentStagingArea' AS[TARGET_TYPE],");
+                createStatement.AppendLine("  NULL AS[SURROGATE_KEY],");
+                createStatement.AppendLine("  [FILTER_CRITERIA],");
+                createStatement.AppendLine("  'Raw' AS [LOAD_VECTOR]");
                 createStatement.AppendLine("FROM [MD_SOURCE_PERSISTENT_STAGING_XREF] xref");
                 createStatement.AppendLine("JOIN [MD_SOURCE] src ON xref.[SOURCE_NAME] = src.[SOURCE_NAME]");
                 createStatement.AppendLine("JOIN [MD_PERSISTENT_STAGING] tgt ON xref.[PERSISTENT_STAGING_NAME] = tgt.[PERSISTENT_STAGING_NAME]");

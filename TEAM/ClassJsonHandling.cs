@@ -681,7 +681,7 @@ namespace TEAM
                ,[SURROGATE_KEY]
                ,[FILTER_CRITERIA]
                ,[LOAD_VECTOR]
-            FROM [interface].[INTERFACE_SOURCE_STAGING_XREF]
+            FROM [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]
             ");
 
             var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };

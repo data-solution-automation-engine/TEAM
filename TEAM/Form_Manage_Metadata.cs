@@ -3710,12 +3710,12 @@ namespace TEAM
 
                 var deleteStatement = new StringBuilder();
                 deleteStatement.AppendLine(@"
-                                        DELETE FROM dbo.[MD_STAGING];
                                         DELETE FROM dbo.[MD_SOURCE_STAGING_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_STAGING_ATTRIBUTE_XREF];
-                                        DELETE FROM dbo.[MD_PERSISTENT_STAGING];
                                         DELETE FROM dbo.[MD_SOURCE_PERSISTENT_STAGING_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF];
+                                        DELETE FROM dbo.[MD_STAGING];
+                                        DELETE FROM dbo.[MD_PERSISTENT_STAGING];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];
                                         DELETE FROM dbo.[MD_SOURCE_LINK_XREF];
