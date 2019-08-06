@@ -1647,6 +1647,10 @@ namespace TEAM
                  ,src.[SOURCE_NAME]
                  ,tgt.[LINK_NAME] AS[TARGET_SCHEMA_NAME]
                  ,tgt.[LINK_NAME] AS[TARGET_NAME]
+				 ,xref.BUSINESS_KEY_DEFINITION AS [SOURCE_BUSINESS_KEY_DEFINITION]
+				 ,NULL as [TARGET_BUSINESS_KEY_DEFINITION]
+                 ,'Link' as [TARGET_TYPE]
+				 ,tgt.[SURROGATE_KEY]
                  ,[FILTER_CRITERIA]
                  ,xref.[LOAD_VECTOR]
                 FROM [MD_SOURCE_LINK_XREF] xref

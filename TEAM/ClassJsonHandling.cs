@@ -475,6 +475,10 @@ namespace TEAM
                ,[SOURCE_NAME]
                ,[TARGET_SCHEMA_NAME]
                ,[TARGET_NAME]
+               ,[SOURCE_BUSINESS_KEY_DEFINITION]
+               ,[TARGET_BUSINESS_KEY_DEFINITION]
+               ,[TARGET_TYPE]
+               ,[SURROGATE_KEY]
                ,[FILTER_CRITERIA]
                ,[LOAD_VECTOR]
              FROM [interface].[INTERFACE_SOURCE_LINK_XREF]
@@ -497,8 +501,12 @@ namespace TEAM
                     sourceName = singleRow[1].ToString(),
                     targetSchemaName = singleRow[2].ToString(),
                     targetName = singleRow[3].ToString(),
-                    filterCriteria = singleRow[4].ToString(),
-                    loadVector = singleRow[5].ToString()
+                    sourceBusinessKeyDefinition = singleRow[4].ToString(),
+                    targetBusinessKeyDefinition = singleRow[5].ToString(),
+                    targetType = singleRow[6].ToString(),
+                    surrogateKey = singleRow[7].ToString(),
+                    filterCriteria = singleRow[8].ToString(),
+                    loadVector = singleRow[9].ToString()
                 });
                 outputFileArray.Add(individualRow);
             }
