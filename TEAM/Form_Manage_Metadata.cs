@@ -3864,7 +3864,14 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Staging Area metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_STAGING table
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
+                if (ConfigurationSettings.TableNamingLocation == "Prefix")
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
+                }
+                else
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
+                }
 
                 var distinctListStg = new List<string>
                 {
@@ -3927,8 +3934,15 @@ namespace TEAM
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Staging Area.\r\n");
 
-                // Getting the distinct list of row from the data table
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
+                // Getting the mapping list from the data table
+                if (ConfigurationSettings.TableNamingLocation == "Prefix")
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
+                }
+                else
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
+                }
 
                 // Process the unique Staging Area records
                 foreach (var row in selectionRows)
@@ -3980,7 +3994,14 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Persistent Staging Area metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + psaPrefix + "%'");
+                if (ConfigurationSettings.TableNamingLocation == "Prefix")
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                }
+                else
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                }
 
                 var distinctListPsa = new List<string>
                 {
@@ -4039,13 +4060,20 @@ namespace TEAM
                 #endregion
 
 
-                # region Prepare Source to Staging Area XREF - 15%
+                # region Prepare Source to Persistent Staging Area XREF - 15%
                 // Prepare the Source to Persistent Staging Area XREF
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Persistent Staging Area.\r\n");
 
-                // Getting the distinct list of row from the data table
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + psaPrefix + "%'");
+                // Getting the mapping list from the data table
+                if (ConfigurationSettings.TableNamingLocation == "Prefix")
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                }
+                else
+                {
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                }
 
                 // Process the unique Staging Area records
                 foreach (var row in selectionRows)
@@ -6472,9 +6500,6 @@ namespace TEAM
         private void dataGridViewTableMetadata_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
             // Validate the data entry on the Table Mapping datagrid
-
-            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
-            var cellValue = e.FormattedValue.ToString();
             var valueLength = e.FormattedValue.ToString().Length;
 
             // Source Table (Source)
@@ -6486,23 +6511,6 @@ namespace TEAM
                 {
                     e.Cancel = true;
                     dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) table cannot be empty!";
-                }
-
-                if (valueLength > 0)
-                {
-                    //if (!cellValue.StartsWith(stagingPrefix))
-                    //{
-                    //    //dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = System.Drawing.Color.Red;
-
-                    //    e.Cancel = true;
-                    //    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) name is not conform with the Source prefix ('" + stagingPrefix + "').";
-                    //}
-
-                    //if (!e.FormattedValue.ToString().Contains(stagingPrefix))
-                    //{
-                    //    e.Cancel = true;
-                    //    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) is not conform to the Source prefix ('" + stagingPrefix + "').";
-                    //}
                 }
             }
 
