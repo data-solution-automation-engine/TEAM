@@ -273,13 +273,17 @@ namespace TEAM
             // Get the information from the view
             var sqlStatement = new StringBuilder();
             sqlStatement.AppendLine(@"
-            SELECT 
-                 [LINK_NAME]
-                ,[SOURCE_NAME]
-                ,[SOURCE_SCHEMA_NAME]
-                ,[HUB_NAME]
-                ,[HUB_ORDER]
-                ,[BUSINESS_KEY_DEFINITION]
+            SELECT
+               [SOURCE_SCHEMA_NAME]
+              ,[SOURCE_NAME]
+              ,[LINK_SCHEMA_NAME]
+              ,[LINK_NAME]
+              ,[HUB_SCHEMA_NAME]
+              ,[HUB_NAME]
+              ,[HUB_SURROGATE_KEY]
+              ,[HUB_SOURCE_BUSINESS_KEY_DEFINITION]
+              ,[HUB_TARGET_BUSINESS_KEY_DEFINITION]
+              ,[HUB_ORDER]
             FROM [interface].[INTERFACE_HUB_LINK_XREF]
             ");
 
@@ -296,12 +300,16 @@ namespace TEAM
             {
                 JObject individualRow = JObject.FromObject(new
                 {
-                    linkName = singleRow[0].ToString(),
+                    sourceSchemaName = singleRow[0].ToString(),
                     sourceName = singleRow[1].ToString(),
-                    sourceSchemaName = singleRow[2].ToString(),
-                    hubName = singleRow[3].ToString(),
-                    hubOrder = singleRow[4].ToString(),
-                    businessKeyDefinition = singleRow[5].ToString()
+                    linkSchemaName = singleRow[2].ToString(),
+                    linkName = singleRow[3].ToString(),
+                    hubSchemaName = singleRow[4].ToString(),
+                    hubName = singleRow[5].ToString(),
+                    hubSurrogateKey = singleRow[6].ToString(),
+                    hubSourcebusinessKeyDefinition = singleRow[7].ToString(),
+                    hubTargetbusinessKeyDefinition = singleRow[8].ToString(),
+                    hubOrder = singleRow[9].ToString()
                 });
                 outputFileArray.Add(individualRow);
             }

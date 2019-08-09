@@ -1508,37 +1508,37 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW[interface].[INTERFACE_HUB_LINK_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine(" slxref.LINK_NAME,");
-                createStatement.AppendLine(" slxref.SOURCE_NAME,");
-                createStatement.AppendLine(" stg.SCHEMA_NAME AS SOURCE_SCHEMA_NAME,");
-                createStatement.AppendLine(" hub.HUB_NAME,");
-                createStatement.AppendLine(" hlxref.HUB_ORDER,");
-                createStatement.AppendLine(" BUSINESS_KEY_PART_SOURCE AS BUSINESS_KEY_DEFINITION");
-                createStatement.AppendLine("FROM --Base table that selects the Links to generate. This is the basis for the Link generation");
+                createStatement.AppendLine("  stg.[SCHEMA_NAME] AS[SOURCE_SCHEMA_NAME],");
+                createStatement.AppendLine("  slxref.SOURCE_NAME,");
+                createStatement.AppendLine("  lnk.[SCHEMA_NAME] AS[LINK_SCHEMA_NAME],");
+                createStatement.AppendLine("  slxref.LINK_NAME,");
+                createStatement.AppendLine("  hub.[SCHEMA_NAME] AS[HUB_SCHEMA_NAME],");
+                createStatement.AppendLine("  hub.[HUB_NAME],");
+                createStatement.AppendLine("  hub.[SURROGATE_KEY] AS[HUB_SURROGATE_KEY],");
+                createStatement.AppendLine("  [BUSINESS_KEY_PART_SOURCE] AS[HUB_SOURCE_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  hub.[BUSINESS_KEY] AS[HUB_TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  hlxref.HUB_ORDER");
+                createStatement.AppendLine("FROM");
                 createStatement.AppendLine("(");
-                createStatement.AppendLine("	SELECT");
-                createStatement.AppendLine("	  LINK_NAME,");
-                createStatement.AppendLine("	  SOURCE_NAME,");
-                createStatement.AppendLine("	  LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART_SOURCE,");
-                createStatement.AppendLine("	  ROW_NUMBER() OVER(PARTITION BY LINK_NAME, SOURCE_NAME ORDER BY LINK_NAME, SOURCE_NAME) AS HUB_ORDER");
-                createStatement.AppendLine("	FROM");
-                createStatement.AppendLine("	(");
-                createStatement.AppendLine("	  SELECT");
-                createStatement.AppendLine("		LINK_NAME,");
-                createStatement.AppendLine("		SOURCE_NAME,");
-                createStatement.AppendLine("		CAST('<M>' + REPLACE(BUSINESS_KEY_DEFINITION, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
-                createStatement.AppendLine("		FROM [MD_SOURCE_LINK_XREF]");
-                createStatement.AppendLine("	) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
+                createStatement.AppendLine("  SELECT");
+                createStatement.AppendLine("    LINK_NAME,");
+                createStatement.AppendLine("    SOURCE_NAME,");
+                createStatement.AppendLine("    LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART_SOURCE,");
+                createStatement.AppendLine("    ROW_NUMBER() OVER(PARTITION BY LINK_NAME, SOURCE_NAME ORDER BY LINK_NAME, SOURCE_NAME) AS HUB_ORDER");
+                createStatement.AppendLine("  FROM");
+                createStatement.AppendLine("  (");
+                createStatement.AppendLine("    SELECT");
+                createStatement.AppendLine("      LINK_NAME,");
+                createStatement.AppendLine("      SOURCE_NAME,");
+                createStatement.AppendLine("      CAST('<M>' + REPLACE(BUSINESS_KEY_DEFINITION, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
+                createStatement.AppendLine("    FROM [MD_SOURCE_LINK_XREF]");
+                createStatement.AppendLine("  ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
                 createStatement.AppendLine(") slxref");
-                createStatement.AppendLine("JOIN MD_SOURCE stg ");
-                createStatement.AppendLine("	ON slxref.SOURCE_NAME = stg.SOURCE_NAME -- Adding the Staging Area table name and schema");
-                createStatement.AppendLine("JOIN MD_LINK lnk ");
-                createStatement.AppendLine("	ON slxref.LINK_NAME = lnk.LINK_NAME -- Adding the Link table name");
-                createStatement.AppendLine("JOIN MD_HUB_LINK_XREF hlxref ");
-                createStatement.AppendLine("	ON slxref.LINK_NAME = hlxref.LINK_NAME -- Adding the Hubs that relate to the Link, from a target perspective");
-                createStatement.AppendLine("  AND slxref.HUB_ORDER = hlxref.HUB_ORDER");
-                createStatement.AppendLine("JOIN MD_HUB hub");
-                createStatement.AppendLine("    ON hlxref.HUB_NAME = hub.HUB_NAME -- Adding the Hub name");
+                createStatement.AppendLine("JOIN MD_SOURCE stg ON slxref.SOURCE_NAME = stg.SOURCE_NAME");
+                createStatement.AppendLine("JOIN MD_LINK lnk ON slxref.LINK_NAME = lnk.LINK_NAME");
+                createStatement.AppendLine("JOIN MD_HUB_LINK_XREF hlxref ON slxref.LINK_NAME = hlxref.LINK_NAME");
+                createStatement.AppendLine("AND slxref.HUB_ORDER = hlxref.HUB_ORDER");
+                createStatement.AppendLine("JOIN MD_HUB hub ON hlxref.HUB_NAME = hub.HUB_NAME");
                 createStatement.AppendLine();
                 RunSqlCommandRepositoryForm(connOmdString, createStatement, worker, 91);
                 createStatement.Clear();
@@ -1849,7 +1849,6 @@ namespace TEAM
                 backgroundWorkerSampleData.ReportProgress(0);
                 // Create the repository
                 _alertSampleData.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
-
 
                 try
                 {
