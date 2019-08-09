@@ -60,19 +60,19 @@ namespace TEAM
                     // Backcolour for Integration Layer tables
                     if (Regex.Matches(integrationTable.ToString(), hubIdentifier).Count>0)
                     {
-                        this[4, counter].Style.BackColor = Color.CadetBlue;
+                        this[4, counter].Style.BackColor = Color.CornflowerBlue;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), lsatIdentifier).Count > 0)
                     {
-                        this[4, counter].Style.BackColor = Color.Yellow;
+                        this[4, counter].Style.BackColor = Color.Gold;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), satIdentifier).Count > 0)
                     {
-                        this[4, counter].Style.BackColor = Color.Gold;
+                        this[4, counter].Style.BackColor = Color.Yellow;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), lnkIdentifier).Count > 0)
                     {
-                        this[4, counter].Style.BackColor = Color.Red;
+                        this[4, counter].Style.BackColor = Color.OrangeRed;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), psaIdentifier).Count > 0)
                     {

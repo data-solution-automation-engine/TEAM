@@ -60,23 +60,23 @@ namespace TEAM
                    // Backcolour for Integration Layer tables
                     if (Regex.Matches(targetTable.ToString(), hubIdentifier).Count>0)
                     {
-                        this[3, counter].Style.BackColor = Color.CadetBlue;
+                        this[3, counter].Style.BackColor = Color.CornflowerBlue;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = System.Drawing.Color.LightGray;
                     }
                     else if (Regex.Matches(targetTable.ToString(), lsatIdentifier).Count > 0)
                     {
-                        this[3, counter].Style.BackColor = Color.Yellow;
+                        this[3, counter].Style.BackColor = Color.Gold;
                     }
                     else if (Regex.Matches(targetTable.ToString(), satIdentifier).Count > 0)
                     {
-                        this[3, counter].Style.BackColor = Color.Gold;
+                        this[3, counter].Style.BackColor = Color.Yellow;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = Color.LightGray;
                     }
                     else if (Regex.Matches(targetTable.ToString(), lnkIdentifier).Count > 0)
                     {
-                        this[3, counter].Style.BackColor = Color.Red;
+                        this[3, counter].Style.BackColor = Color.OrangeRed;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = Color.LightGray;
                     }
