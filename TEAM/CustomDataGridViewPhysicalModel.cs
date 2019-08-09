@@ -72,13 +72,13 @@ namespace TEAM
                     {
                         this[4, counter].Style.BackColor = Color.Red;
                     }
-                    else if (Regex.Matches(integrationTable.ToString(), stgIdentifier).Count > 0)
-                    {
-                        this[4, counter].Style.BackColor = Color.WhiteSmoke;
-                    }
                     else if (Regex.Matches(integrationTable.ToString(), psaIdentifier).Count > 0)
                     {
                         this[4, counter].Style.BackColor = Color.AntiqueWhite;
+                    }
+                    else if (Regex.Matches(integrationTable.ToString(), stgIdentifier).Count > 0)
+                    {
+                        this[4, counter].Style.BackColor = Color.WhiteSmoke;
                     }
                     else if (Regex.Matches(integrationTable.ToString(), dimIdentifier).Count > 0)
                     {

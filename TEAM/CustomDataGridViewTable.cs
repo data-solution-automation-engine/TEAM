@@ -52,53 +52,53 @@ namespace TEAM
             foreach (DataGridViewRow row in Rows)
             {
                // var genericTable = row.Cells[0].Value;
-                var integrationTable = row.Cells[3].Value;
+                var targetTable = row.Cells[3].Value;
                 var businessKeySyntax = row.Cells[4].Value;
 
-                if (integrationTable != null && businessKeySyntax != null && row.IsNewRow == false)
+                if (targetTable != null && businessKeySyntax != null && row.IsNewRow == false)
                 {
                    // Backcolour for Integration Layer tables
-                    if (Regex.Matches(integrationTable.ToString(), hubIdentifier).Count>0)
+                    if (Regex.Matches(targetTable.ToString(), hubIdentifier).Count>0)
                     {
                         this[3, counter].Style.BackColor = Color.CadetBlue;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = System.Drawing.Color.LightGray;
                     }
-                    else if (Regex.Matches(integrationTable.ToString(), lsatIdentifier).Count > 0)
+                    else if (Regex.Matches(targetTable.ToString(), lsatIdentifier).Count > 0)
                     {
                         this[3, counter].Style.BackColor = Color.Yellow;
                     }
-                    else if (Regex.Matches(integrationTable.ToString(), satIdentifier).Count > 0)
+                    else if (Regex.Matches(targetTable.ToString(), satIdentifier).Count > 0)
                     {
                         this[3, counter].Style.BackColor = Color.Gold;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(integrationTable.ToString(), lnkIdentifier).Count > 0)
+                    else if (Regex.Matches(targetTable.ToString(), lnkIdentifier).Count > 0)
                     {
                         this[3, counter].Style.BackColor = Color.Red;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(integrationTable.ToString(), stgIdentifier).Count > 0)
-                    {
-                        this[3, counter].Style.BackColor = Color.WhiteSmoke;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = Color.LightGray;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), psaIdentifier).Count > 0)
+                    else if (Regex.Matches(targetTable.ToString(), psaIdentifier).Count > 0)
                     {
                         this[3, counter].Style.BackColor = Color.AntiqueWhite;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(integrationTable.ToString(), dimIdentifier).Count > 0)
+                    else if (Regex.Matches(targetTable.ToString(), stgIdentifier).Count > 0)
+                    {
+                        this[3, counter].Style.BackColor = Color.WhiteSmoke;
+                        row.Cells[5].ReadOnly = true;
+                        row.Cells[5].Style.BackColor = Color.LightGray;
+                    }
+                    else if (Regex.Matches(targetTable.ToString(), dimIdentifier).Count > 0)
                     {
                         this[3, counter].Style.BackColor = Color.Aqua;
                         row.Cells[5].ReadOnly = true;
                         row.Cells[5].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(integrationTable.ToString(), factIdentifier).Count > 0)
+                    else if (Regex.Matches(targetTable.ToString(), factIdentifier).Count > 0)
                     {
                         this[3, counter].Style.BackColor = Color.MediumAquamarine;
                         row.Cells[5].ReadOnly = true;
