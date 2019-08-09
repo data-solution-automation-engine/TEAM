@@ -910,13 +910,6 @@ namespace TEAM
             // Clear out the information textbox
             richTextBoxInformation.Clear();
 
-            // Remove all metadata from repository
-            if (checkBoxClearMetadata.Checked)
-            {
-                TruncateMetadata();
-            }
-
-
             // Check if the current version is the maximum version. At this stage updates on earlier versions are not supported (and cause a NULLreference exception)
             var highestVersion = GlobalParameters.highestVersionId;
             var currentVersion = GlobalParameters.currentVersionId;
@@ -3148,14 +3141,6 @@ namespace TEAM
             }
         }
 
-        private void checkBoxClearMetadata_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxClearMetadata.Checked)
-            {
-                MessageBox.Show("Selection this option will mean that all metadata will be truncated.", "Clear metadata", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
         private void createTemporaryWorkerTable(string connString)
         {
             var inputTableMapping = (DataTable)_bindingSourceTableMetadata.DataSource;
@@ -3442,9 +3427,9 @@ namespace TEAM
             // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
             if (checkBoxValidation.Checked)
             {
-                if (checkBoxIgnoreVersion.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
+                if (radioButtonPhysicalMode.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
                 {
-                    richTextBoxInformation.Text += "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
+                    richTextBoxInformation.Text += "There is no model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
                 }
                 else
                 {
@@ -3464,7 +3449,7 @@ namespace TEAM
             }
             #endregion
 
-            // After validation finishes, the activtation thread / process should start.
+            // After validation finishes, the activation thread / process should start.
             // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
             #region Activation
             if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0))
@@ -3482,7 +3467,7 @@ namespace TEAM
                 // Move data from the grids into temp tables
                 createTemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
 
-                if (checkBoxIgnoreVersion.Checked == false)
+                if (radioButtonPhysicalMode.Checked == false)
                 {
                     var versionExistenceCheck = new StringBuilder();
 
@@ -3687,7 +3672,7 @@ namespace TEAM
 
                 // Determine the query type (physical or virtual)
                 string queryMode;
-                if (checkBoxIgnoreVersion.Checked)
+                if (radioButtonPhysicalMode.Checked)
                 {
                     queryMode = "physical";
                 }
@@ -4669,7 +4654,7 @@ namespace TEAM
 
                 // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
                 var allDatabaseAttributes = new StringBuilder();
-                if (checkBoxIgnoreVersion.Checked
+                if (radioButtonPhysicalMode.Checked
                 ) // Get the attributes from the physical model / catalog. No virtualisation needed.
                 {
                     var physicalModelInstantiation = new AttributeSelection();
@@ -4735,7 +4720,7 @@ namespace TEAM
                     RV: there is an issue below where not all SQL version (i.e. SQL Server) are supporting cross database SQL.
                     i.e. Azure. long term fix is to create individual queries to database without cross-db sql and add to single data table in the application
                 */
-                if (checkBoxIgnoreVersion.Checked) // Read from live database
+                if (radioButtonPhysicalMode.Checked) // Read from live database
                 {
                     _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
                 }
@@ -5115,7 +5100,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the relationship between Hubs and Links.\r\n");
 
                 var virtualisationSnippet = new StringBuilder();
-                if (checkBoxIgnoreVersion.Checked)
+                if (radioButtonPhysicalMode.Checked)
                 {
                     virtualisationSnippet.AppendLine(" SELECT ");
                     virtualisationSnippet.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
@@ -5345,7 +5330,7 @@ namespace TEAM
 
                 int automaticMappingCounter = 0;
 
-                if (checkBoxIgnoreVersion.Checked)
+                if (radioButtonPhysicalMode.Checked)
                 {
                     _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the database.\r\n");
                 }
@@ -5494,7 +5479,7 @@ namespace TEAM
 
                 automaticMappingCounter = 0;
 
-                if (checkBoxIgnoreVersion.Checked)
+                if (radioButtonPhysicalMode.Checked)
                 {
                     _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the database.\r\n");
                 }
@@ -5667,7 +5652,7 @@ namespace TEAM
 
                 var prepareMappingStatement = new StringBuilder();
 
-                if (checkBoxIgnoreVersion.Checked)
+                if (radioButtonPhysicalMode.Checked)
                 {
                     _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the database.\r\n");
                 }
@@ -5841,7 +5826,7 @@ namespace TEAM
                 prepareDegenerateMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_NAME = tgt_attr.ATTRIBUTE_NAME");
 
 
-                if (checkBoxIgnoreVersion.Checked)
+                if (radioButtonPhysicalMode.Checked)
                 {
                     _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for degenerate attributes, based on what's available in the database.\r\n");
                 }
@@ -5931,7 +5916,7 @@ namespace TEAM
 
                 var prepareMultiKeyStatement = new StringBuilder();
 
-                if (checkBoxIgnoreVersion.Checked)
+                if (radioButtonPhysicalMode.Checked)
                 {
                     _alert.SetTextLogging("Commencing Multi-Active Key handling using database.\r\n");
 
@@ -7177,7 +7162,7 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
 
-            if (checkBoxIgnoreVersion.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
+            if (radioButtonPhysicalMode.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
             {
                 richTextBoxInformation.Text += "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
             }
@@ -7339,12 +7324,6 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text += "Commencing reverse-engineering the model metadata from the database.\r\n";
-
-            // Truncate existing metadata - if selected
-            if (checkBoxClearMetadata.Checked)
-            {
-                TruncateMetadata();
-            }
 
             // Populate table / attribute version table
             var intDatabase = ConfigurationSettings.IntegrationDatabaseName;
@@ -7671,7 +7650,7 @@ namespace TEAM
 
         private void ValidateSourceObject()
         {
-            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
             #region Validation for Source Object Existence
             // Informing the user.
@@ -7782,7 +7761,7 @@ namespace TEAM
 
         private void ValidateTargetObject()
         {
-            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
             #region Validation for Source Object Existence
             // Informing the user.
@@ -7852,7 +7831,7 @@ namespace TEAM
         /// </summary>
         internal void ValidateLinkKeyOrder()
         {
-            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
             #region Retrieving the Links
             // Informing the user.
@@ -7917,7 +7896,7 @@ namespace TEAM
 
         internal void ValidateLogicalGroup()
         {
-            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
             #region Retrieving the Integration Layer tables
             // Informing the user.
@@ -7984,7 +7963,7 @@ namespace TEAM
         /// </summary>
         private void ValidateBusinessKeyObject()
         {
-            string evaluationMode = checkBoxIgnoreVersion.Checked ? "physical" : "virtual";
+            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
             #region Validation for source Business Key attribute existence
             // Informing the user.
