@@ -4185,7 +4185,7 @@ namespace TEAM
                 // Create a dummy row
                 distinctListLinks.Add("Not applicable");
 
-                // Create a distinct list of sources from the datagrid
+                // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
                     string target_table = row["TARGET_TABLE"].ToString().Trim();
@@ -5108,8 +5108,9 @@ namespace TEAM
                     virtualisationSnippet.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
                     virtualisationSnippet.AppendLine("     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
                     virtualisationSnippet.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
-                    virtualisationSnippet.AppendLine(" WHERE [column_id]>4");
-                    virtualisationSnippet.AppendLine(" AND OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" + lnkTablePrefix + @"'");
+                    virtualisationSnippet.AppendLine(" WHERE [column_id] > 1");
+                    virtualisationSnippet.AppendLine("   AND OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" + lnkTablePrefix + @"'");
+                    virtualisationSnippet.AppendLine("   AND [name] NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
                 }
                 else
                 {
@@ -5119,9 +5120,12 @@ namespace TEAM
                     virtualisationSnippet.AppendLine("  [COLUMN_NAME] AS HUB_TARGET_KEY_NAME_IN_LINK,");
                     virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
                     virtualisationSnippet.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
-                    virtualisationSnippet.AppendLine("WHERE[ORDINAL_POSITION] > 4");
-                    virtualisationSnippet.AppendLine("AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
+                    virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
+                    virtualisationSnippet.AppendLine( " AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
+                    virtualisationSnippet.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
+
                 }
+
 
                 var prepareHubLnkXrefStatement = new StringBuilder();
 
@@ -5207,9 +5211,64 @@ namespace TEAM
                 #endregion
 
 
-                #region Stg / Link relationship - 80%
-                //Prepare STG / LNK xref
+                #region Link Business Key - 78%
+                // Prepare links business key backfill
                 _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Commencing preparing the Link Business key metadata.\r\n");
+
+                // Getting the distinct list of tables to go into the MD_LINK table
+                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+
+                var distincLinksForBusinessKey = new List<string>();
+
+                // Create a distinct list of sources from the data grid
+                foreach (DataRow row in selectionRows)
+                {
+                    string target_table = row["TARGET_TABLE"].ToString().Trim();
+                    if (!distincLinksForBusinessKey.Contains(target_table))
+                    {
+                        distincLinksForBusinessKey.Add(target_table);
+                    }
+                }
+
+                // Insert the rest of the rows
+                foreach (var tableName in distincLinksForBusinessKey)
+                {
+                    var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
+
+                    var businessKeyList = ClassMetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId);
+                    string businessKey = string.Join(",", businessKeyList);
+
+                    var updateStatement = new StringBuilder();
+
+                    updateStatement.AppendLine("UPDATE [MD_LINK]");
+                    updateStatement.AppendLine("SET [BUSINESS_KEY] = '" + businessKey + "'");
+                    updateStatement.AppendLine("WHERE [SCHEMA_NAME] =  '" + fullyQualifiedName.Key + "'");
+                    updateStatement.AppendLine("AND [LINK_NAME] =  '" + fullyQualifiedName.Value + "'");
+
+                    var connection = new SqlConnection(metaDataConnection);
+                    var command = new SqlCommand(updateStatement.ToString(), connection);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        errorCounter++;
+                        _alert.SetTextLogging("An issue has occured during preparation of the Link Business Key. Please check the Error Log for more details.\r\n");
+
+                        errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link Business Key: \r\n\r\n" + ex);
+                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + updateStatement);
+                    }
+                }
+                #endregion
+
+
+                #region Stg / Link relationship - 80%
+                    //Prepare STG / LNK xref
+                    _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Link tables.\r\n");
 
                 var preparestgLnkXrefStatement = new StringBuilder();

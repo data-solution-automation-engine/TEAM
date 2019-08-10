@@ -787,6 +787,7 @@ namespace TEAM
                 createStatement.AppendLine("( ");
                 createStatement.AppendLine("  [LINK_NAME]       varchar(100)  NOT NULL,");
                 createStatement.AppendLine("  [SCHEMA_NAME]     varchar(100)  NULL,");
+                createStatement.AppendLine("  [BUSINESS_KEY] varchar(100)  NULL,");
                 createStatement.AppendLine("  [SURROGATE_KEY]   varchar(100)  NULL,");
                 createStatement.AppendLine("  CONSTRAINT [PK_MD_LINK] PRIMARY KEY CLUSTERED ([LINK_NAME] ASC)");
                 createStatement.AppendLine(")");
@@ -1648,7 +1649,7 @@ namespace TEAM
                  ,tgt.[LINK_NAME] AS[TARGET_SCHEMA_NAME]
                  ,tgt.[LINK_NAME] AS[TARGET_NAME]
 				 ,xref.BUSINESS_KEY_DEFINITION AS [SOURCE_BUSINESS_KEY_DEFINITION]
-				 ,NULL as [TARGET_BUSINESS_KEY_DEFINITION]
+				 ,tgt.[BUSINESS_KEY] as [TARGET_BUSINESS_KEY_DEFINITION]
                  ,'Link' as [TARGET_TYPE]
 				 ,tgt.[SURROGATE_KEY]
                  ,[FILTER_CRITERIA]
