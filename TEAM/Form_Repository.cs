@@ -1720,7 +1720,7 @@ namespace TEAM
                 createStatement.AppendLine(" sat.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine(" sat.SATELLITE_NAME AS [TARGET_NAME],");
                 createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
-                createStatement.AppendLine(" NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" hub.[BUSINESS_KEY] AS [TARGET_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine(" sat.SATELLITE_TYPE AS [TARGET_TYPE],");
                 createStatement.AppendLine(" hub.SURROGATE_KEY,");
                 createStatement.AppendLine(" xref.FILTER_CRITERIA,");
@@ -1743,7 +1743,7 @@ namespace TEAM
                 createStatement.AppendLine(" sat.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine(" sat.SATELLITE_NAME AS [TARGET_NAME],");
                 createStatement.AppendLine(" xref.BUSINESS_KEY_DEFINITION AS SOURCE_BUSINESS_KEY_DEFINITION,");
-                createStatement.AppendLine(" NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine(" lnk.BUSINESS_KEY AS [TARGET_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine(" sat.SATELLITE_TYPE AS [TARGET_TYPE],");
                 createStatement.AppendLine(" lnk.SURROGATE_KEY,");
                 createStatement.AppendLine(" xref.FILTER_CRITERIA,");
