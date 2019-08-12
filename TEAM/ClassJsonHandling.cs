@@ -281,6 +281,7 @@ namespace TEAM
               ,[HUB_SCHEMA_NAME]
               ,[HUB_NAME]
               ,[HUB_SURROGATE_KEY]
+              ,[HUB_TARGET_KEY_NAME_IN_LINK]
               ,[HUB_SOURCE_BUSINESS_KEY_DEFINITION]
               ,[HUB_TARGET_BUSINESS_KEY_DEFINITION]
               ,[HUB_ORDER]
@@ -307,9 +308,10 @@ namespace TEAM
                     hubSchemaName = singleRow[4].ToString(),
                     hubName = singleRow[5].ToString(),
                     hubSurrogateKey = singleRow[6].ToString(),
-                    hubSourcebusinessKeyDefinition = singleRow[7].ToString(),
-                    hubTargetbusinessKeyDefinition = singleRow[8].ToString(),
-                    hubOrder = singleRow[9].ToString()
+                    hubSurrogateKeyInLink = singleRow[7].ToString(),
+                    hubSourcebusinessKeyDefinition = singleRow[8].ToString(),
+                    hubTargetbusinessKeyDefinition = singleRow[9].ToString(),
+                    hubOrder = singleRow[10].ToString()
                 });
                 outputFileArray.Add(individualRow);
             }

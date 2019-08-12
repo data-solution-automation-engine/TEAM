@@ -1516,6 +1516,7 @@ namespace TEAM
                 createStatement.AppendLine("  hub.[SCHEMA_NAME] AS[HUB_SCHEMA_NAME],");
                 createStatement.AppendLine("  hub.[HUB_NAME],");
                 createStatement.AppendLine("  hub.[SURROGATE_KEY] AS[HUB_SURROGATE_KEY],");
+                createStatement.AppendLine("  hlxref.[HUB_TARGET_KEY_NAME_IN_LINK] AS [HUB_TARGET_KEY_NAME_IN_LINK],");
                 createStatement.AppendLine("  [BUSINESS_KEY_PART_SOURCE] AS[HUB_SOURCE_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine("  hub.[BUSINESS_KEY] AS[HUB_TARGET_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine("  hlxref.HUB_ORDER");
@@ -1646,7 +1647,7 @@ namespace TEAM
                 SELECT
                   src.[SCHEMA_NAME] AS[SOURCE_SCHEMA_NAME]
                  ,src.[SOURCE_NAME]
-                 ,tgt.[LINK_NAME] AS[TARGET_SCHEMA_NAME]
+                 ,tgt.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME]
                  ,tgt.[LINK_NAME] AS[TARGET_NAME]
 				 ,xref.BUSINESS_KEY_DEFINITION AS [SOURCE_BUSINESS_KEY_DEFINITION]
 				 ,tgt.[BUSINESS_KEY] as [TARGET_BUSINESS_KEY_DEFINITION]
