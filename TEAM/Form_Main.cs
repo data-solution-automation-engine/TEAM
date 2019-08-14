@@ -18,7 +18,7 @@ namespace TEAM
             
             
             // Set the version of the build for everything
-            string versionNumberforTeamApplication = "v1.5.5.2";
+            const string versionNumberForTeamApplication = "v1.5.5.2";
 
             // Placeholder for the error handling
             var errorMessage = new StringBuilder();
@@ -29,7 +29,7 @@ namespace TEAM
             var errorCounter = 0;
 
             InitializeComponent();
-            Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberforTeamApplication;
+            Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
 
             // Make sure the application and custom location directories exist
             ClassEnvironmentConfiguration.InitialiseRootPath();
@@ -45,7 +45,7 @@ namespace TEAM
             
             //Startup information
             richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
-            richTextBoxInformation.AppendText("Version "+versionNumberforTeamApplication+"\r\n\r\n");
+            richTextBoxInformation.AppendText("Version "+versionNumberForTeamApplication+"\r\n\r\n");
             //richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
 
             labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
@@ -103,7 +103,7 @@ namespace TEAM
                 }
                 catch
                 {
-                    this.richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
                     DisableMenu();
                     return;
                 }
@@ -144,7 +144,7 @@ namespace TEAM
             }
             catch
             {
-                this.richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables  \r\n");
+                richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables  \r\n");
                 openMetadataFormToolStripMenuItem.Enabled = false;
                 RevalidateFlag = true;
             }
@@ -158,11 +158,11 @@ namespace TEAM
 
         public void DisableMenu()
         {
-            this.metadataToolStripMenuItem.Enabled = false;
+            metadataToolStripMenuItem.Enabled = false;
         }
         public void EnableMenu()
         {
-            this.metadataToolStripMenuItem.Enabled = true;
+            metadataToolStripMenuItem.Enabled = true;
         }
 
         internal void DisplayMaxVersion(SqlConnection connOmd)
@@ -249,11 +249,6 @@ namespace TEAM
             Application.Exit();
         }
 
-        private void CloseTestDataForm(object sender, FormClosedEventArgs e)
-        {
-            _myTestDataForm = null;
-        } 
-
         private void CloseMetadataForm(object sender, FormClosedEventArgs e)
         {
             _myMetadataForm = null;
@@ -276,7 +271,7 @@ namespace TEAM
 
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.metadataToolStripMenuItem.Enabled == false)
+            if (metadataToolStripMenuItem.Enabled == false)
                 return;
             var t = new Thread(ThreadProcMetadata);
             t.SetApartmentState(ApartmentState.STA);
@@ -291,56 +286,7 @@ namespace TEAM
             t.Start();
         }
 
-        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("This feature is yet to be implemented.", "Upcoming!", MessageBoxButtons.OK,
-                MessageBoxIcon.Exclamation);
-        }
-
-        private void linksToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("This feature is yet to be implemented.", "Upcoming!", MessageBoxButtons.OK,
-                MessageBoxIcon.Exclamation);
-        }
-
-
-        private FormTestData _myTestDataForm;
-        public void ThreadProcTestData()
-        {
-            if (_myTestDataForm == null)
-            {
-                _myTestDataForm = new FormTestData(this);
-                _myTestDataForm.Show();
-
-                Application.Run();
-            }
-
-            else
-            {
-                if (_myTestDataForm.InvokeRequired)
-                {
-                    // Thread Error
-                    _myTestDataForm.Invoke((MethodInvoker)delegate { _myTestDataForm.Close(); });
-                    _myTestDataForm.FormClosed += CloseTestDataForm;
-
-                    _myTestDataForm = new FormTestData(this);
-                    _myTestDataForm.Show();
-                    Application.Run();
-                }
-                else
-                {
-                    // No invoke required - same thread
-                    _myTestDataForm.FormClosed += CloseTestDataForm;
-
-                    _myTestDataForm = new FormTestData(this);
-                    _myTestDataForm.Show();
-                    Application.Run();
-                }
-
-            }
-        }
-
-        private FormManageConfiguration _myConfigurationForm;
+       private FormManageConfiguration _myConfigurationForm;
         /// <summary>
         /// 
         /// </summary>
@@ -483,35 +429,10 @@ namespace TEAM
             }
         }
 
-        private void generateTestDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcTestData);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
-
-
-        // Multithreading for updating the user (debugging form)
-        delegate void SetTextCallBackDebug(string text);
-        private void SetTextDebug(string text)
-        {
-            if (richTextBoxInformation.InvokeRequired)
-            {
-                var d = new SetTextCallBackDebug(SetTextDebug);
-                Invoke(d, text);
-            }
-            else
-            {
-                richTextBoxInformation.AppendText(text);
-            }
-        }
-
-
         private void richTextBoxInformation_TextChanged(object sender, EventArgs e)
         {
             CheckKeyword("Issues occurred", Color.Red, 0);
-            CheckKeyword("The statement was executed succesfully.", Color.GreenYellow, 0);
-            // this.CheckKeyword("if", Color.Green, 0);
+            CheckKeyword("The statement was executed successfully.", Color.GreenYellow, 0);
         }
 
 
@@ -523,10 +444,6 @@ namespace TEAM
             t.Start();
         }
 
-        private void sourceSystemRegistryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("This feature is yet to be implemented.", "Upcoming!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        }
 
         private void generalSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {

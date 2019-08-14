@@ -174,12 +174,6 @@
     <Compile Include="Form_Repository.Designer.cs">
       <DependentUpon>Form_Repository.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form_Test_Data.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Test_Data.Designer.cs">
-      <DependentUpon>Form_Test_Data.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form_Validation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -217,9 +211,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Repository.resx">
       <DependentUpon>Form_Repository.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Test_Data.resx">
-      <DependentUpon>Form_Test_Data.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Validation.resx">
       <DependentUpon>Form_Validation.cs</DependentUpon>

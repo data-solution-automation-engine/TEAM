@@ -88,7 +88,7 @@ namespace TEAM
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // Specify that the link was visited. 
-            linkLabel1.LinkVisited = true;
+            linkLabelTeam.LinkVisited = true;
             // Navigate to a URL.
             Process.Start("http://www.roelantvos.com");
         }
