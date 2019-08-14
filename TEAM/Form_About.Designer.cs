@@ -36,7 +36,7 @@ namespace TEAM
             this.buttonClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.linkLabelTeam = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -85,16 +85,16 @@ namespace TEAM
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             // 
-            // linkLabel1
+            // linkLabelTeam
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(6, 253);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(137, 13);
-            this.linkLabel1.TabIndex = 7;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "http://www.roelantvos.com";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            this.linkLabelTeam.AutoSize = true;
+            this.linkLabelTeam.Location = new System.Drawing.Point(6, 253);
+            this.linkLabelTeam.Name = "linkLabelTeam";
+            this.linkLabelTeam.Size = new System.Drawing.Size(168, 13);
+            this.linkLabelTeam.TabIndex = 7;
+            this.linkLabelTeam.TabStop = true;
+            this.linkLabelTeam.Text = "http://roelantvos.com/blog/team/";
+            this.linkLabelTeam.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // FormAbout
             // 
@@ -103,9 +103,9 @@ namespace TEAM
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(289, 276);
+            this.ClientSize = new System.Drawing.Size(289, 275);
             this.ControlBox = false;
-            this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.linkLabelTeam);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.buttonClose);
@@ -136,6 +136,6 @@ namespace TEAM
         private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private LinkLabel linkLabel1;
+        private LinkLabel linkLabelTeam;
     }
 }

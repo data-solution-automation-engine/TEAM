@@ -557,7 +557,6 @@ namespace TEAM
             // Make sure the new paths as updated are available upon save for backup etc.
             ClassEnvironmentConfiguration.InitialiseConfigurationPath();
 
-
             // Create a file backup for the configuration file
             try
             {
@@ -627,7 +626,7 @@ namespace TEAM
             ConfigurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
             ConfigurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
             ConfigurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
-            ConfigurationSettings.LsatPrefixValue = textBoxLinkSatPrefix.Text;
+            ConfigurationSettings.LsatTablePrefixValue = textBoxLinkSatPrefix.Text;
 
             if (keyPrefixRadiobutton.Checked)
             {

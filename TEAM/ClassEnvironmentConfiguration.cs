@@ -439,7 +439,7 @@ namespace TEAM
                 configurationFile.AppendLine("HubTablePrefix|" + FormBase.ConfigurationSettings.HubTablePrefixValue + "");
                 configurationFile.AppendLine("SatTablePrefix|" + FormBase.ConfigurationSettings.SatTablePrefixValue + "");
                 configurationFile.AppendLine("LinkTablePrefix|" + FormBase.ConfigurationSettings.LinkTablePrefixValue +"");
-                configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.ConfigurationSettings.LsatPrefixValue + "");
+                configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.ConfigurationSettings.LsatTablePrefixValue + "");
                 configurationFile.AppendLine("KeyIdentifier|" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "");
                 configurationFile.AppendLine("SchemaName|" + FormBase.ConfigurationSettings.SchemaName + "");
                 configurationFile.AppendLine("RowID|" + FormBase.ConfigurationSettings.RowIdAttribute + "");
@@ -544,7 +544,7 @@ namespace TEAM
                 FormBase.ConfigurationSettings.HubTablePrefixValue = configList["HubTablePrefix"];
                 FormBase.ConfigurationSettings.SatTablePrefixValue = configList["SatTablePrefix"];
                 FormBase.ConfigurationSettings.LinkTablePrefixValue = configList["LinkTablePrefix"];
-                FormBase.ConfigurationSettings.LsatPrefixValue = configList["LinkSatTablePrefix"];
+                FormBase.ConfigurationSettings.LsatTablePrefixValue = configList["LinkSatTablePrefix"];
                 FormBase.ConfigurationSettings.DwhKeyIdentifier = configList["KeyIdentifier"];
                 FormBase.ConfigurationSettings.PsaKeyLocation = configList["PSAKeyLocation"];
                 FormBase.ConfigurationSettings.TableNamingLocation = configList["TableNamingLocation"];

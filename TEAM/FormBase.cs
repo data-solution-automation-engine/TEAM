@@ -57,7 +57,7 @@ namespace TEAM
             internal static string HubTablePrefixValue { get; set; }
             internal static string SatTablePrefixValue { get; set; }
             internal static string LinkTablePrefixValue { get; set; }
-            internal static string LsatPrefixValue { get; set; }
+            internal static string LsatTablePrefixValue { get; set; }
 
             //Connection strings
             internal static string ConnectionStringSource { get; set; }

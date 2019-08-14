@@ -11,6 +11,68 @@ namespace TEAM
 {
     internal class ClassMetadataHandling
     {
+        /// <summary>
+        /// Return the Surrogate Key for a given table using the TEAM settings (i.e. prefix/suffix settings etc.).
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns>surrogateKey</returns>
+        internal static string GetSurrogateKey(string tableName)
+        {
+            // Initialise the return value
+            string surrogateKey = "";
+
+            string keyLocation = FormBase.ConfigurationSettings.DwhKeyIdentifier;
+
+            string[] prefixSuffixAray = {
+                FormBase.ConfigurationSettings.HubTablePrefixValue,
+                FormBase.ConfigurationSettings.SatTablePrefixValue,
+                FormBase.ConfigurationSettings.LinkTablePrefixValue,
+                FormBase.ConfigurationSettings.LsatTablePrefixValue
+            };
+
+            if (tableName != "Not applicable")
+            {
+                // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
+                if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix")
+                {
+                    foreach (string prefixValue in prefixSuffixAray)
+                    {
+                        string prefixValueWithUnderscore = prefixValue + '_';
+                        if (tableName.StartsWith(prefixValueWithUnderscore))
+                        {
+                            tableName = tableName.Replace(prefixValueWithUnderscore, "");
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (string suffixValue in prefixSuffixAray)
+                    {
+                        string suffixValueWithUnderscore = '_'+suffixValue;
+                        if (tableName.EndsWith(suffixValueWithUnderscore))
+                        {
+                            tableName = tableName.Replace(suffixValueWithUnderscore, "");
+                        }
+                    }
+                }
+
+
+                // Define the surrogate key using the table name and key prefix/suffix settings.
+                if (FormBase.ConfigurationSettings.KeyNamingLocation == "Prefix")
+                {
+                    surrogateKey = keyLocation + '_' + tableName;
+                }
+                else
+                {
+                    surrogateKey = tableName + '_' + keyLocation;
+                }
+            }
+
+
+            return surrogateKey;
+        }
+
+
         internal static string GetTableType(string tableName)
         {
             string localType ="";
@@ -32,7 +94,7 @@ namespace TEAM
                 {
                     localType = "Link";
                 }
-                else if (tableName.StartsWith(FormBase.ConfigurationSettings.LsatPrefixValue))
+                else if (tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue))
                 {
                     localType = "Link-Satellite";
                 }
@@ -67,7 +129,7 @@ namespace TEAM
                 {
                     localType = "Link";
                 }
-                else if (tableName.EndsWith(FormBase.ConfigurationSettings.LsatPrefixValue))
+                else if (tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue))
                 {
                     localType = "Link-Satellite";
                 }
@@ -160,7 +222,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Return just the table name, in case a fully qualified name is available (including schema etc.)
+        ///   Return just the table name, in case a fully qualified name is available (including schema etc.).
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
@@ -183,7 +245,11 @@ namespace TEAM
         }
 
 
-
+        /// <summary>
+        ///  Separates the schema from the table name, and returns both as individual values.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         internal static Dictionary<string, string> GetSchema(string tableName)
         {
             Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
@@ -208,6 +274,11 @@ namespace TEAM
             return fullyQualifiedTableName;
         }
 
+        /// <summary>
+        /// Retrieve the fully qualified name (including schema) for a given input table name.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         internal static string getFullSchemaTable(string tableName)
         {
             var fullyQualifiedSourceName = GetSchema(tableName).FirstOrDefault();
@@ -217,73 +288,75 @@ namespace TEAM
             return returnTableName;
         }
 
-        public static List<string> GetHubTargetBusinessKeyList(string hubSchemaName, string hubTableName, int versionId, string queryMode)
+
+        /// <summary>
+        /// Returns a list of Business Key attributes as they are defined in the target Hub table.
+        /// </summary>
+        /// <param name="schemaName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="versionId"></param>
+        /// <param name="queryMode"></param>
+        /// <returns></returns>
+        public static List<string> GetHubTargetBusinessKeyList(string schemaName, string tableName, int versionId, string queryMode)
         {
-            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys
+            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
             var conn = new SqlConnection();
 
-            if (queryMode == "physical")
-            {
-                conn = new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt};
-            }
-            else // Virtual
-            {
-                conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            }
+            conn = queryMode == "physical" ? new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt} : new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
 
             try
             {
                 conn.Open();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                // SetTextDebug("An error has occurred defining the Hub Business Key in the model due to connectivity issues (connection string " + conn.ConnectionString + "). The associated message is " + exception.Message);
             }
 
-            var sqlStatementForHubBusinessKeys = new StringBuilder();
+            var sqlStatementForBusinessKeys = new StringBuilder();
 
             var keyText = FormBase.ConfigurationSettings.DwhKeyIdentifier;
             var localkeyLength = keyText.Length;
             var localkeySubstring = localkeyLength + 1;
 
             // Make sure brackets are removed
-            hubSchemaName = hubSchemaName.Replace("[","").Replace("]","");
-            hubTableName = hubTableName.Replace("[", "").Replace("]", "");
+            schemaName = schemaName.Replace("[","").Replace("]","");
+            tableName = tableName.Replace("[", "").Replace("]", "");
 
             if (queryMode == "physical")
             {
                 // Make sure the live database is hit when the checkbox is ticked
-                sqlStatementForHubBusinessKeys.AppendLine("SELECT COLUMN_NAME");
-                sqlStatementForHubBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
-                sqlStatementForHubBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
-                sqlStatementForHubBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + hubSchemaName + "'");
-                sqlStatementForHubBusinessKeys.AppendLine("  AND TABLE_NAME= '" + hubTableName + "'");
-                sqlStatementForHubBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
+                sqlStatementForBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
+                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
+                sqlStatementForBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + schemaName + "'");
+                sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
+                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
                                                           FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
             }
             else
             {
                 //Ignore version is not checked, so versioning is used - meaning the business key metadata is sourced from the version history metadata.
-                sqlStatementForHubBusinessKeys.AppendLine("SELECT COLUMN_NAME");
-                sqlStatementForHubBusinessKeys.AppendLine("FROM MD_VERSION_ATTRIBUTE");
-                sqlStatementForHubBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
-                sqlStatementForHubBusinessKeys.AppendLine("  AND TABLE_NAME= '" + hubTableName + "'");
-                sqlStatementForHubBusinessKeys.AppendLine("  AND SCHEMA_NAME= '" + hubSchemaName + "'");
-                sqlStatementForHubBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
+                sqlStatementForBusinessKeys.AppendLine("FROM MD_VERSION_ATTRIBUTE");
+                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
+                sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
+                sqlStatementForBusinessKeys.AppendLine("  AND SCHEMA_NAME= '" + schemaName + "'");
+                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
                                                           FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
-                sqlStatementForHubBusinessKeys.AppendLine("  AND VERSION_ID = " + versionId + "");
+                sqlStatementForBusinessKeys.AppendLine("  AND VERSION_ID = " + versionId + "");
             }
 
 
-            var hubKeyList = FormBase.GetDataTable(ref conn, sqlStatementForHubBusinessKeys.ToString());
+            var keyList = FormBase.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
 
-            if (hubKeyList == null)
+            if (keyList == null)
             {
                 //SetTextDebug("An error has occurred defining the Hub Business Key in the model for " + hubTableName + ". The Business Key was not found when querying the underlying metadata. This can be either that the attribute is missing in the metadata or in the table (depending if versioning is used). If the 'ignore versioning' option is checked, then the metadata will be retrieved directly from the data dictionary. Otherwise the metadata needs to be available in the repository (manage model metadata).");
             }
 
             var businessKeyList = new List<string>();
-            foreach (DataRow row in hubKeyList.Rows)
+            foreach (DataRow row in keyList.Rows)
             {
                 if (!businessKeyList.Contains((string)row["COLUMN_NAME"]))
                 {
@@ -295,6 +368,61 @@ namespace TEAM
         }
 
 
+        /// <summary>
+        /// Returns a list of Business Key attributes as they are defined in the target Link table.
+        /// </summary>
+        /// <param name="schemaName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="versionId"></param>
+        /// <param name="queryMode"></param>
+        /// <returns></returns>
+        public static List<string> GetLinkTargetBusinessKeyList(string schemaName, string tableName, int versionId)
+        {
+            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
+
+            var conn = new SqlConnection();
+            conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception)
+            {
+            }
+
+            // Make sure brackets are removed
+            tableName = tableName.Replace("[", "").Replace("]", "");
+
+            var sqlStatementForBusinessKeys = new StringBuilder();
+
+            sqlStatementForBusinessKeys.AppendLine("SELECT");
+            sqlStatementForBusinessKeys.AppendLine("  xref.[HUB_NAME]");
+            sqlStatementForBusinessKeys.AppendLine(" ,xref.[LINK_NAME]");
+            sqlStatementForBusinessKeys.AppendLine(" ,hub.[BUSINESS_KEY]");
+            sqlStatementForBusinessKeys.AppendLine("FROM[dbo].[MD_HUB_LINK_XREF] xref");
+            sqlStatementForBusinessKeys.AppendLine("JOIN[dbo].[MD_HUB] hub ON xref.HUB_NAME = hub.HUB_NAME");
+            sqlStatementForBusinessKeys.AppendLine("WHERE [LINK_NAME] = '"+tableName+"'");
+            sqlStatementForBusinessKeys.AppendLine("ORDER BY [HUB_ORDER]");
+
+            var keyList = FormBase.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
+
+            if (keyList == null)
+            {
+                //SetTextDebug("An error has occurred defining the Hub Business Key in the model for " + hubTableName + ". The Business Key was not found when querying the underlying metadata. This can be either that the attribute is missing in the metadata or in the table (depending if versioning is used). If the 'ignore versioning' option is checked, then the metadata will be retrieved directly from the data dictionary. Otherwise the metadata needs to be available in the repository (manage model metadata).");
+            }
+
+            var businessKeyList = new List<string>();
+            foreach (DataRow row in keyList.Rows)
+            {
+                if (!businessKeyList.Contains((string)row["BUSINESS_KEY"]))
+                {
+                    businessKeyList.Add((string)row["BUSINESS_KEY"]);
+                }
+            }
+
+            return businessKeyList;
+        }
     }
 
     internal class AttributeSelection
@@ -322,19 +450,19 @@ namespace TEAM
             returnValue.AppendLine("    THEN 'N' ");
             returnValue.AppendLine("    ELSE 'Y' ");
             returnValue.AppendLine("  END AS PRIMARY_KEY_INDICATOR");
-            returnValue.AppendLine("FROM " + databaseName + ".sys.columns A");
+            returnValue.AppendLine("FROM [" + databaseName + "].sys.columns A");
             returnValue.AppendLine("JOIN sys.types t ON A.user_type_id= t.user_type_id");
             returnValue.AppendLine("-- Primary Key");
             returnValue.AppendLine(" LEFT OUTER JOIN (");
             returnValue.AppendLine("     SELECT");
             returnValue.AppendLine("       sc.name AS TABLE_NAME,");
             returnValue.AppendLine("       C.name AS COLUMN_NAME");
-            returnValue.AppendLine("     FROM " + databaseName + ".sys.index_columns A");
-            returnValue.AppendLine("     JOIN " + databaseName + ".sys.indexes B");
+            returnValue.AppendLine("     FROM [" + databaseName + "].sys.index_columns A");
+            returnValue.AppendLine("     JOIN [" + databaseName + "].sys.indexes B");
             returnValue.AppendLine("     ON A.OBJECT_ID= B.OBJECT_ID AND A.index_id= B.index_id");
-            returnValue.AppendLine("     JOIN " + databaseName + ".sys.columns C");
+            returnValue.AppendLine("     JOIN [" + databaseName + "].sys.columns C");
             returnValue.AppendLine("     ON A.column_id= C.column_id AND A.OBJECT_ID= C.OBJECT_ID");
-            returnValue.AppendLine("     JOIN " + databaseName + ".sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            returnValue.AppendLine("     JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
             returnValue.AppendLine("     WHERE is_primary_key = 1");
             returnValue.AppendLine(" ) keysub");
             returnValue.AppendLine("    ON OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) = keysub.[TABLE_NAME]");

@@ -67,9 +67,9 @@ namespace TEAM
             this.radiobuttonMajorRelease = new System.Windows.Forms.RadioButton();
             this.radiobuttonNoVersionChange = new System.Windows.Forms.RadioButton();
             this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
-            this.checkBoxIgnoreVersion = new System.Windows.Forms.CheckBox();
+            this.radioButtonPhysicalMode = new System.Windows.Forms.RadioButton();
+            this.radioButtonVirtualMode = new System.Windows.Forms.RadioButton();
             this.checkBoxValidation = new System.Windows.Forms.CheckBox();
-            this.checkBoxClearMetadata = new System.Windows.Forms.CheckBox();
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.menuStripMetadata = new System.Windows.Forms.MenuStrip();
@@ -147,7 +147,7 @@ namespace TEAM
             // buttonValidation
             // 
             this.buttonValidation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonValidation.Location = new System.Drawing.Point(1376, 329);
+            this.buttonValidation.Location = new System.Drawing.Point(1376, 394);
             this.buttonValidation.Name = "buttonValidation";
             this.buttonValidation.Size = new System.Drawing.Size(120, 40);
             this.buttonValidation.TabIndex = 24;
@@ -159,7 +159,7 @@ namespace TEAM
             // 
             this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(1249, 372);
+            this.labelResult.Location = new System.Drawing.Point(1251, 437);
             this.labelResult.Name = "labelResult";
             this.labelResult.Size = new System.Drawing.Size(38, 13);
             this.labelResult.TabIndex = 23;
@@ -168,7 +168,7 @@ namespace TEAM
             // buttonStart
             // 
             this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStart.Location = new System.Drawing.Point(1252, 329);
+            this.buttonStart.Location = new System.Drawing.Point(1252, 393);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(120, 40);
             this.buttonStart.TabIndex = 22;
@@ -492,48 +492,47 @@ namespace TEAM
             // MetadataGenerationGroupBox
             // 
             this.MetadataGenerationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxIgnoreVersion);
+            this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonPhysicalMode);
+            this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonVirtualMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
-            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxClearMetadata);
-            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1252, 218);
+            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1252, 293);
             this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
-            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(243, 105);
+            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(243, 95);
             this.MetadataGenerationGroupBox.TabIndex = 3;
             this.MetadataGenerationGroupBox.TabStop = false;
             this.MetadataGenerationGroupBox.Text = "Metadata activation options";
             // 
-            // checkBoxIgnoreVersion
+            // radioButtonPhysicalMode
             // 
-            this.checkBoxIgnoreVersion.AutoSize = true;
-            this.checkBoxIgnoreVersion.Checked = true;
-            this.checkBoxIgnoreVersion.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxIgnoreVersion.Location = new System.Drawing.Point(6, 65);
-            this.checkBoxIgnoreVersion.Name = "checkBoxIgnoreVersion";
-            this.checkBoxIgnoreVersion.Size = new System.Drawing.Size(219, 17);
-            this.checkBoxIgnoreVersion.TabIndex = 25;
-            this.checkBoxIgnoreVersion.Text = "Use live database / ignore model version";
-            this.checkBoxIgnoreVersion.UseVisualStyleBackColor = true;
+            this.radioButtonPhysicalMode.AutoSize = true;
+            this.radioButtonPhysicalMode.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonPhysicalMode.Name = "radioButtonPhysicalMode";
+            this.radioButtonPhysicalMode.Size = new System.Drawing.Size(94, 17);
+            this.radioButtonPhysicalMode.TabIndex = 4;
+            this.radioButtonPhysicalMode.Text = "Physical Mode";
+            this.radioButtonPhysicalMode.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonVirtualMode
+            // 
+            this.radioButtonVirtualMode.AutoSize = true;
+            this.radioButtonVirtualMode.Checked = true;
+            this.radioButtonVirtualMode.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonVirtualMode.Name = "radioButtonVirtualMode";
+            this.radioButtonVirtualMode.Size = new System.Drawing.Size(84, 17);
+            this.radioButtonVirtualMode.TabIndex = 3;
+            this.radioButtonVirtualMode.TabStop = true;
+            this.radioButtonVirtualMode.Text = "Virtual Mode";
+            this.radioButtonVirtualMode.UseVisualStyleBackColor = true;
             // 
             // checkBoxValidation
             // 
             this.checkBoxValidation.AutoSize = true;
-            this.checkBoxValidation.Location = new System.Drawing.Point(6, 42);
+            this.checkBoxValidation.Location = new System.Drawing.Point(6, 67);
             this.checkBoxValidation.Name = "checkBoxValidation";
             this.checkBoxValidation.Size = new System.Drawing.Size(164, 17);
             this.checkBoxValidation.TabIndex = 10;
             this.checkBoxValidation.Text = "Validate generation metadata";
             this.checkBoxValidation.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxClearMetadata
-            // 
-            this.checkBoxClearMetadata.AutoSize = true;
-            this.checkBoxClearMetadata.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxClearMetadata.Name = "checkBoxClearMetadata";
-            this.checkBoxClearMetadata.Size = new System.Drawing.Size(150, 17);
-            this.checkBoxClearMetadata.TabIndex = 9;
-            this.checkBoxClearMetadata.Text = "Clear generation metadata";
-            this.checkBoxClearMetadata.UseVisualStyleBackColor = true;
-            this.checkBoxClearMetadata.CheckedChanged += new System.EventHandler(this.checkBoxClearMetadata_CheckedChanged);
             // 
             // labelInformation
             // 
@@ -743,10 +742,10 @@ namespace TEAM
             // 
             // checkBoxResizeDataGrid
             // 
-            this.checkBoxResizeDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxResizeDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxResizeDataGrid.Checked = true;
             this.checkBoxResizeDataGrid.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxResizeDataGrid.Location = new System.Drawing.Point(1258, 508);
+            this.checkBoxResizeDataGrid.Location = new System.Drawing.Point(22, 816);
             this.checkBoxResizeDataGrid.Name = "checkBoxResizeDataGrid";
             this.checkBoxResizeDataGrid.Size = new System.Drawing.Size(108, 17);
             this.checkBoxResizeDataGrid.TabIndex = 27;
@@ -781,11 +780,11 @@ namespace TEAM
             // 
             // groupBoxJsonOptions
             // 
-            this.groupBoxJsonOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxJsonOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxSaveInterfaceToJson);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxBackupFiles);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxMergeFiles);
-            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1252, 401);
+            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1252, 657);
             this.groupBoxJsonOptions.Name = "groupBoxJsonOptions";
             this.groupBoxJsonOptions.Size = new System.Drawing.Size(243, 98);
             this.groupBoxJsonOptions.TabIndex = 26;
@@ -859,7 +858,6 @@ namespace TEAM
         private System.Windows.Forms.Label labelInformation;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.GroupBox MetadataGenerationGroupBox;
-        private System.Windows.Forms.CheckBox checkBoxClearMetadata;
         private System.Windows.Forms.CheckBox checkBoxValidation;
         private System.Windows.Forms.ToolStripMenuItem validationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem manageValidationRulesToolStripMenuItem;
@@ -891,7 +889,6 @@ namespace TEAM
         public System.Windows.Forms.GroupBox groupBox1;
         public System.Windows.Forms.TrackBar trackBarVersioning;
         private System.Windows.Forms.Button buttonValidation;
-        private System.Windows.Forms.CheckBox checkBoxIgnoreVersion;
         private System.Windows.Forms.ToolStripMenuItem saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
         private CustomTimedTextBox textBoxFilterCriterion;
@@ -918,5 +915,7 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxSaveInterfaceToJson;
         private System.Windows.Forms.CheckBox checkBoxPresentationLayer;
         private System.Windows.Forms.CheckBox checkBoxPsa;
+        private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
+        private System.Windows.Forms.RadioButton radioButtonVirtualMode;
     }
 }

@@ -133,7 +133,6 @@
             this.labelResult.Size = new System.Drawing.Size(38, 13);
             this.labelResult.TabIndex = 30;
             this.labelResult.Text = "Ready";
-            this.labelResult.Click += new System.EventHandler(this.labelResult_Click);
             // 
             // checkBoxRetainManualMapping
             // 
@@ -155,7 +154,6 @@
             this.labelMetadataRepository.Size = new System.Drawing.Size(197, 13);
             this.labelMetadataRepository.TabIndex = 62;
             this.labelMetadataRepository.Text = "Repository type in configuration is set to ";
-            this.labelMetadataRepository.Click += new System.EventHandler(this.labelMetadataRepository_Click);
             // 
             // backgroundWorkerSampleData
             // 
@@ -247,7 +245,6 @@
             this.label5.Size = new System.Drawing.Size(561, 52);
             this.label5.TabIndex = 87;
             this.label5.Text = resources.GetString("label5.Text");
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // linkLabel4
             // 
@@ -405,10 +402,10 @@
             this.linkLabel5.AutoSize = true;
             this.linkLabel5.Location = new System.Drawing.Point(625, 19);
             this.linkLabel5.Name = "linkLabel5";
-            this.linkLabel5.Size = new System.Drawing.Size(111, 13);
+            this.linkLabel5.Size = new System.Drawing.Size(107, 13);
             this.linkLabel5.TabIndex = 83;
             this.linkLabel5.TabStop = true;
-            this.linkLabel5.Text = "https://bit.ly/2OrAanq";
+            this.linkLabel5.Text = "https://bit.ly/2YF5tTr";
             // 
             // FormManageRepository
             // 
