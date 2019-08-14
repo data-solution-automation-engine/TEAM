@@ -275,7 +275,7 @@ namespace TEAM
                     table.Rows.Add(row);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             { 
                 // IGNORE
             }

@@ -3385,7 +3385,7 @@ namespace TEAM
                     commandVersion.ExecuteNonQuery();
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // IGNORE FOR NOW
                 }
@@ -5767,8 +5767,6 @@ namespace TEAM
                 }
                 else
                 {
-                    int automaticSatMappingCounter = 0;
-
                     foreach (DataRow row in automaticAttributeMappingsSatellites.Rows)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
