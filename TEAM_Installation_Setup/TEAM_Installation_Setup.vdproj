@@ -33,18 +33,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0BBF9E23B2B2EDCCA8D4926C388BB26B"
-        "OwnerKey" = "8:_BDBB773B7D3FBAA025C9248894F318BF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0BBF9E23B2B2EDCCA8D4926C388BB26B"
-        "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0D99BBD707174F4FA217F36F838E5613"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -77,18 +65,6 @@
         {
         "MsmKey" = "8:_1ACB6F9EEE7F4CD9CD64EFC1FE4A095C"
         "OwnerKey" = "8:_FD384E93540152245CEE2A08956BF9EB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2995EF8E80761AFDF58FE3178885BA36"
-        "OwnerKey" = "8:_BDBB773B7D3FBAA025C9248894F318BF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2995EF8E80761AFDF58FE3178885BA36"
-        "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -165,12 +141,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BDBB773B7D3FBAA025C9248894F318BF"
-        "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_F3CE363D9D3F858D53913D04D6637F96"
         "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
         "MsmSig" = "8:_UNDEFINED"
@@ -202,19 +172,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BDBB773B7D3FBAA025C9248894F318BF"
+        "OwnerKey" = "8:_7005F4A6881E182ADBF553ACC5313DDB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2995EF8E80761AFDF58FE3178885BA36"
+        "OwnerKey" = "8:_6C17198D46295DD15D142529DA57CB95"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0BBF9E23B2B2EDCCA8D4926C388BB26B"
+        "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -251,24 +221,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1ACB6F9EEE7F4CD9CD64EFC1FE4A095C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7005F4A6881E182ADBF553ACC5313DDB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6C17198D46295DD15D142529DA57CB95"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -382,38 +334,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.SqlEnum.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0BBF9E23B2B2EDCCA8D4926C388BB26B"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:yWorks.yFilesNET.Algorithms, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_0BBF9E23B2B2EDCCA8D4926C388BB26B"
-                    {
-                    "Name" = "8:yWorks.yFilesNET.Algorithms.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:yWorks.yFilesNET.Algorithms.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -433,7 +354,7 @@
             "SourcePath" = "8:..\\TEAM\\Resources\\Ravos-logo-small_transparant.ico"
             "TargetName" = "8:Ravos-logo-small_transparant.ico"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_42F988944C0B4AF68AF68B8F3879187F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -464,38 +385,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.ConnectionInfo.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2995EF8E80761AFDF58FE3178885BA36"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:yWorks.yFilesNET.Viewer, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_2995EF8E80761AFDF58FE3178885BA36"
-                    {
-                    "Name" = "8:yWorks.yFilesNET.Viewer.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:yWorks.yFilesNET.Viewer.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -526,7 +416,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.SqlClrProvider.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -557,7 +447,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.Dmf.Common.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -588,7 +478,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.Diagnostics.STrace.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -619,7 +509,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.ServiceBrokerEnum.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -650,38 +540,7 @@
             "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BDBB773B7D3FBAA025C9248894F318BF"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:yWorks.yFilesNET.Adapter, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_BDBB773B7D3FBAA025C9248894F318BF"
-                    {
-                    "Name" = "8:yWorks.yFilesNET.Adapter.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:yWorks.yFilesNET.Adapter.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -712,7 +571,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.Smo.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -743,7 +602,7 @@
             "SourcePath" = "8:Microsoft.SqlServer.Management.Sdk.Sfc.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -774,13 +633,13 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_4CA4CA64A9804800ABAF3A00663F0E38"
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_42F988944C0B4AF68AF68B8F3879187F"
                     {
-                    "Name" = "8:TEAM"
+                    "Name" = "8:Resources"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
-                    "Property" = "8:_8FA8BBCB04C54DD4A72C9AF8C0DBEAAC"
+                    "Property" = "8:_6B12DBDA17D14503B9BF589061DBDCC4"
                         "Folders"
                         {
                         }
@@ -796,17 +655,6 @@
             "Property" = "8:ProgramMenuFolder"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_C266C184B2814FA8A69781AED729BD2A"
-                    {
-                    "Name" = "8:TEAM"
-                    "AlwaysCreate" = "11:TRUE"
-                    "Condition" = "8:"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_FE11CB7058224AF18D1D7C6180A791D1"
-                        "Folders"
-                        {
-                        }
-                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_E30CB0C020F941AEB98DB5CCD013233A"
@@ -836,15 +684,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
-        "ProductCode" = "8:{3DC0AB49-CEDC-4712-9399-3CD7D2EAF7B3}"
-        "PackageCode" = "8:{D1315EBC-7F3A-4925-ABF5-7682BADD1E6A}"
+        "ProductCode" = "8:{25EC5644-A004-4D0F-80EB-F52A0BCA0F9F}"
+        "PackageCode" = "8:{5FA9C557-04D7-40FF-BA5B-A91FC26CA97C}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.5.5"
         "Manufacturer" = "8:Roelant Vos"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.roelantvos.com/blog"
@@ -966,8 +814,8 @@
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
             "Target" = "8:_2CA91C3E5CDB4111B03879697165DB37"
-            "Folder" = "8:_C266C184B2814FA8A69781AED729BD2A"
-            "WorkingFolder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_CC3BBB7CE7834112AB2FAAF88FA4B1B9"
+            "WorkingFolder" = "8:"
             "Icon" = "8:_0D99BBD707174F4FA217F36F838E5613"
             "Feature" = "8:"
             }
@@ -981,7 +829,7 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_2CA91C3E5CDB4111B03879697165DB37"
             "Folder" = "8:_E30CB0C020F941AEB98DB5CCD013233A"
-            "WorkingFolder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "WorkingFolder" = "8:"
             "Icon" = "8:_0D99BBD707174F4FA217F36F838E5613"
             "Feature" = "8:"
             }
@@ -1389,7 +1237,7 @@
             "SourcePath" = "8:..\\TEAM\\obj\\Release\\TEAM.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_4CA4CA64A9804800ABAF3A00663F0E38"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
