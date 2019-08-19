@@ -1557,7 +1557,7 @@ namespace TEAM
                 createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine("  tgt.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine("  xref.[STAGING_NAME] AS [TARGET_NAME],");
-                createStatement.AppendLine("  NULL AS [TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [TARGET_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine("  'StagingArea' AS [TARGET_TYPE],");
                 createStatement.AppendLine("  NULL AS [SURROGATE_KEY],");
                 createStatement.AppendLine("  [FILTER_CRITERIA],");
@@ -1593,7 +1593,7 @@ namespace TEAM
                 createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine("  tgt.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine("  xref.[PERSISTENT_STAGING_NAME] AS[TARGET_NAME],");
-                createStatement.AppendLine("  NULL AS[TARGET_BUSINESS_KEY_DEFINITION],");
+                createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [TARGET_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine("  'PersistentStagingArea' AS[TARGET_TYPE],");
                 createStatement.AppendLine("  NULL AS[SURROGATE_KEY],");
                 createStatement.AppendLine("  [FILTER_CRITERIA],");
