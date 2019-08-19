@@ -415,10 +415,10 @@ namespace TEAM
             var businessKeyList = new List<string>();
             foreach (DataRow row in keyList.Rows)
             {
-                if (!businessKeyList.Contains((string)row["BUSINESS_KEY"]))
-                {
+                //if (!businessKeyList.Contains((string)row["BUSINESS_KEY"]))
+               // {
                     businessKeyList.Add((string)row["BUSINESS_KEY"]);
-                }
+               // }
             }
 
             return businessKeyList;

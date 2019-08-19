@@ -1559,7 +1559,7 @@ namespace TEAM
                 createStatement.AppendLine("  xref.[STAGING_NAME] AS [TARGET_NAME],");
                 createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [TARGET_BUSINESS_KEY_DEFINITION],");
                 createStatement.AppendLine("  'StagingArea' AS [TARGET_TYPE],");
-                createStatement.AppendLine("  NULL AS [SURROGATE_KEY],");
+                createStatement.AppendLine("  'Not applicable' AS [SURROGATE_KEY],");
                 createStatement.AppendLine("  [FILTER_CRITERIA],");
                 createStatement.AppendLine("  'Raw' AS [LOAD_VECTOR]");
                 createStatement.AppendLine("FROM[MD_SOURCE_STAGING_XREF] xref");
@@ -1588,14 +1588,14 @@ namespace TEAM
                 createStatement.AppendLine("CREATE VIEW [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]");
                 createStatement.AppendLine("AS");
                 createStatement.AppendLine("SELECT");
-                createStatement.AppendLine("  src.[SCHEMA_NAME] AS[SOURCE_SCHEMA_NAME],");
+                createStatement.AppendLine("  src.[SCHEMA_NAME] AS [SOURCE_SCHEMA_NAME],");
                 createStatement.AppendLine("  xref.[SOURCE_NAME],");
                 createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [SOURCE_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("  tgt.[SCHEMA_NAME] AS[TARGET_SCHEMA_NAME],");
+                createStatement.AppendLine("  tgt.[SCHEMA_NAME] AS [TARGET_SCHEMA_NAME],");
                 createStatement.AppendLine("  xref.[PERSISTENT_STAGING_NAME] AS[TARGET_NAME],");
                 createStatement.AppendLine("  xref.[KEY_DEFINITION] AS [TARGET_BUSINESS_KEY_DEFINITION],");
-                createStatement.AppendLine("  'PersistentStagingArea' AS[TARGET_TYPE],");
-                createStatement.AppendLine("  NULL AS[SURROGATE_KEY],");
+                createStatement.AppendLine("  'PersistentStagingArea' AS [TARGET_TYPE],");
+                createStatement.AppendLine("  'Not applicable' AS [SURROGATE_KEY],");
                 createStatement.AppendLine("  [FILTER_CRITERIA],");
                 createStatement.AppendLine("  'Raw' AS [LOAD_VECTOR]");
                 createStatement.AppendLine("FROM [MD_SOURCE_PERSISTENT_STAGING_XREF] xref");
