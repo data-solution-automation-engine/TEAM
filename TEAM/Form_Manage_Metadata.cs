@@ -5398,11 +5398,24 @@ namespace TEAM
                     _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the physical model metadata.\r\n");
                 }
 
-                // Run the statement, the virtual vs. physical lookups are embedded in allDatabaseAttributes
+                // Run the statement, the virtual vs. physical lookups are embedded in MD_PHYSICAL_MODEL
                 var prepareMappingStagingStatement = new StringBuilder();
                 prepareMappingStagingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareMappingStagingStatement.AppendLine("(");
-                prepareMappingStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+                //prepareMappingStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+
+                prepareMappingStagingStatement.AppendLine("SELECT");
+                prepareMappingStagingStatement.AppendLine("  [DATABASE_NAME]");
+                prepareMappingStagingStatement.AppendLine(" ,[SCHEMA_NAME]");
+                prepareMappingStagingStatement.AppendLine(" ,[TABLE_NAME]");
+                prepareMappingStagingStatement.AppendLine(" ,[COLUMN_NAME]");
+                prepareMappingStagingStatement.AppendLine(" ,[DATA_TYPE]");
+                prepareMappingStagingStatement.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                prepareMappingStagingStatement.AppendLine(" ,[NUMERIC_PRECISION]");
+                prepareMappingStagingStatement.AppendLine(" ,[ORDINAL_POSITION]");
+                prepareMappingStagingStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                prepareMappingStagingStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
+
                 prepareMappingStagingStatement.AppendLine("),");
                 prepareMappingStagingStatement.AppendLine("XREF AS");
                 prepareMappingStagingStatement.AppendLine("(");
@@ -5904,13 +5917,13 @@ namespace TEAM
                     // Entries found in the automatic check which are not already in the manual datatable will be added
                     foreach (DataRow automaticMapping in automaticDegenerateMappings.Rows)
                     {
-                        DataRow[] foundRow = degenerateMappings.Select("SOURCE_NAME = '" + automaticMapping["SOURCE_NAME"] + "' AND LINK_NAME = '" + automaticMapping["TARGET_NAME"] + "' AND ATTRIBUTE_NAME_FROM = '" + automaticMapping["ATTRIBUTE_NAME_FROM"] + "'AND ATTRIBUTE_NAME_TO = '" + automaticMapping["ATTRIBUTE_NAME_TO"] + "'");
+                        DataRow[] foundRow = degenerateMappings.Select("SOURCE_NAME = '" + automaticMapping["SOURCE_NAME"] + "' AND LINK_NAME = '" + automaticMapping["LINK_NAME"] + "' AND ATTRIBUTE_NAME_FROM = '" + automaticMapping["ATTRIBUTE_NAME_FROM"] + "'AND ATTRIBUTE_NAME_TO = '" + automaticMapping["ATTRIBUTE_NAME_TO"] + "'");
                         if (foundRow.Length == 0)
                         {
                             // If nothing is found, add to the overall data table that is inserted into SOURCE_SATELLITE_ATTRIBUTE_XREF
                             degenerateMappings.Rows.Add(
                                 automaticMapping["SOURCE_NAME"],
-                                automaticMapping["TARGET_NAME"],
+                                automaticMapping["LINK_NAME"],
                                 automaticMapping["ATTRIBUTE_NAME_FROM"],
                                 automaticMapping["ATTRIBUTE_NAME_TO"],
                                 automaticMapping["VERIFICATION"]);
