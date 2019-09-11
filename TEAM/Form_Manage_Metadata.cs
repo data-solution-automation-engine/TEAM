@@ -4644,13 +4644,14 @@ namespace TEAM
                 worker.ReportProgress(35);
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Filter variables created successfully.\r\n");
-                
+
                 #endregion
 
+                #region Physical Model dump- 40%
+                // Creating a point-in-time snapshot of the physical model used for export to the interface schemas
 
-                #region Prepare attributes - 40%
-                //Prepare Attributes
                 _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Creating a snapshot of the physical model.\r\n");
 
                 // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
                 var allDatabaseAttributes = new StringBuilder();
@@ -4685,8 +4686,105 @@ namespace TEAM
                     allDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
                 }
 
+                try
+                {
+                    var preparePhysicalModelStatement = new StringBuilder();
 
-                var prepareAttStatement = new StringBuilder();
+                    preparePhysicalModelStatement.AppendLine("SELECT ");
+                    preparePhysicalModelStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelStatement.AppendLine("FROM");
+                    preparePhysicalModelStatement.AppendLine("(");
+
+                    preparePhysicalModelStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
+
+                    //preparePhysicalModelStatement.AppendLine("SELECT");
+                    //preparePhysicalModelStatement.AppendLine("  [DATABASE_NAME]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[SCHEMA_NAME]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[TABLE_NAME]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[COLUMN_NAME]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[DATA_TYPE]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[NUMERIC_PRECISION]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[ORDINAL_POSITION]");
+                    //preparePhysicalModelStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                    //preparePhysicalModelStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
+
+                    preparePhysicalModelStatement.AppendLine(") sub");
+
+                    var physicalModelDataTable = GetDataTable(ref connOmd, preparePhysicalModelStatement.ToString());
+
+                    if (physicalModelDataTable.Rows.Count == 0)
+                    {
+                        _alert.SetTextLogging("--> No model information was found in the metadata.\r\n");
+                    }
+                    else
+                    {
+                        foreach (DataRow tableName in physicalModelDataTable.Rows)
+                        {
+                            using (var connection = new SqlConnection(metaDataConnection))
+                            {
+                                var insertKeyStatement = new StringBuilder();
+
+                                insertKeyStatement.AppendLine("INSERT INTO [MD_PHYSICAL_MODEL]");
+                                insertKeyStatement.AppendLine("([DATABASE_NAME], " +
+                                                              "[SCHEMA_NAME], " +
+                                                              "[TABLE_NAME], " +
+                                                              "[COLUMN_NAME], " +
+                                                              "[DATA_TYPE], " +
+                                                              "[CHARACTER_MAXIMUM_LENGTH], " +
+                                                              "[NUMERIC_PRECISION], " +
+                                                              "[ORDINAL_POSITION], " +
+                                                              "[PRIMARY_KEY_INDICATOR])");
+                                insertKeyStatement.AppendLine("VALUES ('" + tableName["DATABASE_NAME"].ToString().Trim() +
+                                                              "','" + tableName["SCHEMA_NAME"].ToString().Trim() +
+                                                              "','" + tableName["TABLE_NAME"].ToString().Trim() +
+                                                              "','" + tableName["COLUMN_NAME"].ToString().Trim() +
+                                                              "','" + tableName["DATA_TYPE"].ToString().Trim() +
+                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString().Trim() +
+                                                              "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
+                                                              "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
+                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString().Trim() + "')");
+
+                                var command = new SqlCommand(insertKeyStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorCounter++;
+                                    _alert.SetTextLogging("An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
+                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
+                                }
+                            }
+                        }
+                    }
+                    worker.ReportProgress(40);
+                    _alert.SetTextLogging("Preparation of the physical model extract completed.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    _alert.SetTextLogging("An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
+                }
+                #endregion
+
+
+                #region Prepare attributes - 45%
+                //Prepare Attributes
+                _alert.SetTextLogging("\r\n");
+
                 var attCounter = 1;
 
                 // Dummy row - insert 'Not Applicable' attribute to satisfy RI
@@ -4729,10 +4827,24 @@ namespace TEAM
                     _alert.SetTextLogging("Commencing preparing the attributes from the metadata.\r\n");
                 }
 
+                var prepareAttStatement = new StringBuilder();
                 prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM (");
-                prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
+                //prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
+
+                prepareAttStatement.AppendLine("SELECT");
+                prepareAttStatement.AppendLine("  [DATABASE_NAME]");
+                prepareAttStatement.AppendLine(" ,[SCHEMA_NAME]");
+                prepareAttStatement.AppendLine(" ,[TABLE_NAME]");
+                prepareAttStatement.AppendLine(" ,[COLUMN_NAME]");
+                prepareAttStatement.AppendLine(" ,[DATA_TYPE]");
+                prepareAttStatement.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                prepareAttStatement.AppendLine(" ,[NUMERIC_PRECISION]");
+                prepareAttStatement.AppendLine(" ,[ORDINAL_POSITION]");
+                prepareAttStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                prepareAttStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
+
                 prepareAttStatement.AppendLine(") sub");
-                prepareAttStatement.AppendLine("  WHERE sub.COLUMN_NAME NOT IN");
+                prepareAttStatement.AppendLine("WHERE sub.COLUMN_NAME NOT IN");
                 prepareAttStatement.AppendLine("  ( ");
                 prepareAttStatement.AppendLine("    '" + recordSource + "',");
                 prepareAttStatement.AppendLine("    '" + alternativeRecordSource + "',");
@@ -4788,97 +4900,9 @@ namespace TEAM
                     }
                     _alert.SetTextLogging("--> Processing " + attCounter + " attributes.\r\n");
                 }
-                worker.ReportProgress(40);
+                worker.ReportProgress(45);
                 _alert.SetTextLogging("Preparation of the attributes completed.\r\n");
 
-
-                #endregion
-
-
-                #region Physical Model dump- 50%
-                //7b - Creating a point-in-time snapshot of the physical model used for export to the interface schemas
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Creating a snapshot of the physical model.\r\n");
-
-                try
-                {
-                    var preparePhysicalModelStatement = new StringBuilder();
-
-                    preparePhysicalModelStatement.AppendLine("SELECT ");
-                    preparePhysicalModelStatement.AppendLine(" [DATABASE_NAME] ");
-                    preparePhysicalModelStatement.AppendLine(",[SCHEMA_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[TABLE_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[COLUMN_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[DATA_TYPE]");
-                    preparePhysicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    preparePhysicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    preparePhysicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
-                    preparePhysicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    preparePhysicalModelStatement.AppendLine("FROM");
-                    preparePhysicalModelStatement.AppendLine("(");
-                    preparePhysicalModelStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
-                    preparePhysicalModelStatement.AppendLine(") sub");
-
-                    var physicalModelDataTable = GetDataTable(ref connOmd, preparePhysicalModelStatement.ToString());
-
-                    if (physicalModelDataTable.Rows.Count == 0)
-                    {
-                        _alert.SetTextLogging("--> No model information was found in the metadata.\r\n");
-                    }
-                    else
-                    {
-                        foreach (DataRow tableName in physicalModelDataTable.Rows)
-                        {
-                            using (var connection = new SqlConnection(metaDataConnection))
-                            {
-                                var insertKeyStatement = new StringBuilder();
-
-                                insertKeyStatement.AppendLine("INSERT INTO [MD_PHYSICAL_MODEL]");
-                                insertKeyStatement.AppendLine("([DATABASE_NAME], " +
-                                                              "[SCHEMA_NAME], " +
-                                                              "[TABLE_NAME], " +
-                                                              "[COLUMN_NAME], " +
-                                                              "[DATA_TYPE], " +
-                                                              "[CHARACTER_MAXIMUM_LENGTH], " +
-                                                              "[NUMERIC_PRECISION], " +
-                                                              "[ORDINAL_POSITION], " +
-                                                              "[PRIMARY_KEY_INDICATOR])");
-                                insertKeyStatement.AppendLine("VALUES ('" + tableName["DATABASE_NAME"].ToString().Trim() + 
-                                                              "','" + tableName["SCHEMA_NAME"].ToString().Trim() + 
-                                                              "','" + tableName["TABLE_NAME"].ToString().Trim() + 
-                                                              "','" + tableName["COLUMN_NAME"].ToString().Trim() + 
-                                                              "','" + tableName["DATA_TYPE"].ToString().Trim() +
-                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString().Trim() +
-                                                              "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
-                                                              "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
-                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString().Trim() + "')");
-
-                                var command = new SqlCommand(insertKeyStatement.ToString(), connection);
-
-                                try
-                                {
-                                    connection.Open();
-                                    command.ExecuteNonQuery();
-                                }
-                                catch (Exception ex)
-                                {
-                                    errorCounter++;
-                                    _alert.SetTextLogging("An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
-                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
-                                }
-                            }
-                        }
-                    }
-                    worker.ReportProgress(50);
-                    _alert.SetTextLogging("Preparation of the physical model extract completed.\r\n");
-                }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
-                }
 
                 #endregion
 
@@ -5564,7 +5588,20 @@ namespace TEAM
 
                 prepareMappingPersistentStagingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareMappingPersistentStagingStatement.AppendLine("(");
-                prepareMappingPersistentStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+                //prepareMappingPersistentStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+
+                prepareMappingPersistentStagingStatement.AppendLine("SELECT");
+                prepareMappingPersistentStagingStatement.AppendLine("  [DATABASE_NAME]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[SCHEMA_NAME]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[TABLE_NAME]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[COLUMN_NAME]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[DATA_TYPE]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[NUMERIC_PRECISION]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[ORDINAL_POSITION]");
+                prepareMappingPersistentStagingStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                prepareMappingPersistentStagingStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
+
                 prepareMappingPersistentStagingStatement.AppendLine("),");
                 prepareMappingPersistentStagingStatement.AppendLine("XREF AS");
                 prepareMappingPersistentStagingStatement.AppendLine("(");
@@ -5736,7 +5773,20 @@ namespace TEAM
                 // Run the statement, the virtual vs. physical lookups are embedded in allDatabaseAttributes
                 prepareMappingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareMappingStatement.AppendLine("(");
-                prepareMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+                //prepareMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+
+                prepareMappingStatement.AppendLine("SELECT");
+                prepareMappingStatement.AppendLine("  [DATABASE_NAME]");
+                prepareMappingStatement.AppendLine(" ,[SCHEMA_NAME]");
+                prepareMappingStatement.AppendLine(" ,[TABLE_NAME]");
+                prepareMappingStatement.AppendLine(" ,[COLUMN_NAME]");
+                prepareMappingStatement.AppendLine(" ,[DATA_TYPE]");
+                prepareMappingStatement.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                prepareMappingStatement.AppendLine(" ,[NUMERIC_PRECISION]");
+                prepareMappingStatement.AppendLine(" ,[ORDINAL_POSITION]");
+                prepareMappingStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                prepareMappingStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
+
                 prepareMappingStatement.AppendLine("),");
                 prepareMappingStatement.AppendLine("XREF AS");
                 prepareMappingStatement.AppendLine("(");
@@ -5868,7 +5918,21 @@ namespace TEAM
 
                 prepareDegenerateMappingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareDegenerateMappingStatement.AppendLine("(");
-                prepareDegenerateMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+
+                //prepareDegenerateMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
+
+                prepareDegenerateMappingStatement.AppendLine("SELECT");
+                prepareDegenerateMappingStatement.AppendLine("  [DATABASE_NAME]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[SCHEMA_NAME]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[TABLE_NAME]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[COLUMN_NAME]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[DATA_TYPE]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[NUMERIC_PRECISION]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[ORDINAL_POSITION]");
+                prepareDegenerateMappingStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                prepareDegenerateMappingStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
+
                 prepareDegenerateMappingStatement.AppendLine("),");
                 prepareDegenerateMappingStatement.AppendLine("XREF AS");
                 prepareDegenerateMappingStatement.AppendLine("(");
