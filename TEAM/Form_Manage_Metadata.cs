@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -3582,6 +3583,11 @@ namespace TEAM
         private void backgroundWorkerMetadata_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
         {
             #region Generic
+            Stopwatch totalProcess = new Stopwatch();
+            Stopwatch subProcess = new Stopwatch();
+            totalProcess.Start();
+
+
             BackgroundWorker worker = sender as BackgroundWorker;
 
             var inputTableMetadata = (DataTable)_bindingSourceTableMetadata.DataSource;
@@ -3782,6 +3788,9 @@ namespace TEAM
 
                 # region Prepare Source - 5%
                 // Prepare the generic sources
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the source metadata.\r\n");
 
@@ -3839,12 +3848,16 @@ namespace TEAM
                 }
 
                 worker?.ReportProgress(5);
-                _alert.SetTextLogging("Preparation of the source metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the source metadata completed, and has taken "+subProcess.Elapsed.TotalSeconds.ToString()+" seconds.\r\n");
                 #endregion
 
 
-                # region Prepare Staging Area - 7%
-                //3. Prepare the Staging Area
+                #region Prepare Staging Area - 7%
+                //Prepare the Staging Area
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Staging Area metadata.\r\n");
 
@@ -3910,12 +3923,16 @@ namespace TEAM
                 }
 
                 worker?.ReportProgress(7);
-                _alert.SetTextLogging("Preparation of the Staging Area metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
-                # region Prepare Source to Staging Area XREF - 10%
+                #region Prepare Source to Staging Area XREF - 10%
                 // Prepare the Source to Staging Area XREF
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Staging Area.\r\n");
 
@@ -3969,12 +3986,16 @@ namespace TEAM
                 }
 
                 worker?.ReportProgress(10);
-                _alert.SetTextLogging("Preparation of the Source / Staging Area XREF metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Source / Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
-                
 
-                # region Prepare Persistent Staging Area - 13%
+
+                #region Prepare Persistent Staging Area - 13%
                 //3. Prepare Persistent Staging Area
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Persistent Staging Area metadata.\r\n");
 
@@ -4040,13 +4061,17 @@ namespace TEAM
                 }
 
                 if (worker != null) worker.ReportProgress(13);
-                _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
                 #endregion
 
 
-                # region Prepare Source to Persistent Staging Area XREF - 15%
+                #region Prepare Source to Persistent Staging Area XREF - 15%
                 // Prepare the Source to Persistent Staging Area XREF
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Persistent Staging Area.\r\n");
 
@@ -4100,12 +4125,16 @@ namespace TEAM
                 }
 
                 worker?.ReportProgress(15);
-                _alert.SetTextLogging("Preparation of the Source / Persistent Staging Area XREF metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
-                # region Prepare Hubs - 17%
+                #region Prepare Hubs - 17%
                 //3. Prepare Hubs
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Hub metadata.\r\n");
 
@@ -4168,12 +4197,16 @@ namespace TEAM
                 }
 
                 if (worker != null) worker.ReportProgress(17);
-                _alert.SetTextLogging("Preparation of the Hub metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Hub metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Prepare Links - 20%
                 //4. Prepare links
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Link metadata.\r\n");
 
@@ -4235,12 +4268,16 @@ namespace TEAM
                 }
 
                 if (worker != null) worker.ReportProgress(20);
-                _alert.SetTextLogging("Preparation of the Link metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Prepare Satellites - 24%
                 // Prepare Satellites
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Satellite metadata.\r\n");
 
@@ -4310,12 +4347,16 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(24);
-                _alert.SetTextLogging("Preparation of the Satellite metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Prepare Link Satellites - 28%
                 //Prepare Link Satellites
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Link Satellite metadata.\r\n");
 
@@ -4387,12 +4428,16 @@ namespace TEAM
                     }
                 }
                 worker.ReportProgress(28);
-                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Prepare Source / SAT Xref - 28%
                 //Prepare Source / Sat XREF
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between (Link) Satellites and the Source tables.\r\n");
 
@@ -4470,12 +4515,16 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(28);
-                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Source / Hub relationship - 30%
                 //Prepare Source / HUB xref
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Hubs.\r\n");
 
@@ -4558,11 +4607,15 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(30);
-                _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Filter Variables  - 35%
+                subProcess.Reset();
+                subProcess.Start();
+
                 string tableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
                                             UNION
                                             SELECT DISTINCT [TARGET_TABLE] AS [TABLE_NAME], [TARGET_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]";
@@ -4642,13 +4695,16 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(35);
+                subProcess.Stop();
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Filter variables created successfully.\r\n");
+                _alert.SetTextLogging("Filter variables created successfully, this took " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
                 #endregion
 
                 #region Physical Model dump- 40%
                 // Creating a point-in-time snapshot of the physical model used for export to the interface schemas
+                subProcess.Reset();
+                subProcess.Start();
 
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Creating a snapshot of the physical model.\r\n");
@@ -4705,18 +4761,6 @@ namespace TEAM
 
                     preparePhysicalModelStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
 
-                    //preparePhysicalModelStatement.AppendLine("SELECT");
-                    //preparePhysicalModelStatement.AppendLine("  [DATABASE_NAME]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[SCHEMA_NAME]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[TABLE_NAME]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[COLUMN_NAME]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[DATA_TYPE]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[NUMERIC_PRECISION]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[ORDINAL_POSITION]");
-                    //preparePhysicalModelStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
-                    //preparePhysicalModelStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
-
                     preparePhysicalModelStatement.AppendLine(") sub");
 
                     var physicalModelDataTable = GetDataTable(ref connOmd, preparePhysicalModelStatement.ToString());
@@ -4770,7 +4814,8 @@ namespace TEAM
                         }
                     }
                     worker.ReportProgress(40);
-                    _alert.SetTextLogging("Preparation of the physical model extract completed.\r\n");
+                    subProcess.Stop();
+                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 }
                 catch (Exception ex)
                 {
@@ -4783,6 +4828,9 @@ namespace TEAM
 
                 #region Prepare attributes - 45%
                 //Prepare Attributes
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
 
                 var attCounter = 1;
@@ -4901,7 +4949,8 @@ namespace TEAM
                     _alert.SetTextLogging("--> Processing " + attCounter + " attributes.\r\n");
                 }
                 worker.ReportProgress(45);
-                _alert.SetTextLogging("Preparation of the attributes completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the attributes completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
 
                 #endregion
@@ -4909,6 +4958,8 @@ namespace TEAM
 
                 #region Business Key - 50%
                 //Understanding the Business Key (MD_BUSINESS_KEY_COMPONENT)
+                subProcess.Reset();
+                subProcess.Start();
 
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing the definition of the Business Key.\r\n");
@@ -5022,12 +5073,15 @@ namespace TEAM
                     }
                 }
                 worker.ReportProgress(50);
-                _alert.SetTextLogging("Preparation of the Business Key definition completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Business Key definition completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Business Key components - 60%
-                //9. Understanding the Business Key component parts
+                //Understanding the Business Key component parts
+                subProcess.Reset();
+                subProcess.Start();
 
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing the Business Key component analysis.\r\n");
@@ -5110,16 +5164,19 @@ namespace TEAM
                     }
                 }
                 worker.ReportProgress(60);
+                subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + keyPartCounter + " Business Key component attributes.\r\n");
-                _alert.SetTextLogging("Preparation of the Business Key components completed.\r\n");
+                _alert.SetTextLogging("Preparation of the Business Key components completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
 
                 #endregion
 
 
                 #region Hub / Link relationship - 75%
+                //Prepare HUB / LNK xref
+                subProcess.Reset();
+                subProcess.Start();
 
-                //10. Prepare HUB / LNK xref
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Hubs and Links.\r\n");
 
@@ -5231,12 +5288,14 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(75);
-                _alert.SetTextLogging("Preparation of the relationship between Hubs and Links completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the relationship between Hubs and Links completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
                 #region Link Business Key - 78%
                 // Prepare links business key backfill
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Link Business key metadata.\r\n");
 
@@ -5291,8 +5350,11 @@ namespace TEAM
 
 
                 #region Stg / Link relationship - 80%
-                    //Prepare STG / LNK xref
-                    _alert.SetTextLogging("\r\n");
+                //Prepare STG / LNK xref
+                subProcess.Reset();
+                subProcess.Start();
+
+                _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Link tables.\r\n");
 
                 var preparestgLnkXrefStatement = new StringBuilder();
@@ -5355,12 +5417,16 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(80);
-                _alert.SetTextLogging("Preparation of the relationship between Source and the Links completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the relationship between Source and the Links completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
 
-                # region Manually mapped Source to Staging Area Attribute XREF - 81%
+                #region Manually mapped Source to Staging Area Attribute XREF - 81%
                 // Prepare the Source to Staging Area XREF
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.\r\n");
 
@@ -5404,11 +5470,16 @@ namespace TEAM
                     }
                 }
                 worker?.ReportProgress(87);
-                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
+
 
                 #region Automatically mapped Source to Staging Area Attribute XREF 93%
                 //Prepare automatic attribute mapping
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
 
                 int automaticMappingCounter = 0;
@@ -5512,14 +5583,19 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(90);
+                subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
+                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
 
                 #endregion
 
-                # region Manually mapped Source to Persistent Staging Area Attribute XREF - 81%
+
+                #region Manually mapped Source to Persistent Staging Area Attribute XREF - 81%
                 // Prepare the Source to Persistent Staging Area XREF
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Source to Persistent Staging column-to-column mapping metadata based on the manual mappings.\r\n");
 
@@ -5564,11 +5640,16 @@ namespace TEAM
                 }
 
                 worker?.ReportProgress(87);
-                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed.\r\n");
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
+
 
                 #region Automatically mapped Source to Persistent Staging Area Attribute XREF 93%
                 // Prepare automatic attribute mapping
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
 
                 var prepareMappingPersistentStagingStatement = new StringBuilder();
@@ -5672,14 +5753,19 @@ namespace TEAM
                     }
                 }
                 worker.ReportProgress(90);
+                subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
+                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
 
                 #endregion
 
+
                 #region Manually mapped attributes for SAT and LSAT 90%
                 //Prepare Manual Attribute mapping for Satellites and Link Satellites
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
 
@@ -5751,12 +5837,17 @@ namespace TEAM
                     }
                 }
                 worker.ReportProgress(90);
+                subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + manualSatMappingCounter + " manual attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed.\r\n");
+                _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
+
 
                 #region Automatically mapped attributes for SAT and LSAT 93%
                 //Prepare automatic attribute mapping
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
 
                 var prepareMappingStatement = new StringBuilder();
@@ -5867,12 +5958,17 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(90);
+                subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + automaticAttributeMappingsSatellites.Rows.Count + " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed.\r\n");
+                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
+
 
                 #region Manually mapped degenerate attributes for Links 95%
                 //12. Prepare Manual Attribute mapping for Link degenerate fields
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata based on the manual mappings for degenerate attributes.\r\n");
 
@@ -5904,12 +6000,17 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(95);
+                subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + degenerateMappings.Rows.Count + " manual degenerate attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
+                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
+
 
                 #region Automatically mapped degenerate attributes for Links 95%
                 //13. Prepare the automatic degenerate attribute mapping
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
 
 
@@ -6038,13 +6139,17 @@ namespace TEAM
                 }
 
                 worker.ReportProgress(95);
-
+                subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + automaticDegenerateMappingCounter + " automatically added degenerate attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the degenerate column metadata completed.\r\n");
+                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
+
 
                 #region Multi-Active Key - 97%
                 //Handle the Multi-Active Key
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
 
 
@@ -6144,14 +6249,19 @@ namespace TEAM
                         }
                     }
                 }
-                worker.ReportProgress(80);
-                _alert.SetTextLogging("Preparation of the Multi-Active Keys completed.\r\n");
+                worker.ReportProgress(97);
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Multi-Active Keys completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
 
                 #endregion
 
+
                 #region Driving Key preparation
                 //Prepare driving keys
+                subProcess.Reset();
+                subProcess.Start();
+
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Driving Key metadata.\r\n");
 
@@ -6240,14 +6350,13 @@ namespace TEAM
                         }
                     }
                 }
-                worker.ReportProgress(95);
-                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed.\r\n");
+                worker.ReportProgress(98);
+                subProcess.Stop();
+                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
                 #endregion
 
                 //
-                //
                 // Activation completed!
-                //
                 //
 
                 // Error handling
@@ -6436,6 +6545,8 @@ namespace TEAM
                 #endregion
 
                 // Report completion
+                totalProcess.Stop();
+                _alert.SetTextLogging("\r\n\r\nThe full activation process has taken "+totalProcess.Elapsed.TotalSeconds.ToString()+" seconds.");
                 worker.ReportProgress(100);
             }
         }
