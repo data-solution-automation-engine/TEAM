@@ -252,6 +252,7 @@
     <Content Include="Dotfuscator\DotfuscatorTEAM.xml" />
     <Content Include="Resources\Ravos-logo-small.ico" />
     <Content Include="Scripts\generateRepository.sql" />
+    <Content Include="Scripts\generateSampleSourceSchema.sql" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

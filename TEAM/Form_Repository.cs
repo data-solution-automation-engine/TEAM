@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
@@ -294,6 +295,7 @@ namespace TEAM
             else
             {
                 backgroundWorkerSampleData.ReportProgress(0);
+
                 // Create the repository
                 _alertSampleData.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
 
@@ -393,145 +395,27 @@ namespace TEAM
                     }
                     #endregion
 
-                    #region Source
 
+                    Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
+
+                    #region Source
                     if (checkBoxCreateSampleSource.Checked)
                     {
-                        // Create sample data
-                        StringBuilder createStatement = new StringBuilder();
-                        var connString = ConfigurationSettings.ConnectionStringSource;
-
-                        createStatement.AppendLine("/* Drop the tables, if they exist */");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.ESTIMATED_WORTH', 'U') IS NOT NULL DROP TABLE [ESTIMATED_WORTH]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PERSONALISED_COSTING', 'U') IS NOT NULL DROP TABLE [PERSONALISED_COSTING]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.CUST_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE [CUST_MEMBERSHIP]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.PLAN', 'U') IS NOT NULL DROP TABLE [PLAN]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE [CUSTOMER_OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.OFFER', 'U') IS NOT NULL DROP TABLE [OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.CUSTOMER_PERSONAL', 'U') IS NOT NULL DROP TABLE [CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("/* Create the tables */");
-                        createStatement.AppendLine("CREATE TABLE [CUST_MEMBERSHIP]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Start_Date] datetime NULL,");
-                        createStatement.AppendLine("  [End_Date] datetime NULL,");
-                        createStatement.AppendLine("  [Status] varchar(10) NULL,");
-                        createStatement.AppendLine("  [Comment] varchar(50) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_CUST_MEMBERSHIP] PRIMARY KEY CLUSTERED(CustomerID ASC, Plan_Code ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [CUSTOMER_OFFER]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_CUSTOMER_OFFER] PRIMARY KEY CLUSTERED (CustomerID ASC, OfferID ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("  [Given] varchar(100) NULL,");
-                        createStatement.AppendLine("  [Surname] varchar(100) NULL,");
-                        createStatement.AppendLine("  [Suburb] varchar(50) NULL,");
-                        createStatement.AppendLine("  [State] varchar(3) NULL,");
-                        createStatement.AppendLine("  [Postcode] varchar(6) NULL,");
-                        createStatement.AppendLine("  [Country] varchar(100) NULL,");
-                        createStatement.AppendLine("  [Gender] varchar(1) NULL,");
-                        createStatement.AppendLine("  [DOB] date NULL,");
-                        createStatement.AppendLine("  [Contact_Number] integer NULL,");
-                        createStatement.AppendLine("  [Referee_Offer_Made] integer NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_CUSTOMER_PERSONAL] PRIMARY KEY CLUSTERED (CustomerID ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [ESTIMATED_WORTH]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Date_effective] datetime NOT NULL,");
-                        createStatement.AppendLine("  [Value_Amount] numeric NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_ESTIMATED_WORTH] PRIMARY KEY CLUSTERED(Plan_Code ASC, Date_effective ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [OFFER]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
-                        createStatement.AppendLine("  [Offer_Long_Description] varchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_OFFER] PRIMARY KEY CLUSTERED(OfferID ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [PERSONALISED_COSTING]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [Member] integer NOT NULL,");
-                        createStatement.AppendLine("  [Segment] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Date_effective] datetime NOT NULL,");
-                        createStatement.AppendLine("  [Monthly_Cost] numeric NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PERSONALISED_COSTING] PRIMARY KEY CLUSTERED(Member ASC, Segment ASC, Plan_Code ASC, Date_effective ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [PLAN]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [Plan_Code] varchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Plan_Desc]varchar(100) NULL,");
-                        createStatement.AppendLine("  [Renewal_Plan_Code] varchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_PLAN] PRIMARY KEY CLUSTERED(Plan_Code ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("/* Create the content */");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made]) VALUES(235892, N'Simon', N'Vos', N'Sydney', N'NSW', N'1000', N'Australia', N'M', CAST(N'1960-12-10' AS Date), 9874634, 1)");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made]) VALUES(258279, N'John', N'Doe', N'Indooropilly', N'QLD', N'4000', N'Australia', N'M', CAST(N'1980-01-04' AS Date), 41234, 1)");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made]) VALUES(321799, N'Jonathan', N'Slimpy', N'London', N'N/A', N'0000', N'UK', N'M', CAST(N'1951-01-04' AS Date), 23555, 1)");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made]) VALUES(683492, N'Mary', N'Smith', N'Bulimba', N'QLD', N'3000', N'Australia', N'F', CAST(N'1977-04-12' AS Date), 41234, 0)");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made]) VALUES(885325, N'Michael', N'Evans', N'Bourke', N'NWS', N'2000', N'Australia', N'M', CAST(N'1985-04-19' AS Date), 89235, 0)");
-                        createStatement.AppendLine("INSERT[dbo].[OFFER] ([OfferID], [Offer_Long_Description]) VALUES(450, N'20% off all future purchases')");
-                        createStatement.AppendLine("INSERT[dbo].[OFFER] ([OfferID], [Offer_Long_Description]) VALUES(462, N'10% off all future purchases')");
-                        createStatement.AppendLine("INSERT[dbo].[OFFER] ([OfferID], [Offer_Long_Description]) VALUES(469, N'Free movie tickets')");
-                        createStatement.AppendLine("INSERT[dbo].[PLAN] ([Plan_Code], [Plan_Desc], [Renewal_Plan_Code]) VALUES(N'AVG', N'Average / Mix plan', 'SUPR')");
-                        createStatement.AppendLine("INSERT[dbo].[PLAN] ([Plan_Code], [Plan_Desc], [Renewal_Plan_Code]) VALUES(N'HIGH', N'Highroller / risk embracing', 'SUPR')");
-                        createStatement.AppendLine("INSERT[dbo].[PLAN] ([Plan_Code], [Plan_Desc], [Renewal_Plan_Code]) VALUES(N'LOW', N'Risk avoiding', 'MAXM')");
-                        createStatement.AppendLine("INSERT[dbo].[CUST_MEMBERSHIP] ([CustomerID], [Plan_Code], [Start_Date], [End_Date], [Status], [Comment]) VALUES(235892, N'HIGH', CAST(N'2012-05-12T00:00:00.000' AS DateTime), CAST(N'2015-12-31T00:00:00.000' AS DateTime), N'High', N'Trial')");
-                        createStatement.AppendLine("INSERT[dbo].[CUST_MEMBERSHIP] ([CustomerID], [Plan_Code], [Start_Date], [End_Date], [Status], [Comment]) VALUES(321799, N'AVG', CAST(N'2010-01-01T00:00:00.000' AS DateTime), CAST(N'2014-10-28T00:00:00.000' AS DateTime), N'Open', N'None')");
-                        createStatement.AppendLine("INSERT[dbo].[CUST_MEMBERSHIP] ([CustomerID], [Plan_Code], [Start_Date], [End_Date], [Status], [Comment]) VALUES(683492, N'LOW', CAST(N'2012-12-12T00:00:00.000' AS DateTime), CAST(N'2020-02-27T00:00:00.000' AS DateTime), N'Active', N'None')");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_OFFER] ([CustomerID], [OfferID]) VALUES(235892, 450)");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_OFFER] ([CustomerID], [OfferID]) VALUES(258279, 450)");
-                        createStatement.AppendLine("INSERT[dbo].[CUSTOMER_OFFER] ([CustomerID], [OfferID]) VALUES(321799, 469)");
-                        createStatement.AppendLine("INSERT[dbo].[ESTIMATED_WORTH] ([Plan_Code], [Date_effective], [Value_Amount]) VALUES(N'AVG', CAST(N'2016-06-06T00:00:00.000' AS DateTime), CAST(10 AS Numeric(18, 0)))");
-                        createStatement.AppendLine("INSERT[dbo].[ESTIMATED_WORTH] ([Plan_Code], [Date_effective], [Value_Amount]) VALUES(N'HIGH', CAST(N'2011-01-01T00:00:00.000' AS DateTime), CAST(1545000 AS Numeric(18, 0)))");
-                        createStatement.AppendLine("INSERT[dbo].[ESTIMATED_WORTH] ([Plan_Code], [Date_effective], [Value_Amount]) VALUES(N'LOW', CAST(N'2012-05-04T00:00:00.000' AS DateTime), CAST(450000 AS Numeric(18, 0)))");
-                        createStatement.AppendLine("INSERT[dbo].[ESTIMATED_WORTH] ([Plan_Code], [Date_effective], [Value_Amount]) VALUES(N'LOW', CAST(N'2013-06-19T00:00:00.000' AS DateTime), CAST(550000 AS Numeric(18, 0)))");
-                        createStatement.AppendLine("INSERT[dbo].[PERSONALISED_COSTING] ([Member], [Segment], [Plan_Code], [Date_effective], [Monthly_Cost]) VALUES(258279, N'LOW', N'HIGH', CAST(N'2014-01-01T00:00:00.000' AS DateTime), CAST(150 AS Numeric(18, 0)))");
-                        createStatement.AppendLine("INSERT[dbo].[PERSONALISED_COSTING] ([Member], [Segment], [Plan_Code], [Date_effective], [Monthly_Cost]) VALUES(683492, N'HIGH', N'AVG', CAST(N'2013-01-01T00:00:00.000' AS DateTime), CAST(450 AS Numeric(18, 0)))");
-                        createStatement.AppendLine("INSERT[dbo].[PERSONALISED_COSTING] ([Member], [Segment], [Plan_Code], [Date_effective], [Monthly_Cost]) VALUES(885325, N'MED', N'AVG', CAST(N'2013-01-01T00:00:00.000' AS DateTime), CAST(475 AS Numeric(18, 0)))");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                        PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringSource);
                     }
 
+                    //foreach (var individualSQlCommand in commandDictionary)
+                    //{
+                    //    int counter = 0;
+
+                    //    // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
+                    //    var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
+
+                    //    RunSqlCommandSampleDataForm(individualSQlCommand.Value, individualSQlCommand.Key + "\r\n\r\n", worker, normalisedValue);
+                    //    counter++;
+
+                    //    worker.ReportProgress(100);
+                    //}
                     #endregion
 
                     #region Staging
@@ -1953,6 +1837,29 @@ namespace TEAM
                 }
 
                 backgroundWorkerSampleData.ReportProgress(100);
+            }
+        }
+
+        private void PopulateSqlCommandDictionaryFromFile(string filePath, Dictionary<string, string> commandDictionary, string connString)
+        {
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    var sqlCommands = sr.ReadToEnd()
+                        .Split(new string[] {Environment.NewLine + Environment.NewLine},
+                            StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var command in sqlCommands)
+                    {
+                        commandDictionary.Add(command, connString);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _alertRepository.SetTextLogging(
+                    "An issue has occured interpreting a file containing the SQL commands. The reported error was: " + ex);
             }
         }
 
