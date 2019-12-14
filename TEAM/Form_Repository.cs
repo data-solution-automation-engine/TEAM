@@ -84,7 +84,7 @@ namespace TEAM
         /// <param name="createStatement"></param>
         /// <param name="worker"></param>
         /// <param name="progressCounter"></param>
-        private void RunSqlCommandSampleDataForm(string connString, StringBuilder createStatement, BackgroundWorker worker, int progressCounter)
+        private void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter)
         {
             using (var connectionVersion = new SqlConnection(connString))
             {
@@ -106,8 +106,6 @@ namespace TEAM
                     ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
                 }
             }
-
-            createStatement.Clear();
         }
 
         /// <summary>
@@ -403,1409 +401,268 @@ namespace TEAM
                     {
                         PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringSource);
                     }
-
-                    //foreach (var individualSQlCommand in commandDictionary)
-                    //{
-                    //    int counter = 0;
-
-                    //    // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
-                    //    var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
-
-                    //    RunSqlCommandSampleDataForm(individualSQlCommand.Value, individualSQlCommand.Key + "\r\n\r\n", worker, normalisedValue);
-                    //    counter++;
-
-                    //    worker.ReportProgress(100);
-                    //}
                     #endregion
 
                     #region Staging
-
                     if (checkBoxCreateSampleStaging.Checked)
                     {
-                        // Create sample data
-                        StringBuilder createStatement = new StringBuilder();
-
-                        var connString = ConfigurationSettings.ConnectionStringStg;
-
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_CUST_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_CUST_MEMBERSHIP]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_CUSTOMER_OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_CUSTOMER_PERSONAL', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_ESTIMATED_WORTH', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_ESTIMATED_WORTH]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_OFFER', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_PERSONALISED_COSTING', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_PERSONALISED_COSTING]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_PROFILER_PLAN', 'U') IS NOT NULL DROP TABLE [dbo].[STG_PROFILER_PLAN]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.STG_USERMANAGED_SEGMENT', 'U') IS NOT NULL DROP TABLE [dbo].[STG_USERMANAGED_SEGMENT]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("/* Create the tables */");
-                        createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUST_MEMBERSHIP]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [CustomerID] int NULL,");
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Start_Date] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [End_Date] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [Status] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Comment] nvarchar(100) NULL ");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUST_MEMBERSHIP',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CustomerID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUST_MEMBERSHIP',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUSTOMER_OFFER]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [CustomerID] int NULL,");
-                        createStatement.AppendLine("  [OfferID] int NULL ");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUSTOMER_OFFER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CustomerID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUSTOMER_OFFER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'OfferID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [STG_PROFILER_CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [CustomerID] int NULL,");
-                        createStatement.AppendLine("  [Given] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Surname] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Suburb] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [State] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Postcode] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Country] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Gender] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [DOB] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [Contact_Number] int NULL,");
-                        createStatement.AppendLine("  [Referee_Offer_Made] int NULL ");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_CUSTOMER_PERSONAL',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CustomerID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [STG_PROFILER_ESTIMATED_WORTH]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Date_effective] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL ");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_ESTIMATED_WORTH',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_ESTIMATED_WORTH',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Date_effective'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [STG_PROFILER_OFFER]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [OfferID] int NULL,");
-                        createStatement.AppendLine("  [Offer_Long_Description] nvarchar(100)   NULL ");
-                        createStatement.AppendLine();
-                        createStatement.AppendLine(")");
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_OFFER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'OfferID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [STG_PROFILER_PERSONALISED_COSTING]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [Member] int NULL,");
-                        createStatement.AppendLine("  [Segment] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Date_effective] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [Monthly_Cost] numeric(38,20) NULL ");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PERSONALISED_COSTING',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Segment'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PERSONALISED_COSTING',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PERSONALISED_COSTING',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Date_effective'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [STG_PROFILER_PLAN]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Renewal_Plan_Code] nvarchar(100) NULL");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_PROFILER_PLAN',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Plan_Code'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [STG_USERMANAGED_SEGMENT]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameworkIncludeStg);
-                        createStatement.AppendLine("  [Demographic_Segment_Code] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Demographic_Segment_Description] nvarchar(100) NULL ");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Natural_Key', @value = 'Yes',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'STG_USERMANAGED_SEGMENT',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'Demographic_Segment_Description'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-
-                        createStatement.AppendLine("/* Create the content (for the User Managed Staging table) */");
                         if (checkBoxDIRECT.Checked)
                         {
-                            createStatement.AppendLine("INSERT INTO[dbo].[STG_USERMANAGED_SEGMENT] (");
-                            createStatement.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID]");
-                            createStatement.AppendLine(" ,[OMD_INSERT_DATETIME]");
-                            createStatement.AppendLine(" ,[OMD_EVENT_DATETIME]");
-                            createStatement.AppendLine(" ,[OMD_RECORD_SOURCE]");
-                            createStatement.AppendLine(" ,[OMD_CDC_OPERATION]");
-                            createStatement.AppendLine(" ,[OMD_HASH_FULL_RECORD]");
-                            createStatement.AppendLine(" ,[Demographic_Segment_Code]");
-                            createStatement.AppendLine(" ,[Demographic_Segment_Description])");
-                            createStatement.AppendLine("VALUES");
-                            createStatement.AppendLine(" ( -1, GETDATE(), GETDATE(), 'Data Warehouse','Insert',0x00, 'LOW', 'Lower SES'),");
-                            createStatement.AppendLine(" ( -1,GETDATE(), GETDATE(), 'Data Warehouse','Insert',0x00, 'MED', 'Medium SES'),");
-                            createStatement.AppendLine(" ( -1,GETDATE(), GETDATE(), 'Data Warehouse','Insert',0x00, 'HIGH','High SES')");
+                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleStagingSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringStg);
                         }
                         else
                         {
-                            createStatement.AppendLine("INSERT INTO[dbo].[STG_USERMANAGED_SEGMENT] (");
-                            createStatement.AppendLine("  [ETL_INSERT_RUN_ID]");
-                            createStatement.AppendLine(" ,[LOAD_DATETIME]");
-                            createStatement.AppendLine(" ,[EVENT_DATETIME]");
-                            createStatement.AppendLine(" ,[RECORD_SOURCE]");
-                            createStatement.AppendLine(" ,[CDC_OPERATION]");
-                            createStatement.AppendLine(" ,[HASH_FULL_RECORD]");
-                            createStatement.AppendLine(" ,[Demographic_Segment_Code]");
-                            createStatement.AppendLine(" ,[Demographic_Segment_Description])");
-                            createStatement.AppendLine("VALUES");
-                            createStatement.AppendLine(" ( -1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'LOW'), CONVERT(NVARCHAR(100),'Lower SES')),");
-                            createStatement.AppendLine(" ( -1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'MED'), CONVERT(NVARCHAR(100),'Medium SES')),");
-                            createStatement.AppendLine(" ( -1, GETDATE(), GETDATE(), 'Data Warehouse','Insert', (SELECT HASHBYTES('MD5', ISNULL(RTRIM(CONVERT(NVARCHAR(100),'N/A')),'NA')+'|')), CONVERT(NVARCHAR(100),'HIGH'), CONVERT(NVARCHAR(100),'High SES'))");
+                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleStagingSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringStg);
                         }
-
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
                     }
-
                     #endregion
 
                     #region Persistent Staging
-
                     if (checkBoxCreateSamplePSA.Checked)
                     {
-                        var connString = ConfigurationSettings.ConnectionStringHstg;
-
-                        // Create sample data
-                        StringBuilder createStatement = new StringBuilder();
-
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_CUST_MEMBERSHIP]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_CUSTOMER_OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_ESTIMATED_WORTH', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_ESTIMATED_WORTH]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_OFFER', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_OFFER]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_PERSONALISED_COSTING', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_PERSONALISED_COSTING]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_PROFILER_PLAN', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_PROFILER_PLAN]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo." + psaPrefixName + "_USERMANAGED_SEGMENT', 'U') IS NOT NULL DROP TABLE[dbo].[" + psaPrefixName +"_USERMANAGED_SEGMENT]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_CUST_MEMBERSHIP]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Start_Date] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [End_Date] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [Status] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Comment] nvarchar(100) NULL");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_CUST_MEMBERSHIP] PRIMARY KEY NONCLUSTERED ([CustomerID] ASC, [Plan_Code] ASC, " + etlFrameworkIncludePsaKey+")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_CUSTOMER_OFFER]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_CUSTOMER_OFFER] PRIMARY KEY NONCLUSTERED ([CustomerID] ASC, [OfferID] ASC, " + etlFrameworkIncludePsaKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_CUSTOMER_PERSONAL]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [CustomerID] integer NOT NULL,");
-                        createStatement.AppendLine("  [Given] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Surname] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Suburb] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [State] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Postcode] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Country] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Gender] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [DOB] datetime2(7) NULL,");
-                        createStatement.AppendLine("  [Contact_Number] integer NULL,");
-                        createStatement.AppendLine("  [Referee_Offer_Made] integer NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_CUSTOMER_PERSONAL] PRIMARY KEY NONCLUSTERED([CustomerID] ASC, " + etlFrameworkIncludePsaKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_ESTIMATED_WORTH]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Date_effective] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [Value_Amount] numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_ESTIMATED_WORTH] PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, [Date_effective] ASC, " + etlFrameworkIncludePsaKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_OFFER]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [OfferID] integer NOT NULL,");
-                        createStatement.AppendLine("  [Offer_Long_Description] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_OFFER] PRIMARY KEY NONCLUSTERED([OfferID] ASC, " + etlFrameworkIncludePsaKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_PERSONALISED_COSTING]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [Member] integer NOT NULL,");
-                        createStatement.AppendLine("  [Segment] nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Date_effective] datetime2(7) NOT NULL,");
-                        createStatement.AppendLine("  [Monthly_Cost] numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_PERSONALISED_COSTING] PRIMARY KEY NONCLUSTERED([Member] ASC, [Segment] ASC, [Plan_Code] ASC, [Date_effective] ASC, " + etlFrameworkIncludePsaKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_PROFILER_PLAN]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [Plan_Code] nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Plan_Desc] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [Renewal_Plan_Code] nvarchar(100) NULL");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_PROFILER_PLAN] PRIMARY KEY NONCLUSTERED([Plan_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [" + psaPrefixName +"_USERMANAGED_SEGMENT]");
-                        createStatement.AppendLine("(");
-                        createStatement.Append(etlFrameWorkIncludePsa);
-                        createStatement.AppendLine("  [Demographic_Segment_Code] nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  [Demographic_Segment_Description] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_" + psaPrefixName +"_USERMANAGED_SEGMENT] PRIMARY KEY CLUSTERED([Demographic_Segment_Code] ASC, " + etlFrameworkIncludePsaKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                        if (checkBoxDIRECT.Checked)
+                        {
+                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSamplePersistentStagingSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringHstg);
+                        }
+                        else
+                        {
+                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSamplePersistentStagingSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringHstg);
+                        }
                     }
-
                     #endregion
 
                     #region Integration Layer
-
                     if (checkBoxCreateSampleDV.Checked)
                     {
-                        var connString = ConfigurationSettings.ConnectionStringInt;
-
-                        // Create sample data
-                        StringBuilder createStatement = new StringBuilder();
-
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_CUSTOMER', 'U') IS NOT NULL DROP TABLE dbo.HUB_CUSTOMER");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_INCENTIVE_OFFER', 'U') IS NOT NULL DROP TABLE dbo.HUB_INCENTIVE_OFFER");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_MEMBERSHIP_PLAN', 'U') IS NOT NULL DROP TABLE dbo.HUB_MEMBERSHIP_PLAN");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.HUB_SEGMENT', 'U') IS NOT NULL DROP TABLE dbo.HUB_SEGMENT");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_CUSTOMER_COSTING', 'U') IS NOT NULL DROP TABLE dbo.LNK_CUSTOMER_COSTING");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE dbo.LNK_CUSTOMER_OFFER");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE dbo.LNK_MEMBERSHIP");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.LNK_RENEWAL_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE dbo.LNK_RENEWAL_MEMBERSHIP");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.LSAT_CUSTOMER_COSTING', 'U') IS NOT NULL DROP TABLE dbo.LSAT_CUSTOMER_COSTING");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.LSAT_CUSTOMER_OFFER', 'U') IS NOT NULL DROP TABLE dbo.LSAT_CUSTOMER_OFFER");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.LSAT_MEMBERSHIP', 'U') IS NOT NULL DROP TABLE dbo.LSAT_MEMBERSHIP");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_CUSTOMER', 'U') IS NOT NULL DROP TABLE dbo.SAT_CUSTOMER");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_CUSTOMER_ADDITIONAL_DETAILS', 'U') IS NOT NULL DROP TABLE dbo.SAT_CUSTOMER_ADDITIONAL_DETAILS");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_INCENTIVE_OFFER', 'U') IS NOT NULL DROP TABLE dbo.SAT_INCENTIVE_OFFER");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_MEMBERSHIP_PLAN_DETAIL', 'U') IS NOT NULL DROP TABLE dbo.SAT_MEMBERSHIP_PLAN_DETAIL");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_MEMBERSHIP_PLAN_VALUATION', 'U') IS NOT NULL DROP TABLE dbo.SAT_MEMBERSHIP_PLAN_VALUATION");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.SAT_SEGMENT', 'U') IS NOT NULL DROP TABLE dbo.SAT_SEGMENT");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.BR_MEMBERSHIP_OFFER', 'U') IS NOT NULL DROP TABLE dbo.BR_MEMBERSHIP_OFFER");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- HUB CUSTOMER");
-                        createStatement.AppendLine("CREATE TABLE dbo.HUB_CUSTOMER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName+ " binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  CUSTOMER_ID nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_CUSTOMER] PRIMARY KEY NONCLUSTERED (CUSTOMER_" + dwhKeyName +" ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_CUSTOMER ON dbo.HUB_CUSTOMER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_ID ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- HUB INCENTIVE OFFER");
-                        createStatement.AppendLine("CREATE TABLE dbo.HUB_INCENTIVE_OFFER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  OFFER_ID nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_INCENTIVE_OFFER] PRIMARY KEY NONCLUSTERED (INCENTIVE_OFFER_" + dwhKeyName +" ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_INCENTIVE_OFFER ON dbo.HUB_INCENTIVE_OFFER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("    OFFER_ID ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- HUB MEMBERSHIP PLAN");
-                        createStatement.AppendLine("CREATE TABLE dbo.HUB_MEMBERSHIP_PLAN");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  PLAN_CODE nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  PLAN_SUFFIX nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_MEMBERSHIP_PLAN] PRIMARY KEY NONCLUSTERED (MEMBERSHIP_PLAN_" + dwhKeyName +" ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_MEMBERSHIP_PLAN ON dbo.HUB_MEMBERSHIP_PLAN");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  PLAN_CODE ASC,");
-                        createStatement.AppendLine("  PLAN_SUFFIX ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- HUB SEGMENT");
-                        createStatement.AppendLine("CREATE TABLE dbo.HUB_SEGMENT");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  SEGMENT_CODE nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_HUB_SEGMENT] PRIMARY KEY NONCLUSTERED (SEGMENT_" + dwhKeyName +" ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_HUB_SEGMENT ON dbo.HUB_SEGMENT");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  SEGMENT_CODE ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- LNK CUSTOMER COSTING");
-                        createStatement.AppendLine("CREATE TABLE dbo.LNK_CUSTOMER_COSTING");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_COSTING_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_CUSTOMER_COSTING] PRIMARY KEY NONCLUSTERED (CUSTOMER_COSTING_" + dwhKeyName +" ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_CUSTOMER_COSTING ON dbo.LNK_CUSTOMER_COSTING");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" ASC,");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" ASC,");
-                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-                        
-                        createStatement.AppendLine("-- LNK CUSTOMER OFFER");
-                        createStatement.AppendLine("CREATE TABLE dbo.LNK_CUSTOMER_OFFER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_CUSTOMER_OFFER] PRIMARY KEY NONCLUSTERED(CUSTOMER_OFFER_" + dwhKeyName +" ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_CUSTOMER_OFFER ON dbo.LNK_CUSTOMER_OFFER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" ASC,");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'Driving_Key_Indicator', @value = 'True',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'LNK_CUSTOMER_OFFER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_" + dwhKeyName +"'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- LNK MEMBERSHIP");
-                        createStatement.AppendLine("CREATE TABLE dbo.LNK_MEMBERSHIP");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  SALES_CHANNEL nvarchar(100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_MEMBERSHIP] PRIMARY KEY NONCLUSTERED(MEMBERSHIP_" + dwhKeyName +" ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_MEMBERSHIP ON dbo.LNK_MEMBERSHIP");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" ASC,");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" ASC,");
-                        createStatement.AppendLine("  SALES_CHANNEL ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- LNK RENEWAL_MEMBERSHIP");
-                        createStatement.AppendLine("CREATE TABLE[dbo].[LNK_RENEWAL_MEMBERSHIP]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [RENEWAL_MEMBERSHIP_" + dwhKeyName +"][binary](16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeHubLink);
-                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_" + dwhKeyName +"] [binary] (16) NOT NULL,");
-                        createStatement.AppendLine("  [RENEWAL_PLAN_" + dwhKeyName +"] [binary] (16) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LNK_RENEWAL_MEMBERSHIP] PRIMARY KEY NONCLUSTERED ([RENEWAL_MEMBERSHIP_" + dwhKeyName +"] ASC)");
-                        createStatement.AppendLine(") ON [PRIMARY]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE UNIQUE CLUSTERED INDEX IX_LNK_RENEWAL_MEMBERSHIP ON dbo.LNK_RENEWAL_MEMBERSHIP");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_" + dwhKeyName +"] ASC,");
-                        createStatement.AppendLine("  [RENEWAL_PLAN_" + dwhKeyName +"] ASC");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- LSAT CUSTOMER COSTING");
-                        createStatement.AppendLine("CREATE TABLE dbo.LSAT_CUSTOMER_COSTING");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_COSTING_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  COSTING_EFFECTIVE_DATE datetime2(7) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  PERSONAL_MONTHLY_COST numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_CUSTOMER_COSTING] PRIMARY KEY CLUSTERED (CUSTOMER_COSTING_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ", COSTING_EFFECTIVE_DATE ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-                        
-                        createStatement.AppendLine("-- LSAT CUSTOMER OFFER");
-                        createStatement.AppendLine("CREATE TABLE dbo.LSAT_CUSTOMER_OFFER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_CUSTOMER_OFFER] PRIMARY KEY CLUSTERED (CUSTOMER_OFFER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- LSAT MEMBERSHIP");
-                        createStatement.AppendLine("CREATE TABLE dbo.LSAT_MEMBERSHIP");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  MEMBERSHIP_START_DATE datetime2(7) NULL,");
-                        createStatement.AppendLine("  MEMBERSHIP_END_DATE datetime2(7) NULL,");
-                        createStatement.AppendLine("  MEMBERSHIP_STATUS nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_LSAT_MEMBERSHIP] PRIMARY KEY CLUSTERED (MEMBERSHIP_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- SAT CUSTOMER");
-                        createStatement.AppendLine("CREATE TABLE dbo.SAT_CUSTOMER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  GIVEN_NAME nvarchar(100) NULL,");
-                        createStatement.AppendLine("  SURNAME nvarchar(100) NULL,");
-                        createStatement.AppendLine("  SUBURB nvarchar(100) NULL,");
-                        createStatement.AppendLine("  POSTCODE nvarchar(100) NULL,");
-                        createStatement.AppendLine("  COUNTRY nvarchar(100) NULL,");
-                        createStatement.AppendLine("  GENDER nvarchar(100) NULL,");
-                        createStatement.AppendLine("  DATE_OF_BIRTH datetime2(7) NULL,");
-                        createStatement.AppendLine("  REFERRAL_OFFER_MADE_INDICATOR nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_CUSTOMER] PRIMARY KEY CLUSTERED (CUSTOMER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- SAT CUSTOMER ADDITIONAL DETAILS");
-                        createStatement.AppendLine("CREATE TABLE dbo.SAT_CUSTOMER_ADDITIONAL_DETAILS");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  CUSTOMER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  CONTACT_NUMBER nvarchar(100) NULL,");
-                        createStatement.AppendLine("  [STATE] nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_CUSTOMER_ADDITIONAL_DETAILS] PRIMARY KEY CLUSTERED (CUSTOMER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- SAT INCENTIVE OFFER");
-                        createStatement.AppendLine("CREATE TABLE dbo.SAT_INCENTIVE_OFFER");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  INCENTIVE_OFFER_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  OFFER_DESCRIPTION nvarchar(100) NULL,"); 
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_INCENTIVE_OFFER] PRIMARY KEY CLUSTERED(INCENTIVE_OFFER_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- SAT MEMBERSHIP PLAN DETAIL");
-                        createStatement.AppendLine("CREATE TABLE dbo.SAT_MEMBERSHIP_PLAN_DETAIL");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  PLAN_DESCRIPTION nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_MEMBERSHIP_PLAN_DETAIL] PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- SAT MEMBERSHIP PLAN VALUATION");
-                        createStatement.AppendLine("CREATE TABLE dbo.SAT_MEMBERSHIP_PLAN_VALUATION");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  MEMBERSHIP_PLAN_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.AppendLine("  PLAN_VALUATION_DATE datetime2(7) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  PLAN_VALUATION_AMOUNT numeric(38,20) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_MEMBERSHIP_PLAN_VALUATION] PRIMARY KEY CLUSTERED(MEMBERSHIP_PLAN_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ", PLAN_VALUATION_DATE ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- SAT SEGMENT");
-                        createStatement.AppendLine("CREATE TABLE dbo.SAT_SEGMENT");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  SEGMENT_" + dwhKeyName +" binary(16) NOT NULL,");
-                        createStatement.Append(etlFrameworkIncludeSat);
-                        createStatement.AppendLine("  SEGMENT_DESCRIPTION nvarchar(100) NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_SAT_SEGMENT] PRIMARY KEY CLUSTERED (SEGMENT_" + dwhKeyName +" ASC, " + etlFrameworkIncludeSatKey + ")");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("-- BR MEMBERSHIP OFFER");
-                        createStatement.AppendLine("CREATE TABLE[dbo].[BR_MEMBERSHIP_OFFER]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [SNAPSHOT_DATETIME][datetime2](7) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_OFFER_" + dwhKeyName +"] binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [MEMBERSHIP_" + dwhKeyName +"] binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"] binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [MEMBERSHIP_PLAN_" + dwhKeyName +"] binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [SALES_CHANNEL] [nvarchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  CONSTRAINT [PK_BR_MEMBERSHIP_OFFER] PRIMARY KEY CLUSTERED([SNAPSHOT_DATETIME] ASC, [CUSTOMER_OFFER_" + dwhKeyName +"] ASC, [MEMBERSHIP_" + dwhKeyName +"] ASC, [CUSTOMER_" + dwhKeyName +"] ASC, [MEMBERSHIP_PLAN_" + dwhKeyName +"] ASC, [SALES_CHANNEL] ASC)");
-                        createStatement.AppendLine(") ON [PRIMARY]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                        if (checkBoxDIRECT.Checked)
+                        {
+                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleIntegrationSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringInt);
+                        }
+                        else
+                        {
+                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleIntegrationSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringInt);
+                        }
                     }
-
                     #endregion
 
-                    #region Presentation Layer
+                    //#region Presentation Layer
+                    //if (checkBoxCreateSamplePresLayer.Checked)
+                    //{
+                    //    var connString = ConfigurationSettings.ConnectionStringPres;
 
-                    if (checkBoxCreateSamplePresLayer.Checked)
-                    {
-                        var connString = ConfigurationSettings.ConnectionStringPres;
+                    //    // Create sample data
+                    //    StringBuilder createStatement = new StringBuilder();
 
-                        // Create sample data
-                        StringBuilder createStatement = new StringBuilder();
+                    //    createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER', 'U') IS NOT NULL DROP TABLE [DIM_CUSTOMER]");
+                    //    createStatement.AppendLine("IF OBJECT_ID('temp.DIM_CUSTOMER_TMP', 'U') IS NOT NULL DROP TABLE [temp].[DIM_CUSTOMER_TMP]");
+                    //    createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER_VW', 'V') IS NOT NULL DROP VIEW [dbo].[DIM_CUSTOMER_VW]");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER', 'U') IS NOT NULL DROP TABLE [DIM_CUSTOMER]");
-                        createStatement.AppendLine("IF OBJECT_ID('temp.DIM_CUSTOMER_TMP', 'U') IS NOT NULL DROP TABLE [temp].[DIM_CUSTOMER_TMP]");
-                        createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER_VW', 'V') IS NOT NULL DROP VIEW [dbo].[DIM_CUSTOMER_VW]");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    // Create the schemas
+                    //    createStatement.AppendLine("-- Creating the schema");
+                    //    createStatement.AppendLine("IF EXISTS ( SELECT schema_name FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'temp')");
+                    //    createStatement.AppendLine("DROP SCHEMA [temp]");
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        // Create the schemas
-                        createStatement.AppendLine("-- Creating the schema");
-                        createStatement.AppendLine("IF EXISTS ( SELECT schema_name FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'temp')");
-                        createStatement.AppendLine("DROP SCHEMA [temp]");
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("CREATE SCHEMA [temp]");
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("CREATE SCHEMA [temp]");
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    // Create the tables
+                    //    createStatement.AppendLine("/*");
+                    //    createStatement.AppendLine("Create tables");
+                    //    createStatement.AppendLine("*/");
+                    //    createStatement.AppendLine("CREATE TABLE [DIM_CUSTOMER]");
+                    //    createStatement.AppendLine("(");
+                    //    createStatement.AppendLine("  [DIM_CUSTOMER_" + dwhKeyName +"]          binary(16)  NOT NULL,");
+                    //    createStatement.AppendLine("  [ETL_INSERT_RUN_ID]         integer NOT NULL ,");
+                    //    createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] integer NOT NULL ,");
+                    //    createStatement.AppendLine("  [CHECKSUM_TYPE1] varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [CHECKSUM_TYPE2]            varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [EFFECTIVE_DATETIME]        datetime2(7)  NOT NULL,");
+                    //    createStatement.AppendLine("  [EXPIRY_DATETIME]           datetime2(7)  NOT NULL,");
+                    //    createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR]  varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"]              binary(16) NOT NULL,");
+                    //    createStatement.AppendLine("  [CUSTOMER_ID]               numeric(38,20)  NOT NULL,");
+                    //    createStatement.AppendLine("  [GIVEN_NAME]                varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [SURNAME]                   varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [GENDER]                    varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [SUBURB]                    varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [POSTCODE]                  varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [COUNTRY]                   varchar(100)  NOT NULL,");
+                    //    createStatement.AppendLine("  [DATE_OF_BIRTH]             datetime2(7)  NOT NULL,");
+                    //    createStatement.AppendLine("  PRIMARY KEY CLUSTERED([DIM_CUSTOMER_" + dwhKeyName +"] ASC)");
+                    //    createStatement.AppendLine(")");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        // Create the tables
-                        createStatement.AppendLine("/*");
-                        createStatement.AppendLine("Create tables");
-                        createStatement.AppendLine("*/");
-                        createStatement.AppendLine("CREATE TABLE [DIM_CUSTOMER]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [DIM_CUSTOMER_" + dwhKeyName +"]          binary(16)  NOT NULL,");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID]         integer NOT NULL ,");
-                        createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] integer NOT NULL ,");
-                        createStatement.AppendLine("  [CHECKSUM_TYPE1] varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [CHECKSUM_TYPE2]            varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [EFFECTIVE_DATETIME]        datetime2(7)  NOT NULL,");
-                        createStatement.AppendLine("  [EXPIRY_DATETIME]           datetime2(7)  NOT NULL,");
-                        createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR]  varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"]              binary(16) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_ID]               numeric(38,20)  NOT NULL,");
-                        createStatement.AppendLine("  [GIVEN_NAME]                varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [SURNAME]                   varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [GENDER]                    varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [SUBURB]                    varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [POSTCODE]                  varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [COUNTRY]                   varchar(100)  NOT NULL,");
-                        createStatement.AppendLine("  [DATE_OF_BIRTH]             datetime2(7)  NOT NULL,");
-                        createStatement.AppendLine("  PRIMARY KEY CLUSTERED([DIM_CUSTOMER_" + dwhKeyName +"] ASC)");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-
-                        createStatement.AppendLine("CREATE TABLE [temp].[DIM_CUSTOMER_TMP]");
-                        createStatement.AppendLine("(");
-                        createStatement.AppendLine("  [ETL_INSERT_RUN_ID][int] NOT NULL,");
-                        createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] [int] NOT NULL,");
-                        createStatement.AppendLine("  [EFFECTIVE_DATETIME] [datetime2] (7) NOT NULL,");
-                        createStatement.AppendLine("  [EXPIRY_DATETIME] [datetime2] (7) NOT NULL,");
-                        createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"] [char](32) NOT NULL,");
-                        createStatement.AppendLine("  [CUSTOMER_ID] [numeric] (38, 20) NOT NULL,");
-                        createStatement.AppendLine("  [GIVEN_NAME] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [SURNAME] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [GENDER] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [SUBURB] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [POSTCODE] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [COUNTRY] [varchar] (100) NOT NULL,");
-                        createStatement.AppendLine("  [DATE_OF_BIRTH] [datetime2] (7) NOT NULL");
-                        createStatement.AppendLine(")");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("CREATE TABLE [temp].[DIM_CUSTOMER_TMP]");
+                    //    createStatement.AppendLine("(");
+                    //    createStatement.AppendLine("  [ETL_INSERT_RUN_ID][int] NOT NULL,");
+                    //    createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] [int] NOT NULL,");
+                    //    createStatement.AppendLine("  [EFFECTIVE_DATETIME] [datetime2] (7) NOT NULL,");
+                    //    createStatement.AppendLine("  [EXPIRY_DATETIME] [datetime2] (7) NOT NULL,");
+                    //    createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR] [varchar] (100) NOT NULL,");
+                    //    createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"] [char](32) NOT NULL,");
+                    //    createStatement.AppendLine("  [CUSTOMER_ID] [numeric] (38, 20) NOT NULL,");
+                    //    createStatement.AppendLine("  [GIVEN_NAME] [varchar] (100) NOT NULL,");
+                    //    createStatement.AppendLine("  [SURNAME] [varchar] (100) NOT NULL,");
+                    //    createStatement.AppendLine("  [GENDER] [varchar] (100) NOT NULL,");
+                    //    createStatement.AppendLine("  [SUBURB] [varchar] (100) NOT NULL,");
+                    //    createStatement.AppendLine("  [POSTCODE] [varchar] (100) NOT NULL,");
+                    //    createStatement.AppendLine("  [COUNTRY] [varchar] (100) NOT NULL,");
+                    //    createStatement.AppendLine("  [DATE_OF_BIRTH] [datetime2] (7) NOT NULL");
+                    //    createStatement.AppendLine(")");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GIVEN_NAME'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GIVEN_NAME'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SURNAME'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SURNAME'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type2',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SUBURB'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type2',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SUBURB'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'POSTCODE'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'POSTCODE'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GENDER'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GENDER'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DATE_OF_BIRTH'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DATE_OF_BIRTH'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_ID'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_ID'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("EXEC sp_addextendedproperty");
-                        createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-                        createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-                        createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-                        createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DIM_CUSTOMER_" + dwhKeyName +"'");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
+                    //    createStatement.AppendLine("EXEC sp_addextendedproperty");
+                    //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
+                    //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
+                    //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
+                    //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DIM_CUSTOMER_" + dwhKeyName +"'");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
 
-                        createStatement.AppendLine("/*");
-                        createStatement.AppendLine("	Create the Views");
-                        createStatement.AppendLine("*/");
-                        createStatement.AppendLine("CREATE VIEW DIM_CUSTOMER_VW AS");
-                        createStatement.AppendLine("SELECT ");
-                        createStatement.AppendLine("  -1 AS[ETL_INSERT_RUN_ID],");
-                        createStatement.AppendLine("  -1 AS[ETL_UPDATE_RUN_ID],");
-                        createStatement.AppendLine("  scu.[LOAD_DATETIME] AS EFFECTIVE_DATETIME,");
-                        createStatement.AppendLine("  scu.[LOAD_END_DATETIME] AS EXPIRY_DATETIME,");
-                        createStatement.AppendLine("  scu.[CURRENT_RECORD_INDICATOR],");
-                        createStatement.AppendLine("  --scu.[DELETED_RECORD_INDICATOR],");
-                        createStatement.AppendLine("  hcu.CUSTOMER_" + dwhKeyName +", ");
-                        createStatement.AppendLine("  hcu.CUSTOMER_ID,");
-                        createStatement.AppendLine("  scu.GIVEN_NAME,");
-                        createStatement.AppendLine("  scu.SURNAME,");
-                        createStatement.AppendLine("  CASE scu.GENDER");
-                        createStatement.AppendLine("    WHEN 'M' THEN 'Male'");
-                        createStatement.AppendLine("    WHEN 'F' THEN 'Female'");
-                        createStatement.AppendLine("    ELSE 'Unknown'");
-                        createStatement.AppendLine("  END AS GENDER,");
-                        createStatement.AppendLine("  scu.SUBURB,");
-                        createStatement.AppendLine("  scu.POSTCODE,");
-                        createStatement.AppendLine("  scu.COUNTRY,");
-                        createStatement.AppendLine("  CAST(scu.DATE_OF_BIRTH AS DATE) AS DATE_OF_BIRTH");
-                        createStatement.AppendLine("FROM");
-                        createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".HUB_CUSTOMER AS hcu INNER JOIN");
-                        createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".SAT_CUSTOMER AS scu ON hcu.CUSTOMER_" + dwhKeyName +" = scu.CUSTOMER_" + dwhKeyName +"");
-                        createStatement.AppendLine("WHERE");
-                        createStatement.AppendLine("  (ISNULL(scu.CURRENT_RECORD_INDICATOR, 'Y') = 'Y') ");
-                        createStatement.AppendLine();
-                        RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                        createStatement.Clear();
-                    }
-
-                    #endregion
+                    //    createStatement.AppendLine("/*");
+                    //    createStatement.AppendLine("	Create the Views");
+                    //    createStatement.AppendLine("*/");
+                    //    createStatement.AppendLine("CREATE VIEW DIM_CUSTOMER_VW AS");
+                    //    createStatement.AppendLine("SELECT ");
+                    //    createStatement.AppendLine("  -1 AS[ETL_INSERT_RUN_ID],");
+                    //    createStatement.AppendLine("  -1 AS[ETL_UPDATE_RUN_ID],");
+                    //    createStatement.AppendLine("  scu.[LOAD_DATETIME] AS EFFECTIVE_DATETIME,");
+                    //    createStatement.AppendLine("  scu.[LOAD_END_DATETIME] AS EXPIRY_DATETIME,");
+                    //    createStatement.AppendLine("  scu.[CURRENT_RECORD_INDICATOR],");
+                    //    createStatement.AppendLine("  --scu.[DELETED_RECORD_INDICATOR],");
+                    //    createStatement.AppendLine("  hcu.CUSTOMER_" + dwhKeyName +", ");
+                    //    createStatement.AppendLine("  hcu.CUSTOMER_ID,");
+                    //    createStatement.AppendLine("  scu.GIVEN_NAME,");
+                    //    createStatement.AppendLine("  scu.SURNAME,");
+                    //    createStatement.AppendLine("  CASE scu.GENDER");
+                    //    createStatement.AppendLine("    WHEN 'M' THEN 'Male'");
+                    //    createStatement.AppendLine("    WHEN 'F' THEN 'Female'");
+                    //    createStatement.AppendLine("    ELSE 'Unknown'");
+                    //    createStatement.AppendLine("  END AS GENDER,");
+                    //    createStatement.AppendLine("  scu.SUBURB,");
+                    //    createStatement.AppendLine("  scu.POSTCODE,");
+                    //    createStatement.AppendLine("  scu.COUNTRY,");
+                    //    createStatement.AppendLine("  CAST(scu.DATE_OF_BIRTH AS DATE) AS DATE_OF_BIRTH");
+                    //    createStatement.AppendLine("FROM");
+                    //    createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".HUB_CUSTOMER AS hcu INNER JOIN");
+                    //    createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".SAT_CUSTOMER AS scu ON hcu.CUSTOMER_" + dwhKeyName +" = scu.CUSTOMER_" + dwhKeyName +"");
+                    //    createStatement.AppendLine("WHERE");
+                    //    createStatement.AppendLine("  (ISNULL(scu.CURRENT_RECORD_INDICATOR, 'Y') = 'Y') ");
+                    //    createStatement.AppendLine();
+                    //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
+                    //    createStatement.Clear();
+                    //}
+                    //#endregion
 
                     #region Metadadata
-
                     if (checkBoxCreateMetadataMapping.Checked)
                     {
                         if (!checkBoxRetainManualMapping.Checked)
                         {
-                            // Create sample mapping data
-                            var connString = ConfigurationSettings.ConnectionStringOmd;
-                            var createStatement = new StringBuilder();
-
-                            createStatement.AppendLine("DELETE FROM [MD_TABLE_MAPPING];");
-                            createStatement.AppendLine("DELETE FROM [MD_ATTRIBUTE_MAPPING];");
-                            createStatement.AppendLine("DELETE FROM [MD_PHYSICAL_MODEL];");
-                            createStatement.AppendLine("TRUNCATE TABLE [MD_VERSION_ATTRIBUTE];");
-                            createStatement.AppendLine("TRUNCATE TABLE [MD_VERSION];");
-                            createStatement.AppendLine();
-                            RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                            createStatement.Clear();
-
-                            // Staging Layer
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_PROFILER_CUST_MEMBERSHIP', N'COMPOSITE(CustomerID; Plan_Code)', N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'CUST_MEMBERSHIP', N'COMPOSITE(CustomerID; Plan_Code)', N'STG_PROFILER_CUST_MEMBERSHIP', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_OFFER', N'COMPOSITE(CustomerID; OfferID)', N'"+ psaPrefixName + "_PROFILER_CUSTOMER_OFFER', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'CUSTOMER_OFFER', N'COMPOSITE(CustomerID; OfferID)', N'STG_PROFILER_CUSTOMER_OFFER', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'CUSTOMER_PERSONAL', N'CustomerID', N'STG_PROFILER_CUSTOMER_PERSONAL', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code; Date_effective)', N'"+ psaPrefixName + "_PROFILER_ESTIMATED_WORTH', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'ESTIMATED_WORTH', N'COMPOSITE(Plan_Code; Date_effective)', N'STG_PROFILER_ESTIMATED_WORTH', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_PROFILER_OFFER', N'OfferID', N'"+ psaPrefixName + "_PROFILER_OFFER', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'OFFER', N'OfferID', N'STG_PROFILER_OFFER', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Member; Segment; Plan_Code; Date_effective)', N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'PERSONALISED_COSTING', N'COMPOSITE(Member; Segment; Plan_Code; Date_effective)', N'STG_PROFILER_PERSONALISED_COSTING', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_PROFILER_PLAN', N'Plan_Code', N'"+ psaPrefixName + "_PROFILER_PLAN', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'PLAN', N'Plan_Code', N'STG_PROFILER_PLAN', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'STG_USERMANAGED_SEGMENT', N'Demographic_Segment_Code', N'"+ psaPrefixName + "_USERMANAGED_SEGMENT', NULL, NULL, 'Y');");
-
-                            // Integration Layer
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'12=12', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'14=14', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_OFFER', N'CustomerID, OfferID', N'LNK_CUSTOMER_OFFER', N'7=7', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', N'Member', N'HUB_CUSTOMER', N'', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'10=10', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', N'CONCATENATE(Segment;''TEST'')', N'HUB_SEGMENT', N'', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_USERMANAGED_SEGMENT', N'CONCATENATE(Demographic_Segment_Code;''TEST'')', N'SAT_SEGMENT', N'9=9', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_OFFER', N'CustomerID, OfferID', N'LSAT_CUSTOMER_OFFER', N'7=7', 'CustomerID', 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'CustomerID', N'HUB_CUSTOMER', N'15=15', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'CustomerID, COMPOSITE(Plan_Code;''XYZ'')', N'LNK_MEMBERSHIP', N'16=16', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ'')', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'11=11', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_OFFER', N'CustomerID', N'HUB_CUSTOMER', N'5=5', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_OFFER', N'OfferID', N'HUB_INCENTIVE_OFFER', N'3=3', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'18=18', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_OFFER', N'OfferID', N'SAT_INCENTIVE_OFFER', N'4=4', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'HUB_CUSTOMER', N'1=1', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'SAT_CUSTOMER', N'2=2', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', NULL, NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_USERMANAGED_SEGMENT', N'CONCATENATE(Demographic_Segment_Code;''TEST'')', N'HUB_SEGMENT', N'8=8', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ''), Member, CONCATENATE(Segment;''TEST'')', N'LSAT_CUSTOMER_COSTING', N'', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_OFFER', N'OfferID', N'HUB_INCENTIVE_OFFER', N'6=6', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', N'COMPOSITE(Plan_Code;''XYZ''), Member, CONCATENATE(Segment;''TEST'')', N'LNK_CUSTOMER_COSTING', N'', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_ESTIMATED_WORTH', N'COMPOSITE(Plan_Code;''XYZ'')', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'13=13', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'CustomerID, COMPOSITE(Plan_Code;''XYZ'')', N'LSAT_MEMBERSHIP', N'17=17', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PLAN', N'COMPOSITE(Plan_Code;''XYZ''),COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'LNK_RENEWAL_MEMBERSHIP', N'1=1', NULL, 'Y');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + psaPrefixName + "_PROFILER_PLAN', N'COMPOSITE(Renewal_Plan_Code;''XYZ'')', N'HUB_MEMBERSHIP_PLAN', N'1=1', NULL, 'Y');");
-                            createStatement.AppendLine();
-                            RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                            createStatement.Clear();
-
-                            // Attribute mapping details
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', N'Monthly_Cost', N'LSAT_CUSTOMER_COSTING', N'PERSONAL_MONTHLY_COST', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PERSONALISED_COSTING', N'Date_effective', N'LSAT_CUSTOMER_COSTING', N'COSTING_EFFECTIVE_DATE', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'Status', N'LNK_MEMBERSHIP', N'SALES_CHANNEL', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'End_Date', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_END_DATE', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_ESTIMATED_WORTH', N'Date_effective', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'PLAN_VALUATION_DATE', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_ESTIMATED_WORTH', N'Value_Amount', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'PLAN_VALUATION_AMOUNT', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_PLAN', N'Plan_Desc', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'PLAN_DESCRIPTION', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_USERMANAGED_SEGMENT', N'Demographic_Segment_Description', N'SAT_SEGMENT', N'SEGMENT_DESCRIPTION', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_OFFER', N'Offer_Long_Description', N'SAT_INCENTIVE_OFFER', N'OFFER_DESCRIPTION', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'Start_Date', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_START_DATE', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUST_MEMBERSHIP', N'Status', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_STATUS', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Contact_Number', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'CONTACT_NUMBER', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'State', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'STATE', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'DOB', N'SAT_CUSTOMER', N'DATE_OF_BIRTH', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Surname', N'SAT_CUSTOMER', N'SURNAME', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Gender', N'SAT_CUSTOMER', N'GENDER', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Given', N'SAT_CUSTOMER', N'GIVEN_NAME', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Country', N'SAT_CUSTOMER', N'COUNTRY', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Referee_Offer_Made', N'SAT_CUSTOMER', N'REFERRAL_OFFER_MADE_INDICATOR', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'"+ psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Suburb', N'SAT_CUSTOMER', N'SUBURB', N'');");
-                            createStatement.AppendLine("INSERT[dbo].[MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + psaPrefixName + "_PROFILER_CUSTOMER_PERSONAL', N'Postcode', N'SAT_CUSTOMER', N'POSTCODE', N'');");
-                            createStatement.AppendLine();
-                            RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-                            createStatement.Clear();
-
-                            // Physical  model
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'Comment', N'nvarchar', 100, 0, 13, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'CustomerID', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'End_Date', N'datetime2', 8, 27, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'Plan_Code', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'Start_Date', N'datetime2', 8, 27, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUST_MEMBERSHIP', N'Status', N'nvarchar', 100, 0, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'CustomerID', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'OfferID', N'int', 4, 10, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Contact_Number', N'int', 4, 10, 17, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Country', N'nvarchar', 100, 0, 14, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'DOB', N'datetime2', 8, 27, 16, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Gender', N'nvarchar', 100, 0, 15, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Given', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Postcode', N'nvarchar', 100, 0, 13, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Referee_Offer_Made', N'int', 4, 10, 18, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'State', N'nvarchar', 100, 0, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Suburb', N'nvarchar', 100, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_CUSTOMER_PERSONAL', N'Surname', N'nvarchar', 100, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'Date_effective', N'datetime2', 8, 27, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'Plan_Code', N'nvarchar', 100, 0, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_ESTIMATED_WORTH', N'Value_Amount', N'numeric', 17, 38, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'Offer_Long_Description', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'OfferID', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_OFFER', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'Date_effective', N'datetime2', 8, 27, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'Member', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'Monthly_Cost', N'numeric', 17, 38, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'Plan_Code', N'nvarchar', 100, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'Segment', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'Plan_Code', N'nvarchar', 100, 0, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'Plan_Desc', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'Renewal_Plan_Code', N'nvarchar', 100, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_PROFILER_PLAN', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'Demographic_Segment_Code', N'nvarchar', 100, 0, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'Demographic_Segment_Description', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'100_Staging_Area', N'dbo', N'STG_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'Comment', N'nvarchar', 100, 0, 13, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'CustomerID', N'int', 4, 10, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'End_Date', N'datetime2', 8, 27, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'Plan_Code', N'nvarchar', 100, 0, 9, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'Start_Date', N'datetime2', 8, 27, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUST_MEMBERSHIP', N'Status', N'nvarchar', 100, 0, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'CustomerID', N'int', 4, 10, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'OfferID', N'int', 4, 10, 9, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Contact_Number', N'int', 4, 10, 17, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Country', N'nvarchar', 100, 0, 14, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'CustomerID', N'int', 4, 10, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'DOB', N'datetime2', 8, 27, 16, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Gender', N'nvarchar', 100, 0, 15, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Given', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Postcode', N'nvarchar', 100, 0, 13, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Referee_Offer_Made', N'int', 4, 10, 18, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'State', N'nvarchar', 100, 0, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Suburb', N'nvarchar', 100, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_CUSTOMER_PERSONAL', N'Surname', N'nvarchar', 100, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'Date_effective', N'datetime2', 8, 27, 9, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'Plan_Code', N'nvarchar', 100, 0, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_ESTIMATED_WORTH', N'Value_Amount', N'numeric', 17, 38, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'Offer_Long_Description', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'OfferID', N'int', 4, 10, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_OFFER', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'Date_effective', N'datetime2', 8, 27, 11, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'Member', N'int', 4, 10, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'Monthly_Cost', N'numeric', 17, 38, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'Plan_Code', N'nvarchar', 100, 0, 10, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'Segment', N'nvarchar', 100, 0, 9, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PERSONALISED_COSTING', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'Plan_Code', N'nvarchar', 100, 0, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'Plan_Desc', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'Renewal_Plan_Code', N'nvarchar', 100, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_PROFILER_PLAN', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'Demographic_Segment_Code', N'nvarchar', 100, 0, 8, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'Demographic_Segment_Description', N'nvarchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 1, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.EventDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'150_Persistent_Staging_Area', N'dbo', N'PSA_USERMANAGED_SEGMENT', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 5, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_CUSTOMER', N'CUSTOMER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_CUSTOMER', N'CUSTOMER_ID', N'nvarchar', 100, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_CUSTOMER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_CUSTOMER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_CUSTOMER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_INCENTIVE_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_INCENTIVE_OFFER', N'INCENTIVE_OFFER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_INCENTIVE_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_INCENTIVE_OFFER', N'OFFER_ID', N'nvarchar', 100, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_INCENTIVE_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_MEMBERSHIP_PLAN', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_MEMBERSHIP_PLAN', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_MEMBERSHIP_PLAN', N'MEMBERSHIP_PLAN_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_MEMBERSHIP_PLAN', N'PLAN_CODE', N'nvarchar', 100, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_MEMBERSHIP_PLAN', N'PLAN_SUFFIX', N'nvarchar', 100, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_MEMBERSHIP_PLAN', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_SEGMENT', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_SEGMENT', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_SEGMENT', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_SEGMENT', N'SEGMENT_CODE', N'nvarchar', 100, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'HUB_SEGMENT', N'SEGMENT_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_COSTING', N'CUSTOMER_COSTING_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_COSTING', N'CUSTOMER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_COSTING', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_COSTING', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_COSTING', N'MEMBERSHIP_PLAN_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_COSTING', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_COSTING', N'SEGMENT_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_OFFER', N'CUSTOMER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_OFFER', N'CUSTOMER_OFFER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_OFFER', N'INCENTIVE_OFFER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_MEMBERSHIP', N'CUSTOMER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_MEMBERSHIP', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_MEMBERSHIP', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_MEMBERSHIP', N'MEMBERSHIP_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_MEMBERSHIP', N'MEMBERSHIP_PLAN_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_MEMBERSHIP', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_MEMBERSHIP', N'SALES_CHANNEL', N'nvarchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_RENEWAL_MEMBERSHIP', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 2, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_RENEWAL_MEMBERSHIP', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_RENEWAL_MEMBERSHIP', N'MEMBERSHIP_PLAN_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_RENEWAL_MEMBERSHIP', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_RENEWAL_MEMBERSHIP', N'RENEWAL_MEMBERSHIP_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LNK_RENEWAL_MEMBERSHIP', N'RENEWAL_PLAN_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'COSTING_EFFECTIVE_DATE', N'datetime2', 8, 27, 2, N'Y' ,N'Y')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'CUSTOMER_COSTING_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'PERSONAL_MONTHLY_COST', N'numeric', 17, 38, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_COSTING', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'CUSTOMER_OFFER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_CUSTOMER_OFFER', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_END_DATE', N'datetime2', 8, 27, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_START_DATE', N'datetime2', 8, 27, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'MEMBERSHIP_STATUS', N'nvarchar', 100, 0, 13, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'LSAT_MEMBERSHIP', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'COUNTRY', N'nvarchar', 100, 0, 15, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'CUSTOMER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'DATE_OF_BIRTH', N'datetime2', 8, 27, 17, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'GENDER', N'nvarchar', 100, 0, 16, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'GIVEN_NAME', N'nvarchar', 100, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'POSTCODE', N'nvarchar', 100, 0, 14, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'REFERRAL_OFFER_MADE_INDICATOR', N'nvarchar', 100, 0, 18, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'SUBURB', N'nvarchar', 100, 0, 13, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER', N'SURNAME', N'nvarchar', 100, 0, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'CONTACT_NUMBER', N'nvarchar', 100, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'CUSTOMER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_CUSTOMER_ADDITIONAL_DETAILS', N'STATE', N'nvarchar', 100, 0, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'INCENTIVE_OFFER_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'OFFER_DESCRIPTION', N'nvarchar', 100, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_INCENTIVE_OFFER', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'MEMBERSHIP_PLAN_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'PLAN_DESCRIPTION', N'nvarchar', 100, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_DETAIL', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 8, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'MEMBERSHIP_PLAN_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'PLAN_VALUATION_AMOUNT', N'numeric', 17, 38, 12, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'PLAN_VALUATION_DATE', N'datetime2', 8, 27, 2, N'Y' ,N'Y')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_MEMBERSHIP_PLAN_VALUATION', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.ChangeDataCaptureAttribute + "', N'varchar', 100, 0, 7, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.CurrentRowAttribute + "', N'varchar', 100, 0, 4, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.EtlProcessAttribute + "', N'int', 4, 10, 5, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.EtlProcessUpdateAttribute + "', N'int', 4, 10, 6, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.RecordChecksumAttribute + "', N'binary', 16, 0, 10, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.LoadDateTimeAttribute + "', N'datetime2', 8, 27, 2, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.ExpiryDateTimeAttribute + "', N'datetime2', 8, 27, 3, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.RecordSourceAttribute + "', N'varchar', 100, 0, 9, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'SEGMENT_DESCRIPTION', N'nvarchar', 100, 0, 11, N'N' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'SEGMENT_"+ ConfigurationSettings.DwhKeyIdentifier + "', N'binary', 16, 0, 1, N'Y' ,N'N')");
-                            createStatement.AppendLine("INSERT[dbo].[MD_VERSION_ATTRIBUTE] ([VERSION_ID], [DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [NUMERIC_PRECISION], [ORDINAL_POSITION], [PRIMARY_KEY_INDICATOR], [MULTI_ACTIVE_INDICATOR]) VALUES(0, N'200_Integration_Layer', N'dbo', N'SAT_SEGMENT', N'"+ ConfigurationSettings.RowIdAttribute + "', N'int', 4, 10, 8, N'N' ,N'N')");
-                            RunSqlCommandSampleDataForm(connString, createStatement, worker, 6);
-                            createStatement.Clear();
-
+                            if (checkBoxDIRECT.Checked)
+                            {
+                                PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleMappingMetadataDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+                            }
+                            else
+                            {
+                                PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleMappingMetadata.sql", commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+                            }
                         }
                         else
                         {
                             _alertSampleData.SetTextLogging("The option to retain the mapping metadata is checked, so new mapping metadata has not been added.");
                         }
                     }
-
                     #endregion
+
+                    // Execute the SQL statements
+                    foreach (var individualSQlCommand in commandDictionary)
+                    {
+                        int counter = 0;
+
+                        // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
+                        var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
+
+                        RunSqlCommandSampleDataForm(individualSQlCommand.Value, individualSQlCommand.Key + "\r\n\r\n", worker, normalisedValue);
+                        counter++;
+
+                        worker.ReportProgress(100);
+                    }
 
                     #region Configuration Settings
 

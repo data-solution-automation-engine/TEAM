@@ -252,7 +252,15 @@
     <Content Include="Dotfuscator\DotfuscatorTEAM.xml" />
     <Content Include="Resources\Ravos-logo-small.ico" />
     <Content Include="Scripts\generateRepository.sql" />
+    <Content Include="Scripts\generateSampleIntegrationSchema.sql" />
+    <Content Include="Scripts\generateSampleIntegrationSchemaDIRECT.sql" />
+    <Content Include="Scripts\generateSampleMappingMetadata.sql" />
+    <Content Include="Scripts\generateSampleMappingMetadataDIRECT.sql" />
+    <Content Include="Scripts\generateSamplePersistentStagingSchema.sql" />
+    <Content Include="Scripts\generateSamplePersistentStagingSchemaDIRECT.sql" />
     <Content Include="Scripts\generateSampleSourceSchema.sql" />
+    <Content Include="Scripts\generateSampleStagingSchema.sql" />
+    <Content Include="Scripts\generateSampleStagingSchemaDIRECT.sql" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
