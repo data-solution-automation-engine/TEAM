@@ -249,7 +249,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dotfuscator\DotfuscatorTEAM.xml" />
     <Content Include="Resources\Ravos-logo-small.ico" />
     <Content Include="Scripts\generateRepository.sql" />
     <Content Include="Scripts\generateSampleIntegrationSchema.sql" />
