@@ -57,7 +57,7 @@ namespace TEAM
         {
             using (var connectionVersion = new SqlConnection(connString))
             {
-                var commandVersion = new SqlCommand(createStatement.ToString(), connectionVersion);
+                var commandVersion = new SqlCommand(createStatement, connectionVersion);
 
                 try
                 {
@@ -65,7 +65,7 @@ namespace TEAM
                     commandVersion.ExecuteNonQuery();
 
                     worker.ReportProgress(progressCounter);
-                    _alertRepository.SetTextLogging(createStatement.ToString());
+                    _alertRepository.SetTextLogging(createStatement);
                 }
                 catch (Exception ex)
                 {

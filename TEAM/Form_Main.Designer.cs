@@ -237,7 +237,8 @@
             // 
             this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
             this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.openOutputDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
             // 
@@ -245,7 +246,8 @@
             // 
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.exitToolStripMenuItem.Text = "Exit Application";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -295,7 +297,8 @@
             // 
             this.createRebuildRepositoryToolStripMenuItem1.Image = global::TEAM.Properties.Resources.database_icon;
             this.createRebuildRepositoryToolStripMenuItem1.Name = "createRebuildRepositoryToolStripMenuItem1";
-            this.createRebuildRepositoryToolStripMenuItem1.Size = new System.Drawing.Size(218, 22);
+            this.createRebuildRepositoryToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.createRebuildRepositoryToolStripMenuItem1.Size = new System.Drawing.Size(259, 22);
             this.createRebuildRepositoryToolStripMenuItem1.Text = "&Create / Rebuild Repository";
             this.createRebuildRepositoryToolStripMenuItem1.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem1_Click);
             // 
@@ -311,12 +314,12 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(104, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
