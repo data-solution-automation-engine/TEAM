@@ -181,7 +181,7 @@ namespace TEAM
                                 FormBase.GlobalParameters.FileExtension))
                 {
                     var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                             string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_",
+                                             string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_",
                                                  FormBase.GlobalParameters.ConfigfileName + '_' +
                                                  FormBase.GlobalParameters.WorkingEnvironment +
                                                  FormBase.GlobalParameters.FileExtension);
