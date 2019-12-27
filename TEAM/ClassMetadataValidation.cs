@@ -11,7 +11,7 @@ namespace TEAM
     {
 
         /// <summary>
-        ///    This class ensures that a source object exists in the physical model against the catalog
+        ///    This method ensures that a source object exists in the physical model against the catalog
         /// </summary>
         internal static string ValidateObjectExistencePhysical (string validationObject, string connectionString)
         {

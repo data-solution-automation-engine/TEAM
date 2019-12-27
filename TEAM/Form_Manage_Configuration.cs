@@ -249,7 +249,6 @@ namespace TEAM
                 textBoxRecordSource.Text = configList["RecordSourceAttribute"];
                 textBoxETLProcessID.Text = configList["ETLProcessID"];
                 textBoxETLUpdateProcessID.Text = configList["ETLUpdateProcessID"];
-                textBoxSourcePrefix.Text = configList["SourceSystemPrefix"];
                 textBoxStagingAreaPrefix.Text = configList["StagingAreaPrefix"];
                 textBoxPSAPrefix.Text = configList["PersistentStagingAreaPrefix"];
                 textBoxSourceRowId.Text = configList["RowID"];
@@ -620,7 +619,6 @@ namespace TEAM
             ConfigurationSettings.PhysicalModelServerName = textBoxPhysicalModelServerName.Text;
             ConfigurationSettings.MetadataServerName = textBoxMetadataServerName.Text;
 
-            ConfigurationSettings.SourceSystemPrefix = textBoxSourcePrefix.Text;
             ConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
             ConfigurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
             ConfigurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;

@@ -5699,7 +5699,7 @@ namespace TEAM
                 var prepareMappingStatementManual = new StringBuilder();
                 prepareMappingStatementManual.AppendLine(@"
                     SELECT  
-                      stg.SOURCE_NAME
+                       stg.SOURCE_NAME
                       ,sat.SATELLITE_NAME
                       ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_FROM
                       ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_TO
@@ -5712,7 +5712,7 @@ namespace TEAM
                     LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME
                     LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping
                         ON mapping.TARGET_TABLE = table_mapping.TARGET_TABLE
-                    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE
+                    AND mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE
                     WHERE mapping.TARGET_TABLE_TYPE IN ('Satellite', 'Link-Satellite')
                        AND table_mapping.PROCESS_INDICATOR = 'Y' 
                     ");
@@ -5730,19 +5730,19 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["SATELLITE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
-
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
                             insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
                             insertStatement.AppendLine("VALUES ('" + row["SOURCE_NAME"] + "','" + row["SATELLITE_NAME"] + "','" + row["ATTRIBUTE_NAME_FROM"] + "','" + row["ATTRIBUTE_NAME_TO"] + "','" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
 
-                            var command = new SqlCommand(insertStatement.ToString(), connection);
-
                             try
                             {
+
+                                var command = new SqlCommand(insertStatement.ToString(), connection);
                                 connection.Open();
                                 command.ExecuteNonQuery();
+                                _alert.SetTextLogging("--> Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["SATELLITE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+
                                 manualSatMappingCounter++;
 
                             }

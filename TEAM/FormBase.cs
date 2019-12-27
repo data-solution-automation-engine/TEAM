@@ -83,7 +83,6 @@ namespace TEAM
             internal static string PsaKeyLocation { get; set; }
             internal static string SchemaName { get; set; }
 
-            internal static string SourceSystemPrefix { get; set; }
 
             internal static string EventDateTimeAttribute { get; set; }
 

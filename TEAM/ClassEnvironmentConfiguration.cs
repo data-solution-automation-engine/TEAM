@@ -54,7 +54,6 @@ namespace TEAM
                 initialConfigurationFile.AppendLine(@"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
                 initialConfigurationFile.AppendLine(@"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
 
-                initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
                 initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
@@ -433,7 +432,6 @@ namespace TEAM
                 configurationFile.AppendLine(@"connectionStringIntegration|" +FormBase.ConfigurationSettings.ConnectionStringInt + "");
                 configurationFile.AppendLine(@"connectionStringPresentation|" +FormBase.ConfigurationSettings.ConnectionStringPres + "");
 
-                configurationFile.AppendLine("SourceSystemPrefix|" + FormBase.ConfigurationSettings.SourceSystemPrefix +"");
                 configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +"");
                 configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
                 configurationFile.AppendLine("HubTablePrefix|" + FormBase.ConfigurationSettings.HubTablePrefixValue + "");
@@ -550,7 +548,6 @@ namespace TEAM
                 FormBase.ConfigurationSettings.TableNamingLocation = configList["TableNamingLocation"];
                 FormBase.ConfigurationSettings.KeyNamingLocation = configList["KeyNamingLocation"];
                 FormBase.ConfigurationSettings.SchemaName = configList["SchemaName"];
-                FormBase.ConfigurationSettings.SourceSystemPrefix = configList["SourceSystemPrefix"];
                 FormBase.ConfigurationSettings.EventDateTimeAttribute = configList["EventDateTimeStamp"];
                 FormBase.ConfigurationSettings.LoadDateTimeAttribute = configList["LoadDateTimeStamp"];
                 FormBase.ConfigurationSettings.ExpiryDateTimeAttribute = configList["ExpiryDateTimeStamp"];

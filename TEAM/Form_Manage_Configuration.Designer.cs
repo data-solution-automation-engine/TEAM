@@ -94,8 +94,6 @@
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
             this.radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
-            this.label28 = new System.Windows.Forms.Label();
-            this.textBoxSourcePrefix = new System.Windows.Forms.TextBox();
             this.label34 = new System.Windows.Forms.Label();
             this.textBoxPSAPrefix = new System.Windows.Forms.TextBox();
             this.label33 = new System.Windows.Forms.Label();
@@ -364,9 +362,9 @@
             this.label41.AutoSize = true;
             this.label41.Location = new System.Drawing.Point(5, 299);
             this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(198, 13);
+            this.label41.Size = new System.Drawing.Size(197, 13);
             this.label41.TabIndex = 69;
-            this.label41.Text = "Alternative Satellite LDTS attribute name";
+            this.label41.Text = "Alternative Context LDTS attribute name";
             // 
             // textBoxSatelliteAlternativeLDTSAttribute
             // 
@@ -420,9 +418,9 @@
             this.label37.AutoSize = true;
             this.label37.Location = new System.Drawing.Point(5, 273);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(181, 13);
+            this.label37.Size = new System.Drawing.Size(182, 13);
             this.label37.TabIndex = 62;
-            this.label37.Text = "Alternative Hub LDTS attribute name";
+            this.label37.Text = "Alternative CBC LDTS attribute name";
             // 
             // textBoxHubAlternativeLDTSAttribute
             // 
@@ -463,9 +461,9 @@
             this.label35.AutoSize = true;
             this.label35.Location = new System.Drawing.Point(5, 142);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(199, 13);
+            this.label35.Size = new System.Drawing.Size(159, 13);
             this.label35.TabIndex = 57;
-            this.label35.Text = "Satellite Expiry Date/Time attribute name";
+            this.label35.Text = "Expiry Date/Time attribute name";
             // 
             // textBoxExpiryDateTimeName
             // 
@@ -511,9 +509,9 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(5, 89);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(112, 13);
+            this.label14.Size = new System.Drawing.Size(175, 13);
             this.label14.TabIndex = 26;
-            this.label14.Text = "Link Satellite identifyer";
+            this.label14.Text = "Relationship Context table identifyer";
             // 
             // textBoxHubTablePrefix
             // 
@@ -527,9 +525,9 @@
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(5, 11);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(72, 13);
+            this.label17.Size = new System.Drawing.Size(192, 13);
             this.label17.TabIndex = 19;
-            this.label17.Text = "Hub identifyer";
+            this.label17.Text = "Core Business Concept (CBC) identifyer";
             // 
             // textBoxSatPrefix
             // 
@@ -543,9 +541,9 @@
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(5, 37);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(89, 13);
+            this.label16.Size = new System.Drawing.Size(114, 13);
             this.label16.TabIndex = 22;
-            this.label16.Text = "Satellite identifyer";
+            this.label16.Text = "Context table identifyer";
             // 
             // textBoxLinkTablePrefix
             // 
@@ -559,9 +557,9 @@
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(5, 63);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(72, 13);
+            this.label15.Size = new System.Drawing.Size(192, 13);
             this.label15.TabIndex = 24;
-            this.label15.Text = "Link identifyer";
+            this.label15.Text = "Natural Business Relationship identifyer";
             // 
             // textBoxLinkSatPrefix
             // 
@@ -746,8 +744,6 @@
             // 
             this.tabPagePrefixesSuffixex.Controls.Add(this.label48);
             this.tabPagePrefixesSuffixex.Controls.Add(this.groupBox8);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.label28);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.textBoxSourcePrefix);
             this.tabPagePrefixesSuffixex.Controls.Add(this.label34);
             this.tabPagePrefixesSuffixex.Controls.Add(this.textBoxPSAPrefix);
             this.tabPagePrefixesSuffixex.Controls.Add(this.label33);
@@ -803,32 +799,14 @@
             this.radioButtonPSABusinessKeyIndex.Text = "Unique Index";
             this.radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
             // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(5, 62);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(195, 13);
-            this.label28.TabIndex = 73;
-            this.label28.Text = "Source prefix (one example source only)";
-            // 
-            // textBoxSourcePrefix
-            // 
-            this.textBoxSourcePrefix.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxSourcePrefix.Location = new System.Drawing.Point(233, 60);
-            this.textBoxSourcePrefix.Multiline = true;
-            this.textBoxSourcePrefix.Name = "textBoxSourcePrefix";
-            this.textBoxSourcePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSourcePrefix.TabIndex = 24;
-            // 
             // label34
             // 
             this.label34.AutoSize = true;
             this.label34.Location = new System.Drawing.Point(5, 37);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(145, 13);
+            this.label34.Size = new System.Drawing.Size(175, 13);
             this.label34.TabIndex = 71;
-            this.label34.Text = "Persistent Staging Area prefix";
+            this.label34.Text = "Persistent Staging Area (PSA) prefix";
             // 
             // textBoxPSAPrefix
             // 
@@ -842,9 +820,9 @@
             this.label33.AutoSize = true;
             this.label33.Location = new System.Drawing.Point(5, 11);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(96, 13);
+            this.label33.Size = new System.Drawing.Size(145, 13);
             this.label33.TabIndex = 69;
-            this.label33.Text = "Staging Area prefix";
+            this.label33.Text = "Staging / Landing Area prefix";
             // 
             // textBoxStagingAreaPrefix
             // 
@@ -1628,8 +1606,6 @@
         internal System.Windows.Forms.GroupBox groupBox8;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyPK;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyIndex;
-        private System.Windows.Forms.Label label28;
-        internal System.Windows.Forms.TextBox textBoxSourcePrefix;
         private System.Windows.Forms.Label label34;
         internal System.Windows.Forms.TextBox textBoxPSAPrefix;
         private System.Windows.Forms.Label label33;

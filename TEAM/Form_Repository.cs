@@ -727,7 +727,6 @@ namespace TEAM
 
                 // Shared values (same for all samples)
                 //var metadataRepositoryType = "SQLServer";
-                var sourceSystemPrefix = "PROFILER";
                 var stagingAreaPrefix = "STG";
                 var hubTablePrefix = "HUB";
                 var satTablePrefix = "SAT";
@@ -824,7 +823,6 @@ namespace TEAM
                 ConfigurationSettings.TableNamingLocation = tableNamingLocation;
                 ConfigurationSettings.KeyNamingLocation = keyNamingLocation;
 
-                ConfigurationSettings.SourceSystemPrefix = sourceSystemPrefix;
                 ConfigurationSettings.EventDateTimeAttribute = eventDateTime;
                 ConfigurationSettings.LoadDateTimeAttribute = loadDateTime;
                 ConfigurationSettings.ExpiryDateTimeAttribute = expiryDateTime;
