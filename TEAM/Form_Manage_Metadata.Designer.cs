@@ -79,11 +79,9 @@ namespace TEAM
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.businessKeyMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTableMappingAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.attributeMappingMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAttributeMappingAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.physicalModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openModelMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -607,33 +605,24 @@ namespace TEAM
             // 
             this.businessKeyMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMetadataFileToolStripMenuItem,
-            this.saveMetadataFileToolStripMenuItem,
             this.saveTableMappingAsJSONToolStripMenuItem});
             this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
-            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(151, 20);
+            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(150, 20);
             this.businessKeyMetadataToolStripMenuItem.Text = "Table &Mapping Metadata";
             // 
             // openMetadataFileToolStripMenuItem
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.openMetadataFileToolStripMenuItem.Text = "Open Table Mapping file";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
-            // 
-            // saveMetadataFileToolStripMenuItem
-            // 
-            this.saveMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.saveMetadataFileToolStripMenuItem.Name = "saveMetadataFileToolStripMenuItem";
-            this.saveMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-            this.saveMetadataFileToolStripMenuItem.Text = "Save Table Mapping as XML";
-            this.saveMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.saveBusinessKeyMetadataFileToolStripMenuItem_Click);
             // 
             // saveTableMappingAsJSONToolStripMenuItem
             // 
             this.saveTableMappingAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveTableMappingAsJSONToolStripMenuItem.Name = "saveTableMappingAsJSONToolStripMenuItem";
-            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.saveTableMappingAsJSONToolStripMenuItem.Text = "Save Table Mapping as JSON";
             this.saveTableMappingAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveTableMappingAsJSONToolStripMenuItem_Click);
             // 
@@ -641,7 +630,6 @@ namespace TEAM
             // 
             this.attributeMappingMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
-            this.toolStripMenuItem2,
             this.saveAttributeMappingAsJSONToolStripMenuItem});
             this.attributeMappingMetadataToolStripMenuItem.Name = "attributeMappingMetadataToolStripMenuItem";
             this.attributeMappingMetadataToolStripMenuItem.Size = new System.Drawing.Size(170, 20);
@@ -654,14 +642,6 @@ namespace TEAM
             this.toolStripMenuItem1.Size = new System.Drawing.Size(244, 22);
             this.toolStripMenuItem1.Text = "Open Attribute Mapping File";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.OpenAttributeFileMenuItem_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(244, 22);
-            this.toolStripMenuItem2.Text = "Save Attribute Mapping as XML";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.saveAttributeMetadataMenuItem_Click);
             // 
             // saveAttributeMappingAsJSONToolStripMenuItem
             // 
@@ -879,10 +859,8 @@ namespace TEAM
         private System.Windows.Forms.Button buttonSaveMetadataChanges;
         private System.Windows.Forms.ToolStripMenuItem businessKeyMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openMetadataFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveMetadataFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem attributeMappingMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Label labelResult;
         private System.ComponentModel.BackgroundWorker backgroundWorkerMetadata;

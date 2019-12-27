@@ -2960,82 +2960,7 @@ namespace TEAM
             }
         }
 
-        private void saveBusinessKeyMetadataFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var theDialog = new SaveFileDialog
-                {
-                    Title = @"Save Business Key Metadata File",
-                    Filter = @"XML files|*.xml",
-                    InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
-                };
 
-                var ret = STAShowDialog(theDialog);
-
-                if (ret == DialogResult.OK)
-                {
-                    try
-                    {
-                        var chosenFile = theDialog.FileName;
-                      
-                        DataTable gridDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
-
-                        gridDataTable.TableName = "TableMappingMetadata";
-
-                        gridDataTable.WriteXml(chosenFile);
-                        richTextBoxInformation.Text = "The Business Key metadata file " + chosenFile + " saved successfully.";
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
-            }   
-        }
-
-        private void saveAttributeMetadataMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var theDialog = new SaveFileDialog
-                {
-                    Title = @"Save Attribute Mapping Metadata File",
-                    Filter = @"XML files|*.xml",
-                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
-                };
-
-
-                var ret = STAShowDialog(theDialog);
-
-                if (ret == DialogResult.OK)
-                {
-                    try
-                    {
-                        var chosenFile = theDialog.FileName;
-
-                        DataTable gridDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
-
-                        gridDataTable.TableName = "AttributeMappingMetadata";
-
-                        gridDataTable.WriteXml(chosenFile);
-                        richTextBoxInformation.Text = "The attribute mapping file " + chosenFile + " saved successfully.";
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
-            }   
-        }
 
         private void OpenAttributeFileMenuItem_Click(object sender, EventArgs e)
         {
@@ -3849,7 +3774,7 @@ namespace TEAM
 
                 worker?.ReportProgress(5);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the source metadata completed, and has taken "+subProcess.Elapsed.TotalSeconds.ToString()+" seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the source metadata completed, and has taken "+subProcess.Elapsed.TotalSeconds+" seconds.\r\n");
                 #endregion
 
 
@@ -3924,7 +3849,7 @@ namespace TEAM
 
                 worker?.ReportProgress(7);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -3987,7 +3912,7 @@ namespace TEAM
 
                 worker?.ReportProgress(10);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Source / Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Source / Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4062,7 +3987,7 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(13);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
                 #endregion
 
@@ -4126,7 +4051,7 @@ namespace TEAM
 
                 worker?.ReportProgress(15);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4198,7 +4123,7 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(17);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Hub metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Hub metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4269,7 +4194,7 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(20);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4348,7 +4273,7 @@ namespace TEAM
 
                 worker.ReportProgress(24);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4429,7 +4354,7 @@ namespace TEAM
                 }
                 worker.ReportProgress(28);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4516,7 +4441,7 @@ namespace TEAM
 
                 worker.ReportProgress(28);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4608,7 +4533,7 @@ namespace TEAM
 
                 worker.ReportProgress(30);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
