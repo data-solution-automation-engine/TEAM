@@ -300,9 +300,8 @@ namespace TEAM
         public static List<string> GetHubTargetBusinessKeyList(string schemaName, string tableName, int versionId, string queryMode)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
-            var conn = new SqlConnection();
 
-            conn = queryMode == "physical" ? new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt} : new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = queryMode == "physical" ? new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt} : new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
 
             try
             {
@@ -338,7 +337,7 @@ namespace TEAM
             {
                 //Ignore version is not checked, so versioning is used - meaning the business key metadata is sourced from the version history metadata.
                 sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
-                sqlStatementForBusinessKeys.AppendLine("FROM MD_VERSION_ATTRIBUTE");
+                sqlStatementForBusinessKeys.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
                 sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
                 sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
                 sqlStatementForBusinessKeys.AppendLine("  AND SCHEMA_NAME= '" + schemaName + "'");
