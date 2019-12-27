@@ -1,0 +1,412 @@
+[
+  {
+    "tableMappingHash": "FFC638CE16A3C9EC16C3575DE032F89C",
+    "versionId": "0",
+    "sourceTable": "CUST_MEMBERSHIP",
+    "targetTable": "STG_PROFILER_CUST_MEMBERSHIP",
+    "businessKeyDefinition": "COMPOSITE(CustomerID; Plan_Code)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "8B944F0BCB1BE4DFC73366FDC7E3607E",
+    "versionId": "0",
+    "sourceTable": "CUSTOMER_OFFER",
+    "targetTable": "STG_PROFILER_CUSTOMER_OFFER",
+    "businessKeyDefinition": "COMPOSITE(CustomerID; OfferID)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "A3D7B5908AA0209776360A8E8ED3C7B1",
+    "versionId": "0",
+    "sourceTable": "CUSTOMER_PERSONAL",
+    "targetTable": "STG_PROFILER_CUSTOMER_PERSONAL",
+    "businessKeyDefinition": "CustomerID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "10F64C7F68BCC0AA7AECCBFD13C8F60D",
+    "versionId": "0",
+    "sourceTable": "ESTIMATED_WORTH",
+    "targetTable": "STG_PROFILER_ESTIMATED_WORTH",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code; Date_effective)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "1A355AC5CD1F36F2C8BE439A8321B1FD",
+    "versionId": "0",
+    "sourceTable": "OFFER",
+    "targetTable": "STG_PROFILER_OFFER",
+    "businessKeyDefinition": "OfferID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "616EA2CDDB10F14E7143C0B128A55167",
+    "versionId": "0",
+    "sourceTable": "PERSONALISED_COSTING",
+    "targetTable": "STG_PROFILER_PERSONALISED_COSTING",
+    "businessKeyDefinition": "COMPOSITE(Member; Segment; Plan_Code; Date_effective)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "7DA9F00BEB242E77A8CCE4ACBB794C5B",
+    "versionId": "0",
+    "sourceTable": "PLAN",
+    "targetTable": "STG_PROFILER_PLAN",
+    "businessKeyDefinition": "Plan_Code",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "626C37F1B930B24CA835A1F0F9D73E0D",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "targetTable": "HUB_CUSTOMER",
+    "businessKeyDefinition": "CustomerID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "15=15",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "9FB98E86B3A9D692A6EB1A214833A9F4",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "targetTable": "HUB_MEMBERSHIP_PLAN",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "14=14",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "BFDD5976088B0EF7A4F67CD0E8BC34BB",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "targetTable": "LNK_MEMBERSHIP",
+    "businessKeyDefinition": "CustomerID, COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "16=16",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "2E7984ED9A459323016832895438A379",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "targetTable": "LSAT_MEMBERSHIP",
+    "businessKeyDefinition": "CustomerID, COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "17=17",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "6FA204E18168C2B7E054E6A02E259587",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
+    "targetTable": "HUB_CUSTOMER",
+    "businessKeyDefinition": "CustomerID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "5=5",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "8D93B4849393772F1803F99C3D0AC22D",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
+    "targetTable": "HUB_INCENTIVE_OFFER",
+    "businessKeyDefinition": "OfferID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "6=6",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "FB730BB84E06FE568A7CA494F4B97B32",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
+    "targetTable": "LNK_CUSTOMER_OFFER",
+    "businessKeyDefinition": "CustomerID, OfferID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "7=7",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "E12B89FC652997B51E2E962F9DAA1A2A",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
+    "targetTable": "LSAT_CUSTOMER_OFFER",
+    "businessKeyDefinition": "CustomerID, OfferID",
+    "drivingKeyDefinition": "CustomerID",
+    "filterCriteria": "7=7",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "D8595025739BA599663F990458EEABA2",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "targetTable": "HUB_CUSTOMER",
+    "businessKeyDefinition": "CustomerID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "1=1",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "15D93719AE2B516B0A3624694FE41D67",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "targetTable": "SAT_CUSTOMER",
+    "businessKeyDefinition": "CustomerID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "2=2",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "69C076F75631FEAE2625CF133319EE44",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "businessKeyDefinition": "CustomerID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "8F4E35021BA6D179A96DD12216C09476",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_ESTIMATED_WORTH",
+    "targetTable": "HUB_MEMBERSHIP_PLAN",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "12=12",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "7E8F62C8D0B85DD22EFE9060F24BF22E",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_ESTIMATED_WORTH",
+    "targetTable": "SAT_MEMBERSHIP_PLAN_VALUATION",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "13=13",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "2F5AD76AFE34DD4DA871249731CD5669",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_OFFER",
+    "targetTable": "HUB_INCENTIVE_OFFER",
+    "businessKeyDefinition": "OfferID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "3=3",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "57F9EF44DB251C209C950277D579EB1C",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_OFFER",
+    "targetTable": "SAT_INCENTIVE_OFFER",
+    "businessKeyDefinition": "OfferID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "4=4",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "13B25E1C213C7152F9E9C4343D714DDA",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "targetTable": "HUB_CUSTOMER",
+    "businessKeyDefinition": "Member",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "97BC088A50708F9C5C70AE3A56771029",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "targetTable": "HUB_MEMBERSHIP_PLAN",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "18=18",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "A7BAD4CDFF75A0F40DF656E105821E5F",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "targetTable": "HUB_SEGMENT",
+    "businessKeyDefinition": "CONCATENATE(Segment;'TEST')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "4F0B8B8F0482EF7012D6530162FA404D",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "targetTable": "LNK_CUSTOMER_COSTING",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ'), Member, CONCATENATE(Segment;'TEST')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "07E25ECC5FE8653B070575109EEB7B6F",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "targetTable": "LSAT_CUSTOMER_COSTING",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ'), Member, CONCATENATE(Segment;'TEST')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "020A932E1FFD7AB74A085804C287B8C3",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PLAN",
+    "targetTable": "HUB_MEMBERSHIP_PLAN",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "10=10",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "7097CE35A260193214FD430D459F04B5",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PLAN",
+    "targetTable": "HUB_MEMBERSHIP_PLAN",
+    "businessKeyDefinition": "COMPOSITE(Renewal_Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "1=1",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "62BF748B9F0CFFBE5AB3CC36C76E33E9",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PLAN",
+    "targetTable": "LNK_RENEWAL_MEMBERSHIP",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ'),COMPOSITE(Renewal_Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "1=1",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "D3FEF327166AD678C7B1EC30DB0D1FC9",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PLAN",
+    "targetTable": "SAT_MEMBERSHIP_PLAN_DETAIL",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "11=11",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "7DA185111347E9AC1509AF473D6ECFCB",
+    "versionId": "0",
+    "sourceTable": "PSA_USERMANAGED_SEGMENT",
+    "targetTable": "HUB_SEGMENT",
+    "businessKeyDefinition": "CONCATENATE(Demographic_Segment_Code;'TEST')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "8=8",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "5690BA359F340709587CB48F131D7907",
+    "versionId": "0",
+    "sourceTable": "PSA_USERMANAGED_SEGMENT",
+    "targetTable": "SAT_SEGMENT",
+    "businessKeyDefinition": "CONCATENATE(Demographic_Segment_Code;'TEST')",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "9=9",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "DDE6F2640C57B0BB6F5CCB34CBAC766C",
+    "versionId": "0",
+    "sourceTable": "STG_PROFILER_CUST_MEMBERSHIP",
+    "targetTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "businessKeyDefinition": "COMPOSITE(CustomerID; Plan_Code)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "4AFD7345417B1911A650F7649A6A00AF",
+    "versionId": "0",
+    "sourceTable": "STG_PROFILER_CUSTOMER_OFFER",
+    "targetTable": "PSA_PROFILER_CUSTOMER_OFFER",
+    "businessKeyDefinition": "COMPOSITE(CustomerID; OfferID)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "CA36FC3BE063D3227D8871B7CC420C59",
+    "versionId": "0",
+    "sourceTable": "STG_PROFILER_CUSTOMER_PERSONAL",
+    "targetTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "businessKeyDefinition": "CustomerID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "7BDEA58BD160F165C203E2D9729A5A9A",
+    "versionId": "0",
+    "sourceTable": "STG_PROFILER_ESTIMATED_WORTH",
+    "targetTable": "PSA_PROFILER_ESTIMATED_WORTH",
+    "businessKeyDefinition": "COMPOSITE(Plan_Code; Date_effective)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "51241819420ACC40D50C2F131B1C8B3F",
+    "versionId": "0",
+    "sourceTable": "STG_PROFILER_OFFER",
+    "targetTable": "PSA_PROFILER_OFFER",
+    "businessKeyDefinition": "OfferID",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "255A1E911A6165531B68E2A892F4310C",
+    "versionId": "0",
+    "sourceTable": "STG_PROFILER_PERSONALISED_COSTING",
+    "targetTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "businessKeyDefinition": "COMPOSITE(Member; Segment; Plan_Code; Date_effective)",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "7646F16C53050981918843E6A5CCDB43",
+    "versionId": "0",
+    "sourceTable": "STG_PROFILER_PLAN",
+    "targetTable": "PSA_PROFILER_PLAN",
+    "businessKeyDefinition": "Plan_Code",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  },
+  {
+    "tableMappingHash": "81AABBBF9A6E1D6A75FD6AEDE54ACD47",
+    "versionId": "0",
+    "sourceTable": "STG_USERMANAGED_SEGMENT",
+    "targetTable": "PSA_USERMANAGED_SEGMENT",
+    "businessKeyDefinition": "Demographic_Segment_Code",
+    "drivingKeyDefinition": "",
+    "filterCriteria": "",
+    "processIndicator": "Y"
+  }
+]

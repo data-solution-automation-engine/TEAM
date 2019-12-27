@@ -18,7 +18,7 @@ namespace TEAM
             
             
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.5.5.2";
+            const string versionNumberForTeamApplication = "v1.6.0.0";
 
             // Placeholder for the error handling
             var errorMessage = new StringBuilder();
@@ -435,16 +435,6 @@ namespace TEAM
             CheckKeyword("The statement was executed successfully.", Color.GreenYellow, 0);
         }
 
-
-
-        private void createRebuildRepositoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcRepository);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
-
-
         private void generalSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var t = new Thread(ThreadProcConfiguration);
@@ -465,6 +455,13 @@ namespace TEAM
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
+        }
+
+        private void createRebuildRepositoryToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcRepository);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
     }
 }

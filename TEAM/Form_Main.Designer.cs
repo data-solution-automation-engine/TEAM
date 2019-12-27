@@ -50,9 +50,10 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createRebuildRepositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.repositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createRebuildRepositoryToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -215,6 +216,7 @@
             this.fileToolStripMenuItem,
             this.metadataToolStripMenuItem,
             this.configurationToolStripMenuItem,
+            this.repositoryToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
             this.menuStripMainMenu.Name = "menuStripMainMenu";
@@ -250,8 +252,7 @@
             // metadataToolStripMenuItem
             // 
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openMetadataFormToolStripMenuItem,
-            this.createRebuildRepositoryToolStripMenuItem});
+            this.openMetadataFormToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
             this.metadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.metadataToolStripMenuItem.Text = "&Metadata";
@@ -261,17 +262,9 @@
             this.openMetadataFormToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
             this.openMetadataFormToolStripMenuItem.Name = "openMetadataFormToolStripMenuItem";
             this.openMetadataFormToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.openMetadataFormToolStripMenuItem.Text = "Manage &Metadata";
             this.openMetadataFormToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFormToolStripMenuItem_Click);
-            // 
-            // createRebuildRepositoryToolStripMenuItem
-            // 
-            this.createRebuildRepositoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
-            this.createRebuildRepositoryToolStripMenuItem.Name = "createRebuildRepositoryToolStripMenuItem";
-            this.createRebuildRepositoryToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.createRebuildRepositoryToolStripMenuItem.Text = "&Create / Rebuild Repository";
-            this.createRebuildRepositoryToolStripMenuItem.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem_Click);
             // 
             // configurationToolStripMenuItem
             // 
@@ -289,6 +282,22 @@
             this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.generalSettingsToolStripMenuItem.Text = "General &Settings";
             this.generalSettingsToolStripMenuItem.Click += new System.EventHandler(this.generalSettingsToolStripMenuItem_Click);
+            // 
+            // repositoryToolStripMenuItem
+            // 
+            this.repositoryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createRebuildRepositoryToolStripMenuItem1});
+            this.repositoryToolStripMenuItem.Name = "repositoryToolStripMenuItem";
+            this.repositoryToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
+            this.repositoryToolStripMenuItem.Text = "Repository";
+            // 
+            // createRebuildRepositoryToolStripMenuItem1
+            // 
+            this.createRebuildRepositoryToolStripMenuItem1.Image = global::TEAM.Properties.Resources.database_icon;
+            this.createRebuildRepositoryToolStripMenuItem1.Name = "createRebuildRepositoryToolStripMenuItem1";
+            this.createRebuildRepositoryToolStripMenuItem1.Size = new System.Drawing.Size(218, 22);
+            this.createRebuildRepositoryToolStripMenuItem1.Text = "&Create / Rebuild Repository";
+            this.createRebuildRepositoryToolStripMenuItem1.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem1_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -355,7 +364,6 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBoxVersionSelection;
@@ -371,6 +379,8 @@
         private System.Windows.Forms.Label labelRepositoryVersion;
         private System.Windows.Forms.Label labelMetadataRepository;
         private System.Windows.Forms.Label labelWorkingEnvironment;
+        private System.Windows.Forms.ToolStripMenuItem repositoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem1;
     }
 }
 
