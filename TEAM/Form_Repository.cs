@@ -88,7 +88,7 @@ namespace TEAM
         {
             using (var connectionVersion = new SqlConnection(connString))
             {
-                var commandVersion = new SqlCommand(createStatement.ToString(), connectionVersion);
+                var commandVersion = new SqlCommand(createStatement, connectionVersion);
 
                 try
                 {
@@ -96,7 +96,7 @@ namespace TEAM
                     commandVersion.ExecuteNonQuery();
 
                     worker.ReportProgress(progressCounter);
-                    _alertSampleData.SetTextLogging(createStatement.ToString());
+                    _alertSampleData.SetTextLogging(createStatement);
                 }
                 catch (Exception ex)
                 {
@@ -192,7 +192,7 @@ namespace TEAM
 
                 try
                 {  
-                    using (StreamReader sr = new StreamReader(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateRepository.sql"))
+                    using (StreamReader sr = new StreamReader(GlobalParameters.RootPath + @"..\..\..\Scripts\generateRepository.sql"))
                     {
                         var sqlCommands = sr.ReadToEnd().Split(new string[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -221,7 +221,7 @@ namespace TEAM
                     _alertRepository.SetTextLogging("Please check the Error Log for details \r\n");
                     _alertRepository.SetTextLogging("\r\n");
 
-                    using (var outfile = new System.IO.StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
                     {
                         outfile.Write(ErrorHandlingParameters.ErrorLog);
                         outfile.Close();
@@ -299,107 +299,12 @@ namespace TEAM
 
                 try
                 {
-                    #region Framework Default Attributes
-                    var etlFrameworkIncludeStg = new StringBuilder();
-                    var etlFrameWorkIncludePsa = new StringBuilder();
-                    var etlFrameworkIncludePsaKey = new StringBuilder();
-
-                    var etlFrameworkIncludeHubLink = new StringBuilder();
-                    var etlFrameworkIncludeSat = new StringBuilder();
-                    var etlFrameworkIncludeSatKey = new StringBuilder();
-
-                    string dwhKeyName;
-                    string psaPrefixName;
-
-                    if (checkBoxDIRECT.Checked)
-                    {
-                        dwhKeyName = "SK";
-                        psaPrefixName = "HSTG";
-
-                        etlFrameworkIncludeStg.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID] [int] NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [OMD_INSERT_DATETIME] [datetime2] (7) NOT NULL DEFAULT SYSDATETIME(),");
-                        etlFrameworkIncludeStg.AppendLine("  [OMD_EVENT_DATETIME] [datetime2] (7) NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [OMD_RECORD_SOURCE] [varchar] (100) NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [OMD_SOURCE_ROW_ID] [int] IDENTITY(1,1) NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [OMD_CDC_OPERATION] [varchar] (100) NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [OMD_HASH_FULL_RECORD] [binary] (16) NOT NULL,");
-
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_INSERT_MODULE_INSTANCE_ID][int] NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_INSERT_DATETIME] [datetime2] (7) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_EVENT_DATETIME] [datetime2] (7) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_RECORD_SOURCE] [varchar] (100) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_SOURCE_ROW_ID] [int] NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_CDC_OPERATION] [varchar] (100) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_HASH_FULL_RECORD] [binary] (16) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [OMD_CURRENT_RECORD_INDICATOR] [varchar] (1) NOT NULL DEFAULT 'Y',");
-
-                        etlFrameworkIncludePsaKey.AppendLine("[OMD_INSERT_DATETIME] ASC, [OMD_SOURCE_ROW_ID] ASC");
-
-                        etlFrameworkIncludeHubLink.AppendLine("  OMD_INSERT_MODULE_INSTANCE_ID integer NOT NULL,");
-                        etlFrameworkIncludeHubLink.AppendLine("  OMD_FIRST_SEEN_DATETIME datetime2(7) NOT NULL,");
-                        etlFrameworkIncludeHubLink.AppendLine("  [OMD_RECORD_SOURCE_ID] [int] NOT NULL,");
-
-                        etlFrameworkIncludeSat.AppendLine("  OMD_EFFECTIVE_DATETIME datetime2(7) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  OMD_EXPIRY_DATETIME datetime2(7) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  OMD_CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  OMD_INSERT_MODULE_INSTANCE_ID integer NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  OMD_UPDATE_MODULE_INSTANCE_ID integer NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  OMD_CDC_OPERATION varchar(100) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  OMD_SOURCE_ROW_ID integer NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  [OMD_RECORD_SOURCE_ID] [int] NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  OMD_HASH_FULL_RECORD binary(16) NOT NULL,");
-
-                        etlFrameworkIncludeSatKey.AppendLine("OMD_EFFECTIVE_DATETIME ASC");
-                    }
-                    else
-                    {
-                        dwhKeyName = "HSH";
-                        psaPrefixName = "PSA";
-
-                        etlFrameworkIncludeStg.AppendLine("  [ETL_INSERT_RUN_ID] int NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL DEFAULT SYSDATETIME(),");
-                        etlFrameworkIncludeStg.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [SOURCE_ROW_ID] int NOT NULL IDENTITY( 1,1 ),");
-                        etlFrameworkIncludeStg.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        etlFrameworkIncludeStg.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
-
-                        etlFrameWorkIncludePsa.AppendLine("  [ETL_INSERT_RUN_ID] integer NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [LOAD_DATETIME] datetime2(7) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [EVENT_DATETIME] datetime2(7) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [RECORD_SOURCE] varchar(100) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [SOURCE_ROW_ID] integer NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [CDC_OPERATION] varchar(100) NOT NULL,");
-                        etlFrameWorkIncludePsa.AppendLine("  [HASH_FULL_RECORD] binary(16) NOT NULL,");
-
-                        etlFrameworkIncludePsaKey.AppendLine("[LOAD_DATETIME] ASC, [SOURCE_ROW_ID] ASC");
-
-                        etlFrameworkIncludeHubLink.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
-                        etlFrameworkIncludeHubLink.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
-                        etlFrameworkIncludeHubLink.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
-
-                        etlFrameworkIncludeSat.AppendLine("  LOAD_DATETIME datetime2(7) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  LOAD_END_DATETIME datetime2(7) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  CURRENT_RECORD_INDICATOR varchar(100) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  ETL_INSERT_RUN_ID integer NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  ETL_UPDATE_RUN_ID integer NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  CDC_OPERATION varchar(100) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  SOURCE_ROW_ID integer NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  RECORD_SOURCE varchar(100) NOT NULL,");
-                        etlFrameworkIncludeSat.AppendLine("  HASH_FULL_RECORD binary(16) NOT NULL,");
-
-                        etlFrameworkIncludeSatKey.AppendLine("LOAD_DATETIME ASC");
-
-                    }
-                    #endregion
-
-
                     Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
                     #region Source
                     if (checkBoxCreateSampleSource.Checked)
                     {
-                        PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringSource);
+                        PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringSource);
                     }
                     #endregion
 
@@ -408,11 +313,11 @@ namespace TEAM
                     {
                         if (checkBoxDIRECT.Checked)
                         {
-                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleStagingSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringStg);
+                            PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleStagingSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringStg);
                         }
                         else
                         {
-                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleStagingSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringStg);
+                            PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleStagingSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringStg);
                         }
                     }
                     #endregion
@@ -422,11 +327,11 @@ namespace TEAM
                     {
                         if (checkBoxDIRECT.Checked)
                         {
-                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSamplePersistentStagingSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringHstg);
+                            PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSamplePersistentStagingSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringHstg);
                         }
                         else
                         {
-                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSamplePersistentStagingSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringHstg);
+                            PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSamplePersistentStagingSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringHstg);
                         }
                     }
                     #endregion
@@ -436,11 +341,11 @@ namespace TEAM
                     {
                         if (checkBoxDIRECT.Checked)
                         {
-                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleIntegrationSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringInt);
+                            PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleIntegrationSchemaDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringInt);
                         }
                         else
                         {
-                            PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleIntegrationSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringInt);
+                            PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleIntegrationSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringInt);
                         }
                     }
                     #endregion
@@ -636,11 +541,11 @@ namespace TEAM
                         {
                             if (checkBoxDIRECT.Checked)
                             {
-                                PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleMappingMetadataDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+                                PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleMappingMetadataDIRECT.sql", commandDictionary, ConfigurationSettings.ConnectionStringOmd);
                             }
                             else
                             {
-                                PopulateSqlCommandDictionaryFromFile(FormBase.GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleMappingMetadata.sql", commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+                                PopulateSqlCommandDictionaryFromFile(GlobalParameters.RootPath + @"..\..\..\Scripts\generateSampleMappingMetadata.sql", commandDictionary, ConfigurationSettings.ConnectionStringOmd);
                             }
                         }
                         else
@@ -682,7 +587,7 @@ namespace TEAM
                     _alertSampleData.SetTextLogging("Please check the Error Log for details \r\n");
                     _alertSampleData.SetTextLogging("\r\n");
 
-                    using (var outfile = new System.IO.StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
                     {
                         outfile.Write(ErrorHandlingParameters.ErrorLog);
                         outfile.Close();
