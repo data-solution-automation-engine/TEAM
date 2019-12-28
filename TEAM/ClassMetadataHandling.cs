@@ -83,7 +83,7 @@ namespace TEAM
             string localType ="";
 
             // Remove schema, if one is set
-            tableName = NonQualifiedTableName(tableName);
+            tableName = GetNonQualifiedTableName(tableName);
 
             switch (FormBase.ConfigurationSettings.TableNamingLocation)
             {
@@ -184,6 +184,12 @@ namespace TEAM
             return localDatabase;
         }
 
+        /// <summary>
+        /// This method returns the ETL loading 'direction' based on the source and target mapping.
+        /// </summary>
+        /// <param name="sourceMapping"></param>
+        /// <param name="targetMapping"></param>
+        /// <returns></returns>
         internal static string GetLoadVector(string sourceMapping, string targetMapping)
         {
             // This is used to evaluate the correct connection for the generated ETL processes.
@@ -225,11 +231,11 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Return just the table name, in case a fully qualified name is available (including schema etc.).
+        ///   Return only the table name (without the schema), in case a fully qualified name is available (including schema etc.).
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        internal static string NonQualifiedTableName(string tableName)
+        internal static string GetNonQualifiedTableName(string tableName)
         {
             string returnTableName = "";
 
@@ -247,9 +253,8 @@ namespace TEAM
             return returnTableName;
         }
 
-
         /// <summary>
-        ///  Separates the schema from the table name, and returns both as individual values.
+        ///  Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair.
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
@@ -278,11 +283,11 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Retrieve the fully qualified table name (including schema) for a given input table name.
+        /// Retrieve the fully qualified table name (including schema) for a given input table name as a single string, even if the table does not provide a schema.
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        internal static string GetFullSchemaTable(string tableName)
+        internal static string GetFullyQualifiedTableName(string tableName)
         {
             var fullyQualifiedSourceName = GetSchema(tableName).FirstOrDefault();
 

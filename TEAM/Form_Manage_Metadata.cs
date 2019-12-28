@@ -3172,10 +3172,10 @@ namespace TEAM
                 if (row["TRANSFORMATION_RULE"] != DBNull.Value)
                     TRANSFORMATION_RULE = (string)row["TRANSFORMATION_RULE"];
 
-                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullSchemaTable(sourceTable);
+                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
 
-                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullSchemaTable(targetTable);
+                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
                 var targetType = ClassMetadataHandling.GetTableType(targetTable);
 
                 createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_TABLE_TYPE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' ,N'" + SOURCE_COLUMN + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
@@ -3243,10 +3243,10 @@ namespace TEAM
                 if (row["PROCESS_INDICATOR"] != DBNull.Value)
                     PROCESS_INDICATOR = (string)row["PROCESS_INDICATOR"];
 
-                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullSchemaTable(sourceTable);
+                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
 
-                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullSchemaTable(targetTable);
+                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
                 var targetType = ClassMetadataHandling.GetTableType(targetTable);
 
                 createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
@@ -4608,7 +4608,7 @@ namespace TEAM
 
                     // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
                     // I.e. when there are no PSA tables defined, they will be derived from the STG
-                    var workingTableName = ClassMetadataHandling.NonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
+                    var workingTableName = ClassMetadataHandling.GetNonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
                     if (workingTableName.StartsWith(ConfigurationSettings.StgTablePrefixValue + "_") || workingTableName.EndsWith("_" + ConfigurationSettings.StgTablePrefixValue))
                     {
                         var tempTableName = tableRow["TABLE_NAME"].ToString().Replace(ConfigurationSettings.StgTablePrefixValue, ConfigurationSettings.PsaTablePrefixValue);
@@ -7736,7 +7736,7 @@ namespace TEAM
 
             #region Validation for Source Object Existence
             // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the sources as captured in metadata exists in the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the sources as captured in metadata exists in the model.\r\n\r\n");
 
             // Creating a list of unique table names from the data grid / data table
             var objectListSTG = new List<string>();
@@ -7749,7 +7749,8 @@ namespace TEAM
             {
                 if (!row.IsNewRow)
                 {
-                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix)
+                    if (ClassMetadataHandling.GetTableType(row.Cells[2].Value.ToString()) == "Staging Area")
+                    //if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix)
                     {
                         if (!objectListSTG.Contains(row.Cells[2].Value.ToString()))
                         {
