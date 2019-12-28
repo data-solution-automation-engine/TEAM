@@ -52,6 +52,7 @@ namespace TEAM
             this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
             this.contextMenuStripTableMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteThisRowFromTheGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -95,7 +96,6 @@ namespace TEAM
             this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
-            this.deleteThisRowFromTheGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -310,6 +310,7 @@ namespace TEAM
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
             this.dataGridViewTableMetadata.Sorted += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
+            this.dataGridViewTableMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewTableMetadata_MouseDown);
             // 
             // contextMenuStripTableMapping
             // 
@@ -317,14 +318,21 @@ namespace TEAM
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem,
             this.deleteThisRowFromTheGridToolStripMenuItem});
             this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
-            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 70);
+            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 48);
             // 
             // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
             // 
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = "Export this row as Source-to-Target interface JSON";
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.exportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem_Click);
             // 
             // tabPage2
             // 
@@ -773,13 +781,6 @@ namespace TEAM
             this.groupBoxJsonOptions.TabIndex = 26;
             this.groupBoxJsonOptions.TabStop = false;
             this.groupBoxJsonOptions.Text = "Json / XML load options";
-            // 
-            // deleteThisRowFromTheGridToolStripMenuItem
-            // 
-            this.deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
-            this.deleteThisRowFromTheGridToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
-            this.deleteThisRowFromTheGridToolStripMenuItem.Text = "Delete this row from the grid";
-            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem_Click);
             // 
             // FormManageMetadata
             // 

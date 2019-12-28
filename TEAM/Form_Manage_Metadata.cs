@@ -154,17 +154,23 @@ namespace TEAM
         }
 
 
-        // Sets the ToolTip text for cells in the Rating column.
+        /// <summary>
+        /// Sets the ToolTip text for cells in the datagrid (hover over).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void DataGridViewTableMetadata_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             // Retrieve the full row for the selected cell
             DataGridViewRow selectedRow = dataGridViewTableMetadata.Rows[e.RowIndex];
 
             var loadVector = "";
+            var tableType = "";
+            DataGridViewCell cell = null;
 
             if (e.Value != null)
             {
-                loadVector = ClassMetadataHandling.GetLoadVector(e.Value.ToString(),
+                loadVector = ClassMetadataHandling.GetLoadVector(selectedRow.DataGridView.Rows[e.RowIndex].Cells[2].Value.ToString(),
                     selectedRow.DataGridView.Rows[e.RowIndex].Cells[3].Value.ToString());
             }
 
@@ -172,26 +178,26 @@ namespace TEAM
             if (e.ColumnIndex == dataGridViewTableMetadata.Columns[2].Index && e.Value != null)
             {
                 // Retrieve the specific cell value for the hover-over
-                DataGridViewCell cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
-                var tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
-
-                cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." +
-                                   "\n" + "The direction of loading is " + loadVector+".";
+                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
             }
             // Assert table type for the Target column
             else if ((e.ColumnIndex == dataGridViewTableMetadata.Columns[3].Index && e.Value != null))
             {
-                DataGridViewCell cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
-                var tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
-
-                cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." +
-                                   "\n" + "The direction of loading is " + loadVector;
+                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
             }
             else
             {
+                // Do nothing
+            }
 
+            if (cell != null)
+            {
+                cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." +
+                                   "\n" + "The direction of loading is " + loadVector + ".";
             }
         }
 
@@ -7568,18 +7574,32 @@ namespace TEAM
             conn.Close();
             return reverseEngineerResults;
         }
-        
+
+
+
+
+        #region Contextmenu
+
+        private void dataGridViewTableMetadata_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hti = dataGridViewTableMetadata.HitTest(e.X, e.Y);
+                dataGridViewTableMetadata.ClearSelection();
+                dataGridViewTableMetadata.Rows[hti.RowIndex].Selected = true;
+            }
+        }
 
         /// <summary>
         /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        public void exportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Check if any cells were clicked / selected
             Int32 selectedCellCount = dataGridViewTableMetadata.SelectedCells.Count;
-
+            
             if (selectedCellCount > 0)
             {
                 //For every cell, get the row and the rest of the row values
@@ -7596,7 +7616,19 @@ namespace TEAM
             }
         }
 
- 
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It deletes the row from the grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void deleteThisRowFromTheGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Int32 rowToDelete = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            dataGridViewTableMetadata.Rows.RemoveAt(rowToDelete);
+        }
+        #endregion
+
+
 
         public void CreateSourceToTargetMapping(string sourceTableName, string targetTableName,string businessKeyDefinition)
         {
@@ -8268,26 +8300,5 @@ namespace TEAM
             GridAutoLayout();
         }
 
-        /// <summary>
-        /// This method is called from the context menu on the data grid. It deletes the row from the grid.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void deleteThisRowFromTheGridToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //Check if any cells were clicked / selected
-            Int32 selectedCellCount = dataGridViewTableMetadata.SelectedCells.Count;
-
-            if (selectedCellCount > 0)
-            {
-                //For every cell, get the row and the rest of the row values
-                for (int i = 0; i < selectedCellCount; i++)
-                {
-                    DataGridViewRow fullRow = dataGridViewTableMetadata.SelectedCells[i].OwningRow;
-
-                    dataGridViewTableMetadata.Rows.RemoveAt(fullRow.Index);
-                }
-            }
-        }
     }
 }
