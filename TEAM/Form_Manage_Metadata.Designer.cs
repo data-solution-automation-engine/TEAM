@@ -95,6 +95,7 @@ namespace TEAM
             this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
+            this.deleteThisRowFromTheGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -305,19 +306,18 @@ namespace TEAM
             this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
             this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1217, 699);
             this.dataGridViewTableMetadata.TabIndex = 1;
-            this.dataGridViewTableMetadata.ShowCellToolTips = true;
+            this.dataGridViewTableMetadata.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DataGridViewTableMetadata_CellFormatting);
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
             this.dataGridViewTableMetadata.Sorted += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
-            this.dataGridViewTableMetadata.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(DataGridViewTableMetadata_CellFormatting);
-
-    // 
-    // contextMenuStripTableMapping
-    // 
-    this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem});
+            // 
+            // contextMenuStripTableMapping
+            // 
+            this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem,
+            this.deleteThisRowFromTheGridToolStripMenuItem});
             this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
-            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 26);
+            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 70);
             // 
             // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
             // 
@@ -774,6 +774,13 @@ namespace TEAM
             this.groupBoxJsonOptions.TabStop = false;
             this.groupBoxJsonOptions.Text = "Json / XML load options";
             // 
+            // deleteThisRowFromTheGridToolStripMenuItem
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem_Click);
+            // 
             // FormManageMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -898,5 +905,6 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxPsa;
         private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
         private System.Windows.Forms.RadioButton radioButtonVirtualMode;
+        private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem;
     }
 }

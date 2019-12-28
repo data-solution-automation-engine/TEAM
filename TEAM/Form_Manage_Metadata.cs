@@ -7569,6 +7569,12 @@ namespace TEAM
             return reverseEngineerResults;
         }
         
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Check if any cells were clicked / selected
@@ -7589,6 +7595,8 @@ namespace TEAM
                 }
             }
         }
+
+ 
 
         public void CreateSourceToTargetMapping(string sourceTableName, string targetTableName,string businessKeyDefinition)
         {
@@ -8258,6 +8266,28 @@ namespace TEAM
         private void FormManageMetadata_Shown(object sender, EventArgs e)
         {
             GridAutoLayout();
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It deletes the row from the grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void deleteThisRowFromTheGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Check if any cells were clicked / selected
+            Int32 selectedCellCount = dataGridViewTableMetadata.SelectedCells.Count;
+
+            if (selectedCellCount > 0)
+            {
+                //For every cell, get the row and the rest of the row values
+                for (int i = 0; i < selectedCellCount; i++)
+                {
+                    DataGridViewRow fullRow = dataGridViewTableMetadata.SelectedCells[i].OwningRow;
+
+                    dataGridViewTableMetadata.Rows.RemoveAt(fullRow.Index);
+                }
+            }
         }
     }
 }
