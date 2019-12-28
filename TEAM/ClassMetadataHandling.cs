@@ -73,89 +73,82 @@ namespace TEAM
         }
 
 
+        /// <summary>
+        /// This method returns the type of table (classification) based on the name and active conventions.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         internal static string GetTableType(string tableName)
         {
             string localType ="";
 
-            // Remove schema, if there
-            tableName = tableName.Substring(tableName.IndexOf('.') + 1);
+            // Remove schema, if one is set
+            tableName = NonQualifiedTableName(tableName);
 
-            if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix") // I.e. HUB_CUSTOMER
+            switch (FormBase.ConfigurationSettings.TableNamingLocation)
             {
-                if (tableName.StartsWith(FormBase.ConfigurationSettings.SatTablePrefixValue))
-                {
-                    localType = "Satellite";
-                }
-                else if (tableName.StartsWith(FormBase.ConfigurationSettings.HubTablePrefixValue))
-                {
-                    localType = "Hub";
-                }
-                else if (tableName.StartsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue))
-                {
-                    localType = "Link";
-                }
-                else if (tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue))
-                {
-                    localType = "Link-Satellite";
-                }
-                else if (tableName.StartsWith(FormBase.ConfigurationSettings.StgTablePrefixValue))
-                {
+                // I.e. HUB_CUSTOMER
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.SatTablePrefixValue):
+                    localType = "Context";
+                    break;
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.HubTablePrefixValue):
+                    localType = "Core Business Concept";
+                    break;
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue):
+                    localType = "Natural Business Relationship";
+                    break;
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue):
+                    localType = "Natural Business Relationship Context";
+                    break;
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.StgTablePrefixValue):
                     localType = "Staging Area";
-                }
-                else if (tableName.StartsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue))
-                {
+                    break;
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue):
                     localType = "Persistent Staging Area";
-                }
-                else if (tableName.StartsWith("DIM_") && tableName.StartsWith("FACT_"))
-                {
-                    localType = "Presentation";
-                }
-                else 
-                {
+                    break;
+                case "Prefix" when tableName.StartsWith("BDV_"):
                     localType = "Derived";
-                }
-            }
-            else if (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix") // I.e. CUSTOMER_HUB
-            {
-                if (tableName.EndsWith(FormBase.ConfigurationSettings.SatTablePrefixValue))
-                {
-                    localType = "Satellite";
-                }
-                else if (tableName.EndsWith(FormBase.ConfigurationSettings.HubTablePrefixValue))
-                {
-                    localType = "Hub";
-                }
-                else if (tableName.EndsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue))
-                {
-                    localType = "Link";
-                }
-                else if (tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue))
-                {
-                    localType = "Link-Satellite";
-                }
-                else if (tableName.EndsWith(FormBase.ConfigurationSettings.StgTablePrefixValue))
-                {
+                    break;
+                case "Prefix" when tableName.StartsWith("DIM_") && tableName.StartsWith("FACT_"):
+                    localType = "Presentation";
+                    break;
+                case "Prefix":
+                    localType = "Other (e.g. source)";
+                    break;
+                // I.e. CUSTOMER_HUB
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.SatTablePrefixValue):
+                    localType = "Context";
+                    break;
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.HubTablePrefixValue):
+                    localType = "Core Business Concept";
+                    break;
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue):
+                    localType = "Natural Business Relationship";
+                    break;
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue):
+                    localType = "Natural Business Relationship Context";
+                    break;
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.StgTablePrefixValue):
                     localType = "Staging Area";
-                }
-                else if (tableName.EndsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue))
-                {
+                    break;
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue):
                     localType = "Persistent Staging Area";
-                }
-                else if (tableName.EndsWith("DIM_") && tableName.EndsWith("FACT_"))
-                {
-                    localType = "Presentation";
-                }
-                else
-                {
+                    break;
+                case "Suffix" when tableName.EndsWith("BDV_"):
                     localType = "Derived";
-                }
-            }
-            else
-            {
-                localType = "The table type cannot be defined because of an unknown prefix/suffix: "+ FormBase.ConfigurationSettings.TableNamingLocation;
+                    break;
+                case "Suffix" when tableName.EndsWith("DIM_") && tableName.EndsWith("FACT_"):
+                    localType = "Presentation";
+                    break;
+                case "Suffix":
+                    localType = "Other (e.g. source)";
+                    break;
+                default:
+                    localType = "The table type cannot be defined because of an unknown prefix/suffix: "+ FormBase.ConfigurationSettings.TableNamingLocation;
+                    break;
             }
 
-
+            // Return the table type
             return localType;
         }
 
@@ -163,7 +156,7 @@ namespace TEAM
         {
             string localDatabase = "";
 
-            if (new string[] {"Hub", "Satellite", "Link", "Link-Satellite", "Derived"}.Contains(tableType))
+            if (new string[] {"Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context", "Derived"}.Contains(tableType))
             {
                 localDatabase = FormBase.ConfigurationSettings.IntegrationDatabaseName;
             }
@@ -179,6 +172,10 @@ namespace TEAM
             {
                 localDatabase = FormBase.ConfigurationSettings.PresentationDatabaseName;
             }
+            else if (tableType == "Other (e.g. source)")
+            {
+                localDatabase = FormBase.ConfigurationSettings.SourceDatabaseName;
+            }
             else // Return error
             {
                 localDatabase = "Unknown - error - the database could not be derived from the object " + tableType;
@@ -189,36 +186,42 @@ namespace TEAM
 
         internal static string GetLoadVector(string sourceMapping, string targetMapping)
         {
-            // The following scenarios are supported:
-            // -> If the source is not a DV table, but the target is a DV table then it's a base ('Raw') Data Vault ETL (load vector). - 'Raw'.
-            // -> If the source is a DV table, and the target is a DV table then it's a Derived ('Business') Data Vault ETL - 'Interpreted'.
-            // -> If the source is a DV table, but target is not a DV table then it's a Presentation Layer ETL. - 'Presentation'.
-
             // This is used to evaluate the correct connection for the generated ETL processes.
 
             string evaluatedSource = GetTableType(sourceMapping);
             string evaluatedTarget = GetTableType(targetMapping);
 
-            string localArea = "";
+            string loadVector = "";
 
-            if (!new[] {"Hub", "Satellite", "Link", "Link-Satellite"}.Contains(evaluatedSource) && new[] { "Hub", "Satellite", "Link", "Link-Satellite"}.Contains(evaluatedTarget))
+            if (new[] { "Staging Area" }.Contains(evaluatedSource) && new[] { "Persistent Staging Area" }.Contains(evaluatedTarget))
             {
-                localArea = "Raw";
+                loadVector = "Landing to Persistent Staging Area";
             }
-            else if (new[] { "Hub", "Satellite", "Link", "Link-Satellite"}.Contains(evaluatedSource) && new[] { "Hub", "Satellite", "Link", "Link-Satellite" }.Contains(evaluatedTarget))
+            // If the source is not a DWH table, but the target is a DWH table then it's a base ('Raw') Data Warehouse ETL (load vector). - 'Staging Layer to Raw Data Warehouse'.
+            else if (!new[] {"Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context", "Derived" }.Contains(evaluatedSource) && new[] { "Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context" }.Contains(evaluatedTarget))
             {
-                localArea = "Interpreted";
+                loadVector = "Staging Layer to Raw Data Warehouse";
             }
-            else if (new[] { "Hub", "Satellite", "Link", "Link-Satellite" }.Contains(evaluatedSource) && !new[] { "Hub", "Satellite", "Link", "Link-Satellite" }.Contains(evaluatedTarget))
+            // If the source is a DWH or Derived table, and the target is a DWH table then it's a Derived ('Business') DWH ETL - 'Raw Data Warehouse to Interpreted'.
+            else if (new[] { "Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context", "Derived" }.Contains(evaluatedSource) && new[] { "Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context" }.Contains(evaluatedTarget))
             {
-                localArea = FormBase.ConfigurationSettings.PsaDatabaseName;
+                loadVector = "Raw Data Warehouse to Interpreted";
+            }
+            // If the source is a DWH table, but target is not a DWH table then it's a Presentation Layer ETL. - 'Data Warehouse to Presentation Layer'.
+            else if (new[] { "Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context" }.Contains(evaluatedSource) && !new[] { "Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context" }.Contains(evaluatedTarget))
+            {
+                loadVector = "Data Warehouse to Presentation Layer";
+            }
+            else if (new[] { "Other (e.g. source)" }.Contains(evaluatedSource) && new[] { "Staging Area", "Persistent Staging Area" }.Contains(evaluatedTarget))
+            {
+                loadVector = "Source to Staging Layer";
             }
             else // Return error
             {
-                localArea = "Unknown - error - the load vector could not be derived from the objects '" + evaluatedSource+"' and '"+evaluatedTarget+"'";
+                loadVector = "The load direction could not be derived from the object types '" + evaluatedSource+"' and '"+evaluatedTarget+"'";
             }
 
-            return localArea;
+            return loadVector;
         }
 
         /// <summary>
@@ -226,7 +229,7 @@ namespace TEAM
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        internal static string nonQualifiedTableName(string tableName)
+        internal static string NonQualifiedTableName(string tableName)
         {
             string returnTableName = "";
 
@@ -275,11 +278,11 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Retrieve the fully qualified name (including schema) for a given input table name.
+        /// Retrieve the fully qualified table name (including schema) for a given input table name.
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        internal static string getFullSchemaTable(string tableName)
+        internal static string GetFullSchemaTable(string tableName)
         {
             var fullyQualifiedSourceName = GetSchema(tableName).FirstOrDefault();
 
@@ -368,7 +371,7 @@ namespace TEAM
 
 
         /// <summary>
-        /// Returns a list of Business Key attributes as they are defined in the target Link table.
+        /// Returns a list of Business Key attributes as they are defined in the target Natural Business Relationship table.
         /// </summary>
         /// <param name="schemaName"></param>
         /// <param name="tableName"></param>

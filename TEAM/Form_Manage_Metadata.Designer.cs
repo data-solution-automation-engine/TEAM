@@ -305,13 +305,16 @@ namespace TEAM
             this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
             this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1217, 699);
             this.dataGridViewTableMetadata.TabIndex = 1;
+            this.dataGridViewTableMetadata.ShowCellToolTips = true;
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
             this.dataGridViewTableMetadata.Sorted += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
-            // 
-            // contextMenuStripTableMapping
-            // 
-            this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dataGridViewTableMetadata.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(DataGridViewTableMetadata_CellFormatting);
+
+    // 
+    // contextMenuStripTableMapping
+    // 
+    this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem});
             this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
             this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 26);

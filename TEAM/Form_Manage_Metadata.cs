@@ -154,6 +154,47 @@ namespace TEAM
         }
 
 
+        // Sets the ToolTip text for cells in the Rating column.
+        void DataGridViewTableMetadata_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Retrieve the full row for the selected cell
+            DataGridViewRow selectedRow = dataGridViewTableMetadata.Rows[e.RowIndex];
+
+            var loadVector = "";
+
+            if (e.Value != null)
+            {
+                loadVector = ClassMetadataHandling.GetLoadVector(e.Value.ToString(),
+                    selectedRow.DataGridView.Rows[e.RowIndex].Cells[3].Value.ToString());
+            }
+
+            // Assert table type for Source column
+            if (e.ColumnIndex == dataGridViewTableMetadata.Columns[2].Index && e.Value != null)
+            {
+                // Retrieve the specific cell value for the hover-over
+                DataGridViewCell cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                var tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
+
+                cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." +
+                                   "\n" + "The direction of loading is " + loadVector+".";
+            }
+            // Assert table type for the Target column
+            else if ((e.ColumnIndex == dataGridViewTableMetadata.Columns[3].Index && e.Value != null))
+            {
+                DataGridViewCell cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                var tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
+
+                cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." +
+                                   "\n" + "The direction of loading is " + loadVector;
+            }
+            else
+            {
+
+            }
+        }
+
         private void DataGridViewPhysicalModelMetadataKeyDown(object sender, KeyEventArgs e)
         {
             try
@@ -164,7 +205,6 @@ namespace TEAM
                     {
                         case Keys.V:
                             PasteClipboardPhysicalModelMetadata();
-                            // MessageBox.Show("!");
                             break;
                     }
                 }
@@ -3126,10 +3166,10 @@ namespace TEAM
                 if (row["TRANSFORMATION_RULE"] != DBNull.Value)
                     TRANSFORMATION_RULE = (string)row["TRANSFORMATION_RULE"];
 
-                var fullyQualifiedSourceName = ClassMetadataHandling.getFullSchemaTable(sourceTable);
+                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullSchemaTable(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
 
-                var fullyQualifiedTargetName = ClassMetadataHandling.getFullSchemaTable(targetTable);
+                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullSchemaTable(targetTable);
                 var targetType = ClassMetadataHandling.GetTableType(targetTable);
 
                 createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_TABLE_TYPE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' ,N'" + SOURCE_COLUMN + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
@@ -3197,10 +3237,10 @@ namespace TEAM
                 if (row["PROCESS_INDICATOR"] != DBNull.Value)
                     PROCESS_INDICATOR = (string)row["PROCESS_INDICATOR"];
 
-                var fullyQualifiedSourceName = ClassMetadataHandling.getFullSchemaTable(sourceTable);
+                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullSchemaTable(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
 
-                var fullyQualifiedTargetName = ClassMetadataHandling.getFullSchemaTable(targetTable);
+                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullSchemaTable(targetTable);
                 var targetType = ClassMetadataHandling.GetTableType(targetTable);
 
                 createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
@@ -4562,7 +4602,7 @@ namespace TEAM
 
                     // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
                     // I.e. when there are no PSA tables defined, they will be derived from the STG
-                    var workingTableName = ClassMetadataHandling.nonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
+                    var workingTableName = ClassMetadataHandling.NonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
                     if (workingTableName.StartsWith(ConfigurationSettings.StgTablePrefixValue + "_") || workingTableName.EndsWith("_" + ConfigurationSettings.StgTablePrefixValue))
                     {
                         var tempTableName = tableRow["TABLE_NAME"].ToString().Replace(ConfigurationSettings.StgTablePrefixValue, ConfigurationSettings.PsaTablePrefixValue);
