@@ -391,7 +391,6 @@ namespace TEAM
             Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
             #region Source
-
             if (checkBoxCreateSampleSource.Checked)
             {
                 PopulateSqlCommandDictionaryFromFile(
@@ -402,7 +401,6 @@ namespace TEAM
             #endregion
 
             #region Staging
-
             if (checkBoxCreateSampleStaging.Checked)
             {
                 if (checkBoxDIRECT.Checked)
@@ -422,7 +420,6 @@ namespace TEAM
             #endregion
 
             #region Persistent Staging
-
             if (checkBoxCreateSamplePSA.Checked)
             {
                 if (checkBoxDIRECT.Checked)
@@ -442,7 +439,6 @@ namespace TEAM
             #endregion
 
             #region Integration Layer
-
             if (checkBoxCreateSampleDV.Checked)
             {
                 if (checkBoxDIRECT.Checked)
@@ -646,7 +642,6 @@ namespace TEAM
             //#endregion
 
             #region Metadadata
-
             if (checkBoxCreateMetadataMapping.Checked)
             {
                 if (!checkBoxRetainManualMapping.Checked)
@@ -676,12 +671,36 @@ namespace TEAM
             // Execute the SQL statements
             foreach (var individualSQlCommand in commandDictionary)
             {
+                //Replace some of the database connections with runtime values from the configuration settings
+                var sqlCommand = individualSQlCommand.Key;
+
+                if (sqlCommand.Contains("N'100_Staging_Area',"))
+                {
+                    sqlCommand = sqlCommand.Replace("N'100_Staging_Area',",
+                        "N'" + ConfigurationSettings.StagingDatabaseName + "',");
+                }
+
+                if (sqlCommand.Contains("N'150_Persistent_Staging_Area',"))
+                {
+                    sqlCommand = sqlCommand.Replace("N'150_Persistent_Staging_Area',", "N'" + ConfigurationSettings.PsaDatabaseName + "',");
+                }
+
+                if (sqlCommand.Contains("N'200_Integration_Layer',"))
+                {
+                    sqlCommand = sqlCommand.Replace("N'200_Integration_Layer',", "N'" + ConfigurationSettings.IntegrationDatabaseName + "',");
+                }
+
+                if (sqlCommand.Contains("N'300_Presentation_Layer',"))
+                {
+                    sqlCommand = sqlCommand.Replace("N'300_Presentation_Layer',", "N'" + ConfigurationSettings.PresentationDatabaseName + "',");
+                }
+
                 int counter = 0;
 
                 // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
                 var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
 
-                RunSqlCommandSampleDataForm(individualSQlCommand.Value, individualSQlCommand.Key + "\r\n\r\n", worker,
+                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker,
                     normalisedValue);
                 counter++;
 
