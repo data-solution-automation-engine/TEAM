@@ -42,17 +42,16 @@
             this.checkBoxSourceBusinessKeyExistence = new System.Windows.Forms.CheckBox();
             this.checkBoxTargetObjectExistence = new System.Windows.Forms.CheckBox();
             this.checkBoxSourceObjectExistence = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBoxLinkKeyOrder = new System.Windows.Forms.CheckBox();
             this.checkBoxLogicalGroup = new System.Windows.Forms.CheckBox();
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.checkBoxSourceAttribute = new System.Windows.Forms.CheckBox();
+            this.checkBoxTargetAttribute = new System.Windows.Forms.CheckBox();
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxExistenceChecks.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -132,12 +131,14 @@
             // 
             // groupBoxExistenceChecks
             // 
+            this.groupBoxExistenceChecks.Controls.Add(this.checkBoxTargetAttribute);
+            this.groupBoxExistenceChecks.Controls.Add(this.checkBoxSourceAttribute);
             this.groupBoxExistenceChecks.Controls.Add(this.checkBoxSourceBusinessKeyExistence);
             this.groupBoxExistenceChecks.Controls.Add(this.checkBoxTargetObjectExistence);
             this.groupBoxExistenceChecks.Controls.Add(this.checkBoxSourceObjectExistence);
             this.groupBoxExistenceChecks.Location = new System.Drawing.Point(12, 42);
             this.groupBoxExistenceChecks.Name = "groupBoxExistenceChecks";
-            this.groupBoxExistenceChecks.Size = new System.Drawing.Size(226, 92);
+            this.groupBoxExistenceChecks.Size = new System.Drawing.Size(226, 136);
             this.groupBoxExistenceChecks.TabIndex = 6;
             this.groupBoxExistenceChecks.TabStop = false;
             this.groupBoxExistenceChecks.Text = "Object existence";
@@ -178,23 +179,12 @@
             this.checkBoxSourceObjectExistence.Text = "Source object";
             this.checkBoxSourceObjectExistence.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.checkBoxLinkKeyOrder);
-            this.groupBox1.Controls.Add(this.checkBoxLogicalGroup);
-            this.groupBox1.Location = new System.Drawing.Point(12, 199);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(226, 92);
-            this.groupBox1.TabIndex = 26;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Consistency";
-            // 
             // checkBoxLinkKeyOrder
             // 
             this.checkBoxLinkKeyOrder.AutoSize = true;
             this.checkBoxLinkKeyOrder.Checked = true;
             this.checkBoxLinkKeyOrder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxLinkKeyOrder.Location = new System.Drawing.Point(6, 42);
+            this.checkBoxLinkKeyOrder.Location = new System.Drawing.Point(6, 65);
             this.checkBoxLinkKeyOrder.Name = "checkBoxLinkKeyOrder";
             this.checkBoxLinkKeyOrder.Size = new System.Drawing.Size(206, 17);
             this.checkBoxLinkKeyOrder.TabIndex = 10;
@@ -206,7 +196,7 @@
             this.checkBoxLogicalGroup.AutoSize = true;
             this.checkBoxLogicalGroup.Checked = true;
             this.checkBoxLogicalGroup.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxLogicalGroup.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxLogicalGroup.Location = new System.Drawing.Point(6, 42);
             this.checkBoxLogicalGroup.Name = "checkBoxLogicalGroup";
             this.checkBoxLogicalGroup.Size = new System.Drawing.Size(126, 17);
             this.checkBoxLogicalGroup.TabIndex = 9;
@@ -236,13 +226,15 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.checkBoxLinkKeyOrder);
             this.groupBox2.Controls.Add(this.checkBoxBusinessKeySyntaxValidation);
-            this.groupBox2.Location = new System.Drawing.Point(313, 42);
+            this.groupBox2.Controls.Add(this.checkBoxLogicalGroup);
+            this.groupBox2.Location = new System.Drawing.Point(244, 42);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(226, 92);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Syntax";
+            this.groupBox2.Text = "Consistency";
             // 
             // checkBoxBusinessKeySyntaxValidation
             // 
@@ -256,26 +248,38 @@
             this.checkBoxBusinessKeySyntaxValidation.Text = "Business Key syntax validation";
             this.checkBoxBusinessKeySyntaxValidation.UseVisualStyleBackColor = true;
             // 
-            // richTextBox1
+            // checkBoxSourceAttribute
             // 
-            this.richTextBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.Location = new System.Drawing.Point(244, 208);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(465, 83);
-            this.richTextBox1.TabIndex = 29;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+            this.checkBoxSourceAttribute.AutoSize = true;
+            this.checkBoxSourceAttribute.Checked = true;
+            this.checkBoxSourceAttribute.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSourceAttribute.Location = new System.Drawing.Point(6, 88);
+            this.checkBoxSourceAttribute.Name = "checkBoxSourceAttribute";
+            this.checkBoxSourceAttribute.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxSourceAttribute.TabIndex = 26;
+            this.checkBoxSourceAttribute.Text = "Source attribute";
+            this.checkBoxSourceAttribute.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxTargetAttribute
+            // 
+            this.checkBoxTargetAttribute.AutoSize = true;
+            this.checkBoxTargetAttribute.Checked = true;
+            this.checkBoxTargetAttribute.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxTargetAttribute.Location = new System.Drawing.Point(6, 111);
+            this.checkBoxTargetAttribute.Name = "checkBoxTargetAttribute";
+            this.checkBoxTargetAttribute.Size = new System.Drawing.Size(98, 17);
+            this.checkBoxTargetAttribute.TabIndex = 27;
+            this.checkBoxTargetAttribute.Text = "Target attribute";
+            this.checkBoxTargetAttribute.UseVisualStyleBackColor = true;
             // 
             // FormManageValidation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(721, 485);
-            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.labelInformation);
             this.Controls.Add(this.richTextBoxInformation);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBoxExistenceChecks);
             this.Controls.Add(this.menuStripMainMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -285,8 +289,6 @@
             this.menuStripMainMenu.PerformLayout();
             this.groupBoxExistenceChecks.ResumeLayout(false);
             this.groupBoxExistenceChecks.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
@@ -305,7 +307,6 @@
         private System.Windows.Forms.CheckBox checkBoxSourceBusinessKeyExistence;
         private System.Windows.Forms.CheckBox checkBoxTargetObjectExistence;
         private System.Windows.Forms.CheckBox checkBoxSourceObjectExistence;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox checkBoxLinkKeyOrder;
         private System.Windows.Forms.CheckBox checkBoxLogicalGroup;
         private System.Windows.Forms.Label labelInformation;
@@ -315,6 +316,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBoxBusinessKeySyntaxValidation;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.CheckBox checkBoxTargetAttribute;
+        private System.Windows.Forms.CheckBox checkBoxSourceAttribute;
     }
 }

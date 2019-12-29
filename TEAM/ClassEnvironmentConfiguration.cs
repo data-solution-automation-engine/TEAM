@@ -628,6 +628,8 @@ namespace TEAM
                 FormBase.ValidationSettings.SourceObjectExistence = configList["SourceObjectExistence"];
                 FormBase.ValidationSettings.TargetObjectExistence = configList["TargetObjectExistence"];
                 FormBase.ValidationSettings.SourceBusinessKeyExistence = configList["BusinessKeyExistence"];
+                FormBase.ValidationSettings.SourceAttributeExistence = configList["SourceAttributeExistence"];
+                FormBase.ValidationSettings.TargetAttributeExistence = configList["TargetAttributeExistence"];
 
                 FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
                 FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
@@ -636,7 +638,7 @@ namespace TEAM
             }
             catch (Exception)
             {
-
+                // Do nothing
             }
         }
 
@@ -655,6 +657,8 @@ namespace TEAM
                 validationFile.AppendLine("SourceObjectExistence|" + FormBase.ValidationSettings.SourceObjectExistence +"");
                 validationFile.AppendLine("TargetObjectExistence|" + FormBase.ValidationSettings.TargetObjectExistence +"");
                 validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.SourceBusinessKeyExistence + "");
+                validationFile.AppendLine("SourceAttributeExistence|" + FormBase.ValidationSettings.SourceAttributeExistence + "");
+                validationFile.AppendLine("TargetAttributeExistence|" + FormBase.ValidationSettings.TargetAttributeExistence + "");
                 validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
                 validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
                 validationFile.AppendLine("BusinessKeySyntax|" + FormBase.ValidationSettings.BusinessKeySyntax + "");

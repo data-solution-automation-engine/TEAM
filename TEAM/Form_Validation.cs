@@ -37,7 +37,7 @@ namespace TEAM
             }
             catch (Exception)
             {
-
+                // Do nothing
             }
 
         }
@@ -47,35 +47,60 @@ namespace TEAM
         /// </summary>
         private void LocalInitialiseValidationSettings()
         {
-            //Checkbox setting based on loaded configuration
-            if (ValidationSettings.SourceObjectExistence == "True")
+            // Source object existence
+            switch (ValidationSettings.SourceObjectExistence)
             {
-                checkBoxSourceObjectExistence.Checked = true;
-            }
-            else if (ValidationSettings.SourceObjectExistence == "False")
-            {
-                checkBoxSourceObjectExistence.Checked = false;
-            }
-            else
-            {
-                // Raise exception
-                MessageBox.Show("There is something wrong with the source object validation values, only true and false are allowed but this was encountered: " + ValidationSettings.SourceObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                case "True":
+                    checkBoxSourceObjectExistence.Checked = true;
+                    break;
+                case "False":
+                    checkBoxSourceObjectExistence.Checked = false;
+                    break;
+                default:
+                    MessageBox.Show("There is something wrong with the source object validation values, only true and false are allowed but this was encountered: " + ValidationSettings.SourceObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
             }
 
+            // Target object existence
+            switch (ValidationSettings.TargetObjectExistence)
+            {
+                case "True":
+                    checkBoxTargetObjectExistence.Checked = true;
+                    break;
+                case "False":
+                    checkBoxTargetObjectExistence.Checked = false;
+                    break;
+                default:
+                    MessageBox.Show("There is something wrong with the target object validation values, only true and false are allowed but this was encountered: " +ValidationSettings.TargetObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+            }
 
-            // Target Object Existence
-            if (ValidationSettings.TargetObjectExistence == "True")
+            // Source attribute existence
+            switch (ValidationSettings.SourceAttributeExistence)
             {
-                checkBoxTargetObjectExistence.Checked = true;
+                case "True":
+                    checkBoxSourceAttribute.Checked = true;
+                    break;
+                case "False":
+                    checkBoxSourceAttribute.Checked = false;
+                    break;
+                default:
+                    MessageBox.Show("There is something wrong with the source attribute validation values, only true and false are allowed but this was encountered: " + ValidationSettings.SourceAttributeExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
             }
-            else if (ValidationSettings.TargetObjectExistence == "False")
+
+            // Target attribute existence
+            switch (ValidationSettings.TargetAttributeExistence)
             {
-                checkBoxTargetObjectExistence.Checked = false;
-            }
-            else
-            {
-                // Raise exception
-                MessageBox.Show("There is something wrong with the target object validation values, only true and false are allowed but this was encountered: " +ValidationSettings.TargetObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                case "True":
+                    checkBoxTargetAttribute.Checked = true;
+                    break;
+                case "False":
+                    checkBoxTargetAttribute.Checked = false;
+                    break;
+                default:
+                    MessageBox.Show("There is something wrong with the target attribute validation values, only true and false are allowed but this was encountered: " + ValidationSettings.TargetAttributeExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
             }
 
 
@@ -177,13 +202,16 @@ namespace TEAM
                 MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
+        
+        /// <summary>
+        /// Save validation settings
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
             try
             {
-                // Save form values to memory
-
                 // Source object existence check
                 var stringSourceObjectExistence = "";
                 if (checkBoxSourceObjectExistence.Checked)
@@ -221,6 +249,32 @@ namespace TEAM
                     stringBusinessKeyExistence = "False";
                 }
                 ValidationSettings.SourceBusinessKeyExistence = stringBusinessKeyExistence;
+
+
+                // Source attribute existence check
+                var stringSourceAttributeExistence = "";
+                if (checkBoxSourceAttribute.Checked)
+                {
+                    stringSourceAttributeExistence = "True";
+                }
+                else
+                {
+                    stringSourceAttributeExistence = "False";
+                }
+                ValidationSettings.SourceAttributeExistence = stringSourceAttributeExistence;
+
+
+                // Target attribute existence check
+                var stringTargetAttributeExistence = "";
+                if (checkBoxTargetAttribute.Checked)
+                {
+                    stringTargetAttributeExistence = "True";
+                }
+                else
+                {
+                    stringTargetAttributeExistence = "False";
+                }
+                ValidationSettings.TargetAttributeExistence = stringTargetAttributeExistence;
 
 
                 // Logical Group Validation

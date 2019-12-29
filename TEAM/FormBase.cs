@@ -149,6 +149,8 @@ namespace TEAM
             public static string SourceObjectExistence { get; set; }
             public static string TargetObjectExistence { get; set; }
             public static string SourceBusinessKeyExistence { get; set; }
+            public static string SourceAttributeExistence { get; set; }
+            public static string TargetAttributeExistence { get; set; }
 
             // Consistency of the unit of work
             public static string LogicalGroup { get; set; }
