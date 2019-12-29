@@ -4603,34 +4603,38 @@ namespace TEAM
                 int objectCounter = 1;
                 foreach (DataRow tableRow in tableDataTable.Rows)
                 {
-                    // Get the right database for the table type (which can be anything including STG, PSA, base- and derived DV and Dimension or Facts)
-                    string databaseName = ClassMetadataHandling.GetDatabaseForArea(tableRow["TABLE_TYPE"].ToString());
+                    // Get the right database name for the table type (which can be anything including STG, PSA, base- and derived DV and Dimension or Facts)
+                    Dictionary<string,string> databaseName = ClassMetadataHandling.GetConnectionInformationForTableType(tableRow["TABLE_TYPE"].ToString());
+                    string databaseNameKey = databaseName.FirstOrDefault().Key;
 
                     // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
                     // I.e. when there are no PSA tables defined, they will be derived from the STG
                     var workingTableName = ClassMetadataHandling.GetNonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
+
                     if (workingTableName.StartsWith(ConfigurationSettings.StgTablePrefixValue + "_") || workingTableName.EndsWith("_" + ConfigurationSettings.StgTablePrefixValue))
                     {
                         var tempTableName = tableRow["TABLE_NAME"].ToString().Replace(ConfigurationSettings.StgTablePrefixValue, ConfigurationSettings.PsaTablePrefixValue);
                         var tempTableType = "Persistent Staging Area";
-                        string tempDatabaseName = ClassMetadataHandling.GetDatabaseForArea(tempTableType);
+
+                        Dictionary<string, string> tempDatabaseName = ClassMetadataHandling.GetConnectionInformationForTableType(tempTableType);
                         psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + tempDatabaseName + "]." + tempTableName + "') ,";
+                        
                     }
 
                     // Regular processing
-                    if (databaseName == ConfigurationSettings.StagingDatabaseName)
+                    if (databaseNameKey == ConfigurationSettings.StagingDatabaseName)
                     { // Staging filter
                         stgTableFilterObjects = stgTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == ConfigurationSettings.PsaDatabaseName)
+                    else if (databaseNameKey == ConfigurationSettings.PsaDatabaseName)
                     { // Persistent Staging Area filter
                         psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == ConfigurationSettings.IntegrationDatabaseName)
+                    else if (databaseNameKey == ConfigurationSettings.IntegrationDatabaseName)
                     { // Integration Layer filter
                         intTableFilterObjects = intTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == ConfigurationSettings.PresentationDatabaseName)
+                    else if (databaseNameKey == ConfigurationSettings.PresentationDatabaseName)
                     { // Presentation Layer filter
                         presTableFilterObjects = presTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }

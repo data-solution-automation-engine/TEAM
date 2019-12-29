@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace TEAM
 {
@@ -152,36 +153,41 @@ namespace TEAM
             return localType;
         }
 
-        internal static string GetDatabaseForArea(string tableType)
+        internal static Dictionary<string,string> GetConnectionInformationForTableType(string tableType)
         {
-            string localDatabase = "";
+            Dictionary<string, string> localConnectionInformation = new Dictionary<string, string>();
 
             if (new string[] {"Core Business Concept", "Context", "Natural Business Relationship", "Natural Business Relationship Context", "Derived"}.Contains(tableType))
             {
-                localDatabase = FormBase.ConfigurationSettings.IntegrationDatabaseName;
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.IntegrationDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringInt);
             }
             else if (tableType == "Staging Area")
             {
-                localDatabase = FormBase.ConfigurationSettings.StagingDatabaseName;
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.StagingDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringStg);
             }
             else if (tableType == "Persistent Staging Area")
             {
-                localDatabase = FormBase.ConfigurationSettings.PsaDatabaseName;
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.PsaDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringHstg);
             }
             else if (tableType == "Presentation")
             {
-                localDatabase = FormBase.ConfigurationSettings.PresentationDatabaseName;
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.PresentationDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringPres);
             }
             else if (tableType == "Other (e.g. source)")
             {
-                localDatabase = FormBase.ConfigurationSettings.SourceDatabaseName;
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.SourceDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringSource);
             }
             else // Return error
             {
-                localDatabase = "Unknown - error - the database could not be derived from the object " + tableType;
+                localConnectionInformation.Add("Unknown - error - the database could not be derived from the object " + tableType, "The connection string could not be derived");
             }
 
-            return localDatabase;
+            return localConnectionInformation;
         }
 
         /// <summary>
