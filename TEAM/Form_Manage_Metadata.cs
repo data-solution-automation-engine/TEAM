@@ -7661,8 +7661,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging(
-                    "Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+                _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
                 MetadataParameters.ValidationIssues = 0;
                 if (ValidationSettings.SourceObjectExistence == "True")
                 {
@@ -7681,6 +7680,16 @@ namespace TEAM
                 if (ValidationSettings.SourceBusinessKeyExistence == "True")
                 {
                     ValidateBusinessKeyObject();
+                }
+
+                if (ValidationSettings.SourceAttributeExistence == "True")
+                {
+                    ValidateAttributeExistence("source");
+                }
+
+                if (ValidationSettings.TargetAttributeExistence == "True")
+                {
+                    ValidateAttributeExistence("target");
                 }
 
                 if (worker != null) worker.ReportProgress(60);
@@ -7711,6 +7720,90 @@ namespace TEAM
             public static bool ValidationRunning {get; set;}
         }
 
+        /// <summary>
+        /// This method runs a check against the DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
+        /// </summary>
+        /// <param name="area"></param>
+        private void ValidateAttributeExistence(string area)
+        {
+            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
+
+            // Map the area to the column in the datagrid (e.g. source or target)
+            int areaColumnIndex = 0;
+            int areaAttributeColumnIndex = 0;
+
+            switch (area)
+            {
+                case "source":
+                    areaColumnIndex = 2;
+                    areaAttributeColumnIndex = 3;
+                    break;
+                case "target":
+                    areaColumnIndex = 4;
+                    areaAttributeColumnIndex = 5;
+                    break;
+                default:
+                    areaColumnIndex = 0;
+                    areaAttributeColumnIndex = 0;
+                    break;
+            }
+
+            // Informing the user.
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the attributes in the {area} metadata exists in the model.\r\n");
+
+            var resultList = new Dictionary<string, string>();
+
+            foreach (DataGridViewRow row in dataGridViewAttributeMetadata.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    string objectValidated;
+                    var validationObject = row.Cells[areaColumnIndex].Value.ToString();
+                    var validationAttribute = row.Cells[areaAttributeColumnIndex].Value.ToString();
+
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject) != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    {
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject));
+                        string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        objectValidated = ClassMetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
+                    }
+                    else if (evaluationMode == "virtual")
+                    {
+                        objectValidated = "";
+                        // Exclude a lookup to the source
+                        if (ClassMetadataHandling.GetTableType(validationObject) != ClassMetadataHandling.TableTypes.Source.ToString())
+                        {
+                            objectValidated = ClassMetadataValidation.ValidateAttributeExistenceVirtual(validationObject, validationAttribute, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
+                        }
+                    }
+                    else
+                    {
+                        objectValidated = "The validation approach (physical/virtual) could not be asserted.";
+                    }
+
+                    // Add negative results to dictionary
+                    if (objectValidated == "False")
+                    {
+                        resultList.Add(validationObject, objectValidated); // Add objects that did not pass the test
+                    }
+                }
+            }
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var objectValidationResult in resultList)
+                {
+                    _alertValidation.SetTextLogging(objectValidationResult.Key + " is tested with this outcome: " + objectValidationResult.Value + "\r\n");
+                }
+
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count;
+            }
+            else
+            {
+                _alertValidation.SetTextLogging($"    There were no validation issues related to the existence of the {area} attribute.\r\n\r\n");
+            }
+        }
 
         /// <summary>
         /// This method runs a check against the DataGrid to assert if model metadata is available for the object. The object needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run succesfully.
@@ -7736,7 +7829,7 @@ namespace TEAM
             }
 
             // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the objects in the {area} metadata exists in the model.\r\n\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the objects in the {area} metadata exists in the model.\r\n");
 
             var resultList = new Dictionary<string, string>();
 
@@ -7751,7 +7844,16 @@ namespace TEAM
                         Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject));
                         string connectionValue = connectionInformation.FirstOrDefault().Value;
 
-                        objectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(validationObject, connectionValue);
+                        try
+                        {
+                            objectValidated =
+                                ClassMetadataValidation.ValidateObjectExistencePhysical(validationObject,
+                                    connectionValue);
+                        }
+                        catch
+                        {
+                            objectValidated = "An issue occurred connecting to the database.";
+                        }
                     }
                     else if (evaluationMode == "virtual")
                     {
@@ -7787,13 +7889,12 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging($"There were no validation issues related to the existence of the {area} table / object.\r\n");
+                _alertValidation.SetTextLogging($"    There were no validation issues related to the existence of the {area} table / object.\r\n\r\n");
             }
         }
  
-
         /// <summary>
-        /// This method will check if the order of the keys in the Link is consistent with the physical table structures
+        /// This method will check if the order of the keys in the Link is consistent with the physical table structures.
         /// </summary>
         internal void ValidateLinkKeyOrder()
         {
@@ -7801,7 +7902,7 @@ namespace TEAM
 
             #region Retrieving the Links
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
 
 
             // Creating a list of unique Link business key combinations from the data grid / data table
@@ -7840,7 +7941,6 @@ namespace TEAM
             }
             #endregion
 
-
             // Return the results back to the user
             if (resultList.Count > 0)
             {
@@ -7853,20 +7953,20 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
+                _alertValidation.SetTextLogging("    There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
-
-
-
         }
 
+        /// <summary>
+        /// Checks if all the supporting mappings are available (e.g. a Context table also needs a Core Business Concept present.
+        /// </summary>
         internal void ValidateLogicalGroup()
         {
             string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
             #region Retrieving the Integration Layer tables
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
 
             // Creating a list of tables which are dependent on other tables being present
             var objectList = new List<Tuple<string, string, string>>();
@@ -7904,8 +8004,6 @@ namespace TEAM
             }
             #endregion
 
-
-
             // Return the results back to the user
             if (resultList.Count > 0)
             {
@@ -7918,10 +8016,8 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
+                _alertValidation.SetTextLogging("    There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
-
-
         }
 
         /// <summary>
@@ -7933,7 +8029,7 @@ namespace TEAM
 
             #region Validation for source Business Key attribute existence
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n");
 
             // Creating a list of (Source) table names and business key (combinations) from the data grid / data table
             var objectListSTG = new List<Tuple<string, string>>();
@@ -7962,9 +8058,6 @@ namespace TEAM
                     }
                 }
             }
-
-
-
 
             // Execute the validation check using the list of unique objects
             foreach (var sourceObject in objectListSTG)
@@ -8014,8 +8107,6 @@ namespace TEAM
                     }
                 }
             }
-
-
             #endregion
 
             // Return the results back to the user
@@ -8030,10 +8121,9 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
+                _alertValidation.SetTextLogging("    There were no validation issues related to the existence of the business keys in the Source tables.\r\n\r\n");
             }
         }
-
 
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {

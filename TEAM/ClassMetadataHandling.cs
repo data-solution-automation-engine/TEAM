@@ -178,12 +178,12 @@ namespace TEAM
                 localConnectionInformation.Add(FormBase.ConfigurationSettings.StagingDatabaseName,
                     FormBase.ConfigurationSettings.ConnectionStringStg);
             }
-            else if (tableType == "Persistent Staging Area")
+            else if (tableType == TableTypes.PersistentStagingArea.ToString())
             {
                 localConnectionInformation.Add(FormBase.ConfigurationSettings.PsaDatabaseName,
                     FormBase.ConfigurationSettings.ConnectionStringHstg);
             }
-            else if (tableType == "Presentation")
+            else if (tableType == TableTypes.Presentation.ToString())
             {
                 localConnectionInformation.Add(FormBase.ConfigurationSettings.PresentationDatabaseName,
                     FormBase.ConfigurationSettings.ConnectionStringPres);
@@ -195,7 +195,7 @@ namespace TEAM
             }
             else // Return error
             {
-                localConnectionInformation.Add("Unknown - error - the database could not be derived from the object " + tableType, "The connection string could not be derived");
+                localConnectionInformation.Add("The database could not be derived from the object " + tableType, "The connection string could not be derived");
             }
 
             return localConnectionInformation;

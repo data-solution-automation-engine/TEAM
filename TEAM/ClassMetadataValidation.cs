@@ -11,7 +11,7 @@ namespace TEAM
     {
 
         /// <summary>
-        ///    This method ensures that a source object exists in the physical model against the catalog
+        ///    This method ensures that a table object exists in the physical model against the catalog
         /// </summary>
         internal static string ValidateObjectExistencePhysical (string validationObject, string connectionString)
         {
@@ -33,6 +33,29 @@ namespace TEAM
             return returnExistenceEvaluation;
         }
 
+        /// <summary>
+        ///    This method ensures that an attribute object exists in the physical model against the catalog
+        /// </summary>
+        internal static string ValidateAttributeExistencePhysical(string validationObject, string validationAttribute, string connectionString)
+        {
+            string returnExistenceEvaluation = "False";
+
+            var conn = new SqlConnection { ConnectionString = connectionString };
+            conn.Open();
+
+            // Execute the check
+            var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE [TABLE_NAME] = '" + validationObject + "' AND [COLUMN_NAME] = '"+ validationAttribute + "')) THEN 1 ELSE 0 END", conn);
+
+            var exists = (int)cmd.ExecuteScalar() == 1;
+            returnExistenceEvaluation = exists.ToString();
+
+            conn.Close();
+
+            // return the result of the test;
+            return returnExistenceEvaluation;
+        }
+
+        // Check if an object / table exists in the metadata
         internal static string ValidateObjectExistenceVirtual (string validationObject, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
@@ -41,6 +64,25 @@ namespace TEAM
             bool existenceCheck = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == validationObject));
 
             returnExistenceEvaluation = existenceCheck.ToString();
+
+            // return the result of the test;
+            return returnExistenceEvaluation;
+        }
+
+        // Check if an attribute exists in the metadata
+        internal static string ValidateAttributeExistenceVirtual(string validationObject, string validationAttribute, DataTable inputDataTable)
+        {
+            string returnExistenceEvaluation = "False";
+
+            DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
+
+            bool existenceCheckTables = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == validationObject));
+            bool existenceCheckAttributes = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == validationAttribute));
+
+            if (existenceCheckTables == true && existenceCheckAttributes == true)
+            {
+                returnExistenceEvaluation = "True";
+            }
 
             // return the result of the test;
             return returnExistenceEvaluation;

@@ -39,6 +39,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxExistenceChecks = new System.Windows.Forms.GroupBox();
+            this.checkBoxTargetAttribute = new System.Windows.Forms.CheckBox();
+            this.checkBoxSourceAttribute = new System.Windows.Forms.CheckBox();
             this.checkBoxSourceBusinessKeyExistence = new System.Windows.Forms.CheckBox();
             this.checkBoxTargetObjectExistence = new System.Windows.Forms.CheckBox();
             this.checkBoxSourceObjectExistence = new System.Windows.Forms.CheckBox();
@@ -48,8 +50,6 @@
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
-            this.checkBoxSourceAttribute = new System.Windows.Forms.CheckBox();
-            this.checkBoxTargetAttribute = new System.Windows.Forms.CheckBox();
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxExistenceChecks.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -83,7 +83,7 @@
             // 
             this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
-            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.openConfigurationFileToolStripMenuItem.Text = "Open Validation Settings File";
             this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
             // 
@@ -91,7 +91,8 @@
             // 
             this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(231, 22);
+            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(259, 22);
             this.toolStripMenuItem2.Text = "Save Validation Settings File";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
@@ -99,33 +100,33 @@
             // 
             this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
             this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
             this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(228, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(256, 6);
             // 
             // openOutputDirectoryToolStripMenuItem
             // 
             this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
             this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(228, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(256, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.exitToolStripMenuItem.Text = "Close Window";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -142,6 +143,30 @@
             this.groupBoxExistenceChecks.TabIndex = 6;
             this.groupBoxExistenceChecks.TabStop = false;
             this.groupBoxExistenceChecks.Text = "Object existence";
+            // 
+            // checkBoxTargetAttribute
+            // 
+            this.checkBoxTargetAttribute.AutoSize = true;
+            this.checkBoxTargetAttribute.Checked = true;
+            this.checkBoxTargetAttribute.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxTargetAttribute.Location = new System.Drawing.Point(6, 111);
+            this.checkBoxTargetAttribute.Name = "checkBoxTargetAttribute";
+            this.checkBoxTargetAttribute.Size = new System.Drawing.Size(98, 17);
+            this.checkBoxTargetAttribute.TabIndex = 27;
+            this.checkBoxTargetAttribute.Text = "Target attribute";
+            this.checkBoxTargetAttribute.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSourceAttribute
+            // 
+            this.checkBoxSourceAttribute.AutoSize = true;
+            this.checkBoxSourceAttribute.Checked = true;
+            this.checkBoxSourceAttribute.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSourceAttribute.Location = new System.Drawing.Point(6, 88);
+            this.checkBoxSourceAttribute.Name = "checkBoxSourceAttribute";
+            this.checkBoxSourceAttribute.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxSourceAttribute.TabIndex = 26;
+            this.checkBoxSourceAttribute.Text = "Source attribute";
+            this.checkBoxSourceAttribute.UseVisualStyleBackColor = true;
             // 
             // checkBoxSourceBusinessKeyExistence
             // 
@@ -247,30 +272,6 @@
             this.checkBoxBusinessKeySyntaxValidation.TabIndex = 9;
             this.checkBoxBusinessKeySyntaxValidation.Text = "Business Key syntax validation";
             this.checkBoxBusinessKeySyntaxValidation.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxSourceAttribute
-            // 
-            this.checkBoxSourceAttribute.AutoSize = true;
-            this.checkBoxSourceAttribute.Checked = true;
-            this.checkBoxSourceAttribute.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSourceAttribute.Location = new System.Drawing.Point(6, 88);
-            this.checkBoxSourceAttribute.Name = "checkBoxSourceAttribute";
-            this.checkBoxSourceAttribute.Size = new System.Drawing.Size(101, 17);
-            this.checkBoxSourceAttribute.TabIndex = 26;
-            this.checkBoxSourceAttribute.Text = "Source attribute";
-            this.checkBoxSourceAttribute.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxTargetAttribute
-            // 
-            this.checkBoxTargetAttribute.AutoSize = true;
-            this.checkBoxTargetAttribute.Checked = true;
-            this.checkBoxTargetAttribute.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxTargetAttribute.Location = new System.Drawing.Point(6, 111);
-            this.checkBoxTargetAttribute.Name = "checkBoxTargetAttribute";
-            this.checkBoxTargetAttribute.Size = new System.Drawing.Size(98, 17);
-            this.checkBoxTargetAttribute.TabIndex = 27;
-            this.checkBoxTargetAttribute.Text = "Target attribute";
-            this.checkBoxTargetAttribute.UseVisualStyleBackColor = true;
             // 
             // FormManageValidation
             // 
