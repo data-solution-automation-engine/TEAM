@@ -334,7 +334,7 @@ namespace TEAM
                 foreach (string businessKeyPart in subKeys)
                 {
                     // Handle hard-coded business key values
-                    if (businessKeyPart.StartsWith("'") && businessKeyPart.EndsWith("'"))
+                    if (businessKeyPart.Trim().StartsWith("'") && businessKeyPart.Trim().EndsWith("'"))
                     {
                         // Do nothing
                     }

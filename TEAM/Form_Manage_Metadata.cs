@@ -410,7 +410,7 @@ namespace TEAM
 
 
         /// <summary>
-        /// Populate the Table Mapping datagrid from a database or existing JSON file.
+        /// Populate the Table Mapping DataGrid from a database or existing JSON file.
         /// </summary>
         /// <param name="versionId"></param>
         private void PopulateTableMappingGridWithVersion(int versionId)
@@ -5934,19 +5934,19 @@ namespace TEAM
                 var prepareMappingStatementLink = new StringBuilder();
 
                 prepareMappingStatementLink.AppendLine("SELECT");
-                prepareMappingStatementLink.AppendLine("	    stg.SOURCE_NAME");
-                prepareMappingStatementLink.AppendLine("	   ,lnk.LINK_NAME");                
-                prepareMappingStatementLink.AppendLine("	   ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_FROM");
-                prepareMappingStatementLink.AppendLine("	   ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_TO");
-                prepareMappingStatementLink.AppendLine("	   ,'manually_mapped' as VERIFICATION");
+                prepareMappingStatementLink.AppendLine("  stg.SOURCE_NAME");
+                prepareMappingStatementLink.AppendLine(" ,lnk.LINK_NAME");                
+                prepareMappingStatementLink.AppendLine(" ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_FROM");
+                prepareMappingStatementLink.AppendLine(" ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_TO");
+                prepareMappingStatementLink.AppendLine(" ,'manually_mapped' as VERIFICATION");
                 prepareMappingStatementLink.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
-                prepareMappingStatementLink.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk on lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=mapping.TARGET_TABLE");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
-                prepareMappingStatementLink.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
-                prepareMappingStatementLink.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_LINK lnk on lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=mapping.TARGET_TABLE");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
+                prepareMappingStatementLink.AppendLine("  ON mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
+                prepareMappingStatementLink.AppendLine(" AND mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
                 prepareMappingStatementLink.AppendLine("WHERE mapping.TARGET_TABLE_TYPE = ('" + ClassMetadataHandling.TableTypes.NaturalBusinessRelationship + "')");
                 prepareMappingStatementLink.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
 
@@ -7652,60 +7652,56 @@ namespace TEAM
         /// <param name="e"></param>
         private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
-            //LBM 2019-01-24 - We don't need to have the checked box marked when pressing Validation Only, removing the IF
-            //LBM 2109-05-25 - Need to create a validation to check if all Mapped Attributes exists in the Target
-            //if (checkBoxValidation.Checked)
-            //{
             BackgroundWorker worker = sender as BackgroundWorker;
 
-                // Handling multi-threading
-                if (worker != null && worker.CancellationPending)
+            // Handling multi-threading
+            if (worker != null && worker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                _alertValidation.SetTextLogging(
+                    "Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+                MetadataParameters.ValidationIssues = 0;
+                if (ValidationSettings.SourceObjectExistence == "True")
                 {
-                    e.Cancel = true;
+                    ValidateObjectExistence("source");
                 }
-                else
+
+                if (worker != null) worker.ReportProgress(15);
+
+                if (ValidationSettings.TargetObjectExistence == "True")
                 {
-                    _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
-                    MetadataParameters.ValidationIssues = 0;
-                    if (ValidationSettings.SourceObjectExistence == "True")
-                    {
-                        ValidateObjectExistence("source");
-                    }
-                    if (worker != null) worker.ReportProgress(15);
-
-                    if (ValidationSettings.TargetObjectExistence == "True")
-                    {
-                        ValidateObjectExistence("target");
+                    ValidateObjectExistence("target");
                 }
-                    if (worker != null) worker.ReportProgress(30);
 
-                    if (ValidationSettings.SourceBusinessKeyExistence == "True")
-                    {
-                        ValidateBusinessKeyObject();
-                    }
-                    if (worker != null) worker.ReportProgress(60);
+                if (worker != null) worker.ReportProgress(30);
 
-                    if (ValidationSettings.LogicalGroup == "True")
-                    {
-                        ValidateLogicalGroup();
-                    }
-                    if (worker != null) worker.ReportProgress(75);
-
-                    if (ValidationSettings.LinkKeyOrder == "True")
-                    {
-                        ValidateLinkKeyOrder();
-                    }
-                    if (worker != null) worker.ReportProgress(100);
-
-                    // Informing the user.
-                    _alertValidation.SetTextLogging("\r\nIn total "+ MetadataParameters.ValidationIssues + " validation issues have been found.");
+                if (ValidationSettings.SourceBusinessKeyExistence == "True")
+                {
+                    ValidateBusinessKeyObject();
                 }
-            //}
-            //else
-            //{
-            //    // Raise exception
-            //    MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+
+                if (worker != null) worker.ReportProgress(60);
+
+                if (ValidationSettings.LogicalGroup == "True")
+                {
+                    ValidateLogicalGroup();
+                }
+
+                if (worker != null) worker.ReportProgress(75);
+
+                if (ValidationSettings.LinkKeyOrder == "True")
+                {
+                    ValidateLinkKeyOrder();
+                }
+
+                if (worker != null) worker.ReportProgress(100);
+
+                // Informing the user.
+                _alertValidation.SetTextLogging("\r\nIn total " + MetadataParameters.ValidationIssues + " validation issues have been found.");
+            }
         }
 
         internal static class MetadataParameters

@@ -536,6 +536,8 @@ namespace TEAM
             // checkBoxValidation
             // 
             this.checkBoxValidation.AutoSize = true;
+            this.checkBoxValidation.Checked = true;
+            this.checkBoxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxValidation.Location = new System.Drawing.Point(6, 67);
             this.checkBoxValidation.Name = "checkBoxValidation";
             this.checkBoxValidation.Size = new System.Drawing.Size(164, 17);
