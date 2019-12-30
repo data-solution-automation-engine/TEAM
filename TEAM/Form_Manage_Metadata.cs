@@ -7779,13 +7779,13 @@ namespace TEAM
                     }
                     else
                     {
-                        objectValidated = "The validation approach (physical/virtual) could not be asserted.";
+                        objectValidated = "     The validation approach (physical/virtual) could not be asserted.";
                     }
 
                     // Add negative results to dictionary
-                    if (objectValidated == "False")
+                    if (objectValidated == "False" && !resultList.ContainsKey((validationAttribute)))
                     {
-                        resultList.Add(validationObject, objectValidated); // Add objects that did not pass the test
+                        resultList.Add(validationAttribute, objectValidated); // Add objects that did not pass the test
                     }
                 }
             }
@@ -7794,14 +7794,18 @@ namespace TEAM
             {
                 foreach (var objectValidationResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(objectValidationResult.Key + " is tested with this outcome: " + objectValidationResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     " + objectValidationResult.Key +
+                                                    " is tested with this outcome: " + objectValidationResult.Value +
+                                                    "\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count;
+
+                _alertValidation.SetTextLogging("\r\n");
             }
             else
             {
-                _alertValidation.SetTextLogging($"    There were no validation issues related to the existence of the {area} attribute.\r\n\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of the {area} attribute.\r\n\r\n");
             }
         }
 
@@ -7852,7 +7856,7 @@ namespace TEAM
                         }
                         catch
                         {
-                            objectValidated = "An issue occurred connecting to the database.";
+                            objectValidated = "     An issue occurred connecting to the database.";
                         }
                     }
                     else if (evaluationMode == "virtual")
@@ -7867,7 +7871,7 @@ namespace TEAM
                     }
                     else
                     {
-                        objectValidated = "The validation approach (physical/virtual) could not be asserted.";
+                        objectValidated = "     The validation approach (physical/virtual) could not be asserted.";
                     }
 
                     // Add negative results to dictionary
@@ -7882,15 +7886,17 @@ namespace TEAM
             {
                 foreach (var objectValidationResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(objectValidationResult.Key + " is tested with this outcome: " + objectValidationResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     " + objectValidationResult.Key + " is tested with this outcome: " + objectValidationResult.Value + "\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count;
+                _alertValidation.SetTextLogging("\r\n");
             }
             else
             {
-                _alertValidation.SetTextLogging($"    There were no validation issues related to the existence of the {area} table / object.\r\n\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of the {area} table / object.\r\n\r\n");
             }
+
         }
  
         /// <summary>
@@ -7946,14 +7952,15 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     "+sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
+                _alertValidation.SetTextLogging("\r\n");
             }
             else
             {
-                _alertValidation.SetTextLogging("    There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
         }
 
@@ -8009,14 +8016,15 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     "+sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
 
+                _alertValidation.SetTextLogging("\r\n");
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alertValidation.SetTextLogging("    There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
         }
 
@@ -8114,7 +8122,7 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging("Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + "\r\n");
+                    _alertValidation.SetTextLogging("    Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + "\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
@@ -8123,6 +8131,8 @@ namespace TEAM
             {
                 _alertValidation.SetTextLogging("    There were no validation issues related to the existence of the business keys in the Source tables.\r\n\r\n");
             }
+
+            _alertValidation.SetTextLogging("\r\n");
         }
 
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -8148,7 +8158,7 @@ namespace TEAM
             else
             {
                 labelResult.Text = "Done!";
-                richTextBoxInformation.Text += "\r\nThe metadata was validated succesfully!\r\n";
+                richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
             }
         }
 
