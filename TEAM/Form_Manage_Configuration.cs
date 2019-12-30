@@ -196,7 +196,7 @@ namespace TEAM
                 string textline;
                 while ((textline = sr.ReadLine()) != null)
                 {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
+                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
                     {
                         var line = textline.Split('|');
                         configList.Add(line[0], line[1]);
