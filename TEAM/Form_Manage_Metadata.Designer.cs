@@ -96,6 +96,11 @@ namespace TEAM
             this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
+            this.contextMenuStripAttributeMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteThisRowFromTheGridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteThisRowFromTheGridToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -113,6 +118,8 @@ namespace TEAM
             this.MetadataGenerationGroupBox.SuspendLayout();
             this.menuStripMetadata.SuspendLayout();
             this.groupBoxJsonOptions.SuspendLayout();
+            this.contextMenuStripAttributeMapping.SuspendLayout();
+            this.contextMenuStripModel.SuspendLayout();
             this.SuspendLayout();
             // 
             // backgroundWorkerMetadata
@@ -332,7 +339,7 @@ namespace TEAM
             this.deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
             this.deleteThisRowFromTheGridToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
             this.deleteThisRowFromTheGridToolStripMenuItem.Text = "Delete this row from the grid";
-            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem_Click);
+            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTableDataGridToolStripMenuItem_Click);
             // 
             // tabPage2
             // 
@@ -351,11 +358,13 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewAttributeMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewAttributeMetadata.ContextMenuStrip = this.contextMenuStripAttributeMapping;
             this.dataGridViewAttributeMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewAttributeMetadata.Name = "dataGridViewAttributeMetadata";
             this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(1217, 699);
             this.dataGridViewAttributeMetadata.TabIndex = 1;
             this.dataGridViewAttributeMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewAttributeMetadataKeyDown);
+            this.dataGridViewAttributeMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewAttributeMetadata_MouseDown);
             // 
             // tabPage3
             // 
@@ -449,11 +458,13 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewPhysicalModelMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewPhysicalModelMetadata.ContextMenuStrip = this.contextMenuStripModel;
             this.dataGridViewPhysicalModelMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewPhysicalModelMetadata.Name = "dataGridViewPhysicalModelMetadata";
             this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1088, 699);
             this.dataGridViewPhysicalModelMetadata.TabIndex = 2;
             this.dataGridViewPhysicalModelMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewPhysicalModelMetadataKeyDown);
+            this.dataGridViewPhysicalModelMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewModelMetadata_MouseDown);
             // 
             // outputGroupBoxVersioning
             // 
@@ -784,6 +795,42 @@ namespace TEAM
             this.groupBoxJsonOptions.TabStop = false;
             this.groupBoxJsonOptions.Text = "Json / XML load options";
             // 
+            // contextMenuStripAttributeMapping
+            // 
+            this.contextMenuStripAttributeMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteThisRowFromTheGridToolStripMenuItem1});
+            this.contextMenuStripAttributeMapping.Name = "contextMenuStripAttributeMapping";
+            this.contextMenuStripAttributeMapping.Size = new System.Drawing.Size(226, 26);
+            // 
+            // contextMenuStripModel
+            // 
+            this.contextMenuStripModel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.displayTableScriptToolStripMenuItem,
+            this.deleteThisRowFromTheGridToolStripMenuItem2});
+            this.contextMenuStripModel.Name = "contextMenuStripModel";
+            this.contextMenuStripModel.Size = new System.Drawing.Size(226, 70);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem1
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Name = "deleteThisRowFromTheGridToolStripMenuItem1";
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem1_Click);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem2
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Name = "deleteThisRowFromTheGridToolStripMenuItem2";
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem2_Click);
+            // 
+            // displayTableScriptToolStripMenuItem
+            // 
+            this.displayTableScriptToolStripMenuItem.Name = "displayTableScriptToolStripMenuItem";
+            this.displayTableScriptToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.displayTableScriptToolStripMenuItem.Text = "Display table script";
+            this.displayTableScriptToolStripMenuItem.Click += new System.EventHandler(this.displayTableScriptToolStripMenuItem_Click);
+            // 
             // FormManageMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -838,6 +885,8 @@ namespace TEAM
             this.menuStripMetadata.PerformLayout();
             this.groupBoxJsonOptions.ResumeLayout(false);
             this.groupBoxJsonOptions.PerformLayout();
+            this.contextMenuStripAttributeMapping.ResumeLayout(false);
+            this.contextMenuStripModel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -909,5 +958,10 @@ namespace TEAM
         private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
         private System.Windows.Forms.RadioButton radioButtonVirtualMode;
         private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripAttributeMapping;
+        private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripModel;
+        private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem displayTableScriptToolStripMenuItem;
     }
 }

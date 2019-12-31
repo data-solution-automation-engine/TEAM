@@ -7,7 +7,7 @@ namespace TEAM
 {
     public partial class FormAlert : FormBase
     {
-        //Make the label and progressbar accessbile from the main form for updates
+        //Make the label and progressbar accessible from the main form for updates
         public string Message
         {
             set { labelMessage.Text = value; }
@@ -28,7 +28,37 @@ namespace TEAM
             InitializeComponent();
         }
 
-        // Multithreading for updating the user
+        delegate void SetFormNameCallBack(string text);
+
+        public void SetFormName(string text)
+        {
+            if (this.InvokeRequired)
+            {
+                var d = new SetFormNameCallBack(SetFormName);
+                try
+                {
+                    Invoke(d, text);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                try
+                {
+                    this.Text = text;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
+
+        // Multi threading for updating the user
         delegate void SetTextCallBackLogging(string text);
         public void SetTextLogging(string text)
         {
@@ -44,7 +74,7 @@ namespace TEAM
                     // ignored
                 }
             }
-        else
+            else
             {
                 try
                 {

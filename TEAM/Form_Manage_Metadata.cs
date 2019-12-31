@@ -19,6 +19,7 @@ namespace TEAM
     {
         FormAlert _alert;
         FormAlert _alertValidation;
+        FormAlert _generatedScripts;
 
         //Getting the DataTable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
@@ -3530,7 +3531,7 @@ namespace TEAM
             else
             {
                 labelResult.Text = "Done!";
-                richTextBoxInformation.Text += "The metadata was processed succesfully!\r\n";
+                richTextBoxInformation.Text += "The metadata was processed successfully!\r\n";
             }
             // Close the AlertForm
             //alert.Close();
@@ -7560,7 +7561,7 @@ namespace TEAM
             return reverseEngineerResults;
         }
 
-        #region Contextmenu
+        #region ContextMenu
         private void dataGridViewTableMetadata_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -7568,6 +7569,26 @@ namespace TEAM
                 var hti = dataGridViewTableMetadata.HitTest(e.X, e.Y);
                 dataGridViewTableMetadata.ClearSelection();
                 dataGridViewTableMetadata.Rows[hti.RowIndex].Selected = true;
+            }
+        }
+
+        private void dataGridViewAttributeMetadata_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hti = dataGridViewAttributeMetadata.HitTest(e.X, e.Y);
+                dataGridViewAttributeMetadata.ClearSelection();
+                dataGridViewAttributeMetadata.Rows[hti.RowIndex].Selected = true;
+            }
+        }
+
+        private void dataGridViewModelMetadata_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hti = dataGridViewPhysicalModelMetadata.HitTest(e.X, e.Y);
+                dataGridViewPhysicalModelMetadata.ClearSelection();
+                dataGridViewPhysicalModelMetadata.Rows[hti.RowIndex].Selected = true;
             }
         }
 
@@ -7602,7 +7623,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void deleteThisRowFromTheGridToolStripMenuItem_Click(object sender, EventArgs e)
+        private void deleteThisRowFromTableDataGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Int32 rowToDelete = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
             dataGridViewTableMetadata.Rows.RemoveAt(rowToDelete);
@@ -7881,6 +7902,7 @@ namespace TEAM
                     }
                 }
             }
+
             // Return the results back to the user
             if (resultList.Count > 0)
             {
@@ -8035,101 +8057,69 @@ namespace TEAM
         {
             string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
-            #region Validation for source Business Key attribute existence
             // Informing the user.
             _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n");
 
-            // Creating a list of (Source) table names and business key (combinations) from the data grid / data table
-            var objectListSTG = new List<Tuple<string, string>>();
-            var objectListPSA = new List<Tuple<string, string>>();
-            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
-            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
             var resultList = new Dictionary<Tuple<string, string>, bool>();
-
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix)
+                    Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
+                    Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString());
+
+                    //row.Cells[areaColumnIndex].Value.ToString();
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject.Item1) != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        if (!objectListSTG.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject.Item1));
+                        string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        try
                         {
-                            objectListSTG.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                            objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(validationObject, connectionValue);
+                        }
+                        catch
+                        {
+                            _alertValidation.SetTextLogging("     An issue occurred connecting to the database while looking up physical model references.\r\n");
                         }
                     }
-                    else if (row.Cells[2].Value.ToString().Substring(0, psaPrefix.Length) == psaPrefix)
+                    else if (evaluationMode == "virtual")
                     {
-                        if (!objectListPSA.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
-                        {
-                            objectListPSA.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                        // Exclude a lookup to the source
+                        if (ClassMetadataHandling.GetTableType(validationObject.Item1) != ClassMetadataHandling.TableTypes.Source.ToString())
+                        { 
+                            objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
-                }
-            }
-
-            // Execute the validation check using the list of unique objects
-            foreach (var sourceObject in objectListSTG)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = new Dictionary<Tuple<string, string>, bool>();
-                if (evaluationMode == "physical")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.currentVersionId);
-                }
-                else if (evaluationMode == "virtual")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(sourceObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
-                }
-                else
-                {
-                    //sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
-                }
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
+                    else
                     {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
+                        _alertValidation.SetTextLogging("     The validation approach (physical/virtual) could not be asserted.\r\n");
+                    }
+
+                    // Add negative results to dictionary
+                    foreach (var objectValidationTuple in objectValidated)
+                    {
+                        if (objectValidationTuple.Value == false && !resultList.ContainsKey(objectValidationTuple.Key))
                         {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                            resultList.Add(objectValidationTuple.Key, false); // Add objects that did not pass the test
                         }
                     }
                 }
             }
-
-            foreach (var sourceObject in objectListPSA)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringHstg, GlobalParameters.currentVersionId);
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-            #endregion
 
             // Return the results back to the user
             if (resultList.Count > 0)
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging("    Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + "\r\n");
+                    _alertValidation.SetTextLogging("     Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + ".\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alertValidation.SetTextLogging("    There were no validation issues related to the existence of the business keys in the Source tables.\r\n\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to the existence of the business keys in the Source tables.\r\n\r\n");
             }
 
             _alertValidation.SetTextLogging("\r\n");
@@ -8284,5 +8274,81 @@ namespace TEAM
             GridAutoLayout();
         }
 
+        private void deleteThisRowFromTheGridToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Int32 rowToDelete = dataGridViewAttributeMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            dataGridViewAttributeMetadata.Rows.RemoveAt(rowToDelete);
+        }
+
+        private void deleteThisRowFromTheGridToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Int32 rowToDelete = dataGridViewPhysicalModelMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            dataGridViewPhysicalModelMetadata.Rows.RemoveAt(rowToDelete);
+        }
+
+        private void displayTableScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Retrieve the index of the selected row
+            Int32 selectedRow = dataGridViewPhysicalModelMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
+            // Make sure the output is sorted
+
+
+
+            DataTable dt2 = gridDataTable.Clone();
+            dt2.Columns["ORDINAL_POSITION"].DataType = Type.GetType("System.Int32");
+
+            foreach (DataRow dr in gridDataTable.Rows)
+            {
+                dt2.ImportRow(dr);
+            }
+            dt2.AcceptChanges();
+            dt2.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
+            // Retrieve all rows relative to the selected row (e.g. all attributes for the table)
+            IEnumerable<DataRow> rows = dt2.DefaultView.ToTable().AsEnumerable().Where(r =>
+                r.Field<string>("TABLE_NAME") ==
+                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value.ToString()
+                && r.Field<string>("SCHEMA_NAME") ==
+                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[3].Value.ToString()
+                && r.Field<string>("DATABASE_NAME") ==
+                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[2].Value.ToString()
+                );
+
+            // Create a form and display the results
+            var results = new StringBuilder();
+
+            _generatedScripts = new FormAlert();
+            _generatedScripts.SetFormName("Display model metadata");
+            _generatedScripts.Canceled += buttonCancel_Click;
+            _generatedScripts.Show();
+
+            results.AppendLine("IF OBJECT_ID('["+ dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value + "]', 'U') IS NOT NULL");
+            results.AppendLine("DROP TABLE [" + dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value + "]");
+            results.AppendLine();
+            results.AppendLine("CREATE TABLE [" + dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value + "]");
+            results.AppendLine("(");
+
+            int counter = 1;
+            foreach (DataRow row in rows)
+            {
+                var commaSnippet = "";
+                if (counter == 1)
+                {
+                    commaSnippet = "  ";
+                }
+                else
+                {
+                    commaSnippet = " ,";
+                }
+
+                counter++;
+                results.AppendLine(commaSnippet + row["COLUMN_NAME"] + " -- with ordinal position of "+ row["ORDINAL_POSITION"]);
+            }
+            results.AppendLine(")");
+
+            _generatedScripts.SetTextLogging(results.ToString());
+        }
     }
 }
