@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -3407,6 +3406,7 @@ namespace TEAM
                     if (backgroundWorkerValidationOnly.IsBusy) return;
                     // create a new instance of the alert form
                     _alertValidation = new FormAlert();
+                    _alertValidation.SetFormName("Validating the metadata");
                     // event handler for the Cancel button in AlertForm
                     _alertValidation.Canceled += buttonCancel_Click;
                     _alertValidation.Show();
@@ -8093,7 +8093,11 @@ namespace TEAM
                     }
                     else
                     {
-                        _alertValidation.SetTextLogging("     The validation approach (physical/virtual) could not be asserted.\r\n");
+                        if (ClassMetadataHandling.GetTableType(validationObject.Item1) !=
+                            ClassMetadataHandling.TableTypes.Source.ToString())
+                        {
+                            _alertValidation.SetTextLogging("     The validation approach (physical/virtual) could not be asserted.\r\n");
+                        }
                     }
 
                     // Add negative results to dictionary
@@ -8119,7 +8123,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("     There were no validation issues related to the existence of the business keys in the Source tables.\r\n\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
             }
 
             _alertValidation.SetTextLogging("\r\n");
@@ -8349,6 +8353,8 @@ namespace TEAM
             results.AppendLine(")");
 
             _generatedScripts.SetTextLogging(results.ToString());
+            _generatedScripts.ProgressValue = 100;
+            _generatedScripts.Message = "Done";
         }
     }
 }

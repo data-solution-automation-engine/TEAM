@@ -103,7 +103,7 @@
             this.buttonShowLog.UseVisualStyleBackColor = true;
             this.buttonShowLog.Click += new System.EventHandler(this.buttonShowLog_Click);
             // 
-            // Form_Alert
+            // FormAlert
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -116,7 +116,7 @@
             this.Controls.Add(this.labelMessage);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormAlert";
-            this.Text = "Processing Metadata";
+            this.Text = "Processing the metadata";
             this.ResumeLayout(false);
             this.PerformLayout();
 
