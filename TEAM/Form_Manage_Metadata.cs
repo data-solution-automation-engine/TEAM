@@ -8296,10 +8296,6 @@ namespace TEAM
             Int32 selectedRow = dataGridViewPhysicalModelMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
             DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
-            // Make sure the output is sorted
-
-
-
             DataTable dt2 = gridDataTable.Clone();
             dt2.Columns["ORDINAL_POSITION"].DataType = Type.GetType("System.Int32");
 
@@ -8308,6 +8304,8 @@ namespace TEAM
                 dt2.ImportRow(dr);
             }
             dt2.AcceptChanges();
+
+            // Make sure the output is sorted
             dt2.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
             // Retrieve all rows relative to the selected row (e.g. all attributes for the table)
