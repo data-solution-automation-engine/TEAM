@@ -7896,7 +7896,7 @@ namespace TEAM
                     }
 
                     // Add negative results to dictionary
-                    if (objectValidated == "False")
+                    if (objectValidated == "False" && !resultList.ContainsKey(validationObject))
                     {
                         resultList.Add(validationObject, objectValidated); // Add objects that did not pass the test
                     }
