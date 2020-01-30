@@ -96,7 +96,6 @@ namespace TEAM
 
             internal static string EtlProcessAttribute { get; set; }
 
-
             internal static string EtlProcessUpdateAttribute { get; set; }
 
             internal static string RowIdAttribute { get; set; }
@@ -104,7 +103,6 @@ namespace TEAM
             internal static string RecordChecksumAttribute { get; set; }
 
             internal static string CurrentRowAttribute { get; set; }
-
 
             internal static string AlternativeRecordSourceAttribute { get; set; }
 
@@ -130,7 +128,6 @@ namespace TEAM
             internal static string TableNamingLocation { get; set; } // The location if the table classification (i.e. HUB OR SAT) is a prefix (HUB_CUSTOMER) or suffix (CUSTOMER_HUB).
             internal static string KeyNamingLocation { get; set; } // The location if the key (i.e. HSH or SK), whether it is a prefix (SK_CUSTOMER) or a suffix (CUSTOMER_SK).
 
-
             internal static string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }
 
             internal static string EnableAlternativeRecordSourceAttribute { get; set; }
@@ -138,6 +135,10 @@ namespace TEAM
             internal static string EnableAlternativeLoadDateTimeAttribute { get; set; }
 
             internal static string MetadataRepositoryType { get; set; }
+
+            // File paths
+            internal static string LoadPatternListPath { get; set; } = Application.StartupPath + @"\LoadPatterns\";
+            public static List<FormManagePattern.LoadPatternDefinition> patternDefinitionList { get; set; }
         }
 
         /// <summary>
@@ -159,7 +160,6 @@ namespace TEAM
             // Syntax validation
             public static string BusinessKeySyntax { get; set; }
         }
-
 
         /// <summary>
         ///    These variables are used as global variables throughout the application
@@ -186,9 +186,10 @@ namespace TEAM
             public static string JsonAttributeMappingFileName { get; set; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; set; } = "TEAM_Model_Metadata";
             public static string JsonExtension { get; set; } = ".json";
-
+            public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";
             // Version handling
             public static int currentVersionId { get; set; } = 0;
+
             public static int highestVersionId { get; set; } = 0;
 
         }

@@ -120,6 +120,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassExtensionMethods.cs" />
     <Compile Include="ClassMetadataHandling.cs" />
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
