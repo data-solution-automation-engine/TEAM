@@ -249,6 +249,27 @@ namespace TEAM
             Application.Exit();
         }
 
+
+
+        private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (metadataToolStripMenuItem.Enabled == false)
+                return;
+            var t = new Thread(ThreadProcMetadata);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcAbout);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+
+        #region From Close Delegates
         private void CloseMetadataForm(object sender, FormClosedEventArgs e)
         {
             _myMetadataForm = null;
@@ -269,27 +290,45 @@ namespace TEAM
             _myConfigurationForm = null;
         }
 
-        private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ClosePatternForm(object sender, FormClosedEventArgs e)
         {
-            if (metadataToolStripMenuItem.Enabled == false)
-                return;
-            var t = new Thread(ThreadProcMetadata);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
+            _myPatternForm = null;
+        }
+        #endregion
+
+        #region Form Threads
+        private FormManagePattern _myPatternForm;
+        [STAThread]
+        public void ThreadProcPattern()
+        {
+            if (_myPatternForm == null)
+            {
+                _myPatternForm = new FormManagePattern(this);
+                Application.Run(_myPatternForm);
+            }
+            else
+            {
+                if (_myPatternForm.InvokeRequired)
+                {
+                    // Thread Error
+                    _myPatternForm.Invoke((MethodInvoker)delegate { _myPatternForm.Close(); });
+                    _myPatternForm.FormClosed += ClosePatternForm;
+
+                    _myPatternForm = new FormManagePattern(this);
+                    Application.Run(_myPatternForm);
+                }
+                else
+                {
+                    // No invoke required - same thread
+                    _myPatternForm.FormClosed += ClosePatternForm;
+                    _myPatternForm = new FormManagePattern(this);
+
+                    Application.Run(_myPatternForm);
+                }
+            }
         }
 
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcAbout);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
-
-       private FormManageConfiguration _myConfigurationForm;
-        /// <summary>
-        /// 
-        /// </summary>
+        private FormManageConfiguration _myConfigurationForm;
         [STAThread]
         public void ThreadProcConfiguration()
         {
@@ -428,6 +467,8 @@ namespace TEAM
                 }
             }
         }
+        #endregion
+
 
         private void richTextBoxInformation_TextChanged(object sender, EventArgs e)
         {
@@ -460,6 +501,13 @@ namespace TEAM
         private void createRebuildRepositoryToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var t = new Thread(ThreadProcRepository);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+        private void patternDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcPattern);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }

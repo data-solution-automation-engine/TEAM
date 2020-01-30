@@ -150,6 +150,12 @@
     <Compile Include="FormAlert.Designer.cs">
       <DependentUpon>FormAlert.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_Manage_Pattern_Definitions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Manage_Pattern_Definitions.Designer.cs">
+      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Manage_Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -199,6 +205,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormBase.resx">
       <DependentUpon>FormBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Manage_Pattern_Definitions.resx">
+      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Configuration.resx">
       <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
