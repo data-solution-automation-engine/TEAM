@@ -34,7 +34,6 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -45,7 +44,7 @@
             this.richTextBoxInformationMain = new System.Windows.Forms.RichTextBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.dataGridViewLoadPatternDefinition = new System.Windows.Forms.DataGridView();
-            this.button12 = new System.Windows.Forms.Button();
+            this.checkBoxBackupFiles = new System.Windows.Forms.CheckBox();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -69,7 +68,6 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openConfigurationFileToolStripMenuItem,
             this.toolStripMenuItem2,
-            this.openConfigurationDirectoryToolStripMenuItem,
             this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -81,36 +79,29 @@
             this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
             this.openConfigurationFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
             this.openConfigurationFileToolStripMenuItem.Text = "&Open Pattern Definition File";
+            this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(290, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(263, 22);
             this.toolStripMenuItem2.Text = "&Save Pattern Definition File";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
-            // 
-            // openConfigurationDirectoryToolStripMenuItem
-            // 
-            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
-            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Pattern Definition Directory";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(287, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(260, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
             this.exitToolStripMenuItem.Text = "Close Window";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -146,6 +137,7 @@
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox4.TabIndex = 96;
             this.pictureBox4.TabStop = false;
+            this.pictureBox4.Click += new System.EventHandler(this.pictureBox4_Click);
             // 
             // textBoxLoadPatternPath
             // 
@@ -174,18 +166,21 @@
             this.richTextBoxInformationMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxInformationMain.Location = new System.Drawing.Point(6, 17);
             this.richTextBoxInformationMain.Name = "richTextBoxInformationMain";
-            this.richTextBoxInformationMain.Size = new System.Drawing.Size(882, 82);
+            this.richTextBoxInformationMain.ReadOnly = true;
+            this.richTextBoxInformationMain.Size = new System.Drawing.Size(1212, 82);
             this.richTextBoxInformationMain.TabIndex = 29;
+            this.richTextBoxInformationMain.TabStop = false;
             this.richTextBoxInformationMain.Text = "";
+            this.richTextBoxInformationMain.TextChanged += new System.EventHandler(this.richTextBoxInformationMain_TextChanged);
             // 
             // groupBox9
             // 
             this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox9.Controls.Add(this.richTextBoxInformationMain);
-            this.groupBox9.Location = new System.Drawing.Point(342, 679);
+            this.groupBox9.Location = new System.Drawing.Point(12, 679);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(894, 106);
+            this.groupBox9.Size = new System.Drawing.Size(1224, 106);
             this.groupBox9.TabIndex = 101;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Information";
@@ -198,19 +193,22 @@
             this.dataGridViewLoadPatternDefinition.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewLoadPatternDefinition.Location = new System.Drawing.Point(12, 110);
             this.dataGridViewLoadPatternDefinition.Name = "dataGridViewLoadPatternDefinition";
-            this.dataGridViewLoadPatternDefinition.Size = new System.Drawing.Size(1338, 480);
+            this.dataGridViewLoadPatternDefinition.Size = new System.Drawing.Size(1338, 563);
             this.dataGridViewLoadPatternDefinition.TabIndex = 105;
+            this.dataGridViewLoadPatternDefinition.SizeChanged += new System.EventHandler(this.dataGridViewLoadPatternDefinition_SizeChanged);
             // 
-            // button12
+            // checkBoxBackupFiles
             // 
-            this.button12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button12.Location = new System.Drawing.Point(12, 605);
-            this.button12.MinimumSize = new System.Drawing.Size(109, 40);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(109, 40);
-            this.button12.TabIndex = 102;
-            this.button12.Text = "Repopulate Metadata Selection";
-            this.button12.UseVisualStyleBackColor = true;
+            this.checkBoxBackupFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxBackupFiles.AutoSize = true;
+            this.checkBoxBackupFiles.Checked = true;
+            this.checkBoxBackupFiles.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxBackupFiles.Location = new System.Drawing.Point(594, 87);
+            this.checkBoxBackupFiles.Name = "checkBoxBackupFiles";
+            this.checkBoxBackupFiles.Size = new System.Drawing.Size(181, 17);
+            this.checkBoxBackupFiles.TabIndex = 106;
+            this.checkBoxBackupFiles.Text = "Automatically create file backups";
+            this.checkBoxBackupFiles.UseVisualStyleBackColor = true;
             // 
             // FormManagePattern
             // 
@@ -219,9 +217,9 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1362, 797);
+            this.Controls.Add(this.checkBoxBackupFiles);
             this.Controls.Add(this.dataGridViewLoadPatternDefinition);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.button12);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.menuStripMainMenu);
@@ -231,6 +229,8 @@
             this.Name = "FormManagePattern";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the pattern definition settings";
+            this.Load += new System.EventHandler(this.FormManagePattern_Load);
+            this.SizeChanged += new System.EventHandler(this.FormManagePattern_SizeChanged);
             this.menuStripMainMenu.ResumeLayout(false);
             this.menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -251,7 +251,6 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.PictureBox pictureBox4;
@@ -260,7 +259,7 @@
         private System.Windows.Forms.RichTextBox richTextBoxInformationMain;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.DataGridView dataGridViewLoadPatternDefinition;
-        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.CheckBox checkBoxBackupFiles;
     }
 }
 

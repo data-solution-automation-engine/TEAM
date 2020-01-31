@@ -7,11 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEAM", "TEAM\TEAM.csproj", 
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TEAM_Installation_Setup", "TEAM_Installation_Setup\TEAM_Installation_Setup.vdproj", "{1852EE88-A5AB-4241-AF6E-085ADE61C74A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LoadPatterns", "LoadPatterns", "{D53BFF02-6086-460C-A189-72FD90D5ED4D}"
-	ProjectSection(SolutionItems) = preProject
-		LoadPatterns\loadPatternDefinition.json = LoadPatterns\loadPatternDefinition.json
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

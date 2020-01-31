@@ -6,7 +6,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TEAM
 {
@@ -33,18 +35,23 @@ namespace TEAM
             ConfigurationSettings.patternDefinitionList = patternDefinition.DeserializeLoadPatternDefinition();
 
             // Load Pattern definition in memory
-            if ((ConfigurationSettings.patternDefinitionList != null) &&
-                (!ConfigurationSettings.patternDefinitionList.Any()))
+            if ((ConfigurationSettings.patternDefinitionList != null) && (!ConfigurationSettings.patternDefinitionList.Any()))
             {
-                richTextBoxInformationMain.Text= "There are no pattern definitions / types found in the designated load pattern directory. Please verify if there is a " +
-                                                 GlobalParameters.LoadPatternDefinitionFile + " in the " +
-                                                 ConfigurationSettings.LoadPatternListPath +
-                                                 " directory, and if the file contains pattern types.";
+                richTextBoxInformationMain.Text= "There are no pattern definitions / types found in the designated load pattern directory. Please verify if the file "+ GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile + "exits.";
             }
 
+            if (ConfigurationSettings.patternDefinitionList != null) 
+            {
+                populateLoadPatternDefinitionDataGrid();
+                textBoxLoadPatternPath.Text = ConfigurationSettings.LoadPatternListPath;
+            }
+            else
+            {
+                richTextBoxInformationMain.Text = "The pattern definition file could not be loaded. Please verify if the file " + GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile + "exits.";
 
-            populateLoadPatternDefinitionDataGrid();
+            }
 
+            dataGridViewLoadPatternDefinition.Focus();
             _formLoading = false;
         }
 
@@ -151,19 +158,29 @@ namespace TEAM
             }
         }
 
-        class LoadPatternDefinitionFileHandling
+        internal class LoadPatternDefinitionFileHandling
         {
             internal List<LoadPatternDefinition> DeserializeLoadPatternDefinition()
             {
                 List<LoadPatternDefinition> loadPatternDefinitionList = new List<LoadPatternDefinition>();
+
                 // Retrieve the file contents and store in a string
-                if (File.Exists(ConfigurationSettings.LoadPatternListPath + GlobalParameters.LoadPatternDefinitionFile))
+                if (File.Exists(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile))
                 {
-                    var jsonInput = File.ReadAllText(ConfigurationSettings.LoadPatternListPath +
-                                                     GlobalParameters.LoadPatternDefinitionFile);
+                    var jsonInput = File.ReadAllText(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile);
 
                     //Move the (json) string into a List object (a list of the type LoadPattern)
                     loadPatternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(jsonInput);
+
+                    ConfigurationSettings.patternDefinitionList = loadPatternDefinitionList;
+                    ConfigurationSettings.LoadPatternListPath = Path.GetFullPath(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\");
+                }
+                else
+                {
+                    //richTextBoxInformationMain.Text = "The file " + ConfigurationSettings.LoadPatternListPath +
+                    //                                  GlobalParameters.LoadPatternDefinitionFile +
+                    //                                  " could not be found!";
+                    loadPatternDefinitionList = null;
                 }
 
                 // Return the list to the instance
@@ -174,7 +191,7 @@ namespace TEAM
         public void populateLoadPatternDefinitionDataGrid()
         {
             // Create a datatable 
-            DataTable dt = patternDefinitionList.ToDataTable();
+            DataTable dt = ConfigurationSettings.patternDefinitionList.ToDataTable();
 
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "Key";
@@ -270,12 +287,208 @@ namespace TEAM
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
+            try
+            {
+                richTextBoxInformationMain.Clear();
 
+                var chosenFile = ConfigurationSettings.LoadPatternListPath + GlobalParameters.LoadPatternDefinitionFile;
+
+
+                DataTable gridDataTable = (DataTable)_bindingSourceLoadPatternDefinition.DataSource;
+
+                // Make sure the output is sorted
+                gridDataTable.DefaultView.Sort = "[KEY] ASC";
+
+                gridDataTable.TableName = "LoadPatternDefinition";
+
+                JArray outputFileArray = new JArray();
+                foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
+                {
+                    JObject individualRow = JObject.FromObject(new
+                    {
+                        loadPatternKey = singleRow[0].ToString(),
+                        loadPatternType = singleRow[1].ToString(),
+                        LoadPatternSelectionQuery = singleRow[2].ToString(),
+                        loadPatternBaseQuery = singleRow[3].ToString(),
+                        loadPatternAttributeQuery = singleRow[4].ToString(),
+                        loadPatternAdditionalBusinessKeyQuery = singleRow[5].ToString(),
+                        loadPatternNotes = singleRow[6].ToString(),
+                        LoadPatternConnectionKey = singleRow[7].ToString()
+                    });
+                    outputFileArray.Add(individualRow);
+                }
+
+                string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+                // Create a backup file, if enabled
+                if (checkBoxBackupFiles.Checked)
+                {
+                    try
+                    {
+                        var backupFile = new ClassJsonHandling();
+                        var targetFileName = backupFile.BackupJsonFile(GlobalParameters.LoadPatternDefinitionFile, ConfigurationSettings.LoadPatternListPath);
+                        richTextBoxInformationMain.Text="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
+                    }
+                    catch (Exception exception)
+                    {
+                        richTextBoxInformationMain.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " +
+                                                          exception + ".";
+                    }
+                }
+
+                File.WriteAllText(chosenFile, json);
+
+                richTextBoxInformationMain.Text = "The file " + chosenFile + " was updated.\r\n";
+
+                try
+                {
+                    // Quick fix, in the file again to commit changes to memory.
+                    ConfigurationSettings.patternDefinitionList =
+                        JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
+        
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformationMain.AppendText(
+                        "An issue was encountered when regenerating the UI (Tab Pages). The reported error is " + ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
-        private void buttonSaveAsLoadPatternDefinition_Click(object sender, EventArgs e)
-        {
 
+        private void dataGridViewLoadPatternDefinition_SizeChanged(object sender, EventArgs e)
+        {
+            GridAutoLayoutLoadPatternDefinition();
+        }
+
+        private void pictureBox4_Click(object sender, EventArgs e)
+        {
+            var fileBrowserDialog = new FolderBrowserDialog();
+            fileBrowserDialog.SelectedPath = textBoxLoadPatternPath.Text;
+
+            DialogResult result = fileBrowserDialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fileBrowserDialog.SelectedPath))
+            {
+                string[] files = Directory.GetFiles(fileBrowserDialog.SelectedPath);
+
+                int fileCounter = 0;
+                foreach (string file in files)
+                {
+                    if (file.Contains("loadPatternCollection"))
+                    {
+                        fileCounter++;
+                    }
+                }
+
+                string finalPath = "";
+                if (fileBrowserDialog.SelectedPath.EndsWith(@"\"))
+                {
+                    finalPath = fileBrowserDialog.SelectedPath;
+                }
+                else
+                {
+                    finalPath = fileBrowserDialog.SelectedPath + @"\";
+                }
+
+
+                textBoxLoadPatternPath.Text = finalPath;
+
+                if (fileCounter == 0)
+                {
+                    richTextBoxInformationMain.Text =
+                        "The selected directory does not seem to contain a loadPatternCollection.json file. Did you select a correct Load Pattern directory?";
+                }
+                else
+                {
+                    richTextBoxInformationMain.Text =
+                        "The path now points to a directory that contains the loadPatternCollection.json Load Pattern Collection file.";
+                }
+
+            }
+        }
+
+        private DialogResult STAShowDialog(FileDialog dialog)
+        {
+            var state = new DialogState { FileDialog = dialog };
+            var t = new Thread(state.ThreadProcShowDialog);
+            t.SetApartmentState(ApartmentState.STA);
+
+            t.Start();
+            t.Join();
+
+            return state.DialogResult;
+        }
+
+        public class DialogState
+        {
+            public DialogResult DialogResult;
+            public FileDialog FileDialog;
+
+            public void ThreadProcShowDialog()
+            {
+                DialogResult = FileDialog.ShowDialog();
+            }
+        }
+
+        private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var theDialog = new OpenFileDialog
+            {
+                Title = @"Open Load Pattern Definition File",
+                Filter = @"Load Pattern Definition|*.json",
+                InitialDirectory = ConfigurationSettings.LoadPatternListPath
+            };
+
+            var ret = STAShowDialog(theDialog);
+
+            if (ret == DialogResult.OK)
+            {
+                try
+                {
+                    var chosenFile = theDialog.FileName;
+                  
+
+                    //string filePath = Path.GetFullPath(theDialog.FileName);
+
+                    // Save the list to memory
+                    ConfigurationSettings.patternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
+
+                    // ... and populate the data grid
+                    populateLoadPatternDefinitionDataGrid();
+
+                    richTextBoxInformationMain.Text="The file " + chosenFile + " was loaded.\r\n";
+
+                    GridAutoLayoutLoadPatternDefinition();
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformationMain.AppendText("An error has been encountered! The reported error is: " + ex);
+                }
+
+            }
+        }
+
+        private void FormManagePattern_SizeChanged(object sender, EventArgs e)
+        {
+            GridAutoLayoutLoadPatternDefinition();
+        }
+
+        private void FormManagePattern_Load(object sender, EventArgs e)
+        {
+            GridAutoLayoutLoadPatternDefinition();
+        }
+
+        private void richTextBoxInformationMain_TextChanged(object sender, EventArgs e)
+        {
+            // Set the current caret position to the end
+            richTextBoxInformationMain.SelectionStart = richTextBoxInformationMain.Text.Length;
+            // Scroll automatically
+            richTextBoxInformationMain.ScrollToCaret();
         }
     }
 }

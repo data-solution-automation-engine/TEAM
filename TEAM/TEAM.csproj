@@ -241,6 +241,7 @@
     <None Include="Files\sample_TEAM_Attribute_Mapping_v0.json" />
     <None Include="Files\sample_TEAM_Model_Metadata_v0.json" />
     <None Include="Files\sample_TEAM_Table_Mapping_v0.json" />
+    <None Include="LoadPatterns\loadPatternDefinition.json" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>

@@ -2933,7 +2933,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId +".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId +".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -3041,7 +3041,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -8193,7 +8193,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)

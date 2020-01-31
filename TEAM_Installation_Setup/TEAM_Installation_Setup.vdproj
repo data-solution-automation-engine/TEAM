@@ -141,6 +141,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_675E0806559441BA83A9DF9993B8AF37"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7005F4A6881E182ADBF553ACC5313DDB"
         "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
         "MsmSig" = "8:_UNDEFINED"
@@ -201,12 +207,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D64DFACF629D43D9804A97C88AF3862D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D8C0F4D1F9BC161BE5138CC008B86657"
         "OwnerKey" = "8:_2CA91C3E5CDB4111B03879697165DB37"
         "MsmSig" = "8:_UNDEFINED"
@@ -256,7 +256,37 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_FF585492F3F67B226C96564D3D2AC3FF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_F23BA0584DD48CAEFBD00938A35B0168"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D8C0F4D1F9BC161BE5138CC008B86657"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_7005F4A6881E182ADBF553ACC5313DDB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5B951B5D8009D31217A5F9CF7607FBA3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5130FAA382433EEE7EAE20DB6803356E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -269,36 +299,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_CFBC4AF287446E0DE960770DF46D54E5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D8C0F4D1F9BC161BE5138CC008B86657"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FF585492F3F67B226C96564D3D2AC3FF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5130FAA382433EEE7EAE20DB6803356E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F23BA0584DD48CAEFBD00938A35B0168"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5B951B5D8009D31217A5F9CF7607FBA3"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -669,6 +669,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_675E0806559441BA83A9DF9993B8AF37"
+            {
+            "SourcePath" = "8:..\\TEAM\\LoadPatterns\\loadPatternDefinition.json"
+            "TargetName" = "8:loadPatternDefinition.json"
+            "Tag" = "8:"
+            "Folder" = "8:_FCF44A580CE146C59F5D104F9B6982B9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7005F4A6881E182ADBF553ACC5313DDB"
             {
             "AssemblyRegister" = "3:1"
@@ -871,26 +891,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D64DFACF629D43D9804A97C88AF3862D"
-            {
-            "SourcePath" = "8:..\\LoadPatterns\\loadPatternDefinition.json"
-            "TargetName" = "8:loadPatternDefinition.json"
-            "Tag" = "8:"
-            "Folder" = "8:_8BF8931E01554CD88C5C7F87AB4F3DF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D8C0F4D1F9BC161BE5138CC008B86657"
             {
             "AssemblyRegister" = "3:1"
@@ -1053,13 +1053,13 @@
                         {
                         }
                     }
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_8BF8931E01554CD88C5C7F87AB4F3DF1"
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_FCF44A580CE146C59F5D104F9B6982B9"
                     {
                     "Name" = "8:LoadPatterns"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
-                    "Property" = "8:_F92BD730A04549519B70C72BA7BE2C2F"
+                    "Property" = "8:_264178E0CD2C4EA99018178255A386F1"
                         "Folders"
                         {
                         }
