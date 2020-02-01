@@ -90,7 +90,7 @@
             this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.toolStripMenuItem2.Size = new System.Drawing.Size(263, 22);
             this.toolStripMenuItem2.Text = "&Save Pattern Definition File";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripSave_Click);
             // 
             // toolStripSeparator2
             // 
@@ -137,7 +137,7 @@
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox4.TabIndex = 96;
             this.pictureBox4.TabStop = false;
-            this.pictureBox4.Click += new System.EventHandler(this.pictureBox4_Click);
+            this.pictureBox4.Click += new System.EventHandler(this.openFileClick);
             // 
             // textBoxLoadPatternPath
             // 
@@ -147,7 +147,6 @@
             this.textBoxLoadPatternPath.Name = "textBoxLoadPatternPath";
             this.textBoxLoadPatternPath.Size = new System.Drawing.Size(429, 20);
             this.textBoxLoadPatternPath.TabIndex = 93;
-            this.textBoxLoadPatternPath.TextChanged += new System.EventHandler(this.textBoxLoadPatternPath_TextChanged);
             // 
             // label10
             // 

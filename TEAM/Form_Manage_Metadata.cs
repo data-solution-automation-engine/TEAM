@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DataWarehouseAutomation;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8353,6 +8354,292 @@ namespace TEAM
             _generatedScripts.SetTextLogging(results.ToString());
             _generatedScripts.ProgressValue = 100;
             _generatedScripts.Message = "Done";
+        }
+
+        private void ButtonClickExportToJson(object sender, EventArgs e)
+        {
+            // Add the Custom Tab Pages
+            foreach (LoadPatternDefinition pattern in ConfigurationSettings.patternDefinitionList)
+            {
+                if (pattern.LoadPatternType == "Hub")
+                {
+                    GenerateFromPattern(pattern);
+                }
+            }
+        }
+
+        private void GenerateFromPattern(LoadPatternDefinition pattern)
+        {
+            richTextBoxInformation.Clear();
+
+            EventLog eventLog = new EventLog();
+            SqlConnection conn = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            List< string > itemList = new List<string>();
+
+            // Retrieve the items related to the pattern (i.e. all the Hubs, or all the Links) - selectionQuery.            
+            try
+            {
+                itemList = DatabaseHandling.GetItemList(pattern.LoadPatternSelectionQuery, conn);
+            }
+            catch (Exception ex)
+            {
+                var localEvent = new Event
+                {
+                    eventCode = 1,
+                    eventDescription = "The item list could not be retrieved (selectionQuery in PatternDefinition file). The error message is " + ex + "."
+                };
+
+                eventLog.Add(localEvent);
+            }
+
+            // Retrieve the source-to-target mappings (base query)
+            DataTable metadataDataTable = new DataTable();
+            try
+            {
+                var metadataQuery = pattern.LoadPatternBaseQuery;
+                metadataDataTable = GetDataTable(ref conn, metadataQuery);
+            }
+            catch (Exception ex)
+            {
+                var localEvent = new Event
+                {
+                    eventCode = 1,
+                    eventDescription = "The source-to-target mapping list could not be retrieved (baseQuery in PatternDefinition file). The error message is " + ex + "."
+                };
+
+                eventLog.Add(localEvent);
+            }
+
+            // Populate the attribute mappings
+            // Create the column-to-column mapping
+            var columnMetadataQuery = pattern.LoadPatternAttributeQuery;
+            var columnMetadataDataTable = GetDataTable(ref conn, columnMetadataQuery);
+
+            // Populate the additional business key information (i.e. links)
+            var additionalBusinessKeyQuery = pattern.LoadPatternAdditionalBusinessKeyQuery;
+            var additionalBusinessKeyDataTable = GetDataTable(ref conn, additionalBusinessKeyQuery);
+
+            // Loop through the available items, select the right mapping and map the metadata to the DWH automation schema
+            foreach (string item in itemList)
+            {
+                var targetTableName = item;
+                richTextBoxInformation.AppendText(@"Processing generation for " + targetTableName + ".\r\n");
+
+                DataRow[] mappingRows = null;
+                try
+                {
+                    mappingRows = metadataDataTable.Select("[TARGET_NAME] = '" + targetTableName + "'");
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.AppendText(
+                        "There was an error generating the output, this happened when interpreting the source-to-mapping rows. " +
+                        "\r\n\r\nThe query used was:" + pattern.LoadPatternBaseQuery +
+                        ".\r\n\r\nThe error message was:" + ex);
+                }
+
+                // Move the data table to the class instance
+                List<DataObjectMapping> sourceToTargetMappingList = new List<DataObjectMapping>();
+
+                if (mappingRows != null)
+                {
+                    foreach (DataRow row in mappingRows)
+                    {
+
+                        #region Business Key
+
+                        // Creating the Business Key definition, using the available components (see above)
+                        List<BusinessKey> businessKeyList = new List<BusinessKey>();
+                        BusinessKey businessKey =
+                            new BusinessKey
+                            {
+                                businessKeyComponentMapping =
+                                    InterfaceHandling.BusinessKeyComponentMappingList(
+                                        (string) row["SOURCE_BUSINESS_KEY_DEFINITION"],
+                                        (string) row["TARGET_BUSINESS_KEY_DEFINITION"]),
+                                surrogateKey = (string) row["SURROGATE_KEY"]
+                            };
+                        businessKeyList.Add(businessKey);
+
+                        #endregion
+
+                        #region Data Item Mapping (column to column)
+
+                        // Create the column-to-column mapping
+                        List<DataItemMapping> dataItemMappingList = new List<DataItemMapping>();
+                        if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
+                        {
+                            DataRow[] columnRows = columnMetadataDataTable.Select(
+                                "[TARGET_NAME] = '" + targetTableName + "' AND [SOURCE_NAME] = '" +
+                                (string) row["SOURCE_NAME"] + "'");
+
+                            foreach (DataRow column in columnRows)
+                            {
+                                DataItemMapping columnMapping = new DataItemMapping();
+                                DataItem sourceColumn = new DataItem();
+                                DataItem targetColumn = new DataItem();
+
+                                sourceColumn.name = (string) column["SOURCE_ATTRIBUTE_NAME"];
+                                targetColumn.name = (string) column["TARGET_ATTRIBUTE_NAME"];
+
+                                columnMapping.sourceDataItem = sourceColumn;
+                                columnMapping.targetDataItem = targetColumn;
+
+                                dataItemMappingList.Add(columnMapping);
+                            }
+                        }
+
+                        #endregion
+
+                        #region Additional Business Keys
+
+                        if (additionalBusinessKeyDataTable != null && additionalBusinessKeyDataTable.Rows.Count > 0)
+                        {
+                            DataRow[] additionalBusinessKeyRows =
+                                additionalBusinessKeyDataTable.Select("[LINK_NAME] = '" + targetTableName + "'");
+
+                            foreach (DataRow additionalKeyRow in additionalBusinessKeyRows)
+                            {
+                                var hubBusinessKey = new BusinessKey();
+
+                                hubBusinessKey.businessKeyComponentMapping =
+                                    InterfaceHandling.BusinessKeyComponentMappingList(
+                                        (string) additionalKeyRow["HUB_SOURCE_BUSINESS_KEY_DEFINITION"],
+                                        (string) additionalKeyRow["HUB_TARGET_BUSINESS_KEY_DEFINITION"]);
+                                hubBusinessKey.surrogateKey = (string) additionalKeyRow["HUB_TARGET_KEY_NAME_IN_LINK"];
+
+                                businessKeyList.Add(hubBusinessKey); // Adding the Link Business Key
+                            }
+                        }
+
+                        #endregion
+
+
+                        #region Lookup Table
+
+                        // Define a lookup table, in case there is a desire to do key lookups.
+                        var lookupTable = (string) row["TARGET_NAME"];
+
+                        if (ConfigurationSettings.TableNamingLocation == "Prefix")
+                        {
+                            int prefixLocation = lookupTable.IndexOf(ConfigurationSettings.StgTablePrefixValue);
+                            if (prefixLocation != -1)
+                            {
+                                lookupTable = lookupTable
+                                    .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
+                                    .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
+                            }
+                        }
+                        else
+                        {
+                            int prefixLocation = lookupTable.LastIndexOf(ConfigurationSettings.StgTablePrefixValue);
+                            if (prefixLocation != -1)
+                            {
+                                lookupTable = lookupTable
+                                    .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
+                                    .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
+                            }
+                        }
+
+                        #endregion
+
+                        // Add the created Business Key to the source-to-target mapping
+                        var sourceToTargetMapping = new VEDW_DataObjectMapping();
+
+                        var sourceDataObject = new DataWarehouseAutomation.DataObject();
+                        var targetDataObject = new DataWarehouseAutomation.DataObject();
+
+                        sourceDataObject.name = (string) row["SOURCE_NAME"];
+                        targetDataObject.name = (string) row["TARGET_NAME"];
+
+                        //sourceToTargetMapping.sourceDataObject.name = (string)row["SOURCE_NAME"];  // Source table
+                        //sourceToTargetMapping.targetDataObject.name = (string)row["TARGET_NAME"];  // Target table
+
+                        sourceToTargetMapping.sourceDataObject = sourceDataObject;
+                        sourceToTargetMapping.targetDataObject = targetDataObject;
+                        sourceToTargetMapping.enabled = true;
+
+                        sourceToTargetMapping.lookupTable = lookupTable; // Lookup Table
+                        sourceToTargetMapping.targetTableHashKey = (string) row["SURROGATE_KEY"]; // Surrogate Key
+                        sourceToTargetMapping.businessKey = businessKeyList; // Business Key
+                        sourceToTargetMapping.filterCriterion = (string) row["FILTER_CRITERIA"]; // Filter criterion
+
+                        if (dataItemMappingList.Count == 0)
+                        {
+                            dataItemMappingList = null;
+                        }
+
+                        sourceToTargetMapping.dataItemMapping = dataItemMappingList; // Column to column mapping
+
+                        // Add the source-to-target mapping to the mapping list
+                        sourceToTargetMappingList.Add(sourceToTargetMapping);
+                    }
+                }
+
+                // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
+                GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata();
+                vedwMetadata.selectedDataObject = targetTableName;
+
+                // Create an instance of the 'MappingList' class / object model 
+                VEDW_DataObjectMappingList sourceTargetMappingList = new VEDW_DataObjectMappingList();
+                sourceTargetMappingList.dataObjectMappingList = sourceToTargetMappingList;
+
+                sourceTargetMappingList.metadataConfiguration = new MetadataConfiguration();
+                sourceTargetMappingList.generationSpecificMetadata = vedwMetadata;
+
+
+                // Return the result to the user
+                try
+                {
+                    // Check if the metadata needs to be displayed
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(sourceTargetMappingList, Formatting.Indented);
+                        richTextBoxInformation.AppendText(json + "\r\n\r\n");
+
+                        // Spool the output to disk
+                        EventLog fileSaveEventLog = new EventLog();
+                        fileSaveEventLog =
+                            Utility.SaveOutputToDisk(
+                                GlobalParameters.OutputPath + targetTableName + ".json", json);
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBoxInformation.AppendText(
+                            "An error was encountered while generating the JSON metadata. The error message is: " +
+                            ex);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var localEvent = new Event
+                    {
+                        eventCode = 1,
+                        eventDescription = "The template could not be compiled, the error message is " + ex + "."
+                    };
+
+                    eventLog.Add(localEvent);
+                }
+            }
+
+
+            conn.Close();
+            conn.Dispose();
+
+            // Report back to the user
+            int errorCounter = 0;
+            foreach (Event individualEvent in eventLog)
+            {
+                if (individualEvent.eventCode == 1)
+                {
+                    errorCounter++;
+                }
+
+                richTextBoxInformation.AppendText(individualEvent.eventDescription);
+            }
+
+            richTextBoxInformation.AppendText($"\r\n\r\n{errorCounter} errors have been found.\r\n");
+            richTextBoxInformation.AppendText($"Associated scripts have been saved in {GlobalParameters.OutputPath}.\r\n");
         }
     }
 }

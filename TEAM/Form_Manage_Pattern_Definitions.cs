@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Linq;
@@ -31,8 +29,8 @@ namespace TEAM
             this.parentFormMain = parent;
             InitializeComponent();
 
-            var patternDefinition = new LoadPatternDefinitionFileHandling();
-            ConfigurationSettings.patternDefinitionList = patternDefinition.DeserializeLoadPatternDefinition();
+            //var patternDefinition = new LoadPatternDefinition.LoadPatternDefinitionFileHandling();
+            ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition();
 
             // Load Pattern definition in memory
             if ((ConfigurationSettings.patternDefinitionList != null) && (!ConfigurationSettings.patternDefinitionList.Any()))
@@ -57,136 +55,6 @@ namespace TEAM
 
         internal static List<LoadPatternDefinition> patternDefinitionList { get; set; }
 
-        internal class LoadPatternDefinition
-        {
-            public int LoadPatternKey { get; set; }
-            public string LoadPatternType { get; set; }
-            public string LoadPatternSelectionQuery { get; set; }
-            public string LoadPatternBaseQuery { get; set; }
-            public string LoadPatternAttributeQuery { get; set; }
-            public string LoadPatternAdditionalBusinessKeyQuery { get; set; }
-            public string LoadPatternNotes { get; set; }
-            public string LoadPatternConnectionKey { get; set; }
-
-            /// <summary>
-            /// Create a file backup for the configuration file at the provided location and return notice of success or failure as a string.
-            /// /// </summary>
-            internal static string BackupLoadPatternDefinition(string loadPatternDefinitionFilePath)
-            {
-                string returnMessage = "";
-
-                try
-                {
-                    if (File.Exists(loadPatternDefinitionFilePath))
-                    {
-                        var targetFilePathName = loadPatternDefinitionFilePath +
-                                                 string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss"));
-
-                        File.Copy(loadPatternDefinitionFilePath, targetFilePathName);
-                        returnMessage = "A backup was created at: " + targetFilePathName;
-                    }
-                    else
-                    {
-                        returnMessage = "VEDW couldn't locate a configuration file! Can you check the paths and existence of directories?";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    returnMessage = ("An error has occured while creating a file backup. The error message is " + ex);
-                }
-
-                return returnMessage;
-            }
-
-            internal Dictionary<String, String> MatchConnectionKey()
-            {
-                Dictionary<string, string> returnValue = new Dictionary<string, string>();
-
-                if (LoadPatternConnectionKey == "SourceDatabase")
-                {
-                    returnValue.Add(LoadPatternConnectionKey, ConfigurationSettings.ConnectionStringSource);
-                }
-                else if (LoadPatternConnectionKey == "StagingDatabase")
-                {
-                    returnValue.Add(LoadPatternConnectionKey, ConfigurationSettings.ConnectionStringStg);
-                }
-                else if (LoadPatternConnectionKey == "PersistentStagingDatabase")
-                {
-                    returnValue.Add(LoadPatternConnectionKey, ConfigurationSettings.ConnectionStringHstg);
-                }
-                else if (LoadPatternConnectionKey == "IntegrationDatabase")
-                {
-                    returnValue.Add(LoadPatternConnectionKey, ConfigurationSettings.ConnectionStringInt);
-                }
-                else if (LoadPatternConnectionKey == "PresentationDatabase")
-                {
-                    returnValue.Add(LoadPatternConnectionKey, ConfigurationSettings.ConnectionStringPres);
-                }
-
-                return returnValue;
-            }
-
-
-
-            /// <summary>
-            /// The method that backs-up and saves a specific pattern (based on its path) with whatever is passed as contents.
-            /// </summary>
-            /// <param name="loadPatternFilePath"></param>
-            /// <param name="fileContent"></param>
-            /// <returns></returns>
-            internal static string SaveLoadPattern(string loadPatternDefinitionFilePath, string fileContent)
-            {
-                string returnMessage = "";
-
-                try
-                {
-                    using (var outfile = new StreamWriter(loadPatternDefinitionFilePath))
-                    {
-                        outfile.Write(fileContent);
-                        outfile.Close();
-                    }
-
-                    returnMessage = "The file has been updated.";
-                }
-                catch (Exception ex)
-                {
-                    returnMessage = ("An error has occured while creating saving the file. The error message is " + ex);
-                }
-
-
-                return returnMessage;
-            }
-        }
-
-        internal class LoadPatternDefinitionFileHandling
-        {
-            internal List<LoadPatternDefinition> DeserializeLoadPatternDefinition()
-            {
-                List<LoadPatternDefinition> loadPatternDefinitionList = new List<LoadPatternDefinition>();
-
-                // Retrieve the file contents and store in a string
-                if (File.Exists(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile))
-                {
-                    var jsonInput = File.ReadAllText(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile);
-
-                    //Move the (json) string into a List object (a list of the type LoadPattern)
-                    loadPatternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(jsonInput);
-
-                    ConfigurationSettings.patternDefinitionList = loadPatternDefinitionList;
-                    ConfigurationSettings.LoadPatternListPath = Path.GetFullPath(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\");
-                }
-                else
-                {
-                    //richTextBoxInformationMain.Text = "The file " + ConfigurationSettings.LoadPatternListPath +
-                    //                                  GlobalParameters.LoadPatternDefinitionFile +
-                    //                                  " could not be found!";
-                    loadPatternDefinitionList = null;
-                }
-
-                // Return the list to the instance
-                return loadPatternDefinitionList;
-            }
-        }
 
         public void populateLoadPatternDefinitionDataGrid()
         {
@@ -280,12 +148,8 @@ namespace TEAM
             Close();
         }
 
-        private void textBoxLoadPatternPath_TextChanged(object sender, EventArgs e)
-        {
 
-        }
-
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        private void toolStripSave_Click(object sender, EventArgs e)
         {
             try
             {
@@ -359,13 +223,12 @@ namespace TEAM
             }
         }
 
-
         private void dataGridViewLoadPatternDefinition_SizeChanged(object sender, EventArgs e)
         {
             GridAutoLayoutLoadPatternDefinition();
         }
 
-        private void pictureBox4_Click(object sender, EventArgs e)
+        private void openFileClick(object sender, EventArgs e)
         {
             var fileBrowserDialog = new FolderBrowserDialog();
             fileBrowserDialog.SelectedPath = textBoxLoadPatternPath.Text;

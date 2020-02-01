@@ -138,7 +138,7 @@ namespace TEAM
 
             // File paths
             internal static string LoadPatternListPath { get; set; } = Application.StartupPath + @"\LoadPatterns\";
-            public static List<FormManagePattern.LoadPatternDefinition> patternDefinitionList { get; set; }
+            public static List<LoadPatternDefinition> patternDefinitionList { get; set; }
         }
 
         /// <summary>
