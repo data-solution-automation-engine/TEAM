@@ -9,24 +9,35 @@ using System.Threading.Tasks;
 
 namespace TEAM
 {
-    public class EventLog : List<Event> { }
+    internal class EventLog : List<Event> { }
 
-    enum EventTypes
+    internal enum EventTypes
     {
         Information = 0,
         Error = 1,
         Warning = 2
     }
 
-    public class Event
+    internal class Event
     {
-        public int eventCode { get; set; }
-        public string eventDescription { get; set; }
+        internal int eventCode { get; set; }
+        internal string eventDescription { get; set; }
+
+        internal static Event CreateNewEvent(EventTypes eventType, string eventDescription)
+        {
+            var localEvent = new Event
+            {
+                eventCode = (int)eventType,
+                eventDescription = eventDescription
+            };
+
+            return localEvent;
+        }
     }
 
     public class Utility
     {
-        public static EventLog SaveOutputToDisk(string targetFile, string textContent)
+        internal static EventLog SaveOutputToDisk(string targetFile, string textContent)
         {
             EventLog eventLog = new EventLog();
 

@@ -30,99 +30,80 @@ namespace TEAM
             try
             {
                 ClassEnvironmentConfiguration.InitialiseRootPath();
-                richTextBoxInformation.AppendText("... The TEAM directories are available and initialised.\r\n");
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The TEAM directories are available and initialised.\r\n"));
             }
             catch
             {
-                var localEvent = new Event
-                {
-                    eventCode = (int)EventTypes.Error,
-                    eventDescription = "The directories required to operate TEAM are not available and can not be created. Do you have administrative priviliges in the installation directory to create these additional directories?"
-                };
-
-                eventLog.Add(localEvent);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative priviliges in the installation directory to create these additional directories?"));
             }
 
             // Set the root path, to be able to locate the customisable configuration file
             try
             {
                 ClassEnvironmentConfiguration.LoadRootPathFile();
-                richTextBoxInformation.AppendText("... The core configuration file has been loaded.\r\n");
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The core configuration file has been loaded.\r\n"));
             }
             catch 
             {
-                var localEvent = new Event
-                {
-                    eventCode = (int)EventTypes.Error,
-                    eventDescription = "The core configuration file could not be loaded. Is there a Configuration directory in the TEAM installation location?"
-                };
-
-                eventLog.Add(localEvent);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The core configuration file could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
             }
 
             // Make sure the configuration file is in memory
             try
             {
                 ClassEnvironmentConfiguration.InitialiseConfigurationPath();
-                richTextBoxInformation.AppendText("... The user configuration paths are available.\r\n");
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration paths are available.\r\n"));
             }
             catch
             {
-                var localEvent = new Event
-                {
-                    eventCode = (int)EventTypes.Error,
-                    eventDescription = "An issue was encountered creating or detecting the configuration paths."
-                };
-
-                eventLog.Add(localEvent);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered creating or detecting the configuration paths."));
             }
 
             // Load the available configuration file
             try
             {
-                ClassEnvironmentConfiguration.LoadConfigurationFile(
-                    GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' +
-                    GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-
-                richTextBoxInformation.AppendText("... The user configuration settings (file) have been loaded.\r\n");
+                ClassEnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration settings (file) have been loaded.\r\n"));
             }
             catch
             {
-                var localEvent = new Event
-                {
-                    eventCode = (int)EventTypes.Error,
-                    eventDescription = "An issue was encountered loading the user configuration file."
-                };
-
-                eventLog.Add(localEvent);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the user configuration file.")); ;
             }
 
             // Load the pattern definition file
             try
             {
                 ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition();
-                richTextBoxInformation.AppendText("... The Pattern Definition file was loaded succesfully.\r\n");
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The Pattern Definition file was loaded successfully.\r\n"));
             }
             catch 
             {
-                var localEvent = new Event
-                {
-                    eventCode = (int)EventTypes.Error,
-                    eventDescription = "An issue was encountered loading the pattern definition file."
-                };
-
-                eventLog.Add(localEvent);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
             }
 
 
-            //Startup information
-            richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
-            richTextBoxInformation.AppendText("Welcome to TEAM version "+versionNumberForTeamApplication+"\r\n\r\n");
-            //richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
+            // Report the events (including errors) back to the user
+            int errorCounter = 0;
+            foreach (Event individualEvent in eventLog)
+            {
+                if (individualEvent.eventCode == (int)EventTypes.Error)
+                {
+                    errorCounter++;
+                }
 
-            labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
+                richTextBoxInformation.AppendText(individualEvent.eventDescription);
+            }
+
+            richTextBoxInformation.AppendText($"\r\n{errorCounter} errors have been found at startup.\r\n\r\n");
+
 
             TestConnections();
+
+            //Startup information
+            richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
+            richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + "\r\n\r\n");
+
+            labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
         }
 
         public sealed override string Text
