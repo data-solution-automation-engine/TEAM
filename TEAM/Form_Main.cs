@@ -29,7 +29,7 @@ namespace TEAM
             // Make sure the application and custom location directories exist
             try
             {
-                ClassEnvironmentConfiguration.InitialiseRootPath();
+                EnvironmentConfiguration.InitialiseRootPath();
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The TEAM directories are available and initialised.\r\n"));
             }
             catch
@@ -40,7 +40,7 @@ namespace TEAM
             // Set the root path, to be able to locate the customisable configuration file
             try
             {
-                ClassEnvironmentConfiguration.LoadRootPathFile();
+                EnvironmentConfiguration.LoadRootPathFile();
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The core configuration file has been loaded.\r\n"));
             }
             catch 
@@ -51,7 +51,7 @@ namespace TEAM
             // Make sure the configuration file is in memory
             try
             {
-                ClassEnvironmentConfiguration.InitialiseConfigurationPath();
+                EnvironmentConfiguration.InitialiseConfigurationPath();
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration paths are available.\r\n"));
             }
             catch
@@ -62,7 +62,7 @@ namespace TEAM
             // Load the available configuration file
             try
             {
-                ClassEnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                EnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration settings (file) have been loaded.\r\n"));
             }
             catch
@@ -94,14 +94,14 @@ namespace TEAM
                 richTextBoxInformation.AppendText(individualEvent.eventDescription);
             }
 
-            richTextBoxInformation.AppendText($"\r\n{errorCounter} errors have been found at startup.\r\n\r\n");
+            richTextBoxInformation.AppendText($"\r\n{errorCounter} error(s) have been found at startup.\r\n\r\n");
 
 
             TestConnections();
 
             //Startup information
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
-            richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + "\r\n\r\n");
+            richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
 
             labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
         }

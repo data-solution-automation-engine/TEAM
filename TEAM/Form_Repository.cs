@@ -742,7 +742,7 @@ namespace TEAM
         {
             if (checkBoxConfigurationSettings.Checked)
             {
-                ClassEnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
+                EnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
 
                 // Shared values (same for all samples)
                 //var metadataRepositoryType = "SQLServer";
@@ -860,7 +860,7 @@ namespace TEAM
                 ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
                 ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
 
-                ClassEnvironmentConfiguration.SaveConfigurationFile();
+                EnvironmentConfiguration.SaveConfigurationFile();
             }
         }
 

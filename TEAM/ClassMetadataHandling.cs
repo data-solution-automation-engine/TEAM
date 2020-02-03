@@ -18,6 +18,7 @@ namespace TEAM
             CoreBusinessConcept,
             NaturalBusinessRelationship,
             NaturalBusinessRelationshipContext,
+            NaturalBusinessRelationshipContextDrivingKey,
             StagingArea,
             PersistentStagingArea,
             Derived,
@@ -91,7 +92,7 @@ namespace TEAM
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        internal static string GetTableType(string tableName)
+        internal static string GetTableType(string tableName, string additionalInformation)
         {
             string localType ="";
 
@@ -110,8 +111,11 @@ namespace TEAM
                 case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue):
                     localType = TableTypes.NaturalBusinessRelationship.ToString();
                     break;
-                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue):
+                case "Prefix" when (tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation==""):
                     localType = TableTypes.NaturalBusinessRelationshipContext.ToString();
+                    break;
+                case "Prefix" when (tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation != ""):
+                    localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey.ToString();
                     break;
                 case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.StgTablePrefixValue):
                     localType = TableTypes.StagingArea.ToString();
@@ -138,8 +142,11 @@ namespace TEAM
                 case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue):
                     localType = TableTypes.NaturalBusinessRelationship.ToString();
                     break;
-                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue):
+                case "Suffix" when (tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation == ""):
                     localType = TableTypes.NaturalBusinessRelationshipContext.ToString();
+                    break;
+                case "Suffix" when (tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation != ""):
+                    localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey.ToString();
                     break;
                 case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.StgTablePrefixValue):
                     localType = TableTypes.StagingArea.ToString();
@@ -211,8 +218,8 @@ namespace TEAM
         {
             // This is used to evaluate the correct connection for the generated ETL processes.
 
-            string evaluatedSource = GetTableType(sourceMapping);
-            string evaluatedTarget = GetTableType(targetMapping);
+            string evaluatedSource = GetTableType(sourceMapping, "");
+            string evaluatedTarget = GetTableType(targetMapping, "");
 
             string loadVector = "";
 

@@ -23,12 +23,12 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                    var newEnvironmentConfiguration = new EnvironmentConfiguration();
                     newEnvironmentConfiguration.CreateDummyValidationConfiguration(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                ClassEnvironmentConfiguration.LoadValidationFile(validationFile);
+                EnvironmentConfiguration.LoadValidationFile(validationFile);
 
                 richTextBoxInformation.Text += "The validation file " + validationFile + " has been loaded.";
 
@@ -191,7 +191,7 @@ namespace TEAM
                     var chosenFile = theDialog.FileName;
                     
                     // Load from disk into memory
-                    ClassEnvironmentConfiguration.LoadValidationFile(chosenFile);
+                    EnvironmentConfiguration.LoadValidationFile(chosenFile);
 
                     // Update values on form
                     LocalInitialiseValidationSettings();
@@ -317,7 +317,7 @@ namespace TEAM
 
 
                 // Write to disk
-                ClassEnvironmentConfiguration.SaveValidationFile();
+                EnvironmentConfiguration.SaveValidationFile();
 
                 richTextBoxInformation.Text = "The values have been successfully saved.";
             }

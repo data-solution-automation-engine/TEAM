@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAlert));
-            this.labelMessage = new System.Windows.Forms.Label();
+            this.labelProgressMessage = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonClose = new System.Windows.Forms.Button();
@@ -37,15 +37,15 @@
             this.buttonShowLog = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // labelMessage
+            // labelProgressMessage
             // 
-            this.labelMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelMessage.AutoSize = true;
-            this.labelMessage.Location = new System.Drawing.Point(9, 456);
-            this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(48, 13);
-            this.labelMessage.TabIndex = 0;
-            this.labelMessage.Text = "Progress";
+            this.labelProgressMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelProgressMessage.AutoSize = true;
+            this.labelProgressMessage.Location = new System.Drawing.Point(9, 456);
+            this.labelProgressMessage.Name = "labelProgressMessage";
+            this.labelProgressMessage.Size = new System.Drawing.Size(48, 13);
+            this.labelProgressMessage.TabIndex = 0;
+            this.labelProgressMessage.Text = "Progress";
             // 
             // progressBar1
             // 
@@ -113,7 +113,7 @@
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.labelMessage);
+            this.Controls.Add(this.labelProgressMessage);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormAlert";
             this.Text = "Processing the metadata";
@@ -124,7 +124,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label labelMessage;
+        private System.Windows.Forms.Label labelProgressMessage;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonClose;

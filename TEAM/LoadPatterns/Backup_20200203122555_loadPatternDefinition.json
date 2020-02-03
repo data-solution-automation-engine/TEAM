@@ -21,7 +21,7 @@
   },
   {
     "loadPatternKey": "3",
-    "loadPatternType": "CoreBusinessConcept",
+    "loadPatternType": "Hub",
     "LoadPatternSelectionQuery": "SELECT\r\n  DISTINCT [TARGET_NAME]\r\nFROM [interface].[INTERFACE_SOURCE_HUB_XREF]\r\nORDER BY [TARGET_NAME]",
     "loadPatternBaseQuery": "SELECT \r\n  [SOURCE_NAME]\r\n ,[SOURCE_BUSINESS_KEY_DEFINITION]\r\n ,[TARGET_NAME]\r\n ,[TARGET_BUSINESS_KEY_DEFINITION]\r\n ,[FILTER_CRITERIA]\r\n ,[SURROGATE_KEY]\r\nFROM [interface].[INTERFACE_SOURCE_HUB_XREF]",
     "loadPatternAttributeQuery": "",
@@ -31,7 +31,7 @@
   },
   {
     "loadPatternKey": "4",
-    "loadPatternType": "NaturalBusinessRelationship",
+    "loadPatternType": "Link",
     "LoadPatternSelectionQuery": "SELECT\r\n  DISTINCT [TARGET_NAME]\r\nFROM [interface].[INTERFACE_SOURCE_LINK_XREF]\r\nORDER BY [TARGET_NAME]",
     "loadPatternBaseQuery": "SELECT \r\n  [SOURCE_NAME]\r\n ,[SOURCE_BUSINESS_KEY_DEFINITION]\r\n ,[TARGET_NAME]\r\n ,[TARGET_BUSINESS_KEY_DEFINITION]\r\n ,[FILTER_CRITERIA]\r\n ,[SURROGATE_KEY]\r\nFROM [interface].[INTERFACE_SOURCE_LINK_XREF]",
     "loadPatternAttributeQuery": "SELECT \r\n  [SOURCE_SCHEMA_NAME]\r\n ,[SOURCE_NAME]\r\n ,[TARGET_SCHEMA_NAME]\r\n ,[TARGET_NAME]\r\n ,[SOURCE_ATTRIBUTE_NAME]\r\n ,[TARGET_ATTRIBUTE_NAME]\r\nFROM [interface].[INTERFACE_SOURCE_LINK_ATTRIBUTE_XREF]",
@@ -41,7 +41,7 @@
   },
   {
     "loadPatternKey": "5",
-    "loadPatternType": "Context",
+    "loadPatternType": "Satellite",
     "LoadPatternSelectionQuery": "SELECT\r\n  DISTINCT [TARGET_NAME]\r\nFROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]\r\nWHERE [TARGET_TYPE]='Normal'\r\nORDER BY [TARGET_NAME]",
     "loadPatternBaseQuery": "SELECT \r\n  [SOURCE_NAME]\r\n ,[SOURCE_BUSINESS_KEY_DEFINITION]\r\n ,[TARGET_NAME]\r\n ,[TARGET_BUSINESS_KEY_DEFINITION]\r\n ,[FILTER_CRITERIA]\r\n ,[SURROGATE_KEY]\r\nFROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF] \r\nWHERE [TARGET_TYPE]='Normal'",
     "loadPatternAttributeQuery": "SELECT\r\n   [SOURCE_SCHEMA_NAME]\r\n  ,[SOURCE_NAME]\r\n  ,[TARGET_SCHEMA_NAME]\r\n  ,[TARGET_NAME]\r\n  ,[SOURCE_ATTRIBUTE_NAME]\r\n  ,[TARGET_ATTRIBUTE_NAME]\r\n  ,[MULTI_ACTIVE_KEY_INDICATOR]\r\n FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]",
@@ -51,7 +51,7 @@
   },
   {
     "loadPatternKey": "6",
-    "loadPatternType": "NaturalBusinessRelationshipContext",
+    "loadPatternType": "LinkSatellite",
     "LoadPatternSelectionQuery": "SELECT\r\n  DISTINCT [TARGET_NAME]\r\nFROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF] xref\r\nWHERE [TARGET_TYPE]='Link Satellite'\r\nAND NOT EXISTS\r\n\t(SELECT 1 \r\n\t FROM [interface].[INTERFACE_DRIVING_KEY] dk\r\n\t WHERE xref.[TARGET_NAME] = dk.[SATELLITE_NAME])\r\nORDER BY [TARGET_NAME]",
     "loadPatternBaseQuery": "SELECT \r\n  [SOURCE_NAME]\r\n ,[SOURCE_BUSINESS_KEY_DEFINITION]\r\n ,[TARGET_NAME]\r\n ,[TARGET_BUSINESS_KEY_DEFINITION]\r\n ,[FILTER_CRITERIA]\r\n ,[SURROGATE_KEY]\r\nFROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]",
     "loadPatternAttributeQuery": "SELECT\r\n   [SOURCE_SCHEMA_NAME]\r\n  ,[SOURCE_NAME]\r\n  ,[TARGET_SCHEMA_NAME]\r\n  ,[TARGET_NAME]\r\n  ,[SOURCE_ATTRIBUTE_NAME]\r\n  ,[TARGET_ATTRIBUTE_NAME]\r\n  ,[MULTI_ACTIVE_KEY_INDICATOR]\r\n FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]",
@@ -61,7 +61,7 @@
   },
   {
     "loadPatternKey": "7",
-    "loadPatternType": "NaturalBusinessRelationshipContextDrivingKey",
+    "loadPatternType": "LinkSatelliteDrivingKey",
     "LoadPatternSelectionQuery": "SELECT\r\n  [SATELLITE_NAME] AS [TARGET_NAME]\r\nFROM interface.INTERFACE_DRIVING_KEY\r\nORDER BY [SATELLITE_NAME]",
     "loadPatternBaseQuery": "SELECT \r\n  [SOURCE_NAME]\r\n ,[SOURCE_BUSINESS_KEY_DEFINITION]\r\n ,[TARGET_NAME]\r\n ,[TARGET_BUSINESS_KEY_DEFINITION]\r\n ,[FILTER_CRITERIA]\r\n ,[SURROGATE_KEY]\r\nFROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]",
     "loadPatternAttributeQuery": "",

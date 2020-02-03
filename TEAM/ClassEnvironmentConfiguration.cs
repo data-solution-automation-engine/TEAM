@@ -9,7 +9,7 @@ namespace TEAM
     /// <summary>
     ///   The configuration information used to drive variables and make the various configuration settings available in the application
     /// </summary>
-    internal class ClassEnvironmentConfiguration
+    internal class EnvironmentConfiguration
     {
         /// <summary>
         ///    Method to create a new configuration file with default values at the default location
@@ -319,7 +319,7 @@ namespace TEAM
                                 FormBase.GlobalParameters.ConfigfileName + '_' +
                                 FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension)) return;
-                var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
                     FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' +
                     FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
@@ -339,7 +339,7 @@ namespace TEAM
                                 FormBase.GlobalParameters.ValidationFileName + '_' +
                                 FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension)) return;
-                var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
                     FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName +
                     '_' + FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);

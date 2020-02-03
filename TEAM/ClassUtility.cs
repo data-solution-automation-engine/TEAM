@@ -37,12 +37,10 @@ namespace TEAM
 
     public class Utility
     {
-        internal static EventLog SaveOutputToDisk(string targetFile, string textContent)
+        internal static Event SaveOutputToDisk(string targetFile, string textContent)
         {
-            EventLog eventLog = new EventLog();
-
+            Event localEvent = new Event();
             try
-
             {
                 //Output to file
                 using (var outfile = new StreamWriter(targetFile))
@@ -50,20 +48,15 @@ namespace TEAM
                     outfile.Write(textContent);
                     outfile.Close();
                 }
+
+                localEvent = Event.CreateNewEvent(EventTypes.Information, "The file was succesfully saved to disk.\r\n");
             }
             catch (Exception ex)
             {
-                var localEvent = new Event
-                {
-                    eventCode = 1,
-                    eventDescription =
-                        @"There was an issue saving the output to disk. The message is: " + ex
-                };
-
-                eventLog.Add(localEvent);
+                localEvent = Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n");
             }
 
-            return eventLog;
+            return localEvent;
         }
     }
 

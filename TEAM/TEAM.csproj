@@ -92,7 +92,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DataWarehouseAutomation">
-      <HintPath>..\..\Data_Warehouse_Automation_Metadata_Interface\ClassLibrary\DataWarehouseAutomation\DataWarehouseAutomation\bin\Debug\netstandard2.0\DataWarehouseAutomation.dll</HintPath>
+      <HintPath>Libraries\DataWarehouseAutomation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=13.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

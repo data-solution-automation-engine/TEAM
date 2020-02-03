@@ -20,6 +20,7 @@ namespace TEAM
         FormAlert _alert;
         FormAlert _alertValidation;
         FormAlert _generatedScripts;
+        FormAlert _generatedJsonInterface;
 
         //Getting the DataTable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
@@ -136,12 +137,12 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                    var newEnvironmentConfiguration = new EnvironmentConfiguration();
                     newEnvironmentConfiguration.CreateDummyValidationConfiguration(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                ClassEnvironmentConfiguration.LoadValidationFile(validationFile);
+                EnvironmentConfiguration.LoadValidationFile(validationFile);
 
                 richTextBoxInformation.Text += "\r\nThe validation file " + validationFile + " has been loaded.";
             }
@@ -179,14 +180,14 @@ namespace TEAM
                 // Retrieve the specific cell value for the hover-over
                 cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
-                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
+                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString(),"");
             }
             // Assert table type for the Target column
             else if ((e.ColumnIndex == dataGridViewTableMetadata.Columns[3].Index && e.Value != null))
             {
                 cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
-                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString());
+                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
             }
             else
             {
@@ -3172,10 +3173,10 @@ namespace TEAM
                     TRANSFORMATION_RULE = (string)row["TRANSFORMATION_RULE"];
 
                 var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
-                var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
+                var sourceType = ClassMetadataHandling.GetTableType(sourceTable, "");
 
                 var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
-                var targetType = ClassMetadataHandling.GetTableType(targetTable);
+                var targetType = ClassMetadataHandling.GetTableType(targetTable, "");
 
                 createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_TABLE_TYPE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' ,N'" + SOURCE_COLUMN + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
             }
@@ -3243,10 +3244,10 @@ namespace TEAM
                     PROCESS_INDICATOR = (string)row["PROCESS_INDICATOR"];
 
                 var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
-                var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
+                var sourceType = ClassMetadataHandling.GetTableType(sourceTable,"");
 
                 var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
-                var targetType = ClassMetadataHandling.GetTableType(targetTable);
+                var targetType = ClassMetadataHandling.GetTableType(targetTable, "");
 
                 createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
             }
@@ -6342,7 +6343,7 @@ namespace TEAM
                 // Saving the interfaces to Json
                 if (checkBoxSaveInterfaceToJson.Checked)
                 {
-                    _alert.SetTextLogging("\r\nSaving interface output to disk.\r\n");
+                    _alert.SetTextLogging("\r\nSaving TEAM metadata to disk.\r\n");
 
                     // Business Key Component
                     try
@@ -7598,25 +7599,30 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void exportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        public void ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            richTextBoxInformation.Clear();
+
             //Check if any cells were clicked / selected
-            Int32 selectedCellCount = dataGridViewTableMetadata.SelectedCells.Count;
-            
-            if (selectedCellCount > 0)
+            Int32 selectedRow = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            List<string> selectionFilter = new List<string>();            
+            selectionFilter.Add(dataGridViewTableMetadata.Rows[selectedRow].Cells[3].Value.ToString());
+
+            string additionalInfoForDrivingKey = dataGridViewTableMetadata.Rows[selectedRow].Cells[5].Value.ToString();
+
+            List<LoadPatternDefinition> patternlist = new List<LoadPatternDefinition>();
+            var tableType = ClassMetadataHandling.GetTableType(dataGridViewTableMetadata.Rows[selectedRow].Cells[3].Value.ToString(), additionalInfoForDrivingKey);
+
+            foreach (LoadPatternDefinition pattern in ConfigurationSettings.patternDefinitionList)
             {
-                //For every cell, get the row and the rest of the row values
-                for (int i = 0; i < selectedCellCount; i++)
+                if (pattern.LoadPatternType==tableType)
                 {
-                    var fullRow = dataGridViewTableMetadata.SelectedCells[i].OwningRow;
-
-                    var sourceTableName = fullRow.Cells[2].Value.ToString();
-                    var targetTableName = fullRow.Cells[3].Value.ToString();
-                    var businessKeyDefinition = fullRow.Cells[4].Value.ToString();
-
-                    CreateJsonSourceToTargetMapping(sourceTableName, targetTableName, businessKeyDefinition);
+                    patternlist.Add(pattern);
                 }
             }
+
+            GenerateFromPattern(patternlist, selectionFilter);
         }
 
         /// <summary>
@@ -7783,9 +7789,9 @@ namespace TEAM
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
                     var validationAttribute = row.Cells[areaAttributeColumnIndex].Value.ToString();
 
-                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject) != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject));
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject,""));
                         string connectionValue = connectionInformation.FirstOrDefault().Value;
 
                         objectValidated = ClassMetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
@@ -7794,7 +7800,7 @@ namespace TEAM
                     {
                         objectValidated = "";
                         // Exclude a lookup to the source
-                        if (ClassMetadataHandling.GetTableType(validationObject) != ClassMetadataHandling.TableTypes.Source.ToString())
+                        if (ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString())
                         {
                             objectValidated = ClassMetadataValidation.ValidateAttributeExistenceVirtual(validationObject, validationAttribute, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
@@ -7865,9 +7871,9 @@ namespace TEAM
                 {
                     string objectValidated;
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
-                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject) != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject));
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject, ""));
                         string connectionValue = connectionInformation.FirstOrDefault().Value;
 
                         try
@@ -7885,7 +7891,7 @@ namespace TEAM
                     {
                         objectValidated = "";
                         // Exclude a lookup to the source
-                        if (ClassMetadataHandling.GetTableType(validationObject) != ClassMetadataHandling.TableTypes.Source.ToString())
+                        if (ClassMetadataHandling.GetTableType(validationObject,"") != ClassMetadataHandling.TableTypes.Source.ToString())
                         {
                             objectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(validationObject,
                                 (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
@@ -8070,9 +8076,9 @@ namespace TEAM
                     Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString());
 
                     //row.Cells[areaColumnIndex].Value.ToString();
-                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject.Item1) != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject.Item1,"") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject.Item1));
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject.Item1,""));
                         string connectionValue = connectionInformation.FirstOrDefault().Value;
 
                         try
@@ -8087,14 +8093,14 @@ namespace TEAM
                     else if (evaluationMode == "virtual")
                     {
                         // Exclude a lookup to the source
-                        if (ClassMetadataHandling.GetTableType(validationObject.Item1) != ClassMetadataHandling.TableTypes.Source.ToString())
+                        if (ClassMetadataHandling.GetTableType(validationObject.Item1,"") != ClassMetadataHandling.TableTypes.Source.ToString())
                         { 
                             objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
                     else
                     {
-                        if (ClassMetadataHandling.GetTableType(validationObject.Item1) !=
+                        if (ClassMetadataHandling.GetTableType(validationObject.Item1,"") !=
                             ClassMetadataHandling.TableTypes.Source.ToString())
                         {
                             _alertValidation.SetTextLogging("     The validation approach (physical/virtual) could not be asserted.\r\n");
@@ -8358,288 +8364,295 @@ namespace TEAM
 
         private void ButtonClickExportToJson(object sender, EventArgs e)
         {
-            // Add the Custom Tab Pages
-            foreach (LoadPatternDefinition pattern in ConfigurationSettings.patternDefinitionList)
-            {
-                if (pattern.LoadPatternType == "Hub")
-                {
-                    GenerateFromPattern(pattern);
-                }
-            }
+            richTextBoxInformation.Clear();
+
+            List<string> dummyFilter = new List<string>();
+            GenerateFromPattern(ConfigurationSettings.patternDefinitionList, dummyFilter);
         }
 
-        private void GenerateFromPattern(LoadPatternDefinition pattern)
+        /// <summary>
+        /// Creates a Json schema based on the Data Warehouse Automation interface definition using a pattern and filter as input. 
+        /// </summary>
+        /// <param name="LoadPatternDefinitionList"></param>
+        /// <param name="filter"></param>
+        private void GenerateFromPattern(List<LoadPatternDefinition> LoadPatternDefinitionList, List<string> filter)
         {
-            richTextBoxInformation.Clear();
+            // Set up the form in case the show Json output checkbox has been selected
+            if (checkBoxShowJsonOutput.Checked)
+            {
+                _generatedJsonInterface = new FormAlert();
+                _generatedJsonInterface.SetFormName("Exporting the metadata");
+                _generatedJsonInterface.ShowProgressBar(false);
+                _generatedJsonInterface.ShowCancelButton(false);
+                _generatedJsonInterface.ShowLogButton(false);
+                _generatedJsonInterface.ShowProgressLabel(false);
+                _generatedJsonInterface.Show();
+            }
 
             EventLog eventLog = new EventLog();
             SqlConnection conn = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-            List< string > itemList = new List<string>();
 
-            // Retrieve the items related to the pattern (i.e. all the Hubs, or all the Links) - selectionQuery.            
-            try
+
+            foreach (LoadPatternDefinition pattern in LoadPatternDefinitionList)
             {
-                itemList = DatabaseHandling.GetItemList(pattern.LoadPatternSelectionQuery, conn);
-            }
-            catch (Exception ex)
-            {
-                var localEvent = new Event
-                {
-                    eventCode = 1,
-                    eventDescription = "The item list could not be retrieved (selectionQuery in PatternDefinition file). The error message is " + ex + "."
-                };
+                List<string> itemList = new List<string>();
 
-                eventLog.Add(localEvent);
-            }
-
-            // Retrieve the source-to-target mappings (base query)
-            DataTable metadataDataTable = new DataTable();
-            try
-            {
-                var metadataQuery = pattern.LoadPatternBaseQuery;
-                metadataDataTable = GetDataTable(ref conn, metadataQuery);
-            }
-            catch (Exception ex)
-            {
-                var localEvent = new Event
-                {
-                    eventCode = 1,
-                    eventDescription = "The source-to-target mapping list could not be retrieved (baseQuery in PatternDefinition file). The error message is " + ex + "."
-                };
-
-                eventLog.Add(localEvent);
-            }
-
-            // Populate the attribute mappings
-            // Create the column-to-column mapping
-            var columnMetadataQuery = pattern.LoadPatternAttributeQuery;
-            var columnMetadataDataTable = GetDataTable(ref conn, columnMetadataQuery);
-
-            // Populate the additional business key information (i.e. links)
-            var additionalBusinessKeyQuery = pattern.LoadPatternAdditionalBusinessKeyQuery;
-            var additionalBusinessKeyDataTable = GetDataTable(ref conn, additionalBusinessKeyQuery);
-
-            // Loop through the available items, select the right mapping and map the metadata to the DWH automation schema
-            foreach (string item in itemList)
-            {
-                var targetTableName = item;
-                richTextBoxInformation.AppendText(@"Processing generation for " + targetTableName + ".\r\n");
-
-                DataRow[] mappingRows = null;
+                // Retrieve the items related to the pattern (i.e. all the Hubs, or all the Links) - selectionQuery. Or replace this with an input list.            
                 try
                 {
-                    mappingRows = metadataDataTable.Select("[TARGET_NAME] = '" + targetTableName + "'");
+                    if (filter.Count == 0)
+                    {
+                        itemList = DatabaseHandling.GetItemList(pattern.LoadPatternSelectionQuery, conn);
+                    }
+                    else
+                    {
+                        itemList = filter;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    richTextBoxInformation.AppendText(
-                        "There was an error generating the output, this happened when interpreting the source-to-mapping rows. " +
-                        "\r\n\r\nThe query used was:" + pattern.LoadPatternBaseQuery +
-                        ".\r\n\r\nThe error message was:" + ex);
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The item list could not be retrieved (selectionQuery in PatternDefinition file). The error message is " + ex + ".\r\n"));
                 }
 
-                // Move the data table to the class instance
-                List<DataObjectMapping> sourceToTargetMappingList = new List<DataObjectMapping>();
-
-                if (mappingRows != null)
-                {
-                    foreach (DataRow row in mappingRows)
-                    {
-
-                        #region Business Key
-
-                        // Creating the Business Key definition, using the available components (see above)
-                        List<BusinessKey> businessKeyList = new List<BusinessKey>();
-                        BusinessKey businessKey =
-                            new BusinessKey
-                            {
-                                businessKeyComponentMapping =
-                                    InterfaceHandling.BusinessKeyComponentMappingList(
-                                        (string) row["SOURCE_BUSINESS_KEY_DEFINITION"],
-                                        (string) row["TARGET_BUSINESS_KEY_DEFINITION"]),
-                                surrogateKey = (string) row["SURROGATE_KEY"]
-                            };
-                        businessKeyList.Add(businessKey);
-
-                        #endregion
-
-                        #region Data Item Mapping (column to column)
-
-                        // Create the column-to-column mapping
-                        List<DataItemMapping> dataItemMappingList = new List<DataItemMapping>();
-                        if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
-                        {
-                            DataRow[] columnRows = columnMetadataDataTable.Select(
-                                "[TARGET_NAME] = '" + targetTableName + "' AND [SOURCE_NAME] = '" +
-                                (string) row["SOURCE_NAME"] + "'");
-
-                            foreach (DataRow column in columnRows)
-                            {
-                                DataItemMapping columnMapping = new DataItemMapping();
-                                DataItem sourceColumn = new DataItem();
-                                DataItem targetColumn = new DataItem();
-
-                                sourceColumn.name = (string) column["SOURCE_ATTRIBUTE_NAME"];
-                                targetColumn.name = (string) column["TARGET_ATTRIBUTE_NAME"];
-
-                                columnMapping.sourceDataItem = sourceColumn;
-                                columnMapping.targetDataItem = targetColumn;
-
-                                dataItemMappingList.Add(columnMapping);
-                            }
-                        }
-
-                        #endregion
-
-                        #region Additional Business Keys
-
-                        if (additionalBusinessKeyDataTable != null && additionalBusinessKeyDataTable.Rows.Count > 0)
-                        {
-                            DataRow[] additionalBusinessKeyRows =
-                                additionalBusinessKeyDataTable.Select("[LINK_NAME] = '" + targetTableName + "'");
-
-                            foreach (DataRow additionalKeyRow in additionalBusinessKeyRows)
-                            {
-                                var hubBusinessKey = new BusinessKey();
-
-                                hubBusinessKey.businessKeyComponentMapping =
-                                    InterfaceHandling.BusinessKeyComponentMappingList(
-                                        (string) additionalKeyRow["HUB_SOURCE_BUSINESS_KEY_DEFINITION"],
-                                        (string) additionalKeyRow["HUB_TARGET_BUSINESS_KEY_DEFINITION"]);
-                                hubBusinessKey.surrogateKey = (string) additionalKeyRow["HUB_TARGET_KEY_NAME_IN_LINK"];
-
-                                businessKeyList.Add(hubBusinessKey); // Adding the Link Business Key
-                            }
-                        }
-
-                        #endregion
-
-
-                        #region Lookup Table
-
-                        // Define a lookup table, in case there is a desire to do key lookups.
-                        var lookupTable = (string) row["TARGET_NAME"];
-
-                        if (ConfigurationSettings.TableNamingLocation == "Prefix")
-                        {
-                            int prefixLocation = lookupTable.IndexOf(ConfigurationSettings.StgTablePrefixValue);
-                            if (prefixLocation != -1)
-                            {
-                                lookupTable = lookupTable
-                                    .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
-                                    .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
-                            }
-                        }
-                        else
-                        {
-                            int prefixLocation = lookupTable.LastIndexOf(ConfigurationSettings.StgTablePrefixValue);
-                            if (prefixLocation != -1)
-                            {
-                                lookupTable = lookupTable
-                                    .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
-                                    .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
-                            }
-                        }
-
-                        #endregion
-
-                        // Add the created Business Key to the source-to-target mapping
-                        var sourceToTargetMapping = new VEDW_DataObjectMapping();
-
-                        var sourceDataObject = new DataWarehouseAutomation.DataObject();
-                        var targetDataObject = new DataWarehouseAutomation.DataObject();
-
-                        sourceDataObject.name = (string) row["SOURCE_NAME"];
-                        targetDataObject.name = (string) row["TARGET_NAME"];
-
-                        //sourceToTargetMapping.sourceDataObject.name = (string)row["SOURCE_NAME"];  // Source table
-                        //sourceToTargetMapping.targetDataObject.name = (string)row["TARGET_NAME"];  // Target table
-
-                        sourceToTargetMapping.sourceDataObject = sourceDataObject;
-                        sourceToTargetMapping.targetDataObject = targetDataObject;
-                        sourceToTargetMapping.enabled = true;
-
-                        sourceToTargetMapping.lookupTable = lookupTable; // Lookup Table
-                        sourceToTargetMapping.targetTableHashKey = (string) row["SURROGATE_KEY"]; // Surrogate Key
-                        sourceToTargetMapping.businessKey = businessKeyList; // Business Key
-                        sourceToTargetMapping.filterCriterion = (string) row["FILTER_CRITERIA"]; // Filter criterion
-
-                        if (dataItemMappingList.Count == 0)
-                        {
-                            dataItemMappingList = null;
-                        }
-
-                        sourceToTargetMapping.dataItemMapping = dataItemMappingList; // Column to column mapping
-
-                        // Add the source-to-target mapping to the mapping list
-                        sourceToTargetMappingList.Add(sourceToTargetMapping);
-                    }
-                }
-
-                // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
-                GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata();
-                vedwMetadata.selectedDataObject = targetTableName;
-
-                // Create an instance of the 'MappingList' class / object model 
-                VEDW_DataObjectMappingList sourceTargetMappingList = new VEDW_DataObjectMappingList();
-                sourceTargetMappingList.dataObjectMappingList = sourceToTargetMappingList;
-
-                sourceTargetMappingList.metadataConfiguration = new MetadataConfiguration();
-                sourceTargetMappingList.generationSpecificMetadata = vedwMetadata;
-
-
-                // Return the result to the user
+                // Retrieve the source-to-target mappings (base query)
+                DataTable metadataDataTable = new DataTable();
                 try
                 {
-                    // Check if the metadata needs to be displayed
+                    var metadataQuery = pattern.LoadPatternBaseQuery;
+                    metadataDataTable = GetDataTable(ref conn, metadataQuery);
+                }
+                catch (Exception ex)
+                {
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The source-to-target mapping list could not be retrieved (baseQuery in PatternDefinition file). The error message is " + ex + ".\r\n"));
+                }
+
+                // Populate the attribute mappings
+                // Create the column-to-column mapping
+                var columnMetadataQuery = pattern.LoadPatternAttributeQuery;
+                var columnMetadataDataTable = GetDataTable(ref conn, columnMetadataQuery);
+
+                // Populate the additional business key information (i.e. links)
+                var additionalBusinessKeyQuery = pattern.LoadPatternAdditionalBusinessKeyQuery;
+                var additionalBusinessKeyDataTable = GetDataTable(ref conn, additionalBusinessKeyQuery);
+
+                // Loop through the available items, select the right mapping and map the metadata to the DWH automation schema
+                foreach (string item in itemList)
+                {
+                    var targetTableName = item;
+                    richTextBoxInformation.AppendText(@"Processing generation for " + targetTableName + ".\r\n");
+
+                    DataRow[] mappingRows = null;
                     try
                     {
-                        var json = JsonConvert.SerializeObject(sourceTargetMappingList, Formatting.Indented);
-                        richTextBoxInformation.AppendText(json + "\r\n\r\n");
-
-                        // Spool the output to disk
-                        EventLog fileSaveEventLog = new EventLog();
-                        fileSaveEventLog =
-                            Utility.SaveOutputToDisk(
-                                GlobalParameters.OutputPath + targetTableName + ".json", json);
+                        mappingRows = metadataDataTable.Select("[TARGET_NAME] = '" + targetTableName + "'");
                     }
                     catch (Exception ex)
                     {
                         richTextBoxInformation.AppendText(
-                            "An error was encountered while generating the JSON metadata. The error message is: " +
-                            ex);
+                            "There was an error generating the output, this happened when interpreting the source-to-mapping rows. " +
+                            "\r\n\r\nThe query used was:" + pattern.LoadPatternBaseQuery +
+                            ".\r\n\r\nThe error message was:" + ex);
                     }
-                }
-                catch (Exception ex)
-                {
-                    var localEvent = new Event
+
+                    // Move the data table to the class instance
+                    List<DataObjectMapping> sourceToTargetMappingList = new List<DataObjectMapping>();
+
+                    if (mappingRows != null)
                     {
-                        eventCode = 1,
-                        eventDescription = "The template could not be compiled, the error message is " + ex + "."
-                    };
+                        foreach (DataRow row in mappingRows)
+                        {
+                            #region Business Key
 
-                    eventLog.Add(localEvent);
-                }
+                            // Creating the Business Key definition, using the available components (see above)
+                            List<BusinessKey> businessKeyList = new List<BusinessKey>();
+                            BusinessKey businessKey =
+                                new BusinessKey
+                                {
+                                    businessKeyComponentMapping =
+                                        InterfaceHandling.BusinessKeyComponentMappingList(
+                                            (string)row["SOURCE_BUSINESS_KEY_DEFINITION"],
+                                            (string)row["TARGET_BUSINESS_KEY_DEFINITION"]),
+                                    surrogateKey = (string)row["SURROGATE_KEY"]
+                                };
+                            businessKeyList.Add(businessKey);
+
+                            #endregion
+
+                            #region Data Item Mapping (column to column)
+
+                            // Create the column-to-column mapping
+                            List<DataItemMapping> dataItemMappingList = new List<DataItemMapping>();
+                            if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
+                            {
+                                DataRow[] columnRows = columnMetadataDataTable.Select(
+                                    "[TARGET_NAME] = '" + targetTableName + "' AND [SOURCE_NAME] = '" +
+                                    (string)row["SOURCE_NAME"] + "'");
+
+                                foreach (DataRow column in columnRows)
+                                {
+                                    DataItemMapping columnMapping = new DataItemMapping();
+                                    DataItem sourceColumn = new DataItem();
+                                    DataItem targetColumn = new DataItem();
+
+                                    sourceColumn.name = (string)column["SOURCE_ATTRIBUTE_NAME"];
+                                    targetColumn.name = (string)column["TARGET_ATTRIBUTE_NAME"];
+
+                                    columnMapping.sourceDataItem = sourceColumn;
+                                    columnMapping.targetDataItem = targetColumn;
+
+                                    dataItemMappingList.Add(columnMapping);
+                                }
+                            }
+
+                            #endregion
+
+                            #region Additional Business Keys
+
+                            if (additionalBusinessKeyDataTable != null && additionalBusinessKeyDataTable.Rows.Count > 0)
+                            {
+                                DataRow[] additionalBusinessKeyRows =
+                                    additionalBusinessKeyDataTable.Select("[LINK_NAME] = '" + targetTableName + "'");
+
+                                foreach (DataRow additionalKeyRow in additionalBusinessKeyRows)
+                                {
+                                    var hubBusinessKey = new BusinessKey();
+
+                                    hubBusinessKey.businessKeyComponentMapping =
+                                        InterfaceHandling.BusinessKeyComponentMappingList(
+                                            (string)additionalKeyRow["HUB_SOURCE_BUSINESS_KEY_DEFINITION"],
+                                            (string)additionalKeyRow["HUB_TARGET_BUSINESS_KEY_DEFINITION"]);
+                                    hubBusinessKey.surrogateKey = (string)additionalKeyRow["HUB_TARGET_KEY_NAME_IN_LINK"];
+
+                                    businessKeyList.Add(hubBusinessKey); // Adding the Link Business Key
+                                }
+                            }
+
+                            #endregion
+
+                            #region Lookup Table
+
+                            // Define a lookup table, in case there is a desire to do key lookups.
+                            var lookupTable = (string)row["TARGET_NAME"];
+
+                            if (ConfigurationSettings.TableNamingLocation == "Prefix")
+                            {
+                                int prefixLocation = lookupTable.IndexOf(ConfigurationSettings.StgTablePrefixValue);
+                                if (prefixLocation != -1)
+                                {
+                                    lookupTable = lookupTable
+                                        .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
+                                        .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
+                                }
+                            }
+                            else
+                            {
+                                int prefixLocation = lookupTable.LastIndexOf(ConfigurationSettings.StgTablePrefixValue);
+                                if (prefixLocation != -1)
+                                {
+                                    lookupTable = lookupTable
+                                        .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
+                                        .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
+                                }
+                            }
+
+                            #endregion
+
+                            // Add the created Business Key to the source-to-target mapping
+                            var sourceToTargetMapping = new VEDW_DataObjectMapping();
+
+                            var sourceDataObject = new DataWarehouseAutomation.DataObject();
+                            var targetDataObject = new DataWarehouseAutomation.DataObject();
+
+                            sourceDataObject.name = (string)row["SOURCE_NAME"];
+                            targetDataObject.name = (string)row["TARGET_NAME"];
+
+                            //sourceToTargetMapping.sourceDataObject.name = (string)row["SOURCE_NAME"];  // Source table
+                            //sourceToTargetMapping.targetDataObject.name = (string)row["TARGET_NAME"];  // Target table
+
+                            sourceToTargetMapping.sourceDataObject = sourceDataObject;
+                            sourceToTargetMapping.targetDataObject = targetDataObject;
+                            sourceToTargetMapping.enabled = true;
+
+                            sourceToTargetMapping.lookupTable = lookupTable; // Lookup Table
+                            sourceToTargetMapping.targetTableHashKey = (string)row["SURROGATE_KEY"]; // Surrogate Key
+                            sourceToTargetMapping.businessKey = businessKeyList; // Business Key
+                            //sourceToTargetMapping.classification = ClassMetadataHandling.GetTableType((string)row["TARGET_NAME"], "").Split(',').ToList();
+                            sourceToTargetMapping.classification = pattern.LoadPatternType.Split(',').ToList(); ;
+                            
+                            sourceToTargetMapping.filterCriterion = (string)row["FILTER_CRITERIA"]; // Filter criterion
+
+                            if (dataItemMappingList.Count == 0)
+                            {
+                                dataItemMappingList = null;
+                            }
+
+                            sourceToTargetMapping.dataItemMapping = dataItemMappingList; // Column to column mapping
+
+                            // Add the source-to-target mapping to the mapping list
+                            sourceToTargetMappingList.Add(sourceToTargetMapping);
+                        }
+                    }
+
+                    // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
+                    GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata();
+                    vedwMetadata.selectedDataObject = targetTableName;
+
+                    // Create an instance of the 'MappingList' class / object model 
+                    VEDW_DataObjectMappingList sourceTargetMappingList = new VEDW_DataObjectMappingList();
+                    sourceTargetMappingList.dataObjectMappingList = sourceToTargetMappingList;
+
+                    sourceTargetMappingList.metadataConfiguration = new MetadataConfiguration();
+                    sourceTargetMappingList.generationSpecificMetadata = vedwMetadata;
+
+                    // Check if the metadata needs to be displayed
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(sourceTargetMappingList, Formatting.Indented);
+
+                        if (checkBoxShowJsonOutput.Checked)
+                        {
+                            _generatedJsonInterface.SetTextLogging("Creating " + targetTableName + "\r\n\r\n" + json + "\r\n\r\n");
+                        }
+
+                        // Spool the output to disk
+                        if (checkBoxSaveInterfaceToJson.Checked)
+                        {
+                            Event fileSaveEventLog = Utility.SaveOutputToDisk(GlobalParameters.OutputPath + targetTableName + ".json", json);
+                            eventLog.Add(fileSaveEventLog);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBoxInformation.AppendText("An error was encountered while generating the JSON metadata. The error message is: " + ex);
+                    }
+                }             
             }
-
-
-            conn.Close();
-            conn.Dispose();
 
             // Report back to the user
             int errorCounter = 0;
             foreach (Event individualEvent in eventLog)
             {
+                // Only report errors at this stage, can be extended with debug checkbox.
                 if (individualEvent.eventCode == 1)
                 {
                     errorCounter++;
+                    richTextBoxInformation.AppendText(individualEvent.eventDescription);
                 }
-
-                richTextBoxInformation.AppendText(individualEvent.eventDescription);
             }
 
             richTextBoxInformation.AppendText($"\r\n\r\n{errorCounter} errors have been found.\r\n");
-            richTextBoxInformation.AppendText($"Associated scripts have been saved in {GlobalParameters.OutputPath}.\r\n");
+
+            // Spool the output to disk
+            if (checkBoxSaveInterfaceToJson.Checked)
+            {
+                richTextBoxInformation.AppendText($"Associated scripts have been saved in {GlobalParameters.OutputPath}.\r\n");
+            }
+
+            richTextBoxInformation.ScrollToCaret();
+            _generatedJsonInterface.Focus();
+
+            conn.Close();
+            conn.Dispose();
         }
     }
 }
