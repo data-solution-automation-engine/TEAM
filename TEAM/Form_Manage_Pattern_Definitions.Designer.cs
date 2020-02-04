@@ -37,7 +37,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBoxPath = new System.Windows.Forms.GroupBox();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.textBoxLoadPatternPath = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -47,7 +47,7 @@
             this.checkBoxBackupFiles = new System.Windows.Forms.CheckBox();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupBox2.SuspendLayout();
+            this.groupBoxPath.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.groupBox9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLoadPatternDefinition)).BeginInit();
@@ -116,17 +116,17 @@
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
             // 
-            // groupBox2
+            // groupBoxPath
             // 
-            this.groupBox2.Controls.Add(this.pictureBox4);
-            this.groupBox2.Controls.Add(this.textBoxLoadPatternPath);
-            this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Location = new System.Drawing.Point(12, 41);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(576, 63);
-            this.groupBox2.TabIndex = 104;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Configuration paths";
+            this.groupBoxPath.Controls.Add(this.pictureBox4);
+            this.groupBoxPath.Controls.Add(this.textBoxLoadPatternPath);
+            this.groupBoxPath.Controls.Add(this.label10);
+            this.groupBoxPath.Location = new System.Drawing.Point(12, 41);
+            this.groupBoxPath.Name = "groupBoxPath";
+            this.groupBoxPath.Size = new System.Drawing.Size(576, 63);
+            this.groupBoxPath.TabIndex = 104;
+            this.groupBoxPath.TabStop = false;
+            this.groupBoxPath.Text = "Configuration paths";
             // 
             // pictureBox4
             // 
@@ -198,7 +198,6 @@
             // 
             // checkBoxBackupFiles
             // 
-            this.checkBoxBackupFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxBackupFiles.AutoSize = true;
             this.checkBoxBackupFiles.Checked = true;
             this.checkBoxBackupFiles.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -215,10 +214,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1362, 797);
+            this.ClientSize = new System.Drawing.Size(1362, 798);
             this.Controls.Add(this.checkBoxBackupFiles);
             this.Controls.Add(this.dataGridViewLoadPatternDefinition);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.groupBoxPath);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.menuStripMainMenu);
@@ -233,8 +232,8 @@
             this.menuStripMainMenu.ResumeLayout(false);
             this.menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.groupBoxPath.ResumeLayout(false);
+            this.groupBoxPath.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.groupBox9.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLoadPatternDefinition)).EndInit();
@@ -251,7 +250,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBoxPath;
         private System.Windows.Forms.PictureBox pictureBox4;
         internal System.Windows.Forms.TextBox textBoxLoadPatternPath;
         private System.Windows.Forms.Label label10;

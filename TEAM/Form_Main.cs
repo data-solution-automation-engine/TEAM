@@ -74,7 +74,7 @@ namespace TEAM
             try
             {
                 ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition();
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The Pattern Definition file was loaded successfully.\r\n"));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The pattern definition file was loaded successfully.\r\n"));
             }
             catch 
             {
