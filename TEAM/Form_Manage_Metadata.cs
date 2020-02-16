@@ -6499,7 +6499,6 @@ namespace TEAM
                         _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Persistent Staging Attribute Xref interface file. The reported error is: " + ex);
                     }
 
-
                 }
                 #endregion
 
@@ -8530,7 +8529,6 @@ namespace TEAM
                             #endregion
 
                             #region Lookup Table
-
                             // Define a lookup table, in case there is a desire to do key lookups.
                             var lookupTable = (string)row["TARGET_NAME"];
 
@@ -8554,11 +8552,10 @@ namespace TEAM
                                         .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
                                 }
                             }
-
                             #endregion
 
                             // Add the created Business Key to the source-to-target mapping
-                            var sourceToTargetMapping = new VEDW_DataObjectMapping();
+                            var sourceToTargetMapping = new DataObjectMapping();
 
                             var sourceDataObject = new DataWarehouseAutomation.DataObject();
                             var targetDataObject = new DataWarehouseAutomation.DataObject();
@@ -8566,19 +8563,22 @@ namespace TEAM
                             sourceDataObject.name = (string)row["SOURCE_NAME"];
                             targetDataObject.name = (string)row["TARGET_NAME"];
 
-                            //sourceToTargetMapping.sourceDataObject.name = (string)row["SOURCE_NAME"];  // Source table
-                            //sourceToTargetMapping.targetDataObject.name = (string)row["TARGET_NAME"];  // Target table
+                            var targetConnectionKey = new DataConnection();
+                            targetConnectionKey.dataConnectionString = pattern.LoadPatternConnectionKey;
+
+                            targetDataObject.dataObjectConnection = targetConnectionKey;
 
                             sourceToTargetMapping.sourceDataObject = sourceDataObject;
                             sourceToTargetMapping.targetDataObject = targetDataObject;
                             sourceToTargetMapping.enabled = true;
 
                             sourceToTargetMapping.lookupTable = lookupTable; // Lookup Table
-                            sourceToTargetMapping.targetTableHashKey = (string)row["SURROGATE_KEY"]; // Surrogate Key
+                            sourceToTargetMapping.mappingName = (string)row["TARGET_NAME"]; // Source-to-target mapping name
                             sourceToTargetMapping.businessKey = businessKeyList; // Business Key]
 
                             List<DataObjectMappingClassification> classificationList = new List<DataObjectMappingClassification>();
                             var localClassification = new DataObjectMappingClassification();
+                            localClassification.id = pattern.LoadPatternKey;
                             localClassification.classification = pattern.LoadPatternType;
                             localClassification.notes = pattern.LoadPatternNotes;
                             classificationList.Add(localClassification);
