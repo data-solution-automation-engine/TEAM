@@ -194,7 +194,7 @@
             this.richTextBoxInformation.Location = new System.Drawing.Point(14, 59);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
             this.richTextBoxInformation.ReadOnly = true;
-            this.richTextBoxInformation.Size = new System.Drawing.Size(1122, 281);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(1122, 512);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
             this.richTextBoxInformation.TextChanged += new System.EventHandler(this.richTextBoxInformation_TextChanged);
