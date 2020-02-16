@@ -8575,9 +8575,17 @@ namespace TEAM
 
                             sourceToTargetMapping.lookupTable = lookupTable; // Lookup Table
                             sourceToTargetMapping.targetTableHashKey = (string)row["SURROGATE_KEY"]; // Surrogate Key
-                            sourceToTargetMapping.businessKey = businessKeyList; // Business Key
+                            sourceToTargetMapping.businessKey = businessKeyList; // Business Key]
+
+                            List<DataObjectMappingClassification> classificationList = new List<DataObjectMappingClassification>();
+                            var localClassification = new DataObjectMappingClassification();
+                            localClassification.classification = pattern.LoadPatternType;
+                            localClassification.notes = pattern.LoadPatternNotes;
+                            classificationList.Add(localClassification);
+
+                            sourceToTargetMapping.mappingClassification = classificationList;
                             //sourceToTargetMapping.classification = ClassMetadataHandling.GetTableType((string)row["TARGET_NAME"], "").Split(',').ToList();
-                            sourceToTargetMapping.classification = pattern.LoadPatternType.Split(',').ToList(); ;
+                            //sourceToTargetMapping.classification = pattern.LoadPatternType.Split(',').ToList(); ;
                             
                             sourceToTargetMapping.filterCriterion = (string)row["FILTER_CRITERIA"]; // Filter criterion
 
