@@ -7,6 +7,7 @@ using System.Threading;
 using System.Drawing;
 using System.Data;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace TEAM
 {
@@ -189,6 +190,9 @@ namespace TEAM
                 DisplayCurrentVersion(connOmd);
                 DisplayRepositoryVersion(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
+
+                labelMetadataRepository.Text = "Repository type in configuration is set to: " +
+                                               ConfigurationSettings.MetadataRepositoryType;
             }
             catch
             {
@@ -229,16 +233,24 @@ namespace TEAM
             var sqlStatementForCurrentVersion = new StringBuilder();
             sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME] FROM [MD_MODEL_METADATA]");
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
-
-            foreach (DataRow versionNameRow in versionList.Rows)
+            try
             {
-                var versionName = (string) versionNameRow["VERSION_NAME"];
-                labelActiveVersion.Text = versionName;
+                var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+
+                if (versionList != null && versionList.Rows.Count > 0)
+                {
+                    foreach (DataRow versionNameRow in versionList.Rows)
+                    {
+                        var versionName = (string) versionNameRow["VERSION_NAME"];
+                        labelActiveVersion.Text = versionName;
+                    }
+                }
+
             }
-
-
-            labelMetadataRepository.Text = "Repository type in configuration is set to: " + ConfigurationSettings.MetadataRepositoryType;
+            catch (Exception ex)
+            {
+                labelActiveVersion.Text = "There has been an error displaying the active version";
+            }
         }
 
 
@@ -249,18 +261,23 @@ namespace TEAM
 
             var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
 
-            foreach (DataRow versionNameRow in versionList.Rows)
+            try
             {
-                var versionName = (string)versionNameRow["REPOSITORY_VERSION"];
-                var versionDate = (DateTime)versionNameRow["REPOSITORY_UPDATE_DATETIME"];
-                labelRepositoryVersion.Text = versionName;
-                labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
+                if (versionList != null && versionList.Rows.Count > 0)
+                {
+                    foreach (DataRow versionNameRow in versionList.Rows)
+                    {
+                        var versionName = (string) versionNameRow["REPOSITORY_VERSION"];
+                        var versionDate = (DateTime) versionNameRow["REPOSITORY_UPDATE_DATETIME"];
+                        labelRepositoryVersion.Text = versionName;
+                        labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
+                    }
+                }
             }
-
-
-
-
-
+            catch (Exception ex)
+            {
+                // THROW EXCEPTION
+            }
         }
 
         private void CheckKeyword(string word, Color color, int startIndex)

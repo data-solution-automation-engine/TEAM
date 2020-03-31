@@ -8662,5 +8662,25 @@ namespace TEAM
             conn.Close();
             conn.Dispose();
         }
+
+        private void openConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (GlobalParameters.ConfigurationPath != "")
+                {
+                    Process.Start(GlobalParameters.ConfigurationPath);
+                }
+                else
+                {
+                    richTextBoxInformation.Text =
+                        "There is no value given for the Configuration Path. Please enter a valid path name.";
+                }
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+            }
+        }
     }
 }

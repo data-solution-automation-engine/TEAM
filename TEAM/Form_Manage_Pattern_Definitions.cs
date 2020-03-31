@@ -314,7 +314,6 @@ namespace TEAM
                 try
                 {
                     var chosenFile = theDialog.FileName;
-                  
 
                     //string filePath = Path.GetFullPath(theDialog.FileName);
 

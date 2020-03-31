@@ -563,8 +563,8 @@ namespace TEAM
                 FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute = configList["AlternativeRecordSource"];
                 FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute =configList["AlternativeHubLDTSFunction"];
                 FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute = configList["AlternativeHubLDTS"];
-                FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute =configList["AlternativeSatelliteLDTSFunction"];
-                FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute =configList["AlternativeSatelliteLDTS"];
+                FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTSFunction"];
+                FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTS"];
 
                 // Databases
                 FormBase.ConfigurationSettings.SourceDatabaseName = configList["SourceDatabase"];
