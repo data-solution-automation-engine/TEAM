@@ -125,7 +125,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.textBoxSchemaName = new System.Windows.Forms.TextBox();
             this.groupBoxPhysicalModelNamedUser = new System.Windows.Forms.GroupBox();
-            this.textBoxPhysicalModelPassword = new System.Windows.Forms.TextBox();
+            this.textBoxPhysicalModelPassword = new System.Windows.Forms.MaskedTextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxPhysicalModelUserName = new System.Windows.Forms.TextBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -137,7 +137,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBoxMetadataConnection = new System.Windows.Forms.TextBox();
             this.groupBoxMetadataNamedUser = new System.Windows.Forms.GroupBox();
-            this.textBoxMetadataPassword = new System.Windows.Forms.TextBox();
+            this.textBoxMetadataPassword = new System.Windows.Forms.MaskedTextBox();
             this.labelPasswordMetadata = new System.Windows.Forms.Label();
             this.textBoxMetadataUserName = new System.Windows.Forms.TextBox();
             this.labelUserName = new System.Windows.Forms.Label();
@@ -296,7 +296,8 @@
             // 
             // tabControlDefaultDetails
             // 
-            this.tabControlDefaultDetails.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabControlDefaultDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControlDefaultDetails.Controls.Add(this.tabPageDataVaultSpecific);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageETLFrameworkSpecific);
@@ -1124,6 +1125,7 @@
             // 
             this.textBoxPhysicalModelPassword.Location = new System.Drawing.Point(67, 41);
             this.textBoxPhysicalModelPassword.Name = "textBoxPhysicalModelPassword";
+            this.textBoxPhysicalModelPassword.PasswordChar = '*';
             this.textBoxPhysicalModelPassword.Size = new System.Drawing.Size(276, 20);
             this.textBoxPhysicalModelPassword.TabIndex = 79;
             this.textBoxPhysicalModelPassword.TextChanged += new System.EventHandler(this.textBoxPhysicalModelPassword_TextChanged);
@@ -1250,6 +1252,7 @@
             // 
             this.textBoxMetadataPassword.Location = new System.Drawing.Point(67, 41);
             this.textBoxMetadataPassword.Name = "textBoxMetadataPassword";
+            this.textBoxMetadataPassword.PasswordChar = '*';
             this.textBoxMetadataPassword.Size = new System.Drawing.Size(276, 20);
             this.textBoxMetadataPassword.TabIndex = 79;
             this.textBoxMetadataPassword.TextChanged += new System.EventHandler(this.textBoxMetadataPassword_TextChanged);
@@ -1349,6 +1352,7 @@
             // 
             // richTextBox1
             // 
+            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox1.Location = new System.Drawing.Point(152, 546);
             this.richTextBox1.Name = "richTextBox1";
@@ -1360,6 +1364,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox2.Controls.Add(this.radioButtonSQLServer);
             this.groupBox2.Controls.Add(this.radioButtonJSON);
             this.groupBox2.Location = new System.Drawing.Point(6, 537);
@@ -1388,7 +1393,6 @@
             this.radioButtonJSON.TabIndex = 38;
             this.radioButtonJSON.Text = "JSON";
             this.radioButtonJSON.UseVisualStyleBackColor = true;
-            this.radioButtonJSON.CheckedChanged += new System.EventHandler(this.radioButtonJSON_CheckedChanged);
             // 
             // tabPagePaths
             // 
@@ -1502,7 +1506,6 @@
             this.Name = "FormManageConfiguration";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the configuration settings";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormManageConfiguration_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormManageConfiguration_FormClosed);
             this.menuStripMainMenu.ResumeLayout(false);
             this.menuStripMainMenu.PerformLayout();
@@ -1648,7 +1651,7 @@
         private System.Windows.Forms.GroupBox groupBoxMetadataNamedUser;
         internal System.Windows.Forms.TextBox textBoxMetadataUserName;
         internal System.Windows.Forms.TextBox textBoxMetadataConnection;
-        internal System.Windows.Forms.TextBox textBoxMetadataPassword;
+        internal System.Windows.Forms.MaskedTextBox textBoxMetadataPassword;
         private System.Windows.Forms.Label labelPasswordMetadata;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label27;
@@ -1664,7 +1667,7 @@
         private System.Windows.Forms.Label label12;
         internal System.Windows.Forms.TextBox textBoxSchemaName;
         private System.Windows.Forms.GroupBox groupBoxPhysicalModelNamedUser;
-        internal System.Windows.Forms.TextBox textBoxPhysicalModelPassword;
+        internal System.Windows.Forms.MaskedTextBox textBoxPhysicalModelPassword;
         private System.Windows.Forms.Label label5;
         internal System.Windows.Forms.TextBox textBoxPhysicalModelUserName;
         private System.Windows.Forms.Label label20;
