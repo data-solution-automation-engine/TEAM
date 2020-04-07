@@ -73,6 +73,8 @@ namespace TEAM
             this.radiobuttonMajorRelease = new System.Windows.Forms.RadioButton();
             this.radiobuttonNoVersionChange = new System.Windows.Forms.RadioButton();
             this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
+            this.checkBoxShowJsonOutput = new System.Windows.Forms.CheckBox();
+            this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.radioButtonPhysicalMode = new System.Windows.Forms.RadioButton();
             this.radioButtonVirtualMode = new System.Windows.Forms.RadioButton();
             this.checkBoxValidation = new System.Windows.Forms.CheckBox();
@@ -81,6 +83,7 @@ namespace TEAM
             this.menuStripMetadata = new System.Windows.Forms.MenuStrip();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.businessKeyMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,13 +101,9 @@ namespace TEAM
             this.checkBoxMergeFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxBackupFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxResizeDataGrid = new System.Windows.Forms.CheckBox();
-            this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
             this.buttonGenerateJsonInterface = new System.Windows.Forms.Button();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.checkBoxShowJsonOutput = new System.Windows.Forms.CheckBox();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -124,7 +123,6 @@ namespace TEAM
             this.MetadataGenerationGroupBox.SuspendLayout();
             this.menuStripMetadata.SuspendLayout();
             this.groupBoxJsonOptions.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // backgroundWorkerMetadata
@@ -158,7 +156,7 @@ namespace TEAM
             // buttonValidation
             // 
             this.buttonValidation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonValidation.Location = new System.Drawing.Point(1376, 393);
+            this.buttonValidation.Location = new System.Drawing.Point(1376, 643);
             this.buttonValidation.Name = "buttonValidation";
             this.buttonValidation.Size = new System.Drawing.Size(120, 40);
             this.buttonValidation.TabIndex = 24;
@@ -206,9 +204,9 @@ namespace TEAM
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.labelVersion);
             this.groupBox1.Controls.Add(this.trackBarVersioning);
-            this.groupBox1.Location = new System.Drawing.Point(277, 764);
+            this.groupBox1.Location = new System.Drawing.Point(253, 764);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(352, 85);
+            this.groupBox1.Size = new System.Drawing.Size(261, 85);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Version selection";
@@ -225,9 +223,9 @@ namespace TEAM
             // trackBarVersioning
             // 
             this.trackBarVersioning.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.trackBarVersioning.Location = new System.Drawing.Point(6, 23);
+            this.trackBarVersioning.Location = new System.Drawing.Point(6, 24);
             this.trackBarVersioning.Name = "trackBarVersioning";
-            this.trackBarVersioning.Size = new System.Drawing.Size(338, 45);
+            this.trackBarVersioning.Size = new System.Drawing.Size(249, 45);
             this.trackBarVersioning.TabIndex = 4;
             this.trackBarVersioning.ValueChanged += new System.EventHandler(this.trackBarVersioning_ValueChanged);
             // 
@@ -553,15 +551,43 @@ namespace TEAM
             // MetadataGenerationGroupBox
             // 
             this.MetadataGenerationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxShowJsonOutput);
+            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxSaveInterfaceToJson);
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonPhysicalMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonVirtualMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
-            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1252, 293);
+            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1252, 249);
             this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
-            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(243, 95);
+            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(243, 139);
             this.MetadataGenerationGroupBox.TabIndex = 3;
             this.MetadataGenerationGroupBox.TabStop = false;
             this.MetadataGenerationGroupBox.Text = "Metadata activation options";
+            // 
+            // checkBoxShowJsonOutput
+            // 
+            this.checkBoxShowJsonOutput.AutoSize = true;
+            this.checkBoxShowJsonOutput.Location = new System.Drawing.Point(6, 113);
+            this.checkBoxShowJsonOutput.Name = "checkBoxShowJsonOutput";
+            this.checkBoxShowJsonOutput.Size = new System.Drawing.Size(118, 17);
+            this.checkBoxShowJsonOutput.TabIndex = 10;
+            this.checkBoxShowJsonOutput.Text = "Display Json output";
+            this.checkBoxShowJsonOutput.UseVisualStyleBackColor = true;
+            this.checkBoxShowJsonOutput.CheckedChanged += new System.EventHandler(this.checkBoxShowJsonOutput_CheckedChanged);
+            // 
+            // checkBoxSaveInterfaceToJson
+            // 
+            this.checkBoxSaveInterfaceToJson.AutoSize = true;
+            this.checkBoxSaveInterfaceToJson.Checked = true;
+            this.checkBoxSaveInterfaceToJson.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSaveInterfaceToJson.Location = new System.Drawing.Point(6, 90);
+            this.checkBoxSaveInterfaceToJson.Name = "checkBoxSaveInterfaceToJson";
+            this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(154, 17);
+            this.checkBoxSaveInterfaceToJson.TabIndex = 11;
+            this.checkBoxSaveInterfaceToJson.Text = "Save interface Json to disk";
+            this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
+        "t having this option checked will overwrite the mapping information for the sele" +
+        "cted version (in the datagrid).");
+            this.checkBoxSaveInterfaceToJson.UseVisualStyleBackColor = true;
             // 
             // radioButtonPhysicalMode
             // 
@@ -601,7 +627,7 @@ namespace TEAM
             // 
             this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.labelInformation.AutoSize = true;
-            this.labelInformation.Location = new System.Drawing.Point(654, 764);
+            this.labelInformation.Location = new System.Drawing.Point(520, 764);
             this.labelInformation.Name = "labelInformation";
             this.labelInformation.Size = new System.Drawing.Size(59, 13);
             this.labelInformation.TabIndex = 5;
@@ -612,9 +638,9 @@ namespace TEAM
             this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(657, 780);
+            this.richTextBoxInformation.Location = new System.Drawing.Point(520, 780);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.Size = new System.Drawing.Size(589, 69);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(726, 69);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
             // 
@@ -650,6 +676,14 @@ namespace TEAM
             this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            // 
+            // openConfigurationDirectoryToolStripMenuItem
+            // 
+            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
+            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
             // saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem
             // 
@@ -801,21 +835,6 @@ namespace TEAM
         "cted version (in the datagrid).");
             this.checkBoxResizeDataGrid.UseVisualStyleBackColor = true;
             // 
-            // checkBoxSaveInterfaceToJson
-            // 
-            this.checkBoxSaveInterfaceToJson.AutoSize = true;
-            this.checkBoxSaveInterfaceToJson.Checked = true;
-            this.checkBoxSaveInterfaceToJson.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSaveInterfaceToJson.Location = new System.Drawing.Point(7, 19);
-            this.checkBoxSaveInterfaceToJson.Name = "checkBoxSaveInterfaceToJson";
-            this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(154, 17);
-            this.checkBoxSaveInterfaceToJson.TabIndex = 11;
-            this.checkBoxSaveInterfaceToJson.Text = "Save interface Json to disk";
-            this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
-        "t having this option checked will overwrite the mapping information for the sele" +
-        "cted version (in the datagrid).");
-            this.checkBoxSaveInterfaceToJson.UseVisualStyleBackColor = true;
-            // 
             // backgroundWorkerValidationOnly
             // 
             this.backgroundWorkerValidationOnly.WorkerReportsProgress = true;
@@ -839,52 +858,19 @@ namespace TEAM
             // buttonGenerateJsonInterface
             // 
             this.buttonGenerateJsonInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonGenerateJsonInterface.Location = new System.Drawing.Point(1252, 563);
+            this.buttonGenerateJsonInterface.Location = new System.Drawing.Point(1252, 643);
             this.buttonGenerateJsonInterface.Name = "buttonGenerateJsonInterface";
             this.buttonGenerateJsonInterface.Size = new System.Drawing.Size(120, 40);
             this.buttonGenerateJsonInterface.TabIndex = 28;
-            this.buttonGenerateJsonInterface.Text = "&Generate Json interface";
+            this.buttonGenerateJsonInterface.Text = "Generate Json Interface Files Only";
             this.buttonGenerateJsonInterface.UseVisualStyleBackColor = true;
             this.buttonGenerateJsonInterface.Click += new System.EventHandler(this.ButtonClickExportToJson);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.checkBoxSaveInterfaceToJson);
-            this.groupBox4.Controls.Add(this.checkBoxShowJsonOutput);
-            this.groupBox4.Location = new System.Drawing.Point(1254, 486);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(243, 71);
-            this.groupBox4.TabIndex = 11;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Metadata export options";
-            // 
-            // checkBoxShowJsonOutput
-            // 
-            this.checkBoxShowJsonOutput.AutoSize = true;
-            this.checkBoxShowJsonOutput.Checked = true;
-            this.checkBoxShowJsonOutput.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxShowJsonOutput.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxShowJsonOutput.Name = "checkBoxShowJsonOutput";
-            this.checkBoxShowJsonOutput.Size = new System.Drawing.Size(111, 17);
-            this.checkBoxShowJsonOutput.TabIndex = 10;
-            this.checkBoxShowJsonOutput.Text = "Show Json output";
-            this.checkBoxShowJsonOutput.UseVisualStyleBackColor = true;
-            // 
-            // openConfigurationDirectoryToolStripMenuItem
-            // 
-            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
-            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
             // FormManageMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1507, 861);
-            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.buttonGenerateJsonInterface);
             this.Controls.Add(this.checkBoxResizeDataGrid);
             this.Controls.Add(this.groupBoxJsonOptions);
@@ -937,8 +923,6 @@ namespace TEAM
             this.menuStripMetadata.PerformLayout();
             this.groupBoxJsonOptions.ResumeLayout(false);
             this.groupBoxJsonOptions.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1016,7 +1000,6 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem displayTableScriptToolStripMenuItem;
         private System.Windows.Forms.Button buttonGenerateJsonInterface;
-        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox checkBoxShowJsonOutput;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
     }
