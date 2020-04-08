@@ -8886,7 +8886,7 @@ namespace TEAM
                             if (additionalBusinessKeyDataTable != null && additionalBusinessKeyDataTable.Rows.Count > 0)
                             {
                                 DataRow[] additionalBusinessKeyRows =
-                                    additionalBusinessKeyDataTable.Select("[LINK_NAME] = '" + targetTableName + "'");
+                                    additionalBusinessKeyDataTable.Select("[TARGET_NAME] = '" + targetTableName + "'");
 
                                 foreach (DataRow additionalKeyRow in additionalBusinessKeyRows)
                                 {
@@ -8894,9 +8894,23 @@ namespace TEAM
 
                                     hubBusinessKey.businessKeyComponentMapping =
                                         InterfaceHandling.BusinessKeyComponentMappingList(
-                                            (string)additionalKeyRow["HUB_SOURCE_BUSINESS_KEY_DEFINITION"],
-                                            (string)additionalKeyRow["HUB_TARGET_BUSINESS_KEY_DEFINITION"]);
-                                    hubBusinessKey.surrogateKey = (string)additionalKeyRow["HUB_TARGET_KEY_NAME_IN_LINK"];
+                                            (string)additionalKeyRow["SOURCE_BUSINESS_KEY_DEFINITION"],
+                                            (string)additionalKeyRow["TARGET_BUSINESS_KEY_DEFINITION"]);
+                                    hubBusinessKey.surrogateKey = (string)additionalKeyRow["TARGET_KEY_NAME"];
+
+                                    if ((string) additionalKeyRow["HUB_NAME"] == "N/A")
+                                    {
+                                        // Classification (degenerate field)
+                                        List<Classification> businesskeyClassificationList = new List<Classification>();
+                                        var businesskeyClassification = new Classification();
+                                        businesskeyClassification.classification = "DegenerateAttribute";
+                                        businesskeyClassification.notes =
+                                            "Non Core Business Concept attribute, though part of the Relationship Key.";
+                                        businesskeyClassificationList.Add(businesskeyClassification);
+
+                                        hubBusinessKey.businessKeyClassification = businesskeyClassificationList;
+                                    }
+
 
                                     businessKeyList.Add(hubBusinessKey); // Adding the Link Business Key
                                 }
