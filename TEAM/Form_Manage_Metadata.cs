@@ -8837,7 +8837,7 @@ namespace TEAM
 
                             #region Data Item Mapping (column to column)
 
-                            // Create the column-to-column mapping
+                            // Create the column-to-column mapping.
                             List<DataItemMapping> dataItemMappingList = new List<DataItemMapping>();
                             if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
                             {
@@ -8856,6 +8856,24 @@ namespace TEAM
 
                                     columnMapping.sourceDataItem = sourceColumn;
                                     columnMapping.targetDataItem = targetColumn;
+
+                                    if (column.Table.Columns.Contains("MULTI_ACTIVE_KEY_INDICATOR"))
+                                    {
+                                        if ((string) column["MULTI_ACTIVE_KEY_INDICATOR"] == "Y")
+                                        {
+                                            // Create the classifications at Data Item (target) level, to capture if this attribute is a Multi-Active attribute.
+                                            List<Classification> dataItemClassificationList =
+                                                new List<Classification>();
+                                            var dataItemClassification = new Classification();
+                                            dataItemClassification.classification = "MultiActive";
+                                            dataItemClassification.notes =
+                                                "A multi-active attribute is part of the target table key.";
+                                            dataItemClassificationList.Add(dataItemClassification);
+
+                                            // Add the classification to the target Data Item
+                                            columnMapping.targetDataItem.dataItemClassification = dataItemClassificationList;
+                                        }
+                                    }
 
                                     dataItemMappingList.Add(columnMapping);
                                 }
@@ -8912,7 +8930,7 @@ namespace TEAM
                             }
                             #endregion
 
-                            // Add the created Business Key to the source-to-target mapping
+                            // Add the created Business Key to the source-to-target mapping.
                             var sourceToTargetMapping = new DataObjectMapping();
 
                             var sourceDataObject = new DataWarehouseAutomation.DataObject();
