@@ -91,8 +91,8 @@ namespace TEAM
                 loadPatternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(jsonInput);
 
                 FormBase.ConfigurationSettings.patternDefinitionList = loadPatternDefinitionList;
-                FormBase.ConfigurationSettings.LoadPatternListPath =
-                    Path.GetFullPath(FormBase.GlobalParameters.RootPath + @"..\..\..\LoadPatterns\");
+                //FormBase.GlobalParameters.LoadPatternListPath =
+                //    Path.GetFullPath(FormBase.GlobalParameters.RootPath + @"..\..\..\LoadPatterns\");
             }
             else
             {

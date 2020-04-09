@@ -41,7 +41,7 @@ namespace TEAM
             if (ConfigurationSettings.patternDefinitionList != null) 
             {
                 populateLoadPatternDefinitionDataGrid();
-                textBoxLoadPatternPath.Text = ConfigurationSettings.LoadPatternListPath;
+                textBoxLoadPatternPath.Text = GlobalParameters.LoadPatternListPath;
             }
             else
             {
@@ -148,14 +148,13 @@ namespace TEAM
             Close();
         }
 
-
         private void toolStripSave_Click(object sender, EventArgs e)
         {
             try
             {
                 richTextBoxInformationMain.Clear();
 
-                var chosenFile = ConfigurationSettings.LoadPatternListPath + GlobalParameters.LoadPatternDefinitionFile;
+                var chosenFile = GlobalParameters.LoadPatternListPath + GlobalParameters.LoadPatternDefinitionFile;
 
 
                 DataTable gridDataTable = (DataTable)_bindingSourceLoadPatternDefinition.DataSource;
@@ -190,7 +189,7 @@ namespace TEAM
                     try
                     {
                         var backupFile = new ClassJsonHandling();
-                        var targetFileName = backupFile.BackupJsonFile(GlobalParameters.LoadPatternDefinitionFile, ConfigurationSettings.LoadPatternListPath);
+                        var targetFileName = backupFile.BackupJsonFile(GlobalParameters.LoadPatternDefinitionFile, GlobalParameters.LoadPatternListPath);
                         richTextBoxInformationMain.Text="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                     }
                     catch (Exception exception)
@@ -304,7 +303,7 @@ namespace TEAM
             {
                 Title = @"Open Load Pattern Definition File",
                 Filter = @"Load Pattern Definition|*.json",
-                InitialDirectory = ConfigurationSettings.LoadPatternListPath
+                InitialDirectory = GlobalParameters.LoadPatternListPath
             };
 
             var ret = STAShowDialog(theDialog);

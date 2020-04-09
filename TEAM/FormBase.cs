@@ -137,7 +137,6 @@ namespace TEAM
             internal static string MetadataRepositoryType { get; set; }
 
             // File paths
-            internal static string LoadPatternListPath { get; set; } = Application.StartupPath + @"\LoadPatterns\";
             public static List<LoadPatternDefinition> patternDefinitionList { get; set; }
         }
 
@@ -186,12 +185,12 @@ namespace TEAM
             public static string JsonAttributeMappingFileName { get; set; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; set; } = "TEAM_Model_Metadata";
             public static string JsonExtension { get; set; } = ".json";
+            internal static string LoadPatternListPath { get; } = Application.StartupPath + @"\LoadPatterns\";
+
             public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";
             // Version handling
             public static int currentVersionId { get; set; } = 0;
-
             public static int highestVersionId { get; set; } = 0;
-
         }
 
 
