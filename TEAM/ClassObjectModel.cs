@@ -93,7 +93,6 @@ namespace TEAM
 
                 if (keyPart.StartsWith("'") && keyPart.EndsWith("'"))
                 {
-                    //businessKeyEval = "HardCoded";
                     businessKeyEval = true;
                 }
 

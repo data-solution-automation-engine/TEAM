@@ -8831,6 +8831,38 @@ namespace TEAM
                                             (string)row["TARGET_BUSINESS_KEY_DEFINITION"]),
                                     surrogateKey = (string)row["SURROGATE_KEY"]
                                 };
+
+
+                            // Create the classifications at Data Item (target) level, to capture if this attribute is a Multi-Active attribute.
+                            if (row.Table.Columns.Contains("DRIVING_KEY_SOURCE"))
+                            {
+                                if (row["DRIVING_KEY_SOURCE"].ToString().Length>0)
+                                {
+                                    // Update the existing Business Key with a classification if a Driving Key exists.
+
+                                    foreach (var localDataItemMapping in businessKey.businessKeyComponentMapping)
+                                    {
+                                        if (localDataItemMapping.sourceDataItem.name ==
+                                            (string) row["DRIVING_KEY_SOURCE"])
+                                        {
+                                            
+                                            List<Classification> dataItemClassificationList =
+                                                new List<Classification>();
+                                            var dataItemClassification = new Classification();
+                                            dataItemClassification.classification = "DrivingKey";
+                                            dataItemClassification.notes =
+                                                "The attribute that triggers (drives) closing of a relationship.";
+                                            dataItemClassificationList.Add(dataItemClassification);
+
+                                            localDataItemMapping.sourceDataItem.dataItemClassification =
+                                                dataItemClassificationList;
+                                        }
+                                    }
+
+
+                                }
+                            }
+
                             businessKeyList.Add(businessKey);
 
                             #endregion
