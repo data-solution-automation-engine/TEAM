@@ -141,7 +141,8 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
-            if (!checkBoxRetainManualMapping.Checked)
+
+            if (!checkBoxRetainManualMapping.Checked && ConfigurationSettings.MetadataRepositoryType == "SQLServer")
             {
                 commandText.AppendLine("DELETE FROM [MD_TABLE_MAPPING];");
                 commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE_MAPPING];");
@@ -167,6 +168,13 @@ namespace TEAM
                         "An issue occurred when truncating the metadata tables. The error message is: " + ex,
                         "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+            }
+
+            if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+            {
+                ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
+                ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
             }
         }
 
@@ -457,189 +465,7 @@ namespace TEAM
 
             #endregion
 
-            //#region Presentation Layer
-            //if (checkBoxCreateSamplePresLayer.Checked)
-            //{
-            //    var connString = ConfigurationSettings.ConnectionStringPres;
 
-            //    // Create sample data
-            //    StringBuilder createStatement = new StringBuilder();
-
-            //    createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER', 'U') IS NOT NULL DROP TABLE [DIM_CUSTOMER]");
-            //    createStatement.AppendLine("IF OBJECT_ID('temp.DIM_CUSTOMER_TMP', 'U') IS NOT NULL DROP TABLE [temp].[DIM_CUSTOMER_TMP]");
-            //    createStatement.AppendLine("IF OBJECT_ID('dbo.DIM_CUSTOMER_VW', 'V') IS NOT NULL DROP VIEW [dbo].[DIM_CUSTOMER_VW]");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    // Create the schemas
-            //    createStatement.AppendLine("-- Creating the schema");
-            //    createStatement.AppendLine("IF EXISTS ( SELECT schema_name FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'temp')");
-            //    createStatement.AppendLine("DROP SCHEMA [temp]");
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("CREATE SCHEMA [temp]");
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    // Create the tables
-            //    createStatement.AppendLine("/*");
-            //    createStatement.AppendLine("Create tables");
-            //    createStatement.AppendLine("*/");
-            //    createStatement.AppendLine("CREATE TABLE [DIM_CUSTOMER]");
-            //    createStatement.AppendLine("(");
-            //    createStatement.AppendLine("  [DIM_CUSTOMER_" + dwhKeyName +"]          binary(16)  NOT NULL,");
-            //    createStatement.AppendLine("  [ETL_INSERT_RUN_ID]         integer NOT NULL ,");
-            //    createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] integer NOT NULL ,");
-            //    createStatement.AppendLine("  [CHECKSUM_TYPE1] varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [CHECKSUM_TYPE2]            varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [EFFECTIVE_DATETIME]        datetime2(7)  NOT NULL,");
-            //    createStatement.AppendLine("  [EXPIRY_DATETIME]           datetime2(7)  NOT NULL,");
-            //    createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR]  varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"]              binary(16) NOT NULL,");
-            //    createStatement.AppendLine("  [CUSTOMER_ID]               numeric(38,20)  NOT NULL,");
-            //    createStatement.AppendLine("  [GIVEN_NAME]                varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [SURNAME]                   varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [GENDER]                    varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [SUBURB]                    varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [POSTCODE]                  varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [COUNTRY]                   varchar(100)  NOT NULL,");
-            //    createStatement.AppendLine("  [DATE_OF_BIRTH]             datetime2(7)  NOT NULL,");
-            //    createStatement.AppendLine("  PRIMARY KEY CLUSTERED([DIM_CUSTOMER_" + dwhKeyName +"] ASC)");
-            //    createStatement.AppendLine(")");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("CREATE TABLE [temp].[DIM_CUSTOMER_TMP]");
-            //    createStatement.AppendLine("(");
-            //    createStatement.AppendLine("  [ETL_INSERT_RUN_ID][int] NOT NULL,");
-            //    createStatement.AppendLine("  [ETL_UPDATE_RUN_ID] [int] NOT NULL,");
-            //    createStatement.AppendLine("  [EFFECTIVE_DATETIME] [datetime2] (7) NOT NULL,");
-            //    createStatement.AppendLine("  [EXPIRY_DATETIME] [datetime2] (7) NOT NULL,");
-            //    createStatement.AppendLine("  [CURRENT_RECORD_INDICATOR] [varchar] (100) NOT NULL,");
-            //    createStatement.AppendLine("  [CUSTOMER_" + dwhKeyName +"] [char](32) NOT NULL,");
-            //    createStatement.AppendLine("  [CUSTOMER_ID] [numeric] (38, 20) NOT NULL,");
-            //    createStatement.AppendLine("  [GIVEN_NAME] [varchar] (100) NOT NULL,");
-            //    createStatement.AppendLine("  [SURNAME] [varchar] (100) NOT NULL,");
-            //    createStatement.AppendLine("  [GENDER] [varchar] (100) NOT NULL,");
-            //    createStatement.AppendLine("  [SUBURB] [varchar] (100) NOT NULL,");
-            //    createStatement.AppendLine("  [POSTCODE] [varchar] (100) NOT NULL,");
-            //    createStatement.AppendLine("  [COUNTRY] [varchar] (100) NOT NULL,");
-            //    createStatement.AppendLine("  [DATE_OF_BIRTH] [datetime2] (7) NOT NULL");
-            //    createStatement.AppendLine(")");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GIVEN_NAME'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SURNAME'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type2',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'SUBURB'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'POSTCODE'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'GENDER'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DATE_OF_BIRTH'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'Type1',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'CUSTOMER_ID'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("EXEC sp_addextendedproperty");
-            //    createStatement.AppendLine("@name = 'HistoryType', @value = 'None',");
-            //    createStatement.AppendLine("@level0type = 'SCHEMA', @level0name = 'dbo',");
-            //    createStatement.AppendLine("@level1type = 'TABLE', @level1name = 'DIM_CUSTOMER',");
-            //    createStatement.AppendLine("@level2type = 'COLUMN', @level2name = 'DIM_CUSTOMER_" + dwhKeyName +"'");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-
-            //    createStatement.AppendLine("/*");
-            //    createStatement.AppendLine("	Create the Views");
-            //    createStatement.AppendLine("*/");
-            //    createStatement.AppendLine("CREATE VIEW DIM_CUSTOMER_VW AS");
-            //    createStatement.AppendLine("SELECT ");
-            //    createStatement.AppendLine("  -1 AS[ETL_INSERT_RUN_ID],");
-            //    createStatement.AppendLine("  -1 AS[ETL_UPDATE_RUN_ID],");
-            //    createStatement.AppendLine("  scu.[LOAD_DATETIME] AS EFFECTIVE_DATETIME,");
-            //    createStatement.AppendLine("  scu.[LOAD_END_DATETIME] AS EXPIRY_DATETIME,");
-            //    createStatement.AppendLine("  scu.[CURRENT_RECORD_INDICATOR],");
-            //    createStatement.AppendLine("  --scu.[DELETED_RECORD_INDICATOR],");
-            //    createStatement.AppendLine("  hcu.CUSTOMER_" + dwhKeyName +", ");
-            //    createStatement.AppendLine("  hcu.CUSTOMER_ID,");
-            //    createStatement.AppendLine("  scu.GIVEN_NAME,");
-            //    createStatement.AppendLine("  scu.SURNAME,");
-            //    createStatement.AppendLine("  CASE scu.GENDER");
-            //    createStatement.AppendLine("    WHEN 'M' THEN 'Male'");
-            //    createStatement.AppendLine("    WHEN 'F' THEN 'Female'");
-            //    createStatement.AppendLine("    ELSE 'Unknown'");
-            //    createStatement.AppendLine("  END AS GENDER,");
-            //    createStatement.AppendLine("  scu.SUBURB,");
-            //    createStatement.AppendLine("  scu.POSTCODE,");
-            //    createStatement.AppendLine("  scu.COUNTRY,");
-            //    createStatement.AppendLine("  CAST(scu.DATE_OF_BIRTH AS DATE) AS DATE_OF_BIRTH");
-            //    createStatement.AppendLine("FROM");
-            //    createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".HUB_CUSTOMER AS hcu INNER JOIN");
-            //    createStatement.AppendLine("  " + ConfigurationSettings.IntegrationDatabaseName + "." + ConfigurationSettings.SchemaName + ".SAT_CUSTOMER AS scu ON hcu.CUSTOMER_" + dwhKeyName +" = scu.CUSTOMER_" + dwhKeyName +"");
-            //    createStatement.AppendLine("WHERE");
-            //    createStatement.AppendLine("  (ISNULL(scu.CURRENT_RECORD_INDICATOR, 'Y') = 'Y') ");
-            //    createStatement.AppendLine();
-            //    RunSqlCommandSampleDataForm(connString, createStatement, worker, 5);
-            //    createStatement.Clear();
-            //}
-            //#endregion
 
             #region Metadadata
             if (checkBoxCreateMetadataMapping.Checked)

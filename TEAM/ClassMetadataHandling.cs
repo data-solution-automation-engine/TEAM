@@ -97,7 +97,7 @@ namespace TEAM
             string localType ="";
 
             // Remove schema, if one is set
-            tableName = GetNonQualifiedTableName(tableName);
+            //tableName = GetNonQualifiedTableName(tableName);
 
             switch (FormBase.ConfigurationSettings.TableNamingLocation)
             {
@@ -292,7 +292,10 @@ namespace TEAM
             {
                 var splitName = tableName.Split('.').ToList();
 
-                fullyQualifiedTableName.Add(splitName[0], splitName[1]);
+                schemaName = splitName[0];
+                returnTableName = splitName[1];
+
+                fullyQualifiedTableName.Add(schemaName, returnTableName);
 
             }
             else // Return the default (e.g. [dbo])
@@ -301,7 +304,7 @@ namespace TEAM
                 returnTableName = tableName;
             }
 
-            fullyQualifiedTableName.Add(schemaName, returnTableName);
+            //fullyQualifiedTableName.Add(schemaName, returnTableName);
 
             return fullyQualifiedTableName;
         }

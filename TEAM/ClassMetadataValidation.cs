@@ -20,9 +20,21 @@ namespace TEAM
             var conn = new SqlConnection {ConnectionString = connectionString};
             conn.Open();
 
+            var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject);
+            var schemaName = ClassMetadataHandling.GetSchema(validationObject);
+
             // Execute the check
             var cmd = new SqlCommand(
-                "SELECT CASE WHEN EXISTS ((SELECT * FROM sys.objects WHERE [name] = '" + validationObject + "')) THEN 1 ELSE 0 END", conn);
+                "SELECT CASE WHEN EXISTS ((SELECT * " +
+                "FROM sys.objects a " +
+                "JOIN sys.schemas b on a.schema_id = b.schema_id" +
+                "WHERE a.[name] = '" + objectName + "' and b.[name]= '"+ schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key + "')) THEN 1 ELSE 0 END", conn);
+
+
+            //SELECT * FROM sys.objects a
+            // JOIN sys.schemas b ON a.schema_id = b.schema_id
+            // WHERE a.[name] = 'dim_holder'
+            // AND b.[name] = 'landing'
 
             var exists = (int) cmd.ExecuteScalar() == 1;
             returnExistenceEvaluation = exists.ToString();
