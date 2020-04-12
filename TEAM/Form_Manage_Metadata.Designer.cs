@@ -592,22 +592,22 @@ namespace TEAM
             // radioButtonPhysicalMode
             // 
             this.radioButtonPhysicalMode.AutoSize = true;
+            this.radioButtonPhysicalMode.Checked = true;
             this.radioButtonPhysicalMode.Location = new System.Drawing.Point(6, 42);
             this.radioButtonPhysicalMode.Name = "radioButtonPhysicalMode";
             this.radioButtonPhysicalMode.Size = new System.Drawing.Size(94, 17);
             this.radioButtonPhysicalMode.TabIndex = 4;
+            this.radioButtonPhysicalMode.TabStop = true;
             this.radioButtonPhysicalMode.Text = "Physical Mode";
             this.radioButtonPhysicalMode.UseVisualStyleBackColor = true;
             // 
             // radioButtonVirtualMode
             // 
             this.radioButtonVirtualMode.AutoSize = true;
-            this.radioButtonVirtualMode.Checked = true;
             this.radioButtonVirtualMode.Location = new System.Drawing.Point(6, 19);
             this.radioButtonVirtualMode.Name = "radioButtonVirtualMode";
             this.radioButtonVirtualMode.Size = new System.Drawing.Size(84, 17);
             this.radioButtonVirtualMode.TabIndex = 3;
-            this.radioButtonVirtualMode.TabStop = true;
             this.radioButtonVirtualMode.Text = "Virtual Mode";
             this.radioButtonVirtualMode.UseVisualStyleBackColor = true;
             // 

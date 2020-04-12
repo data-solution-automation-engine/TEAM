@@ -4843,6 +4843,7 @@ namespace TEAM
 
                 // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
                 var allDatabaseAttributes = new StringBuilder();
+
                 if (radioButtonPhysicalMode.Checked
                 ) // Get the attributes from the physical model / catalog. No virtualisation needed.
                 {

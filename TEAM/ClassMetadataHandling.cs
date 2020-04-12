@@ -354,8 +354,9 @@ namespace TEAM
             var localkeySubstring = localkeyLength + 1;
 
             // Make sure brackets are removed
-            schemaName = schemaName.Replace("[","").Replace("]","");
-            tableName = tableName.Replace("[", "").Replace("]", "");
+            schemaName = schemaName?.Replace("[", "").Replace("]", "");
+
+            tableName = tableName?.Replace("[", "").Replace("]", "");
 
             if (queryMode == "physical")
             {

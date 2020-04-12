@@ -52,11 +52,14 @@ namespace TEAM
         {
             string returnExistenceEvaluation = "False";
 
+            var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject).Replace("[","").Replace("]","");
+            var schemaName = ClassMetadataHandling.GetSchema(validationObject);
+
             var conn = new SqlConnection { ConnectionString = connectionString };
             conn.Open();
 
             // Execute the check
-            var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE [TABLE_NAME] = '" + validationObject + "' AND [COLUMN_NAME] = '"+ validationAttribute + "')) THEN 1 ELSE 0 END", conn);
+            var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE [TABLE_NAME] = '" + objectName + "' AND [TABLE_SCHEMA] = '" + schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key.Replace("[", "").Replace("]", "") + "' AND [COLUMN_NAME] = '"+ validationAttribute + "')) THEN 1 ELSE 0 END", conn);
 
             var exists = (int)cmd.ExecuteScalar() == 1;
             returnExistenceEvaluation = exists.ToString();
@@ -356,6 +359,11 @@ namespace TEAM
             // Every business key needs to be iterated over to validate if the attribute exists in that table.
             List<string> businessKeys = validationObject.Item2.Split(',').ToList();
 
+
+            // Get the table the component belongs to if available
+            var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject.Item1);
+            var schemaName = ClassMetadataHandling.GetSchema(validationObject.Item1);
+
             // Now iterate over each table, as identified by the business key.
             var conn = new SqlConnection { ConnectionString = connectionString };
             conn.Open();
@@ -394,8 +402,17 @@ namespace TEAM
                     }
                     else
                     {
+                      
                         // Query the data dictionary to validate existence
-                        var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM sys.columns WHERE OBJECT_NAME([object_id]) = '" + validationObject.Item1 + "' AND [name] = '" + businessKeyPart.Trim() + "')) THEN 1 ELSE 0 END", conn);
+                        var cmd = new SqlCommand("SELECT CASE WHEN EXISTS (" +
+                                                 "(" +
+                                                 "SELECT * FROM sys.columns a "+
+                                                 "JOIN sys.objects b ON a.object_id = b.object_id " +
+                                                 "JOIN sys.schemas c on b.schema_id = c.schema_id " +
+                                                 "WHERE OBJECT_NAME(a.[object_id]) = '" + objectName + "' AND c.[name] = '" + schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key.Replace("[", "").Replace("]", "") + "' AND a.[name] = '" + businessKeyPart.Trim() + "'" +
+                                                 ")" +
+                                                 ") THEN 1 ELSE 0 END", conn);
+                        
                         var exists = (int)cmd.ExecuteScalar() == 1;
                         result.Add(Tuple.Create(validationObject.Item1, businessKeyPart.Trim()), exists);
                     }
