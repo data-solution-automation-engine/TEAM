@@ -302,6 +302,8 @@ namespace TEAM
             {
                 schemaName = FormBase.GlobalParameters.DefaultSchema;
                 returnTableName = tableName;
+
+                fullyQualifiedTableName.Add(schemaName, returnTableName);
             }
 
             //fullyQualifiedTableName.Add(schemaName, returnTableName);

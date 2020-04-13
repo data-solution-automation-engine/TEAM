@@ -402,7 +402,6 @@ namespace TEAM
                     }
                     else
                     {
-                      
                         // Query the data dictionary to validate existence
                         var cmd = new SqlCommand("SELECT CASE WHEN EXISTS (" +
                                                  "(" +

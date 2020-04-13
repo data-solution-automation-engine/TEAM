@@ -3579,6 +3579,12 @@ namespace TEAM
             var errorCounter = new int();
 
             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var connStg= new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
+            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg};
+            var connInt = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringInt };
+            var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringPres };
+
+
             var metaDataConnection = ConfigurationSettings.ConnectionStringOmd;
 
             // Get everything as local variables to reduce multithreading issues
@@ -4751,31 +4757,32 @@ namespace TEAM
 
                     // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
                     // I.e. when there are no PSA tables defined, they will be derived from the STG
-                    var workingTableName =
-                        ClassMetadataHandling.GetNonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
+                   // var workingTableName = ClassMetadataHandling.GetNonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
 
-                    if (workingTableName.StartsWith(ConfigurationSettings.StgTablePrefixValue + "_") ||
-                        workingTableName.EndsWith("_" + ConfigurationSettings.StgTablePrefixValue))
-                    {
-                        var tempTableName = tableRow["TABLE_NAME"].ToString().Replace(
-                            ConfigurationSettings.StgTablePrefixValue, ConfigurationSettings.PsaTablePrefixValue);
+                    //if (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.StgTablePrefixValue) ||
+                    //    tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.StgTablePrefixValue))
+                    //{
+                    //    var tempTableName = tableRow["TABLE_NAME"].ToString().Replace(
+                    //        ConfigurationSettings.StgTablePrefixValue, ConfigurationSettings.PsaTablePrefixValue);
 
-                        Dictionary<string, string> tempDatabaseNameDictionary =
-                            ClassMetadataHandling.GetConnectionInformationForTableType("Persistent Staging Area");
-                        string tempDatabaseNameKey = tempDatabaseNameDictionary.FirstOrDefault().Key;
-                        psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + tempDatabaseNameKey + "]." +
-                                                tempTableName + "') ,";
+                    //    Dictionary<string, string> tempDatabaseNameDictionary =
+                    //        ClassMetadataHandling.GetConnectionInformationForTableType("PersistentStagingArea");
+                    //    string tempDatabaseNameKey = tempDatabaseNameDictionary.FirstOrDefault().Key;
+                    //    psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + tempDatabaseNameKey + "]." +
+                    //                            tempTableName + "') ,";
 
-                    }
+                    //}
 
                     // Regular processing
-                    if (databaseNameKey == ConfigurationSettings.StagingDatabaseName)
+                    if (databaseNameKey == ConfigurationSettings.StagingDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.StgTablePrefixValue) ||
+                       tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.StgTablePrefixValue)))
                     {
                         // Staging filter
                         stgTableFilterObjects = stgTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." +
                                                 tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseNameKey == ConfigurationSettings.PsaDatabaseName)
+                    else if (databaseNameKey == ConfigurationSettings.PsaDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.PsaTablePrefixValue) ||
+                                                                                          tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.PsaTablePrefixValue)))
                     {
                         // Persistent Staging Area filter
                         psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." +
@@ -4843,30 +4850,123 @@ namespace TEAM
 
                 // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
                 var allDatabaseAttributes = new StringBuilder();
+                var physicalModelDataTable = new DataTable();
 
                 if (radioButtonPhysicalMode.Checked
                 ) // Get the attributes from the physical model / catalog. No virtualisation needed.
                 {
                     var physicalModelInstantiation = new AttributeSelection();
 
-                    allDatabaseAttributes.AppendLine("  SELECT * FROM");
-                    allDatabaseAttributes.AppendLine("  (");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation
-                        .CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects)
-                        .ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation
-                        .CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects)
-                        .ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation
-                        .CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects)
-                        .ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation
-                        .CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects)
-                        .ToString());
-                    allDatabaseAttributes.AppendLine("  ) mapping");
+
+                    // Staging / landing
+                    var preparePhysicalModelStgStatement = new StringBuilder();
+                    preparePhysicalModelStgStatement.AppendLine("SELECT ");
+                    preparePhysicalModelStgStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelStgStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelStgStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelStgStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelStgStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelStgStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelStgStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelStgStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelStgStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelStgStatement.AppendLine("FROM");
+                    preparePhysicalModelStgStatement.AppendLine("(");
+                    preparePhysicalModelStgStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
+                    preparePhysicalModelStgStatement.AppendLine(") sub");
+
+                    var physicalModelDataTableStg = GetDataTable(ref connStg, preparePhysicalModelStgStatement.ToString());
+
+                    // PSA
+                    var preparePhysicalModelPsaStatement = new StringBuilder();
+                    preparePhysicalModelPsaStatement.AppendLine("SELECT ");
+                    preparePhysicalModelPsaStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelPsaStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelPsaStatement.AppendLine("FROM");
+                    preparePhysicalModelPsaStatement.AppendLine("(");
+                    preparePhysicalModelPsaStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
+                    preparePhysicalModelPsaStatement.AppendLine(") sub");
+
+                    var physicalModelDataTablePsa = GetDataTable(ref connPsa, preparePhysicalModelPsaStatement.ToString());
+
+                    // INT
+
+                    var preparePhysicalModelIntStatement = new StringBuilder();
+                    preparePhysicalModelIntStatement.AppendLine("SELECT ");
+                    preparePhysicalModelIntStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelIntStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelIntStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelIntStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelIntStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelIntStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelIntStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelIntStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelIntStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelIntStatement.AppendLine("FROM");
+                    preparePhysicalModelIntStatement.AppendLine("(");
+                    preparePhysicalModelIntStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
+                    preparePhysicalModelIntStatement.AppendLine(") sub");
+
+                    var physicalModelDataTableInt = GetDataTable(ref connInt, preparePhysicalModelIntStatement.ToString());
+
+                    // PRES
+
+                    var preparePhysicalModelPresStatement = new StringBuilder();
+                    preparePhysicalModelPresStatement.AppendLine("SELECT ");
+                    preparePhysicalModelPresStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelPresStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelPresStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelPresStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelPresStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelPresStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelPresStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelPresStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelPresStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelPresStatement.AppendLine("FROM");
+                    preparePhysicalModelPresStatement.AppendLine("(");
+                    preparePhysicalModelPresStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
+                    preparePhysicalModelPresStatement.AppendLine(") sub");
+
+                    var physicalModelDataTablePres = GetDataTable(ref connPres, preparePhysicalModelPresStatement.ToString());
+
+                    //allDatabaseAttributes.AppendLine("  SELECT * FROM");
+                    // allDatabaseAttributes.AppendLine("  (");
+                    // allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
+                    //allDatabaseAttributes.AppendLine("    UNION ");
+                    // allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
+                    //allDatabaseAttributes.AppendLine("    UNION ");
+                    // allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
+                    //allDatabaseAttributes.AppendLine("    UNION ");
+                    //allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
+                    //allDatabaseAttributes.AppendLine("  ) mapping");
+
+                    if (physicalModelDataTableStg != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTableStg);
+                    }
+
+                    if (physicalModelDataTablePsa != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTablePsa);
+                    }
+
+                    if (physicalModelDataTableInt != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTableInt);
+                    }
+
+                    if (physicalModelDataTablePres != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTablePres);
+                    }
+
                 }
                 else // Get the values from the data grid or worker table (virtual mode)
                 {
@@ -4885,27 +4985,26 @@ namespace TEAM
 
                 try
                 {
-                    var preparePhysicalModelStatement = new StringBuilder();
+                    //var preparePhysicalModelStatement = new StringBuilder();
 
-                    preparePhysicalModelStatement.AppendLine("SELECT ");
-                    preparePhysicalModelStatement.AppendLine(" [DATABASE_NAME] ");
-                    preparePhysicalModelStatement.AppendLine(",[SCHEMA_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[TABLE_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[COLUMN_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[DATA_TYPE]");
-                    preparePhysicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    preparePhysicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    preparePhysicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
-                    preparePhysicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    preparePhysicalModelStatement.AppendLine("FROM");
-                    preparePhysicalModelStatement.AppendLine("(");
+                    //preparePhysicalModelStatement.AppendLine("SELECT ");
+                    //preparePhysicalModelStatement.AppendLine(" [DATABASE_NAME] ");
+                    //preparePhysicalModelStatement.AppendLine(",[SCHEMA_NAME]");
+                    //preparePhysicalModelStatement.AppendLine(",[TABLE_NAME]");
+                    //preparePhysicalModelStatement.AppendLine(",[COLUMN_NAME]");
+                    //preparePhysicalModelStatement.AppendLine(",[DATA_TYPE]");
+                    //preparePhysicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    //preparePhysicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    //preparePhysicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
+                    //preparePhysicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    //preparePhysicalModelStatement.AppendLine("FROM");
+                    //preparePhysicalModelStatement.AppendLine("(");
 
-                    preparePhysicalModelStatement
-                        .Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
+                    //preparePhysicalModelStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
 
-                    preparePhysicalModelStatement.AppendLine(") sub");
+                    //preparePhysicalModelStatement.AppendLine(") sub");
 
-                    var physicalModelDataTable = GetDataTable(ref connOmd, preparePhysicalModelStatement.ToString());
+                    //var physicalModelDataTable = GetDataTable(ref connOmd, preparePhysicalModelStatement.ToString());
 
                     if (physicalModelDataTable.Rows.Count == 0)
                     {
@@ -5505,38 +5604,42 @@ namespace TEAM
 
                 var listHlXref = GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
-                foreach (DataRow tableName in listHlXref.Rows)
+                if (listHlXref != null)
                 {
-                    using (var connection = new SqlConnection(metaDataConnection))
+                    foreach (DataRow tableName in listHlXref.Rows)
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["HUB_NAME"] + " to " +
-                                              tableName["LINK_NAME"] + " relationship.\r\n");
-
-                        var insertStatement = new StringBuilder();
-                        insertStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
-                        insertStatement.AppendLine(
-                            "([HUB_NAME], [LINK_NAME], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
-                        insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + "','" +
-                                                   tableName["LINK_NAME"] + "','" + tableName["HUB_ORDER"] + "','" +
-                                                   tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
-
-                        var command = new SqlCommand(insertStatement.ToString(), connection);
-
-                        try
+                        using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging("--> Processing the " + tableName["HUB_NAME"] + " to " +
+                                                  tableName["LINK_NAME"] + " relationship.\r\n");
 
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +
-                                ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
+                            insertStatement.AppendLine(
+                                "([HUB_NAME], [LINK_NAME], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
+                            insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + "','" +
+                                                       tableName["LINK_NAME"] + "','" + tableName["HUB_ORDER"] + "','" +
+                                                       tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
+
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            }
                         }
                     }
                 }
@@ -6656,7 +6759,7 @@ namespace TEAM
 
                 var listMultiKeys = GetDataTable(ref connOmd, prepareMultiKeyStatement.ToString());
 
-                if (listMultiKeys.Rows.Count == 0)
+                if (listMultiKeys == null || listMultiKeys.Rows.Count == 0)
                 {
                     _alert.SetTextLogging("--> No Multi-Active Keys were detected.\r\n");
                 }
