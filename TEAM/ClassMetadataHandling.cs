@@ -278,7 +278,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///  Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair.
+        ///  Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair (schema/table).
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>

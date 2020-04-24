@@ -33,11 +33,35 @@ namespace TEAM
 
             return localEvent;
         }
+
+
+
+        internal static Event SaveEventToFile(string targetFile, Event inputEvent)
+        {
+            Event localEvent = new Event();
+            try
+            {
+                //Output to file
+                using (var outfile = new StreamWriter(targetFile))
+                {
+                    outfile.Write(inputEvent.eventCode+ ": "+inputEvent.eventDescription);
+                    outfile.Close();
+                }
+
+                localEvent = Event.CreateNewEvent(EventTypes.Information, "The file was successfully saved to disk.\r\n");
+            }
+            catch (Exception ex)
+            {
+                localEvent = Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n");
+            }
+
+            return localEvent;
+        }
     }
 
     public class Utility
     {
-        internal static Event SaveOutputToDisk(string targetFile, string textContent)
+        internal static Event SaveTextToFile(string targetFile, string textContent)
         {
             Event localEvent = new Event();
             try
@@ -49,7 +73,7 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                localEvent = Event.CreateNewEvent(EventTypes.Information, "The file was succesfully saved to disk.\r\n");
+                localEvent = Event.CreateNewEvent(EventTypes.Information, "The file was successfully saved to disk.\r\n");
             }
             catch (Exception ex)
             {
