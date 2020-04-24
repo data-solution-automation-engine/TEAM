@@ -7981,12 +7981,12 @@ namespace TEAM
                 sqlStatementForAttributeVersion.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '"+ fullyQualifiedName.Value+ "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '"+fullyQualifiedName.Key+"')");
                 sqlStatementForAttributeVersion.AppendLine("  OR");
 
-                // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
-                if (filter.StartsWith(ConfigurationSettings.StgTablePrefixValue+"_") || filter.EndsWith("_"+ConfigurationSettings.StgTablePrefixValue))
-                {
-                    var tempFilter = filter.Replace(ConfigurationSettings.StgTablePrefixValue,ConfigurationSettings.PsaTablePrefixValue);
-                    sqlStatementForAttributeVersion.AppendLine("  '" + tempFilter + "',");
-                }
+                //// Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
+                //if (filter.StartsWith(ConfigurationSettings.StgTablePrefixValue+"_") || filter.EndsWith("_"+ConfigurationSettings.StgTablePrefixValue))
+                //{
+                //    var tempFilter = filter.Replace(ConfigurationSettings.StgTablePrefixValue,ConfigurationSettings.PsaTablePrefixValue);
+                //    sqlStatementForAttributeVersion.AppendLine("  '" + tempFilter + "',");
+                //}
             }
             sqlStatementForAttributeVersion.Remove(sqlStatementForAttributeVersion.Length - 6, 6);
             sqlStatementForAttributeVersion.AppendLine();
