@@ -31,15 +31,15 @@ namespace TEAM
 
             //var patternDefinition = new LoadPatternDefinition.LoadPatternDefinitionFileHandling();
 
-            var filePath = GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile;
+            var filePath = GlobalParameters.RootPath + @"..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile;
 
-            updatePatternDefinitions(filePath);
+            UpdatePatternDefinitions(filePath);
 
             dataGridViewLoadPatternDefinition.Focus();
             _formLoading = false;
         }
 
-        private void updatePatternDefinitions(string filePath)
+        private void UpdatePatternDefinitions(string filePath)
         {
             ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(filePath);
 
@@ -53,7 +53,7 @@ namespace TEAM
 
             if (ConfigurationSettings.patternDefinitionList != null)
             {
-                populateLoadPatternDefinitionDataGrid();
+                PopulateLoadPatternDefinitionDataGrid();
                 textBoxLoadPatternPath.Text = Path.GetFullPath(filePath);
             }
             else
@@ -66,7 +66,7 @@ namespace TEAM
         internal static List<LoadPatternDefinition> patternDefinitionList { get; set; }
 
 
-        public void populateLoadPatternDefinitionDataGrid()
+        public void PopulateLoadPatternDefinitionDataGrid()
         {
             // Create a datatable 
             DataTable dt = ConfigurationSettings.patternDefinitionList.ToDataTable();
@@ -198,8 +198,7 @@ namespace TEAM
                 }
 
                 // Save the file, and inform the user.
-                richTextBoxInformationMain.AppendText(
-                    LoadPatternDefinition.SaveLoadPatternDefinition(chosenFile, json));
+                richTextBoxInformationMain.AppendText(LoadPatternDefinition.SaveLoadPatternDefinition(chosenFile, json));
 
                 try
                 {
@@ -261,7 +260,7 @@ namespace TEAM
                 }
                 else
                 {
-                    updatePatternDefinitions(finalPath);
+                    UpdatePatternDefinitions(finalPath);
                     richTextBoxInformationMain.Text = "New pattern definitions have been loaded in memory.";
                 }
 
@@ -314,7 +313,7 @@ namespace TEAM
                     ConfigurationSettings.patternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
 
                     // ... and populate the data grid
-                    populateLoadPatternDefinitionDataGrid();
+                    PopulateLoadPatternDefinitionDataGrid();
 
                     richTextBoxInformationMain.Text="The file " + chosenFile + " was loaded.\r\n";
 

@@ -28,14 +28,15 @@ namespace TEAM
             {
                 if (File.Exists(loadPatternDefinitionFilePath))
                 {
-                    var targetFilePathName = loadPatternDefinitionFilePath + string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss"));
+                    
+                    var targetFilePathName = string.Concat(Path.GetDirectoryName(loadPatternDefinitionFilePath), @"\Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss_"), Path.GetFileName(loadPatternDefinitionFilePath));
 
                     File.Copy(loadPatternDefinitionFilePath, targetFilePathName);
                     returnMessage = "A backup was created at: " + targetFilePathName;
                 }
                 else
                 {
-                    returnMessage = "VEDW couldn't locate a configuration file! Can you check the paths and existence of directories?";
+                    returnMessage = "TEAM could not create a backup of the file.";
                 }
             }
             catch (Exception ex)

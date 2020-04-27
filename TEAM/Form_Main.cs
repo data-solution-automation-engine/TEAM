@@ -73,7 +73,7 @@ namespace TEAM
             // Load the pattern definition file
             try
             {
-                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile);
+                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.RootPath + @"..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile);
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The pattern definition file was loaded successfully.\r\n"));
             }
             catch 
