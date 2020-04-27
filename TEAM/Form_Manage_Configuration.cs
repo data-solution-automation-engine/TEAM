@@ -46,7 +46,7 @@ namespace TEAM
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
             {
-                LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
@@ -440,7 +440,7 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + workingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
-            using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathfileName + GlobalParameters.FileExtension))
+            using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
             {
                 outfile.Write(rootPathConfigurationFile.ToString());
                 outfile.Close();
@@ -748,7 +748,7 @@ namespace TEAM
                     try
                     {
                         LocalInitialiseConnections(GlobalParameters.ConfigurationPath +
-                                                   GlobalParameters.ConfigfileName + '_' +
+                                                   GlobalParameters.ConfigFileName + '_' +
                                                    GlobalParameters.WorkingEnvironment +
                                                    GlobalParameters.FileExtension);
                     }
@@ -776,7 +776,7 @@ namespace TEAM
                     try
                     {
                         LocalInitialiseConnections(GlobalParameters.ConfigurationPath +
-                                                   GlobalParameters.ConfigfileName + '_' +
+                                                   GlobalParameters.ConfigFileName + '_' +
                                                    GlobalParameters.WorkingEnvironment +
                                                    GlobalParameters.FileExtension);
                     }

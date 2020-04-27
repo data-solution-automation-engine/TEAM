@@ -104,8 +104,8 @@ namespace TEAM
             var selectedVersion = GetMaxVersionId(connOmd);
             
             // Set the version in memory
-            GlobalParameters.currentVersionId = selectedVersion;
-            GlobalParameters.highestVersionId = selectedVersion; // On startup, the highest version is the same as the current version
+            GlobalParameters.CurrentVersionId = selectedVersion;
+            GlobalParameters.HighestVersionId = selectedVersion; // On startup, the highest version is the same as the current version
             FileConfiguration.jsonVersionExtension = @"_v" + selectedVersion + ".json";
 
             trackBarVersioning.Maximum = selectedVersion;
@@ -929,7 +929,7 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
             FileConfiguration.jsonVersionExtension = @"_v" + trackBarVersioning.Value + ".json";
-            GlobalParameters.currentVersionId = trackBarVersioning.Value;
+            GlobalParameters.CurrentVersionId = trackBarVersioning.Value;
             
             PopulateTableMappingGridWithVersion(trackBarVersioning.Value);
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
@@ -958,8 +958,8 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             // Check if the current version is the maximum version. At this stage updates on earlier versions are not supported (and cause a NULLreference exception)
-            var highestVersion = GlobalParameters.highestVersionId;
-            var currentVersion = GlobalParameters.currentVersionId;
+            var highestVersion = GlobalParameters.HighestVersionId;
+            var currentVersion = GlobalParameters.CurrentVersionId;
 
             if (currentVersion < highestVersion)
             {
@@ -1098,8 +1098,8 @@ namespace TEAM
             var versionId = GetMaxVersionId(connOmd);
 
             //Make sure the correct version is added to the global parameters
-            GlobalParameters.currentVersionId = versionId;
-            GlobalParameters.highestVersionId = versionId;
+            GlobalParameters.CurrentVersionId = versionId;
+            GlobalParameters.HighestVersionId = versionId;
             FileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
 
             return versionId;
@@ -1862,7 +1862,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFileTableMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
                 FileConfiguration.newFileTableMapping = "false";
             }
@@ -2134,7 +2134,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFilePhysicalModel == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 FileConfiguration.newFilePhysicalModel = "false";
             }
@@ -2477,7 +2477,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFileAttributeMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
                 FileConfiguration.newFileAttributeMapping = "false";
             }
@@ -2935,7 +2935,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId +".json", FormBase.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId +".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -3043,7 +3043,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -7893,8 +7893,8 @@ namespace TEAM
             var sqlStatementForAttributeVersion = new StringBuilder();
 
             sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.currentVersionId + ") + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
-            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.currentVersionId + " AS [VERSION_ID],");
+            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.CurrentVersionId + ") + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
+            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.CurrentVersionId + " AS [VERSION_ID],");
             sqlStatementForAttributeVersion.AppendLine("  DB_NAME(DB_ID('"+databaseName+"')) AS [DATABASE_NAME],");
             sqlStatementForAttributeVersion.AppendLine("  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [SCHEMA_NAME],");
             sqlStatementForAttributeVersion.AppendLine("  OBJECT_NAME(main.OBJECT_ID) AS [TABLE_NAME], ");
@@ -8396,7 +8396,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -8460,7 +8460,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -8636,7 +8636,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)

@@ -100,12 +100,12 @@ namespace TEAM
                 try
                 {
                     var sourceFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                             FormBase.GlobalParameters.ConfigfileName + '_' + "Development" +
+                                             FormBase.GlobalParameters.ConfigFileName + '_' + "Development" +
                                              FormBase.GlobalParameters.FileExtension;
 
                     if (File.Exists(sourceFilePathName))
                     {
-                        var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' + "Production" + FormBase.GlobalParameters.FileExtension;
+                        var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + "Production" + FormBase.GlobalParameters.FileExtension;
 
                         File.Copy(sourceFilePathName, targetFilePathName);
 
@@ -175,18 +175,18 @@ namespace TEAM
             try
             {
                 if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
-                                FormBase.GlobalParameters.ConfigfileName + '_' +
+                                FormBase.GlobalParameters.ConfigFileName + '_' +
                                 FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension))
                 {
                     var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
                                              string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_",
-                                                 FormBase.GlobalParameters.ConfigfileName + '_' +
+                                                 FormBase.GlobalParameters.ConfigFileName + '_' +
                                                  FormBase.GlobalParameters.WorkingEnvironment +
                                                  FormBase.GlobalParameters.FileExtension);
 
                     File.Copy(
-                        FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName +
+                        FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName +
                         '_' + FormBase.GlobalParameters.WorkingEnvironment +
                         FormBase.GlobalParameters.FileExtension, targetFilePathName);
 
@@ -245,7 +245,7 @@ namespace TEAM
             // Create root path file, with dummy values if it doesn't exist already
             try
             {
-                if (!File.Exists(FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathfileName +
+                if (!File.Exists(FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathFileName +
                                  FormBase.GlobalParameters.FileExtension))
                 {
                     var initialConfigurationFile = new StringBuilder();
@@ -257,7 +257,7 @@ namespace TEAM
                     initialConfigurationFile.AppendLine("/* End of file */");
 
                     using (var outfile = new StreamWriter(FormBase.GlobalParameters.RootPath +
-                                                          FormBase.GlobalParameters.PathfileName +
+                                                          FormBase.GlobalParameters.PathFileName +
                                                           FormBase.GlobalParameters.FileExtension))
                     {
                         outfile.Write(initialConfigurationFile.ToString());
@@ -316,12 +316,12 @@ namespace TEAM
             {
                 // Create a default configuration file if the file does not exist as expected
                 if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
-                                FormBase.GlobalParameters.ConfigfileName + '_' +
+                                FormBase.GlobalParameters.ConfigFileName + '_' +
                                 FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension)) return;
                 var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' +
+                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' +
                     FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
             }
             catch (Exception ex)
@@ -361,7 +361,7 @@ namespace TEAM
             // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
             var configList = new Dictionary<string, string>();
             var fs = new FileStream(
-                FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathfileName +
+                FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathFileName +
                 FormBase.GlobalParameters.FileExtension, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
@@ -467,7 +467,7 @@ namespace TEAM
 
                 using (var outfile =
                     new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                     FormBase.GlobalParameters.ConfigfileName + '_' +
+                                     FormBase.GlobalParameters.ConfigFileName + '_' +
                                      FormBase.GlobalParameters.WorkingEnvironment +
                                      FormBase.GlobalParameters.FileExtension))
                 {

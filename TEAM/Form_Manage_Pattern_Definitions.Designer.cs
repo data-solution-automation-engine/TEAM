@@ -137,7 +137,7 @@
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox4.TabIndex = 96;
             this.pictureBox4.TabStop = false;
-            this.pictureBox4.Click += new System.EventHandler(this.openFileClick);
+            this.pictureBox4.Click += new System.EventHandler(this.OpenFileClick);
             // 
             // textBoxLoadPatternPath
             // 

@@ -200,7 +200,7 @@ namespace TEAM
 
                 try
                 {  
-                    using (StreamReader sr = new StreamReader(GlobalParameters.RootPath + @"..\Scripts\generateRepository.sql"))
+                    using (StreamReader sr = new StreamReader(GlobalParameters.ScriptPath+"generateRepository.sql"))
                     {
                         var sqlCommands = sr.ReadToEnd().Split(new string[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -316,7 +316,7 @@ namespace TEAM
                         Dictionary<string,string> fileDictionary= new Dictionary<string, string>();
 
                         // First, figure out which files to process
-                        foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.RootPath + @"..\Files", "*.json"))
+                        foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
                         {
                             var fileName = Path.GetFileName(filePath);
 
@@ -402,7 +402,7 @@ namespace TEAM
             if (checkBoxCreateSampleSource.Checked)
             {
                 PopulateSqlCommandDictionaryFromFile(
-                    GlobalParameters.RootPath + @"..\Scripts\generateSampleSourceSchema.sql", commandDictionary,
+                    GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary,
                     ConfigurationSettings.ConnectionStringSource);
             }
 
@@ -414,13 +414,13 @@ namespace TEAM
                 if (checkBoxDIRECT.Checked)
                 {
                     PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.RootPath + @"..\Scripts\generateSampleStagingSchemaDIRECT.sql",
+                        GlobalParameters.ScriptPath + @"generateSampleStagingSchemaDIRECT.sql",
                         commandDictionary, ConfigurationSettings.ConnectionStringStg);
                 }
                 else
                 {
                     PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.RootPath + @"..\Scripts\generateSampleStagingSchema.sql", commandDictionary,
+                        GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql", commandDictionary,
                         ConfigurationSettings.ConnectionStringStg);
                 }
             }
@@ -433,13 +433,13 @@ namespace TEAM
                 if (checkBoxDIRECT.Checked)
                 {
                     PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.RootPath + @"..\Scripts\generateSamplePersistentStagingSchemaDIRECT.sql",
+                        GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchemaDIRECT.sql",
                         commandDictionary, ConfigurationSettings.ConnectionStringHstg);
                 }
                 else
                 {
                     PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.RootPath + @"..\Scripts\generateSamplePersistentStagingSchema.sql",
+                        GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql",
                         commandDictionary, ConfigurationSettings.ConnectionStringHstg);
                 }
             }
@@ -452,13 +452,13 @@ namespace TEAM
                 if (checkBoxDIRECT.Checked)
                 {
                     PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.RootPath + @"..\Scripts\generateSampleIntegrationSchemaDIRECT.sql",
+                        GlobalParameters.ScriptPath + @"generateSampleIntegrationSchemaDIRECT.sql",
                         commandDictionary, ConfigurationSettings.ConnectionStringInt);
                 }
                 else
                 {
                     PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.RootPath + @"..\Scripts\generateSampleIntegrationSchema.sql", commandDictionary,
+                        GlobalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary,
                         ConfigurationSettings.ConnectionStringInt);
                 }
             }
@@ -475,13 +475,13 @@ namespace TEAM
                     if (checkBoxDIRECT.Checked)
                     {
                         PopulateSqlCommandDictionaryFromFile(
-                            GlobalParameters.RootPath + @"..\Scripts\generateSampleMappingMetadataDIRECT.sql",
+                            GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
                             commandDictionary, ConfigurationSettings.ConnectionStringOmd);
                     }
                     else
                     {
                         PopulateSqlCommandDictionaryFromFile(
-                            GlobalParameters.RootPath + @"..\Scripts\generateSampleMappingMetadata.sql",
+                            GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
                             commandDictionary, ConfigurationSettings.ConnectionStringOmd);
                     }
                 }

@@ -31,7 +31,7 @@ namespace TEAM
 
             //var patternDefinition = new LoadPatternDefinition.LoadPatternDefinitionFileHandling();
 
-            var filePath = GlobalParameters.RootPath + @"..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile;
+            var filePath = GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile;
 
             UpdatePatternDefinitions(filePath);
 
@@ -41,25 +41,24 @@ namespace TEAM
 
         private void UpdatePatternDefinitions(string filePath)
         {
+            filePath = Path.GetFullPath(filePath);
+
             ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(filePath);
 
             // Load Pattern definition in memory
             if ((ConfigurationSettings.patternDefinitionList != null) && (!ConfigurationSettings.patternDefinitionList.Any()))
             {
-                richTextBoxInformationMain.Text =
-                    "There are no pattern definitions / types found in the designated load pattern directory. Please verify if the file " +
-                    filePath + "exists.";
+                richTextBoxInformationMain.Text = "There are no pattern definitions / types found in the designated load pattern directory. Please verify if the file " + filePath + " exists.";
             }
 
             if (ConfigurationSettings.patternDefinitionList != null)
             {
                 PopulateLoadPatternDefinitionDataGrid();
-                textBoxLoadPatternPath.Text = Path.GetFullPath(filePath);
+                textBoxLoadPatternPath.Text = filePath;
             }
             else
             {
-                richTextBoxInformationMain.Text =
-                    "The pattern definition file could not be loaded. Please verify if the file " + filePath + "exists.";
+                richTextBoxInformationMain.Text = "The pattern definition file could not be loaded. Please verify if the file " + filePath + " exists.";
             }
         }
 
@@ -221,7 +220,7 @@ namespace TEAM
             GridAutoLayoutLoadPatternDefinition();
         }
 
-        private void openFileClick(object sender, EventArgs e)
+        private void OpenFileClick(object sender, EventArgs e)
         {
             var fileBrowserDialog = new OpenFileDialog();
             fileBrowserDialog.Title = "Open Pattern Definition File";
@@ -296,7 +295,7 @@ namespace TEAM
             {
                 Title = @"Open Load Pattern Definition File",
                 Filter = @"Load Pattern Definition|*.json",
-                InitialDirectory = GlobalParameters.LoadPatternListPath
+                InitialDirectory = GlobalParameters.LoadPatternPath
             };
 
             var ret = STAShowDialog(theDialog);

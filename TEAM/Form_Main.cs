@@ -62,7 +62,7 @@ namespace TEAM
             // Load the available configuration file
             try
             {
-                EnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                EnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration settings (file) have been loaded.\r\n"));
             }
             catch
@@ -73,7 +73,7 @@ namespace TEAM
             // Load the pattern definition file
             try
             {
-                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.RootPath + @"..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile);
+                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The pattern definition file was loaded successfully.\r\n"));
             }
             catch 

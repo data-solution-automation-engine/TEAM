@@ -166,18 +166,21 @@ namespace TEAM
         internal static class GlobalParameters
         {
             // TEAM core path parameters
-            public static string RootPath { get; } = Application.StartupPath + @"\Configuration\";
-            public static string ConfigfileName { get; set; } = "TEAM_configuration";
-            public static string PathfileName { get; set; } = "TEAM_Path_configuration";
+            public static string RootPath { get; } = Application.StartupPath;
+            public static string ConfigurationPath { get; set; } = RootPath + @"\Configuration\";
+            public static string OutputPath { get; set; } = RootPath + @"\Output\";
+            public static string ScriptPath { get; set; } = RootPath + @"\Scripts\";
+            public static string FilesPath { get; set; } = RootPath + @"\Files\";
+            internal static string LoadPatternPath { get; set; } = RootPath + @"\LoadPatterns\";
+
+            public static string ConfigFileName { get; set; } = "TEAM_configuration";
+            public static string PathFileName { get; set; } = "TEAM_Path_configuration";
             public static string ValidationFileName { get; set; } = "TEAM_validation";
             public static string FileExtension { get; set; } = ".txt";
 
-            // TEAM core path variables
-            public static string ConfigurationPath { get; set; } = Application.StartupPath + @"\Configuration\";
-            public static string OutputPath { get; set; } = Application.StartupPath + @"\Output\";
             internal static string WorkingEnvironment { get; set; } = "Development";
             
-            // Database defaults
+
             public static string DefaultSchema { get; set; } = "dbo";
 
             // Json file name parameters
@@ -185,12 +188,12 @@ namespace TEAM
             public static string JsonAttributeMappingFileName { get; set; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; set; } = "TEAM_Model_Metadata";
             public static string JsonExtension { get; set; } = ".json";
-            internal static string LoadPatternListPath { get; } = Application.StartupPath + @"\LoadPatterns\";
+
 
             public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";
             // Version handling
-            public static int currentVersionId { get; set; } = 0;
-            public static int highestVersionId { get; set; } = 0;
+            public static int CurrentVersionId { get; set; } = 0;
+            public static int HighestVersionId { get; set; } = 0;
         }
 
 
