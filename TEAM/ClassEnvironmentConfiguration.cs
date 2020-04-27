@@ -148,6 +148,9 @@ namespace TEAM
             validationFile.AppendLine("TargetObjectExistence|True");
             validationFile.AppendLine("BusinessKeyExistence|True");
 
+            validationFile.AppendLine("SourceAttributeExistence|True");
+            validationFile.AppendLine("TargetAttributeExistence|True");
+
             // Consistency validation
             validationFile.AppendLine("LogicalGroup|True");
             validationFile.AppendLine("LinkKeyOrder|True");
