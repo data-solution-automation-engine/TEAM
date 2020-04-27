@@ -26,31 +26,41 @@ namespace TEAM
         // TEAM form constructor
         public FormManagePattern(FormMain parent) : base(parent)
         {
-            this.parentFormMain = parent;
+            parentFormMain = parent;
             InitializeComponent();
 
             //var patternDefinition = new LoadPatternDefinition.LoadPatternDefinitionFileHandling();
-            ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition();
+
+            var filePath = GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile;
+
+            updatePatternDefinitions(filePath);
+
+            dataGridViewLoadPatternDefinition.Focus();
+            _formLoading = false;
+        }
+
+        private void updatePatternDefinitions(string filePath)
+        {
+            ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(filePath);
 
             // Load Pattern definition in memory
             if ((ConfigurationSettings.patternDefinitionList != null) && (!ConfigurationSettings.patternDefinitionList.Any()))
             {
-                richTextBoxInformationMain.Text= "There are no pattern definitions / types found in the designated load pattern directory. Please verify if the file "+ GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile + "exits.";
+                richTextBoxInformationMain.Text =
+                    "There are no pattern definitions / types found in the designated load pattern directory. Please verify if the file " +
+                    filePath + "exists.";
             }
 
-            if (ConfigurationSettings.patternDefinitionList != null) 
+            if (ConfigurationSettings.patternDefinitionList != null)
             {
                 populateLoadPatternDefinitionDataGrid();
-                textBoxLoadPatternPath.Text = GlobalParameters.LoadPatternListPath;
+                textBoxLoadPatternPath.Text = Path.GetFullPath(filePath);
             }
             else
             {
-                richTextBoxInformationMain.Text = "The pattern definition file could not be loaded. Please verify if the file " + GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile + "exits.";
-
+                richTextBoxInformationMain.Text =
+                    "The pattern definition file could not be loaded. Please verify if the file " + filePath + "exists.";
             }
-
-            dataGridViewLoadPatternDefinition.Focus();
-            _formLoading = false;
         }
 
         internal static List<LoadPatternDefinition> patternDefinitionList { get; set; }
@@ -154,14 +164,12 @@ namespace TEAM
             {
                 richTextBoxInformationMain.Clear();
 
-                var chosenFile = GlobalParameters.LoadPatternListPath + GlobalParameters.LoadPatternDefinitionFile;
+                var chosenFile = textBoxLoadPatternPath.Text;
 
-
+                // Prepare the data grid and make sure the output is sorted
                 DataTable gridDataTable = (DataTable)_bindingSourceLoadPatternDefinition.DataSource;
 
-                // Make sure the output is sorted
                 gridDataTable.DefaultView.Sort = "[KEY] ASC";
-
                 gridDataTable.TableName = "LoadPatternDefinition";
 
                 JArray outputFileArray = new JArray();
@@ -183,37 +191,24 @@ namespace TEAM
 
                 string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-                // Create a backup file, if enabled
+                // Create a backup file, if enabled, and inform the user.
                 if (checkBoxBackupFiles.Checked)
                 {
-                    try
-                    {
-                        var backupFile = new ClassJsonHandling();
-                        var targetFileName = backupFile.BackupJsonFile(GlobalParameters.LoadPatternDefinitionFile, GlobalParameters.LoadPatternListPath);
-                        richTextBoxInformationMain.Text="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformationMain.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " +
-                                                          exception + ".";
-                    }
+                    richTextBoxInformationMain.AppendText(LoadPatternDefinition.BackupLoadPatternDefinition(chosenFile)+"\r\n");
                 }
 
-                File.WriteAllText(chosenFile, json);
-
-                richTextBoxInformationMain.Text = "The file " + chosenFile + " was updated.\r\n";
+                // Save the file, and inform the user.
+                richTextBoxInformationMain.AppendText(
+                    LoadPatternDefinition.SaveLoadPatternDefinition(chosenFile, json));
 
                 try
                 {
-                    // Quick fix, in the file again to commit changes to memory.
-                    ConfigurationSettings.patternDefinitionList =
-                        JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
+                   ConfigurationSettings.patternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
         
                 }
                 catch (Exception ex)
                 {
-                    richTextBoxInformationMain.AppendText(
-                        "An issue was encountered when regenerating the UI (Tab Pages). The reported error is " + ex);
+                    richTextBoxInformationMain.AppendText("An issue was encountered committing the information to memory. The reported error is " + ex);
                 }
             }
             catch (Exception ex)
@@ -229,46 +224,45 @@ namespace TEAM
 
         private void openFileClick(object sender, EventArgs e)
         {
-            var fileBrowserDialog = new FolderBrowserDialog();
-            fileBrowserDialog.SelectedPath = textBoxLoadPatternPath.Text;
+            var fileBrowserDialog = new OpenFileDialog();
+            fileBrowserDialog.Title = "Open Pattern Definition File";
+            fileBrowserDialog.InitialDirectory = Path.GetDirectoryName(textBoxLoadPatternPath.Text);
 
             DialogResult result = fileBrowserDialog.ShowDialog();
 
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fileBrowserDialog.SelectedPath))
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fileBrowserDialog.InitialDirectory))
             {
-                string[] files = Directory.GetFiles(fileBrowserDialog.SelectedPath);
+                string[] files = Directory.GetFiles(fileBrowserDialog.InitialDirectory);
 
                 int fileCounter = 0;
                 foreach (string file in files)
                 {
-                    if (file.Contains("loadPatternCollection"))
+                    if (file.Contains("loadPatternDefinition"))
                     {
                         fileCounter++;
                     }
                 }
 
-                string finalPath = "";
-                if (fileBrowserDialog.SelectedPath.EndsWith(@"\"))
+                string finalPath;
+                if (fileBrowserDialog.InitialDirectory.EndsWith(@"\"))
                 {
-                    finalPath = fileBrowserDialog.SelectedPath;
+                    finalPath = fileBrowserDialog.FileName.Replace(@"\", "");
                 }
                 else
                 {
-                    finalPath = fileBrowserDialog.SelectedPath + @"\";
+                    finalPath = fileBrowserDialog.FileName;
                 }
-
 
                 textBoxLoadPatternPath.Text = finalPath;
 
                 if (fileCounter == 0)
                 {
-                    richTextBoxInformationMain.Text =
-                        "The selected directory does not seem to contain a loadPatternCollection.json file. Did you select a correct Load Pattern directory?";
+                    richTextBoxInformationMain.Text = "The selected directory does not seem to contain a loadPatternCollection.json file. Did you select a correct Load Pattern directory?";
                 }
                 else
                 {
-                    richTextBoxInformationMain.Text =
-                        "The path now points to a directory that contains the loadPatternCollection.json Load Pattern Collection file.";
+                    updatePatternDefinitions(finalPath);
+                    richTextBoxInformationMain.Text = "New pattern definitions have been loaded in memory.";
                 }
 
             }

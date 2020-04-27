@@ -35,8 +35,7 @@ namespace TEAM
                 }
                 else
                 {
-                    returnMessage =
-                        "VEDW couldn't locate a configuration file! Can you check the paths and existence of directories?";
+                    returnMessage = "VEDW couldn't locate a configuration file! Can you check the paths and existence of directories?";
                 }
             }
             catch (Exception ex)
@@ -47,45 +46,14 @@ namespace TEAM
             return returnMessage;
         }
 
-        internal Dictionary<String, String> MatchConnectionKey()
-        {
-            Dictionary<string, string> returnValue = new Dictionary<string, string>();
-
-            if (LoadPatternConnectionKey == "SourceDatabase")
-            {
-                returnValue.Add(LoadPatternConnectionKey, FormBase.ConfigurationSettings.ConnectionStringSource);
-            }
-            else if (LoadPatternConnectionKey == "StagingDatabase")
-            {
-                returnValue.Add(LoadPatternConnectionKey, FormBase.ConfigurationSettings.ConnectionStringStg);
-            }
-            else if (LoadPatternConnectionKey == "PersistentStagingDatabase")
-            {
-                returnValue.Add(LoadPatternConnectionKey, FormBase.ConfigurationSettings.ConnectionStringHstg);
-            }
-            else if (LoadPatternConnectionKey == "IntegrationDatabase")
-            {
-                returnValue.Add(LoadPatternConnectionKey, FormBase.ConfigurationSettings.ConnectionStringInt);
-            }
-            else if (LoadPatternConnectionKey == "PresentationDatabase")
-            {
-                returnValue.Add(LoadPatternConnectionKey, FormBase.ConfigurationSettings.ConnectionStringPres);
-            }
-
-            return returnValue;
-        }
-
-
-        internal static List<LoadPatternDefinition> DeserializeLoadPatternDefinition()
+        internal static List<LoadPatternDefinition> DeserializeLoadPatternDefinition(string filePath)
         {
             List<LoadPatternDefinition> loadPatternDefinitionList = new List<LoadPatternDefinition>();
 
             // Retrieve the file contents and store in a string
-            if (File.Exists(FormBase.GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" +
-                            FormBase.GlobalParameters.LoadPatternDefinitionFile))
+            if (File.Exists(filePath))
             {
-                var jsonInput = File.ReadAllText(FormBase.GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" +
-                                                 FormBase.GlobalParameters.LoadPatternDefinitionFile);
+                var jsonInput = File.ReadAllText(filePath);
 
                 //Move the (json) string into a List object (a list of the type LoadPattern)
                 loadPatternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(jsonInput);

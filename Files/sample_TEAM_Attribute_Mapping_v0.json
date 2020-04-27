@@ -1,0 +1,191 @@
+[
+  {
+    "attributeMappingHash": "08D10654B68EF89D18F648D8AA308A61",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "sourceAttribute": "End_Date",
+    "targetTable": "LSAT_MEMBERSHIP",
+    "targetAttribute": "MEMBERSHIP_END_DATE",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "FBD89368C300F35E98110E679FB40C79",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "sourceAttribute": "Start_Date",
+    "targetTable": "LSAT_MEMBERSHIP",
+    "targetAttribute": "MEMBERSHIP_START_DATE",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "F496F21A312465285C0059F2D06FCA18",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "sourceAttribute": "Status",
+    "targetTable": "LNK_MEMBERSHIP",
+    "targetAttribute": "SALES_CHANNEL",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "C9E29ADFABAC328A780A96BC1478F928",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "sourceAttribute": "Status",
+    "targetTable": "LSAT_MEMBERSHIP",
+    "targetAttribute": "MEMBERSHIP_STATUS",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "DDBC50F91D3AC63546827D650A46644B",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Contact_Number",
+    "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "targetAttribute": "CONTACT_NUMBER",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "18CF75AE4394DC3390DDCEE267FA9F7E",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Country",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "COUNTRY",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "67B058DB9F60A2A1AEA821062BEEDB3A",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "DOB",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "DATE_OF_BIRTH",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "03F344021F65DC207E87808799E92042",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Gender",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "GENDER",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "6D20BF8D1F6ECB156CFFE0FBFD3A3B9C",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Given",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "GIVEN_NAME",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "17E6EE3CE5533F72D4F93800120BB8F5",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Postcode",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "POSTCODE",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "1C649519A289968B178C907D7C3446AA",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Referee_Offer_Made",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "REFERRAL_OFFER_MADE_INDICATOR",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "890D69920FC254A262EC7938F8BC9906",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "State",
+    "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "targetAttribute": "STATE",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "AB8C7D88DD08CF660F76B749B342890E",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Suburb",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "SUBURB",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "BEFA6A7B461A8D4AA0F57CBC4326B312",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Surname",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "SURNAME",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "FCCC0B74D4F43AB134EEFC045972E1E6",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_ESTIMATED_WORTH",
+    "sourceAttribute": "Date_effective",
+    "targetTable": "SAT_MEMBERSHIP_PLAN_VALUATION",
+    "targetAttribute": "PLAN_VALUATION_DATE",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "DFB00F4074CA088785ADA92FFF090F7E",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_ESTIMATED_WORTH",
+    "sourceAttribute": "Value_Amount",
+    "targetTable": "SAT_MEMBERSHIP_PLAN_VALUATION",
+    "targetAttribute": "PLAN_VALUATION_AMOUNT",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "D8269A1EA821649D4D25F775A759C13C",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_OFFER",
+    "sourceAttribute": "Offer_Long_Description",
+    "targetTable": "SAT_INCENTIVE_OFFER",
+    "targetAttribute": "OFFER_DESCRIPTION",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "CEFCBB74A4A9A79A8B0B00E09E88C708",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "sourceAttribute": "Date_effective",
+    "targetTable": "LSAT_CUSTOMER_COSTING",
+    "targetAttribute": "COSTING_EFFECTIVE_DATE",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "7FFA5F7AC42464D057AEE3C8B1BF2667",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "sourceAttribute": "Monthly_Cost",
+    "targetTable": "LSAT_CUSTOMER_COSTING",
+    "targetAttribute": "PERSONAL_MONTHLY_COST",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "C47254B166182C3BC3E60DFFA8AE7FB6",
+    "versionId": "0",
+    "sourceTable": "PSA_PROFILER_PLAN",
+    "sourceAttribute": "Plan_Desc",
+    "targetTable": "SAT_MEMBERSHIP_PLAN_DETAIL",
+    "targetAttribute": "PLAN_DESCRIPTION",
+    "transformationRule": ""
+  },
+  {
+    "attributeMappingHash": "16DC973FA3405716C6A0A74502876564",
+    "versionId": "0",
+    "sourceTable": "PSA_USERMANAGED_SEGMENT",
+    "sourceAttribute": "Demographic_Segment_Description",
+    "targetTable": "SAT_SEGMENT",
+    "targetAttribute": "SEGMENT_DESCRIPTION",
+    "transformationRule": ""
+  }
+]

@@ -67,13 +67,13 @@ namespace TEAM
             }
             catch
             {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the user configuration file.")); ;
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the user configuration file."));
             }
 
             // Load the pattern definition file
             try
             {
-                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition();
+                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.RootPath + @"..\..\..\LoadPatterns\" + GlobalParameters.LoadPatternDefinitionFile);
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The pattern definition file was loaded successfully.\r\n"));
             }
             catch 
@@ -246,7 +246,7 @@ namespace TEAM
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 labelActiveVersion.Text = "There has been an error displaying the active version";
             }
@@ -273,7 +273,7 @@ namespace TEAM
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // THROW EXCEPTION
             }
