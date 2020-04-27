@@ -7395,7 +7395,7 @@ namespace TEAM
                             dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["BUSINESS_CONCEPT"] + "\" Target=\"" + (string)row["CONTEXT_TABLE"] + "\" />");
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         errorCounter++;
                         errorLog.AppendLine("The following query caused an issue when generating the DGML file: " + sqlStatementForLinkCategories);

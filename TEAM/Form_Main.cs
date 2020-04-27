@@ -21,8 +21,11 @@ namespace TEAM
             EventLog eventLog = new EventLog();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.0.0";
+            const string versionNumberForTeamApplication = "v1.6.0";
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
+
+            //richTextBoxInformation.AppendText("Starting from "+GlobalParameters.RootPath+"\r\n\r\n");
+            //richTextBoxInformation.AppendText("Script path is " + GlobalParameters.ScriptPath + "\r\n\r\n");
 
             richTextBoxInformation.AppendText("Initialising the application.\r\n\r\n");
 

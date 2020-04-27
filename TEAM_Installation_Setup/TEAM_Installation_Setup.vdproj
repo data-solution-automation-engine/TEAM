@@ -8232,15 +8232,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
-        "ProductCode" = "8:{7C5D3C50-66FF-46C1-B124-EC30AE4E5AAA}"
-        "PackageCode" = "8:{79C1B9D3-AC13-4EE2-9F5D-025C63ED6D4D}"
+        "ProductCode" = "8:{8A7E6F0A-6473-4BFC-AE23-363D2BB73F84}"
+        "PackageCode" = "8:{5AD8FBBD-6489-4D8A-93B6-D6BF406D852B}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.6.0.0"
+        "ProductVersion" = "8:1.6.0"
         "Manufacturer" = "8:Roelant Vos"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.roelantvos.com/blog"
@@ -8782,7 +8782,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2CA91C3E5CDB4111B03879697165DB37"
             {
-            "SourcePath" = "8:..\\TEAM\\obj\\Debug\\TEAM.exe"
+            "SourcePath" = "8:..\\TEAM\\obj\\Release\\TEAM.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
