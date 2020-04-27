@@ -52,19 +52,33 @@ namespace TEAM
         {
             string returnExistenceEvaluation = "False";
 
-            var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject).Replace("[","").Replace("]","");
-            var schemaName = ClassMetadataHandling.GetSchema(validationObject);
+            // Temporary fix to allow 'transformations', in this case hard-coded NULL values to be loaded.
+            if (validationAttribute != "NULL")
+            {
 
-            var conn = new SqlConnection { ConnectionString = connectionString };
-            conn.Open();
+                var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject).Replace("[", "")
+                    .Replace("]", "");
+                var schemaName = ClassMetadataHandling.GetSchema(validationObject);
 
-            // Execute the check
-            var cmd = new SqlCommand("SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE [TABLE_NAME] = '" + objectName + "' AND [TABLE_SCHEMA] = '" + schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key.Replace("[", "").Replace("]", "") + "' AND [COLUMN_NAME] = '"+ validationAttribute + "')) THEN 1 ELSE 0 END", conn);
+                var conn = new SqlConnection {ConnectionString = connectionString};
+                conn.Open();
 
-            var exists = (int)cmd.ExecuteScalar() == 1;
-            returnExistenceEvaluation = exists.ToString();
+                // Execute the check
+                var cmd = new SqlCommand(
+                    "SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE [TABLE_NAME] = '" +
+                    objectName + "' AND [TABLE_SCHEMA] = '" +
+                    schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key.Replace("[", "").Replace("]", "") +
+                    "' AND [COLUMN_NAME] = '" + validationAttribute + "')) THEN 1 ELSE 0 END", conn);
 
-            conn.Close();
+                var exists = (int) cmd.ExecuteScalar() == 1;
+                returnExistenceEvaluation = exists.ToString();
+
+                conn.Close();
+            }
+            else
+            {
+                returnExistenceEvaluation = "True";
+            }
 
             // return the result of the test;
             return returnExistenceEvaluation;
@@ -75,10 +89,18 @@ namespace TEAM
         {
             string returnExistenceEvaluation = "False";
 
-            DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
-            bool existenceCheck = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == validationObject));
+            var objectDetails = ClassMetadataHandling.GetSchema(validationObject).FirstOrDefault();
 
-            returnExistenceEvaluation = existenceCheck.ToString();
+            //DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
+
+            DataRow[] foundRows = inputDataTable.Select("TABLE_NAME = '"+ objectDetails.Value+ "' AND SCHEMA_NAME='"+ objectDetails.Key+"'");
+
+            //bool existenceCheck = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == objectName));
+
+            if (foundRows.Length > 0)
+            {
+                returnExistenceEvaluation = "True";
+            }
 
             // return the result of the test;
             return returnExistenceEvaluation;
@@ -89,12 +111,30 @@ namespace TEAM
         {
             string returnExistenceEvaluation = "False";
 
-            DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
+            if (validationAttribute != "NULL")
+            {
 
-            bool existenceCheckTables = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == validationObject));
-            bool existenceCheckAttributes = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == validationAttribute));
+                //DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
 
-            if (existenceCheckTables == true && existenceCheckAttributes == true)
+                //bool existenceCheckTables = inputDataTable.AsEnumerable()
+                //    .Any(row => columns.Any(col => row[col].ToString() == validationObject));
+                //bool existenceCheckAttributes = inputDataTable.AsEnumerable()
+                //    .Any(row => columns.Any(col => row[col].ToString() == validationAttribute));
+
+                //if (existenceCheckTables == true && existenceCheckAttributes == true)
+                //{
+                //    returnExistenceEvaluation = "True";
+                //}
+                var objectDetails = ClassMetadataHandling.GetSchema(validationObject).FirstOrDefault();
+
+                DataRow[] foundRows = inputDataTable.Select("TABLE_NAME = '" + objectDetails.Value + "' AND SCHEMA_NAME='" + objectDetails.Key + "' AND COLUMN_NAME = '"+validationAttribute+"'");
+
+                if (foundRows.Length > 0)
+                {
+                    returnExistenceEvaluation = "True";
+                }
+            }
+            else
             {
                 returnExistenceEvaluation = "True";
             }
@@ -463,9 +503,11 @@ namespace TEAM
                     }
                     else
                     {
+                        var objectDetails = ClassMetadataHandling.GetSchema(validationObject.Item1).FirstOrDefault();
+
                         bool returnExistenceEvaluation = false;
 
-                        DataRow[] foundAuthors = inputDataTable.Select("TABLE_NAME = '" + validationObject.Item1 + "' AND COLUMN_NAME = '"+ businessKeyPart.Trim() + "'");
+                        DataRow[] foundAuthors = inputDataTable.Select("TABLE_NAME = '" + objectDetails.Value + "' AND SCHEMA_NAME = '"+objectDetails.Key+"' AND COLUMN_NAME = '"+ businessKeyPart.Trim() + "'");
                         if (foundAuthors.Length != 0)
                         {
                             returnExistenceEvaluation = true;
