@@ -248,7 +248,7 @@ namespace TEAM
             // Create root path file, with dummy values if it doesn't exist already
             try
             {
-                if (!File.Exists(FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathFileName +
+                if (!File.Exists(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
                                  FormBase.GlobalParameters.FileExtension))
                 {
                     var initialConfigurationFile = new StringBuilder();
@@ -259,7 +259,7 @@ namespace TEAM
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
                     initialConfigurationFile.AppendLine("/* End of file */");
 
-                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.RootPath +
+                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
                                                           FormBase.GlobalParameters.PathFileName +
                                                           FormBase.GlobalParameters.FileExtension))
                     {
@@ -364,7 +364,7 @@ namespace TEAM
             // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
             var configList = new Dictionary<string, string>();
             var fs = new FileStream(
-                FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathFileName +
+                FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
                 FormBase.GlobalParameters.FileExtension, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
