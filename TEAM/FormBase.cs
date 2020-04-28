@@ -83,7 +83,6 @@ namespace TEAM
             internal static string PsaKeyLocation { get; set; }
             internal static string SchemaName { get; set; }
 
-            internal static string SourceSystemPrefix { get; set; }
 
             internal static string EventDateTimeAttribute { get; set; }
 
@@ -97,7 +96,6 @@ namespace TEAM
 
             internal static string EtlProcessAttribute { get; set; }
 
-
             internal static string EtlProcessUpdateAttribute { get; set; }
 
             internal static string RowIdAttribute { get; set; }
@@ -105,7 +103,6 @@ namespace TEAM
             internal static string RecordChecksumAttribute { get; set; }
 
             internal static string CurrentRowAttribute { get; set; }
-
 
             internal static string AlternativeRecordSourceAttribute { get; set; }
 
@@ -131,7 +128,6 @@ namespace TEAM
             internal static string TableNamingLocation { get; set; } // The location if the table classification (i.e. HUB OR SAT) is a prefix (HUB_CUSTOMER) or suffix (CUSTOMER_HUB).
             internal static string KeyNamingLocation { get; set; } // The location if the key (i.e. HSH or SK), whether it is a prefix (SK_CUSTOMER) or a suffix (CUSTOMER_SK).
 
-
             internal static string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }
 
             internal static string EnableAlternativeRecordSourceAttribute { get; set; }
@@ -139,6 +135,9 @@ namespace TEAM
             internal static string EnableAlternativeLoadDateTimeAttribute { get; set; }
 
             internal static string MetadataRepositoryType { get; set; }
+
+            // File paths
+            public static List<LoadPatternDefinition> patternDefinitionList { get; set; }
         }
 
         /// <summary>
@@ -150,6 +149,8 @@ namespace TEAM
             public static string SourceObjectExistence { get; set; }
             public static string TargetObjectExistence { get; set; }
             public static string SourceBusinessKeyExistence { get; set; }
+            public static string SourceAttributeExistence { get; set; }
+            public static string TargetAttributeExistence { get; set; }
 
             // Consistency of the unit of work
             public static string LogicalGroup { get; set; }
@@ -159,25 +160,27 @@ namespace TEAM
             public static string BusinessKeySyntax { get; set; }
         }
 
-
         /// <summary>
         ///    These variables are used as global variables throughout the application
         /// </summary>
         internal static class GlobalParameters
         {
             // TEAM core path parameters
-            public static string RootPath { get; } = Application.StartupPath + @"\Configuration\";
-            public static string ConfigfileName { get; set; } = "TEAM_configuration";
-            public static string PathfileName { get; set; } = "TEAM_Path_configuration";
+            public static string RootPath { get; } = Application.StartupPath;
+            public static string ConfigurationPath { get; set; } = RootPath + @"\Configuration\";
+            public static string OutputPath { get; set; } = RootPath + @"\Output\";
+            public static string ScriptPath { get; set; } = RootPath + @"\Scripts\";
+            public static string FilesPath { get; set; } = RootPath + @"\Files\";
+            internal static string LoadPatternPath { get; set; } = RootPath + @"\LoadPatterns\";
+
+            public static string ConfigFileName { get; set; } = "TEAM_configuration";
+            public static string PathFileName { get; set; } = "TEAM_Path_configuration";
             public static string ValidationFileName { get; set; } = "TEAM_validation";
             public static string FileExtension { get; set; } = ".txt";
 
-            // TEAM core path variables
-            public static string ConfigurationPath { get; set; } = Application.StartupPath + @"\Configuration\";
-            public static string OutputPath { get; set; } = Application.StartupPath + @"\Output\";
             internal static string WorkingEnvironment { get; set; } = "Development";
             
-            // Database defaults
+
             public static string DefaultSchema { get; set; } = "dbo";
 
             // Json file name parameters
@@ -186,10 +189,11 @@ namespace TEAM
             public static string JsonModelMetadataFileName { get; set; } = "TEAM_Model_Metadata";
             public static string JsonExtension { get; set; } = ".json";
 
-            // Version handling
-            public static int currentVersionId { get; set; } = 0;
-            public static int highestVersionId { get; set; } = 0;
 
+            public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";
+            // Version handling
+            public static int CurrentVersionId { get; set; } = 0;
+            public static int HighestVersionId { get; set; } = 0;
         }
 
 

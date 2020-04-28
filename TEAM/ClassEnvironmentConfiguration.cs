@@ -9,7 +9,7 @@ namespace TEAM
     /// <summary>
     ///   The configuration information used to drive variables and make the various configuration settings available in the application
     /// </summary>
-    internal class ClassEnvironmentConfiguration
+    internal class EnvironmentConfiguration
     {
         /// <summary>
         ///    Method to create a new configuration file with default values at the default location
@@ -54,7 +54,6 @@ namespace TEAM
                 initialConfigurationFile.AppendLine(@"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
                 initialConfigurationFile.AppendLine(@"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
 
-                initialConfigurationFile.AppendLine("SourceSystemPrefix|PROFILER");
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
                 initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
@@ -101,12 +100,12 @@ namespace TEAM
                 try
                 {
                     var sourceFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                             FormBase.GlobalParameters.ConfigfileName + '_' + "Development" +
+                                             FormBase.GlobalParameters.ConfigFileName + '_' + "Development" +
                                              FormBase.GlobalParameters.FileExtension;
 
                     if (File.Exists(sourceFilePathName))
                     {
-                        var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' + "Production" + FormBase.GlobalParameters.FileExtension;
+                        var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + "Production" + FormBase.GlobalParameters.FileExtension;
 
                         File.Copy(sourceFilePathName, targetFilePathName);
 
@@ -149,6 +148,9 @@ namespace TEAM
             validationFile.AppendLine("TargetObjectExistence|True");
             validationFile.AppendLine("BusinessKeyExistence|True");
 
+            validationFile.AppendLine("SourceAttributeExistence|True");
+            validationFile.AppendLine("TargetAttributeExistence|True");
+
             // Consistency validation
             validationFile.AppendLine("LogicalGroup|True");
             validationFile.AppendLine("LinkKeyOrder|True");
@@ -176,18 +178,18 @@ namespace TEAM
             try
             {
                 if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
-                                FormBase.GlobalParameters.ConfigfileName + '_' +
+                                FormBase.GlobalParameters.ConfigFileName + '_' +
                                 FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension))
                 {
                     var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                             string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_",
-                                                 FormBase.GlobalParameters.ConfigfileName + '_' +
+                                             string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_",
+                                                 FormBase.GlobalParameters.ConfigFileName + '_' +
                                                  FormBase.GlobalParameters.WorkingEnvironment +
                                                  FormBase.GlobalParameters.FileExtension);
 
                     File.Copy(
-                        FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName +
+                        FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName +
                         '_' + FormBase.GlobalParameters.WorkingEnvironment +
                         FormBase.GlobalParameters.FileExtension, targetFilePathName);
 
@@ -246,7 +248,7 @@ namespace TEAM
             // Create root path file, with dummy values if it doesn't exist already
             try
             {
-                if (!File.Exists(FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathfileName +
+                if (!File.Exists(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
                                  FormBase.GlobalParameters.FileExtension))
                 {
                     var initialConfigurationFile = new StringBuilder();
@@ -257,8 +259,8 @@ namespace TEAM
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
                     initialConfigurationFile.AppendLine("/* End of file */");
 
-                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.RootPath +
-                                                          FormBase.GlobalParameters.PathfileName +
+                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
+                                                          FormBase.GlobalParameters.PathFileName +
                                                           FormBase.GlobalParameters.FileExtension))
                     {
                         outfile.Write(initialConfigurationFile.ToString());
@@ -317,12 +319,12 @@ namespace TEAM
             {
                 // Create a default configuration file if the file does not exist as expected
                 if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
-                                FormBase.GlobalParameters.ConfigfileName + '_' +
+                                FormBase.GlobalParameters.ConfigFileName + '_' +
                                 FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension)) return;
-                var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigfileName + '_' +
+                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' +
                     FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
             }
             catch (Exception ex)
@@ -340,7 +342,7 @@ namespace TEAM
                                 FormBase.GlobalParameters.ValidationFileName + '_' +
                                 FormBase.GlobalParameters.WorkingEnvironment +
                                 FormBase.GlobalParameters.FileExtension)) return;
-                var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
                     FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName +
                     '_' + FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
@@ -362,7 +364,7 @@ namespace TEAM
             // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
             var configList = new Dictionary<string, string>();
             var fs = new FileStream(
-                FormBase.GlobalParameters.RootPath + FormBase.GlobalParameters.PathfileName +
+                FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
                 FormBase.GlobalParameters.FileExtension, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
@@ -371,7 +373,7 @@ namespace TEAM
                 string textline;
                 while ((textline = sr.ReadLine()) != null)
                 {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
+                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
                     {
                         var line = textline.Split('|');
                         configList.Add(line[0], line[1]);
@@ -433,7 +435,6 @@ namespace TEAM
                 configurationFile.AppendLine(@"connectionStringIntegration|" +FormBase.ConfigurationSettings.ConnectionStringInt + "");
                 configurationFile.AppendLine(@"connectionStringPresentation|" +FormBase.ConfigurationSettings.ConnectionStringPres + "");
 
-                configurationFile.AppendLine("SourceSystemPrefix|" + FormBase.ConfigurationSettings.SourceSystemPrefix +"");
                 configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +"");
                 configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
                 configurationFile.AppendLine("HubTablePrefix|" + FormBase.ConfigurationSettings.HubTablePrefixValue + "");
@@ -469,7 +470,7 @@ namespace TEAM
 
                 using (var outfile =
                     new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                     FormBase.GlobalParameters.ConfigfileName + '_' +
+                                     FormBase.GlobalParameters.ConfigFileName + '_' +
                                      FormBase.GlobalParameters.WorkingEnvironment +
                                      FormBase.GlobalParameters.FileExtension))
                 {
@@ -500,7 +501,7 @@ namespace TEAM
                 string textline;
                 while ((textline = sr.ReadLine()) != null)
                 {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
+                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
                     {
                         var line = textline.Split('|');
                         configList.Add(line[0], line[1]);
@@ -550,7 +551,6 @@ namespace TEAM
                 FormBase.ConfigurationSettings.TableNamingLocation = configList["TableNamingLocation"];
                 FormBase.ConfigurationSettings.KeyNamingLocation = configList["KeyNamingLocation"];
                 FormBase.ConfigurationSettings.SchemaName = configList["SchemaName"];
-                FormBase.ConfigurationSettings.SourceSystemPrefix = configList["SourceSystemPrefix"];
                 FormBase.ConfigurationSettings.EventDateTimeAttribute = configList["EventDateTimeStamp"];
                 FormBase.ConfigurationSettings.LoadDateTimeAttribute = configList["LoadDateTimeStamp"];
                 FormBase.ConfigurationSettings.ExpiryDateTimeAttribute = configList["ExpiryDateTimeStamp"];
@@ -566,8 +566,8 @@ namespace TEAM
                 FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute = configList["AlternativeRecordSource"];
                 FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute =configList["AlternativeHubLDTSFunction"];
                 FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute = configList["AlternativeHubLDTS"];
-                FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute =configList["AlternativeSatelliteLDTSFunction"];
-                FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute =configList["AlternativeSatelliteLDTS"];
+                FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTSFunction"];
+                FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTS"];
 
                 // Databases
                 FormBase.ConfigurationSettings.SourceDatabaseName = configList["SourceDatabase"];
@@ -618,7 +618,7 @@ namespace TEAM
                 string textline;
                 while ((textline = sr.ReadLine()) != null)
                 {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1)
+                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
                     {
                         var line = textline.Split('|');
                         configList.Add(line[0], line[1]);
@@ -631,6 +631,8 @@ namespace TEAM
                 FormBase.ValidationSettings.SourceObjectExistence = configList["SourceObjectExistence"];
                 FormBase.ValidationSettings.TargetObjectExistence = configList["TargetObjectExistence"];
                 FormBase.ValidationSettings.SourceBusinessKeyExistence = configList["BusinessKeyExistence"];
+                FormBase.ValidationSettings.SourceAttributeExistence = configList["SourceAttributeExistence"];
+                FormBase.ValidationSettings.TargetAttributeExistence = configList["TargetAttributeExistence"];
 
                 FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
                 FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
@@ -639,7 +641,7 @@ namespace TEAM
             }
             catch (Exception)
             {
-
+                // Do nothing
             }
         }
 
@@ -658,6 +660,8 @@ namespace TEAM
                 validationFile.AppendLine("SourceObjectExistence|" + FormBase.ValidationSettings.SourceObjectExistence +"");
                 validationFile.AppendLine("TargetObjectExistence|" + FormBase.ValidationSettings.TargetObjectExistence +"");
                 validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.SourceBusinessKeyExistence + "");
+                validationFile.AppendLine("SourceAttributeExistence|" + FormBase.ValidationSettings.SourceAttributeExistence + "");
+                validationFile.AppendLine("TargetAttributeExistence|" + FormBase.ValidationSettings.TargetAttributeExistence + "");
                 validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
                 validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
                 validationFile.AppendLine("BusinessKeySyntax|" + FormBase.ValidationSettings.BusinessKeySyntax + "");

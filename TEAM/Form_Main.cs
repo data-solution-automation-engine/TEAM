@@ -15,47 +15,98 @@ namespace TEAM
         internal bool RevalidateFlag = true;
         public FormMain()
         {
-            
-            
-            // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.5.5.2";
-
-            // Placeholder for the error handling
-            var errorMessage = new StringBuilder();
-            errorMessage.AppendLine("Error were detected:");
-            errorMessage.AppendLine();
-            var errorDetails = new StringBuilder();
-            errorDetails.AppendLine();
-            var errorCounter = 0;
-
             InitializeComponent();
+
+            // Instantiate the logging
+            EventLog eventLog = new EventLog();
+
+            // Set the version of the build for everything
+            const string versionNumberForTeamApplication = "v1.6.0";
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
 
+            //richTextBoxInformation.AppendText("Starting from "+GlobalParameters.RootPath+"\r\n\r\n");
+            //richTextBoxInformation.AppendText("Script path is " + GlobalParameters.ScriptPath + "\r\n\r\n");
+
+            richTextBoxInformation.AppendText("Initialising the application.\r\n\r\n");
+
             // Make sure the application and custom location directories exist
-            ClassEnvironmentConfiguration.InitialiseRootPath();
+            try
+            {
+                EnvironmentConfiguration.InitialiseRootPath();
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The TEAM directories are available and initialised.\r\n"));
+            }
+            catch
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative priviliges in the installation directory to create these additional directories?"));
+            }
 
             // Set the root path, to be able to locate the customisable configuration file
-            ClassEnvironmentConfiguration.LoadRootPathFile();
+            try
+            {
+                EnvironmentConfiguration.LoadRootPathFile();
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The core configuration file has been loaded.\r\n"));
+            }
+            catch 
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The core configuration file could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
+            }
 
             // Make sure the configuration file is in memory
-            ClassEnvironmentConfiguration.InitialiseConfigurationPath();
+            try
+            {
+                EnvironmentConfiguration.InitialiseConfigurationPath();
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration paths are available.\r\n"));
+            }
+            catch
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered creating or detecting the configuration paths."));
+            }
 
             // Load the available configuration file
-            ClassEnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigfileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-            
-            //Startup information
-            richTextBoxInformation.Text = "Application initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n";
-            richTextBoxInformation.AppendText("Version "+versionNumberForTeamApplication+"\r\n\r\n");
-            //richTextBoxInformation.AppendText("Source code on Github: https://github.com/RoelantVos/TEAM \r\n\r\n");
+            try
+            {
+                EnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration settings (file) have been loaded.\r\n"));
+            }
+            catch
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the user configuration file."));
+            }
 
-            labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
+            // Load the pattern definition file
+            try
+            {
+                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The pattern definition file was loaded successfully.\r\n"));
+            }
+            catch 
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
+            }
+
+
+            // Report the events (including errors) back to the user
+            int errorCounter = 0;
+            foreach (Event individualEvent in eventLog)
+            {
+                if (individualEvent.eventCode == (int)EventTypes.Error)
+                {
+                    errorCounter++;
+                }
+
+                richTextBoxInformation.AppendText(individualEvent.eventDescription);
+            }
+
+            richTextBoxInformation.AppendText($"\r\n{errorCounter} error(s) have been found at startup.\r\n\r\n");
+
 
             TestConnections();
 
-            if (errorCounter > 0)
-            {
-                richTextBoxInformation.AppendText(errorMessage.ToString());
-            }
+            //Startup information
+            richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
+            richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
+
+            labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
         }
 
         public sealed override string Text
@@ -141,6 +192,9 @@ namespace TEAM
                 DisplayCurrentVersion(connOmd);
                 DisplayRepositoryVersion(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
+
+                labelMetadataRepository.Text = "Repository type in configuration is set to: " +
+                                               ConfigurationSettings.MetadataRepositoryType;
             }
             catch
             {
@@ -181,16 +235,24 @@ namespace TEAM
             var sqlStatementForCurrentVersion = new StringBuilder();
             sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME] FROM [MD_MODEL_METADATA]");
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
-
-            foreach (DataRow versionNameRow in versionList.Rows)
+            try
             {
-                var versionName = (string) versionNameRow["VERSION_NAME"];
-                labelActiveVersion.Text = versionName;
+                var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+
+                if (versionList != null && versionList.Rows.Count > 0)
+                {
+                    foreach (DataRow versionNameRow in versionList.Rows)
+                    {
+                        var versionName = (string) versionNameRow["VERSION_NAME"];
+                        labelActiveVersion.Text = versionName;
+                    }
+                }
+
             }
-
-
-            labelMetadataRepository.Text = "Repository type in configuration is set to: " + ConfigurationSettings.MetadataRepositoryType;
+            catch (Exception)
+            {
+                labelActiveVersion.Text = "There has been an error displaying the active version";
+            }
         }
 
 
@@ -201,18 +263,23 @@ namespace TEAM
 
             var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
 
-            foreach (DataRow versionNameRow in versionList.Rows)
+            try
             {
-                var versionName = (string)versionNameRow["REPOSITORY_VERSION"];
-                var versionDate = (DateTime)versionNameRow["REPOSITORY_UPDATE_DATETIME"];
-                labelRepositoryVersion.Text = versionName;
-                labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
+                if (versionList != null && versionList.Rows.Count > 0)
+                {
+                    foreach (DataRow versionNameRow in versionList.Rows)
+                    {
+                        var versionName = (string) versionNameRow["REPOSITORY_VERSION"];
+                        var versionDate = (DateTime) versionNameRow["REPOSITORY_UPDATE_DATETIME"];
+                        labelRepositoryVersion.Text = versionName;
+                        labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
+                    }
+                }
             }
-
-
-
-
-
+            catch (Exception)
+            {
+                // THROW EXCEPTION
+            }
         }
 
         private void CheckKeyword(string word, Color color, int startIndex)
@@ -249,6 +316,27 @@ namespace TEAM
             Application.Exit();
         }
 
+
+
+        private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (metadataToolStripMenuItem.Enabled == false)
+                return;
+            var t = new Thread(ThreadProcMetadata);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcAbout);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+
+        #region From Close Delegates
         private void CloseMetadataForm(object sender, FormClosedEventArgs e)
         {
             _myMetadataForm = null;
@@ -269,27 +357,45 @@ namespace TEAM
             _myConfigurationForm = null;
         }
 
-        private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ClosePatternForm(object sender, FormClosedEventArgs e)
         {
-            if (metadataToolStripMenuItem.Enabled == false)
-                return;
-            var t = new Thread(ThreadProcMetadata);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
+            _myPatternForm = null;
+        }
+        #endregion
+
+        #region Form Threads
+        private FormManagePattern _myPatternForm;
+        [STAThread]
+        public void ThreadProcPattern()
+        {
+            if (_myPatternForm == null)
+            {
+                _myPatternForm = new FormManagePattern(this);
+                Application.Run(_myPatternForm);
+            }
+            else
+            {
+                if (_myPatternForm.InvokeRequired)
+                {
+                    // Thread Error
+                    _myPatternForm.Invoke((MethodInvoker)delegate { _myPatternForm.Close(); });
+                    _myPatternForm.FormClosed += ClosePatternForm;
+
+                    _myPatternForm = new FormManagePattern(this);
+                    Application.Run(_myPatternForm);
+                }
+                else
+                {
+                    // No invoke required - same thread
+                    _myPatternForm.FormClosed += ClosePatternForm;
+                    _myPatternForm = new FormManagePattern(this);
+
+                    Application.Run(_myPatternForm);
+                }
+            }
         }
 
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcAbout);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
-
-       private FormManageConfiguration _myConfigurationForm;
-        /// <summary>
-        /// 
-        /// </summary>
+        private FormManageConfiguration _myConfigurationForm;
         [STAThread]
         public void ThreadProcConfiguration()
         {
@@ -428,22 +534,14 @@ namespace TEAM
                 }
             }
         }
+        #endregion
+
 
         private void richTextBoxInformation_TextChanged(object sender, EventArgs e)
         {
             CheckKeyword("Issues occurred", Color.Red, 0);
             CheckKeyword("The statement was executed successfully.", Color.GreenYellow, 0);
         }
-
-
-
-        private void createRebuildRepositoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcRepository);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
-
 
         private void generalSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -465,6 +563,20 @@ namespace TEAM
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
+        }
+
+        private void createRebuildRepositoryToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcRepository);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+        private void patternDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcPattern);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DataWarehouseAutomation;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -6,8 +7,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,13 +15,14 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public partial class FormManageMetadata : FormBase
     {
         FormAlert _alert;
         FormAlert _alertValidation;
+        FormAlert _generatedScripts;
+        FormAlert _generatedJsonInterface;
 
-        //Getting the datatable to bind to something
+        //Getting the DataTable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
         private BindingSource _bindingSourceAttributeMetadata = new BindingSource();
         private BindingSource _bindingSourcePhysicalModelMetadata = new BindingSource();
@@ -104,8 +104,8 @@ namespace TEAM
             var selectedVersion = GetMaxVersionId(connOmd);
             
             // Set the version in memory
-            GlobalParameters.currentVersionId = selectedVersion;
-            GlobalParameters.highestVersionId = selectedVersion; // On startup, the highest version is the same as the current version
+            GlobalParameters.CurrentVersionId = selectedVersion;
+            GlobalParameters.HighestVersionId = selectedVersion; // On startup, the highest version is the same as the current version
             FileConfiguration.jsonVersionExtension = @"_v" + selectedVersion + ".json";
 
             trackBarVersioning.Maximum = selectedVersion;
@@ -137,12 +137,12 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    var newEnvironmentConfiguration = new ClassEnvironmentConfiguration();
+                    var newEnvironmentConfiguration = new EnvironmentConfiguration();
                     newEnvironmentConfiguration.CreateDummyValidationConfiguration(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                ClassEnvironmentConfiguration.LoadValidationFile(validationFile);
+                EnvironmentConfiguration.LoadValidationFile(validationFile);
 
                 richTextBoxInformation.Text += "\r\nThe validation file " + validationFile + " has been loaded.";
             }
@@ -154,6 +154,53 @@ namespace TEAM
         }
 
 
+        /// <summary>
+        /// Sets the ToolTip text for cells in the datagrid (hover over).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void DataGridViewTableMetadata_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Retrieve the full row for the selected cell
+            DataGridViewRow selectedRow = dataGridViewTableMetadata.Rows[e.RowIndex];
+
+            var loadVector = "";
+            var tableType = "";
+            DataGridViewCell cell = null;
+
+            if (e.Value != null)
+            {
+                loadVector = ClassMetadataHandling.GetLoadVector(selectedRow.DataGridView.Rows[e.RowIndex].Cells[2].Value.ToString(),
+                    selectedRow.DataGridView.Rows[e.RowIndex].Cells[3].Value.ToString());
+            }
+
+            // Assert table type for Source column
+            if (e.ColumnIndex == dataGridViewTableMetadata.Columns[2].Index && e.Value != null)
+            {
+                // Retrieve the specific cell value for the hover-over
+                cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString(),"");
+            }
+            // Assert table type for the Target column
+            else if ((e.ColumnIndex == dataGridViewTableMetadata.Columns[3].Index && e.Value != null))
+            {
+                cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                tableType = ClassMetadataHandling.GetTableType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex].Cells[5].Value.ToString());
+            }
+            else
+            {
+                // Do nothing
+            }
+
+            if (cell != null)
+            {
+                cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." +
+                                   "\n" + "The direction of loading is " + loadVector + ".";
+            }
+        }
+
         private void DataGridViewPhysicalModelMetadataKeyDown(object sender, KeyEventArgs e)
         {
             try
@@ -164,7 +211,6 @@ namespace TEAM
                     {
                         case Keys.V:
                             PasteClipboardPhysicalModelMetadata();
-                            // MessageBox.Show("!");
                             break;
                     }
                 }
@@ -366,7 +412,7 @@ namespace TEAM
 
 
         /// <summary>
-        /// Populate the Table Mapping datagrid from a database or existing JSON file.
+        /// Populate the Table Mapping DataGrid from a database or existing JSON file.
         /// </summary>
         /// <param name="versionId"></param>
         private void PopulateTableMappingGridWithVersion(int versionId)
@@ -883,7 +929,7 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
             FileConfiguration.jsonVersionExtension = @"_v" + trackBarVersioning.Value + ".json";
-            GlobalParameters.currentVersionId = trackBarVersioning.Value;
+            GlobalParameters.CurrentVersionId = trackBarVersioning.Value;
             
             PopulateTableMappingGridWithVersion(trackBarVersioning.Value);
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
@@ -912,8 +958,8 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             // Check if the current version is the maximum version. At this stage updates on earlier versions are not supported (and cause a NULLreference exception)
-            var highestVersion = GlobalParameters.highestVersionId;
-            var currentVersion = GlobalParameters.currentVersionId;
+            var highestVersion = GlobalParameters.HighestVersionId;
+            var currentVersion = GlobalParameters.CurrentVersionId;
 
             if (currentVersion < highestVersion)
             {
@@ -1052,8 +1098,8 @@ namespace TEAM
             var versionId = GetMaxVersionId(connOmd);
 
             //Make sure the correct version is added to the global parameters
-            GlobalParameters.currentVersionId = versionId;
-            GlobalParameters.highestVersionId = versionId;
+            GlobalParameters.CurrentVersionId = versionId;
+            GlobalParameters.HighestVersionId = versionId;
             FileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
 
             return versionId;
@@ -1816,7 +1862,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFileTableMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
                 FileConfiguration.newFileTableMapping = "false";
             }
@@ -2088,7 +2134,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFilePhysicalModel == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 FileConfiguration.newFilePhysicalModel = "false";
             }
@@ -2431,7 +2477,7 @@ namespace TEAM
         {
             if (FileConfiguration.newFileAttributeMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
                 ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
                 FileConfiguration.newFileAttributeMapping = "false";
             }
@@ -2889,7 +2935,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.currentVersionId +".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId +".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -2960,82 +3006,7 @@ namespace TEAM
             }
         }
 
-        private void saveBusinessKeyMetadataFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var theDialog = new SaveFileDialog
-                {
-                    Title = @"Save Business Key Metadata File",
-                    Filter = @"XML files|*.xml",
-                    InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
-                };
 
-                var ret = STAShowDialog(theDialog);
-
-                if (ret == DialogResult.OK)
-                {
-                    try
-                    {
-                        var chosenFile = theDialog.FileName;
-                      
-                        DataTable gridDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
-
-                        gridDataTable.TableName = "TableMappingMetadata";
-
-                        gridDataTable.WriteXml(chosenFile);
-                        richTextBoxInformation.Text = "The Business Key metadata file " + chosenFile + " saved successfully.";
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
-            }   
-        }
-
-        private void saveAttributeMetadataMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var theDialog = new SaveFileDialog
-                {
-                    Title = @"Save Attribute Mapping Metadata File",
-                    Filter = @"XML files|*.xml",
-                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
-                };
-
-
-                var ret = STAShowDialog(theDialog);
-
-                if (ret == DialogResult.OK)
-                {
-                    try
-                    {
-                        var chosenFile = theDialog.FileName;
-
-                        DataTable gridDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
-
-                        gridDataTable.TableName = "AttributeMappingMetadata";
-
-                        gridDataTable.WriteXml(chosenFile);
-                        richTextBoxInformation.Text = "The attribute mapping file " + chosenFile + " saved successfully.";
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A problem occure when attempting to save the file to disk. The detail error message is: " + ex.Message);
-            }   
-        }
 
         private void OpenAttributeFileMenuItem_Click(object sender, EventArgs e)
         {
@@ -3072,7 +3043,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -3201,11 +3172,11 @@ namespace TEAM
                 if (row["TRANSFORMATION_RULE"] != DBNull.Value)
                     TRANSFORMATION_RULE = (string)row["TRANSFORMATION_RULE"];
 
-                var fullyQualifiedSourceName = ClassMetadataHandling.getFullSchemaTable(sourceTable);
-                var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
+                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
+                var sourceType = ClassMetadataHandling.GetTableType(sourceTable, "");
 
-                var fullyQualifiedTargetName = ClassMetadataHandling.getFullSchemaTable(targetTable);
-                var targetType = ClassMetadataHandling.GetTableType(targetTable);
+                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
+                var targetType = ClassMetadataHandling.GetTableType(targetTable, "");
 
                 createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_TABLE_TYPE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' ,N'" + SOURCE_COLUMN + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
             }
@@ -3272,11 +3243,11 @@ namespace TEAM
                 if (row["PROCESS_INDICATOR"] != DBNull.Value)
                     PROCESS_INDICATOR = (string)row["PROCESS_INDICATOR"];
 
-                var fullyQualifiedSourceName = ClassMetadataHandling.getFullSchemaTable(sourceTable);
-                var sourceType = ClassMetadataHandling.GetTableType(sourceTable);
+                var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
+                var sourceType = ClassMetadataHandling.GetTableType(sourceTable,"");
 
-                var fullyQualifiedTargetName = ClassMetadataHandling.getFullSchemaTable(targetTable);
-                var targetType = ClassMetadataHandling.GetTableType(targetTable);
+                var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
+                var targetType = ClassMetadataHandling.GetTableType(targetTable, "");
 
                 createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
             }
@@ -3372,8 +3343,6 @@ namespace TEAM
 
         }
 
-
-
         private void executeSqlCommand(StringBuilder inputString, string connString)
         {
             using (var connectionVersion = new SqlConnection(connString))
@@ -3437,6 +3406,7 @@ namespace TEAM
                     if (backgroundWorkerValidationOnly.IsBusy) return;
                     // create a new instance of the alert form
                     _alertValidation = new FormAlert();
+                    _alertValidation.SetFormName("Validating the metadata");
                     // event handler for the Cancel button in AlertForm
                     _alertValidation.Canceled += buttonCancel_Click;
                     _alertValidation.Show();
@@ -3509,8 +3479,6 @@ namespace TEAM
                 richTextBoxInformation.Text = "Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and activate the metadata again.\r\n ";
             }
             #endregion
-
-
         }
 
         /// <summary>
@@ -3525,7 +3493,7 @@ namespace TEAM
                 // Cancel the asynchronous operation.
                 backgroundWorkerMetadata.CancelAsync();
                 // Close the AlertForm
-                _alert.Close();
+                _alertValidation.Close();
             }
         }
 
@@ -3561,7 +3529,17 @@ namespace TEAM
             else
             {
                 labelResult.Text = "Done!";
-                richTextBoxInformation.Text += "The metadata was processed succesfully!\r\n";
+                richTextBoxInformation.Text += "The metadata was processed successfully!\r\n";
+
+                #region Save the JSON interface files
+                // Saving the interfaces to Json
+                if (checkBoxSaveInterfaceToJson.Checked)
+                {
+                    // After activation, the Json information can be created if enabled.
+                    List<string> dummyFilter = new List<string>();
+                    GenerateFromPattern(ConfigurationSettings.patternDefinitionList, dummyFilter);
+                }
+                #endregion
             }
             // Close the AlertForm
             //alert.Close();
@@ -3583,10 +3561,10 @@ namespace TEAM
         private void backgroundWorkerMetadata_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
         {
             #region Generic
+            // Set the stopwatch to be able to report back on process duration.
             Stopwatch totalProcess = new Stopwatch();
             Stopwatch subProcess = new Stopwatch();
             totalProcess.Start();
-
 
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -3595,13 +3573,22 @@ namespace TEAM
 
             DataRow[] selectionRows;
 
+            // Create an instance of the EventLog to information capture.
+            EventLog eventLog = new EventLog();
+            string eventMessage = "";
+
             var errorLog = new StringBuilder();
             var errorCounter = new int();
 
             var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var connStg= new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
+            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg};
+            var connInt = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringInt };
+            var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringPres };
+
             var metaDataConnection = ConfigurationSettings.ConnectionStringOmd;
 
-            // Get everything as local variables to reduce multithreading issues
+            // Get everything as local variables to reduce multi-threading issues
             var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';
 
             var linkedServer = ConfigurationSettings.PhysicalModelServerName;
@@ -3634,21 +3621,21 @@ namespace TEAM
 
             if (ConfigurationSettings.TableNamingLocation=="Prefix")
             {
-                stagingPrefix = stagingPrefix + "_%";
-                psaPrefix = psaPrefix + "_%";
-                hubTablePrefix = hubTablePrefix + "_%";
-                lnkTablePrefix = lnkTablePrefix + "_%";
-                satTablePrefix = satTablePrefix + "_%";
-                lsatTablePrefix = lsatTablePrefix + "_%";
+                stagingPrefix = stagingPrefix + "%";
+                psaPrefix = psaPrefix + "%";
+                hubTablePrefix = hubTablePrefix + "%";
+                lnkTablePrefix = lnkTablePrefix + "%";
+                satTablePrefix = satTablePrefix + "%";
+                lsatTablePrefix = lsatTablePrefix + "%";
             }
             else
             {
-                stagingPrefix = "%_" + stagingPrefix;
-                psaPrefix = "%_" + psaPrefix;
-                hubTablePrefix = "%_" + hubTablePrefix;
-                lnkTablePrefix = "%_" + lnkTablePrefix;
-                satTablePrefix = "%_" + satTablePrefix;
-                lsatTablePrefix = "%_" + lsatTablePrefix;
+                stagingPrefix = "%" + stagingPrefix;
+                psaPrefix = "%" + psaPrefix;
+                hubTablePrefix = "%" + hubTablePrefix;
+                lnkTablePrefix = "%" + lnkTablePrefix;
+                satTablePrefix = "%" + satTablePrefix;
+                lsatTablePrefix = "%" + lsatTablePrefix;
             }
 
             var dwhKeyIdentifier = ConfigurationSettings.DwhKeyIdentifier;
@@ -3662,7 +3649,7 @@ namespace TEAM
                 dwhKeyIdentifier = '%' + dwhKeyIdentifier;
             }
 
-            // Handling multithreading
+            // Handling multi-threading
             if (worker != null && worker.CancellationPending)
             {
                 e.Cancel = true;
@@ -3677,25 +3664,21 @@ namespace TEAM
                 var minorVersion = versionMajorMinor.Value;
 
                 // Determine the query type (physical or virtual)
-                string queryMode;
-                if (radioButtonPhysicalMode.Checked)
-                {
-                    queryMode = "physical";
-                }
-                else
-                {
-                    queryMode = "virtual";
-                }
+                var queryMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
-                _alert.SetTextLogging("Commencing metadata preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n\r\n");
+                // Event reporting - informing the user that the activation process has started
+                eventMessage = "Commencing metadata preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n\r\n";
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage));
+                _alert.SetTextLogging(eventMessage);
 
-                // Alerting the user what kind of metadata is prepared
-                _alert.SetTextLogging(queryMode == "physical"
-                    ? "The 'ignore model version' option is selected. This means when possible the live database (tables and attributes) will be used in conjunction with the Data Vault metadata. In other words, the model versioning is ignored.\r\n\r\n"
-                    : "Metadata is prepared using the selected version for both the Data Vault metadata as well as the model metadata.\r\n\r\n");
+                // Event reporting - alerting the user what kind of metadata is prepared
+                eventMessage = queryMode == "physical" ? "Physical Mode has been selected as metadata source for activation. This means that the database will be used to query physical model (table and attribute) metadata. In other words, the physical model versioning is ignored.\r\n\r\n" : "Virtual Mode has been selected. This means that the versioned physical model in the data grid will be used as table and attribute metadata.\r\n\r\n";
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage));
+                _alert.SetTextLogging(eventMessage);
                 #endregion
 
                 #region Delete Metadata - 2%
+
                 // 1. Deleting metadata
                 _alert.SetTextLogging("Commencing removal of existing metadata.\r\n");
 
@@ -3740,15 +3723,18 @@ namespace TEAM
                     catch (Exception ex)
                     {
                         errorCounter++;
-                        _alert.SetTextLogging("An issue has occured during removal of old metadata. Please check the Error Log for more details.\r\n");
+                        _alert.SetTextLogging(
+                            "An issue has occured during removal of old metadata. Please check the Error Log for more details.\r\n");
                         errorLog.AppendLine("\r\nAn issue has occured during removal of old metadata: \r\n\r\n" + ex);
                         errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + deleteStatement);
                     }
                 }
+
                 # endregion
 
 
                 # region Prepare Version Information - 3%
+
                 // 2. Prepare Version
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the version metadata.\r\n");
@@ -3757,12 +3743,14 @@ namespace TEAM
 
                 using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    _alert.SetTextLogging("-->  Working on committing version " + versionName + " to the metadata repository.\r\n");
+                    _alert.SetTextLogging("-->  Working on committing version " + versionName +
+                                          " to the metadata repository.\r\n");
 
                     var insertVersionStatement = new StringBuilder();
                     insertVersionStatement.AppendLine("INSERT INTO [MD_MODEL_METADATA]");
                     insertVersionStatement.AppendLine("([VERSION_NAME],[ACTIVATION_DATETIME])");
-                    insertVersionStatement.AppendLine("VALUES ('" + versionName + "','" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz") + "')");
+                    insertVersionStatement.AppendLine("VALUES ('" + versionName + "','" +
+                                                      DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz") + "')");
 
                     var command = new SqlCommand(insertVersionStatement.ToString(), connection);
 
@@ -3774,8 +3762,10 @@ namespace TEAM
                     catch (Exception ex)
                     {
                         errorCounter++;
-                        _alert.SetTextLogging("An issue has occured during preparation of the version information. Please check the Error Log for more details.\r\n");
-                        errorLog.AppendLine("\r\nAn issue has occured during preparation of the version information: \r\n\r\n" + ex);
+                        _alert.SetTextLogging(
+                            "An issue has occured during preparation of the version information. Please check the Error Log for more details.\r\n");
+                        errorLog.AppendLine(
+                            "\r\nAn issue has occured during preparation of the version information: \r\n\r\n" + ex);
                     }
                 }
 
@@ -3787,6 +3777,7 @@ namespace TEAM
 
 
                 # region Prepare Source - 5%
+
                 // Prepare the generic sources
                 subProcess.Reset();
                 subProcess.Start();
@@ -3802,7 +3793,7 @@ namespace TEAM
                     // Create a dummy row
                     "Not applicable"
                 };
- 
+
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
@@ -3827,8 +3818,8 @@ namespace TEAM
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE]");
-                        insertStatement.AppendLine("([SOURCE_NAME], [SCHEMA_NAME])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + fullyQualifiedName.Key + "')");
+                        insertStatement.AppendLine("([SOURCE_NAME], [SOURCE_NAME_SHORT], [SCHEMA_NAME])");
+                        insertStatement.AppendLine("VALUES ('" + tableName + "','" + fullyQualifiedName.Value + "','" + fullyQualifiedName.Key + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -3840,8 +3831,10 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the source metadata. Please check the Error Log for more details.\r\n");
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the source metadata. Please check the Error Log for more details.\r\n");
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -3849,11 +3842,13 @@ namespace TEAM
 
                 worker?.ReportProgress(5);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the source metadata completed, and has taken "+subProcess.Elapsed.TotalSeconds.ToString()+" seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the source metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Staging Area - 7%
+
                 //Prepare the Staging Area
                 subProcess.Reset();
                 subProcess.Start();
@@ -3864,11 +3859,13 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
+                                                              ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
+                                                              ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
                 var distinctListStg = new List<string>
@@ -3914,9 +3911,11 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Staging Area. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the Staging Area. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging Area: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Staging Area: \r\n\r\n" + ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -3924,11 +3923,14 @@ namespace TEAM
 
                 worker?.ReportProgress(7);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Staging Area metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Source to Staging Area XREF - 10%
+
                 // Prepare the Source to Staging Area XREF
                 subProcess.Reset();
                 subProcess.Start();
@@ -3939,11 +3941,13 @@ namespace TEAM
                 // Getting the mapping list from the data table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
+                                                              ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
+                                                              ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
                 // Process the unique Staging Area records
@@ -3951,10 +3955,13 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row["SOURCE_TABLE"].ToString()).FirstOrDefault();
-                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row["TARGET_TABLE"].ToString()).FirstOrDefault();
+                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row["SOURCE_TABLE"].ToString())
+                            .FirstOrDefault();
+                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row["TARGET_TABLE"].ToString())
+                            .FirstOrDefault();
 
-                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " +
+                                              targetFullyQualifiedName.Value + " relationship.\r\n");
 
                         var filterCriterion = row["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -3964,8 +3971,16 @@ namespace TEAM
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_XREF]");
-                        insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [CHANGE_DATA_CAPTURE_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
-                        insertStatement.AppendLine("VALUES ('" + sourceFullyQualifiedName.Value + "','" + targetFullyQualifiedName.Value + "', NULL, NULL, '" + businessKeyDefinition + "', '" + filterCriterion + "')");
+                        insertStatement.AppendLine(
+                            "([SOURCE_NAME], [STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [CHANGE_DATA_CAPTURE_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
+                        insertStatement.AppendLine("VALUES (" +
+                                                   "'" + sourceFullyQualifiedName.Value + "', " +
+                                                   "'" + targetFullyQualifiedName.Value + "', " +
+                                                   "NULL, " +
+                                                   "NULL, " +
+                                                   "'" + businessKeyDefinition + "', " +
+                                                   "'" + filterCriterion + "'" +
+                                                   ")");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -3977,9 +3992,12 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the relationship between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Staging Area XREF: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Source / Staging Area XREF: \r\n\r\n" +
+                                ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -3987,11 +4005,15 @@ namespace TEAM
 
                 worker?.ReportProgress(10);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Source / Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the Source / Staging Area XREF metadata completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Persistent Staging Area - 13%
+
                 //3. Prepare Persistent Staging Area
                 subProcess.Reset();
                 subProcess.Start();
@@ -4002,11 +4024,13 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
+                                                              ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
+                                                              ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
                 var distinctListPsa = new List<string>
@@ -4039,8 +4063,8 @@ namespace TEAM
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_PERSISTENT_STAGING]");
-                        insertStatement.AppendLine("([PERSISTENT_STAGING_NAME], [SCHEMA_NAME])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + fullyQualifiedName.Key + "')");
+                        insertStatement.AppendLine("([PERSISTENT_STAGING_NAME], [PERSISTENT_STAGING_NAME_SHORT], [SCHEMA_NAME])");
+                        insertStatement.AppendLine("VALUES ('" + tableName + "','" + fullyQualifiedName.Value + "','" + fullyQualifiedName.Key + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4062,12 +4086,13 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(13);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
                 #endregion
 
 
                 #region Prepare Source to Persistent Staging Area XREF - 15%
+
                 // Prepare the Source to Persistent Staging Area XREF
                 subProcess.Reset();
                 subProcess.Start();
@@ -4090,10 +4115,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row["SOURCE_TABLE"].ToString()).FirstOrDefault();
-                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row["TARGET_TABLE"].ToString()).FirstOrDefault();
-
-                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + row["SOURCE_TABLE"] + " to " + row["TARGET_TABLE"] + " relationship.\r\n");
 
                         var filterCriterion = row["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -4104,7 +4126,11 @@ namespace TEAM
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_XREF]");
                         insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
-                        insertStatement.AppendLine("VALUES ('" + sourceFullyQualifiedName.Value + "','" + targetFullyQualifiedName.Value + "', NULL, '" + businessKeyDefinition + "', '" + filterCriterion + "')");
+                        insertStatement.AppendLine("VALUES ('" + row["SOURCE_TABLE"] + "','" +
+                                                   row["TARGET_TABLE"] + 
+                                                   "', NULL, '" +
+                                                   businessKeyDefinition + "', '" + 
+                                                   filterCriterion + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4116,9 +4142,12 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the relationship between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Persistent Staging Area XREF: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Source / Persistent Staging Area XREF: \r\n\r\n" +
+                                ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -4126,11 +4155,15 @@ namespace TEAM
 
                 worker?.ReportProgress(15);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Hubs - 17%
+
                 //3. Prepare Hubs
                 subProcess.Reset();
                 subProcess.Start();
@@ -4139,7 +4172,9 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Hub metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_HUB table
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
+                selectionRows =
+                    inputTableMetadata.Select(
+                        "PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
 
                 var distinctListHub = new List<string>();
 
@@ -4169,14 +4204,17 @@ namespace TEAM
                         var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
                         // Retrieve the business key
-                        var hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, queryMode);
+                        var hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyList(fullyQualifiedName.Key,
+                            fullyQualifiedName.Value, versionId, queryMode);
                         string businessKeyString = string.Join(",", hubBusinessKey);
                         string surrogateKey = ClassMetadataHandling.GetSurrogateKey(tableName);
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_HUB]");
                         insertStatement.AppendLine("([HUB_NAME], [SCHEMA_NAME], [BUSINESS_KEY], [SURROGATE_KEY])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','"+fullyQualifiedName.Key+"', '"+ businessKeyString + "', '" + surrogateKey + "')");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" +
+                                                   fullyQualifiedName.Key + "', '" + businessKeyString + "', '" +
+                                                   surrogateKey + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4188,9 +4226,11 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Hubs. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the Hubs. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -4198,11 +4238,14 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(17);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Hub metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Hub metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Links - 20%
+
                 //4. Prepare links
                 subProcess.Reset();
                 subProcess.Start();
@@ -4211,7 +4254,9 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Link metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_LINK table
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+                selectionRows =
+                    inputTableMetadata.Select(
+                        "PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
 
                 var distinctListLinks = new List<string>();
 
@@ -4247,7 +4292,8 @@ namespace TEAM
 
                         insertStatement.AppendLine("INSERT INTO [MD_LINK]");
                         insertStatement.AppendLine("([LINK_NAME], [SCHEMA_NAME], [SURROGATE_KEY])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','"+fullyQualifiedName.Key+ "','" + surrogateKey + "')");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" +
+                                                   fullyQualifiedName.Key + "','" + surrogateKey + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4259,9 +4305,11 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Links. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the Links. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Links: \r\n\r\n" + ex);
+                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Links: \r\n\r\n" +
+                                                ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -4269,11 +4317,14 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(20);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Satellites - 24%
+
                 // Prepare Satellites
                 subProcess.Reset();
                 subProcess.Start();
@@ -4283,27 +4334,31 @@ namespace TEAM
 
                 var prepareSatStatement = new StringBuilder();
 
-                prepareSatStatement.AppendLine(@"
-                                                SELECT DISTINCT
-                                                        spec.TARGET_TABLE AS SATELLITE_NAME,
-                                                        hubkeysub.HUB_NAME,
-                                                        'Normal' AS SATELLITE_TYPE,
-                                                        (SELECT LINK_NAME FROM MD_LINK WHERE LINK_NAME='Not applicable') AS LINK_NAME -- No link for normal Satellites 
-                                                FROM TMP_MD_TABLE_MAPPING spec 
-                                                LEFT OUTER JOIN 
-                                                ( 
-                                                        SELECT DISTINCT TARGET_TABLE, hub.HUB_NAME, SOURCE_TABLE, BUSINESS_KEY_ATTRIBUTE 
-                                                        FROM TMP_MD_TABLE_MAPPING spec2 
-                                                        LEFT OUTER JOIN -- Join in the Hub NAME from the MD table 
-                                                                MD_HUB hub ON hub.[SCHEMA_NAME]+'.'+hub.HUB_NAME=spec2.TARGET_TABLE 
-                                                    WHERE TARGET_TABLE_TYPE = 'Hub'
-                                                    AND [PROCESS_INDICATOR] = 'Y'                                                        
-                                                ) hubkeysub 
-                                                        ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE 
-                                                        AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') 
-                                                WHERE spec.TARGET_TABLE_TYPE = 'Satellite'
-                                                AND [PROCESS_INDICATOR] = 'Y'
-                                                ");
+                prepareSatStatement.AppendLine("SELECT DISTINCT");
+                prepareSatStatement.AppendLine("  spec.TARGET_TABLE AS SATELLITE_NAME,");
+                prepareSatStatement.AppendLine("  hubkeysub.HUB_NAME, ");
+                prepareSatStatement.AppendLine("  'Normal' AS SATELLITE_TYPE, ");
+                prepareSatStatement.AppendLine(
+                    "  (SELECT LINK_NAME FROM MD_LINK WHERE LINK_NAME='Not applicable') AS LINK_NAME -- No link for normal Satellites ");
+                prepareSatStatement.AppendLine("FROM TMP_MD_TABLE_MAPPING spec ");
+                prepareSatStatement.AppendLine("LEFT OUTER JOIN ");
+                prepareSatStatement.AppendLine("(");
+                prepareSatStatement.AppendLine(
+                    "  SELECT DISTINCT TARGET_TABLE, hub.HUB_NAME, SOURCE_TABLE, BUSINESS_KEY_ATTRIBUTE ");
+                prepareSatStatement.AppendLine("  FROM TMP_MD_TABLE_MAPPING spec2 ");
+                prepareSatStatement.AppendLine("  LEFT OUTER JOIN -- Join in the Hub NAME from the MD table ");
+                prepareSatStatement.AppendLine(
+                    "  MD_HUB hub ON hub.[SCHEMA_NAME]+'.'+hub.HUB_NAME=spec2.TARGET_TABLE ");
+                prepareSatStatement.AppendLine("  WHERE TARGET_TABLE_TYPE = '" +
+                                               ClassMetadataHandling.TableTypes.CoreBusinessConcept +
+                                               "' AND [PROCESS_INDICATOR] = 'Y'                                                        ");
+                prepareSatStatement.AppendLine(") hubkeysub ");
+                prepareSatStatement.AppendLine("        ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE ");
+                prepareSatStatement.AppendLine(
+                    "        AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') ");
+                prepareSatStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
+                                               ClassMetadataHandling.TableTypes.Context + "' ");
+                prepareSatStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
 
                 var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
 
@@ -4325,8 +4380,10 @@ namespace TEAM
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
-                        insertStatement.AppendLine("([SATELLITE_NAME], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_NAME], [LINK_NAME])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value +"','" + tableType + "', '"+fullyQualifiedName.Key+"', '" + hubName + "','" + linkName + "')");
+                        insertStatement.AppendLine(
+                            "([SATELLITE_NAME], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_NAME], [LINK_NAME])");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + tableType + "', '" +
+                                                   fullyQualifiedName.Key + "', '" + hubName + "','" + linkName + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4338,9 +4395,11 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Satellites. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the Satellites. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -4348,11 +4407,14 @@ namespace TEAM
 
                 worker.ReportProgress(24);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Satellite metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Link Satellites - 28%
+
                 //Prepare Link Satellites
                 subProcess.Reset();
                 subProcess.Start();
@@ -4361,33 +4423,38 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Link Satellite metadata.\r\n");
 
                 var prepareLsatStatement = new StringBuilder();
-                prepareLsatStatement.AppendLine(@"
-                                                SELECT DISTINCT
-                                                        spec.TARGET_TABLE AS SATELLITE_NAME, 
-                                                        (SELECT HUB_NAME FROM MD_HUB WHERE HUB_NAME='Not applicable') AS HUB_NAME, -- No Hub for Link Satellites
-                                                        'Link Satellite' AS SATELLITE_TYPE,
-                                                        lnkkeysub.LINK_NAME
-                                                FROM TMP_MD_TABLE_MAPPING spec
-                                                LEFT OUTER JOIN  -- Get the Link ID that belongs to this LSAT
-                                                (
-                                                        SELECT DISTINCT 
-                                                                lnk.LINK_NAME AS LINK_NAME,
-                                                                SOURCE_TABLE,
-                                                                BUSINESS_KEY_ATTRIBUTE
-                                                        FROM TMP_MD_TABLE_MAPPING spec2
-                                                        LEFT OUTER JOIN -- Join in the Link Name from the MD table
-                                                                MD_LINK lnk ON lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=spec2.TARGET_TABLE
-                                                        WHERE TARGET_TABLE_TYPE = 'Link'
-                                                        AND [PROCESS_INDICATOR] = 'Y'
-                                                ) lnkkeysub
-                                                    ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT
-                                                    AND REPLACE(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=REPLACE(lnkkeysub.BUSINESS_KEY_ATTRIBUTE,' ','')
+                prepareLsatStatement.AppendLine("SELECT DISTINCT");
+                prepareLsatStatement.AppendLine("        spec.TARGET_TABLE AS SATELLITE_NAME, ");
+                prepareLsatStatement.AppendLine(
+                    "        (SELECT HUB_NAME FROM MD_HUB WHERE HUB_NAME='Not applicable') AS HUB_NAME, -- No Hub for Link Satellites");
+                prepareLsatStatement.AppendLine("        'Link Satellite' AS SATELLITE_TYPE,");
+                prepareLsatStatement.AppendLine("        lnkkeysub.LINK_NAME");
+                prepareLsatStatement.AppendLine("FROM TMP_MD_TABLE_MAPPING spec");
+                prepareLsatStatement.AppendLine("LEFT OUTER JOIN  -- Get the Link ID that belongs to this LSAT");
+                prepareLsatStatement.AppendLine("(");
+                prepareLsatStatement.AppendLine("        SELECT DISTINCT ");
+                prepareLsatStatement.AppendLine("                lnk.LINK_NAME AS LINK_NAME,");
+                prepareLsatStatement.AppendLine("                SOURCE_TABLE,");
+                prepareLsatStatement.AppendLine("                BUSINESS_KEY_ATTRIBUTE");
+                prepareLsatStatement.AppendLine("        FROM TMP_MD_TABLE_MAPPING spec2");
+                prepareLsatStatement.AppendLine("        LEFT OUTER JOIN -- Join in the Link Name from the MD table");
+                prepareLsatStatement.AppendLine(
+                    "                MD_LINK lnk ON lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=spec2.TARGET_TABLE");
+                prepareLsatStatement.AppendLine("        WHERE TARGET_TABLE_TYPE = '" +
+                                                ClassMetadataHandling.TableTypes.NaturalBusinessRelationship + "' ");
+                prepareLsatStatement.AppendLine("        AND [PROCESS_INDICATOR] = 'Y'");
+                prepareLsatStatement.AppendLine(") lnkkeysub");
+                prepareLsatStatement.AppendLine(
+                    "    ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT");
+                prepareLsatStatement.AppendLine(
+                    "    AND REPLACE(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=REPLACE(lnkkeysub.BUSINESS_KEY_ATTRIBUTE,' ','')");
+                prepareLsatStatement.AppendLine(
+                    "-- Only select Link Satellites as the base / driving table (spec alias)");
+                prepareLsatStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
+                                                ClassMetadataHandling.TableTypes.NaturalBusinessRelationshipContext +
+                                                "'");
+                prepareLsatStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
 
-                                                -- Only select Link Satellites as the base / driving table (spec alias)
-                                                WHERE spec.TARGET_TABLE_TYPE LIKE 'Link-Satellite'
-                                                AND [PROCESS_INDICATOR] = 'Y'
-                                                ");
- 
 
                 var listLsat = GetDataTable(ref connOmd, prepareLsatStatement.ToString());
 
@@ -4406,8 +4473,10 @@ namespace TEAM
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
-                        insertStatement.AppendLine("([SATELLITE_NAME], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_NAME], [LINK_NAME])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + tableType + "', '" + fullyQualifiedName.Key + "', '" + hubName + "','" + linkName + "')");
+                        insertStatement.AppendLine(
+                            "([SATELLITE_NAME], [SATELLITE_TYPE], [SCHEMA_NAME], [HUB_NAME], [LINK_NAME])");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + tableType + "', '" +
+                                                   fullyQualifiedName.Key + "', '" + hubName + "','" + linkName + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4419,56 +4488,70 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Link Satellites. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the Link Satellites. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link Satellites: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Link Satellites: \r\n\r\n" + ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
 
                         }
                     }
                 }
+
                 worker.ReportProgress(28);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Prepare Source / SAT Xref - 28%
+
                 //Prepare Source / Sat XREF
                 subProcess.Reset();
                 subProcess.Start();
 
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between (Link) Satellites and the Source tables.\r\n");
+                _alert.SetTextLogging(
+                    "Commencing preparing the relationship between (Link) Satellites and the Source tables.\r\n");
 
                 var prepareSatXrefStatement = new StringBuilder();
-                prepareSatXrefStatement.AppendLine(@"
-                                                    SELECT
-	                                                        sat.SATELLITE_NAME,
-	                                                        stg.SOURCE_NAME,
-	                                                        spec.BUSINESS_KEY_ATTRIBUTE,
-                                                            spec.FILTER_CRITERIA
-                                                    FROM TMP_MD_TABLE_MAPPING spec
-                                                    LEFT OUTER JOIN -- Join in the Source_ID from the MD_SOURCE table
-                                                            MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE
-                                                    LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
-                                                            MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE
-                                                    WHERE spec.TARGET_TABLE_TYPE = 'Satellite'
-                                                    AND [PROCESS_INDICATOR] = 'Y'
-                                                    UNION
-                                                    SELECT
-	                                                        sat.SATELLITE_NAME,
-	                                                        stg.SOURCE_NAME,
-	                                                        spec.BUSINESS_KEY_ATTRIBUTE,
-                                                            spec.FILTER_CRITERIA
-                                                    FROM TMP_MD_TABLE_MAPPING spec
-                                                    LEFT OUTER JOIN -- Join in the Source from the MD_SOURCE table
-                                                            MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE
-                                                    LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table
-                                                            MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE
-                                                    WHERE spec.TARGET_TABLE_TYPE = 'Link-Satellite'
-                                                    AND [PROCESS_INDICATOR] = 'Y'
-                                                    ");
+                prepareSatXrefStatement.AppendLine("SELECT");
+                prepareSatXrefStatement.AppendLine("        sat.SATELLITE_NAME,");
+                prepareSatXrefStatement.AppendLine("        stg.SOURCE_NAME,");
+                prepareSatXrefStatement.AppendLine("        spec.BUSINESS_KEY_ATTRIBUTE,");
+                prepareSatXrefStatement.AppendLine("        spec.FILTER_CRITERIA");
+                prepareSatXrefStatement.AppendLine("FROM TMP_MD_TABLE_MAPPING spec");
+                prepareSatXrefStatement.AppendLine("LEFT OUTER JOIN -- Join in the Source_ID from the MD_SOURCE table");
+                prepareSatXrefStatement.AppendLine(
+                    "        MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE");
+                prepareSatXrefStatement.AppendLine(
+                    "LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table");
+                prepareSatXrefStatement.AppendLine(
+                    "        MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE");
+                prepareSatXrefStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
+                                                   ClassMetadataHandling.TableTypes.Context + "'");
+                prepareSatXrefStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
+                prepareSatXrefStatement.AppendLine("UNION");
+                prepareSatXrefStatement.AppendLine("SELECT");
+                prepareSatXrefStatement.AppendLine("        sat.SATELLITE_NAME,");
+                prepareSatXrefStatement.AppendLine("        stg.SOURCE_NAME,");
+                prepareSatXrefStatement.AppendLine("        spec.BUSINESS_KEY_ATTRIBUTE,");
+                prepareSatXrefStatement.AppendLine("        spec.FILTER_CRITERIA");
+                prepareSatXrefStatement.AppendLine("FROM TMP_MD_TABLE_MAPPING spec");
+                prepareSatXrefStatement.AppendLine("LEFT OUTER JOIN -- Join in the Source from the MD_SOURCE table");
+                prepareSatXrefStatement.AppendLine(
+                    "        MD_SOURCE stg ON stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME=spec.SOURCE_TABLE");
+                prepareSatXrefStatement.AppendLine(
+                    "LEFT OUTER JOIN -- Join in the Satellite_ID from the MD_SATELLITE table");
+                prepareSatXrefStatement.AppendLine(
+                    "        MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE");
+                prepareSatXrefStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
+                                                   ClassMetadataHandling.TableTypes.NaturalBusinessRelationshipContext +
+                                                   "'");
+                prepareSatXrefStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
 
                 var listSatXref = GetDataTable(ref connOmd, prepareSatXrefStatement.ToString());
 
@@ -4476,7 +4559,8 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["SATELLITE_NAME"] + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " +
+                                              tableName["SATELLITE_NAME"] + " relationship.\r\n");
 
                         var insertStatement = new StringBuilder();
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
@@ -4485,16 +4569,18 @@ namespace TEAM
                         var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["SATELLITE_NAME"].ToString());
+                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(),
+                            tableName["SATELLITE_NAME"].ToString());
 
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_XREF]");
-                        insertStatement.AppendLine("([SATELLITE_NAME], [SOURCE_NAME], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
-                        insertStatement.AppendLine("VALUES ('" + 
-                                                        tableName["SATELLITE_NAME"] + "','" + 
-                                                        tableName["SOURCE_NAME"] + "','" + 
-                                                        businessKeyDefinition + "','" +
-                                                        filterCriterion + "','" +
-                                                        loadVector + "')");
+                        insertStatement.AppendLine(
+                            "([SATELLITE_NAME], [SOURCE_NAME], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
+                        insertStatement.AppendLine("VALUES ('" +
+                                                   tableName["SATELLITE_NAME"] + "','" +
+                                                   tableName["SOURCE_NAME"] + "','" +
+                                                   businessKeyDefinition + "','" +
+                                                   filterCriterion + "','" +
+                                                   loadVector + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4506,9 +4592,12 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" +
+                                ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -4516,11 +4605,14 @@ namespace TEAM
 
                 worker.ReportProgress(28);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Source / Hub relationship - 30%
+
                 //Prepare Source / HUB xref
                 subProcess.Reset();
                 subProcess.Start();
@@ -4529,38 +4621,37 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Hubs.\r\n");
 
                 var prepareStgHubXrefStatement = new StringBuilder();
-                prepareStgHubXrefStatement.AppendLine(@"
-                SELECT
-                    HUB_NAME,
-	                SOURCE_NAME,
-	                BUSINESS_KEY_ATTRIBUTE,
-                    FILTER_CRITERIA
-                FROM
-                (      
-                    SELECT DISTINCT 
-                    SOURCE_TABLE,
-                    TARGET_TABLE,
-					BUSINESS_KEY_ATTRIBUTE,
-                    FILTER_CRITERIA
-                    FROM TMP_MD_TABLE_MAPPING
-                    WHERE 
-                        TARGET_TABLE_TYPE = 'Hub'
-                    AND [PROCESS_INDICATOR] = 'Y'
-                ) hub
-                LEFT OUTER JOIN
-                ( 
-                    SELECT SOURCE_NAME, [SCHEMA_NAME]
-                    FROM MD_SOURCE
-                ) stgsub
-                ON hub.SOURCE_TABLE=stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME
-                LEFT OUTER JOIN
-                ( 
-                    SELECT HUB_NAME, [SCHEMA_NAME]
-                    FROM MD_HUB
-                ) hubsub
-                ON hub.TARGET_TABLE=hubsub.[SCHEMA_NAME]+'.'+hubsub.HUB_NAME
-                ");
-
+                prepareStgHubXrefStatement.AppendLine("SELECT");
+                prepareStgHubXrefStatement.AppendLine("    HUB_NAME,");
+                prepareStgHubXrefStatement.AppendLine("    SOURCE_NAME,");
+                prepareStgHubXrefStatement.AppendLine("    BUSINESS_KEY_ATTRIBUTE,");
+                prepareStgHubXrefStatement.AppendLine("    FILTER_CRITERIA");
+                prepareStgHubXrefStatement.AppendLine("FROM");
+                prepareStgHubXrefStatement.AppendLine("(      ");
+                prepareStgHubXrefStatement.AppendLine("    SELECT DISTINCT ");
+                prepareStgHubXrefStatement.AppendLine("    SOURCE_TABLE,");
+                prepareStgHubXrefStatement.AppendLine("    TARGET_TABLE,");
+                prepareStgHubXrefStatement.AppendLine("    BUSINESS_KEY_ATTRIBUTE,");
+                prepareStgHubXrefStatement.AppendLine("    FILTER_CRITERIA");
+                prepareStgHubXrefStatement.AppendLine("    FROM TMP_MD_TABLE_MAPPING");
+                prepareStgHubXrefStatement.AppendLine("    WHERE ");
+                prepareStgHubXrefStatement.AppendLine("        TARGET_TABLE_TYPE = '" +
+                                                      ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
+                prepareStgHubXrefStatement.AppendLine("    AND [PROCESS_INDICATOR] = 'Y'");
+                prepareStgHubXrefStatement.AppendLine(") hub");
+                prepareStgHubXrefStatement.AppendLine("LEFT OUTER JOIN");
+                prepareStgHubXrefStatement.AppendLine("( ");
+                prepareStgHubXrefStatement.AppendLine("    SELECT SOURCE_NAME, [SCHEMA_NAME]");
+                prepareStgHubXrefStatement.AppendLine("    FROM MD_SOURCE");
+                prepareStgHubXrefStatement.AppendLine(") stgsub");
+                prepareStgHubXrefStatement.AppendLine(
+                    "ON hub.SOURCE_TABLE=stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME");
+                prepareStgHubXrefStatement.AppendLine("LEFT OUTER JOIN");
+                prepareStgHubXrefStatement.AppendLine("( ");
+                prepareStgHubXrefStatement.AppendLine("    SELECT HUB_NAME, [SCHEMA_NAME]");
+                prepareStgHubXrefStatement.AppendLine("    FROM MD_HUB");
+                prepareStgHubXrefStatement.AppendLine(") hubsub");
+                prepareStgHubXrefStatement.AppendLine("ON hub.TARGET_TABLE=hubsub.[SCHEMA_NAME]+'.'+hubsub.HUB_NAME");
 
                 var listXref = GetDataTable(ref connOmd, prepareStgHubXrefStatement.ToString());
 
@@ -4568,7 +4659,8 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["HUB_NAME"] + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " +
+                                              tableName["HUB_NAME"] + " relationship.\r\n");
 
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -4576,17 +4668,19 @@ namespace TEAM
                         var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["HUB_NAME"].ToString());
+                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(),
+                            tableName["HUB_NAME"].ToString());
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_HUB_XREF]");
-                        insertStatement.AppendLine("([HUB_NAME], [SOURCE_NAME], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
-                        insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + 
-                                                        "','" + tableName["SOURCE_NAME"] + 
-                                                        "','" + businessKeyDefinition + 
-                                                        "','" + filterCriterion +
-                                                        "','" + loadVector +
-                                                        "')");
+                        insertStatement.AppendLine(
+                            "([HUB_NAME], [SOURCE_NAME], [BUSINESS_KEY_DEFINITION], [FILTER_CRITERIA], [LOAD_VECTOR])");
+                        insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] +
+                                                   "','" + tableName["SOURCE_NAME"] +
+                                                   "','" + businessKeyDefinition +
+                                                   "','" + filterCriterion +
+                                                   "','" + loadVector +
+                                                   "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4598,9 +4692,11 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -4608,15 +4704,20 @@ namespace TEAM
 
                 worker.ReportProgress(30);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the relationship between Source and Hubs completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the relationship between Source and Hubs completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Filter Variables  - 35%
+
                 subProcess.Reset();
                 subProcess.Start();
 
-                string tableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
+                string tableFilterQuery =
+                    @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
                                             UNION
                                             SELECT DISTINCT [TARGET_TABLE] AS [TABLE_NAME], [TARGET_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]";
 
@@ -4625,43 +4726,44 @@ namespace TEAM
                 var psaTableFilterObjects = "";
                 var intTableFilterObjects = "";
                 var presTableFilterObjects = "";
-   
+
                 var tableDataTable = GetDataTable(ref connOmd, tableFilterQuery);
 
                 // Creating the filters
                 int objectCounter = 1;
                 foreach (DataRow tableRow in tableDataTable.Rows)
                 {
-                    // Get the right database for the table type (which can be anything including STG, PSA, base- and derived DV and Dimension or Facts)
-                    string databaseName = ClassMetadataHandling.GetDatabaseForArea(tableRow["TABLE_TYPE"].ToString());
-
-                    // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
-                    // I.e. when there are no PSA tables defined, they will be derived from the STG
-                    var workingTableName = ClassMetadataHandling.nonQualifiedTableName(tableRow["TABLE_NAME"].ToString());
-                    if (workingTableName.StartsWith(ConfigurationSettings.StgTablePrefixValue + "_") || workingTableName.EndsWith("_" + ConfigurationSettings.StgTablePrefixValue))
-                    {
-                        var tempTableName = tableRow["TABLE_NAME"].ToString().Replace(ConfigurationSettings.StgTablePrefixValue, ConfigurationSettings.PsaTablePrefixValue);
-                        var tempTableType = "Persistent Staging Area";
-                        string tempDatabaseName = ClassMetadataHandling.GetDatabaseForArea(tempTableType);
-                        psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + tempDatabaseName + "]." + tempTableName + "') ,";
-                    }
+                    // Get the right database name for the table type (which can be anything including STG, PSA, base- and derived DV and Dimension or Facts)
+                    Dictionary<string, string> databaseNameDictionary = ClassMetadataHandling.GetConnectionInformationForTableType(tableRow["TABLE_TYPE"].ToString());
+                    
+                    string databaseNameKey = databaseNameDictionary.FirstOrDefault().Key;
+                   
 
                     // Regular processing
-                    if (databaseName == ConfigurationSettings.StagingDatabaseName)
-                    { // Staging filter
-                        stgTableFilterObjects = stgTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                  //  if (databaseNameKey == ConfigurationSettings.StagingDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.StgTablePrefixValue) ||
+                   //    tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.StgTablePrefixValue)))
+
+                    if (databaseNameKey == ConfigurationSettings.StagingDatabaseName)
+                    {
+                        // Staging filter
+                        stgTableFilterObjects = stgTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == ConfigurationSettings.PsaDatabaseName)
-                    { // Persistent Staging Area filter
-                        psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                    //else if (databaseNameKey == ConfigurationSettings.PsaDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.PsaTablePrefixValue) ||
+                    //                                                                      tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.PsaTablePrefixValue)))
+                    else if (databaseNameKey == ConfigurationSettings.PsaDatabaseName)
+                    {
+                        // Persistent Staging Area filter
+                        psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == ConfigurationSettings.IntegrationDatabaseName)
-                    { // Integration Layer filter
-                        intTableFilterObjects = intTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                    else if (databaseNameKey == ConfigurationSettings.IntegrationDatabaseName)
+                    {
+                        // Integration Layer filter
+                        intTableFilterObjects = intTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
-                    else if (databaseName == ConfigurationSettings.PresentationDatabaseName)
-                    { // Presentation Layer filter
-                        presTableFilterObjects = presTableFilterObjects + "OBJECT_ID(N'[" + databaseName + "]." + tableRow["TABLE_NAME"] + "') ,";
+                    else if (databaseNameKey == ConfigurationSettings.PresentationDatabaseName)
+                    {
+                        // Presentation Layer filter
+                        presTableFilterObjects = presTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
                     }
 
                     objectCounter++;
@@ -4697,11 +4799,13 @@ namespace TEAM
                 worker.ReportProgress(35);
                 subProcess.Stop();
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Filter variables created successfully, this took " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Filter variables created successfully, this took " +
+                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
                 #endregion
 
                 #region Physical Model dump- 40%
+
                 // Creating a point-in-time snapshot of the physical model used for export to the interface schemas
                 subProcess.Reset();
                 subProcess.Start();
@@ -4710,61 +4814,131 @@ namespace TEAM
                 _alert.SetTextLogging("Creating a snapshot of the physical model.\r\n");
 
                 // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
-                var allDatabaseAttributes = new StringBuilder();
-                if (radioButtonPhysicalMode.Checked
-                ) // Get the attributes from the physical model / catalog. No virtualisation needed.
+                var physicalModelDataTable = new DataTable();
+
+                if (radioButtonPhysicalMode.Checked) // Get the attributes from the physical model / catalog. No virtualisation needed.
                 {
                     var physicalModelInstantiation = new AttributeSelection();
 
-                    allDatabaseAttributes.AppendLine("  SELECT * FROM");
-                    allDatabaseAttributes.AppendLine("  (");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
-                    allDatabaseAttributes.AppendLine("    UNION ");
-                    allDatabaseAttributes.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
-                    allDatabaseAttributes.AppendLine("  ) mapping");
+                    // Staging / landing
+                    var preparePhysicalModelStgStatement = new StringBuilder();
+                    preparePhysicalModelStgStatement.AppendLine("SELECT ");
+                    preparePhysicalModelStgStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelStgStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelStgStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelStgStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelStgStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelStgStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelStgStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelStgStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelStgStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelStgStatement.AppendLine("FROM");
+                    preparePhysicalModelStgStatement.AppendLine("(");
+                    preparePhysicalModelStgStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
+                    preparePhysicalModelStgStatement.AppendLine(") sub");
+
+                    var physicalModelDataTableStg = GetDataTable(ref connStg, preparePhysicalModelStgStatement.ToString());
+
+                    // PSA
+                    var preparePhysicalModelPsaStatement = new StringBuilder();
+                    preparePhysicalModelPsaStatement.AppendLine("SELECT ");
+                    preparePhysicalModelPsaStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelPsaStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelPsaStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelPsaStatement.AppendLine("FROM");
+                    preparePhysicalModelPsaStatement.AppendLine("(");
+                    preparePhysicalModelPsaStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
+                    preparePhysicalModelPsaStatement.AppendLine(") sub");
+
+                    var physicalModelDataTablePsa = GetDataTable(ref connPsa, preparePhysicalModelPsaStatement.ToString());
+
+                    // INT
+                    var preparePhysicalModelIntStatement = new StringBuilder();
+                    preparePhysicalModelIntStatement.AppendLine("SELECT ");
+                    preparePhysicalModelIntStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelIntStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelIntStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelIntStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelIntStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelIntStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelIntStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelIntStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelIntStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelIntStatement.AppendLine("FROM");
+                    preparePhysicalModelIntStatement.AppendLine("(");
+                    preparePhysicalModelIntStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
+                    preparePhysicalModelIntStatement.AppendLine(") sub");
+
+                    var physicalModelDataTableInt = GetDataTable(ref connInt, preparePhysicalModelIntStatement.ToString());
+
+                    // PRES
+                    var preparePhysicalModelPresStatement = new StringBuilder();
+                    preparePhysicalModelPresStatement.AppendLine("SELECT ");
+                    preparePhysicalModelPresStatement.AppendLine(" [DATABASE_NAME] ");
+                    preparePhysicalModelPresStatement.AppendLine(",[SCHEMA_NAME]");
+                    preparePhysicalModelPresStatement.AppendLine(",[TABLE_NAME]");
+                    preparePhysicalModelPresStatement.AppendLine(",[COLUMN_NAME]");
+                    preparePhysicalModelPresStatement.AppendLine(",[DATA_TYPE]");
+                    preparePhysicalModelPresStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    preparePhysicalModelPresStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    preparePhysicalModelPresStatement.AppendLine(",[ORDINAL_POSITION]");
+                    preparePhysicalModelPresStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    preparePhysicalModelPresStatement.AppendLine("FROM");
+                    preparePhysicalModelPresStatement.AppendLine("(");
+                    preparePhysicalModelPresStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
+                    preparePhysicalModelPresStatement.AppendLine(") sub");
+
+                    var physicalModelDataTablePres = GetDataTable(ref connPres, preparePhysicalModelPresStatement.ToString());
+
+
+                    if (physicalModelDataTableStg != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTableStg);
+                    }
+
+                    if (physicalModelDataTablePsa != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTablePsa);
+                    }
+
+                    if (physicalModelDataTableInt != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTableInt);
+                    }
+
+                    if (physicalModelDataTablePres != null)
+                    {
+                        physicalModelDataTable.Merge(physicalModelDataTablePres);
+                    }
+
                 }
                 else // Get the values from the data grid or worker table (virtual mode)
                 {
-                    allDatabaseAttributes.AppendLine("SELECT ");
-                    allDatabaseAttributes.AppendLine("  [DATABASE_NAME] ");
-                    allDatabaseAttributes.AppendLine(" ,[SCHEMA_NAME]");
-                    allDatabaseAttributes.AppendLine(" ,[TABLE_NAME]");
-                    allDatabaseAttributes.AppendLine(" ,[COLUMN_NAME]");
-                    allDatabaseAttributes.AppendLine(" ,[DATA_TYPE]");
-                    allDatabaseAttributes.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
-                    allDatabaseAttributes.AppendLine(" ,[NUMERIC_PRECISION]");
-                    allDatabaseAttributes.AppendLine(" ,[ORDINAL_POSITION]");
-                    allDatabaseAttributes.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
-                    allDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
+                    StringBuilder allVirtualDatabaseAttributes = new StringBuilder();
+
+                    allVirtualDatabaseAttributes.AppendLine("SELECT ");
+                    allVirtualDatabaseAttributes.AppendLine("  [DATABASE_NAME] ");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[SCHEMA_NAME]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[TABLE_NAME]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[COLUMN_NAME]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[DATA_TYPE]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[NUMERIC_PRECISION]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[ORDINAL_POSITION]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                    allVirtualDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
+
+                    physicalModelDataTable = GetDataTable(ref connOmd, allVirtualDatabaseAttributes.ToString());
                 }
 
                 try
                 {
-                    var preparePhysicalModelStatement = new StringBuilder();
-
-                    preparePhysicalModelStatement.AppendLine("SELECT ");
-                    preparePhysicalModelStatement.AppendLine(" [DATABASE_NAME] ");
-                    preparePhysicalModelStatement.AppendLine(",[SCHEMA_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[TABLE_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[COLUMN_NAME]");
-                    preparePhysicalModelStatement.AppendLine(",[DATA_TYPE]");
-                    preparePhysicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    preparePhysicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    preparePhysicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
-                    preparePhysicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    preparePhysicalModelStatement.AppendLine("FROM");
-                    preparePhysicalModelStatement.AppendLine("(");
-
-                    preparePhysicalModelStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
-
-                    preparePhysicalModelStatement.AppendLine(") sub");
-
-                    var physicalModelDataTable = GetDataTable(ref connOmd, preparePhysicalModelStatement.ToString());
-
                     if (physicalModelDataTable.Rows.Count == 0)
                     {
                         _alert.SetTextLogging("--> No model information was found in the metadata.\r\n");
@@ -4787,15 +4961,18 @@ namespace TEAM
                                                               "[NUMERIC_PRECISION], " +
                                                               "[ORDINAL_POSITION], " +
                                                               "[PRIMARY_KEY_INDICATOR])");
-                                insertKeyStatement.AppendLine("VALUES ('" + tableName["DATABASE_NAME"].ToString().Trim() +
+                                insertKeyStatement.AppendLine("VALUES ('" +
+                                                              tableName["DATABASE_NAME"].ToString().Trim() +
                                                               "','" + tableName["SCHEMA_NAME"].ToString().Trim() +
                                                               "','" + tableName["TABLE_NAME"].ToString().Trim() +
                                                               "','" + tableName["COLUMN_NAME"].ToString().Trim() +
                                                               "','" + tableName["DATA_TYPE"].ToString().Trim() +
-                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString().Trim() +
+                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString()
+                                                                  .Trim() +
                                                               "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
                                                               "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
-                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString().Trim() + "')");
+                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString()
+                                                                  .Trim() + "')");
 
                                 var command = new SqlCommand(insertKeyStatement.ToString(), connection);
 
@@ -4807,26 +4984,35 @@ namespace TEAM
                                 catch (Exception ex)
                                 {
                                     errorCounter++;
-                                    _alert.SetTextLogging("An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
-                                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
+                                    _alert.SetTextLogging(
+                                        "An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
+                                    errorLog.AppendLine(
+                                        "\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" +
+                                        ex);
                                 }
                             }
                         }
                     }
+
                     worker.ReportProgress(40);
                     subProcess.Stop();
-                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " +
+                                          subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 }
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
+                    _alert.SetTextLogging(
+                        "An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine(
+                        "\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
                 }
+
                 #endregion
 
 
                 #region Prepare attributes - 45%
+
                 //Prepare Attributes
                 subProcess.Reset();
                 subProcess.Start();
@@ -4838,18 +5024,28 @@ namespace TEAM
                 // Dummy row - insert 'Not Applicable' attribute to satisfy RI
                 using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    var insertStatement = new StringBuilder();
+                    var insertNAStatement = new StringBuilder();
 
-                    insertStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
-                    insertStatement.AppendLine("([ATTRIBUTE_NAME])");
-                    insertStatement.AppendLine("VALUES ('Not applicable')");
+                    insertNAStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
+                    insertNAStatement.AppendLine("([ATTRIBUTE_NAME])");
+                    insertNAStatement.AppendLine("VALUES ('Not applicable')");
 
-                    var command = new SqlCommand(insertStatement.ToString(), connection);
+                    var commandNA = new SqlCommand(insertNAStatement.ToString(), connection);
+
+                    var insertNULLStatement = new StringBuilder();
+
+                    insertNULLStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
+                    insertNULLStatement.AppendLine("([ATTRIBUTE_NAME])");
+                    insertNULLStatement.AppendLine("VALUES ('NULL')");
+
+                    var commandNULL = new SqlCommand(insertNULLStatement.ToString(), connection);
 
                     try
                     {
                         connection.Open();
-                        command.ExecuteNonQuery();
+                        commandNA.ExecuteNonQuery();
+                        attCounter++;
+                        commandNULL.ExecuteNonQuery();
                         attCounter++;
                     }
                     catch (Exception ex)
@@ -4858,7 +5054,7 @@ namespace TEAM
                         _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
 
                         errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertNAStatement);
                     }
                 }
 
@@ -4877,7 +5073,6 @@ namespace TEAM
 
                 var prepareAttStatement = new StringBuilder();
                 prepareAttStatement.AppendLine("SELECT DISTINCT(COLUMN_NAME) AS COLUMN_NAME FROM (");
-                //prepareAttStatement.Append(allDatabaseAttributes); // The master list of all database columns as defined earlier.
 
                 prepareAttStatement.AppendLine("SELECT");
                 prepareAttStatement.AppendLine("  [DATABASE_NAME]");
@@ -4913,7 +5108,8 @@ namespace TEAM
                 // Check if there are any attributes found, otherwise insert into the repository
                 if (listAtt.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    _alert.SetTextLogging(
+                        "--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
                 }
                 else
                 {
@@ -4940,23 +5136,30 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
+
                     _alert.SetTextLogging("--> Processing " + attCounter + " attributes.\r\n");
                 }
+
                 worker.ReportProgress(45);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the attributes completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the attributes completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
 
                 #endregion
 
 
                 #region Business Key - 50%
+
                 //Understanding the Business Key (MD_BUSINESS_KEY_COMPONENT)
                 subProcess.Reset();
                 subProcess.Start();
@@ -4966,72 +5169,87 @@ namespace TEAM
 
                 var prepareKeyStatement = new StringBuilder();
 
-                prepareKeyStatement.AppendLine(@"
-                SELECT 
-                  SOURCE_NAME,
-                  TARGET_NAME,
-                  BUSINESS_KEY_ATTRIBUTE,
-                  ROW_NUMBER() OVER(PARTITION BY SOURCE_NAME, TARGET_NAME, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_NAME, TARGET_NAME, COMPONENT_ORDER ASC) AS COMPONENT_ID,
-                  COMPONENT_ORDER,
-                  REPLACE(COMPONENT_VALUE,'COMPOSITE(', '') AS COMPONENT_VALUE,
-                    CASE
-                            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 11)= 'CONCATENATE' THEN 'CONCATENATE()'
-                            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 6)= 'PIVOT' THEN 'PIVOT()'
-                            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 9)= 'COMPOSITE' THEN 'COMPOSITE()'
-                            ELSE 'NORMAL'
-                    END AS COMPONENT_TYPE
-                FROM
-                (
-                    SELECT DISTINCT
-                        A.SOURCE_TABLE,
-                        A.BUSINESS_KEY_ATTRIBUTE,
-                        A.TARGET_TABLE,
-                        CASE
-                            WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0
-                            THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))
-                            ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')
-                        END AS COMPONENT_VALUE,
-                        ROW_NUMBER() OVER(PARTITION BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER
-                    FROM
-                    (
-                      SELECT
-                          SOURCE_TABLE, 
-                          TARGET_TABLE, 
-                          BUSINESS_KEY_ATTRIBUTE,
-                          CASE SUBSTRING(BUSINESS_KEY_ATTRIBUTE, 0, CHARINDEX('(', BUSINESS_KEY_ATTRIBUTE))
-        	                 WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') 
-        	                 ELSE CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') 
-                          END AS BUSINESS_KEY_ATTRIBUTE_XML
-                        FROM
-                        (
-                            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE
-                            FROM TMP_MD_TABLE_MAPPING
-                            WHERE TARGET_TABLE_TYPE = 'Hub'
-                              AND [PROCESS_INDICATOR] = 'Y'
-                        ) TableName
-                    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)
-                    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''
-                ) pivotsub
-                LEFT OUTER JOIN
-                       (
-                              SELECT SOURCE_NAME, [SCHEMA_NAME]
-                              FROM MD_SOURCE
-                       ) stgsub
-                ON pivotsub.SOURCE_TABLE = stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME
-                LEFT OUTER JOIN
-                       (
-                              SELECT HUB_NAME AS TARGET_NAME, [SCHEMA_NAME]
-                              FROM MD_HUB
-                       ) hubsub
-                ON pivotsub.TARGET_TABLE = hubsub.[SCHEMA_NAME]+'.'+hubsub.TARGET_NAME
-                ORDER BY stgsub.SOURCE_NAME, hubsub.TARGET_NAME, COMPONENT_ORDER
-                ");
+                prepareKeyStatement.AppendLine("SELECT");
+                prepareKeyStatement.AppendLine("  SOURCE_NAME,");
+                prepareKeyStatement.AppendLine("  TARGET_NAME,");
+                prepareKeyStatement.AppendLine("  BUSINESS_KEY_ATTRIBUTE,");
+                prepareKeyStatement.AppendLine(
+                    "  ROW_NUMBER() OVER(PARTITION BY SOURCE_NAME, TARGET_NAME, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_NAME, TARGET_NAME, COMPONENT_ORDER ASC) AS COMPONENT_ID,");
+                prepareKeyStatement.AppendLine("  COMPONENT_ORDER,");
+                prepareKeyStatement.AppendLine("  REPLACE(COMPONENT_VALUE,'COMPOSITE(', '') AS COMPONENT_VALUE,");
+                prepareKeyStatement.AppendLine("    CASE");
+                prepareKeyStatement.AppendLine(
+                    "            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 11)= 'CONCATENATE' THEN 'CONCATENATE()'");
+                prepareKeyStatement.AppendLine(
+                    "            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 6)= 'PIVOT' THEN 'PIVOT()'");
+                prepareKeyStatement.AppendLine(
+                    "            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 9)= 'COMPOSITE' THEN 'COMPOSITE()'");
+                prepareKeyStatement.AppendLine("            ELSE 'NORMAL'");
+                prepareKeyStatement.AppendLine("    END AS COMPONENT_TYPE");
+                prepareKeyStatement.AppendLine("FROM");
+                prepareKeyStatement.AppendLine("(");
+                prepareKeyStatement.AppendLine("    SELECT DISTINCT");
+                prepareKeyStatement.AppendLine("        A.SOURCE_TABLE,");
+                prepareKeyStatement.AppendLine("        A.BUSINESS_KEY_ATTRIBUTE,");
+                prepareKeyStatement.AppendLine("        A.TARGET_TABLE,");
+                prepareKeyStatement.AppendLine("        CASE");
+                prepareKeyStatement.AppendLine(
+                    "            WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
+                prepareKeyStatement.AppendLine("            THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))");
+                prepareKeyStatement.AppendLine(
+                    "            ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')");
+                prepareKeyStatement.AppendLine("        END AS COMPONENT_VALUE,");
+                prepareKeyStatement.AppendLine(
+                    "        ROW_NUMBER() OVER(PARTITION BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER");
+                prepareKeyStatement.AppendLine("    FROM");
+                prepareKeyStatement.AppendLine("    (");
+                prepareKeyStatement.AppendLine("      SELECT");
+                prepareKeyStatement.AppendLine("          SOURCE_TABLE, ");
+                prepareKeyStatement.AppendLine("          TARGET_TABLE, ");
+                prepareKeyStatement.AppendLine("          BUSINESS_KEY_ATTRIBUTE,");
+                prepareKeyStatement.AppendLine(
+                    "          CASE SUBSTRING(BUSINESS_KEY_ATTRIBUTE, 0, CHARINDEX('(', BUSINESS_KEY_ATTRIBUTE))");
+                prepareKeyStatement.AppendLine(
+                    "             WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') ");
+                prepareKeyStatement.AppendLine(
+                    "             ELSE CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') ");
+                prepareKeyStatement.AppendLine("          END AS BUSINESS_KEY_ATTRIBUTE_XML");
+                prepareKeyStatement.AppendLine("        FROM");
+                prepareKeyStatement.AppendLine("        (");
+                prepareKeyStatement.AppendLine(
+                    "            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
+                prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
+                prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE_TYPE = '" +
+                                               ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
+                prepareKeyStatement.AppendLine("              AND [PROCESS_INDICATOR] = 'Y'");
+                prepareKeyStatement.AppendLine("        ) TableName");
+                prepareKeyStatement.AppendLine(
+                    "    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
+                prepareKeyStatement.AppendLine(
+                    "    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''");
+                prepareKeyStatement.AppendLine(") pivotsub");
+                prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
+                prepareKeyStatement.AppendLine("       (");
+                prepareKeyStatement.AppendLine("              SELECT SOURCE_NAME, [SCHEMA_NAME]");
+                prepareKeyStatement.AppendLine("              FROM MD_SOURCE");
+                prepareKeyStatement.AppendLine("       ) stgsub");
+                prepareKeyStatement.AppendLine(
+                    "ON pivotsub.SOURCE_TABLE = stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME");
+                prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
+                prepareKeyStatement.AppendLine("       (");
+                prepareKeyStatement.AppendLine("              SELECT HUB_NAME AS TARGET_NAME, [SCHEMA_NAME]");
+                prepareKeyStatement.AppendLine("              FROM MD_HUB");
+                prepareKeyStatement.AppendLine("       ) hubsub");
+                prepareKeyStatement.AppendLine(
+                    "ON pivotsub.TARGET_TABLE = hubsub.[SCHEMA_NAME]+'.'+hubsub.TARGET_NAME");
+                prepareKeyStatement.AppendLine("ORDER BY stgsub.SOURCE_NAME, hubsub.TARGET_NAME, COMPONENT_ORDER");
 
                 var listKeys = GetDataTable(ref connOmd, prepareKeyStatement.ToString());
 
                 if (listKeys.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("-- >  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    _alert.SetTextLogging(
+                        "-- >  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
                 }
                 else
                 {
@@ -5043,7 +5261,10 @@ namespace TEAM
                             var keyComponent = tableName["COMPONENT_VALUE"]; //Handle quotes between SQL and C%
                             keyComponent = keyComponent.ToString().Replace("'", "''");
 
-                            _alert.SetTextLogging("--> Processing the Business Key "+ tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component "+ keyComponent + ") from " + tableName["SOURCE_NAME"] + " to " + tableName["TARGET_NAME"] + "\r\n");
+                            _alert.SetTextLogging("--> Processing the Business Key " +
+                                                  tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component " +
+                                                  keyComponent + ") from " + tableName["SOURCE_NAME"] + " to " +
+                                                  tableName["TARGET_NAME"] + "\r\n");
 
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
@@ -5051,8 +5272,13 @@ namespace TEAM
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT]");
-                            insertStatement.AppendLine("(SOURCE_NAME, HUB_NAME, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
-                            insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] + "','" + tableName["TARGET_NAME"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_TYPE"] + "')");
+                            insertStatement.AppendLine(
+                                "(SOURCE_NAME, HUB_NAME, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
+                            insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] + "','" +
+                                                       tableName["TARGET_NAME"] + "','" + businessKeyDefinition +
+                                                       "','" + tableName["COMPONENT_ID"] + "','" +
+                                                       tableName["COMPONENT_ORDER"] + "','" + keyComponent + "','" +
+                                                       tableName["COMPONENT_TYPE"] + "')");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5064,21 +5290,29 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
 
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
                 }
+
                 worker.ReportProgress(50);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Business Key definition completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Business Key definition completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Business Key components - 60%
+
                 //Understanding the Business Key component parts
                 subProcess.Reset();
                 subProcess.Start();
@@ -5123,7 +5357,8 @@ namespace TEAM
 
                 if (listKeyParts.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    _alert.SetTextLogging(
+                        "--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
                 }
                 else
                 {
@@ -5141,8 +5376,15 @@ namespace TEAM
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT_PART]");
-                            insertStatement.AppendLine("(SOURCE_NAME, HUB_NAME, BUSINESS_KEY_DEFINITION, COMPONENT_ID,COMPONENT_ELEMENT_ID,COMPONENT_ELEMENT_ORDER,COMPONENT_ELEMENT_VALUE,COMPONENT_ELEMENT_TYPE,ATTRIBUTE_NAME)");
-                            insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] + "','" + tableName["HUB_NAME"] + "','" + businessKeyDefinition + "','" + tableName["COMPONENT_ID"] + "','" + tableName["COMPONENT_ELEMENT_ID"] + "','" + tableName["COMPONENT_ELEMENT_ORDER"] + "','" + keyComponent + "','" + tableName["COMPONENT_ELEMENT_TYPE"] + "','" + tableName["ATTRIBUTE_NAME"] + "')");
+                            insertStatement.AppendLine(
+                                "(SOURCE_NAME, HUB_NAME, BUSINESS_KEY_DEFINITION, COMPONENT_ID,COMPONENT_ELEMENT_ID,COMPONENT_ELEMENT_ORDER,COMPONENT_ELEMENT_VALUE,COMPONENT_ELEMENT_TYPE,ATTRIBUTE_NAME)");
+                            insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] + "','" +
+                                                       tableName["HUB_NAME"] + "','" + businessKeyDefinition + "','" +
+                                                       tableName["COMPONENT_ID"] + "','" +
+                                                       tableName["COMPONENT_ELEMENT_ID"] + "','" +
+                                                       tableName["COMPONENT_ELEMENT_ORDER"] + "','" + keyComponent +
+                                                       "','" + tableName["COMPONENT_ELEMENT_TYPE"] + "','" +
+                                                       tableName["ATTRIBUTE_NAME"] + "')");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5155,24 +5397,31 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Business Key component metadata. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the Business Key component metadata. Please check the Error Log for more details.\r\n");
 
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of Business Key component metadata: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of Business Key component metadata: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
                 }
+
                 worker.ReportProgress(60);
                 subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + keyPartCounter + " Business Key component attributes.\r\n");
-                _alert.SetTextLogging("Preparation of the Business Key components completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Business Key components completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
 
                 #endregion
 
 
                 #region Hub / Link relationship - 75%
+
                 //Prepare HUB / LNK xref
                 subProcess.Reset();
                 subProcess.Start();
@@ -5184,14 +5433,28 @@ namespace TEAM
                 if (radioButtonPhysicalMode.Checked)
                 {
                     virtualisationSnippet.AppendLine(" SELECT ");
-                    virtualisationSnippet.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
-                    virtualisationSnippet.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
+                    virtualisationSnippet.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
+                                                     ConfigurationSettings.IntegrationDatabaseName +
+                                                     "')) AS LINK_SCHEMA,");
+                    virtualisationSnippet.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" +
+                                                     ConfigurationSettings.IntegrationDatabaseName +
+                                                     "'))  AS LINK_NAME,");
                     virtualisationSnippet.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    virtualisationSnippet.AppendLine("     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
+                    virtualisationSnippet.AppendLine(
+                        "     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" +
+                        ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
                     virtualisationSnippet.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
                     virtualisationSnippet.AppendLine(" WHERE [column_id] > 1");
-                    virtualisationSnippet.AppendLine("   AND OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" + lnkTablePrefix + @"'");
-                    virtualisationSnippet.AppendLine("   AND [name] NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
+                    virtualisationSnippet.AppendLine("   AND OBJECT_NAME(OBJECT_ID,DB_ID('" +
+                                                     ConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" +
+                                                     lnkTablePrefix + @"'");
+                    virtualisationSnippet.AppendLine("   AND [name] NOT IN ('" +
+                                                     ConfigurationSettings.RecordSourceAttribute + "','" +
+                                                     ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
+                                                     ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                                                     ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
+                                                     "','" + ConfigurationSettings.EtlProcessAttribute + "','" +
+                                                     FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
                 }
                 else
                 {
@@ -5199,11 +5462,19 @@ namespace TEAM
                     virtualisationSnippet.AppendLine("  [SCHEMA_NAME] AS LINK_SCHEMA,");
                     virtualisationSnippet.AppendLine("  [TABLE_NAME]  AS LINK_NAME,");
                     virtualisationSnippet.AppendLine("  [COLUMN_NAME] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
+                    virtualisationSnippet.AppendLine(
+                        "  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
                     virtualisationSnippet.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
                     virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
-                    virtualisationSnippet.AppendLine( " AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
-                    virtualisationSnippet.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
+                    virtualisationSnippet.AppendLine(" AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
+                    virtualisationSnippet.AppendLine("  AND COLUMN_NAME NOT IN ('" +
+                                                     ConfigurationSettings.RecordSourceAttribute + "','" +
+                                                     ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
+                                                     ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                                                     ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
+                                                     "','" + FormBase.ConfigurationSettings.EtlProcessAttribute +
+                                                     "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute +
+                                                     "')");
 
                 }
 
@@ -5216,91 +5487,124 @@ namespace TEAM
                 prepareHubLnkXrefStatement.AppendLine("       lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,");
                 prepareHubLnkXrefStatement.AppendLine("       lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK");
                 prepareHubLnkXrefStatement.AppendLine("   FROM");
-                prepareHubLnkXrefStatement.AppendLine("   -- This base query adds the Link and its Hubs and their order by pivoting on the full business key");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "   -- This base query adds the Link and its Hubs and their order by pivoting on the full business key");
                 prepareHubLnkXrefStatement.AppendLine("   (");
                 prepareHubLnkXrefStatement.AppendLine("       SELECT");
                 prepareHubLnkXrefStatement.AppendLine("       TARGET_TABLE,");
                 prepareHubLnkXrefStatement.AppendLine("       SOURCE_TABLE,");
                 prepareHubLnkXrefStatement.AppendLine("       BUSINESS_KEY_ATTRIBUTE,");
-                prepareHubLnkXrefStatement.AppendLine("       LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,");
-                prepareHubLnkXrefStatement.AppendLine("       ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS HUB_KEY_ORDER");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "       LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "       ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS HUB_KEY_ORDER");
                 prepareHubLnkXrefStatement.AppendLine("       FROM");
                 prepareHubLnkXrefStatement.AppendLine("       (");
                 prepareHubLnkXrefStatement.AppendLine("       SELECT");
                 prepareHubLnkXrefStatement.AppendLine("           TARGET_TABLE,");
                 prepareHubLnkXrefStatement.AppendLine("           SOURCE_TABLE,");
-                prepareHubLnkXrefStatement.AppendLine("           ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS LINK_ORDER,");
-                prepareHubLnkXrefStatement.AppendLine("           BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "           ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS LINK_ORDER,");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "           BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
                 prepareHubLnkXrefStatement.AppendLine("       FROM  TMP_MD_TABLE_MAPPING");
-                prepareHubLnkXrefStatement.AppendLine("       WHERE [TARGET_TABLE_TYPE] = 'Link'");
+                prepareHubLnkXrefStatement.AppendLine("       WHERE [TARGET_TABLE_TYPE] = '" +
+                                                      ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
+                                                      "'");
                 prepareHubLnkXrefStatement.AppendLine("           AND [PROCESS_INDICATOR] = 'Y'");
-                prepareHubLnkXrefStatement.AppendLine("     ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
-                prepareHubLnkXrefStatement.AppendLine("     WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "     ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "     WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same");
                 prepareHubLnkXrefStatement.AppendLine(" ) lnk_hubkey_order");
-                prepareHubLnkXrefStatement.AppendLine(" -- Adding the information required for the target model in the query");
+                prepareHubLnkXrefStatement.AppendLine(
+                    " -- Adding the information required for the target model in the query");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN ");
                 prepareHubLnkXrefStatement.AppendLine(" (");
                 prepareHubLnkXrefStatement.AppendLine(virtualisationSnippet.ToString());
                 prepareHubLnkXrefStatement.AppendLine(" ) lnk_target_model");
-                prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_SCHEMA+'.'+lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
-                prepareHubLnkXrefStatement.AppendLine(" AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
+                prepareHubLnkXrefStatement.AppendLine(
+                    " ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_SCHEMA+'.'+lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
+                prepareHubLnkXrefStatement.AppendLine(
+                    " AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
                 prepareHubLnkXrefStatement.AppendLine(" --Adding the Hub mapping data to get the business keys");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN TMP_MD_TABLE_MAPPING hub");
                 prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[SOURCE_TABLE] = hub.SOURCE_TABLE");
-                prepareHubLnkXrefStatement.AppendLine("     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
-                prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE_TYPE] = 'Hub'");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
+                prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE_TYPE] = '" +
+                                                      ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
                 prepareHubLnkXrefStatement.AppendLine("     AND hub.[PROCESS_INDICATOR] = 'Y'");
                 prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
-                prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.[SCHEMA_NAME]+'.'+hub_tbl.HUB_NAME");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "     ON hub.TARGET_TABLE = hub_tbl.[SCHEMA_NAME]+'.'+hub_tbl.HUB_NAME");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_LINK lnk_tbl");
-                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
+                prepareHubLnkXrefStatement.AppendLine(
+                    "     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
 
                 var listHlXref = GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
-                foreach (DataRow tableName in listHlXref.Rows)
+                if (listHlXref != null)
                 {
-                    using (var connection = new SqlConnection(metaDataConnection))
+                    foreach (DataRow tableName in listHlXref.Rows)
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["HUB_NAME"] + " to " + tableName["LINK_NAME"] + " relationship.\r\n");
-
-                        var insertStatement = new StringBuilder();
-                        insertStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
-                        insertStatement.AppendLine("([HUB_NAME], [LINK_NAME], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
-                        insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + "','" + tableName["LINK_NAME"] + "','" + tableName["HUB_ORDER"] + "','" + tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
-
-                        var command = new SqlCommand(insertStatement.ToString(), connection);
-
-                        try
+                        using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging("--> Processing the " + tableName["HUB_NAME"] + " to " +
+                                                  tableName["LINK_NAME"] + " relationship.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
+                            insertStatement.AppendLine(
+                                "([HUB_NAME], [LINK_NAME], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
+                            insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + "','" +
+                                                       tableName["LINK_NAME"] + "','" + tableName["HUB_ORDER"] + "','" +
+                                                       tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
+
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            }
                         }
                     }
                 }
 
                 worker.ReportProgress(75);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the relationship between Hubs and Links completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the relationship between Hubs and Links completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Link Business Key - 78%
+
                 // Prepare links business key backfill
 
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the Link Business key metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_LINK table
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+                selectionRows =
+                    inputTableMetadata.Select(
+                        "PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
 
                 var distincLinksForBusinessKey = new List<string>();
 
@@ -5319,7 +5623,8 @@ namespace TEAM
                 {
                     var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
-                    var businessKeyList = ClassMetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId);
+                    var businessKeyList = ClassMetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key,
+                        fullyQualifiedName.Value, versionId);
                     string businessKey = string.Join(",", businessKeyList);
 
                     var updateStatement = new StringBuilder();
@@ -5340,16 +5645,20 @@ namespace TEAM
                     catch (Exception ex)
                     {
                         errorCounter++;
-                        _alert.SetTextLogging("An issue has occured during preparation of the Link Business Key. Please check the Error Log for more details.\r\n");
+                        _alert.SetTextLogging(
+                            "An issue has occured during preparation of the Link Business Key. Please check the Error Log for more details.\r\n");
 
-                        errorLog.AppendLine("\r\nAn issue has occured during preparation of the Link Business Key: \r\n\r\n" + ex);
+                        errorLog.AppendLine(
+                            "\r\nAn issue has occured during preparation of the Link Business Key: \r\n\r\n" + ex);
                         errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + updateStatement);
                     }
                 }
+
                 #endregion
 
 
                 #region Stg / Link relationship - 80%
+
                 //Prepare STG / LNK xref
                 subProcess.Reset();
                 subProcess.Start();
@@ -5358,17 +5667,20 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the relationship between Source and Link tables.\r\n");
 
                 var preparestgLnkXrefStatement = new StringBuilder();
-                preparestgLnkXrefStatement.AppendLine(@"
-                                                        SELECT
-                                                            lnk_tbl.LINK_NAME,
-                                                            stg_tbl.SOURCE_NAME,
-                                                            lnk.FILTER_CRITERIA,
-                                                            lnk.BUSINESS_KEY_ATTRIBUTE
-                                                        FROM [dbo].[TMP_MD_TABLE_MAPPING] lnk
-                                                        JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME
-                                                        JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.[SCHEMA_NAME]+'.'+stg_tbl.SOURCE_NAME
-                                                        WHERE lnk.TARGET_TABLE_TYPE = 'Link'
-                                                        AND[PROCESS_INDICATOR] = 'Y'");
+                preparestgLnkXrefStatement.AppendLine("SELECT");
+                preparestgLnkXrefStatement.AppendLine("  lnk_tbl.LINK_NAME,");
+                preparestgLnkXrefStatement.AppendLine("  stg_tbl.SOURCE_NAME,");
+                preparestgLnkXrefStatement.AppendLine("  lnk.FILTER_CRITERIA,");
+                preparestgLnkXrefStatement.AppendLine("  lnk.BUSINESS_KEY_ATTRIBUTE");
+                preparestgLnkXrefStatement.AppendLine("FROM [dbo].[TMP_MD_TABLE_MAPPING] lnk");
+                preparestgLnkXrefStatement.AppendLine(
+                    "JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
+                preparestgLnkXrefStatement.AppendLine(
+                    "JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.[SCHEMA_NAME]+'.'+stg_tbl.SOURCE_NAME");
+                preparestgLnkXrefStatement.AppendLine("WHERE lnk.TARGET_TABLE_TYPE = '" +
+                                                      ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
+                                                      "'");
+                preparestgLnkXrefStatement.AppendLine("AND[PROCESS_INDICATOR] = 'Y'");
 
                 var listStgLinkXref = GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
 
@@ -5376,7 +5688,8 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " +
+                                              tableName["LINK_NAME"] + " relationship.\r\n");
 
 
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
@@ -5385,18 +5698,20 @@ namespace TEAM
                         var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(), tableName["LINK_NAME"].ToString());
+                        var loadVector = ClassMetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(),
+                            tableName["LINK_NAME"].ToString());
 
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_XREF]");
-                        insertStatement.AppendLine("([SOURCE_NAME], [LINK_NAME], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION], [LOAD_VECTOR])");
+                        insertStatement.AppendLine(
+                            "([SOURCE_NAME], [LINK_NAME], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION], [LOAD_VECTOR])");
                         insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] +
-                                                            "','" + tableName["LINK_NAME"] + 
-                                                            "','" + filterCriterion + 
-                                                            "','" + businessKeyDefinition +
-                                                            "','" + loadVector +
-                                                            "')");
+                                                   "','" + tableName["LINK_NAME"] +
+                                                   "','" + filterCriterion +
+                                                   "','" + businessKeyDefinition +
+                                                   "','" + loadVector +
+                                                   "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5408,9 +5723,12 @@ namespace TEAM
                         catch (Exception ex)
                         {
                             errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
+                            _alert.SetTextLogging(
+                                "An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
 
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +ex);
+                            errorLog.AppendLine(
+                                "\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +
+                                ex);
                             errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                         }
                     }
@@ -5418,24 +5736,30 @@ namespace TEAM
 
                 worker.ReportProgress(80);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the relationship between Source and the Links completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the relationship between Source and the Links completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Manually mapped Source to Staging Area Attribute XREF - 81%
+
                 // Prepare the Source to Staging Area XREF
                 subProcess.Reset();
                 subProcess.Start();
 
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.\r\n");
+                _alert.SetTextLogging(
+                    "Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.\r\n");
 
                 // Getting the distinct list of row from the data table
                 selectionRows = inputAttributeMetadata.Select("TARGET_TABLE LIKE '%" + stagingPrefix + "%'");
 
                 if (selectionRows.Length == 0)
                 {
-                    _alert.SetTextLogging("No manual column-to-column mappings for Source-to-Staging were detected.\r\n");
+                    _alert.SetTextLogging(
+                        "No manual column-to-column mappings for Source-to-Staging were detected.\r\n");
                 }
                 else
                 {
@@ -5444,12 +5768,20 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " + (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " +(string) row["TARGET_COLUMN"] + ".\r\n");
+                            _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " +
+                                                  (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " +
+                                                  (string) row["TARGET_COLUMN"] + ".\r\n");
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
-                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_TABLE"] + "','" + row["TARGET_TABLE"] + "', '" + (string)row["SOURCE_COLUMN"] + "', '" + (string)row["TARGET_COLUMN"] + "')");
+                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                            insertStatement.AppendLine("VALUES (" +
+                                                       "'" + row["SOURCE_TABLE"] + "'," +
+                                                       "'" + row["TARGET_TABLE"] + "', " +
+                                                       "'" + (string) row["SOURCE_COLUMN"] + "', " +
+                                                       "'" + (string) row["TARGET_COLUMN"] + "', " +
+                                                       "'Manual mapping'" +
+                                                       ")");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5461,21 +5793,30 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
 
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
                 }
+
                 worker?.ReportProgress(87);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Automatically mapped Source to Staging Area Attribute XREF 93%
+
                 //Prepare automatic attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
@@ -5486,18 +5827,19 @@ namespace TEAM
 
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the database.\r\n");
+                    _alert.SetTextLogging(
+                        "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the database.\r\n");
                 }
                 else
                 {
-                    _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the physical model metadata.\r\n");
+                    _alert.SetTextLogging(
+                        "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the physical model metadata.\r\n");
                 }
 
                 // Run the statement, the virtual vs. physical lookups are embedded in MD_PHYSICAL_MODEL
                 var prepareMappingStagingStatement = new StringBuilder();
                 prepareMappingStagingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareMappingStagingStatement.AppendLine("(");
-                //prepareMappingStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
 
                 prepareMappingStagingStatement.AppendLine("SELECT");
                 prepareMappingStagingStatement.AppendLine("  [DATABASE_NAME]");
@@ -5519,8 +5861,10 @@ namespace TEAM
                 prepareMappingStagingStatement.AppendLine("    src.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
                 prepareMappingStagingStatement.AppendLine("    tgt.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME");
                 prepareMappingStagingStatement.AppendLine("  FROM MD_SOURCE_STAGING_XREF xref");
-                prepareMappingStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
-                prepareMappingStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STAGING tgt ON xref.STAGING_NAME = tgt.STAGING_NAME");
+                prepareMappingStagingStatement.AppendLine(
+                    "LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                prepareMappingStagingStatement.AppendLine(
+                    "LEFT OUTER JOIN dbo.MD_STAGING tgt ON xref.STAGING_NAME = tgt.STAGING_NAME");
                 prepareMappingStagingStatement.AppendLine(") ");
                 prepareMappingStagingStatement.AppendLine("SELECT");
                 prepareMappingStagingStatement.AppendLine("  XREF.SOURCE_NAME, ");
@@ -5529,15 +5873,18 @@ namespace TEAM
                 prepareMappingStagingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_TO,");
                 prepareMappingStagingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
                 prepareMappingStagingStatement.AppendLine("FROM XREF");
-                prepareMappingStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.STAGING_NAME = ADC_TARGET.TABLE_NAME");
-                prepareMappingStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                prepareMappingStagingStatement.AppendLine(
+                    "JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.STAGING_NAME = ADC_TARGET.TABLE_NAME");
+                prepareMappingStagingStatement.AppendLine(
+                    "JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
                 prepareMappingStagingStatement.AppendLine("WHERE NOT EXISTS (");
                 prepareMappingStagingStatement.AppendLine("  SELECT SOURCE_NAME, STAGING_NAME, ATTRIBUTE_NAME_FROM");
                 prepareMappingStagingStatement.AppendLine("  FROM MD_SOURCE_STAGING_ATTRIBUTE_XREF manualmapping");
                 prepareMappingStagingStatement.AppendLine("WHERE");
                 prepareMappingStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
                 prepareMappingStagingStatement.AppendLine("  AND manualmapping.STAGING_NAME = XREF.STAGING_NAME");
-                prepareMappingStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
+                prepareMappingStagingStatement.AppendLine(
+                    "  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
                 prepareMappingStagingStatement.AppendLine(")");
                 prepareMappingStagingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
@@ -5555,12 +5902,21 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["STAGING_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+                            _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                                                  " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
+                                                  (string) row["STAGING_NAME"] + " - " +
+                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
-                            insertStatement.AppendLine("VALUES ('" + (string)row["SOURCE_NAME"] + "','" + (string)row["STAGING_NAME"] + "', '" + (string)row["ATTRIBUTE_NAME_FROM"] + "', '" + (string)row["ATTRIBUTE_NAME_TO"] + "')");
+                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                            insertStatement.AppendLine("VALUES (" +
+                                                       "'" + (string) row["SOURCE_NAME"] + "', " +
+                                                       "'" + (string) row["STAGING_NAME"] + "', " +
+                                                       "'" + (string) row["ATTRIBUTE_NAME_FROM"] + "', " +
+                                                       "'" + (string) row["ATTRIBUTE_NAME_TO"] + "', " +
+                                                       "'Automatic mapping'" +
+                                                       ")");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5573,10 +5929,14 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
 
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
@@ -5584,14 +5944,16 @@ namespace TEAM
 
                 worker.ReportProgress(90);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
-
-
+                _alert.SetTextLogging("--> Processing " + automaticMappingCounter +
+                                      " automatically added attribute mappings.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the automatically mapped column-to-column metadata completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
                 #region Manually mapped Source to Persistent Staging Area Attribute XREF - 81%
+
                 // Prepare the Source to Persistent Staging Area XREF
                 subProcess.Reset();
                 subProcess.Start();
@@ -5613,12 +5975,22 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " + (string)row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " + (string)row["TARGET_COLUMN"] + ".\r\n");
+                            _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " +
+                                                  (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " +
+                                                  (string) row["TARGET_COLUMN"] + ".\r\n");
+
+                            //var localTableName = ClassMetadataHandling.GetNonQualifiedTableName(row["TARGET_TABLE"].ToString());
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
-                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_TABLE"] + "','" + row["TARGET_TABLE"] + "', '" + (string)row["SOURCE_COLUMN"] + "', '" + (string)row["TARGET_COLUMN"] + "')");
+                            insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                            insertStatement.AppendLine("VALUES (" + 
+                                                       "'" + row["SOURCE_TABLE"] + "', " +
+                                                       "'" + row["TARGET_TABLE"] + "', " +
+                                                       "'" + (string) row["SOURCE_COLUMN"] + "', " +
+                                                       "'" + (string) row["TARGET_COLUMN"] + "', " +
+                                                       "'Manual mapping'" +
+                                                       ")");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5630,10 +6002,14 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
 
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
@@ -5641,11 +6017,13 @@ namespace TEAM
 
                 worker?.ReportProgress(87);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Automatically mapped Source to Persistent Staging Area Attribute XREF 93%
+
                 // Prepare automatic attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
@@ -5656,21 +6034,13 @@ namespace TEAM
 
                 automaticMappingCounter = 0;
 
-                if (radioButtonPhysicalMode.Checked)
-                {
-                    _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the database.\r\n");
-                }
-                else
-                {
-                    _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the physical model metadata.\r\n");
-                }
-
-                // Run the statement, the virtual vs. physical lookups are embedded in allDatabaseAttributes
+                _alert.SetTextLogging(
+                    radioButtonPhysicalMode.Checked
+                        ? "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the database.\r\n"
+                        : "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the physical model metadata.\r\n");
 
                 prepareMappingPersistentStagingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareMappingPersistentStagingStatement.AppendLine("(");
-                //prepareMappingPersistentStagingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
-
                 prepareMappingPersistentStagingStatement.AppendLine("SELECT");
                 prepareMappingPersistentStagingStatement.AppendLine("  [DATABASE_NAME]");
                 prepareMappingPersistentStagingStatement.AppendLine(" ,[SCHEMA_NAME]");
@@ -5682,12 +6052,12 @@ namespace TEAM
                 prepareMappingPersistentStagingStatement.AppendLine(" ,[ORDINAL_POSITION]");
                 prepareMappingPersistentStagingStatement.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
                 prepareMappingPersistentStagingStatement.AppendLine("FROM [MD_PHYSICAL_MODEL]");
-
                 prepareMappingPersistentStagingStatement.AppendLine("),");
                 prepareMappingPersistentStagingStatement.AppendLine("XREF AS");
                 prepareMappingPersistentStagingStatement.AppendLine("(");
                 prepareMappingPersistentStagingStatement.AppendLine("  SELECT");
                 prepareMappingPersistentStagingStatement.AppendLine("    xref.*,");
+                prepareMappingPersistentStagingStatement.AppendLine("    tgt.PERSISTENT_STAGING_NAME_SHORT,");
                 prepareMappingPersistentStagingStatement.AppendLine("    src.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
                 prepareMappingPersistentStagingStatement.AppendLine("    tgt.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME");
                 prepareMappingPersistentStagingStatement.AppendLine("  FROM MD_SOURCE_PERSISTENT_STAGING_XREF xref");
@@ -5701,7 +6071,7 @@ namespace TEAM
                 prepareMappingPersistentStagingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_TO,");
                 prepareMappingPersistentStagingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
                 prepareMappingPersistentStagingStatement.AppendLine("FROM XREF");
-                prepareMappingPersistentStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.PERSISTENT_STAGING_NAME = ADC_TARGET.TABLE_NAME");
+                prepareMappingPersistentStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.PERSISTENT_STAGING_NAME_SHORT = ADC_TARGET.TABLE_NAME");
                 prepareMappingPersistentStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
                 prepareMappingPersistentStagingStatement.AppendLine("WHERE NOT EXISTS (");
                 prepareMappingPersistentStagingStatement.AppendLine("  SELECT SOURCE_NAME, PERSISTENT_STAGING_NAME, ATTRIBUTE_NAME_FROM");
@@ -5709,7 +6079,8 @@ namespace TEAM
                 prepareMappingPersistentStagingStatement.AppendLine("  WHERE");
                 prepareMappingPersistentStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
                 prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.PERSISTENT_STAGING_NAME = XREF.PERSISTENT_STAGING_NAME");
-                prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
+                prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_TO = ADC_TARGET.COLUMN_NAME");
+                prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.MAPPING_TYPE = 'Manual mapping'");
                 prepareMappingPersistentStagingStatement.AppendLine(")");
                 prepareMappingPersistentStagingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
@@ -5726,12 +6097,21 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["PERSISTENT_STAGING_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+                            _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                                                  " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
+                                                  (string) row["PERSISTENT_STAGING_NAME"] + " - " +
+                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO])");
-                            insertStatement.AppendLine("VALUES ('" + (string)row["SOURCE_NAME"] + "','" + (string)row["PERSISTENT_STAGING_NAME"] + "', '" + (string)row["ATTRIBUTE_NAME_FROM"] + "', '" + (string)row["ATTRIBUTE_NAME_TO"] + "')");
+                            insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                            insertStatement.AppendLine("VALUES ("  +
+                                                       "'" + (string) row["SOURCE_NAME"] + "'," +
+                                                       "'" + (string) row["PERSISTENT_STAGING_NAME"] + "', " +
+                                                       "'" + (string) row["ATTRIBUTE_NAME_FROM"] + "', " +
+                                                       "'" + (string) row["ATTRIBUTE_NAME_TO"] + "', " +
+                                                       "'Automatic mapping'" +
+                                                       ")");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5744,56 +6124,67 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
 
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
                 }
+
                 worker.ReportProgress(90);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticMappingCounter + " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("--> Processing " + automaticMappingCounter +
+                                      " automatically added attribute mappings.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the automatically mapped column-to-column metadata completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
 
                 #endregion
 
 
                 #region Manually mapped attributes for SAT and LSAT 90%
+
                 //Prepare Manual Attribute mapping for Satellites and Link Satellites
                 subProcess.Reset();
                 subProcess.Start();
 
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
+                _alert.SetTextLogging(
+                    "Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
 
                 int manualSatMappingCounter = 0;
 
                 var prepareMappingStatementManual = new StringBuilder();
-                prepareMappingStatementManual.AppendLine(@"
-                    SELECT  
-                      stg.SOURCE_NAME
-                      ,sat.SATELLITE_NAME
-                      ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_FROM
-                      ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_TO
-                      ,'N' as MULTI_ACTIVE_KEY_INDICATOR
-                      ,'manually_mapped' as VERIFICATION
-                    FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping
-                    LEFT OUTER JOIN dbo.MD_SATELLITE sat on sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=mapping.TARGET_TABLE
-                    LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME
-                    LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE
-                    LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME
-                    LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping
-                        ON mapping.TARGET_TABLE = table_mapping.TARGET_TABLE
-                    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE
-                    WHERE mapping.TARGET_TABLE_TYPE IN ('Satellite', 'Link-Satellite')
-                       AND table_mapping.PROCESS_INDICATOR = 'Y' 
-                    ");
+                prepareMappingStatementManual.AppendLine("SELECT");
+                prepareMappingStatementManual.AppendLine("   stg.SOURCE_NAME");
+                prepareMappingStatementManual.AppendLine("  ,sat.SATELLITE_NAME");
+                prepareMappingStatementManual.AppendLine("  ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_FROM");
+                prepareMappingStatementManual.AppendLine("  ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_TO");
+                prepareMappingStatementManual.AppendLine("  ,'N' as MULTI_ACTIVE_KEY_INDICATOR");
+                prepareMappingStatementManual.AppendLine("  ,'manually_mapped' as VERIFICATION");
+                prepareMappingStatementManual.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
+                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_SATELLITE sat on sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=mapping.TARGET_TABLE");
+                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
+                prepareMappingStatementManual.AppendLine("    ON mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
+                prepareMappingStatementManual.AppendLine("AND mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
+                prepareMappingStatementManual.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('" +
+                                                         ClassMetadataHandling.TableTypes.Context + "', '" +
+                                                         ClassMetadataHandling.TableTypes
+                                                             .NaturalBusinessRelationshipContext + "')");
+                prepareMappingStatementManual.AppendLine("   AND table_mapping.PROCESS_INDICATOR = 'Y' ");
 
-                var attributeMappingsSatellites = new DataTable();
-                attributeMappingsSatellites = GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
+
+                var attributeMappingsSatellites = GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
 
                 if (attributeMappingsSatellites.Rows.Count == 0)
                 {
@@ -5805,28 +6196,43 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["SATELLITE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
-
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
-                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_NAME"] + "','" + row["SATELLITE_NAME"] + "','" + row["ATTRIBUTE_NAME_FROM"] + "','" + row["ATTRIBUTE_NAME_TO"] + "','" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
-
-                            var command = new SqlCommand(insertStatement.ToString(), connection);
+                            insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR], [MAPPING_TYPE])");
+                            insertStatement.AppendLine("VALUES (" +
+                                                       "'" + row["SOURCE_NAME"] + "', " +
+                                                       "'" + row["SATELLITE_NAME"] + "', " +
+                                                       "'" + row["ATTRIBUTE_NAME_FROM"] + "', " +
+                                                       "'" + row["ATTRIBUTE_NAME_TO"] + "', " +
+                                                       "'" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "'," +
+                                                       "'Manual mapping'" +
+                                                       ")");
 
                             try
                             {
+
+                                var command = new SqlCommand(insertStatement.ToString(), connection);
                                 connection.Open();
                                 command.ExecuteNonQuery();
+                                _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                                                      " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
+                                                      (string) row["SATELLITE_NAME"] + " - " +
+                                                      (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+
                                 manualSatMappingCounter++;
 
                             }
                             catch (Exception ex)
                             {
-                                _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + row["SOURCE_NAME"] + " to " + row["SATELLITE_NAME"] + ". Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " +
+                                                      row["SOURCE_NAME"] + " to " + row["SATELLITE_NAME"] +
+                                                      ". Please check the Error Log for more details.\r\n");
                                 errorCounter++;
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Satellite attribute mapping: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Source to Satellite attribute mapping: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
 
                                 if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
@@ -5836,14 +6242,19 @@ namespace TEAM
                         }
                     }
                 }
+
                 worker.ReportProgress(90);
                 subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + manualSatMappingCounter + " manual attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Automatically mapped attributes for SAT and LSAT 93%
+
                 //Prepare automatic attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
@@ -5854,17 +6265,18 @@ namespace TEAM
 
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the database.\r\n");
+                    _alert.SetTextLogging(
+                        "Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the database.\r\n");
                 }
                 else
                 {
-                    _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the physical model metadata.\r\n");
+                    _alert.SetTextLogging(
+                        "Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the physical model metadata.\r\n");
                 }
 
                 // Run the statement, the virtual vs. physical lookups are embedded in allDatabaseAttributes
                 prepareMappingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareMappingStatement.AppendLine("(");
-                //prepareMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
 
                 prepareMappingStatement.AppendLine("SELECT");
                 prepareMappingStatement.AppendLine("  [DATABASE_NAME]");
@@ -5887,8 +6299,10 @@ namespace TEAM
                 prepareMappingStatement.AppendLine("    tgt.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME,");
                 prepareMappingStatement.AppendLine("    tgt.SATELLITE_NAME AS TARGET_NAME");
                 prepareMappingStatement.AppendLine("  FROM MD_SOURCE_SATELLITE_XREF xref");
-                prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
-                prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SATELLITE tgt ON xref.SATELLITE_NAME = tgt.SATELLITE_NAME");
+                prepareMappingStatement.AppendLine(
+                    "LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                prepareMappingStatement.AppendLine(
+                    "LEFT OUTER JOIN dbo.MD_SATELLITE tgt ON xref.SATELLITE_NAME = tgt.SATELLITE_NAME");
                 prepareMappingStatement.AppendLine(")");
                 prepareMappingStatement.AppendLine("SELECT");
                 prepareMappingStatement.AppendLine("  XREF.SOURCE_NAME, ");
@@ -5898,11 +6312,16 @@ namespace TEAM
                 prepareMappingStatement.AppendLine("  'N' AS MULTI_ACTIVE_KEY_INDICATOR,");
                 prepareMappingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
                 prepareMappingStatement.AppendLine("FROM XREF");
-                prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
-                prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
-                prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE stg_attr ON ADC_SOURCE.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                prepareMappingStatement.AppendLine("WHERE UPPER(stg_attr.ATTRIBUTE_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME)");
+                prepareMappingStatement.AppendLine(
+                    "JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
+                prepareMappingStatement.AppendLine(
+                    "JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
+                prepareMappingStatement.AppendLine(
+                    "JOIN dbo.MD_ATTRIBUTE stg_attr ON ADC_SOURCE.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                prepareMappingStatement.AppendLine(
+                    "JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                prepareMappingStatement.AppendLine(
+                    "WHERE UPPER(stg_attr.ATTRIBUTE_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME)");
                 prepareMappingStatement.AppendLine("AND NOT EXISTS (");
                 prepareMappingStatement.AppendLine("  SELECT SOURCE_NAME, SATELLITE_NAME, ATTRIBUTE_NAME_FROM");
                 prepareMappingStatement.AppendLine("  FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF manualmapping");
@@ -5913,7 +6332,8 @@ namespace TEAM
                 prepareMappingStatement.AppendLine(")");
                 prepareMappingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
-                var automaticAttributeMappingsSatellites = GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                var automaticAttributeMappingsSatellites =
+                    GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
                 if (automaticAttributeMappingsSatellites.Rows.Count == 0)
                 {
@@ -5925,12 +6345,22 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string)row["SOURCE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_FROM"] + " to " + (string)row["SATELLITE_NAME"] + " - " + (string)row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+                            _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                                                  " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
+                                                  (string) row["SATELLITE_NAME"] + " - " +
+                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR])");
-                            insertStatement.AppendLine("VALUES ('" + row["SOURCE_NAME"] + "','" + row["SATELLITE_NAME"] + "','" + row["ATTRIBUTE_NAME_FROM"] + "','" + row["ATTRIBUTE_NAME_TO"] + "','" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "')");
+                            insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR], [MAPPING_TYPE])");
+                            insertStatement.AppendLine("VALUES (" +
+                                                       "'" + row["SOURCE_NAME"] + "', " +
+                                                       "'" + row["SATELLITE_NAME"] + "', " +
+                                                       "'" + row["ATTRIBUTE_NAME_FROM"] + "', " +
+                                                       "'" + row["ATTRIBUTE_NAME_TO"] + "', " +
+                                                       "'" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "'," +
+                                                       "'Automatic mapping'" +
+                                                       ")");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5943,10 +6373,15 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " + row["SOURCE_NAME"] + " to " + row["SATELLITE_NAME"] + ". Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " +
+                                                      row["SOURCE_NAME"] + " to " + row["SATELLITE_NAME"] +
+                                                      ". Please check the Error Log for more details.\r\n");
                                 errorCounter++;
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Source to Satellite attribute mapping: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Source to Satellite attribute mapping: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
 
                                 if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
@@ -5954,45 +6389,52 @@ namespace TEAM
                                 }
                             }
                         }
-                    }                    
+                    }
                 }
 
                 worker.ReportProgress(90);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticAttributeMappingsSatellites.Rows.Count + " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the automatically mapped column-to-column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("--> Processing " + automaticAttributeMappingsSatellites.Rows.Count +
+                                      " automatically added attribute mappings.\r\n");
+                _alert.SetTextLogging(
+                    "Preparation of the automatically mapped column-to-column metadata completed, and has taken " +
+                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Manually mapped degenerate attributes for Links 95%
+
                 //12. Prepare Manual Attribute mapping for Link degenerate fields
                 subProcess.Reset();
                 subProcess.Start();
 
                 _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the column-to-column mapping metadata based on the manual mappings for degenerate attributes.\r\n");
+                _alert.SetTextLogging(
+                    "Commencing preparing the column-to-column mapping metadata based on the manual mappings for degenerate attributes.\r\n");
 
                 var prepareMappingStatementLink = new StringBuilder();
 
                 prepareMappingStatementLink.AppendLine("SELECT");
-                prepareMappingStatementLink.AppendLine("	    stg.SOURCE_NAME");
-                prepareMappingStatementLink.AppendLine("	   ,lnk.LINK_NAME");                
-                prepareMappingStatementLink.AppendLine("	   ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_FROM");
-                prepareMappingStatementLink.AppendLine("	   ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_TO");
-                prepareMappingStatementLink.AppendLine("	   ,'manually_mapped' as VERIFICATION");
+                prepareMappingStatementLink.AppendLine("  stg.SOURCE_NAME");
+                prepareMappingStatementLink.AppendLine(" ,lnk.LINK_NAME");
+                prepareMappingStatementLink.AppendLine(" ,stg_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_FROM");
+                prepareMappingStatementLink.AppendLine(" ,target_attr.ATTRIBUTE_NAME AS ATTRIBUTE_NAME_TO");
+                prepareMappingStatementLink.AppendLine(" ,'Manual mapping' as MAPPING_TYPE");
                 prepareMappingStatementLink.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
-                prepareMappingStatementLink.AppendLine("       LEFT OUTER JOIN dbo.MD_LINK lnk on lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=mapping.TARGET_TABLE");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
-                prepareMappingStatementLink.AppendLine("	   LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
-                prepareMappingStatementLink.AppendLine("	     on mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
-                prepareMappingStatementLink.AppendLine("	    and mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
-                prepareMappingStatementLink.AppendLine("WHERE mapping.TARGET_TABLE_TYPE IN ('Link')");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_LINK lnk on lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=mapping.TARGET_TABLE");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
+                prepareMappingStatementLink.AppendLine("  ON mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
+                prepareMappingStatementLink.AppendLine(" AND mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
+                prepareMappingStatementLink.AppendLine("WHERE mapping.TARGET_TABLE_TYPE = ('" +
+                                                       ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
+                                                       "')");
                 prepareMappingStatementLink.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
 
-                DataTable degenerateMappings;
-                degenerateMappings = GetDataTable(ref connOmd, prepareMappingStatementLink.ToString());
+                var degenerateMappings = GetDataTable(ref connOmd, prepareMappingStatementLink.ToString());
 
                 if (degenerateMappings.Rows.Count == 0)
                 {
@@ -6001,12 +6443,16 @@ namespace TEAM
 
                 worker.ReportProgress(95);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + degenerateMappings.Rows.Count + " manual degenerate attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("--> Processing " + degenerateMappings.Rows.Count +
+                                      " manual degenerate attribute mappings.\r\n");
+                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Automatically mapped degenerate attributes for Links 95%
+
                 //13. Prepare the automatic degenerate attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
@@ -6019,8 +6465,6 @@ namespace TEAM
 
                 prepareDegenerateMappingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareDegenerateMappingStatement.AppendLine("(");
-
-                //prepareDegenerateMappingStatement.Append(allDatabaseAttributes); // The master list of all columns as defined earlier
 
                 prepareDegenerateMappingStatement.AppendLine("SELECT");
                 prepareDegenerateMappingStatement.AppendLine("  [DATABASE_NAME]");
@@ -6052,7 +6496,7 @@ namespace TEAM
                 prepareDegenerateMappingStatement.AppendLine("  ADC_SOURCE.COLUMN_NAME AS ATTRIBUTE_NAME_FROM,");
                 prepareDegenerateMappingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_TO,");
                 prepareDegenerateMappingStatement.AppendLine("  'N' AS MULTI_ACTIVE_INDICATOR,");
-                prepareDegenerateMappingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
+                prepareDegenerateMappingStatement.AppendLine("  'Automatic mapping' as MAPPING_TYPE");
                 prepareDegenerateMappingStatement.AppendLine("FROM XREF");
                 prepareDegenerateMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
                 prepareDegenerateMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
@@ -6063,14 +6507,17 @@ namespace TEAM
 
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    _alert.SetTextLogging("Commencing preparing the (automatic) column-to-column mapping metadata for degenerate attributes, based on what's available in the database.\r\n");
+                    _alert.SetTextLogging(
+                        "Commencing preparing the (automatic) column-to-column mapping metadata for degenerate attributes, based on what's available in the database.\r\n");
                 }
                 else
                 {
-                    _alert.SetTextLogging("Commencing preparing the degenerate column metadata using the physical model metadata.\r\n");
+                    _alert.SetTextLogging(
+                        "Commencing preparing the degenerate column metadata using the physical model metadata.\r\n");
                 }
 
-                var automaticDegenerateMappings = GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
+                var automaticDegenerateMappings =
+                    GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
 
                 if (automaticDegenerateMappings.Rows.Count == 0)
                 {
@@ -6082,7 +6529,11 @@ namespace TEAM
                     // Entries found in the automatic check which are not already in the manual datatable will be added
                     foreach (DataRow automaticMapping in automaticDegenerateMappings.Rows)
                     {
-                        DataRow[] foundRow = degenerateMappings.Select("SOURCE_NAME = '" + automaticMapping["SOURCE_NAME"] + "' AND LINK_NAME = '" + automaticMapping["LINK_NAME"] + "' AND ATTRIBUTE_NAME_FROM = '" + automaticMapping["ATTRIBUTE_NAME_FROM"] + "'AND ATTRIBUTE_NAME_TO = '" + automaticMapping["ATTRIBUTE_NAME_TO"] + "'");
+                        DataRow[] foundRow = degenerateMappings.Select(
+                            "SOURCE_NAME = '" + automaticMapping["SOURCE_NAME"] + "' AND LINK_NAME = '" +
+                            automaticMapping["LINK_NAME"] + "' AND ATTRIBUTE_NAME_FROM = '" +
+                            automaticMapping["ATTRIBUTE_NAME_FROM"] + "'AND ATTRIBUTE_NAME_TO = '" +
+                            automaticMapping["ATTRIBUTE_NAME_TO"] + "'");
                         if (foundRow.Length == 0)
                         {
                             // If nothing is found, add to the overall data table that is inserted into SOURCE_SATELLITE_ATTRIBUTE_XREF
@@ -6091,7 +6542,7 @@ namespace TEAM
                                 automaticMapping["LINK_NAME"],
                                 automaticMapping["ATTRIBUTE_NAME_FROM"],
                                 automaticMapping["ATTRIBUTE_NAME_TO"],
-                                automaticMapping["VERIFICATION"]);
+                                automaticMapping["MAPPING_TYPE"]);
 
                             automaticDegenerateMappingCounter++;
                         }
@@ -6109,12 +6560,14 @@ namespace TEAM
                             var insertStatement = new StringBuilder();
 
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("( [SOURCE_NAME],[LINK_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO])");
-                            insertStatement.AppendLine("VALUES ('" +
-                                                           tableName["SOURCE_NAME"] + "','" +
-                                                           tableName["LINK_NAME"] + "','" +
-                                                           tableName["ATTRIBUTE_NAME_FROM"] + "','" +
-                                                           tableName["ATTRIBUTE_NAME_TO"] + "')");
+                            insertStatement.AppendLine("( [SOURCE_NAME],[LINK_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                            insertStatement.AppendLine("VALUES (" +
+                                                       "'" + tableName["SOURCE_NAME"] + "', " +
+                                                       "'" + tableName["LINK_NAME"] + "', " +
+                                                       "'" + tableName["ATTRIBUTE_NAME_FROM"] + "', " +
+                                                       "'" + tableName["ATTRIBUTE_NAME_TO"] + "', " +
+                                                       "'" + tableName["MAPPING_TYPE"] + "'" +
+                                                       ")");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -6126,9 +6579,13 @@ namespace TEAM
                             }
                             catch (Exception)
                             {
-                                _alert.SetTextLogging("-----> An issue has occurred mapping degenerate columns from table " + tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] + ". Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "-----> An issue has occurred mapping degenerate columns from table " +
+                                    tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] +
+                                    ". Please check the Error Log for more details.\r\n");
                                 errorCounter++;
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                                 if (tableName["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
                                     _alert.SetTextLogging("Both attributes are NULL.");
@@ -6140,12 +6597,16 @@ namespace TEAM
 
                 worker.ReportProgress(95);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticDegenerateMappingCounter + " automatically added degenerate attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("--> Processing " + automaticDegenerateMappingCounter +
+                                      " automatically added degenerate attribute mappings.\r\n");
+                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+
                 #endregion
 
 
                 #region Multi-Active Key - 97%
+
                 //Handle the Multi-Active Key
                 subProcess.Reset();
                 subProcess.Start();
@@ -6170,19 +6631,28 @@ namespace TEAM
                     prepareMultiKeyStatement.AppendLine("  SELECT ");
                     prepareMultiKeyStatement.AppendLine("  	sc.name AS SATELLITE_NAME,");
                     prepareMultiKeyStatement.AppendLine("  	C.name AS ATTRIBUTE_NAME");
-                    prepareMultiKeyStatement.AppendLine("  FROM " + linkedServer + integrationDatabase + ".sys.index_columns A");
-                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.indexes B");
+                    prepareMultiKeyStatement.AppendLine("  FROM " + linkedServer + integrationDatabase +
+                                                        ".sys.index_columns A");
+                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase +
+                                                        ".sys.indexes B");
                     prepareMultiKeyStatement.AppendLine("    ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.columns C");
+                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase +
+                                                        ".sys.columns C");
                     prepareMultiKeyStatement.AppendLine("    ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase +
+                                                        ".sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
                     prepareMultiKeyStatement.AppendLine("    WHERE is_primary_key=1");
-                    prepareMultiKeyStatement.AppendLine("  AND C.name!='" + effectiveDateTimeAttribute + "' AND C.name!='" + currentRecordAttribute + "' AND C.name!='" + eventDateTimeAtttribute + "'");
-                    prepareMultiKeyStatement.AppendLine("  AND C.name NOT LIKE '"+dwhKeyIdentifier+"'");
+                    prepareMultiKeyStatement.AppendLine("  AND C.name!='" + effectiveDateTimeAttribute +
+                                                        "' AND C.name!='" + currentRecordAttribute + "' AND C.name!='" +
+                                                        eventDateTimeAtttribute + "'");
+                    prepareMultiKeyStatement.AppendLine("  AND C.name NOT LIKE '" + dwhKeyIdentifier + "'");
                     prepareMultiKeyStatement.AppendLine(") ddsub");
-                    prepareMultiKeyStatement.AppendLine("ON xref.SATELLITE_NAME = ddsub.SATELLITE_NAME COLLATE DATABASE_DEFAULT");
-                    prepareMultiKeyStatement.AppendLine("AND xref.ATTRIBUTE_NAME_TO = ddsub.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                    prepareMultiKeyStatement.AppendLine("  WHERE ddsub.SATELLITE_NAME LIKE '"+satTablePrefix+"' OR ddsub.SATELLITE_NAME LIKE '"+lsatTablePrefix+"'");
+                    prepareMultiKeyStatement.AppendLine(
+                        "ON xref.SATELLITE_NAME = ddsub.SATELLITE_NAME COLLATE DATABASE_DEFAULT");
+                    prepareMultiKeyStatement.AppendLine(
+                        "AND xref.ATTRIBUTE_NAME_TO = ddsub.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                    prepareMultiKeyStatement.AppendLine("  WHERE ddsub.SATELLITE_NAME LIKE '" + satTablePrefix +
+                                                        "' OR ddsub.SATELLITE_NAME LIKE '" + lsatTablePrefix + "'");
                 }
                 else
                 {
@@ -6208,7 +6678,7 @@ namespace TEAM
 
                 var listMultiKeys = GetDataTable(ref connOmd, prepareMultiKeyStatement.ToString());
 
-                if (listMultiKeys.Rows.Count == 0)
+                if (listMultiKeys == null || listMultiKeys.Rows.Count == 0)
                 {
                     _alert.SetTextLogging("--> No Multi-Active Keys were detected.\r\n");
                 }
@@ -6227,8 +6697,10 @@ namespace TEAM
                             insertStatement.AppendLine("SET MULTI_ACTIVE_KEY_INDICATOR='Y'");
                             insertStatement.AppendLine("WHERE SOURCE_NAME = '" + tableName["SOURCE_NAME"] + "'");
                             insertStatement.AppendLine("AND SATELLITE_NAME = '" + tableName["SATELLITE_NAME"] + "'");
-                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_FROM = '" + tableName["ATTRIBUTE_NAME_FROM"] + "'");
-                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_TO = '" + tableName["ATTRIBUTE_NAME_TO"] + "'");
+                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_FROM = '" +
+                                                       tableName["ATTRIBUTE_NAME_FROM"] + "'");
+                            insertStatement.AppendLine("AND ATTRIBUTE_NAME_TO = '" + tableName["ATTRIBUTE_NAME_TO"] +
+                                                       "'");
 
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
@@ -6241,23 +6713,30 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Multi-Active key metadata. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the Multi-Active key metadata. Please check the Error Log for more details.\r\n");
 
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Multi-Active key metadata: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Multi-Active key metadata: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
                 }
+
                 worker.ReportProgress(97);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Multi-Active Keys completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Multi-Active Keys completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
 
 
                 #endregion
 
 
                 #region Driving Key preparation
+
                 //Prepare driving keys
                 subProcess.Reset();
                 subProcess.Start();
@@ -6267,47 +6746,60 @@ namespace TEAM
 
 
                 var prepareDrivingKeyStatement = new StringBuilder();
-                prepareDrivingKeyStatement.AppendLine(@"
-                SELECT DISTINCT
-                        sat.SATELLITE_NAME
-                        ,COALESCE(hubkey.HUB_NAME, (SELECT HUB_NAME FROM MD_HUB WHERE HUB_NAME = 'Not applicable')) AS HUB_NAME
-                FROM
-                (
-                        SELECT
-                                SOURCE_TABLE,
-                                TARGET_TABLE,
-                                VERSION_ID,
-                                CASE
-                                        WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0
-                                        THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))
-                                        ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')
-                                END AS BUSINESS_KEY_ATTRIBUTE--For Driving Key
-                        FROM
-                        (
-                                SELECT SOURCE_TABLE, TARGET_TABLE, DRIVING_KEY_ATTRIBUTE, VERSION_ID, CONVERT(XML, '<M>' + REPLACE(DRIVING_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') AS DRIVING_KEY_ATTRIBUTE_XML
-                                FROM
-                                (
-                                        SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE
-                                        FROM TMP_MD_TABLE_MAPPING
-                                        WHERE TARGET_TABLE_TYPE IN ('Link-Satellite') AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''
-                                        AND [PROCESS_INDICATOR] = 'Y'
-                                ) TableName
-                        ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)
-                )  base
-                LEFT JOIN [dbo].[TMP_MD_TABLE_MAPPING]
-                        hub
-                    ON  base.SOURCE_TABLE=hub.SOURCE_TABLE
-                    AND hub.TARGET_TABLE_TYPE IN ('Hub')
-                    AND base.BUSINESS_KEY_ATTRIBUTE=hub.BUSINESS_KEY_ATTRIBUTE
-                LEFT JOIN MD_SATELLITE sat
-                    ON base.TARGET_TABLE = sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME
-                LEFT JOIN MD_HUB hubkey
-                    ON hub.TARGET_TABLE = hubkey.[SCHEMA_NAME]+'.'+hubkey.HUB_NAME
-                WHERE 1=1
-                AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL
-                AND base.BUSINESS_KEY_ATTRIBUTE!=''
-                AND [PROCESS_INDICATOR] = 'Y'
-                ");               
+                prepareDrivingKeyStatement.AppendLine("SELECT DISTINCT");
+                prepareDrivingKeyStatement.AppendLine("         sat.SATELLITE_NAME");
+                prepareDrivingKeyStatement.AppendLine(
+                    "         ,COALESCE(hubkey.HUB_NAME, (SELECT HUB_NAME FROM MD_HUB WHERE HUB_NAME = 'Not applicable')) AS HUB_NAME");
+                prepareDrivingKeyStatement.AppendLine(" FROM");
+                prepareDrivingKeyStatement.AppendLine(" (");
+                prepareDrivingKeyStatement.AppendLine("         SELECT");
+                prepareDrivingKeyStatement.AppendLine("                 SOURCE_TABLE,");
+                prepareDrivingKeyStatement.AppendLine("                 TARGET_TABLE,");
+                prepareDrivingKeyStatement.AppendLine("                 VERSION_ID,");
+                prepareDrivingKeyStatement.AppendLine("                 CASE");
+                prepareDrivingKeyStatement.AppendLine(
+                    "                         WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
+                prepareDrivingKeyStatement.AppendLine(
+                    "                         THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))");
+                prepareDrivingKeyStatement.AppendLine(
+                    "                         ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')");
+                prepareDrivingKeyStatement.AppendLine(
+                    "                 END AS BUSINESS_KEY_ATTRIBUTE--For Driving Key");
+                prepareDrivingKeyStatement.AppendLine("         FROM");
+                prepareDrivingKeyStatement.AppendLine("         (");
+                prepareDrivingKeyStatement.AppendLine(
+                    "                 SELECT SOURCE_TABLE, TARGET_TABLE, DRIVING_KEY_ATTRIBUTE, VERSION_ID, CONVERT(XML, '<M>' + REPLACE(DRIVING_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') AS DRIVING_KEY_ATTRIBUTE_XML");
+                prepareDrivingKeyStatement.AppendLine("                 FROM");
+                prepareDrivingKeyStatement.AppendLine("                 (");
+                prepareDrivingKeyStatement.AppendLine(
+                    "                         SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, VERSION_ID, LTRIM(RTRIM(DRIVING_KEY_ATTRIBUTE)) AS DRIVING_KEY_ATTRIBUTE");
+                prepareDrivingKeyStatement.AppendLine("                         FROM TMP_MD_TABLE_MAPPING");
+                prepareDrivingKeyStatement.AppendLine("                         WHERE TARGET_TABLE_TYPE IN ('" +
+                                                      ClassMetadataHandling.TableTypes
+                                                          .NaturalBusinessRelationshipContext +
+                                                      "') AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
+                prepareDrivingKeyStatement.AppendLine("                         AND [PROCESS_INDICATOR] = 'Y'");
+                prepareDrivingKeyStatement.AppendLine("                 ) TableName");
+                prepareDrivingKeyStatement.AppendLine(
+                    "         ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
+                prepareDrivingKeyStatement.AppendLine(" )  base");
+                prepareDrivingKeyStatement.AppendLine(" LEFT JOIN [dbo].[TMP_MD_TABLE_MAPPING]");
+                prepareDrivingKeyStatement.AppendLine("         hub");
+                prepareDrivingKeyStatement.AppendLine("     ON  base.SOURCE_TABLE=hub.SOURCE_TABLE");
+                prepareDrivingKeyStatement.AppendLine("     AND hub.TARGET_TABLE_TYPE IN ('" +
+                                                      ClassMetadataHandling.TableTypes.CoreBusinessConcept + "')");
+                prepareDrivingKeyStatement.AppendLine(
+                    "     AND base.BUSINESS_KEY_ATTRIBUTE=hub.BUSINESS_KEY_ATTRIBUTE");
+                prepareDrivingKeyStatement.AppendLine(" LEFT JOIN MD_SATELLITE sat");
+                prepareDrivingKeyStatement.AppendLine(
+                    "     ON base.TARGET_TABLE = sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME");
+                prepareDrivingKeyStatement.AppendLine(" LEFT JOIN MD_HUB hubkey");
+                prepareDrivingKeyStatement.AppendLine(
+                    "     ON hub.TARGET_TABLE = hubkey.[SCHEMA_NAME]+'.'+hubkey.HUB_NAME");
+                prepareDrivingKeyStatement.AppendLine(" WHERE 1=1");
+                prepareDrivingKeyStatement.AppendLine(" AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
+                prepareDrivingKeyStatement.AppendLine(" AND base.BUSINESS_KEY_ATTRIBUTE!=''");
+                prepareDrivingKeyStatement.AppendLine(" AND [PROCESS_INDICATOR] = 'Y'");
 
 
                 var listDrivingKeys = GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
@@ -6342,27 +6834,69 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the Driving Key metadata. Please check the Error Log for more details.\r\n");
-                                
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of the Driving Key metadata: \r\n\r\n" +ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                _alert.SetTextLogging(
+                                    "An issue has occured during preparation of the Driving Key metadata. Please check the Error Log for more details.\r\n");
+
+                                errorLog.AppendLine(
+                                    "\r\nAn issue has occured during preparation of the Driving Key metadata: \r\n\r\n" +
+                                    ex);
+                                errorLog.AppendLine(
+                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
                 }
+
                 worker.ReportProgress(98);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+
                 #endregion
 
                 //
                 // Activation completed!
                 //
 
+                // Report the events (including errors) back to the user
+                // Clear out the existing error log, or create an empty new file
+                using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
+                {
+                    outfile.Write(String.Empty);
+                    outfile.Close();
+                }
+
+                int eventErrorCounter = 0;
+                StringBuilder logOutput = new StringBuilder();
+                foreach (Event individualEvent in eventLog)
+                {
+                    if (individualEvent.eventCode == (int)EventTypes.Error)
+                    {
+                        eventErrorCounter++;
+                    }
+
+                    logOutput.AppendLine((EventTypes)individualEvent.eventCode + ": " + individualEvent.eventDescription);
+                }
+
+                using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
+                {
+                    outfile.Write(logOutput.ToString());
+                    outfile.Close();
+                }
+
                 // Error handling
+                // Clear out the existing error log, or create an empty new file
+                using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+                {
+                    outfile.Write(String.Empty);
+                    outfile.Close();
+                }
+
+                // Write any errors
                 if (errorCounter > 0)
                 {
-                    _alert.SetTextLogging("\r\nWarning! There were "+errorCounter+" error(s) found while processing the metadata.\r\n");
+                    _alert.SetTextLogging("\r\nWarning! There were " + errorCounter +
+                                          " error(s) found while processing the metadata.\r\n");
                     _alert.SetTextLogging("Please check the Error Log for details \r\n");
                     _alert.SetTextLogging("\r\n");
 
@@ -6380,173 +6914,9 @@ namespace TEAM
                 // Remove the temporary tables that have been used
                 droptemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
 
-                #region Save the JSON interface files
-                // Saving the interfaces to Json
-                if (checkBoxSaveInterfaceToJson.Checked)
-                {
-                    _alert.SetTextLogging("\r\nSaving interface output to disk.\r\n");
-
-                    // Business Key Component
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceBusinessKeyComponent();
-                        _alert.SetTextLogging("\r\n-->  Saving the Business Key Component interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Business Key Component interface file. The reported error is: "+ex);
-                    }
-
-                    // Business Key Component Part
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceBusinessKeyComponentPart();
-                        _alert.SetTextLogging("\r\n-->  Saving the Business Key Component Part interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Business Key Component Part interface file. The reported error is: " + ex);
-                    }
-
-                    // Driving Key
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceDrivingKey();
-                        _alert.SetTextLogging("\r\n-->  Saving the Driving Key interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Driving Key interface file. The reported error is: " + ex);
-                    }
-
-                    // Hub Link Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceHubLinkXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Hub to Link Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Hub to Link Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Physical Model
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfacePhysicalModel();
-                        _alert.SetTextLogging("\r\n-->  Saving the Physical Model interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Physical Model interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Hub Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourceHubXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Hub Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Hub interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Link Attribute Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourceLinkAttributeXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Link Attribute Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Link Attribute Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Link Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourceLinkXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Link Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Link Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Satellite Attribute Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourceSatelliteAttributeXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Satellite Attribute Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Satellite Attribute Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Link Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourceSatelliteXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Satellite Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Satellite Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Staging Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourceStgXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Staging Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Staging Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Persistent Staging Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourcePsaXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Persistent Staging Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Persistent Staging Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Staging Attribute Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourceStagingAttributeXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Staging Attribute Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Staging Attribute Xref interface file. The reported error is: " + ex);
-                    }
-
-                    // Source Staging Attribute Xref
-                    try
-                    {
-                        ClassJsonHandling.SaveJsonInterfaceSourcePersistentStagingAttributeXref();
-                        _alert.SetTextLogging("\r\n-->  Saving the Source to Persistent Staging Attribute Xref interface file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _alert.SetTextLogging("\r\n-->  An error has occured saving the Source to Persistent Staging Attribute Xref interface file. The reported error is: " + ex);
-                    }
-
-
-                }
-                #endregion
-
                 // Report completion
                 totalProcess.Stop();
-                _alert.SetTextLogging("\r\n\r\nThe full activation process has taken "+totalProcess.Elapsed.TotalSeconds.ToString()+" seconds.");
+                _alert.SetTextLogging("\r\n\r\nThe full activation process has taken "+totalProcess.Elapsed.TotalSeconds+" seconds.");
                 worker.ReportProgress(100);
             }
         }
@@ -6817,166 +7187,27 @@ namespace TEAM
                 var chosenFile = theDialog.FileName;
 
                 var errorLog = new StringBuilder();
-                int errorCounter;
-                errorCounter = 0;
+                var errorCounter = 0;
 
                 if (dataGridViewTableMetadata != null) // There needs to be metadata available
                 {
                     var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
 
-                    //For later, get the source/target model relationships for Hubs and Satellites
+                    
+                    //Write the DGML file
+                    var dgmlExtract = new StringBuilder();
+                    dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
+                    dgmlExtract.AppendLine("<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
 
-                    var modelRelationshipsHubDataTable = new DataTable();
-                    var sqlStatementForHubCategories = new StringBuilder();
-                    try
-                    {
-
-                        sqlStatementForHubCategories.AppendLine("SELECT ");
-                        sqlStatementForHubCategories.AppendLine(" [SOURCE_SCHEMA_NAME]");
-                        sqlStatementForHubCategories.AppendLine(" [SOURCE_NAME]");
-                        sqlStatementForHubCategories.AppendLine(",[TARGET_SCHEMA_NAME]");
-                        sqlStatementForHubCategories.AppendLine(",[TARGET_NAME]");
-                        sqlStatementForHubCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
-                        sqlStatementForHubCategories.AppendLine(",[TARGET_BUSINESS_KEY_DEFINITION]");
-                        sqlStatementForHubCategories.AppendLine(",[TARGET_TYPE]");
-                        sqlStatementForHubCategories.AppendLine(",[SURROGATE_KEY]");
-                        sqlStatementForHubCategories.AppendLine(",[FILTER_CRITERIA]");
-                        sqlStatementForHubCategories.AppendLine(",[LOAD_VECTOR]");
-                        sqlStatementForHubCategories.AppendLine(
-                            "FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
-                        sqlStatementForHubCategories.AppendLine("WHERE TARGET_TYPE = 'Normal'");
-
-                        modelRelationshipsHubDataTable =
-                            GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
-                    }
-                    catch
-                    {
-                        errorCounter++;
-                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
-                                            sqlStatementForHubCategories);
-                    }
-
-                    //For later, get the source/target model relationships for Links and Link Satellites
-                    var sqlStatementForLinkCategories = new StringBuilder();
-                    sqlStatementForLinkCategories.AppendLine("SELECT ");
-                    sqlStatementForLinkCategories.AppendLine(" [SOURCE_SCHEMA_NAME]");
-                    sqlStatementForLinkCategories.AppendLine(" [SOURCE_NAME]");
-                    sqlStatementForLinkCategories.AppendLine(",[TARGET_SCHEMA_NAME]");
-                    sqlStatementForLinkCategories.AppendLine(",[TARGET_NAME]");
-                    sqlStatementForLinkCategories.AppendLine(",[SOURCE_BUSINESS_KEY_DEFINITION]");
-                    sqlStatementForLinkCategories.AppendLine(",[TARGET_BUSINESS_KEY_DEFINITION]");
-                    sqlStatementForLinkCategories.AppendLine(",[TARGET_TYPE]");
-                    sqlStatementForLinkCategories.AppendLine(",[SURROGATE_KEY]");
-                    sqlStatementForLinkCategories.AppendLine(",[FILTER_CRITERIA]");
-                    sqlStatementForLinkCategories.AppendLine(",[LOAD_VECTOR]");
-                    sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
-                    sqlStatementForLinkCategories.AppendLine("WHERE TARGET_TYPE = 'Link Satellite'");
-
-                    var modelRelationshipsLinksDataTable =
-                        GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
-
-
-                    //Create the relationships between business concepts (Hubs, Links)
-                    var businessConceptsRelationships = new DataTable();
-                    var sqlStatementForRelationships = new StringBuilder();
-                    try
-                    {
-
-                        sqlStatementForRelationships.AppendLine("SELECT ");
-                        sqlStatementForRelationships.AppendLine(" [LINK_NAME]");
-                        sqlStatementForRelationships.AppendLine(",[SOURCE_NAME]");
-                        sqlStatementForRelationships.AppendLine(",[SOURCE_SCHEMA_NAME]");
-                        sqlStatementForRelationships.AppendLine(",[HUB_NAME]");
-                        sqlStatementForRelationships.AppendLine(",[BUSINESS_KEY_DEFINITION]");
-                        sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
-
-                        businessConceptsRelationships =
-                            GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
-                    }
-                    catch
-                    {
-                        errorCounter++;
-                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
-                                            sqlStatementForRelationships);
-                    }
-
-                    //Make sure the source-to-target mappings are created for the attributes (STG->SAT)
-                    var sqlStatementForSatelliteAttributes = new StringBuilder();
-                    sqlStatementForSatelliteAttributes.AppendLine("SELECT ");
-                    sqlStatementForSatelliteAttributes.AppendLine(" [SOURCE_NAME]");
-                    sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_SCHEMA_NAME]");
-                    sqlStatementForSatelliteAttributes.AppendLine(",[TARGET_NAME]");
-                    sqlStatementForSatelliteAttributes.AppendLine(",[SOURCE_ATTRIBUTE_NAME]");
-                    sqlStatementForSatelliteAttributes.AppendLine(",[TARGET_ATTRIBUTE_NAME]");
-                    sqlStatementForSatelliteAttributes.AppendLine(",[MULTI_ACTIVE_KEY_INDICATOR]");
-                    sqlStatementForSatelliteAttributes.AppendLine(
-                        "FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
-
-                    var satelliteAttributes =
-                        GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
-
-
-                    //Create a list of segments to create, based on nodes (Hubs and Sats)
-                    List<string> segmentNodeList = new List<string>();
-
-                    foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
-                    {
-                        var modelRelationshipsHub = (string) row["TARGET_NAME"];
-
-                        if (!segmentNodeList.Contains(modelRelationshipsHub))
-                        {
-                            segmentNodeList.Add(modelRelationshipsHub);
-                        }
-                    }
-
-                    // ... and the Links / LSATs
-                    foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
-                    {
-                        var modelRelationshipsLink = (string) row["TARGET_NAME"];
-
-                        if (!segmentNodeList.Contains(modelRelationshipsLink))
-                        {
-                            segmentNodeList.Add(modelRelationshipsLink);
-                        }
-                    }
-
-                    // ... and for any orphan Hubs or Links (without Satellites)
-                    foreach (DataRow row in businessConceptsRelationships.Rows)
-                    {
-                        var modelRelationshipsLink = (string) row["LINK_NAME"];
-                        var modelRelationshipsHub = (string) row["HUB_NAME"];
-
-                        if (!segmentNodeList.Contains(modelRelationshipsLink))
-                        {
-                            segmentNodeList.Add(modelRelationshipsLink);
-                        }
-
-                        if (!segmentNodeList.Contains(modelRelationshipsHub))
-                        {
-                            segmentNodeList.Add(modelRelationshipsHub);
-                        }
-                    }
-
-                    //Build up the list of nodes
+                    #region Table nodes
+                    //Build up the list of nodes based on the data grid
                     List<string> nodeList = new List<string>();
-                    List<string> systemList = new List<string>();
 
                     for (int i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
                         DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
                         string sourceNode = row.Cells[2].Value.ToString();
                         string targetNode = row.Cells[3].Value.ToString();
-
-                        var systemName = "Undefined";
-                        if (sourceNode.Contains('_'))
-                        {
-                            systemName = sourceNode.Split('_')[1];
-                        }
-                        else
-                        {
-                            systemName = targetNode.Split('_')[1];
-                        }
-
 
                         // Add source tables to Node List
                         if (!nodeList.Contains(sourceNode))
@@ -6989,53 +7220,54 @@ namespace TEAM
                         {
                             nodeList.Add(targetNode);
                         }
-
-                        // Create a system list
-                        if (!systemList.Contains(systemName))
-                        {
-                            systemList.Add(systemName);
-                        }
                     }
 
-                    //Write the nodes to DGML
-                    var dgmlExtract = new StringBuilder();
-                    dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
-                    dgmlExtract.AppendLine(
-                        "<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
                     dgmlExtract.AppendLine("  <Nodes>");
 
+                    var edgeBuilder = new StringBuilder(); // Also create the links while iterating through the below set
+                    
                     foreach (string node in nodeList)
                     {
-                        if (node.Contains("STG_"))
+                        if (node.Contains(ConfigurationSettings.StgTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("    <Node Id=\"" + node +
-                                                   "\"  Category=\"Source System\" Group=\"Collapsed\" Label=\"" +
-                                                   node + "\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Landing Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
-                        else if (node.Contains("HUB_"))
+                        else if (node.Contains(ConfigurationSettings.PsaTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" +
-                                                   node + "\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Persistent Staging Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
-                        else if (node.Contains("LNK_"))
+                        else if (node.Contains(ConfigurationSettings.HubTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" +
-                                                   node + "\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
-                        else if (node.Contains("SAT_") || node.Contains("LSAT_"))
+                        else if (node.Contains(ConfigurationSettings.LinkTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node +
-                                                   "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" +
-                                                   node + "\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" +node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
-                        else // The others
+                        else if (node.Contains(ConfigurationSettings.SatTablePrefixValue) || node.Contains(ConfigurationSettings.LsatTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Unknown\" Label=\"" +
-                                                   node + "\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node +"\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" +node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
+                        }
+                        else
+                        {
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Unknown\" Label=\"" + node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Sources\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                     }
-
+                    #endregion
+                    
+                    #region Attribute nodes
                     // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
+                    var sqlStatementForSatelliteAttributes = new StringBuilder();
+                    sqlStatementForSatelliteAttributes.AppendLine("SELECT *");
+                    sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+
+                    var satelliteAttributes = GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
                     foreach (DataRow row in satelliteAttributes.Rows)
                     {
                         var sourceNodeLabel = (string) row["SOURCE_ATTRIBUTE_NAME"];
@@ -7055,84 +7287,30 @@ namespace TEAM
                             nodeList.Add(targetNode);
                         }
 
-                        dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode +
-                                               "\"  Category=\"Unknown\" Label=\"" + sourceNodeLabel + "\" />");
-                        dgmlExtract.AppendLine("     <Node Id=\"" + targetNode +
-                                               "\"  Category=\"Unknown\" Label=\"" + targetNodeLabel + "\" />");
+                        dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode + "\"  Category=\"Attribute\" Label=\"" + sourceNodeLabel + "\" />");
+                        dgmlExtract.AppendLine("     <Node Id=\"" + targetNode + "\"  Category=\"Attribute\" Label=\"" + targetNodeLabel + "\" />");
                     }
+                    #endregion
 
+                    #region Category nodes
                     //Adding the category nodes
-                    dgmlExtract.AppendLine("    <Node Id=\"Source\" Group=\"Expanded\" Label=\"Source\"/>");
-                    dgmlExtract.AppendLine("    <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
-
-                    //Adding the source system containers as nodes
-                    foreach (var node in systemList)
-                    {
-                        dgmlExtract.AppendLine("     <Node Id=\"" + node +
-                                               "\"  Group=\"Expanded\" Category=\"Source System\" Label=\"" + node +
-                                               "\" />");
-                    }
-
-                    //Adding the CBC nodes (Hubs and Links)
-                    foreach (string node in segmentNodeList)
-                    {
-                        string segmentName = node.Remove(0, 4).ToLower();
-                        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-                        segmentName = textInfo.ToTitleCase(segmentName);
-
-                        dgmlExtract.AppendLine("    <Node Id=\"" + segmentName + "\" Group=\"Expanded\" Label=\"" +
-                                               segmentName + "\" IsHubContainer=\"True\" />");
-                    }
+                    dgmlExtract.AppendLine("     <Node Id=\"Sources\" Group=\"Collapsed\" Label=\"Sources\"/>");
+                    dgmlExtract.AppendLine("     <Node Id=\"Staging Layer\" Group=\"Collapsed\" Label=\"Staging Layer\"/>");
+                    dgmlExtract.AppendLine("     <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
+                    #endregion
 
                     dgmlExtract.AppendLine("  </Nodes>");
                     //End of Nodes
 
+
                     //Edges and containers
                     dgmlExtract.AppendLine("  <Links>");
+                    dgmlExtract.AppendLine("     <!-- Place regular nodes in layer containers ('contains') -->");
+                    dgmlExtract.Append(edgeBuilder); // Add the containers (e.g. STG and PSA to Staging Layer, Hubs, Links and Satellites to Data Vault
 
-                    for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-                    {
-                        var row = dataGridViewTableMetadata.Rows[i];
-                        var sourceNode = row.Cells[2].Value.ToString();
-                        var targetNode = row.Cells[3].Value.ToString();
-                        var businessKey = row.Cells[4].Value.ToString();
 
-                        dgmlExtract.AppendLine("    <Link Source=\"" + sourceNode + "\" Target=\"" + targetNode +
-                                               "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
-                    }
-
-                    //Add container groupings (node-based) - adding source system containers to 'Source'
-                    foreach (var node in systemList)
-                    {
-                        dgmlExtract.AppendLine("     <Link Source=\"Source\" Target=\"" + node +
-                                               "\" Category=\"Contains\" />");
-                    }
-
-                    // Adding the Source table to the source system container
-                    for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
-                    {
-                        var row = dataGridViewTableMetadata.Rows[i];
-                        var sourceNode = row.Cells[2].Value.ToString();
-                        var targetNode = row.Cells[3].Value.ToString();
-
-                        var systemName = "Undefined";
-                        if (sourceNode.Contains('_'))
-                        {
-                            systemName = sourceNode.Split('_')[1];
-                        }
-                        else
-                        {
-                            systemName = targetNode.Split('_')[1];
-                        }
-
-                        if (sourceNode.Contains("STG_"))
-                        {
-                            dgmlExtract.AppendLine("    <Link Source=\"" + systemName + "\" Target=\"" + sourceNode +
-                                                   "\" Category=\"Contains\" />");
-                        }
-                    }
-
-                    // Separate routine to create STG/ATT and SAT/ATT relationships
+                    // Separate routine to create table / attribute relationships
+                    dgmlExtract.AppendLine("     <!-- Table / Attribute relationships -->");
                     foreach (DataRow row in satelliteAttributes.Rows)
                     {
                         var sourceNodeSat = (string) row["TARGET_NAME"];
@@ -7141,141 +7319,165 @@ namespace TEAM
                         var targetNodeStg = "staging_" + (string) row["SOURCE_ATTRIBUTE_NAME"];
 
                         // This is adding the attributes to the tables
-                        dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeSat + "\" Target=\"" +
-                                               targetNodeSat + "\" Category=\"Contains\" />");
-                        dgmlExtract.AppendLine("    <Link Source=\"" + sourceNodeStg + "\" Target=\"" +
-                                               targetNodeStg + "\" Category=\"Contains\" />");
+                        dgmlExtract.AppendLine("     <Link Source=\"" + sourceNodeSat + "\" Target=\"" +targetNodeSat + "\" Category=\"Contains\" />");
+                        dgmlExtract.AppendLine("     <Link Source=\"" + sourceNodeStg + "\" Target=\"" +targetNodeStg + "\" Category=\"Contains\" />");
 
                         // This is adding the edge between the attributes
-                        dgmlExtract.AppendLine("    <Link Source=\"" + targetNodeStg + "\" Target=\"" +
-                                               targetNodeSat + "\" />");
+                        dgmlExtract.AppendLine("     <Link Source=\"" + targetNodeStg + "\" Target=\"" +targetNodeSat + "\" />");
                     }
 
-                    //Add Data Vault objects to Segment
-                    foreach (var node in segmentNodeList)
+
+
+                    // Get the source / target model relationships for Hubs and Satellites
+                    List<string> segmentNodeList = new List<string>();
+                    var modelRelationshipsHubDataTable = new DataTable();
+                    var sqlStatementForHubCategories = new StringBuilder();
+                    try
                     {
-                        var segmentName = node.Remove(0, 4).ToLower();
-                        var textInfo = new CultureInfo("en-US", false).TextInfo;
-                        segmentName = textInfo.ToTitleCase(segmentName);
-                        // <Link Source="Renewal_Membership" Target="LNK_RENEWAL_MEMBERSHIP" Category="Contains" />
-                        dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + node +
-                                               "\" Category=\"Contains\" />");
-                        dgmlExtract.AppendLine("    <Link Source=\"Data Vault\" Target=\"" + segmentName +
-                                               "\" Category=\"Contains\" />");
+
+                        sqlStatementForHubCategories.AppendLine("SELECT *");
+                        sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
+                        sqlStatementForHubCategories.AppendLine("WHERE TARGET_TYPE = 'Normal'");
+
+                        modelRelationshipsHubDataTable = GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
+                    }
+                    catch
+                    {
+                        errorCounter++;
+                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " + sqlStatementForHubCategories);
                     }
 
-                    ////Add groupings to a Hub (CBC), if there is a Satellite
-                    //foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
-                    //{
-                    //    if (row["TARGET_NAME"] == DBNull.Value || row["HUB_NAME"] == DBNull.Value)
-                    //        continue;
-                    //    var modelRelationshipsHub = (string) row["HUB_NAME"];
-                    //    var modelRelationshipsSat = (string) row["TARGET_NAME"];
-
-                    //    var segmentName = modelRelationshipsHub.Remove(0, 4).ToLower();
-                    //    var textInfo = new CultureInfo("en-US", false).TextInfo;
-                    //    segmentName = textInfo.ToTitleCase(segmentName);
-
-                    //    //Map the Satellite to the Hub and CBC
-                    //    dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" +
-                    //                           modelRelationshipsSat + "\" Category=\"Contains\" />");
-                    //    dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsHub +
-                    //                           "\" Target=\"" + modelRelationshipsSat + "\" />");
-                    //}
-
-                    ////Add groupings per Link (CBC), if there is a Satellite
-                    //foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
-                    //{
-                    //    if (row["SATELLITE_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
-                    //        continue;
-                    //    var modelRelationshipsLink = (string)row["LINK_NAME"];
-                    //    var modelRelationshipsSat = (string)row["SATELLITE_NAME"];
-
-                    //    var segmentName = modelRelationshipsLink.Remove(0, 4).ToLower();
-                    //    var textInfo = new CultureInfo("en-US", false).TextInfo;
-                    //    segmentName = textInfo.ToTitleCase(segmentName);
-
-                    //    //Map the Satellite to the Link and CBC
-                    //    dgmlExtract.AppendLine("    <Link Source=\"" + segmentName + "\" Target=\"" + modelRelationshipsSat + "\" Category=\"Contains\" />");
-                    //    dgmlExtract.AppendLine("    <Link Source=\"" + modelRelationshipsLink + "\" Target=\"" + modelRelationshipsSat + "\" />");
-                    //}
-
-
-
-                    //Add the relationships between groupings (core business concepts) - from Hub to Link
-                    foreach (DataRow row in businessConceptsRelationships.Rows)
+                    foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
                     {
-                        if (row["HUB_NAME"] == DBNull.Value || row["LINK_NAME"] == DBNull.Value)
-                            continue;
-                        var modelRelationshipsHub = (string) row["HUB_NAME"];
-                        var modelRelationshipsLink = (string) row["LINK_NAME"];
+                        var modelRelationshipsHub = (string)row["TARGET_NAME"];
 
-                        var segmentNameFrom = modelRelationshipsHub.Remove(0, 4).ToLower();
-                        var textInfoFrom = new CultureInfo("en-US", false).TextInfo;
-                        segmentNameFrom = textInfoFrom.ToTitleCase(segmentNameFrom);
+                        if (!segmentNodeList.Contains(modelRelationshipsHub))
+                        {
+                            segmentNodeList.Add(modelRelationshipsHub);
+                        }
+                    }
 
-                        var segmentNameTo = modelRelationshipsLink.Remove(0, 4).ToLower();
-                        var textInfoTo = new CultureInfo("en-US", false).TextInfo;
-                        segmentNameTo = textInfoTo.ToTitleCase(segmentNameTo);
 
-                        dgmlExtract.AppendLine("    <Link Source=\"" + segmentNameFrom + "\" Target=\"" +
-                                               segmentNameTo + "\" />");
+                    //Add the relationships between core business concepts - from Hub to Link
+                    dgmlExtract.AppendLine("     <!-- Hub / Link relationships -->");
+                    var sqlStatementForRelationships = new StringBuilder();
+                    try
+                    {
+                        sqlStatementForRelationships.AppendLine("SELECT *");
+                        sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
+
+                        var businessConceptsRelationships = GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
+
+                        foreach (DataRow row in businessConceptsRelationships.Rows)
+                        {
+                            dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["HUB_NAME"] + "\" Target=\"" + (string)row["LINK_NAME"] + "\" />");
+                        }
+                    }
+                    catch
+                    {
+                        errorCounter++;
+                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " + sqlStatementForRelationships);
+                    }
+
+
+                    // Add the relationships to the context tables
+                    dgmlExtract.AppendLine("     <!-- Hubs and Sats as well as Link / Lsat relationships -->");
+                    var sqlStatementForLinkCategories = new StringBuilder();
+                    try
+                    {
+                        sqlStatementForLinkCategories.AppendLine("SELECT *");
+                        sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SUBJECT_AREA]");
+
+                        var modelRelationshipsLinksDataTable = GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
+
+                        foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
+                        {
+                            dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["BUSINESS_CONCEPT"] + "\" Target=\"" + (string)row["CONTEXT_TABLE"] + "\" />");
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        errorCounter++;
+                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " + sqlStatementForLinkCategories);
+                    }
+
+
+                    // Add the regular source-to-target mappings as edges using the datagrid
+                    dgmlExtract.AppendLine("     <!-- Regular source-to-target mappings -->");
+                    for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
+                    {
+                        var row = dataGridViewTableMetadata.Rows[i];
+                        var sourceNode = row.Cells[2].Value.ToString();
+                        var targetNode = row.Cells[3].Value.ToString();
+                        var businessKey = row.Cells[4].Value.ToString();
+
+                        dgmlExtract.AppendLine("     <Link Source=\"" + sourceNode + "\" Target=\"" + targetNode + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
                     }
 
                     dgmlExtract.AppendLine("  </Links>");
+                    // End of edges and containers
 
-                    //Add containers
+
+                    //Add categories
                     dgmlExtract.AppendLine("  <Categories>");
-                    dgmlExtract.AppendLine(
-                        "    <Category Id = \"Source System\" Label = \"Source System\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Sources\" Label = \"Sources\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Landing Area\" Label = \"Landing Area\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Persistent Staging Area\" Label = \"Persistent Staging Area\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine(
-                        "    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("  </Categories>");
 
-                    //Add styles 
+                    //Add category styles 
                     dgmlExtract.AppendLine("  <Styles >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Source System\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Sources\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Source System')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6E6A69\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Landing Area\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Landing Area')\" />");
+                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FE000000\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FE6E6A69\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("    </Style >");
+
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Persistent Staging Area\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Persistent Staging Area')\" />");
+                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FA000000\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FA6E6A69\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("    </Style >");
+
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Hub')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6495ED\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Link')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFB22222\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Satellite')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFC0A000\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
                     dgmlExtract.AppendLine("  </Styles >");
 
                     dgmlExtract.AppendLine("</DirectedGraph>");
+                    // End of graph file creation
+
 
                     // Error handling
                     if (errorCounter > 0)
@@ -7610,15 +7812,34 @@ namespace TEAM
             }
 
             // Merge the data tables
-            var completeDataTable = stagingReverseEngineerResults.Copy();
-            completeDataTable.Merge(integrationReverseEngineerResults);
-            completeDataTable.Merge(psaReverseEngineerResults);
-            completeDataTable.Merge(presentationReverseEngineerResults);
+            var completeDataTable = new DataTable();
 
-            completeDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+            if (stagingReverseEngineerResults != null)
+            {
+                completeDataTable.Merge(stagingReverseEngineerResults);
+            }
+
+            if (integrationReverseEngineerResults != null)
+            {
+                completeDataTable.Merge(integrationReverseEngineerResults);
+            }
+
+            if (psaReverseEngineerResults != null)
+            {
+                completeDataTable.Merge(psaReverseEngineerResults);
+            }
+
+            if (presentationReverseEngineerResults != null)
+            {
+                completeDataTable.Merge(presentationReverseEngineerResults);
+            }
+
+            DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
+
+            distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
             // Display the results on the datagrid
-            _bindingSourcePhysicalModelMetadata.DataSource = completeDataTable;
+            _bindingSourcePhysicalModelMetadata.DataSource = distinctTable;
 
             // Set the column header names.
             dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
@@ -7672,8 +7893,8 @@ namespace TEAM
             var sqlStatementForAttributeVersion = new StringBuilder();
 
             sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.currentVersionId + ") + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
-            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.currentVersionId + " AS [VERSION_ID],");
+            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " + GlobalParameters.CurrentVersionId + ") + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
+            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.CurrentVersionId + " AS [VERSION_ID],");
             sqlStatementForAttributeVersion.AppendLine("  DB_NAME(DB_ID('"+databaseName+"')) AS [DATABASE_NAME],");
             sqlStatementForAttributeVersion.AppendLine("  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [SCHEMA_NAME],");
             sqlStatementForAttributeVersion.AppendLine("  OBJECT_NAME(main.OBJECT_ID) AS [TABLE_NAME], ");
@@ -7745,24 +7966,29 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
             sqlStatementForAttributeVersion.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
 
-            sqlStatementForAttributeVersion.AppendLine("WHERE OBJECT_NAME(main.OBJECT_ID) LIKE '" + prefix + "_%'");
+
+            //sqlStatementForAttributeVersion.AppendLine("WHERE OBJECT_NAME(main.OBJECT_ID) LIKE '" + prefix + "_%'");
+            sqlStatementForAttributeVersion.AppendLine("WHERE 1=1");
 
             // Retrieve (and apply) the list of tables to filter from the Table Mapping datagrid
-            sqlStatementForAttributeVersion.AppendLine("  AND OBJECT_NAME(main.OBJECT_ID) IN (");
+            sqlStatementForAttributeVersion.AppendLine("  AND (");
+
             var filterList = TableMetadataFilter((DataTable)_bindingSourceTableMetadata.DataSource);
             foreach (var filter in filterList)
             {
+                var fullyQualifiedName = ClassMetadataHandling.GetSchema(filter).FirstOrDefault();
                 // Always add the 'regular' mapping.
-                sqlStatementForAttributeVersion.AppendLine("  '" + filter + "',");
+                sqlStatementForAttributeVersion.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '"+ fullyQualifiedName.Value+ "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '"+fullyQualifiedName.Key+"')");
+                sqlStatementForAttributeVersion.AppendLine("  OR");
 
-                // Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
-                if (filter.StartsWith(ConfigurationSettings.StgTablePrefixValue+"_") || filter.EndsWith("_"+ConfigurationSettings.StgTablePrefixValue))
-                {
-                    var tempFilter = filter.Replace(ConfigurationSettings.StgTablePrefixValue,ConfigurationSettings.PsaTablePrefixValue);
-                    sqlStatementForAttributeVersion.AppendLine("  '" + tempFilter + "',");
-                }
+                //// Workaround to allow PSA tables to be reverse-engineered automatically by replacing the STG prefix/suffix
+                //if (filter.StartsWith(ConfigurationSettings.StgTablePrefixValue+"_") || filter.EndsWith("_"+ConfigurationSettings.StgTablePrefixValue))
+                //{
+                //    var tempFilter = filter.Replace(ConfigurationSettings.StgTablePrefixValue,ConfigurationSettings.PsaTablePrefixValue);
+                //    sqlStatementForAttributeVersion.AppendLine("  '" + tempFilter + "',");
+                //}
             }
-            sqlStatementForAttributeVersion.Remove(sqlStatementForAttributeVersion.Length - 3, 3);
+            sqlStatementForAttributeVersion.Remove(sqlStatementForAttributeVersion.Length - 6, 6);
             sqlStatementForAttributeVersion.AppendLine();
             sqlStatementForAttributeVersion.AppendLine("  )");
             sqlStatementForAttributeVersion.AppendLine("ORDER BY main.column_id");
@@ -7771,29 +7997,87 @@ namespace TEAM
             conn.Close();
             return reverseEngineerResults;
         }
-        
-        public void exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
+
+        #region ContextMenu
+        private void dataGridViewTableMetadata_MouseDown(object sender, MouseEventArgs e)
         {
-            //Check if any cells were clicked / selected
-            Int32 selectedCellCount = dataGridViewTableMetadata.SelectedCells.Count;
-
-            if (selectedCellCount > 0)
+            if (e.Button == MouseButtons.Right)
             {
-                //For every cell, get the row and the rest of the row values
-                for (int i = 0; i < selectedCellCount; i++)
-                {
-                    var fullRow = dataGridViewTableMetadata.SelectedCells[i].OwningRow;
-
-                    var sourceTableName = fullRow.Cells[2].Value.ToString();
-                    var targetTableName = fullRow.Cells[3].Value.ToString();
-                    var businessKeyDefinition = fullRow.Cells[4].Value.ToString();
-
-                    CreateSourceToTargetMapping(sourceTableName, targetTableName, businessKeyDefinition);
-                }
+                var hti = dataGridViewTableMetadata.HitTest(e.X, e.Y);
+                dataGridViewTableMetadata.ClearSelection();
+                dataGridViewTableMetadata.Rows[hti.RowIndex].Selected = true;
             }
         }
 
-        public void CreateSourceToTargetMapping(string sourceTableName, string targetTableName,string businessKeyDefinition)
+        private void dataGridViewAttributeMetadata_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hti = dataGridViewAttributeMetadata.HitTest(e.X, e.Y);
+                dataGridViewAttributeMetadata.ClearSelection();
+                dataGridViewAttributeMetadata.Rows[hti.RowIndex].Selected = true;
+            }
+        }
+
+        private void dataGridViewModelMetadata_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hti = dataGridViewPhysicalModelMetadata.HitTest(e.X, e.Y);
+                dataGridViewPhysicalModelMetadata.ClearSelection();
+                dataGridViewPhysicalModelMetadata.Rows[hti.RowIndex].Selected = true;
+            }
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            richTextBoxInformation.Clear();
+
+            //Check if any cells were clicked / selected
+            Int32 selectedRow = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            List<string> selectionFilter = new List<string>();            
+            selectionFilter.Add(dataGridViewTableMetadata.Rows[selectedRow].Cells[3].Value.ToString());
+
+            string additionalInfoForDrivingKey = dataGridViewTableMetadata.Rows[selectedRow].Cells[5].Value.ToString();
+
+            List<LoadPatternDefinition> patternlist = new List<LoadPatternDefinition>();
+            var tableType = ClassMetadataHandling.GetTableType(dataGridViewTableMetadata.Rows[selectedRow].Cells[3].Value.ToString(), additionalInfoForDrivingKey);
+
+            foreach (LoadPatternDefinition pattern in ConfigurationSettings.patternDefinitionList)
+            {
+                if (pattern.LoadPatternType==tableType)
+                {
+                    patternlist.Add(pattern);
+                }
+            }
+
+            GenerateFromPattern(patternlist, selectionFilter);
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It deletes the row from the grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void deleteThisRowFromTableDataGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Int32 rowToDelete = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            dataGridViewTableMetadata.Rows.RemoveAt(rowToDelete);
+        }
+        
+        /// <summary>
+        /// Write out a row in the DataGrid to file
+        /// </summary>
+        /// <param name="sourceTableName"></param>
+        /// <param name="targetTableName"></param>
+        /// <param name="businessKeyDefinition"></param>
+        public void CreateJsonSourceToTargetMapping(string sourceTableName, string targetTableName,string businessKeyDefinition)
         {
             try
             {
@@ -7822,6 +8106,7 @@ namespace TEAM
                 richTextBoxInformation.Text += "There were issues saving the JSON file.\r\n" + ex;
             }
         }
+        #endregion
 
         /// <summary>
         ///   Run the validation checks
@@ -7830,60 +8115,66 @@ namespace TEAM
         /// <param name="e"></param>
         private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
-            //LBM 2019-01-24 - We don't need to have the checked box marked when pressing Validation Only, removing the IF
-            //LBM 2109-05-25 - Need to create a validation to check if all Mapped Attibutes exists in the Target
-            //if (checkBoxValidation.Checked)
-            //{
             BackgroundWorker worker = sender as BackgroundWorker;
 
-                // Handling multi-threading
-                if (worker != null && worker.CancellationPending)
+            // Handling multi-threading
+            if (worker != null && worker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+               
+                _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+                MetadataParameters.ValidationIssues = 0;
+                if (ValidationSettings.SourceObjectExistence == "True")
                 {
-                    e.Cancel = true;
+                    ValidateObjectExistence("source");
                 }
-                else
+
+                if (worker != null) worker.ReportProgress(15);
+
+                if (ValidationSettings.TargetObjectExistence == "True")
                 {
-                    _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
-                    MetadataParameters.ValidationIssues = 0;
-                    if (ValidationSettings.SourceObjectExistence == "True")
-                    {
-                        ValidateSourceObject();
-                    }
-                    if (worker != null) worker.ReportProgress(15);
-
-                    if (ValidationSettings.TargetObjectExistence == "True")
-                    {
-                        ValidateTargetObject();
-                    }
-                    if (worker != null) worker.ReportProgress(30);
-
-                    if (ValidationSettings.SourceBusinessKeyExistence == "True")
-                    {
-                        ValidateBusinessKeyObject();
-                    }
-                    if (worker != null) worker.ReportProgress(60);
-
-                    if (ValidationSettings.LogicalGroup == "True")
-                    {
-                        ValidateLogicalGroup();
-                    }
-                    if (worker != null) worker.ReportProgress(75);
-
-                    if (ValidationSettings.LinkKeyOrder == "True")
-                    {
-                        ValidateLinkKeyOrder();
-                    }
-                    if (worker != null) worker.ReportProgress(100);
-
-                    // Informing the user.
-                    _alertValidation.SetTextLogging("\r\nIn total "+ MetadataParameters.ValidationIssues + " validation issues have been found.");
+                    ValidateObjectExistence("target");
                 }
-            //}
-            //else
-            //{
-            //    // Raise exception
-            //    MessageBox.Show("Validation has been requested but is disabled in the application. Please re-enable the validation checkbox.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+
+                if (worker != null) worker.ReportProgress(30);
+
+                if (ValidationSettings.SourceBusinessKeyExistence == "True")
+                {
+                    ValidateBusinessKeyObject();
+                }
+
+                if (ValidationSettings.SourceAttributeExistence == "True")
+                {
+                    ValidateAttributeExistence("source");
+                }
+
+                if (ValidationSettings.TargetAttributeExistence == "True")
+                {
+                    ValidateAttributeExistence("target");
+                }
+
+                if (worker != null) worker.ReportProgress(60);
+
+                if (ValidationSettings.LogicalGroup == "True")
+                {
+                    ValidateLogicalGroup();
+                }
+
+                if (worker != null) worker.ReportProgress(75);
+
+                if (ValidationSettings.LinkKeyOrder == "True")
+                {
+                    ValidateLinkKeyOrder();
+                }
+
+                if (worker != null) worker.ReportProgress(100);
+
+                // Informing the user.
+                _alertValidation.SetTextLogging("\r\nIn total " + MetadataParameters.ValidationIssues + " validation issues have been found.");
+            }
         }
 
         internal static class MetadataParameters
@@ -7893,186 +8184,188 @@ namespace TEAM
             public static bool ValidationRunning {get; set;}
         }
 
-        private void ValidateSourceObject()
+        /// <summary>
+        /// This method runs a check against the DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
+        /// </summary>
+        /// <param name="area"></param>
+        private void ValidateAttributeExistence(string area)
         {
             string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
-            #region Validation for Source Object Existence
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the sources as captured in metadata exists in the physical model.\r\n\r\n");
+            // Map the area to the column in the datagrid (e.g. source or target)
+            int areaColumnIndex = 0;
+            int areaAttributeColumnIndex = 0;
 
-            // Creating a list of unique table names from the data grid / data table
-            var objectListSTG = new List<string>();
-            var objectListPSA = new List<string>();
-            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
-            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
+            switch (area)
+            {
+                case "source":
+                    areaColumnIndex = 2;
+                    areaAttributeColumnIndex = 3;
+                    break;
+                case "target":
+                    areaColumnIndex = 4;
+                    areaAttributeColumnIndex = 5;
+                    break;
+                default:
+                    areaColumnIndex = 0;
+                    areaAttributeColumnIndex = 0;
+                    break;
+            }
+
+            // Informing the user.
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the attributes in the {area} metadata exists in the model.\r\n");
+
             var resultList = new Dictionary<string, string>();
 
-            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            foreach (DataGridViewRow row in dataGridViewAttributeMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix)
+                    string objectValidated;
+                    var validationObject = row.Cells[areaColumnIndex].Value.ToString();
+                    var validationAttribute = row.Cells[areaAttributeColumnIndex].Value.ToString();
+
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        if (!objectListSTG.Contains(row.Cells[2].Value.ToString()))
-                        {
-                            objectListSTG.Add(row.Cells[2].Value.ToString());
-                        }
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject,""));
+                        string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        objectValidated = ClassMetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
                     }
-                    else if (row.Cells[2].Value.ToString().Substring(0, psaPrefix.Length) == psaPrefix)
+                    else if (evaluationMode == "virtual")
                     {
-                        if (!objectListPSA.Contains(row.Cells[2].Value.ToString()))
+                        objectValidated = "";
+                        // Exclude a lookup to the source
+                        if (ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString())
                         {
-                            objectListPSA.Add(row.Cells[2].Value.ToString());
+                            objectValidated = ClassMetadataValidation.ValidateAttributeExistenceVirtual(validationObject, validationAttribute, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
                     else
                     {
-                        if (!resultList.ContainsKey(row.Cells[2].Value.ToString()))
-                            resultList.Add(row.Cells[2].Value.ToString(), "The provided prefix doesn't match either Staging or Persistent Staging.\r\n");
+                        objectValidated = "     The validation approach (physical/virtual) could not be asserted.";
+                    }
+
+                    // Add negative results to dictionary
+                    if (objectValidated == "False" && !resultList.ContainsKey((validationAttribute)))
+                    {
+                        resultList.Add(validationAttribute, objectValidated); // Add objects that did not pass the test
                     }
                 }
             }
-
-
-            // Execute the validation check using the list of unique objects
-
-            //Validate STG Entries 
-            foreach (string sourceObject in objectListSTG)
-            {
-                string sourceObjectValidated;
-                if (evaluationMode == "physical")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject,ConfigurationSettings.ConnectionStringStg);
-                }
-                else if (evaluationMode == "virtual")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(sourceObject,(DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
-                }
-                else
-                {
-                    sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
-                }
-
-                // Add negative results to dictionary
-                if (sourceObjectValidated == "False")
-                {
-                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
-                }
-            }
-
-
-            //Validate PSA Entries
-            foreach (string sourceObject in objectListPSA)
-            {
-                string sourceObjectValidated;
-                if (evaluationMode == "physical")
-                {
-                    sourceObjectValidated =ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject,ConfigurationSettings.ConnectionStringHstg);
-                }
-                else if (evaluationMode == "virtual")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(sourceObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
-                }
-                else
-                {
-                    sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
-                }
-
-                if (sourceObjectValidated == "False")
-                {
-                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
-                }
-            }
-
-
             // Return the results back to the user
             if (resultList.Count > 0)
             {
-                foreach (var sourceObjectResult in resultList)
+                foreach (var objectValidationResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     " + objectValidationResult.Key +
+                                                    " is tested with this outcome: " + objectValidationResult.Value +
+                                                    "\r\n");
                 }
 
-                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count;
+
+                _alertValidation.SetTextLogging("\r\n");
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the source table / object (Source table).\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of the {area} attribute.\r\n\r\n");
             }
-
-            #endregion
         }
 
-        private void ValidateTargetObject()
+        /// <summary>
+        /// This method runs a check against the DataGrid to assert if model metadata is available for the object. The object needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run succesfully.
+        /// </summary>
+        /// <param name="area"></param>
+        private void ValidateObjectExistence(string area)
         {
             string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
-            #region Validation for Source Object Existence
-            // Informing the user.
-            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Integration Layer metadata exists in the physical model.\r\n\r\n");
+            // Map the area to the column in the datagrid (e.g. source or target)
+            int areaColumnIndex = 0;
+            switch (area)
+            {
+                case "source":
+                    areaColumnIndex = 2;
+                    break;
+                case "target":
+                    areaColumnIndex = 3;
+                    break;
+                default:
+                    // Do nothing
+                    break;
+            }
 
-            // Creating a list of unique table names from the data grid / data table
-            var objectList = new List<string>();
+            // Informing the user.
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the objects in the {area} metadata exists in the model.\r\n");
+
+            var resultList = new Dictionary<string, string>();
+
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (!objectList.Contains(row.Cells[3].Value.ToString()))
+                    string objectValidated;
+                    var validationObject = row.Cells[areaColumnIndex].Value.ToString();
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        objectList.Add(row.Cells[3].Value.ToString());
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject, ""));
+                        string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        try
+                        {
+                            objectValidated =
+                                ClassMetadataValidation.ValidateObjectExistencePhysical(validationObject,
+                                    connectionValue);
+                        }
+                        catch
+                        {
+                            objectValidated = "     An issue occurred connecting to the database.";
+                        }
+                    }
+                    else if (evaluationMode == "virtual")
+                    {
+                        objectValidated = "";
+                        // Exclude a lookup to the source
+                        if (ClassMetadataHandling.GetTableType(validationObject,"") != ClassMetadataHandling.TableTypes.Source.ToString())
+                        {
+                            objectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(validationObject,
+                                (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                        }
+                    }
+                    else
+                    {
+                        objectValidated = "     The validation approach (physical/virtual) could not be asserted.";
+                    }
+
+                    // Add negative results to dictionary
+                    if (objectValidated == "False" && !resultList.ContainsKey(validationObject))
+                    {
+                        resultList.Add(validationObject, objectValidated); // Add objects that did not pass the test
                     }
                 }
             }
 
-
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, string>();
-            foreach (string sourceObject in objectList)
-            {
-                string sourceObjectValidated;
-                if (evaluationMode == "physical")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringInt);
-                }
-                else if (evaluationMode == "virtual")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(sourceObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
-                }
-                else
-                {
-                    sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
-                }
-
-
-
-                if (sourceObjectValidated == "False")
-                {
-                    resultList.Add(sourceObject, sourceObjectValidated); // Add objects that did not pass the test
-                }
-            }
-
-
             // Return the results back to the user
             if (resultList.Count > 0)
             {
-                foreach (var sourceObjectResult in resultList)
+                foreach (var objectValidationResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     " + objectValidationResult.Key + " is tested with this outcome: " + objectValidationResult.Value + "\r\n");
                 }
 
-                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count;
+                _alertValidation.SetTextLogging("\r\n");
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the target table / object (Integration Layer table).\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of the {area} table / object.\r\n\r\n");
             }
 
-            #endregion
         }
-
+ 
         /// <summary>
-        /// This method will check if the order of the keys in the Link is consistent with the physical table structures
+        /// This method will check if the order of the keys in the Link is consistent with the physical table structures.
         /// </summary>
         internal void ValidateLinkKeyOrder()
         {
@@ -8080,7 +8373,7 @@ namespace TEAM
 
             #region Retrieving the Links
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
 
 
             // Creating a list of unique Link business key combinations from the data grid / data table
@@ -8103,7 +8396,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -8119,33 +8412,33 @@ namespace TEAM
             }
             #endregion
 
-
             // Return the results back to the user
             if (resultList.Count > 0)
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     "+sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
+                _alertValidation.SetTextLogging("\r\n");
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
-
-
-
         }
 
+        /// <summary>
+        /// Checks if all the supporting mappings are available (e.g. a Context table also needs a Core Business Concept present.
+        /// </summary>
         internal void ValidateLogicalGroup()
         {
             string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
             #region Retrieving the Integration Layer tables
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
 
             // Creating a list of tables which are dependent on other tables being present
             var objectList = new List<Tuple<string, string, string>>();
@@ -8167,7 +8460,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.currentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -8183,24 +8476,21 @@ namespace TEAM
             }
             #endregion
 
-
-
             // Return the results back to the user
             if (resultList.Count > 0)
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
+                    _alertValidation.SetTextLogging("     "+sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
 
+                _alertValidation.SetTextLogging("\r\n");
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to order of business keys in the Link tables.\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
-
-
         }
 
         /// <summary>
@@ -8210,109 +8500,77 @@ namespace TEAM
         {
             string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
-            #region Validation for source Business Key attribute existence
             // Informing the user.
-            _alertValidation.SetTextLogging("\r\n--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n");
 
-            // Creating a list of (Source) table names and business key (combinations) from the data grid / data table
-            var objectListSTG = new List<Tuple<string, string>>();
-            var objectListPSA = new List<Tuple<string, string>>();
-            var stagingPrefix = ConfigurationSettings.StgTablePrefixValue;
-            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
             var resultList = new Dictionary<Tuple<string, string>, bool>();
-
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
-                    if (row.Cells[2].Value.ToString().Substring(0, stagingPrefix.Length) == stagingPrefix)
+                    Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
+                    Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString());
+
+                    //row.Cells[areaColumnIndex].Value.ToString();
+                    if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject.Item1,"") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        if (!objectListSTG.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
+                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject.Item1,""));
+                        string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        try
                         {
-                            objectListSTG.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                            objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(validationObject, connectionValue);
+                        }
+                        catch
+                        {
+                            _alertValidation.SetTextLogging("     An issue occurred connecting to the database while looking up physical model references.\r\n");
                         }
                     }
-                    else if (row.Cells[2].Value.ToString().Substring(0, psaPrefix.Length) == psaPrefix)
+                    else if (evaluationMode == "virtual")
                     {
-                        if (!objectListPSA.Contains(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString())))
-                        {
-                            objectListPSA.Add(new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString()));
+                        // Exclude a lookup to the source
+                        if (ClassMetadataHandling.GetTableType(validationObject.Item1,"") != ClassMetadataHandling.TableTypes.Source.ToString())
+                        { 
+                            objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
-                }
-            }
-
-
-
-
-            // Execute the validation check using the list of unique objects
-            foreach (var sourceObject in objectListSTG)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = new Dictionary<Tuple<string, string>, bool>();
-                if (evaluationMode == "physical")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringStg, GlobalParameters.currentVersionId);
-                }
-                else if (evaluationMode == "virtual")
-                {
-                    sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(sourceObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
-                }
-                else
-                {
-                    //sourceObjectValidated = "The validation approach (physical/virtual) could not be asserted.";
-                }
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
+                    else
                     {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
+                        if (ClassMetadataHandling.GetTableType(validationObject.Item1,"") !=
+                            ClassMetadataHandling.TableTypes.Source.ToString())
                         {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                            _alertValidation.SetTextLogging("     The validation approach (physical/virtual) could not be asserted.\r\n");
+                        }
+                    }
+
+                    // Add negative results to dictionary
+                    foreach (var objectValidationTuple in objectValidated)
+                    {
+                        if (objectValidationTuple.Value == false && !resultList.ContainsKey(objectValidationTuple.Key))
+                        {
+                            resultList.Add(objectValidationTuple.Key, false); // Add objects that did not pass the test
                         }
                     }
                 }
             }
-
-            foreach (var sourceObject in objectListPSA)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(sourceObject, ConfigurationSettings.ConnectionStringHstg, GlobalParameters.currentVersionId);
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-
-            #endregion
 
             // Return the results back to the user
             if (resultList.Count > 0)
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging("Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + "\r\n");
+                    _alertValidation.SetTextLogging("     Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + ".\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alertValidation.SetTextLogging("There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
             }
-        }
 
+            _alertValidation.SetTextLogging("\r\n");
+        }
 
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -8337,7 +8595,7 @@ namespace TEAM
             else
             {
                 labelResult.Text = "Done!";
-                richTextBoxInformation.Text += "\r\nThe metadata was validated succesfully!\r\n";
+                richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
             }
         }
 
@@ -8378,7 +8636,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.currentVersionId + ".json");
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -8461,6 +8719,512 @@ namespace TEAM
         private void FormManageMetadata_Shown(object sender, EventArgs e)
         {
             GridAutoLayout();
+        }
+
+        private void deleteThisRowFromTheGridToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Int32 rowToDelete = dataGridViewAttributeMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            dataGridViewAttributeMetadata.Rows.RemoveAt(rowToDelete);
+        }
+
+        private void deleteThisRowFromTheGridToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Int32 rowToDelete = dataGridViewPhysicalModelMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            dataGridViewPhysicalModelMetadata.Rows.RemoveAt(rowToDelete);
+        }
+
+        private void displayTableScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Retrieve the index of the selected row
+            Int32 selectedRow = dataGridViewPhysicalModelMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
+            DataTable dt2 = gridDataTable.Clone();
+            dt2.Columns["ORDINAL_POSITION"].DataType = Type.GetType("System.Int32");
+
+            foreach (DataRow dr in gridDataTable.Rows)
+            {
+                dt2.ImportRow(dr);
+            }
+            dt2.AcceptChanges();
+
+            // Make sure the output is sorted
+            dt2.DefaultView.Sort = "[TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
+            // Retrieve all rows relative to the selected row (e.g. all attributes for the table)
+            IEnumerable<DataRow> rows = dt2.DefaultView.ToTable().AsEnumerable().Where(r =>
+                r.Field<string>("TABLE_NAME") ==
+                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value.ToString()
+                && r.Field<string>("SCHEMA_NAME") ==
+                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[3].Value.ToString()
+                && r.Field<string>("DATABASE_NAME") ==
+                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[2].Value.ToString()
+                );
+
+            // Create a form and display the results
+            var results = new StringBuilder();
+
+            _generatedScripts = new FormAlert();
+            _generatedScripts.SetFormName("Display model metadata");
+            _generatedScripts.Canceled += buttonCancel_Click;
+            _generatedScripts.Show();
+
+            results.AppendLine("IF OBJECT_ID('["+ dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value + "]', 'U') IS NOT NULL");
+            results.AppendLine("DROP TABLE [" + dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value + "]");
+            results.AppendLine();
+            results.AppendLine("CREATE TABLE [" + dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value + "]");
+            results.AppendLine("(");
+
+            int counter = 1;
+            foreach (DataRow row in rows)
+            {
+                var commaSnippet = "";
+                if (counter == 1)
+                {
+                    commaSnippet = "  ";
+                }
+                else
+                {
+                    commaSnippet = " ,";
+                }
+
+                counter++;
+                results.AppendLine(commaSnippet + row["COLUMN_NAME"] + " -- with ordinal position of "+ row["ORDINAL_POSITION"]);
+            }
+            results.AppendLine(")");
+
+            _generatedScripts.SetTextLogging(results.ToString());
+            _generatedScripts.ProgressValue = 100;
+            _generatedScripts.Message = "Done";
+        }
+
+        private void ButtonClickExportToJson(object sender, EventArgs e)
+        {
+            richTextBoxInformation.Clear();
+
+            List<string> dummyFilter = new List<string>();
+            GenerateFromPattern(ConfigurationSettings.patternDefinitionList, dummyFilter);
+        }
+
+        /// <summary>
+        /// Creates a Json schema based on the Data Warehouse Automation interface definition using a pattern and filter as input. 
+        /// </summary>
+        /// <param name="LoadPatternDefinitionList"></param>
+        /// <param name="filter"></param>
+        private void GenerateFromPattern(List<LoadPatternDefinition> LoadPatternDefinitionList, List<string> filter)
+        {
+            // Set up the form in case the show Json output checkbox has been selected
+            if (checkBoxShowJsonOutput.Checked)
+            {
+                _generatedJsonInterface = new FormAlert();
+                _generatedJsonInterface.SetFormName("Exporting the metadata");
+                _generatedJsonInterface.ShowProgressBar(false);
+                _generatedJsonInterface.ShowCancelButton(false);
+                _generatedJsonInterface.ShowLogButton(false);
+                _generatedJsonInterface.ShowProgressLabel(false);
+                _generatedJsonInterface.Show();
+            }
+
+            int fileCounter = 0;
+
+            EventLog eventLog = new EventLog();
+            SqlConnection conn = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+
+
+            foreach (LoadPatternDefinition pattern in LoadPatternDefinitionList)
+            {
+                List<string> itemList = new List<string>();
+
+                // Retrieve the items related to the pattern (i.e. all the Hubs, or all the Links) - selectionQuery. Or replace this with an input list.            
+                try
+                {
+                    if (filter.Count == 0)
+                    {
+                        itemList = DatabaseHandling.GetItemList(pattern.LoadPatternSelectionQuery, conn);
+                    }
+                    else
+                    {
+                        itemList = filter;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The item list could not be retrieved (selectionQuery in PatternDefinition file). The error message is " + ex + ".\r\n"));
+                }
+
+                // Retrieve the source-to-target mappings (base query)
+                DataTable metadataDataTable = new DataTable();
+                try
+                {
+                    var metadataQuery = pattern.LoadPatternBaseQuery;
+                    metadataDataTable = GetDataTable(ref conn, metadataQuery);
+                }
+                catch (Exception ex)
+                {
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The source-to-target mapping list could not be retrieved (baseQuery in PatternDefinition file). The error message is " + ex + ".\r\n"));
+                }
+
+                // Populate the attribute mappings
+                // Create the column-to-column mapping
+                var columnMetadataQuery = pattern.LoadPatternAttributeQuery;
+                var columnMetadataDataTable = GetDataTable(ref conn, columnMetadataQuery);
+
+                // Populate the additional business key information (i.e. links)
+                var additionalBusinessKeyQuery = pattern.LoadPatternAdditionalBusinessKeyQuery;
+                var additionalBusinessKeyDataTable = GetDataTable(ref conn, additionalBusinessKeyQuery);
+
+                // Loop through the available items, select the right mapping and map the metadata to the DWH automation schema
+                foreach (string item in itemList)
+                {
+                    var targetTableName = item;
+                    richTextBoxInformation.AppendText(@"Processing generation for " + targetTableName + ".\r\n");
+
+                    DataRow[] mappingRows = null;
+                    try
+                    {
+                        mappingRows = metadataDataTable.Select("[TARGET_NAME] = '" + targetTableName + "'");
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBoxInformation.AppendText(
+                            "There was an error generating the output, this happened when interpreting the source-to-mapping rows. " +
+                            "\r\n\r\nThe query used was:" + pattern.LoadPatternBaseQuery +
+                            ".\r\n\r\nThe error message was:" + ex);
+                    }
+
+                    // Move the data table to the class instance
+                    List<DataObjectMapping> sourceToTargetMappingList = new List<DataObjectMapping>();
+
+                    if (mappingRows != null)
+                    {
+                        foreach (DataRow row in mappingRows)
+                        {
+                            #region Business Key
+
+                            // Creating the Business Key definition, using the available components (see above)
+                            List<BusinessKey> businessKeyList = new List<BusinessKey>();
+                            BusinessKey businessKey =
+                                new BusinessKey
+                                {
+                                    businessKeyComponentMapping =
+                                        InterfaceHandling.BusinessKeyComponentMappingList(
+                                            (string)row["SOURCE_BUSINESS_KEY_DEFINITION"],
+                                            (string)row["TARGET_BUSINESS_KEY_DEFINITION"]),
+                                    surrogateKey = (string)row["SURROGATE_KEY"]
+                                };
+
+
+                            // Create the classifications at Data Item (target) level, to capture if this attribute is a Multi-Active attribute.
+                            if (row.Table.Columns.Contains("DRIVING_KEY_SOURCE"))
+                            {
+                                if (row["DRIVING_KEY_SOURCE"].ToString().Length>0)
+                                {
+                                    // Update the existing Business Key with a classification if a Driving Key exists.
+
+                                    foreach (var localDataItemMapping in businessKey.businessKeyComponentMapping)
+                                    {
+                                        if (localDataItemMapping.sourceDataItem.name ==
+                                            (string) row["DRIVING_KEY_SOURCE"])
+                                        {
+                                            
+                                            List<Classification> dataItemClassificationList =
+                                                new List<Classification>();
+                                            var dataItemClassification = new Classification();
+                                            dataItemClassification.classification = "DrivingKey";
+                                            dataItemClassification.notes =
+                                                "The attribute that triggers (drives) closing of a relationship.";
+                                            dataItemClassificationList.Add(dataItemClassification);
+
+                                            localDataItemMapping.sourceDataItem.dataItemClassification =
+                                                dataItemClassificationList;
+                                        }
+                                    }
+
+
+                                }
+                            }
+
+                            businessKeyList.Add(businessKey);
+
+                            #endregion
+
+                            #region Data Item Mapping (column to column)
+
+                            // Create the column-to-column mapping.
+                            List<DataItemMapping> dataItemMappingList = new List<DataItemMapping>();
+                            if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
+                            {
+                                DataRow[] columnRows = columnMetadataDataTable.Select("[TARGET_NAME] = '" + targetTableName + "' AND [SOURCE_NAME] = '" + (string)row["SOURCE_NAME"] + "'");
+
+                                foreach (DataRow column in columnRows)
+                                {
+                                    DataItemMapping columnMapping = new DataItemMapping();
+                                    DataItem sourceColumn = new DataItem();
+                                    DataItem targetColumn = new DataItem();
+
+                                    sourceColumn.name = (string)column["SOURCE_ATTRIBUTE_NAME"];
+                                    targetColumn.name = (string)column["TARGET_ATTRIBUTE_NAME"];
+
+                                    columnMapping.sourceDataItem = sourceColumn;
+                                    columnMapping.targetDataItem = targetColumn;
+
+                                    // Adding Multi-Active Key classification
+                                    if (column.Table.Columns.Contains("MULTI_ACTIVE_KEY_INDICATOR"))
+                                    {
+                                        if ((string) column["MULTI_ACTIVE_KEY_INDICATOR"] == "Y")
+                                        {
+                                            // Create the classifications at Data Item (target) level, to capture if this attribute is a Multi-Active attribute.
+                                            List<Classification> dataItemClassificationList =
+                                                new List<Classification>();
+                                            var dataItemClassification = new Classification();
+                                            dataItemClassification.classification = "MultiActive";
+                                            dataItemClassification.notes =
+                                                "A multi-active attribute is part of the target table key.";
+                                            dataItemClassificationList.Add(dataItemClassification);
+
+                                            // Add the classification to the target Data Item
+                                            columnMapping.targetDataItem.dataItemClassification = dataItemClassificationList;
+                                        }
+                                    }
+
+                                    // Adding NULL classification
+                                    if ((string) column["SOURCE_ATTRIBUTE_NAME"] == "NULL")
+                                    {
+                                        // Create the classifications at Data Item (target) level, to capture if this attribute is a NULL.
+                                        List<Classification> dataItemClassificationList = new List<Classification>();
+                                        var dataItemClassification = new Classification();
+                                        dataItemClassification.classification = "NULL value";
+                                        dataItemClassificationList.Add(dataItemClassification);
+
+                                        // Add the classification to the target Data Item
+                                        columnMapping.sourceDataItem.dataItemClassification = dataItemClassificationList;
+                                    }
+
+                                    dataItemMappingList.Add(columnMapping);
+                                }
+                            }
+
+                            #endregion
+
+                            #region Additional Business Keys
+
+                            if (additionalBusinessKeyDataTable != null && additionalBusinessKeyDataTable.Rows.Count > 0)
+                            {
+                                DataRow[] additionalBusinessKeyRows =
+                                    additionalBusinessKeyDataTable.Select("[TARGET_NAME] = '" + targetTableName + "'");
+
+                                foreach (DataRow additionalKeyRow in additionalBusinessKeyRows)
+                                {
+                                    var hubBusinessKey = new BusinessKey();
+
+                                    hubBusinessKey.businessKeyComponentMapping =
+                                        InterfaceHandling.BusinessKeyComponentMappingList(
+                                            (string)additionalKeyRow["SOURCE_BUSINESS_KEY_DEFINITION"],
+                                            (string)additionalKeyRow["TARGET_BUSINESS_KEY_DEFINITION"]);
+                                    hubBusinessKey.surrogateKey = (string)additionalKeyRow["TARGET_KEY_NAME"];
+
+                                    if ((string) additionalKeyRow["HUB_NAME"] == "N/A")
+                                    {
+                                        // Classification (degenerate field)
+                                        List<Classification> businesskeyClassificationList = new List<Classification>();
+                                        var businesskeyClassification = new Classification();
+                                        businesskeyClassification.classification = "DegenerateAttribute";
+                                        businesskeyClassification.notes =
+                                            "Non Core Business Concept attribute, though part of the Relationship Key.";
+                                        businesskeyClassificationList.Add(businesskeyClassification);
+
+                                        hubBusinessKey.businessKeyClassification = businesskeyClassificationList;
+                                    }
+
+
+                                    businessKeyList.Add(hubBusinessKey); // Adding the Link Business Key
+                                }
+                            }
+
+                            #endregion
+
+                            #region Lookup Table
+                            // Define a lookup table, in case there is a desire to do key lookups.
+                            var lookupTable = (string)row["TARGET_NAME"];
+
+                            if (ConfigurationSettings.TableNamingLocation == "Prefix")
+                            {
+                                int prefixLocation = lookupTable.IndexOf(ConfigurationSettings.StgTablePrefixValue);
+                                if (prefixLocation != -1)
+                                {
+                                    lookupTable = lookupTable
+                                        .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
+                                        .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
+                                }
+                            }
+                            else
+                            {
+                                int prefixLocation = lookupTable.LastIndexOf(ConfigurationSettings.StgTablePrefixValue);
+                                if (prefixLocation != -1)
+                                {
+                                    lookupTable = lookupTable
+                                        .Remove(prefixLocation, ConfigurationSettings.StgTablePrefixValue.Length)
+                                        .Insert(prefixLocation, ConfigurationSettings.PsaTablePrefixValue);
+                                }
+                            }
+                            #endregion
+
+                            // Add the created Business Key to the source-to-target mapping.
+                            var sourceToTargetMapping = new DataObjectMapping();
+
+                            var sourceDataObject = new DataWarehouseAutomation.DataObject();
+                            var targetDataObject = new DataWarehouseAutomation.DataObject();
+
+                            sourceDataObject.name = (string)row["SOURCE_NAME"];
+                            targetDataObject.name = (string)row["TARGET_NAME"];
+
+                            var targetConnectionKey = new DataConnection();
+                            targetConnectionKey.dataConnectionString = pattern.LoadPatternConnectionKey;
+
+                            targetDataObject.dataObjectConnection = targetConnectionKey;
+
+                            sourceToTargetMapping.sourceDataObject = sourceDataObject;
+                            sourceToTargetMapping.targetDataObject = targetDataObject;
+                            sourceToTargetMapping.enabled = true;
+
+                            // Create a related data object to capture the lookup information.
+                            // This needs to be put in a collection because the relatedDataObject is a List of Data Objects.
+                            List<DataWarehouseAutomation.DataObject> relatedDataObject = new List<DataWarehouseAutomation.DataObject>();
+                            var lookupTableDataObject = new DataWarehouseAutomation.DataObject();
+                            lookupTableDataObject.name = lookupTable;
+
+                            // Create the classifications at Data Object level, to capture this is a Lookup relationship.
+                            List<Classification> dataObjectClassificationList = new List<Classification>();
+                            var dataObjectClassification = new Classification();
+                            dataObjectClassification.classification = "Lookup";
+                            dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
+                            dataObjectClassificationList.Add(dataObjectClassification);
+
+                            lookupTableDataObject.dataObjectClassification = dataObjectClassificationList;
+
+                            relatedDataObject.Add(lookupTableDataObject);
+
+                            sourceToTargetMapping.relatedDataObject = relatedDataObject;
+
+
+                            //sourceToTargetMapping.lookupTable = lookupTable; // Lookup Table
+                            sourceToTargetMapping.mappingName = (string)row["TARGET_NAME"]; // Source-to-target mapping name
+                            sourceToTargetMapping.businessKey = businessKeyList; // Business Key]
+
+                            // Create the classifications at Data Object Mapping level.
+                            List<Classification> dataObjectMappingClassificationList= new List<Classification>();
+                            var dataObjectMappingClassification = new Classification();
+                            dataObjectMappingClassification.id = pattern.LoadPatternKey;
+                            dataObjectMappingClassification.classification = pattern.LoadPatternType;
+                            dataObjectMappingClassification.notes = pattern.LoadPatternNotes;
+                            dataObjectMappingClassificationList.Add(dataObjectMappingClassification);
+
+                            sourceToTargetMapping.mappingClassification = dataObjectMappingClassificationList;
+                            //sourceToTargetMapping.classification = ClassMetadataHandling.GetTableType((string)row["TARGET_NAME"], "").Split(',').ToList();
+                            //sourceToTargetMapping.classification = pattern.LoadPatternType.Split(',').ToList(); ;
+                            
+                            sourceToTargetMapping.filterCriterion = (string)row["FILTER_CRITERIA"]; // Filter criterion
+
+                            if (dataItemMappingList.Count == 0)
+                            {
+                                dataItemMappingList = null;
+                            }
+
+                            sourceToTargetMapping.dataItemMapping = dataItemMappingList; // Column to column mapping
+
+                            // Add the source-to-target mapping to the mapping list
+                            sourceToTargetMappingList.Add(sourceToTargetMapping);
+                        }
+                    }
+
+                    // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
+                    GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata();
+                    vedwMetadata.selectedDataObject = targetTableName;
+
+                    // Create an instance of the 'MappingList' class / object model 
+                    VEDW_DataObjectMappingList sourceTargetMappingList = new VEDW_DataObjectMappingList();
+                    sourceTargetMappingList.dataObjectMappingList = sourceToTargetMappingList;
+
+                    sourceTargetMappingList.metadataConfiguration = new MetadataConfiguration();
+                    sourceTargetMappingList.generationSpecificMetadata = vedwMetadata;
+
+                    // Check if the metadata needs to be displayed
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(sourceTargetMappingList, Formatting.Indented);
+
+                        if (checkBoxShowJsonOutput.Checked)
+                        {
+                            _generatedJsonInterface.SetTextLogging("Creating " + targetTableName + "\r\n\r\n" + json + "\r\n\r\n");
+                        }
+
+                        // Spool the output to disk
+                        if (checkBoxSaveInterfaceToJson.Checked)
+                        {
+                            Event fileSaveEventLog = Utility.SaveTextToFile(GlobalParameters.OutputPath + targetTableName + ".json", json);
+                            eventLog.Add(fileSaveEventLog);
+                            fileCounter++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBoxInformation.AppendText("An error was encountered while generating the JSON metadata. The error message is: " + ex);
+                    }
+                }             
+            }
+
+            // Report back to the user
+            int errorCounter = 0;
+            foreach (Event individualEvent in eventLog)
+            {
+                // Only report errors at this stage, can be extended with debug checkbox.
+                if (individualEvent.eventCode == 1)
+                {
+                    errorCounter++;
+                    richTextBoxInformation.AppendText(individualEvent.eventDescription);
+                }
+            }
+
+            richTextBoxInformation.AppendText($"\r\n{errorCounter} errors have been found.\r\n");
+
+            richTextBoxInformation.AppendText($"\r\n{fileCounter} json schemas (files) have been prepared.\r\n");
+
+            // Spool the output to disk
+            if (checkBoxSaveInterfaceToJson.Checked)
+            {
+                richTextBoxInformation.AppendText($"Associated scripts have been saved in {GlobalParameters.OutputPath}.\r\n");
+            }
+
+            richTextBoxInformation.ScrollToCaret();
+            //_generatedJsonInterface.Focus();
+
+            conn.Close();
+            conn.Dispose();
+        }
+
+        private void openConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (GlobalParameters.ConfigurationPath != "")
+                {
+                    Process.Start(GlobalParameters.ConfigurationPath);
+                }
+                else
+                {
+                    richTextBoxInformation.Text =
+                        "There is no value given for the Configuration Path. Please enter a valid path name.";
+                }
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+            }
+        }
+
+        private void checkBoxShowJsonOutput_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -52,8 +52,11 @@ namespace TEAM
             this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
             this.contextMenuStripTableMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteThisRowFromTheGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
+            this.contextMenuStripAttributeMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteThisRowFromTheGridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBoxPresentationLayer = new System.Windows.Forms.CheckBox();
@@ -62,11 +65,16 @@ namespace TEAM
             this.checkBoxStagingArea = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewPhysicalModel();
+            this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteThisRowFromTheGridToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.outputGroupBoxVersioning = new System.Windows.Forms.GroupBox();
             this.radioButtonMinorRelease = new System.Windows.Forms.RadioButton();
             this.radiobuttonMajorRelease = new System.Windows.Forms.RadioButton();
             this.radiobuttonNoVersionChange = new System.Windows.Forms.RadioButton();
             this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
+            this.checkBoxShowJsonOutput = new System.Windows.Forms.CheckBox();
+            this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.radioButtonPhysicalMode = new System.Windows.Forms.RadioButton();
             this.radioButtonVirtualMode = new System.Windows.Forms.RadioButton();
             this.checkBoxValidation = new System.Windows.Forms.CheckBox();
@@ -75,15 +83,14 @@ namespace TEAM
             this.menuStripMetadata = new System.Windows.Forms.MenuStrip();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.businessKeyMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTableMappingAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.attributeMappingMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAttributeMappingAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.physicalModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openModelMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -94,9 +101,9 @@ namespace TEAM
             this.checkBoxMergeFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxBackupFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxResizeDataGrid = new System.Windows.Forms.CheckBox();
-            this.checkBoxSaveInterfaceToJson = new System.Windows.Forms.CheckBox();
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
+            this.buttonGenerateJsonInterface = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -107,9 +114,11 @@ namespace TEAM
             this.contextMenuStripTableMapping.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).BeginInit();
+            this.contextMenuStripAttributeMapping.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPhysicalModelMetadata)).BeginInit();
+            this.contextMenuStripModel.SuspendLayout();
             this.outputGroupBoxVersioning.SuspendLayout();
             this.MetadataGenerationGroupBox.SuspendLayout();
             this.menuStripMetadata.SuspendLayout();
@@ -146,8 +155,8 @@ namespace TEAM
             // 
             // buttonValidation
             // 
-            this.buttonValidation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonValidation.Location = new System.Drawing.Point(1376, 394);
+            this.buttonValidation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonValidation.Location = new System.Drawing.Point(1376, 643);
             this.buttonValidation.Name = "buttonValidation";
             this.buttonValidation.Size = new System.Drawing.Size(120, 40);
             this.buttonValidation.TabIndex = 24;
@@ -195,9 +204,9 @@ namespace TEAM
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.labelVersion);
             this.groupBox1.Controls.Add(this.trackBarVersioning);
-            this.groupBox1.Location = new System.Drawing.Point(277, 764);
+            this.groupBox1.Location = new System.Drawing.Point(253, 764);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(352, 85);
+            this.groupBox1.Size = new System.Drawing.Size(261, 85);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Version selection";
@@ -214,9 +223,9 @@ namespace TEAM
             // trackBarVersioning
             // 
             this.trackBarVersioning.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.trackBarVersioning.Location = new System.Drawing.Point(6, 23);
+            this.trackBarVersioning.Location = new System.Drawing.Point(6, 24);
             this.trackBarVersioning.Name = "trackBarVersioning";
-            this.trackBarVersioning.Size = new System.Drawing.Size(338, 45);
+            this.trackBarVersioning.Size = new System.Drawing.Size(249, 45);
             this.trackBarVersioning.TabIndex = 4;
             this.trackBarVersioning.ValueChanged += new System.EventHandler(this.trackBarVersioning_ValueChanged);
             // 
@@ -307,23 +316,33 @@ namespace TEAM
             this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
             this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1217, 699);
             this.dataGridViewTableMetadata.TabIndex = 1;
+            this.dataGridViewTableMetadata.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DataGridViewTableMetadata_CellFormatting);
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
             this.dataGridViewTableMetadata.Sorted += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
+            this.dataGridViewTableMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewTableMetadata_MouseDown);
             // 
             // contextMenuStripTableMapping
             // 
             this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem});
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem,
+            this.deleteThisRowFromTheGridToolStripMenuItem});
             this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
-            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 26);
+            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 48);
             // 
             // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
             // 
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = "Export this row as Source-to-Target interface JSON";
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem_Click);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTableDataGridToolStripMenuItem_Click);
             // 
             // tabPage2
             // 
@@ -342,11 +361,27 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewAttributeMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewAttributeMetadata.ContextMenuStrip = this.contextMenuStripAttributeMapping;
             this.dataGridViewAttributeMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewAttributeMetadata.Name = "dataGridViewAttributeMetadata";
             this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(1217, 699);
             this.dataGridViewAttributeMetadata.TabIndex = 1;
             this.dataGridViewAttributeMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewAttributeMetadataKeyDown);
+            this.dataGridViewAttributeMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewAttributeMetadata_MouseDown);
+            // 
+            // contextMenuStripAttributeMapping
+            // 
+            this.contextMenuStripAttributeMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteThisRowFromTheGridToolStripMenuItem1});
+            this.contextMenuStripAttributeMapping.Name = "contextMenuStripAttributeMapping";
+            this.contextMenuStripAttributeMapping.Size = new System.Drawing.Size(226, 26);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem1
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Name = "deleteThisRowFromTheGridToolStripMenuItem1";
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem1_Click);
             // 
             // tabPage3
             // 
@@ -440,11 +475,35 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewPhysicalModelMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewPhysicalModelMetadata.ContextMenuStrip = this.contextMenuStripModel;
             this.dataGridViewPhysicalModelMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewPhysicalModelMetadata.Name = "dataGridViewPhysicalModelMetadata";
             this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1088, 699);
             this.dataGridViewPhysicalModelMetadata.TabIndex = 2;
             this.dataGridViewPhysicalModelMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewPhysicalModelMetadataKeyDown);
+            this.dataGridViewPhysicalModelMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewModelMetadata_MouseDown);
+            // 
+            // contextMenuStripModel
+            // 
+            this.contextMenuStripModel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.displayTableScriptToolStripMenuItem,
+            this.deleteThisRowFromTheGridToolStripMenuItem2});
+            this.contextMenuStripModel.Name = "contextMenuStripModel";
+            this.contextMenuStripModel.Size = new System.Drawing.Size(226, 48);
+            // 
+            // displayTableScriptToolStripMenuItem
+            // 
+            this.displayTableScriptToolStripMenuItem.Name = "displayTableScriptToolStripMenuItem";
+            this.displayTableScriptToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.displayTableScriptToolStripMenuItem.Text = "Display table script";
+            this.displayTableScriptToolStripMenuItem.Click += new System.EventHandler(this.displayTableScriptToolStripMenuItem_Click);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem2
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Name = "deleteThisRowFromTheGridToolStripMenuItem2";
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem2_Click);
             // 
             // outputGroupBoxVersioning
             // 
@@ -492,41 +551,71 @@ namespace TEAM
             // MetadataGenerationGroupBox
             // 
             this.MetadataGenerationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxShowJsonOutput);
+            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxSaveInterfaceToJson);
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonPhysicalMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonVirtualMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
-            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1252, 293);
+            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1252, 249);
             this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
-            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(243, 95);
+            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(243, 139);
             this.MetadataGenerationGroupBox.TabIndex = 3;
             this.MetadataGenerationGroupBox.TabStop = false;
             this.MetadataGenerationGroupBox.Text = "Metadata activation options";
             // 
+            // checkBoxShowJsonOutput
+            // 
+            this.checkBoxShowJsonOutput.AutoSize = true;
+            this.checkBoxShowJsonOutput.Location = new System.Drawing.Point(6, 113);
+            this.checkBoxShowJsonOutput.Name = "checkBoxShowJsonOutput";
+            this.checkBoxShowJsonOutput.Size = new System.Drawing.Size(118, 17);
+            this.checkBoxShowJsonOutput.TabIndex = 10;
+            this.checkBoxShowJsonOutput.Text = "Display Json output";
+            this.checkBoxShowJsonOutput.UseVisualStyleBackColor = true;
+            this.checkBoxShowJsonOutput.CheckedChanged += new System.EventHandler(this.checkBoxShowJsonOutput_CheckedChanged);
+            // 
+            // checkBoxSaveInterfaceToJson
+            // 
+            this.checkBoxSaveInterfaceToJson.AutoSize = true;
+            this.checkBoxSaveInterfaceToJson.Checked = true;
+            this.checkBoxSaveInterfaceToJson.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSaveInterfaceToJson.Location = new System.Drawing.Point(6, 90);
+            this.checkBoxSaveInterfaceToJson.Name = "checkBoxSaveInterfaceToJson";
+            this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(154, 17);
+            this.checkBoxSaveInterfaceToJson.TabIndex = 11;
+            this.checkBoxSaveInterfaceToJson.Text = "Save interface Json to disk";
+            this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
+        "t having this option checked will overwrite the mapping information for the sele" +
+        "cted version (in the datagrid).");
+            this.checkBoxSaveInterfaceToJson.UseVisualStyleBackColor = true;
+            // 
             // radioButtonPhysicalMode
             // 
             this.radioButtonPhysicalMode.AutoSize = true;
+            this.radioButtonPhysicalMode.Checked = true;
             this.radioButtonPhysicalMode.Location = new System.Drawing.Point(6, 42);
             this.radioButtonPhysicalMode.Name = "radioButtonPhysicalMode";
             this.radioButtonPhysicalMode.Size = new System.Drawing.Size(94, 17);
             this.radioButtonPhysicalMode.TabIndex = 4;
+            this.radioButtonPhysicalMode.TabStop = true;
             this.radioButtonPhysicalMode.Text = "Physical Mode";
             this.radioButtonPhysicalMode.UseVisualStyleBackColor = true;
             // 
             // radioButtonVirtualMode
             // 
             this.radioButtonVirtualMode.AutoSize = true;
-            this.radioButtonVirtualMode.Checked = true;
             this.radioButtonVirtualMode.Location = new System.Drawing.Point(6, 19);
             this.radioButtonVirtualMode.Name = "radioButtonVirtualMode";
             this.radioButtonVirtualMode.Size = new System.Drawing.Size(84, 17);
             this.radioButtonVirtualMode.TabIndex = 3;
-            this.radioButtonVirtualMode.TabStop = true;
             this.radioButtonVirtualMode.Text = "Virtual Mode";
             this.radioButtonVirtualMode.UseVisualStyleBackColor = true;
             // 
             // checkBoxValidation
             // 
             this.checkBoxValidation.AutoSize = true;
+            this.checkBoxValidation.Checked = true;
+            this.checkBoxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxValidation.Location = new System.Drawing.Point(6, 67);
             this.checkBoxValidation.Name = "checkBoxValidation";
             this.checkBoxValidation.Size = new System.Drawing.Size(164, 17);
@@ -538,7 +627,7 @@ namespace TEAM
             // 
             this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.labelInformation.AutoSize = true;
-            this.labelInformation.Location = new System.Drawing.Point(654, 764);
+            this.labelInformation.Location = new System.Drawing.Point(520, 764);
             this.labelInformation.Name = "labelInformation";
             this.labelInformation.Size = new System.Drawing.Size(59, 13);
             this.labelInformation.TabIndex = 5;
@@ -549,9 +638,9 @@ namespace TEAM
             this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(657, 780);
+            this.richTextBoxInformation.Location = new System.Drawing.Point(520, 780);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.Size = new System.Drawing.Size(589, 69);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(726, 69);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
             // 
@@ -573,6 +662,7 @@ namespace TEAM
             // 
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openOutputDirectoryToolStripMenuItem,
+            this.openConfigurationDirectoryToolStripMenuItem,
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem,
             this.closeToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
@@ -586,6 +676,14 @@ namespace TEAM
             this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            // 
+            // openConfigurationDirectoryToolStripMenuItem
+            // 
+            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
+            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
             // saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem
             // 
@@ -607,33 +705,24 @@ namespace TEAM
             // 
             this.businessKeyMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMetadataFileToolStripMenuItem,
-            this.saveMetadataFileToolStripMenuItem,
             this.saveTableMappingAsJSONToolStripMenuItem});
             this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
-            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(151, 20);
+            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(150, 20);
             this.businessKeyMetadataToolStripMenuItem.Text = "Table &Mapping Metadata";
             // 
             // openMetadataFileToolStripMenuItem
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.openMetadataFileToolStripMenuItem.Text = "Open Table Mapping file";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
-            // 
-            // saveMetadataFileToolStripMenuItem
-            // 
-            this.saveMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.saveMetadataFileToolStripMenuItem.Name = "saveMetadataFileToolStripMenuItem";
-            this.saveMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-            this.saveMetadataFileToolStripMenuItem.Text = "Save Table Mapping as XML";
-            this.saveMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.saveBusinessKeyMetadataFileToolStripMenuItem_Click);
             // 
             // saveTableMappingAsJSONToolStripMenuItem
             // 
             this.saveTableMappingAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveTableMappingAsJSONToolStripMenuItem.Name = "saveTableMappingAsJSONToolStripMenuItem";
-            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
             this.saveTableMappingAsJSONToolStripMenuItem.Text = "Save Table Mapping as JSON";
             this.saveTableMappingAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveTableMappingAsJSONToolStripMenuItem_Click);
             // 
@@ -641,7 +730,6 @@ namespace TEAM
             // 
             this.attributeMappingMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
-            this.toolStripMenuItem2,
             this.saveAttributeMappingAsJSONToolStripMenuItem});
             this.attributeMappingMetadataToolStripMenuItem.Name = "attributeMappingMetadataToolStripMenuItem";
             this.attributeMappingMetadataToolStripMenuItem.Size = new System.Drawing.Size(170, 20);
@@ -654,14 +742,6 @@ namespace TEAM
             this.toolStripMenuItem1.Size = new System.Drawing.Size(244, 22);
             this.toolStripMenuItem1.Text = "Open Attribute Mapping File";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.OpenAttributeFileMenuItem_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(244, 22);
-            this.toolStripMenuItem2.Text = "Save Attribute Mapping as XML";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.saveAttributeMetadataMenuItem_Click);
             // 
             // saveAttributeMappingAsJSONToolStripMenuItem
             // 
@@ -755,21 +835,6 @@ namespace TEAM
         "cted version (in the datagrid).");
             this.checkBoxResizeDataGrid.UseVisualStyleBackColor = true;
             // 
-            // checkBoxSaveInterfaceToJson
-            // 
-            this.checkBoxSaveInterfaceToJson.AutoSize = true;
-            this.checkBoxSaveInterfaceToJson.Checked = true;
-            this.checkBoxSaveInterfaceToJson.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSaveInterfaceToJson.Location = new System.Drawing.Point(6, 65);
-            this.checkBoxSaveInterfaceToJson.Name = "checkBoxSaveInterfaceToJson";
-            this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(192, 17);
-            this.checkBoxSaveInterfaceToJson.TabIndex = 11;
-            this.checkBoxSaveInterfaceToJson.Text = "Automatically save interface to disk";
-            this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
-        "t having this option checked will overwrite the mapping information for the sele" +
-        "cted version (in the datagrid).");
-            this.checkBoxSaveInterfaceToJson.UseVisualStyleBackColor = true;
-            // 
             // backgroundWorkerValidationOnly
             // 
             this.backgroundWorkerValidationOnly.WorkerReportsProgress = true;
@@ -781,21 +846,32 @@ namespace TEAM
             // groupBoxJsonOptions
             // 
             this.groupBoxJsonOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxJsonOptions.Controls.Add(this.checkBoxSaveInterfaceToJson);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxBackupFiles);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxMergeFiles);
-            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1252, 657);
+            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1252, 689);
             this.groupBoxJsonOptions.Name = "groupBoxJsonOptions";
-            this.groupBoxJsonOptions.Size = new System.Drawing.Size(243, 98);
+            this.groupBoxJsonOptions.Size = new System.Drawing.Size(243, 66);
             this.groupBoxJsonOptions.TabIndex = 26;
             this.groupBoxJsonOptions.TabStop = false;
             this.groupBoxJsonOptions.Text = "Json / XML load options";
+            // 
+            // buttonGenerateJsonInterface
+            // 
+            this.buttonGenerateJsonInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonGenerateJsonInterface.Location = new System.Drawing.Point(1252, 643);
+            this.buttonGenerateJsonInterface.Name = "buttonGenerateJsonInterface";
+            this.buttonGenerateJsonInterface.Size = new System.Drawing.Size(120, 40);
+            this.buttonGenerateJsonInterface.TabIndex = 28;
+            this.buttonGenerateJsonInterface.Text = "Generate Json Interface Files Only";
+            this.buttonGenerateJsonInterface.UseVisualStyleBackColor = true;
+            this.buttonGenerateJsonInterface.Click += new System.EventHandler(this.ButtonClickExportToJson);
             // 
             // FormManageMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1507, 861);
+            this.Controls.Add(this.buttonGenerateJsonInterface);
             this.Controls.Add(this.checkBoxResizeDataGrid);
             this.Controls.Add(this.groupBoxJsonOptions);
             this.Controls.Add(this.groupBox2);
@@ -833,10 +909,12 @@ namespace TEAM
             this.contextMenuStripTableMapping.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).EndInit();
+            this.contextMenuStripAttributeMapping.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPhysicalModelMetadata)).EndInit();
+            this.contextMenuStripModel.ResumeLayout(false);
             this.outputGroupBoxVersioning.ResumeLayout(false);
             this.outputGroupBoxVersioning.PerformLayout();
             this.MetadataGenerationGroupBox.ResumeLayout(false);
@@ -879,10 +957,8 @@ namespace TEAM
         private System.Windows.Forms.Button buttonSaveMetadataChanges;
         private System.Windows.Forms.ToolStripMenuItem businessKeyMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openMetadataFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveMetadataFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem attributeMappingMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Label labelResult;
         private System.ComponentModel.BackgroundWorker backgroundWorkerMetadata;
@@ -917,5 +993,14 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxPsa;
         private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
         private System.Windows.Forms.RadioButton radioButtonVirtualMode;
+        private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripAttributeMapping;
+        private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripModel;
+        private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem displayTableScriptToolStripMenuItem;
+        private System.Windows.Forms.Button buttonGenerateJsonInterface;
+        private System.Windows.Forms.CheckBox checkBoxShowJsonOutput;
+        private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
     }
 }

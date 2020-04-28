@@ -91,6 +91,10 @@
     <StartupObject>TEAM.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DataWarehouseAutomation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Data_Warehouse_Automation_Metadata_Interface\ClassLibrary\DataWarehouseAutomation\DataWarehouseAutomation\bin\Debug\netstandard2.0\DataWarehouseAutomation.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=13.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
@@ -103,8 +107,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -120,7 +124,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassLoadPatternHandling.cs" />
+    <Compile Include="ClassUtility.cs" />
+    <Compile Include="ClassExtensionMethods.cs" />
     <Compile Include="ClassMetadataHandling.cs" />
+    <Compile Include="ClassObjectModel.cs" />
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -149,6 +157,12 @@
     </Compile>
     <Compile Include="FormAlert.Designer.cs">
       <DependentUpon>FormAlert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_Manage_Pattern_Definitions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Manage_Pattern_Definitions.Designer.cs">
+      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_Manage_Configuration.cs">
       <SubType>Form</SubType>
@@ -200,6 +214,9 @@
     <EmbeddedResource Include="FormBase.resx">
       <DependentUpon>FormBase.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_Manage_Pattern_Definitions.resx">
+      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Configuration.resx">
       <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
     </EmbeddedResource>
@@ -225,6 +242,27 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Content Include="Files\sample_DIRECT_TEAM_Attribute_Mapping_v0.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\sample_DIRECT_TEAM_Model_Metadata_v0.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\sample_DIRECT_TEAM_Table_Mapping_v0.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\sample_TEAM_Attribute_Mapping_v0.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\sample_TEAM_Model_Metadata_v0.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\sample_TEAM_Table_Mapping_v0.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LoadPatterns\loadPatternDefinition.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>
@@ -250,6 +288,36 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Ravos-logo-small.ico" />
+    <Content Include="Scripts\generateRepository.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSampleIntegrationSchema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSampleIntegrationSchemaDIRECT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSampleMappingMetadata.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSampleMappingMetadataDIRECT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSamplePersistentStagingSchema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSamplePersistentStagingSchemaDIRECT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSampleSourceSchema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSampleStagingSchema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\generateSampleStagingSchemaDIRECT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -387,9 +455,11 @@
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\PreEmptiveSolutions\DotfuscatorCE\DotfuscatorCLI.exe" "D:\Git_Repositories\TEAM\TEAM\Dotfuscator\DotfuscatorTEAM.xml"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

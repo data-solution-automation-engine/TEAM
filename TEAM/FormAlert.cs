@@ -7,28 +7,181 @@ namespace TEAM
 {
     public partial class FormAlert : FormBase
     {
-        //Make the label and progressbar accessbile from the main form for updates
-        public string Message
+        public FormAlert()
         {
-            set { labelMessage.Text = value; }
+            InitializeComponent();
         }
 
+        //Make the label and progressbar accessible from the main form for updates
+        public string Message
+        {
+            set { labelProgressMessage.Text = value; }
+        }
         public string Log
         {
             set { richTextBoxMetadataLog.Text += value; }
         }
+
+        #region Delegate & function for hiding the Progress Bar
+        delegate void ShowProgressBarCallBack(bool showProgressBar);
+        public void ShowProgressBar(bool showProgressBar)
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                var d = new ShowProgressBarCallBack(ShowProgressBar);
+                try
+                {
+                    Invoke(d, showProgressBar);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                try
+                {
+                    progressBar1.Visible = false;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+        #endregion
+
+        #region Delegate & function for hiding the Show Log button
+        delegate void ShowLogButtonCallBack(bool showLogButton);
+        public void ShowLogButton(bool showLogButton)
+        {
+            if (buttonShowLog.InvokeRequired)
+            {
+                var d = new ShowCancelButtonCallBack(ShowLogButton);
+                try
+                {
+                    Invoke(d, showLogButton);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                try
+                {
+                    buttonShowLog.Visible = false;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+        #endregion
+
+        #region Delegate & function for hiding the Cancel button
+        delegate void ShowCancelButtonCallBack(bool showCancelButton);
+        public void ShowCancelButton(bool showCancelButton)
+        {
+            if (buttonCancel.InvokeRequired)
+            {
+                var d = new ShowCancelButtonCallBack(ShowCancelButton);
+                try
+                {
+                    Invoke(d, showCancelButton);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                try
+                {
+                    buttonCancel.Visible = false;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+        #endregion
+
+        #region Delegate & function for hiding the Progress Label
+        delegate void ShowProgressLabelCallBack(bool showProgressLabel);
+        public void ShowProgressLabel(bool showProgressLabel)
+        {
+            if (labelProgressMessage.InvokeRequired)
+            {
+                var d = new ShowCancelButtonCallBack(ShowProgressLabel);
+                try
+                {
+                    Invoke(d, showProgressLabel);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                try
+                {
+                    labelProgressMessage.Visible = false;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+        #endregion
+
 
         public int ProgressValue
         {
             set { progressBar1.Value = value; }
         }
 
-        public FormAlert()
-        {
-            InitializeComponent();
-        }
+        #region Form Name delegate
+        delegate void SetFormNameCallBack(string text);
 
-        // Multithreading for updating the user
+        public void SetFormName(string text)
+        {
+            if (this.InvokeRequired)
+            {
+                var d = new SetFormNameCallBack(SetFormName);
+                try
+                {
+                    Invoke(d, text);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                try
+                {
+                    this.Text = text;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+        #endregion
+
+
+
+        // Multi threading for updating the user
         delegate void SetTextCallBackLogging(string text);
         public void SetTextLogging(string text)
         {
@@ -44,7 +197,7 @@ namespace TEAM
                     // ignored
                 }
             }
-        else
+            else
             {
                 try
                 {
