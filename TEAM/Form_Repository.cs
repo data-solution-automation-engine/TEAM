@@ -12,6 +12,7 @@ namespace TEAM
     {
         FormAlert _alertRepository;
         FormAlert _alertSampleData;
+        FormAlert _alertMetadata;
 
         public FormManageRepository()
         {
@@ -84,7 +85,7 @@ namespace TEAM
         /// <param name="createStatement"></param>
         /// <param name="worker"></param>
         /// <param name="progressCounter"></param>
-        private void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter)
+        private void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, FormAlert targetForm)
         {
             using (var connectionVersion = new SqlConnection(connString))
             {
@@ -96,12 +97,12 @@ namespace TEAM
                     commandVersion.ExecuteNonQuery();
 
                     worker.ReportProgress(progressCounter);
-                    _alertSampleData.SetTextLogging(createStatement);
+                    targetForm.SetTextLogging(createStatement);
                 }
                 catch (Exception ex)
                 {
-                    _alertSampleData.SetTextLogging("An issue has occured " + ex);
-                    _alertSampleData.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
+                    targetForm.SetTextLogging("An issue has occured " + ex);
+                    targetForm.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
                     ErrorHandlingParameters.ErrorCatcher++;
                     ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
                 }
@@ -142,13 +143,13 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
 
-            if (!checkBoxRetainManualMapping.Checked && ConfigurationSettings.MetadataRepositoryType == "SQLServer")
-            {
-                commandText.AppendLine("DELETE FROM [MD_TABLE_MAPPING];");
-                commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE_MAPPING];");
-                commandText.AppendLine("TRUNCATE TABLE [MD_VERSION_ATTRIBUTE];");
-                commandText.AppendLine("TRUNCATE TABLE [MD_VERSION];");
-            }
+            //if (!checkBoxRetainManualMapping.Checked && ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+            //{
+            commandText.AppendLine("DELETE FROM [MD_TABLE_MAPPING];");
+            commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE_MAPPING];");
+            commandText.AppendLine("TRUNCATE TABLE [MD_VERSION_ATTRIBUTE];");
+            commandText.AppendLine("TRUNCATE TABLE [MD_VERSION];");
+            //}
 
 
             using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
@@ -302,66 +303,14 @@ namespace TEAM
             {
                 backgroundWorkerSampleData.ReportProgress(0);
 
-                // Create the repository
+                // Create the sample data
                 _alertSampleData.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
 
                 try
                 {
-                    if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
-                    {
-                        GenerateDatabaseSample(worker);
-                    }
-                    else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
-                    {
-                        Dictionary<string,string> fileDictionary= new Dictionary<string, string>();
 
-                        // First, figure out which files to process
-                        foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
-                        {
-                            var fileName = Path.GetFileName(filePath);
-
-                            if (checkBoxDIRECT.Checked)
-                            {
-                                if (fileName.StartsWith("sample_DIRECT_"))
-                                {
-                                    fileName = fileName.Replace("sample_DIRECT_", "");
-                                    fileDictionary.Add(filePath,fileName);
-                                }
-                            }
-                            else if (!checkBoxDIRECT.Checked)
-                            {
-                                if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
-                                {
-                                    fileName = fileName.Replace("sample_", "");
-                                    fileDictionary.Add(filePath,fileName);
-                                }
-                            }
-                            else
-                            {
-                                ErrorHandlingParameters.ErrorLog.AppendLine("There was an issue detecting the type of sample data to be created. Either both DIRECT and regular were checked (or none).\r\n\r\n)");
-                            }
-                        }
-
-                        // And then process them
-                        foreach (KeyValuePair<string,string> file in fileDictionary)
-                        {
-                            File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
-                            _alertSampleData.SetTextLogging("Created sample JSON file "+file.Value+" in "+ GlobalParameters.ConfigurationPath + "\r\n");
-                        }
-
-                    }
-                    else
-                    {
-                        ErrorHandlingParameters.ErrorLog.AppendLine("There was an issue detecting the repository type (SQL Server or JSON). It appears neither was selected. \r\n\r\n)");
-                    }
-
-
-
-                    #region Configuration Settings
-
+                    GenerateDatabaseSample(worker);
                     SetStandardConfigurationSettings();
-
-                    #endregion
                 }
                 catch (Exception ex)
                 {
@@ -396,14 +345,13 @@ namespace TEAM
         /// <param name="worker"></param>
         private void GenerateDatabaseSample(BackgroundWorker worker)
         {
+            // Create a dictionary for all SQL files to execute
             Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
             #region Source
             if (checkBoxCreateSampleSource.Checked)
             {
-                PopulateSqlCommandDictionaryFromFile(
-                    GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary,
-                    ConfigurationSettings.ConnectionStringSource);
+                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringSource);
             }
 
             #endregion
@@ -466,35 +414,8 @@ namespace TEAM
             #endregion
 
 
-
-            #region Metadadata
-            if (checkBoxCreateMetadataMapping.Checked)
-            {
-                if (!checkBoxRetainManualMapping.Checked)
-                {
-                    if (checkBoxDIRECT.Checked)
-                    {
-                        PopulateSqlCommandDictionaryFromFile(
-                            GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
-                            commandDictionary, ConfigurationSettings.ConnectionStringOmd);
-                    }
-                    else
-                    {
-                        PopulateSqlCommandDictionaryFromFile(
-                            GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
-                            commandDictionary, ConfigurationSettings.ConnectionStringOmd);
-                    }
-                }
-                else
-                {
-                    _alertSampleData.SetTextLogging(
-                        "The option to retain the mapping metadata is checked, so new mapping metadata has not been added.");
-                }
-            }
-
-            #endregion
-
             // Execute the SQL statements
+            int counter = 0;
             foreach (var individualSQlCommand in commandDictionary)
             {
                 //Replace some of the database connections with runtime values from the configuration settings
@@ -521,13 +442,10 @@ namespace TEAM
                     sqlCommand = sqlCommand.Replace("N'300_Presentation_Layer',", "N'" + ConfigurationSettings.PresentationDatabaseName + "',");
                 }
 
-                int counter = 0;
-
                 // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
                 var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
 
-                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker,
-                    normalisedValue);
+                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertSampleData);
                 counter++;
 
                 worker.ReportProgress(100);
@@ -729,7 +647,82 @@ namespace TEAM
             }
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void buttonClick_GenerateMetadata(object sender, EventArgs e)
+        {
+            if (backgroundWorkerMetadata.IsBusy != true)
+            {
+                // create a new instance of the alert form
+                _alertMetadata = new FormAlert();
+                // event handler for the Cancel button in AlertForm
+                _alertMetadata.Canceled += buttonCancel_Click;
+                _alertMetadata.Show();
+                // Start the asynchronous operation.
+                SetStandardConfigurationSettings();
+
+                backgroundWorkerMetadata.RunWorkerAsync();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SetStandardConfigurationSettings();
+        }
+
+        private void linkLabel5_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelRepositoryModel.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2YF5tTr");
+        }
+
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelRepositoryModel.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2ARcCTw");
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelRepositoryModel.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2VY4Os3");
+        
+        }
+
+        private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelRepositoryModel.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2SX0Xth");
+        
+        }
+
+        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelRepositoryModel.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2FuWBq5");
+        
+        }
+
+        private void buttonGenerateDatabaseSamples(object sender, EventArgs e)
         {
             if (backgroundWorkerSampleData.IsBusy != true)
             {
@@ -744,11 +737,181 @@ namespace TEAM
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void backgroundWorkerMetadata_DoWork(object sender, DoWorkEventArgs e)
         {
-            SetStandardConfigurationSettings();
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            ErrorHandlingParameters.ErrorCatcher = 0;
+            ErrorHandlingParameters.ErrorLog = new StringBuilder();
+
+            // Handle multi-threading
+            if (worker != null && worker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                backgroundWorkerMetadata.ReportProgress(0);
+
+                // Create the sample data
+                _alertMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
+
+                try
+                {
+                    if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+                    {
+                        GenerateMetadataInDatabase(worker);
+                    }
+                    else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+                    {
+                        Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
+
+                        // First, figure out which files to process
+                        foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
+                        {
+                            var fileName = Path.GetFileName(filePath);
+
+                            if (checkBoxDIRECT.Checked)
+                            {
+                                if (fileName.StartsWith("sample_DIRECT_"))
+                                {
+                                    fileName = fileName.Replace("sample_DIRECT_", "");
+                                    fileDictionary.Add(filePath, fileName);
+                                }
+                            }
+                            else if (!checkBoxDIRECT.Checked)
+                            {
+                                if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
+                                {
+                                    fileName = fileName.Replace("sample_", "");
+                                    fileDictionary.Add(filePath, fileName);
+                                }
+                            }
+                            else
+                            {
+                                ErrorHandlingParameters.ErrorLog.AppendLine("There was an issue detecting the type of sample mapping data to be created. Either both DIRECT and regular were checked (or none).\r\n\r\n)");
+                            }
+                        }
+
+                        // And then process them
+                        foreach (KeyValuePair<string, string> file in fileDictionary)
+                        {
+                            File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
+                            _alertMetadata.SetTextLogging("Created sample JSON file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
+                        }
+
+                    }
+                    else
+                    {
+                        ErrorHandlingParameters.ErrorLog.AppendLine("There was an issue detecting the repository type (SQL Server or JSON). It appears neither was selected. \r\n\r\n)");
+                    }
+
+
+
+                    #region Configuration Settings
+
+                    SetStandardConfigurationSettings();
+
+                    #endregion
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                // Error handling
+                if (ErrorHandlingParameters.ErrorCatcher > 0)
+                {
+                    _alertMetadata.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the sample data.\r\n");
+                    _alertMetadata.SetTextLogging("Please check the Error Log for details \r\n");
+                    _alertMetadata.SetTextLogging("\r\n");
+
+                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+                    {
+                        outfile.Write(ErrorHandlingParameters.ErrorLog);
+                        outfile.Close();
+                    }
+                }
+                else
+                {
+                    _alertMetadata.SetTextLogging("\r\nNo errors were detected.\r\n");
+                }
+
+                backgroundWorkerMetadata.ReportProgress(100);
+            }
         }
 
+        private void GenerateMetadataInDatabase(BackgroundWorker worker)
+        {
+            // Create a dictionary for all SQL files to execute
+            Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
+            if (checkBoxDIRECT.Checked)
+            {
+                PopulateSqlCommandDictionaryFromFile(
+                    GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
+                    commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+            }
+            else
+            {
+                PopulateSqlCommandDictionaryFromFile(
+                    GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
+                    commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+            }
+
+            // Execute the SQL statements
+            int counter = 0;
+            foreach (var individualSQlCommand in commandDictionary)
+            {
+                var sqlCommand = individualSQlCommand.Key;
+
+                // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
+                var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
+
+                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertMetadata);
+                counter++;
+
+                worker.ReportProgress(100);
+            }
+        }
+
+        private void backgroundWorkerMetadata_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            // Show the progress in main form (GUI)
+            labelResult.Text = (e.ProgressPercentage + "%");
+
+            // Pass the progress to AlertForm label and progressbar
+            _alertMetadata.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertMetadata.ProgressValue = e.ProgressPercentage;
+
+            // Manage the logging
+        }
+
+        private void backgroundWorkerMetadata_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                labelResult.Text = "Cancelled!";
+            }
+            else if (e.Error != null)
+            {
+                labelResult.Text = "Error: " + e.Error.Message;
+            }
+            else
+            {
+                labelResult.Text = "Done!";
+                if (ErrorHandlingParameters.ErrorCatcher == 0)
+                {
+                    MessageBox.Show("The sample metadata has been created.", "Completed", MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("The sample metadata has been created with " + ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    ErrorHandlingParameters.ErrorCatcher = 0;
+                }
+            }
+        }
     }
 }
