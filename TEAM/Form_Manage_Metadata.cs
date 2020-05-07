@@ -50,18 +50,18 @@ namespace TEAM
             public string multiActiveIndicator { get; set; }
         }
 
-        public class TableMappingJson
-        {
-            //JSON representation of the table mapping metadata
-            public string tableMappingHash { get; set; }
-            public string versionId { get; set; }
-            public string sourceTable { get; set; }
-            public string targetTable { get; set; }
-            public string businessKeyDefinition { get; set; }
-            public string drivingKeyDefinition { get; set; }
-            public string filterCriteria { get; set; }
-            public string processIndicator { get; set; }
-        }
+        //public class TableMappingJson
+        //{
+        //    //JSON representation of the table mapping metadata
+        //    public string tableMappingHash { get; set; }
+        //    public string versionId { get; set; }
+        //    public string sourceTable { get; set; }
+        //    public string targetTable { get; set; }
+        //    public string businessKeyDefinition { get; set; }
+        //    public string drivingKeyDefinition { get; set; }
+        //    public string filterCriteria { get; set; }
+        //    public string processIndicator { get; set; }
+        //}
 
         public class AttributeMappingJson
         {
@@ -359,7 +359,7 @@ namespace TEAM
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
-                    ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                    JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
@@ -483,11 +483,11 @@ namespace TEAM
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No JSON file was found, so a new empty one was created.\r\n");
-                    ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
+                    JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension));
+                List<JsonHandling.TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<JsonHandling.TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
                 // Order by Source Table, Integration_Area table, Business Key Attribute
 
@@ -596,7 +596,7 @@ namespace TEAM
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension))
                 {
                     richTextBoxInformation.AppendText("No attribute mapping JSON file was found, so a new empty one was created.\r\n");
-                    ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                    JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
@@ -1862,8 +1862,8 @@ namespace TEAM
         {
             if (FileConfiguration.newFileTableMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
-                ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
+                JsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
+                JsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
                 FileConfiguration.newFileTableMapping = "false";
             }
 
@@ -1922,7 +1922,7 @@ namespace TEAM
                             }
 
                             //Read the file in memory
-                            TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
+                            JsonHandling.TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<JsonHandling.TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
 
                             //Retrieves the json segment in the file for the given hash returns value or NULL
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
@@ -2022,8 +2022,8 @@ namespace TEAM
                                 var jsonTableMappingFull = new JArray();
 
                                 // Load the file, if existing information needs to be merged
-                                TableMappingJson[] jsonArray =
-                                    JsonConvert.DeserializeObject<TableMappingJson[]>(
+                                JsonHandling.TableMappingJson[] jsonArray =
+                                    JsonConvert.DeserializeObject<JsonHandling.TableMappingJson[]>(
                                         File.ReadAllText(
                                             GlobalParameters.ConfigurationPath +
                                             GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
@@ -2077,7 +2077,7 @@ namespace TEAM
                             try
                             {
                                 var jsonArray =
-                                    JsonConvert.DeserializeObject<TableMappingJson[]>(
+                                    JsonConvert.DeserializeObject<JsonHandling.TableMappingJson[]>(
                                         File.ReadAllText(GlobalParameters.ConfigurationPath +
                                                          GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
 
@@ -2134,8 +2134,8 @@ namespace TEAM
         {
             if (FileConfiguration.newFilePhysicalModel == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
-                ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                JsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
+                JsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 FileConfiguration.newFilePhysicalModel = "false";
             }
 
@@ -2477,8 +2477,8 @@ namespace TEAM
         {
             if (FileConfiguration.newFileAttributeMapping == "true")
             {
-                ClassJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
-                ClassJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                JsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json");
+                JsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
                 FileConfiguration.newFileAttributeMapping = "false";
             }
 
@@ -2836,7 +2836,7 @@ namespace TEAM
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
+            List<JsonHandling.TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<JsonHandling.TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
@@ -2934,7 +2934,7 @@ namespace TEAM
                         {
                             try
                             {
-                                var backupFile = new ClassJsonHandling();
+                                var backupFile = new JsonHandling();
                                 var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId +".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
@@ -2952,7 +2952,7 @@ namespace TEAM
                         }
 
                         // Load the file, convert it to a DataTable and bind it to the source
-                        List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
+                        List<JsonHandling.TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<JsonHandling.TableMappingJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = ConvertToDataTable(jsonArray);
 
                         // Setup the datatable with proper headings
@@ -3042,8 +3042,8 @@ namespace TEAM
                         {
                             try
                             {
-                                var backupFile = new ClassJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
+                                var backupFile = new JsonHandling();
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -8635,7 +8635,7 @@ namespace TEAM
                         {
                             try
                             {
-                                var backupFile = new ClassJsonHandling();
+                                var backupFile = new JsonHandling();
                                 var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }

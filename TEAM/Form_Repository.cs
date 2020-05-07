@@ -173,9 +173,9 @@ namespace TEAM
 
             if (ConfigurationSettings.MetadataRepositoryType == "JSON")
             {
-                ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
-                ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
-                ClassJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
+                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
             }
         }
 

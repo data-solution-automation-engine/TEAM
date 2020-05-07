@@ -8,9 +8,20 @@ using Newtonsoft.Json.Linq;
 
 namespace TEAM
 {
-
-    internal class ClassJsonHandling
+    internal class JsonHandling
     {
+        public class TableMappingJson
+        {
+            //JSON representation of the table mapping metadata
+            public string tableMappingHash { get; set; }
+            public string versionId { get; set; }
+            public string sourceTable { get; set; }
+            public string targetTable { get; set; }
+            public string businessKeyDefinition { get; set; }
+            public string drivingKeyDefinition { get; set; }
+            public string filterCriteria { get; set; }
+            public string processIndicator { get; set; }
+        }
 
         /// <summary>
         ///    Method to create a new dummy JSON file in the designated working directory.
