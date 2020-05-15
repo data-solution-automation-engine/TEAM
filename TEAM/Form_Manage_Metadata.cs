@@ -32,50 +32,6 @@ namespace TEAM
             InitializeComponent();
         }
 
-        #region JSON classes
-        public class PhysicalModelMetadataJson
-        {
-            //JSON representation of the physical model metadata
-            public string versionAttributeHash { get; set; }
-            public string versionId { get; set; }
-            public string databaseName { get; set; }
-            public string schemaName { get; set; }
-            public string tableName { get; set; }
-            public string columnName { get; set; }
-            public string dataType { get; set; }
-            public string characterMaximumLength { get; set; }
-            public string numericPrecision { get; set; }
-            public string ordinalPosition { get; set; }
-            public string primaryKeyIndicator { get; set; }
-            public string multiActiveIndicator { get; set; }
-        }
-
-        //public class TableMappingJson
-        //{
-        //    //JSON representation of the table mapping metadata
-        //    public string tableMappingHash { get; set; }
-        //    public string versionId { get; set; }
-        //    public string sourceTable { get; set; }
-        //    public string targetTable { get; set; }
-        //    public string businessKeyDefinition { get; set; }
-        //    public string drivingKeyDefinition { get; set; }
-        //    public string filterCriteria { get; set; }
-        //    public string processIndicator { get; set; }
-        //}
-
-        public class AttributeMappingJson
-        {
-            //JSON representation of the attribute mapping metadata
-            public string attributeMappingHash { get; set; }
-            public string versionId { get; set; }
-            public string sourceTable { get; set; }
-            public string sourceAttribute { get; set; }
-            public string targetTable { get; set; }
-            public string targetAttribute { get; set; }
-            public string transformationRule { get; set; }
-        }
-        #endregion
-
         internal static class FileConfiguration
         {
             internal static string newFileTableMapping { get; set; }
@@ -366,20 +322,11 @@ namespace TEAM
                 List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+ FileConfiguration.jsonVersionExtension));
 
                 DataTable dt = ConvertToDataTable(jsonArray);
+
+                //Make sure the changes are seen as committed, so that changes can be detected later on.
                 dt.AcceptChanges();
-                //Make sure the changes are seen as committed, so that changes can be detected later on
-                dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
-                dt.Columns[1].ColumnName = "VERSION_ID";
-                dt.Columns[2].ColumnName = "DATABASE_NAME";
-                dt.Columns[3].ColumnName = "SCHEMA_NAME";
-                dt.Columns[4].ColumnName = "TABLE_NAME";
-                dt.Columns[5].ColumnName = "COLUMN_NAME";
-                dt.Columns[6].ColumnName = "DATA_TYPE";
-                dt.Columns[7].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
-                dt.Columns[8].ColumnName = "NUMERIC_PRECISION";
-                dt.Columns[9].ColumnName = "ORDINAL_POSITION";
-                dt.Columns[10].ColumnName = "PRIMARY_KEY_INDICATOR";
-                dt.Columns[11].ColumnName = "MULTI_ACTIVE_INDICATOR";
+
+                SetTeamDataTableMapping.SetPhysicalModelDataTableColumns(dt);
 
                 _bindingSourcePhysicalModelMetadata.DataSource = dt;
 
@@ -487,21 +434,14 @@ namespace TEAM
                 }
 
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<JsonHandling.TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<JsonHandling.TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
+                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
                 // Order by Source Table, Integration_Area table, Business Key Attribute
 
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-                dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
-                dt.Columns[1].ColumnName = "VERSION_ID";
-                dt.Columns[2].ColumnName = "SOURCE_TABLE";
-                dt.Columns[3].ColumnName = "TARGET_TABLE";
-                dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
-                dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
-                dt.Columns[6].ColumnName = "FILTER_CRITERIA";
-                dt.Columns[7].ColumnName = "PROCESS_INDICATOR";
 
-                dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+                SetTeamDataTableMapping.SetTableDataTableColumns(dt);
+                SetTeamDataTableMapping.SetTableDataTableSorting(dt);
 
                 _bindingSourceTableMetadata.DataSource = dt;
 
@@ -533,7 +473,7 @@ namespace TEAM
 
 
         /// <summary>
-        /// Populates the datagrid directly from a database or an existing JSON file
+        /// Populates the data grid directly from a database or an existing JSON file
         /// </summary>
         /// <param name="versionId"></param>
         private void PopulateAttributeGridWithVersion(int versionId)
@@ -603,13 +543,7 @@ namespace TEAM
                 List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension));
                 DataTable dt = ConvertToDataTable(jsonArray);
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-                dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
-                dt.Columns[1].ColumnName = "VERSION_ID";
-                dt.Columns[2].ColumnName = "SOURCE_TABLE";
-                dt.Columns[3].ColumnName = "SOURCE_COLUMN";
-                dt.Columns[4].ColumnName = "TARGET_TABLE";
-                dt.Columns[5].ColumnName = "TARGET_COLUMN";
-                dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
+                SetTeamDataTableMapping.SetAttributeDataTableColumns(dt);
 
                 _bindingSourceAttributeMetadata.DataSource = dt;
 
@@ -637,6 +571,8 @@ namespace TEAM
             // Resize the grid
             GridAutoLayoutAttributeMetadata();
         }
+
+
 
         private DialogResult STAShowDialog(FileDialog dialog)
         {
@@ -1922,7 +1858,7 @@ namespace TEAM
                             }
 
                             //Read the file in memory
-                            JsonHandling.TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<JsonHandling.TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
+                            TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
 
                             //Retrieves the json segment in the file for the given hash returns value or NULL
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
@@ -2022,8 +1958,8 @@ namespace TEAM
                                 var jsonTableMappingFull = new JArray();
 
                                 // Load the file, if existing information needs to be merged
-                                JsonHandling.TableMappingJson[] jsonArray =
-                                    JsonConvert.DeserializeObject<JsonHandling.TableMappingJson[]>(
+                                TableMappingJson[] jsonArray =
+                                    JsonConvert.DeserializeObject<TableMappingJson[]>(
                                         File.ReadAllText(
                                             GlobalParameters.ConfigurationPath +
                                             GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
@@ -2077,7 +2013,7 @@ namespace TEAM
                             try
                             {
                                 var jsonArray =
-                                    JsonConvert.DeserializeObject<JsonHandling.TableMappingJson[]>(
+                                    JsonConvert.DeserializeObject<TableMappingJson[]>(
                                         File.ReadAllText(GlobalParameters.ConfigurationPath +
                                                          GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
 
@@ -2836,17 +2772,13 @@ namespace TEAM
             var JsonVersionExtension = @"_v" + versionId + ".json";
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<JsonHandling.TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<JsonHandling.TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
+            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
-            dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-            dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
-            dt.Columns[1].ColumnName = "VERSION_ID";
-            dt.Columns[2].ColumnName = "SOURCE_TABLE";
-            dt.Columns[3].ColumnName = "TARGET_TABLE";
-            dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
-            dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
-            dt.Columns[6].ColumnName = "FILTER_CRITERIA";
-            dt.Columns[7].ColumnName = "PROCESS_INDICATOR";
+
+            //Make sure the changes are seen as committed, so that changes can be detected later on.
+            dt.AcceptChanges(); 
+
+            SetTeamDataTableMapping.SetTableDataTableColumns(dt);
             _bindingSourceTableMetadata.DataSource = dt;
         }
 
@@ -2858,14 +2790,11 @@ namespace TEAM
             // Load the attribute mapping file, convert it to a DataTable and bind it to the source
             List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
-            dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-            dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
-            dt.Columns[1].ColumnName = "VERSION_ID";
-            dt.Columns[2].ColumnName = "SOURCE_TABLE";
-            dt.Columns[3].ColumnName = "SOURCE_COLUMN";
-            dt.Columns[4].ColumnName = "TARGET_TABLE";
-            dt.Columns[5].ColumnName = "TARGET_COLUMN";
-            dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
+
+            //Make sure the changes are seen as committed, so that changes can be detected later on.
+            dt.AcceptChanges(); 
+
+            SetTeamDataTableMapping.SetAttributeDataTableColumns(dt);
             _bindingSourceAttributeMetadata.DataSource = dt;
         }
 
@@ -2877,19 +2806,11 @@ namespace TEAM
             // Load the table mapping file, convert it to a DataTable and bind it to the source
             List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
             DataTable dt = ConvertToDataTable(jsonArray);
-            dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-            dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
-            dt.Columns[1].ColumnName = "VERSION_ID";
-            dt.Columns[2].ColumnName = "DATABASE_NAME";
-            dt.Columns[3].ColumnName = "SCHEMA_NAME";
-            dt.Columns[4].ColumnName = "TABLE_NAME";
-            dt.Columns[5].ColumnName = "COLUMN_NAME";
-            dt.Columns[6].ColumnName = "DATA_TYPE";
-            dt.Columns[7].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
-            dt.Columns[8].ColumnName = "NUMERIC_PRECISION";
-            dt.Columns[9].ColumnName = "ORDINAL_POSITION";
-            dt.Columns[10].ColumnName = "PRIMARY_KEY_INDICATOR";
-            dt.Columns[11].ColumnName = "MULTI_ACTIVE_INDICATOR";
+
+            //Make sure the changes are seen as committed, so that changes can be detected later on.
+            dt.AcceptChanges(); 
+
+            SetTeamDataTableMapping.SetPhysicalModelDataTableColumns(dt);
             _bindingSourcePhysicalModelMetadata.DataSource = dt;
         }
 
@@ -2952,21 +2873,14 @@ namespace TEAM
                         }
 
                         // Load the file, convert it to a DataTable and bind it to the source
-                        List<JsonHandling.TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<JsonHandling.TableMappingJson>>(File.ReadAllText(chosenFile));
+                        List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = ConvertToDataTable(jsonArray);
 
-                        // Setup the datatable with proper headings
-                        dt.Columns[0].ColumnName = "TABLE_MAPPING_HASH";
-                        dt.Columns[1].ColumnName = "VERSION_ID";
-                        dt.Columns[2].ColumnName = "SOURCE_TABLE";
-                        dt.Columns[3].ColumnName = "TARGET_TABLE";
-                        dt.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
-                        dt.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
-                        dt.Columns[6].ColumnName = "FILTER_CRITERIA";
-                        dt.Columns[7].ColumnName = "PROCESS_INDICATOR";
+                        // Setup the datatable with proper headings.
+                        SetTeamDataTableMapping.SetTableDataTableColumns(dt);
 
                         // Sort the columns
-                        dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
+                        SetTeamDataTableMapping.SetTableDataTableSorting(dt);
 
                         // Clear out the existing data from the grid
                         _bindingSourceTableMetadata.DataSource = null;
@@ -3005,8 +2919,6 @@ namespace TEAM
                 }
             }
         }
-
-
 
         private void OpenAttributeFileMenuItem_Click(object sender, EventArgs e)
         {
@@ -3064,16 +2976,10 @@ namespace TEAM
                     List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
                     DataTable dt = ConvertToDataTable(jsonArray);
 
-                    dt.Columns[0].ColumnName = "ATTRIBUTE_MAPPING_HASH";
-                    dt.Columns[1].ColumnName = "VERSION_ID";
-                    dt.Columns[2].ColumnName = "SOURCE_TABLE";
-                    dt.Columns[3].ColumnName = "SOURCE_COLUMN";
-                    dt.Columns[4].ColumnName = "TARGET_TABLE";
-                    dt.Columns[5].ColumnName = "TARGET_COLUMN";
-                    dt.Columns[6].ColumnName = "TRANSFORMATION_RULE";
-
-                    // Sort the columns
-                    dt.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
+                    // Set the column names in the datatable.
+                    SetTeamDataTableMapping.SetAttributeDataTableColumns(dt);
+                    // Sort the columns in the datatable.
+                    SetTeamDataTableMapping.SetAttributeDatTableSorting(dt);
 
                     // Clear out the existing data from the grid
                     _bindingSourceAttributeMetadata.DataSource = null;
@@ -8656,22 +8562,10 @@ namespace TEAM
                         List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = ConvertToDataTable(jsonArray);
 
-                        // Setup the datatable with proper headings
-                        dt.Columns[0].ColumnName = "VERSION_ATTRIBUTE_HASH";
-                        dt.Columns[1].ColumnName = "VERSION_ID";
-                        dt.Columns[2].ColumnName = "DATABASE_NAME";
-                        dt.Columns[3].ColumnName = "SCHEMA_NAME";
-                        dt.Columns[4].ColumnName = "TABLE_NAME";
-                        dt.Columns[5].ColumnName = "COLUMN_NAME";
-                        dt.Columns[6].ColumnName = "DATA_TYPE";
-                        dt.Columns[7].ColumnName = "CHARACTER_MAXIMUM_LENGTH";
-                        dt.Columns[8].ColumnName = "NUMERIC_PRECISION";
-                        dt.Columns[9].ColumnName = "ORDINAL_POSITION";
-                        dt.Columns[10].ColumnName = "PRIMARY_KEY_INDICATOR";
-                        dt.Columns[11].ColumnName = "MULTI_ACTIVE_INDICATOR";
-
-                        // Sort the columns
-                        dt.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+                        // Setup the datatable with proper column headings.
+                        SetTeamDataTableMapping.SetPhysicalModelDataTableColumns(dt);
+                        // Sort the columns.
+                        SetTeamDataTableMapping.SetPhysicalModelDataTableSorting(dt);
 
                         // Clear out the existing data from the grid
                         _bindingSourcePhysicalModelMetadata.DataSource = null;
