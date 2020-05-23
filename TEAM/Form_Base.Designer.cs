@@ -1,6 +1,6 @@
 ﻿namespace TEAM
 {
-    partial class FormBase
+    partial class Form_Base
     {
         /// <summary>
         /// Required designer variable.

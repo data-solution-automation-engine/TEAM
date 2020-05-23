@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormAbout : FormBase
+    public partial class FormAbout : Form_Base
     {
         private readonly FormMain _myParent;
 

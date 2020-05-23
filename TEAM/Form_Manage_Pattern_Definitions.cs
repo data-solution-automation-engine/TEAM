@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace TEAM
 {
-    public partial class FormManagePattern: FormBase
+    public partial class FormManagePattern: Form_Base
     {
         private bool _formLoading = true;
         private FormMain parentFormMain;

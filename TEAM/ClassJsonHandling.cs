@@ -29,12 +29,12 @@ namespace TEAM
         /// <param name="fileType"></param>
         internal static void CreateDummyJsonFile(string fileType)
         {
-            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.CurrentVersionId + ".json";
+            var jsonVersionExtension = @"_v" + Form_Base.GlobalParameters.CurrentVersionId + ".json";
 
             JArray outputFileArray = new JArray();
             JObject dummyJsonFile = new JObject();
 
-            if (fileType == FormBase.GlobalParameters.JsonTableMappingFileName) // Table Mapping
+            if (fileType == Form_Base.GlobalParameters.JsonTableMappingFileName) // Table Mapping
             {
                 dummyJsonFile = new JObject(
                     new JProperty("tableMappingHash", "NewHash"),
@@ -46,7 +46,7 @@ namespace TEAM
                     new JProperty("filterCriteria", ""),
                     new JProperty("processIndicator", "Y")
                 );
-            } else if (fileType == FormBase.GlobalParameters.JsonModelMetadataFileName) // Physical Model
+            } else if (fileType == Form_Base.GlobalParameters.JsonModelMetadataFileName) // Physical Model
             {
                 dummyJsonFile = new JObject(
                     new JProperty("versionAttributeHash", "NewHash"),
@@ -61,7 +61,7 @@ namespace TEAM
                     new JProperty("primaryKeyIndicator", "N"),
                     new JProperty("multiActiveIndicator", "N")
                 );
-            } else if (fileType == FormBase.GlobalParameters.JsonAttributeMappingFileName) // Attribute Mapping
+            } else if (fileType == Form_Base.GlobalParameters.JsonAttributeMappingFileName) // Attribute Mapping
             {
                 dummyJsonFile = new JObject(
                     new JProperty("attributeMappingHash", "NewHash"),
@@ -81,7 +81,7 @@ namespace TEAM
             // Spool to disk
             outputFileArray.Add(dummyJsonFile);
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
-            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileType + jsonVersionExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.ConfigurationPath + fileType + jsonVersionExtension, json);
         }
 
 
@@ -91,9 +91,9 @@ namespace TEAM
         /// <param name="fileType"></param>
         internal static void CreatePlaceholderJsonFile(string fileType)
         {
-            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.CurrentVersionId + ".json";
+            var jsonVersionExtension = @"_v" + Form_Base.GlobalParameters.CurrentVersionId + ".json";
 
-            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileType + jsonVersionExtension, "");
+            File.WriteAllText(Form_Base.GlobalParameters.ConfigurationPath + fileType + jsonVersionExtension, "");
         }
 
 
@@ -121,7 +121,7 @@ namespace TEAM
         /// </summary>
         internal static void RemoveExistingJsonFile(string inputFileName)
         {
-            File.Delete(FormBase.GlobalParameters.ConfigurationPath + inputFileName);
+            File.Delete(Form_Base.GlobalParameters.ConfigurationPath + inputFileName);
         }
 
         /// <summary>
@@ -147,8 +147,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
 
             // Make sure the output is sorted to persist in JSON
@@ -175,7 +175,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         /// <summary>
@@ -204,8 +204,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
 
             // Make sure the output is sorted to persist in JSON
@@ -236,7 +236,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         /// <summary>
@@ -255,8 +255,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_DRIVING_KEY]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
 
             // Make sure the output is sorted to persist in JSON
@@ -277,7 +277,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceHubLinkXref()
@@ -302,8 +302,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_HUB_LINK_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[LINK_NAME] ASC, [SOURCE_NAME] ASC, [HUB_NAME] ASC";
@@ -332,7 +332,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfacePhysicalModel()
@@ -356,8 +356,8 @@ namespace TEAM
               FROM [interface].[INTERFACE_PHYSICAL_MODEL]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
 
             // Make sure the output is sorted to persist in JSON
@@ -384,7 +384,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourceHubXref()
@@ -409,8 +409,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_HUB_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [TARGET_BUSINESS_KEY_DEFINITION] ASC";
@@ -438,7 +438,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourceLinkAttributeXref()
@@ -458,8 +458,8 @@ namespace TEAM
               FROM [interface].[INTERFACE_SOURCE_LINK_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [SOURCE_ATTRIBUTE_NAME] ASC, [TARGET_ATTRIBUTE_NAME] ASC";
@@ -483,7 +483,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourceLinkXref()
@@ -508,8 +508,8 @@ namespace TEAM
              FROM [interface].[INTERFACE_SOURCE_LINK_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC";
@@ -537,7 +537,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourceSatelliteAttributeXref()
@@ -558,8 +558,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [SOURCE_ATTRIBUTE_NAME] ASC, [TARGET_ATTRIBUTE_NAME] ASC";
@@ -584,7 +584,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourceSatelliteXref()
@@ -608,8 +608,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC";
@@ -637,7 +637,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourceStgXref()
@@ -662,8 +662,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_STAGING_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [TARGET_BUSINESS_KEY_DEFINITION] ASC";
@@ -691,7 +691,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourcePsaXref()
@@ -716,8 +716,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [TARGET_BUSINESS_KEY_DEFINITION] ASC";
@@ -745,7 +745,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
 
         internal static void SaveJsonInterfaceSourceStagingAttributeXref()
@@ -765,8 +765,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [SOURCE_ATTRIBUTE_NAME] ASC, [TARGET_ATTRIBUTE_NAME] ASC";
@@ -790,7 +790,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
         internal static void SaveJsonInterfaceSourcePersistentStagingAttributeXref()
         {
@@ -809,8 +809,8 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
-            var inputDataTable = FormBase.GetDataTable(ref conn, sqlStatement.ToString());
+            var conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var inputDataTable = Form_Base.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
             inputDataTable.DefaultView.Sort = "[SOURCE_NAME] ASC, [TARGET_NAME] ASC, [SOURCE_ATTRIBUTE_NAME] ASC, [TARGET_ATTRIBUTE_NAME] ASC";
@@ -834,7 +834,7 @@ namespace TEAM
 
             string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
 
-            File.WriteAllText(FormBase.GlobalParameters.OutputPath + fileName + FormBase.GlobalParameters.JsonExtension, json);
+            File.WriteAllText(Form_Base.GlobalParameters.OutputPath + fileName + Form_Base.GlobalParameters.JsonExtension, json);
         }
     }
 }

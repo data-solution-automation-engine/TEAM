@@ -7,7 +7,7 @@ using System.IO;
 
 namespace TEAM
 {
-    public partial class FormManageConfiguration : FormBase
+    public partial class FormManageConfiguration : Form_Base
     {
         private bool _formLoading = true;
         private FormMain parentFormMain;

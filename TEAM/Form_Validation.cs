@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormManageValidation : FormBase
+    public partial class FormManageValidation : Form_Base
     {
         private readonly FormManageMetadata _myParent;
 

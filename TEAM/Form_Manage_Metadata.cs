@@ -9,18 +9,19 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormManageMetadata : FormBase
+    public partial class FormManageMetadata : Form_Base
     {
-        FormAlert _alert;
-        FormAlert _alertValidation;
-        FormAlert _generatedScripts;
-        FormAlert _generatedJsonInterface;
+        Form_Alert _alert;
+        Form_Alert _alertValidation;
+        Form_Alert _generatedScripts;
+        Form_Alert _generatedJsonInterface;
 
         //Getting the DataTable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
@@ -1239,7 +1240,8 @@ namespace TEAM
                             multiActiveIndicator = (string) row.Cells[11].Value;
                         }
 
-                        var hashKey = CreateMd5(versionId + '|' + tableName + '|' + columnName);
+                        string[] inputHashValue = new string[] { versionId.ToString(), tableName, columnName};
+                        var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
                       
                         JObject newJsonSegment = new JObject(
                             new JProperty("versionAttributeHash", hashKey),
@@ -1428,8 +1430,8 @@ namespace TEAM
                         //generateIndicator = generateIndicator.Replace("'", "''"); //Double quotes for composites
                     }
 
-                    var hashKey =
-                        CreateMd5(versionId + '|' + stagingTable + '|' + integrationTable + '|' + businessKeyDefinition + '|' + drivingKeyDefinition + '|' + filterCriterion);
+                    string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, integrationTable, businessKeyDefinition, drivingKeyDefinition, filterCriterion };
+                    var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
 
                     JObject newJsonSegment = new JObject(
                         new JProperty("tableMappingHash", hashKey),
@@ -1588,9 +1590,11 @@ namespace TEAM
                         transformationRule = (string)row.Cells[6].Value;
                     }
 
-                    //Generate a unique key using a hash
-                    var hashKey = CreateMd5(versionId + '|' + stagingTable + '|' + stagingColumn + '|' + integrationTable + '|' + integrationColumn + '|' + transformationRule);
-                    
+
+                    string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, transformationRule };
+                    var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
+
+                   
                     JObject newJsonSegment = new JObject(
                         new JProperty("attributeMappingHash", hashKey),
                         new JProperty("versionId", versionId),
@@ -1970,8 +1974,8 @@ namespace TEAM
                                     jsonTableMappingFull = JArray.FromObject(jsonArray);
                                 }
 
-                                //Generate a unique key using a hash
-                                var hashKey = CreateMd5(versionId + '|' + stagingTable + '|' + integrationTable + '|' + businessKeyDefinition + '|' + drivingKeyDefinition + '|' + filterCriterion);
+                                string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, integrationTable, businessKeyDefinition, drivingKeyDefinition, filterCriterion };
+                                var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
 
                                 // Convert it into a JArray so segments can be added easily
                                 JObject newJsonSegment = new JObject(
@@ -2271,8 +2275,9 @@ namespace TEAM
                                         jsonPhysicalModelMappingFull = JArray.FromObject(jsonArray);
                                     }
                                     //Generate a unique key using a hash
-                                    var hashKey = CreateMd5(versionId +'|' + tableName + '|' + columnName);
 
+                                    string[] inputHashValue = new string[] { versionId.ToString(), tableName, columnName };
+                                    var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
 
                                     JObject newJsonSegment = new JObject(
                                             new JProperty("versionAttributeHash", hashKey),
@@ -2614,8 +2619,8 @@ namespace TEAM
                                         jsonAttributeMappingFull = JArray.FromObject(jsonArray);
                                     }
 
-                                    //Generate a unique key using a hash
-                                    var hashKey = CreateMd5(versionId +'|' + stagingTable + '|' + stagingColumn + '|' + integrationTable + '|' +integrationColumn + '|' + transformationRule);
+                                    string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, transformationRule };
+                                    var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
 
                                     JObject newJsonSegment = new JObject(
                                         new JProperty("attributeMappingHash", hashKey),
@@ -2856,7 +2861,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new JsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId +".json", FormBase.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId +".json", Form_Base.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -3311,7 +3316,7 @@ namespace TEAM
                 {
                     if (backgroundWorkerValidationOnly.IsBusy) return;
                     // create a new instance of the alert form
-                    _alertValidation = new FormAlert();
+                    _alertValidation = new Form_Alert();
                     _alertValidation.SetFormName("Validating the metadata");
                     // event handler for the Cancel button in AlertForm
                     _alertValidation.Canceled += buttonCancel_Click;
@@ -3356,7 +3361,7 @@ namespace TEAM
                     {
                         if (backgroundWorkerMetadata.IsBusy) return;
                         // create a new instance of the alert form
-                        _alert = new FormAlert();
+                        _alert = new Form_Alert();
                         // event handler for the Cancel button in AlertForm
                         _alert.Canceled += buttonCancel_Click;
                         _alert.Show();
@@ -3372,7 +3377,7 @@ namespace TEAM
                 {
                     if (backgroundWorkerMetadata.IsBusy) return;
                     // create a new instance of the alert form
-                    _alert = new FormAlert();
+                    _alert = new Form_Alert();
                     // event handler for the Cancel button in AlertForm
                     _alert.Canceled += buttonCancel_Click;
                     _alert.Show();
@@ -5360,7 +5365,7 @@ namespace TEAM
                                                      ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
                                                      ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
                                                      "','" + ConfigurationSettings.EtlProcessAttribute + "','" +
-                                                     FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
+                                                     Form_Base.ConfigurationSettings.LoadDateTimeAttribute + "')");
                 }
                 else
                 {
@@ -5378,8 +5383,8 @@ namespace TEAM
                                                      ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
                                                      ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
                                                      ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
-                                                     "','" + FormBase.ConfigurationSettings.EtlProcessAttribute +
-                                                     "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute +
+                                                     "','" + Form_Base.ConfigurationSettings.EtlProcessAttribute +
+                                                     "','" + Form_Base.ConfigurationSettings.LoadDateTimeAttribute +
                                                      "')");
 
                 }
@@ -7076,8 +7081,44 @@ namespace TEAM
             }
         }
 
+        public DateTime ActivationMetadata()
+        {
+            DateTime mostRecentActivationDateTime = DateTime.MinValue; 
+
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+
+            var sqlStatementForActivationMetadata = new StringBuilder();
+            sqlStatementForActivationMetadata.AppendLine("SELECT [VERSION_NAME], MAX([ACTIVATION_DATETIME]) AS [ACTIVATION_DATETIME]");
+            sqlStatementForActivationMetadata.AppendLine("FROM [dbo].[MD_MODEL_METADATA]");
+            sqlStatementForActivationMetadata.AppendLine("GROUP BY [VERSION_NAME]");
+
+            var activationMetadata = GetDataTable(ref connOmd, sqlStatementForActivationMetadata.ToString());
+
+            if (activationMetadata != null)
+            {
+                foreach (DataRow row in activationMetadata.Rows)
+                {
+                    mostRecentActivationDateTime = (DateTime) row["ACTIVATION_DATETIME"];
+                } 
+            }
+
+            return mostRecentActivationDateTime;
+        }
+
+
+
         private void saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DateTime activationDateTime = ActivationMetadata();
+
+            if (activationDateTime == DateTime.MinValue)
+            {
+                richTextBoxInformation.Text = "The metadata was not activated, so the graph is constructed only from the raw mappings.";
+            }
+            else
+            {
+                richTextBoxInformation.Text = $"DGML will be generated following the most recent activation metadata, as per ({activationDateTime}).";
+            }
 
             var theDialog = new SaveFileDialog
             {
@@ -7087,6 +7128,7 @@ namespace TEAM
             };
 
             var ret = STAShowDialog(theDialog);
+
 
             if (ret == DialogResult.OK)
             {
@@ -7099,7 +7141,6 @@ namespace TEAM
                 {
                     var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
 
-                    
                     //Write the DGML file
                     var dgmlExtract = new StringBuilder();
                     dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
@@ -7147,21 +7188,21 @@ namespace TEAM
                         else if (node.Contains(ConfigurationSettings.HubTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
+                            //edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                         else if (node.Contains(ConfigurationSettings.LinkTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" +node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
+                            //edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                         else if (node.Contains(ConfigurationSettings.SatTablePrefixValue) || node.Contains(ConfigurationSettings.LsatTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node +"\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" +node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
+                            //edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                         else
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Unknown\" Label=\"" + node + "\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Sources\" Label=\"" + node + "\" />");
                             edgeBuilder.AppendLine("     <Link Source=\"Sources\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                     }
@@ -7205,6 +7246,31 @@ namespace TEAM
                     dgmlExtract.AppendLine("     <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
                     #endregion
 
+                    #region Subject Area nodes
+                    // Add the subject area nodes
+                    dgmlExtract.AppendLine("     <!-- Subject Area nodes -->");
+                    var sqlStatementForSubjectAreas = new StringBuilder();
+                    try
+                    {
+                        sqlStatementForSubjectAreas.AppendLine("SELECT DISTINCT SUBJECT_AREA");
+                        sqlStatementForSubjectAreas.AppendLine("FROM [interface].[INTERFACE_SUBJECT_AREA]");
+
+                        var modelRelationshipsLinksDataTable = GetDataTable(ref connOmd, sqlStatementForSubjectAreas.ToString());
+
+                        foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
+                        {
+                            //dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["BUSINESS_CONCEPT"] + "\" Target=\"" + (string)row["CONTEXT_TABLE"] + "\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"SubjectArea_" + (string)row["SUBJECT_AREA"] + "\"  Group=\"Collapsed\" Category=\"Subject Area\" Label=\"" + (string)row["SUBJECT_AREA"] + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"SubjectArea_" + (string)row["SUBJECT_AREA"] + "\" Category=\"Contains\" />");
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        errorCounter++;
+                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " + sqlStatementForSubjectAreas);
+                    }
+                    #endregion
+
                     dgmlExtract.AppendLine("  </Nodes>");
                     //End of Nodes
 
@@ -7231,8 +7297,6 @@ namespace TEAM
                         // This is adding the edge between the attributes
                         dgmlExtract.AppendLine("     <Link Source=\"" + targetNodeStg + "\" Target=\"" +targetNodeSat + "\" />");
                     }
-
-
 
                     // Get the source / target model relationships for Hubs and Satellites
                     List<string> segmentNodeList = new List<string>();
@@ -7269,14 +7333,15 @@ namespace TEAM
                     var sqlStatementForRelationships = new StringBuilder();
                     try
                     {
-                        sqlStatementForRelationships.AppendLine("SELECT *");
+                        sqlStatementForRelationships.AppendLine("SELECT DISTINCT [HUB_NAME], [TARGET_NAME]");
                         sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
+                        sqlStatementForRelationships.AppendLine("WHERE HUB_NAME NOT IN ('N/A')");
 
                         var businessConceptsRelationships = GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
 
                         foreach (DataRow row in businessConceptsRelationships.Rows)
                         {
-                            dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["HUB_NAME"] + "\" Target=\"" + (string)row["LINK_NAME"] + "\" />");
+                            dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["HUB_NAME"] + "\" Target=\"" + (string)row["TARGET_NAME"] + "\" />");
                         }
                     }
                     catch
@@ -7287,7 +7352,7 @@ namespace TEAM
 
 
                     // Add the relationships to the context tables
-                    dgmlExtract.AppendLine("     <!-- Hubs and Sats as well as Link / Lsat relationships -->");
+                    dgmlExtract.AppendLine("     <!-- Relationships between Hubs/Links to context and their subject area -->");
                     var sqlStatementForLinkCategories = new StringBuilder();
                     try
                     {
@@ -7298,10 +7363,22 @@ namespace TEAM
 
                         foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
                         {
-                            dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["BUSINESS_CONCEPT"] + "\" Target=\"" + (string)row["CONTEXT_TABLE"] + "\" />");
+                            var businessConcept = (string) row["BUSINESS_CONCEPT"];
+
+                            var contextTable = Utility.ConvertFromDBVal<string>(row["CONTEXT_TABLE"]);
+
+                            dgmlExtract.AppendLine("     <Link Source=\"" + businessConcept + "\" Target=\"" + contextTable + "\" />");
+
+                            dgmlExtract.AppendLine("     <Link Source=\"SubjectArea_" + (string)row["SUBJECT_AREA"] + "\" Target=\"" + businessConcept + "\" Category=\"Contains\" />");
+
+                            if (contextTable != null)
+                            {
+                                dgmlExtract.AppendLine("     <Link Source=\"SubjectArea_" + (string) row["SUBJECT_AREA"] + "\" Target=\"" + contextTable + "\" Category=\"Contains\" />");
+                            }
                         }
+
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         errorCounter++;
                         errorLog.AppendLine("The following query caused an issue when generating the DGML file: " + sqlStatementForLinkCategories);
@@ -7332,15 +7409,16 @@ namespace TEAM
                     dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Subject Area\" Label = \"Subject Area\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("  </Categories>");
 
                     //Add category styles 
                     dgmlExtract.AppendLine("  <Styles >");
 
                     dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Sources\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Source System')\" />");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Sources')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6E6A69\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
@@ -7379,6 +7457,13 @@ namespace TEAM
                     dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Subject Area\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Subject Area')\" />");
+                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("    </Style >");
+
                     dgmlExtract.AppendLine("  </Styles >");
 
                     dgmlExtract.AppendLine("</DirectedGraph>");
@@ -7413,12 +7498,11 @@ namespace TEAM
                         outfile.Close();
                     }
 
-                    richTextBoxInformation.Text =
-                        "The DGML metadata file file://" + chosenFile + " has been saved successfully.";
+                    richTextBoxInformation.AppendText("The DGML metadata file file://" + chosenFile + " has been saved successfully.");
                 }
                 else
                 {
-                    richTextBoxInformation.Text = "There was no metadata to save, is the grid view empty?";
+                    richTextBoxInformation.AppendText("There was no metadata to create the graph with, is the grid view empty?");
                 }
             }
         }
@@ -7523,7 +7607,7 @@ namespace TEAM
             {
                 if (backgroundWorkerValidationOnly.IsBusy) return;
                 // create a new instance of the alert form
-                _alertValidation = new FormAlert();
+                _alertValidation = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
                 _alertValidation.Canceled += buttonCancel_Click;
                 _alertValidation.Show();
@@ -8542,7 +8626,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new JsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", Form_Base.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -8658,7 +8742,7 @@ namespace TEAM
             // Create a form and display the results
             var results = new StringBuilder();
 
-            _generatedScripts = new FormAlert();
+            _generatedScripts = new Form_Alert();
             _generatedScripts.SetFormName("Display model metadata");
             _generatedScripts.Canceled += buttonCancel_Click;
             _generatedScripts.Show();
@@ -8710,7 +8794,7 @@ namespace TEAM
             // Set up the form in case the show Json output checkbox has been selected
             if (checkBoxShowJsonOutput.Checked)
             {
-                _generatedJsonInterface = new FormAlert();
+                _generatedJsonInterface = new Form_Alert();
                 _generatedJsonInterface.SetFormName("Exporting the metadata");
                 _generatedJsonInterface.ShowProgressBar(false);
                 _generatedJsonInterface.ShowCancelButton(false);
@@ -9055,7 +9139,7 @@ namespace TEAM
                         // Spool the output to disk
                         if (checkBoxSaveInterfaceToJson.Checked)
                         {
-                            Event fileSaveEventLog = Utility.SaveTextToFile(GlobalParameters.OutputPath + targetTableName + ".json", json);
+                            Event fileSaveEventLog = TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetTableName + ".json", json);
                             eventLog.Add(fileSaveEventLog);
                             fileCounter++;
                         }

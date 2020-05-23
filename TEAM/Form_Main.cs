@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace TEAM
 {
-    public partial class FormMain : FormBase
+    public partial class FormMain : Form_Base
     {
         internal bool RevalidateFlag = true;
         public FormMain()

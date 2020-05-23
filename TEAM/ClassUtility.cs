@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TEAM
 {
@@ -59,7 +56,7 @@ namespace TEAM
         }
     }
 
-    public class Utility
+    public class TeamUtility
     {
         internal static Event SaveTextToFile(string targetFile, string textContent)
         {
@@ -92,7 +89,7 @@ namespace TEAM
 
             try
             {
-                var tables = GetDataTable(ref conn, inputQuery);
+                var tables = Utility.GetDataTable(ref conn, inputQuery);
 
                 foreach (DataRow row in tables.Rows)
                 {
@@ -105,33 +102,6 @@ namespace TEAM
             }
 
             return returnList;
-        }
-
-        /// <summary>
-        /// Load a data set into an in-memory datatable
-        /// </summary>
-        /// <param name="sqlConnection"></param>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        public static DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
-        {
-            // Pass the connection to a command object
-            var sqlCommand = new SqlCommand(sql, sqlConnection);
-            var sqlDataAdapter = new SqlDataAdapter { SelectCommand = sqlCommand };
-
-            var dataTable = new DataTable();
-
-            // Adds or refreshes rows in the DataSet to match those in the data source
-            try
-            {
-                sqlDataAdapter.Fill(dataTable);
-            }
-
-            catch (Exception)
-            {
-                return null;
-            }
-            return dataTable;
         }
     }
 }

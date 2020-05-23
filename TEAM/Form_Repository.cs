@@ -8,11 +8,11 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormManageRepository : FormBase
+    public partial class FormManageRepository : Form_Base
     {
-        FormAlert _alertRepository;
-        FormAlert _alertSampleData;
-        FormAlert _alertMetadata;
+        Form_Alert _alertRepository;
+        Form_Alert _alertSampleData;
+        Form_Alert _alertMetadata;
 
         public FormManageRepository()
         {
@@ -26,7 +26,7 @@ namespace TEAM
             if (backgroundWorkerRepository.IsBusy != true)
             {
                 // create a new instance of the alert form
-                _alertRepository = new FormAlert();
+                _alertRepository = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
                 _alertRepository.Canceled += buttonCancel_Click;
                 _alertRepository.Show();
@@ -85,7 +85,7 @@ namespace TEAM
         /// <param name="createStatement"></param>
         /// <param name="worker"></param>
         /// <param name="progressCounter"></param>
-        private void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, FormAlert targetForm)
+        private void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, Form_Alert targetForm)
         {
             using (var connectionVersion = new SqlConnection(connString))
             {
@@ -652,7 +652,7 @@ namespace TEAM
             if (backgroundWorkerMetadata.IsBusy != true)
             {
                 // create a new instance of the alert form
-                _alertMetadata = new FormAlert();
+                _alertMetadata = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
                 _alertMetadata.Canceled += buttonCancel_Click;
                 _alertMetadata.Show();
@@ -727,7 +727,7 @@ namespace TEAM
             if (backgroundWorkerSampleData.IsBusy != true)
             {
                 // create a new instance of the alert form
-                _alertSampleData = new FormAlert();
+                _alertSampleData = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
                 _alertSampleData.Canceled += buttonCancel_Click;
                 _alertSampleData.Show();

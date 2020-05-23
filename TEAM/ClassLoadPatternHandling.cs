@@ -59,7 +59,7 @@ namespace TEAM
                 //Move the (json) string into a List object (a list of the type LoadPattern)
                 loadPatternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(jsonInput);
 
-                FormBase.ConfigurationSettings.patternDefinitionList = loadPatternDefinitionList;
+                Form_Base.ConfigurationSettings.patternDefinitionList = loadPatternDefinitionList;
                 //FormBase.GlobalParameters.LoadPatternListPath =
                 //    Path.GetFullPath(FormBase.GlobalParameters.RootPath + @"..\..\..\LoadPatterns\");
             }

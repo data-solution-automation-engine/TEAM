@@ -8,43 +8,22 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormBase : Form
+    public partial class Form_Base : Form
     {
         protected FormMain MyParent;
 
-        public FormBase()
+        public Form_Base()
         {
             InitializeComponent();
         }
 
-        public FormBase(FormMain myParent)
+        public Form_Base(FormMain myParent)
         {
             MyParent = myParent;
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Generate a MD5 hash based on the string input
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public static string CreateMd5(string input)
-        {
-            // Use input string to calculate MD5 hash
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
 
-                // Convert the byte array to hexadecimal string
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2"));
-                }
-                return sb.ToString();
-            }
-        }
 
         /// <summary>
         ///    Gets or sets the values from the most common configuration settings
@@ -179,7 +158,9 @@ namespace TEAM
             public static string FileExtension { get; set; } = ".txt";
 
             internal static string WorkingEnvironment { get; set; } = "Development";
-            
+
+            public static string SandingElement { get; set; } = "^@#%7!";
+
 
             public static string DefaultSchema { get; set; } = "dbo";
 

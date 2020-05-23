@@ -5,9 +5,9 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormAlert : FormBase
+    public partial class Form_Alert : Form_Base
     {
-        public FormAlert()
+        public Form_Alert()
         {
             InitializeComponent();
         }
