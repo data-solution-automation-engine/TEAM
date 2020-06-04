@@ -40,14 +40,12 @@
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label4 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
             this.tabPageDataVaultSpecific = new System.Windows.Forms.TabPage();
             this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
             this.label41 = new System.Windows.Forms.Label();
             this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.label40 = new System.Windows.Forms.Label();
             this.label39 = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
             this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
@@ -105,7 +103,22 @@
             this.grpTableName = new System.Windows.Forms.GroupBox();
             this.tableSuffixRadiobutton = new System.Windows.Forms.RadioButton();
             this.tablePrefixRadiobutton = new System.Windows.Forms.RadioButton();
-            this.tabPageConnectivity = new System.Windows.Forms.TabPage();
+            this.tabPageRepository = new System.Windows.Forms.TabPage();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.radioButtonSQLServer = new System.Windows.Forms.RadioButton();
+            this.radioButtonJSON = new System.Windows.Forms.RadioButton();
+            this.tabPagePaths = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.OutputPathLabel = new System.Windows.Forms.Label();
+            this.textBoxOutputPath = new System.Windows.Forms.TextBox();
+            this.tabPageEnvironments = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.radioButtonProduction = new System.Windows.Forms.RadioButton();
+            this.radioButtonDevelopment = new System.Windows.Forms.RadioButton();
+            this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBoxPresentationConnection = new System.Windows.Forms.TextBox();
             this.textBoxPSAConnection = new System.Windows.Forms.TextBox();
@@ -135,32 +148,25 @@
             this.radioButtonPhysicalModelSSPI = new System.Windows.Forms.RadioButton();
             this.textBoxPhysicalModelServerName = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBoxDatabase = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBoxMetadataDatabaseName = new System.Windows.Forms.TextBox();
+            this.textBoxMetadataServerName = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.textBoxMetadataConnection = new System.Windows.Forms.TextBox();
             this.groupBoxMetadataNamedUser = new System.Windows.Forms.GroupBox();
             this.textBoxMetadataPassword = new System.Windows.Forms.MaskedTextBox();
             this.labelPasswordMetadata = new System.Windows.Forms.Label();
             this.textBoxMetadataUserName = new System.Windows.Forms.TextBox();
             this.labelUserName = new System.Windows.Forms.Label();
-            this.textBoxMetadataDatabaseName = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.radioButtonMetadataNamed = new System.Windows.Forms.RadioButton();
             this.radioButtonMetadataSSPI = new System.Windows.Forms.RadioButton();
-            this.textBoxMetadataServerName = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.radioButtonSQLServer = new System.Windows.Forms.RadioButton();
-            this.radioButtonJSON = new System.Windows.Forms.RadioButton();
-            this.tabPagePaths = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
-            this.label45 = new System.Windows.Forms.Label();
-            this.OutputPathLabel = new System.Windows.Forms.Label();
-            this.textBoxOutputPath = new System.Windows.Forms.TextBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.radioButtonProduction = new System.Windows.Forms.RadioButton();
-            this.radioButtonDevelopment = new System.Windows.Forms.RadioButton();
+            this.tabPageConnectionsWIP = new System.Windows.Forms.TabPage();
+            this.tabControlConnections = new System.Windows.Forms.TabControl();
+            this.tabPageMain = new System.Windows.Forms.TabPage();
+            this.tabPageNewTab = new System.Windows.Forms.TabPage();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControlDefaultDetails.SuspendLayout();
@@ -170,16 +176,22 @@
             this.groupBox8.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.grpTableName.SuspendLayout();
-            this.tabPageConnectivity.SuspendLayout();
+            this.tabPageRepository.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.tabPagePaths.SuspendLayout();
+            this.tabPageEnvironments.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.tabPageConnections.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBoxPhysicalModelNamedUser.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBoxDatabase.SuspendLayout();
             this.groupBoxMetadataNamedUser.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.tabPagePaths.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.tabPageConnectionsWIP.SuspendLayout();
+            this.tabControlConnections.SuspendLayout();
+            this.tabPageMain.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
@@ -188,9 +200,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(174, 698);
+            this.richTextBoxInformation.Location = new System.Drawing.Point(12, 685);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.Size = new System.Drawing.Size(835, 87);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(1009, 100);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
             // 
@@ -272,17 +284,6 @@
             this.exitToolStripMenuItem.Text = "Close Window";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(171, 682);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(39, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Output";
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -302,8 +303,11 @@
             this.tabControlDefaultDetails.Controls.Add(this.tabPageDataVaultSpecific);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageETLFrameworkSpecific);
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePrefixesSuffixex);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnectivity);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageRepository);
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePaths);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageEnvironments);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnections);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnectionsWIP);
             this.tabControlDefaultDetails.Location = new System.Drawing.Point(12, 32);
             this.tabControlDefaultDetails.Multiline = true;
             this.tabControlDefaultDetails.Name = "tabControlDefaultDetails";
@@ -316,7 +320,6 @@
             this.tabPageDataVaultSpecific.Controls.Add(this.checkBoxAlternativeSatLDTS);
             this.tabPageDataVaultSpecific.Controls.Add(this.label41);
             this.tabPageDataVaultSpecific.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label40);
             this.tabPageDataVaultSpecific.Controls.Add(this.label39);
             this.tabPageDataVaultSpecific.Controls.Add(this.label38);
             this.tabPageDataVaultSpecific.Controls.Add(this.checkBoxAlternativeHubLDTS);
@@ -344,7 +347,7 @@
             this.tabPageDataVaultSpecific.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageDataVaultSpecific.Size = new System.Drawing.Size(1120, 621);
             this.tabPageDataVaultSpecific.TabIndex = 0;
-            this.tabPageDataVaultSpecific.Text = "Data Vault specific";
+            this.tabPageDataVaultSpecific.Text = "Integration Layer specific";
             this.tabPageDataVaultSpecific.UseVisualStyleBackColor = true;
             // 
             // checkBoxAlternativeSatLDTS
@@ -373,16 +376,6 @@
             this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
             this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
             this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label40.Location = new System.Drawing.Point(5, 202);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(138, 13);
-            this.label40.TabIndex = 67;
-            this.label40.Text = "(Integration Layer only)";
             // 
             // label39
             // 
@@ -594,7 +587,7 @@
             this.tabPageETLFrameworkSpecific.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageETLFrameworkSpecific.Size = new System.Drawing.Size(1120, 621);
             this.tabPageETLFrameworkSpecific.TabIndex = 1;
-            this.tabPageETLFrameworkSpecific.Text = "Data Warehouse & ETL generic";
+            this.tabPageETLFrameworkSpecific.Text = "Data Warehouse generic";
             this.tabPageETLFrameworkSpecific.UseVisualStyleBackColor = true;
             // 
             // label46
@@ -730,9 +723,9 @@
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(5, 11);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(154, 13);
+            this.label13.Size = new System.Drawing.Size(137, 13);
             this.label13.TabIndex = 44;
-            this.label13.Text = "Data Warehouse Key identifyer";
+            this.label13.Text = "Data Platform Key identifyer";
             // 
             // textBoxDWHKeyIdentifier
             // 
@@ -763,7 +756,7 @@
             // label48
             // 
             this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(230, 120);
+            this.label48.Location = new System.Drawing.Point(230, 80);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(178, 13);
             this.label48.TabIndex = 75;
@@ -773,7 +766,7 @@
             // 
             this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyPK);
             this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyIndex);
-            this.groupBox8.Location = new System.Drawing.Point(233, 145);
+            this.groupBox8.Location = new System.Drawing.Point(233, 105);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(175, 70);
             this.groupBox8.TabIndex = 74;
@@ -835,7 +828,7 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 120);
+            this.label19.Location = new System.Drawing.Point(3, 80);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(165, 13);
             this.label19.TabIndex = 67;
@@ -845,7 +838,7 @@
             // 
             this.groupBox1.Controls.Add(this.keySuffixRadiobutton);
             this.groupBox1.Controls.Add(this.keyPrefixRadiobutton);
-            this.groupBox1.Location = new System.Drawing.Point(8, 221);
+            this.groupBox1.Location = new System.Drawing.Point(5, 181);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(140, 70);
             this.groupBox1.TabIndex = 66;
@@ -876,7 +869,7 @@
             // 
             this.grpTableName.Controls.Add(this.tableSuffixRadiobutton);
             this.grpTableName.Controls.Add(this.tablePrefixRadiobutton);
-            this.grpTableName.Location = new System.Drawing.Point(9, 145);
+            this.grpTableName.Location = new System.Drawing.Point(6, 105);
             this.grpTableName.Name = "grpTableName";
             this.grpTableName.Size = new System.Drawing.Size(140, 70);
             this.grpTableName.TabIndex = 65;
@@ -903,18 +896,171 @@
             this.tablePrefixRadiobutton.Text = "Prefix";
             this.tablePrefixRadiobutton.UseVisualStyleBackColor = true;
             // 
-            // tabPageConnectivity
+            // tabPageRepository
             // 
-            this.tabPageConnectivity.Controls.Add(this.panel2);
-            this.tabPageConnectivity.Controls.Add(this.panel1);
-            this.tabPageConnectivity.Controls.Add(this.richTextBox1);
-            this.tabPageConnectivity.Controls.Add(this.groupBox2);
-            this.tabPageConnectivity.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnectivity.Name = "tabPageConnectivity";
-            this.tabPageConnectivity.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageConnectivity.TabIndex = 3;
-            this.tabPageConnectivity.Text = "Connections";
-            this.tabPageConnectivity.UseVisualStyleBackColor = true;
+            this.tabPageRepository.Controls.Add(this.richTextBox1);
+            this.tabPageRepository.Controls.Add(this.groupBox2);
+            this.tabPageRepository.Location = new System.Drawing.Point(4, 22);
+            this.tabPageRepository.Name = "tabPageRepository";
+            this.tabPageRepository.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageRepository.TabIndex = 3;
+            this.tabPageRepository.Text = "Repository";
+            this.tabPageRepository.UseVisualStyleBackColor = true;
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox1.Location = new System.Drawing.Point(12, 86);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(487, 61);
+            this.richTextBox1.TabIndex = 72;
+            this.richTextBox1.Text = "Note: the repository storage type only affects the base metadata (Table Mapping, " +
+    "Attribute Mapping and Physical Model). SQL Server is still required for the deli" +
+    "very (activation) of metadata.";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.radioButtonSQLServer);
+            this.groupBox2.Controls.Add(this.radioButtonJSON);
+            this.groupBox2.Location = new System.Drawing.Point(12, 10);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(140, 70);
+            this.groupBox2.TabIndex = 71;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Metadata storage type";
+            // 
+            // radioButtonSQLServer
+            // 
+            this.radioButtonSQLServer.AutoSize = true;
+            this.radioButtonSQLServer.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonSQLServer.Name = "radioButtonSQLServer";
+            this.radioButtonSQLServer.Size = new System.Drawing.Size(80, 17);
+            this.radioButtonSQLServer.TabIndex = 39;
+            this.radioButtonSQLServer.Text = "SQL Server";
+            this.radioButtonSQLServer.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonJSON
+            // 
+            this.radioButtonJSON.AutoSize = true;
+            this.radioButtonJSON.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonJSON.Name = "radioButtonJSON";
+            this.radioButtonJSON.Size = new System.Drawing.Size(53, 17);
+            this.radioButtonJSON.TabIndex = 38;
+            this.radioButtonJSON.Text = "JSON";
+            this.radioButtonJSON.UseVisualStyleBackColor = true;
+            // 
+            // tabPagePaths
+            // 
+            this.tabPagePaths.Controls.Add(this.label1);
+            this.tabPagePaths.Controls.Add(this.textBoxConfigurationPath);
+            this.tabPagePaths.Controls.Add(this.label45);
+            this.tabPagePaths.Controls.Add(this.OutputPathLabel);
+            this.tabPagePaths.Controls.Add(this.textBoxOutputPath);
+            this.tabPagePaths.Location = new System.Drawing.Point(4, 22);
+            this.tabPagePaths.Name = "tabPagePaths";
+            this.tabPagePaths.Size = new System.Drawing.Size(1120, 621);
+            this.tabPagePaths.TabIndex = 4;
+            this.tabPagePaths.Text = "Paths";
+            this.tabPagePaths.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.TabIndex = 74;
+            this.label1.Text = "Configuration path";
+            // 
+            // textBoxConfigurationPath
+            // 
+            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.textBoxConfigurationPath.Location = new System.Drawing.Point(12, 30);
+            this.textBoxConfigurationPath.Multiline = true;
+            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
+            this.textBoxConfigurationPath.Size = new System.Drawing.Size(1094, 27);
+            this.textBoxConfigurationPath.TabIndex = 41;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(-6, -23);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(289, 13);
+            this.label45.TabIndex = 72;
+            this.label45.Text = "Paths and connections used for debugging and automation.\r\n";
+            // 
+            // OutputPathLabel
+            // 
+            this.OutputPathLabel.AutoSize = true;
+            this.OutputPathLabel.Location = new System.Drawing.Point(9, 66);
+            this.OutputPathLabel.Name = "OutputPathLabel";
+            this.OutputPathLabel.Size = new System.Drawing.Size(63, 13);
+            this.OutputPathLabel.TabIndex = 65;
+            this.OutputPathLabel.Text = "Output path";
+            // 
+            // textBoxOutputPath
+            // 
+            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.textBoxOutputPath.Location = new System.Drawing.Point(12, 84);
+            this.textBoxOutputPath.Multiline = true;
+            this.textBoxOutputPath.Name = "textBoxOutputPath";
+            this.textBoxOutputPath.Size = new System.Drawing.Size(1094, 27);
+            this.textBoxOutputPath.TabIndex = 40;
+            // 
+            // tabPageEnvironments
+            // 
+            this.tabPageEnvironments.Controls.Add(this.groupBox3);
+            this.tabPageEnvironments.Location = new System.Drawing.Point(4, 22);
+            this.tabPageEnvironments.Name = "tabPageEnvironments";
+            this.tabPageEnvironments.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageEnvironments.TabIndex = 5;
+            this.tabPageEnvironments.Text = "Environments";
+            this.tabPageEnvironments.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.radioButtonProduction);
+            this.groupBox3.Controls.Add(this.radioButtonDevelopment);
+            this.groupBox3.Location = new System.Drawing.Point(12, 10);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(140, 70);
+            this.groupBox3.TabIndex = 72;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Target environment";
+            // 
+            // radioButtonProduction
+            // 
+            this.radioButtonProduction.AutoSize = true;
+            this.radioButtonProduction.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonProduction.Name = "radioButtonProduction";
+            this.radioButtonProduction.Size = new System.Drawing.Size(76, 17);
+            this.radioButtonProduction.TabIndex = 39;
+            this.radioButtonProduction.Text = "Production";
+            this.radioButtonProduction.UseVisualStyleBackColor = true;
+            this.radioButtonProduction.CheckedChanged += new System.EventHandler(this.radioButtonProduction_CheckedChanged);
+            // 
+            // radioButtonDevelopment
+            // 
+            this.radioButtonDevelopment.AutoSize = true;
+            this.radioButtonDevelopment.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonDevelopment.Name = "radioButtonDevelopment";
+            this.radioButtonDevelopment.Size = new System.Drawing.Size(88, 17);
+            this.radioButtonDevelopment.TabIndex = 38;
+            this.radioButtonDevelopment.Text = "Development";
+            this.radioButtonDevelopment.UseVisualStyleBackColor = true;
+            this.radioButtonDevelopment.CheckedChanged += new System.EventHandler(this.radioButtonDevelopment_CheckedChanged);
+            // 
+            // tabPageConnections
+            // 
+            this.tabPageConnections.Controls.Add(this.panel2);
+            this.tabPageConnections.Controls.Add(this.panel1);
+            this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnections.Name = "tabPageConnections";
+            this.tabPageConnections.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageConnections.TabIndex = 6;
+            this.tabPageConnections.Text = "Connections";
+            this.tabPageConnections.UseVisualStyleBackColor = true;
             // 
             // panel2
             // 
@@ -942,10 +1088,10 @@
             this.panel2.Controls.Add(this.label49);
             this.panel2.Controls.Add(this.groupBox6);
             this.panel2.Controls.Add(this.textBoxPhysicalModelServerName);
-            this.panel2.Location = new System.Drawing.Point(6, 134);
+            this.panel2.Location = new System.Drawing.Point(6, 135);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1107, 260);
-            this.panel2.TabIndex = 78;
+            this.panel2.TabIndex = 80;
             // 
             // textBoxPresentationConnection
             // 
@@ -1114,7 +1260,7 @@
             this.groupBoxPhysicalModelNamedUser.Controls.Add(this.label5);
             this.groupBoxPhysicalModelNamedUser.Controls.Add(this.textBoxPhysicalModelUserName);
             this.groupBoxPhysicalModelNamedUser.Controls.Add(this.label20);
-            this.groupBoxPhysicalModelNamedUser.Location = new System.Drawing.Point(616, 7);
+            this.groupBoxPhysicalModelNamedUser.Location = new System.Drawing.Point(625, 7);
             this.groupBoxPhysicalModelNamedUser.Name = "groupBoxPhysicalModelNamedUser";
             this.groupBoxPhysicalModelNamedUser.Size = new System.Drawing.Size(356, 70);
             this.groupBoxPhysicalModelNamedUser.TabIndex = 75;
@@ -1169,7 +1315,7 @@
             // 
             this.groupBox6.Controls.Add(this.radioButtonPhysicalModelNamed);
             this.groupBox6.Controls.Add(this.radioButtonPhysicalModelSSPI);
-            this.groupBox6.Location = new System.Drawing.Point(470, 7);
+            this.groupBox6.Location = new System.Drawing.Point(479, 7);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(140, 70);
             this.groupBox6.TabIndex = 74;
@@ -1211,17 +1357,61 @@
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel1.Controls.Add(this.groupBoxDatabase);
             this.panel1.Controls.Add(this.textBoxMetadataConnection);
             this.panel1.Controls.Add(this.groupBoxMetadataNamedUser);
-            this.panel1.Controls.Add(this.textBoxMetadataDatabaseName);
             this.panel1.Controls.Add(this.groupBox4);
-            this.panel1.Controls.Add(this.textBoxMetadataServerName);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Location = new System.Drawing.Point(6, 6);
+            this.panel1.Location = new System.Drawing.Point(6, 7);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1107, 122);
-            this.panel1.TabIndex = 77;
+            this.panel1.TabIndex = 79;
+            // 
+            // groupBoxDatabase
+            // 
+            this.groupBoxDatabase.Controls.Add(this.label3);
+            this.groupBoxDatabase.Controls.Add(this.textBoxMetadataDatabaseName);
+            this.groupBoxDatabase.Controls.Add(this.textBoxMetadataServerName);
+            this.groupBoxDatabase.Controls.Add(this.label2);
+            this.groupBoxDatabase.Location = new System.Drawing.Point(11, 7);
+            this.groupBoxDatabase.Name = "groupBoxDatabase";
+            this.groupBoxDatabase.Size = new System.Drawing.Size(462, 70);
+            this.groupBoxDatabase.TabIndex = 73;
+            this.groupBoxDatabase.TabStop = false;
+            this.groupBoxDatabase.Text = "Database";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 21);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(128, 13);
+            this.label3.TabIndex = 76;
+            this.label3.Text = "Metadata database name";
+            // 
+            // textBoxMetadataDatabaseName
+            // 
+            this.textBoxMetadataDatabaseName.Location = new System.Drawing.Point(172, 41);
+            this.textBoxMetadataDatabaseName.Name = "textBoxMetadataDatabaseName";
+            this.textBoxMetadataDatabaseName.Size = new System.Drawing.Size(276, 20);
+            this.textBoxMetadataDatabaseName.TabIndex = 75;
+            this.textBoxMetadataDatabaseName.TextChanged += new System.EventHandler(this.textBoxMetadataServerName_TextChanged);
+            // 
+            // textBoxMetadataServerName
+            // 
+            this.textBoxMetadataServerName.Location = new System.Drawing.Point(172, 16);
+            this.textBoxMetadataServerName.Name = "textBoxMetadataServerName";
+            this.textBoxMetadataServerName.Size = new System.Drawing.Size(276, 20);
+            this.textBoxMetadataServerName.TabIndex = 73;
+            this.textBoxMetadataServerName.TextChanged += new System.EventHandler(this.textBoxMetadataDatabaseName_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 44);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(160, 13);
+            this.label2.TabIndex = 74;
+            this.label2.Text = "Metadata database server name";
             // 
             // textBoxMetadataConnection
             // 
@@ -1241,7 +1431,7 @@
             this.groupBoxMetadataNamedUser.Controls.Add(this.labelPasswordMetadata);
             this.groupBoxMetadataNamedUser.Controls.Add(this.textBoxMetadataUserName);
             this.groupBoxMetadataNamedUser.Controls.Add(this.labelUserName);
-            this.groupBoxMetadataNamedUser.Location = new System.Drawing.Point(616, 7);
+            this.groupBoxMetadataNamedUser.Location = new System.Drawing.Point(625, 7);
             this.groupBoxMetadataNamedUser.Name = "groupBoxMetadataNamedUser";
             this.groupBoxMetadataNamedUser.Size = new System.Drawing.Size(356, 70);
             this.groupBoxMetadataNamedUser.TabIndex = 73;
@@ -1260,7 +1450,7 @@
             // labelPasswordMetadata
             // 
             this.labelPasswordMetadata.AutoSize = true;
-            this.labelPasswordMetadata.Location = new System.Drawing.Point(6, 44);
+            this.labelPasswordMetadata.Location = new System.Drawing.Point(8, 44);
             this.labelPasswordMetadata.Name = "labelPasswordMetadata";
             this.labelPasswordMetadata.Size = new System.Drawing.Size(53, 13);
             this.labelPasswordMetadata.TabIndex = 80;
@@ -1283,19 +1473,11 @@
             this.labelUserName.TabIndex = 78;
             this.labelUserName.Text = "Username";
             // 
-            // textBoxMetadataDatabaseName
-            // 
-            this.textBoxMetadataDatabaseName.Location = new System.Drawing.Point(208, 83);
-            this.textBoxMetadataDatabaseName.Name = "textBoxMetadataDatabaseName";
-            this.textBoxMetadataDatabaseName.Size = new System.Drawing.Size(242, 20);
-            this.textBoxMetadataDatabaseName.TabIndex = 75;
-            this.textBoxMetadataDatabaseName.TextChanged += new System.EventHandler(this.textBoxMetadataDatabaseName_TextChanged);
-            // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.radioButtonMetadataNamed);
             this.groupBox4.Controls.Add(this.radioButtonMetadataSSPI);
-            this.groupBox4.Location = new System.Drawing.Point(470, 7);
+            this.groupBox4.Location = new System.Drawing.Point(479, 7);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(140, 70);
             this.groupBox4.TabIndex = 72;
@@ -1324,168 +1506,60 @@
             this.radioButtonMetadataSSPI.UseVisualStyleBackColor = true;
             this.radioButtonMetadataSSPI.CheckedChanged += new System.EventHandler(this.radioButtonMetadataSSPI_CheckedChanged);
             // 
-            // textBoxMetadataServerName
+            // tabPageConnectionsWIP
             // 
-            this.textBoxMetadataServerName.Location = new System.Drawing.Point(208, 13);
-            this.textBoxMetadataServerName.Name = "textBoxMetadataServerName";
-            this.textBoxMetadataServerName.Size = new System.Drawing.Size(242, 20);
-            this.textBoxMetadataServerName.TabIndex = 73;
-            this.textBoxMetadataServerName.TextChanged += new System.EventHandler(this.textBoxMetadataServerName_TextChanged);
+            this.tabPageConnectionsWIP.Controls.Add(this.tabControlConnections);
+            this.tabPageConnectionsWIP.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnectionsWIP.Name = "tabPageConnectionsWIP";
+            this.tabPageConnectionsWIP.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageConnectionsWIP.TabIndex = 7;
+            this.tabPageConnectionsWIP.Text = "Connections_WIP";
+            this.tabPageConnectionsWIP.UseVisualStyleBackColor = true;
             // 
-            // label3
+            // tabControlConnections
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 86);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(128, 13);
-            this.label3.TabIndex = 76;
-            this.label3.Text = "Metadata database name";
+            this.tabControlConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControlConnections.Controls.Add(this.tabPageMain);
+            this.tabControlConnections.Controls.Add(this.tabPageNewTab);
+            this.tabControlConnections.Location = new System.Drawing.Point(3, 10);
+            this.tabControlConnections.Multiline = true;
+            this.tabControlConnections.Name = "tabControlConnections";
+            this.tabControlConnections.SelectedIndex = 0;
+            this.tabControlConnections.Size = new System.Drawing.Size(1114, 608);
+            this.tabControlConnections.TabIndex = 0;
+            this.tabControlConnections.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlConnections_MouseDown);
             // 
-            // label2
+            // tabPageMain
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(160, 13);
-            this.label2.TabIndex = 74;
-            this.label2.Text = "Metadata database server name";
+            this.tabPageMain.Controls.Add(this.richTextBox2);
+            this.tabPageMain.Location = new System.Drawing.Point(4, 22);
+            this.tabPageMain.Name = "tabPageMain";
+            this.tabPageMain.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageMain.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageMain.TabIndex = 0;
+            this.tabPageMain.Text = "Overview of data connections";
+            this.tabPageMain.UseVisualStyleBackColor = true;
+            this.tabPageMain.Click += new System.EventHandler(this.tabPageMain_Click);
             // 
-            // richTextBox1
+            // tabPageNewTab
             // 
-            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.Location = new System.Drawing.Point(152, 546);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(487, 61);
-            this.richTextBox1.TabIndex = 72;
-            this.richTextBox1.Text = "Note: the repository type only affects the base metadata (Table Mapping, Attribut" +
-    "e Mapping and Physical Model). SQL Server is still required for the delivery (ac" +
-    "tivation) of metadata.";
+            this.tabPageNewTab.Location = new System.Drawing.Point(4, 22);
+            this.tabPageNewTab.Name = "tabPageNewTab";
+            this.tabPageNewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageNewTab.TabIndex = 1;
+            this.tabPageNewTab.UseVisualStyleBackColor = true;
             // 
-            // groupBox2
+            // richTextBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.radioButtonSQLServer);
-            this.groupBox2.Controls.Add(this.radioButtonJSON);
-            this.groupBox2.Location = new System.Drawing.Point(6, 537);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(140, 70);
-            this.groupBox2.TabIndex = 71;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Metadata repository type";
-            // 
-            // radioButtonSQLServer
-            // 
-            this.radioButtonSQLServer.AutoSize = true;
-            this.radioButtonSQLServer.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonSQLServer.Name = "radioButtonSQLServer";
-            this.radioButtonSQLServer.Size = new System.Drawing.Size(80, 17);
-            this.radioButtonSQLServer.TabIndex = 39;
-            this.radioButtonSQLServer.Text = "SQL Server";
-            this.radioButtonSQLServer.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonJSON
-            // 
-            this.radioButtonJSON.AutoSize = true;
-            this.radioButtonJSON.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonJSON.Name = "radioButtonJSON";
-            this.radioButtonJSON.Size = new System.Drawing.Size(53, 17);
-            this.radioButtonJSON.TabIndex = 38;
-            this.radioButtonJSON.Text = "JSON";
-            this.radioButtonJSON.UseVisualStyleBackColor = true;
-            // 
-            // tabPagePaths
-            // 
-            this.tabPagePaths.Controls.Add(this.label1);
-            this.tabPagePaths.Controls.Add(this.textBoxConfigurationPath);
-            this.tabPagePaths.Controls.Add(this.label45);
-            this.tabPagePaths.Controls.Add(this.OutputPathLabel);
-            this.tabPagePaths.Controls.Add(this.textBoxOutputPath);
-            this.tabPagePaths.Location = new System.Drawing.Point(4, 22);
-            this.tabPagePaths.Name = "tabPagePaths";
-            this.tabPagePaths.Size = new System.Drawing.Size(1120, 621);
-            this.tabPagePaths.TabIndex = 4;
-            this.tabPagePaths.Text = "Paths";
-            this.tabPagePaths.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 12);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 13);
-            this.label1.TabIndex = 74;
-            this.label1.Text = "Configuration path";
-            // 
-            // textBoxConfigurationPath
-            // 
-            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxConfigurationPath.Location = new System.Drawing.Point(12, 30);
-            this.textBoxConfigurationPath.Multiline = true;
-            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
-            this.textBoxConfigurationPath.Size = new System.Drawing.Size(1094, 27);
-            this.textBoxConfigurationPath.TabIndex = 41;
-            // 
-            // label45
-            // 
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(-6, -23);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(289, 13);
-            this.label45.TabIndex = 72;
-            this.label45.Text = "Paths and connections used for debugging and automation.\r\n";
-            // 
-            // OutputPathLabel
-            // 
-            this.OutputPathLabel.AutoSize = true;
-            this.OutputPathLabel.Location = new System.Drawing.Point(9, 66);
-            this.OutputPathLabel.Name = "OutputPathLabel";
-            this.OutputPathLabel.Size = new System.Drawing.Size(63, 13);
-            this.OutputPathLabel.TabIndex = 65;
-            this.OutputPathLabel.Text = "Output path";
-            // 
-            // textBoxOutputPath
-            // 
-            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxOutputPath.Location = new System.Drawing.Point(12, 84);
-            this.textBoxOutputPath.Multiline = true;
-            this.textBoxOutputPath.Name = "textBoxOutputPath";
-            this.textBoxOutputPath.Size = new System.Drawing.Size(1094, 27);
-            this.textBoxOutputPath.TabIndex = 40;
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox3.Controls.Add(this.radioButtonProduction);
-            this.groupBox3.Controls.Add(this.radioButtonDevelopment);
-            this.groupBox3.Location = new System.Drawing.Point(22, 683);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(140, 70);
-            this.groupBox3.TabIndex = 72;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Target environment";
-            // 
-            // radioButtonProduction
-            // 
-            this.radioButtonProduction.AutoSize = true;
-            this.radioButtonProduction.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonProduction.Name = "radioButtonProduction";
-            this.radioButtonProduction.Size = new System.Drawing.Size(76, 17);
-            this.radioButtonProduction.TabIndex = 39;
-            this.radioButtonProduction.Text = "Production";
-            this.radioButtonProduction.UseVisualStyleBackColor = true;
-            this.radioButtonProduction.CheckedChanged += new System.EventHandler(this.radioButtonProduction_CheckedChanged);
-            // 
-            // radioButtonDevelopment
-            // 
-            this.radioButtonDevelopment.AutoSize = true;
-            this.radioButtonDevelopment.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonDevelopment.Name = "radioButtonDevelopment";
-            this.radioButtonDevelopment.Size = new System.Drawing.Size(88, 17);
-            this.radioButtonDevelopment.TabIndex = 38;
-            this.radioButtonDevelopment.Text = "Development";
-            this.radioButtonDevelopment.UseVisualStyleBackColor = true;
-            this.radioButtonDevelopment.CheckedChanged += new System.EventHandler(this.radioButtonDevelopment_CheckedChanged);
+            this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox2.Location = new System.Drawing.Point(6, 6);
+            this.richTextBox2.Name = "richTextBox2";
+            this.richTextBox2.Size = new System.Drawing.Size(487, 61);
+            this.richTextBox2.TabIndex = 73;
+            this.richTextBox2.Text = "Create new data connections so these can be assigned to metadata.";
             // 
             // FormManageConfiguration
             // 
@@ -1494,10 +1568,8 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1148, 797);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.tabControlDefaultDetails);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.richTextBoxInformation);
             this.Controls.Add(this.menuStripMainMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1523,7 +1595,15 @@
             this.groupBox1.PerformLayout();
             this.grpTableName.ResumeLayout(false);
             this.grpTableName.PerformLayout();
-            this.tabPageConnectivity.ResumeLayout(false);
+            this.tabPageRepository.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.tabPagePaths.ResumeLayout(false);
+            this.tabPagePaths.PerformLayout();
+            this.tabPageEnvironments.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.tabPageConnections.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.groupBoxPhysicalModelNamedUser.ResumeLayout(false);
@@ -1532,16 +1612,15 @@
             this.groupBox6.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBoxDatabase.ResumeLayout(false);
+            this.groupBoxDatabase.PerformLayout();
             this.groupBoxMetadataNamedUser.ResumeLayout(false);
             this.groupBoxMetadataNamedUser.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.tabPagePaths.ResumeLayout(false);
-            this.tabPagePaths.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.tabPageConnectionsWIP.ResumeLayout(false);
+            this.tabControlConnections.ResumeLayout(false);
+            this.tabPageMain.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1552,7 +1631,6 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
@@ -1562,7 +1640,6 @@
         internal System.Windows.Forms.CheckBox checkBoxAlternativeSatLDTS;
         private System.Windows.Forms.Label label41;
         internal System.Windows.Forms.TextBox textBoxSatelliteAlternativeLDTSAttribute;
-        private System.Windows.Forms.Label label40;
         private System.Windows.Forms.Label label39;
         private System.Windows.Forms.Label label38;
         internal System.Windows.Forms.CheckBox checkBoxAlternativeHubLDTS;
@@ -1620,9 +1697,7 @@
         internal System.Windows.Forms.GroupBox grpTableName;
         internal System.Windows.Forms.RadioButton tableSuffixRadiobutton;
         internal System.Windows.Forms.RadioButton tablePrefixRadiobutton;
-        private System.Windows.Forms.TabPage tabPageConnectivity;
-        private System.Windows.Forms.Label label49;
-        internal System.Windows.Forms.TextBox textBoxPhysicalModelServerName;
+        private System.Windows.Forms.TabPage tabPageRepository;
         private System.Windows.Forms.TabPage tabPagePaths;
         private System.Windows.Forms.Label label45;
         private System.Windows.Forms.Label OutputPathLabel;
@@ -1639,21 +1714,14 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label labelUserName;
-        internal System.Windows.Forms.TextBox textBoxMetadataDatabaseName;
-        private System.Windows.Forms.GroupBox groupBox4;
-        internal System.Windows.Forms.RadioButton radioButtonMetadataNamed;
-        internal System.Windows.Forms.RadioButton radioButtonMetadataSSPI;
-        internal System.Windows.Forms.TextBox textBoxMetadataServerName;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.GroupBox groupBoxMetadataNamedUser;
-        internal System.Windows.Forms.TextBox textBoxMetadataUserName;
-        internal System.Windows.Forms.TextBox textBoxMetadataConnection;
-        internal System.Windows.Forms.MaskedTextBox textBoxMetadataPassword;
-        private System.Windows.Forms.Label labelPasswordMetadata;
+        private System.Windows.Forms.TabPage tabPageEnvironments;
+        private System.Windows.Forms.TabPage tabPageConnections;
         private System.Windows.Forms.Panel panel2;
+        internal System.Windows.Forms.TextBox textBoxPresentationConnection;
+        internal System.Windows.Forms.TextBox textBoxPSAConnection;
+        internal System.Windows.Forms.TextBox textBoxStagingConnection;
+        internal System.Windows.Forms.TextBox textBoxIntegrationConnection;
+        internal System.Windows.Forms.TextBox textBoxSourceConnection;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.TextBox textBoxSourceDatabase;
         private System.Windows.Forms.Label label25;
@@ -1671,14 +1739,31 @@
         private System.Windows.Forms.Label label5;
         internal System.Windows.Forms.TextBox textBoxPhysicalModelUserName;
         private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label49;
         private System.Windows.Forms.GroupBox groupBox6;
         internal System.Windows.Forms.RadioButton radioButtonPhysicalModelNamed;
         internal System.Windows.Forms.RadioButton radioButtonPhysicalModelSSPI;
-        internal System.Windows.Forms.TextBox textBoxSourceConnection;
-        internal System.Windows.Forms.TextBox textBoxPresentationConnection;
-        internal System.Windows.Forms.TextBox textBoxPSAConnection;
-        internal System.Windows.Forms.TextBox textBoxStagingConnection;
-        internal System.Windows.Forms.TextBox textBoxIntegrationConnection;
+        internal System.Windows.Forms.TextBox textBoxPhysicalModelServerName;
+        private System.Windows.Forms.Panel panel1;
+        internal System.Windows.Forms.TextBox textBoxMetadataConnection;
+        private System.Windows.Forms.GroupBox groupBoxMetadataNamedUser;
+        internal System.Windows.Forms.MaskedTextBox textBoxMetadataPassword;
+        private System.Windows.Forms.Label labelPasswordMetadata;
+        internal System.Windows.Forms.TextBox textBoxMetadataUserName;
+        private System.Windows.Forms.Label labelUserName;
+        internal System.Windows.Forms.TextBox textBoxMetadataDatabaseName;
+        private System.Windows.Forms.GroupBox groupBox4;
+        internal System.Windows.Forms.RadioButton radioButtonMetadataNamed;
+        internal System.Windows.Forms.RadioButton radioButtonMetadataSSPI;
+        internal System.Windows.Forms.TextBox textBoxMetadataServerName;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TabPage tabPageConnectionsWIP;
+        private System.Windows.Forms.TabControl tabControlConnections;
+        private System.Windows.Forms.GroupBox groupBoxDatabase;
+        private System.Windows.Forms.TabPage tabPageMain;
+        private System.Windows.Forms.TabPage tabPageNewTab;
+        private System.Windows.Forms.RichTextBox richTextBox2;
     }
 }
 

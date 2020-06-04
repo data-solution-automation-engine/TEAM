@@ -37,19 +37,19 @@ namespace TEAM
             // Initialise the return value
             string surrogateKey = "";
 
-            string keyLocation = Form_Base.ConfigurationSettings.DwhKeyIdentifier;
+            string keyLocation = FormBase.ConfigurationSettings.DwhKeyIdentifier;
 
             string[] prefixSuffixAray = {
-                Form_Base.ConfigurationSettings.HubTablePrefixValue,
-                Form_Base.ConfigurationSettings.SatTablePrefixValue,
-                Form_Base.ConfigurationSettings.LinkTablePrefixValue,
-                Form_Base.ConfigurationSettings.LsatTablePrefixValue
+                FormBase.ConfigurationSettings.HubTablePrefixValue,
+                FormBase.ConfigurationSettings.SatTablePrefixValue,
+                FormBase.ConfigurationSettings.LinkTablePrefixValue,
+                FormBase.ConfigurationSettings.LsatTablePrefixValue
             };
 
             if (tableName != "Not applicable")
             {
                 // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
-                if (Form_Base.ConfigurationSettings.TableNamingLocation == "Prefix")
+                if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
                     foreach (string prefixValue in prefixSuffixAray)
                     {
@@ -74,7 +74,7 @@ namespace TEAM
 
 
                 // Define the surrogate key using the table name and key prefix/suffix settings.
-                if (Form_Base.ConfigurationSettings.KeyNamingLocation == "Prefix")
+                if (FormBase.ConfigurationSettings.KeyNamingLocation == "Prefix")
                 {
                     surrogateKey = keyLocation + '_' + tableName;
                 }
@@ -99,28 +99,28 @@ namespace TEAM
             // Remove schema, if one is set
             //tableName = GetNonQualifiedTableName(tableName);
 
-            switch (Form_Base.ConfigurationSettings.TableNamingLocation)
+            switch (FormBase.ConfigurationSettings.TableNamingLocation)
             {
                 // I.e. HUB_CUSTOMER
-                case "Prefix" when tableName.StartsWith(Form_Base.ConfigurationSettings.SatTablePrefixValue):
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.SatTablePrefixValue):
                     localType = TableTypes.Context.ToString();
                     break;
-                case "Prefix" when tableName.StartsWith(Form_Base.ConfigurationSettings.HubTablePrefixValue):
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.HubTablePrefixValue):
                     localType = TableTypes.CoreBusinessConcept.ToString();
                     break;
-                case "Prefix" when tableName.StartsWith(Form_Base.ConfigurationSettings.LinkTablePrefixValue):
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue):
                     localType = TableTypes.NaturalBusinessRelationship.ToString();
                     break;
-                case "Prefix" when (tableName.StartsWith(Form_Base.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation==""):
+                case "Prefix" when (tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation==""):
                     localType = TableTypes.NaturalBusinessRelationshipContext.ToString();
                     break;
-                case "Prefix" when (tableName.StartsWith(Form_Base.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation != ""):
+                case "Prefix" when (tableName.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation != ""):
                     localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey.ToString();
                     break;
-                case "Prefix" when tableName.StartsWith(Form_Base.ConfigurationSettings.StgTablePrefixValue):
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.StgTablePrefixValue):
                     localType = TableTypes.StagingArea.ToString();
                     break;
-                case "Prefix" when tableName.StartsWith(Form_Base.ConfigurationSettings.PsaTablePrefixValue):
+                case "Prefix" when tableName.StartsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue):
                     localType = TableTypes.PersistentStagingArea.ToString();
                     break;
                 case "Prefix" when tableName.StartsWith("BDV_"):
@@ -133,25 +133,25 @@ namespace TEAM
                     localType = TableTypes.Source.ToString();
                     break;
                 // I.e. CUSTOMER_HUB
-                case "Suffix" when tableName.EndsWith(Form_Base.ConfigurationSettings.SatTablePrefixValue):
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.SatTablePrefixValue):
                     localType = TableTypes.Context.ToString();
                     break;
-                case "Suffix" when tableName.EndsWith(Form_Base.ConfigurationSettings.HubTablePrefixValue):
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.HubTablePrefixValue):
                     localType = TableTypes.CoreBusinessConcept.ToString();
                     break;
-                case "Suffix" when tableName.EndsWith(Form_Base.ConfigurationSettings.LinkTablePrefixValue):
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue):
                     localType = TableTypes.NaturalBusinessRelationship.ToString();
                     break;
-                case "Suffix" when (tableName.EndsWith(Form_Base.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation == ""):
+                case "Suffix" when (tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation == ""):
                     localType = TableTypes.NaturalBusinessRelationshipContext.ToString();
                     break;
-                case "Suffix" when (tableName.EndsWith(Form_Base.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation != ""):
+                case "Suffix" when (tableName.EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue) && additionalInformation != ""):
                     localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey.ToString();
                     break;
-                case "Suffix" when tableName.EndsWith(Form_Base.ConfigurationSettings.StgTablePrefixValue):
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.StgTablePrefixValue):
                     localType = TableTypes.StagingArea.ToString();
                     break;
-                case "Suffix" when tableName.EndsWith(Form_Base.ConfigurationSettings.PsaTablePrefixValue):
+                case "Suffix" when tableName.EndsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue):
                     localType = TableTypes.PersistentStagingArea.ToString();
                     break;
                 case "Suffix" when tableName.EndsWith("BDV_"):
@@ -164,7 +164,7 @@ namespace TEAM
                     localType = TableTypes.Source.ToString();
                     break;
                 default:
-                    localType = "The table type cannot be defined because of an unknown prefix/suffix: "+ Form_Base.ConfigurationSettings.TableNamingLocation;
+                    localType = "The table type cannot be defined because of an unknown prefix/suffix: "+ FormBase.ConfigurationSettings.TableNamingLocation;
                     break;
             }
             // Return the table type
@@ -177,28 +177,28 @@ namespace TEAM
 
             if (new string[] { TableTypes.Context.ToString(), TableTypes.CoreBusinessConcept.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString(), TableTypes.Derived.ToString()}.Contains(tableType))
             {
-                localConnectionInformation.Add(Form_Base.ConfigurationSettings.IntegrationDatabaseName,
-                    Form_Base.ConfigurationSettings.ConnectionStringInt);
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.IntegrationDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringInt);
             }
             else if (tableType == TableTypes.StagingArea.ToString())
             {
-                localConnectionInformation.Add(Form_Base.ConfigurationSettings.StagingDatabaseName,
-                    Form_Base.ConfigurationSettings.ConnectionStringStg);
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.StagingDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringStg);
             }
             else if (tableType == TableTypes.PersistentStagingArea.ToString())
             {
-                localConnectionInformation.Add(Form_Base.ConfigurationSettings.PsaDatabaseName,
-                    Form_Base.ConfigurationSettings.ConnectionStringHstg);
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.PsaDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringHstg);
             }
             else if (tableType == TableTypes.Presentation.ToString())
             {
-                localConnectionInformation.Add(Form_Base.ConfigurationSettings.PresentationDatabaseName,
-                    Form_Base.ConfigurationSettings.ConnectionStringPres);
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.PresentationDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringPres);
             }
             else if (tableType == TableTypes.Source.ToString())
             {
-                localConnectionInformation.Add(Form_Base.ConfigurationSettings.SourceDatabaseName,
-                    Form_Base.ConfigurationSettings.ConnectionStringSource);
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.SourceDatabaseName,
+                    FormBase.ConfigurationSettings.ConnectionStringSource);
             }
             else // Return error
             {
@@ -300,7 +300,7 @@ namespace TEAM
             }
             else // Return the default (e.g. [dbo])
             {
-                schemaName = Form_Base.GlobalParameters.DefaultSchema;
+                schemaName = FormBase.GlobalParameters.DefaultSchema;
                 returnTableName = tableName;
 
                 fullyQualifiedTableName.Add(schemaName, returnTableName);
@@ -338,7 +338,7 @@ namespace TEAM
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var conn = queryMode == "physical" ? new SqlConnection {ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringInt} : new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            var conn = queryMode == "physical" ? new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt} : new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
 
             try
             {
@@ -351,7 +351,7 @@ namespace TEAM
 
             var sqlStatementForBusinessKeys = new StringBuilder();
 
-            var keyText = Form_Base.ConfigurationSettings.DwhKeyIdentifier;
+            var keyText = FormBase.ConfigurationSettings.DwhKeyIdentifier;
             var localkeyLength = keyText.Length;
             var localkeySubstring = localkeyLength + 1;
 
@@ -365,27 +365,27 @@ namespace TEAM
                 // Make sure the live database is hit when the checkbox is ticked
                 sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
                 sqlStatementForBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
-                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + Form_Base.ConfigurationSettings.DwhKeyIdentifier + "'");
+                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
                 sqlStatementForBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + schemaName + "'");
                 sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
-                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + Form_Base.ConfigurationSettings.RecordSourceAttribute + "','" + Form_Base.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + Form_Base.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
-                                                          Form_Base.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + Form_Base.ConfigurationSettings.EtlProcessAttribute + "','" + Form_Base.ConfigurationSettings.LoadDateTimeAttribute + "')");
+                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                                                          FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
             }
             else
             {
                 //Ignore version is not checked, so versioning is used - meaning the business key metadata is sourced from the version history metadata.
                 sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
                 sqlStatementForBusinessKeys.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
-                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + Form_Base.ConfigurationSettings.DwhKeyIdentifier + "'");
+                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
                 sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
                 sqlStatementForBusinessKeys.AppendLine("  AND SCHEMA_NAME= '" + schemaName + "'");
-                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + Form_Base.ConfigurationSettings.RecordSourceAttribute + "','" + Form_Base.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + Form_Base.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + Form_Base.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
-                                                          Form_Base.ConfigurationSettings.EtlProcessAttribute + "','" + Form_Base.ConfigurationSettings.LoadDateTimeAttribute + "')");
+                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                                                          FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
                 sqlStatementForBusinessKeys.AppendLine("  AND VERSION_ID = " + versionId + "");
             }
 
 
-            var keyList = Form_Base.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
+            var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
 
             if (keyList == null)
             {
@@ -418,7 +418,7 @@ namespace TEAM
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
             var conn = new SqlConnection();
-            conn = new SqlConnection { ConnectionString = Form_Base.ConfigurationSettings.ConnectionStringOmd };
+            conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
 
             try
             {
@@ -442,7 +442,7 @@ namespace TEAM
             sqlStatementForBusinessKeys.AppendLine("WHERE [LINK_NAME] = '"+tableName+"'");
             sqlStatementForBusinessKeys.AppendLine("ORDER BY [HUB_ORDER]");
 
-            var keyList = Form_Base.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
+            var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
 
             if (keyList == null)
             {

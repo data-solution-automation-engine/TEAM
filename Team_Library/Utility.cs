@@ -65,7 +65,7 @@ namespace TEAM
 
         }
 
-        public DataTable ConvertToDataTable<T>(IList<T> data)
+        public static DataTable ConvertToDataTable<T>(IList<T> data)
         {
             DataTable table = new DataTable();
 

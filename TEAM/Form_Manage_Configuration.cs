@@ -7,10 +7,14 @@ using System.IO;
 
 namespace TEAM
 {
-    public partial class FormManageConfiguration : Form_Base
+    public partial class FormManageConfiguration : FormBase
     {
         private bool _formLoading = true;
         private FormMain parentFormMain;
+
+        // In-memory list of the known connection tabpages.
+        private List<CustomTabPage> localCustomTabPageList = new List<CustomTabPage>();
+
         public FormManageConfiguration()
         {
             InitializeComponent();
@@ -666,11 +670,11 @@ namespace TEAM
             // Authentication & connectivity
             if (radioButtonMetadataSSPI.Checked)
             {
-                ConfigurationSettings.MetadataSSPI = "True";
+                ConfigurationSettings.MetadataSspi = "True";
             }
             else
             {
-                ConfigurationSettings.MetadataSSPI = "False";
+                ConfigurationSettings.MetadataSspi = "False";
             }
 
             if (radioButtonMetadataNamed.Checked)
@@ -685,11 +689,11 @@ namespace TEAM
 
             if (radioButtonPhysicalModelSSPI.Checked)
             {
-                ConfigurationSettings.PhysicalModelSSPI = "True";
+                ConfigurationSettings.PhysicalModelSspi = "True";
             }
             else
             {
-                ConfigurationSettings.PhysicalModelSSPI = "False";
+                ConfigurationSettings.PhysicalModelSspi = "False";
             }
 
             if (radioButtonPhysicalModelNamed.Checked)
@@ -843,7 +847,7 @@ namespace TEAM
             if (radioButtonMetadataSSPI.Checked)
             {
                 ConfigurationSettings.MetadataNamed = "False";
-                ConfigurationSettings.MetadataSSPI = "True";
+                ConfigurationSettings.MetadataSspi = "True";
             }
 
             UpdateDatabaseConnectionStrings();
@@ -859,7 +863,7 @@ namespace TEAM
             if (radioButtonPhysicalModelSSPI.Checked)
             {
                 ConfigurationSettings.PhysicalModelNamed = "False";
-                ConfigurationSettings.PhysicalModelSSPI = "True";
+                ConfigurationSettings.PhysicalModelSspi = "True";
             }
 
             UpdateDatabaseConnectionStrings();
@@ -875,7 +879,7 @@ namespace TEAM
             {
                 groupBoxMetadataNamedUser.Visible = true;
                 ConfigurationSettings.MetadataNamed = "True";
-                ConfigurationSettings.MetadataSSPI = "False";
+                ConfigurationSettings.MetadataSspi = "False";
             }
 
             UpdateDatabaseConnectionStrings();
@@ -889,7 +893,7 @@ namespace TEAM
             {
                 groupBoxPhysicalModelNamedUser.Visible = true;
                 ConfigurationSettings.PhysicalModelNamed = "True";
-                ConfigurationSettings.PhysicalModelSSPI = "False";
+                ConfigurationSettings.PhysicalModelSspi = "False";
             }
 
             UpdateDatabaseConnectionStrings();
@@ -1038,6 +1042,107 @@ namespace TEAM
         private void FormManageConfiguration_FormClosed(object sender, FormClosedEventArgs e)
         {
             parentFormMain.RevalidateFlag=true;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            CreateCustomTabPages();
+        }
+
+        /// <summary>
+        /// Generates the Custom Tab Pages using the pattern metadata. This method will remove any non-standard Tab Pages and create these using the Load Pattern Definition metadata.
+        /// </summary>
+        internal void CreateCustomTabPages()
+        {
+            // Remove any existing Custom Tab Pages before rebuild
+            localCustomTabPageList.Clear();
+
+            //foreach (TabPage customTabPage in tabControlConnections.TabPages)
+            //{
+            //    if ((customTabPage.Name == "tabPageHome") || (customTabPage.Name == "tabPageSettings"))
+            //    {
+            //        // Do nothing, as only the two standard Tab Pages exist.
+            //    }
+            //    else
+            //    {
+            //        // Remove the Tab Page from the Tab Control
+            //        tabControlConnections.Controls.Remove((customTabPage));
+            //    }
+            //}
+
+            //List<LocalPattern> finalMappingList = Patternlist();
+
+            TeamConnectionProfile connectionProfile = new TeamConnectionProfile();
+
+            connectionProfile.databaseConnectionName = "PersistentStagingArea";
+            connectionProfile.databaseConnectionKey = "PSA";
+
+            TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
+
+            connectionDatabase.namedUserName = "sa";
+            connectionDatabase.namedUserPassword = "test";
+            connectionDatabase.authenticationType = ServerAuthenticationTypes.SSPI;
+
+            connectionProfile.databaseServer = connectionDatabase;
+
+
+            List<TeamConnectionProfile> connectionList = new List<TeamConnectionProfile>();
+
+            connectionList.Add(connectionProfile);
+            //var sortedMappingList = finalMappingList.OrderBy(x => x.id);
+
+            // Add the Custom Tab Pages
+            foreach (var databaseConnection in connectionList)
+            {
+                CustomTabPage localCustomTabPage = new CustomTabPage(databaseConnection);
+                //localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
+                //localCustomTabPage.OnClearMainText += (ClearMainInformationTextBox);
+
+                localCustomTabPageList.Add(localCustomTabPage);
+                tabControlConnections.TabPages.Add(localCustomTabPage);
+            }
+        }
+
+        private void tabPageMain_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        /// <summary>
+        /// Check if the last tab rectangle contains the mouse clicked point, then insert a tab before the last tab.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabControlConnections_MouseDown(object sender, MouseEventArgs e)
+        {
+            var lastIndex = tabControlConnections.TabCount - 1;
+            if (tabControlConnections.GetTabRect(lastIndex).Contains(e.Location))
+            {
+                //tabControlConnections.TabPages.Insert(lastIndex, "New Tab");
+                TeamConnectionProfile connectionProfile = new TeamConnectionProfile();
+                connectionProfile.databaseConnectionName = "New connection";
+                connectionProfile.databaseConnectionKey = "New";
+
+                TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
+                connectionDatabase.schemaName = "<Schema Name>";
+                connectionDatabase.serverName = "<Server Name>";
+                connectionDatabase.databaseName = "<Database Name>";
+                connectionDatabase.namedUserName = "<User Name>";
+                connectionDatabase.namedUserPassword = "<Password>";
+                connectionDatabase.authenticationType = ServerAuthenticationTypes.NamedUser;
+
+                connectionProfile.databaseServer = connectionDatabase;
+
+                CustomTabPage localCustomTabPage = new CustomTabPage(connectionProfile);
+                //localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
+                //localCustomTabPage.OnClearMainText += (ClearMainInformationTextBox);
+
+                localCustomTabPageList.Add(localCustomTabPage);
+                tabControlConnections.TabPages.Insert(lastIndex,localCustomTabPage);
+                
+                tabControlConnections.SelectedIndex = lastIndex;
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormManageRepository : Form_Base
+    public partial class FormManageRepository : FormBase
     {
         Form_Alert _alertRepository;
         Form_Alert _alertSampleData;

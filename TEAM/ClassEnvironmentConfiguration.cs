@@ -16,7 +16,7 @@ namespace TEAM
         /// </summary>
         internal void CreateDummyEnvironmentConfiguration(string filename)
         {
-            if (Form_Base.GlobalParameters.WorkingEnvironment == "Development")
+            if (FormBase.GlobalParameters.WorkingEnvironment == "Development")
             {
                 // Create a completely new file
                 var initialConfigurationFile = new StringBuilder();
@@ -91,7 +91,7 @@ namespace TEAM
                     outfile.Write(initialConfigurationFile.ToString());
                     outfile.Close();
                 }
-            } else if (Form_Base.GlobalParameters.WorkingEnvironment == "Production")
+            } else if (FormBase.GlobalParameters.WorkingEnvironment == "Production")
             {
                 // Just copy the dev file to a prod version to retain settings
                 // Check if the paths are available, just to be sure
@@ -99,13 +99,13 @@ namespace TEAM
 
                 try
                 {
-                    var sourceFilePathName = Form_Base.GlobalParameters.ConfigurationPath +
-                                             Form_Base.GlobalParameters.ConfigFileName + '_' + "Development" +
-                                             Form_Base.GlobalParameters.FileExtension;
+                    var sourceFilePathName = FormBase.GlobalParameters.ConfigurationPath +
+                                             FormBase.GlobalParameters.ConfigFileName + '_' + "Development" +
+                                             FormBase.GlobalParameters.FileExtension;
 
                     if (File.Exists(sourceFilePathName))
                     {
-                        var targetFilePathName = Form_Base.GlobalParameters.ConfigurationPath + Form_Base.GlobalParameters.ConfigFileName + '_' + "Production" + Form_Base.GlobalParameters.FileExtension;
+                        var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + "Production" + FormBase.GlobalParameters.FileExtension;
 
                         File.Copy(sourceFilePathName, targetFilePathName);
 
@@ -177,21 +177,21 @@ namespace TEAM
 
             try
             {
-                if (File.Exists(Form_Base.GlobalParameters.ConfigurationPath +
-                                Form_Base.GlobalParameters.ConfigFileName + '_' +
-                                Form_Base.GlobalParameters.WorkingEnvironment +
-                                Form_Base.GlobalParameters.FileExtension))
+                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
+                                FormBase.GlobalParameters.ConfigFileName + '_' +
+                                FormBase.GlobalParameters.WorkingEnvironment +
+                                FormBase.GlobalParameters.FileExtension))
                 {
-                    var targetFilePathName = Form_Base.GlobalParameters.ConfigurationPath +
+                    var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
                                              string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_",
-                                                 Form_Base.GlobalParameters.ConfigFileName + '_' +
-                                                 Form_Base.GlobalParameters.WorkingEnvironment +
-                                                 Form_Base.GlobalParameters.FileExtension);
+                                                 FormBase.GlobalParameters.ConfigFileName + '_' +
+                                                 FormBase.GlobalParameters.WorkingEnvironment +
+                                                 FormBase.GlobalParameters.FileExtension);
 
                     File.Copy(
-                        Form_Base.GlobalParameters.ConfigurationPath + Form_Base.GlobalParameters.ConfigFileName +
-                        '_' + Form_Base.GlobalParameters.WorkingEnvironment +
-                        Form_Base.GlobalParameters.FileExtension, targetFilePathName);
+                        FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName +
+                        '_' + FormBase.GlobalParameters.WorkingEnvironment +
+                        FormBase.GlobalParameters.FileExtension, targetFilePathName);
 
                 }
                 else
@@ -217,15 +217,15 @@ namespace TEAM
             // Create the configuration directory if it does not exist yet
             try
             {
-                if (!Directory.Exists(Form_Base.GlobalParameters.ConfigurationPath))
+                if (!Directory.Exists(FormBase.GlobalParameters.ConfigurationPath))
                 {
-                    Directory.CreateDirectory(Form_Base.GlobalParameters.ConfigurationPath);
+                    Directory.CreateDirectory(FormBase.GlobalParameters.ConfigurationPath);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Error creation default directory at " + Form_Base.GlobalParameters.ConfigurationPath +
+                    "Error creation default directory at " + FormBase.GlobalParameters.ConfigurationPath +
                     " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -233,35 +233,35 @@ namespace TEAM
             // Create the output directory if it does not exist yet
             try
             {
-                if (!Directory.Exists(Form_Base.GlobalParameters.OutputPath))
+                if (!Directory.Exists(FormBase.GlobalParameters.OutputPath))
                 {
-                    Directory.CreateDirectory(Form_Base.GlobalParameters.OutputPath);
+                    Directory.CreateDirectory(FormBase.GlobalParameters.OutputPath);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Error creation default directory at " + Form_Base.GlobalParameters.OutputPath + " the message is " +
+                    "Error creation default directory at " + FormBase.GlobalParameters.OutputPath + " the message is " +
                     ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             // Create root path file, with dummy values if it doesn't exist already
             try
             {
-                if (!File.Exists(Form_Base.GlobalParameters.ConfigurationPath + Form_Base.GlobalParameters.PathFileName +
-                                 Form_Base.GlobalParameters.FileExtension))
+                if (!File.Exists(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
+                                 FormBase.GlobalParameters.FileExtension))
                 {
                     var initialConfigurationFile = new StringBuilder();
 
                     initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
-                    initialConfigurationFile.AppendLine("ConfigurationPath|" +Form_Base.GlobalParameters.ConfigurationPath);
-                    initialConfigurationFile.AppendLine("OutputPath|" + Form_Base.GlobalParameters.OutputPath);
+                    initialConfigurationFile.AppendLine("ConfigurationPath|" +FormBase.GlobalParameters.ConfigurationPath);
+                    initialConfigurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath);
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
                     initialConfigurationFile.AppendLine("/* End of file */");
 
-                    using (var outfile = new StreamWriter(Form_Base.GlobalParameters.ConfigurationPath +
-                                                          Form_Base.GlobalParameters.PathFileName +
-                                                          Form_Base.GlobalParameters.FileExtension))
+                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
+                                                          FormBase.GlobalParameters.PathFileName +
+                                                          FormBase.GlobalParameters.FileExtension))
                     {
                         outfile.Write(initialConfigurationFile.ToString());
                         outfile.Close();
@@ -285,15 +285,15 @@ namespace TEAM
             // Create the configuration directory if it does not exist yet
             try
             {
-                if (!Directory.Exists(Form_Base.GlobalParameters.ConfigurationPath))
+                if (!Directory.Exists(FormBase.GlobalParameters.ConfigurationPath))
                 {
-                    Directory.CreateDirectory(Form_Base.GlobalParameters.ConfigurationPath);
+                    Directory.CreateDirectory(FormBase.GlobalParameters.ConfigurationPath);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Error creation default directory at " + Form_Base.GlobalParameters.ConfigurationPath +
+                    "Error creation default directory at " + FormBase.GlobalParameters.ConfigurationPath +
                     " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -301,15 +301,15 @@ namespace TEAM
             // Create the output directory if it does not exist yet
             try
             {
-                if (!Directory.Exists(Form_Base.GlobalParameters.OutputPath))
+                if (!Directory.Exists(FormBase.GlobalParameters.OutputPath))
                 {
-                    Directory.CreateDirectory(Form_Base.GlobalParameters.OutputPath);
+                    Directory.CreateDirectory(FormBase.GlobalParameters.OutputPath);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Error creation default directory at " + Form_Base.GlobalParameters.OutputPath +
+                    "Error creation default directory at " + FormBase.GlobalParameters.OutputPath +
                     " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
@@ -318,14 +318,14 @@ namespace TEAM
             try
             {
                 // Create a default configuration file if the file does not exist as expected
-                if (File.Exists(Form_Base.GlobalParameters.ConfigurationPath +
-                                Form_Base.GlobalParameters.ConfigFileName + '_' +
-                                Form_Base.GlobalParameters.WorkingEnvironment +
-                                Form_Base.GlobalParameters.FileExtension)) return;
+                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
+                                FormBase.GlobalParameters.ConfigFileName + '_' +
+                                FormBase.GlobalParameters.WorkingEnvironment +
+                                FormBase.GlobalParameters.FileExtension)) return;
                 var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    Form_Base.GlobalParameters.ConfigurationPath + Form_Base.GlobalParameters.ConfigFileName + '_' +
-                    Form_Base.GlobalParameters.WorkingEnvironment + Form_Base.GlobalParameters.FileExtension);
+                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' +
+                    FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
@@ -338,14 +338,14 @@ namespace TEAM
             try
             {
                 // Create a default configuration file if the file does not exist as expected
-                if (File.Exists(Form_Base.GlobalParameters.ConfigurationPath +
-                                Form_Base.GlobalParameters.ValidationFileName + '_' +
-                                Form_Base.GlobalParameters.WorkingEnvironment +
-                                Form_Base.GlobalParameters.FileExtension)) return;
+                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
+                                FormBase.GlobalParameters.ValidationFileName + '_' +
+                                FormBase.GlobalParameters.WorkingEnvironment +
+                                FormBase.GlobalParameters.FileExtension)) return;
                 var newEnvironmentConfiguration = new EnvironmentConfiguration();
                 newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    Form_Base.GlobalParameters.ConfigurationPath + Form_Base.GlobalParameters.ValidationFileName +
-                    '_' + Form_Base.GlobalParameters.WorkingEnvironment + Form_Base.GlobalParameters.FileExtension);
+                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName +
+                    '_' + FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
@@ -364,8 +364,8 @@ namespace TEAM
             // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
             var configList = new Dictionary<string, string>();
             var fs = new FileStream(
-                Form_Base.GlobalParameters.ConfigurationPath + Form_Base.GlobalParameters.PathFileName +
-                Form_Base.GlobalParameters.FileExtension, FileMode.Open, FileAccess.Read);
+                FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
+                FormBase.GlobalParameters.FileExtension, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
             try
@@ -384,9 +384,9 @@ namespace TEAM
                 fs.Close();
 
                 // These variables are used as global variables throughout the application
-                Form_Base.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
-                Form_Base.GlobalParameters.OutputPath = configList["OutputPath"];
-                Form_Base.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
+                FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
+                FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
+                FormBase.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
 
             }
             catch (Exception)
@@ -407,72 +407,72 @@ namespace TEAM
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                configurationFile.AppendLine("SourceDatabase|" + Form_Base.ConfigurationSettings.SourceDatabaseName +"");
-                configurationFile.AppendLine("StagingDatabase|" + Form_Base.ConfigurationSettings.StagingDatabaseName +"");
-                configurationFile.AppendLine("PersistentStagingDatabase|" +Form_Base.ConfigurationSettings.PsaDatabaseName + "");
-                configurationFile.AppendLine("IntegrationDatabase|" +Form_Base.ConfigurationSettings.IntegrationDatabaseName + "");
-                configurationFile.AppendLine("PresentationDatabase|" +Form_Base.ConfigurationSettings.PresentationDatabaseName +"");
-                configurationFile.AppendLine("MetadataDatabase|" + Form_Base.ConfigurationSettings.MetadataDatabaseName + "");
-                configurationFile.AppendLine("PhysicalModelServerName|" + Form_Base.ConfigurationSettings.PhysicalModelServerName + "");
-                configurationFile.AppendLine("MetadataServerName|" + Form_Base.ConfigurationSettings.MetadataServerName + "");
+                configurationFile.AppendLine("SourceDatabase|" + FormBase.ConfigurationSettings.SourceDatabaseName +"");
+                configurationFile.AppendLine("StagingDatabase|" + FormBase.ConfigurationSettings.StagingDatabaseName +"");
+                configurationFile.AppendLine("PersistentStagingDatabase|" +FormBase.ConfigurationSettings.PsaDatabaseName + "");
+                configurationFile.AppendLine("IntegrationDatabase|" +FormBase.ConfigurationSettings.IntegrationDatabaseName + "");
+                configurationFile.AppendLine("PresentationDatabase|" +FormBase.ConfigurationSettings.PresentationDatabaseName +"");
+                configurationFile.AppendLine("MetadataDatabase|" + FormBase.ConfigurationSettings.MetadataDatabaseName + "");
+                configurationFile.AppendLine("PhysicalModelServerName|" + FormBase.ConfigurationSettings.PhysicalModelServerName + "");
+                configurationFile.AppendLine("MetadataServerName|" + FormBase.ConfigurationSettings.MetadataServerName + "");
 
 
-                configurationFile.AppendLine("MetadataSSPI|" + Form_Base.ConfigurationSettings.MetadataSSPI);
-                configurationFile.AppendLine("MetadataNamed|" + Form_Base.ConfigurationSettings.MetadataNamed);
-                configurationFile.AppendLine("MetadataUserName|" + Form_Base.ConfigurationSettings.MetadataUserName);
-                configurationFile.AppendLine("MetadataPassword|" + Form_Base.ConfigurationSettings.MetadataPassword);
+                configurationFile.AppendLine("MetadataSSPI|" + FormBase.ConfigurationSettings.MetadataSspi);
+                configurationFile.AppendLine("MetadataNamed|" + FormBase.ConfigurationSettings.MetadataNamed);
+                configurationFile.AppendLine("MetadataUserName|" + FormBase.ConfigurationSettings.MetadataUserName);
+                configurationFile.AppendLine("MetadataPassword|" + FormBase.ConfigurationSettings.MetadataPassword);
 
-                configurationFile.AppendLine("PhysicalModelSSPI|" + Form_Base.ConfigurationSettings.PhysicalModelSSPI);
-                configurationFile.AppendLine("PhysicalModelNamed|" + Form_Base.ConfigurationSettings.PhysicalModelNamed);
-                configurationFile.AppendLine("PhysicalModelUserName|" + Form_Base.ConfigurationSettings.PhysicalModelUserName);
-                configurationFile.AppendLine("PhysicalModelPassword|" + Form_Base.ConfigurationSettings.PhysicalModelPassword);
+                configurationFile.AppendLine("PhysicalModelSSPI|" + FormBase.ConfigurationSettings.PhysicalModelSspi);
+                configurationFile.AppendLine("PhysicalModelNamed|" + FormBase.ConfigurationSettings.PhysicalModelNamed);
+                configurationFile.AppendLine("PhysicalModelUserName|" + FormBase.ConfigurationSettings.PhysicalModelUserName);
+                configurationFile.AppendLine("PhysicalModelPassword|" + FormBase.ConfigurationSettings.PhysicalModelPassword);
 
 
-                configurationFile.AppendLine(@"connectionStringSource|" +Form_Base.ConfigurationSettings.ConnectionStringSource +"");
-                configurationFile.AppendLine(@"connectionStringStaging|" +Form_Base.ConfigurationSettings.ConnectionStringStg +"");
-                configurationFile.AppendLine(@"connectionStringPersistentStaging|" +Form_Base.ConfigurationSettings.ConnectionStringHstg + "");
-                configurationFile.AppendLine(@"connectionStringMetadata|" +Form_Base.ConfigurationSettings.ConnectionStringOmd +"");
-                configurationFile.AppendLine(@"connectionStringIntegration|" +Form_Base.ConfigurationSettings.ConnectionStringInt + "");
-                configurationFile.AppendLine(@"connectionStringPresentation|" +Form_Base.ConfigurationSettings.ConnectionStringPres + "");
+                configurationFile.AppendLine(@"connectionStringSource|" +FormBase.ConfigurationSettings.ConnectionStringSource +"");
+                configurationFile.AppendLine(@"connectionStringStaging|" +FormBase.ConfigurationSettings.ConnectionStringStg +"");
+                configurationFile.AppendLine(@"connectionStringPersistentStaging|" +FormBase.ConfigurationSettings.ConnectionStringHstg + "");
+                configurationFile.AppendLine(@"connectionStringMetadata|" +FormBase.ConfigurationSettings.ConnectionStringOmd +"");
+                configurationFile.AppendLine(@"connectionStringIntegration|" +FormBase.ConfigurationSettings.ConnectionStringInt + "");
+                configurationFile.AppendLine(@"connectionStringPresentation|" +FormBase.ConfigurationSettings.ConnectionStringPres + "");
 
-                configurationFile.AppendLine("StagingAreaPrefix|" + Form_Base.ConfigurationSettings.StgTablePrefixValue +"");
-                configurationFile.AppendLine("PersistentStagingAreaPrefix|" +Form_Base.ConfigurationSettings.PsaTablePrefixValue + "");
-                configurationFile.AppendLine("HubTablePrefix|" + Form_Base.ConfigurationSettings.HubTablePrefixValue + "");
-                configurationFile.AppendLine("SatTablePrefix|" + Form_Base.ConfigurationSettings.SatTablePrefixValue + "");
-                configurationFile.AppendLine("LinkTablePrefix|" + Form_Base.ConfigurationSettings.LinkTablePrefixValue +"");
-                configurationFile.AppendLine("LinkSatTablePrefix|" + Form_Base.ConfigurationSettings.LsatTablePrefixValue + "");
-                configurationFile.AppendLine("KeyIdentifier|" + Form_Base.ConfigurationSettings.DwhKeyIdentifier + "");
-                configurationFile.AppendLine("SchemaName|" + Form_Base.ConfigurationSettings.SchemaName + "");
-                configurationFile.AppendLine("RowID|" + Form_Base.ConfigurationSettings.RowIdAttribute + "");
-                configurationFile.AppendLine("EventDateTimeStamp|" + Form_Base.ConfigurationSettings.EventDateTimeAttribute + "");
-                configurationFile.AppendLine("LoadDateTimeStamp|" + Form_Base.ConfigurationSettings.LoadDateTimeAttribute + "");
-                configurationFile.AppendLine("ExpiryDateTimeStamp|" + Form_Base.ConfigurationSettings.ExpiryDateTimeAttribute + "");
-                configurationFile.AppendLine("ChangeDataIndicator|" + Form_Base.ConfigurationSettings.ChangeDataCaptureAttribute +"");
-                configurationFile.AppendLine("RecordSourceAttribute|" + Form_Base.ConfigurationSettings.RecordSourceAttribute + "");
-                configurationFile.AppendLine("ETLProcessID|" + Form_Base.ConfigurationSettings.EtlProcessAttribute + "");
-                configurationFile.AppendLine("ETLUpdateProcessID|" +Form_Base.ConfigurationSettings.EtlProcessUpdateAttribute +"");
-                configurationFile.AppendLine("LogicalDeleteAttribute|" +Form_Base.ConfigurationSettings.LogicalDeleteAttribute +"");
-                configurationFile.AppendLine("TableNamingLocation|" + Form_Base.ConfigurationSettings.TableNamingLocation + "");
-                configurationFile.AppendLine("KeyNamingLocation|" + Form_Base.ConfigurationSettings.KeyNamingLocation +"");
-                configurationFile.AppendLine("RecordChecksum|" +Form_Base.ConfigurationSettings.RecordChecksumAttribute + "");
-                configurationFile.AppendLine("CurrentRecordAttribute|" +Form_Base.ConfigurationSettings.CurrentRowAttribute +"");
-                configurationFile.AppendLine("AlternativeRecordSource|" +Form_Base.ConfigurationSettings.AlternativeRecordSourceAttribute + "");
-                configurationFile.AppendLine("AlternativeHubLDTS|" +Form_Base.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "");
-                configurationFile.AppendLine("AlternativeSatelliteLDTS|" +Form_Base.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +"");
-                configurationFile.AppendLine("AlternativeRecordSourceFunction|" +Form_Base.ConfigurationSettings.EnableAlternativeRecordSourceAttribute +"");
-                configurationFile.AppendLine("AlternativeHubLDTSFunction|" +Form_Base.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute +"");
-                configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +Form_Base.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute +"");
-                configurationFile.AppendLine("PSAKeyLocation|" + Form_Base.ConfigurationSettings.PsaKeyLocation + "");
-                configurationFile.AppendLine("metadataRepositoryType|" +Form_Base.ConfigurationSettings.MetadataRepositoryType +"");
+                configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +"");
+                configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
+                configurationFile.AppendLine("HubTablePrefix|" + FormBase.ConfigurationSettings.HubTablePrefixValue + "");
+                configurationFile.AppendLine("SatTablePrefix|" + FormBase.ConfigurationSettings.SatTablePrefixValue + "");
+                configurationFile.AppendLine("LinkTablePrefix|" + FormBase.ConfigurationSettings.LinkTablePrefixValue +"");
+                configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.ConfigurationSettings.LsatTablePrefixValue + "");
+                configurationFile.AppendLine("KeyIdentifier|" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "");
+                configurationFile.AppendLine("SchemaName|" + FormBase.ConfigurationSettings.SchemaName + "");
+                configurationFile.AppendLine("RowID|" + FormBase.ConfigurationSettings.RowIdAttribute + "");
+                configurationFile.AppendLine("EventDateTimeStamp|" + FormBase.ConfigurationSettings.EventDateTimeAttribute + "");
+                configurationFile.AppendLine("LoadDateTimeStamp|" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "");
+                configurationFile.AppendLine("ExpiryDateTimeStamp|" + FormBase.ConfigurationSettings.ExpiryDateTimeAttribute + "");
+                configurationFile.AppendLine("ChangeDataIndicator|" + FormBase.ConfigurationSettings.ChangeDataCaptureAttribute +"");
+                configurationFile.AppendLine("RecordSourceAttribute|" + FormBase.ConfigurationSettings.RecordSourceAttribute + "");
+                configurationFile.AppendLine("ETLProcessID|" + FormBase.ConfigurationSettings.EtlProcessAttribute + "");
+                configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.ConfigurationSettings.EtlProcessUpdateAttribute +"");
+                configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.ConfigurationSettings.LogicalDeleteAttribute +"");
+                configurationFile.AppendLine("TableNamingLocation|" + FormBase.ConfigurationSettings.TableNamingLocation + "");
+                configurationFile.AppendLine("KeyNamingLocation|" + FormBase.ConfigurationSettings.KeyNamingLocation +"");
+                configurationFile.AppendLine("RecordChecksum|" +FormBase.ConfigurationSettings.RecordChecksumAttribute + "");
+                configurationFile.AppendLine("CurrentRecordAttribute|" +FormBase.ConfigurationSettings.CurrentRowAttribute +"");
+                configurationFile.AppendLine("AlternativeRecordSource|" +FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "");
+                configurationFile.AppendLine("AlternativeHubLDTS|" +FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "");
+                configurationFile.AppendLine("AlternativeSatelliteLDTS|" +FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("AlternativeRecordSourceFunction|" +FormBase.ConfigurationSettings.EnableAlternativeRecordSourceAttribute +"");
+                configurationFile.AppendLine("AlternativeHubLDTSFunction|" +FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("PSAKeyLocation|" + FormBase.ConfigurationSettings.PsaKeyLocation + "");
+                configurationFile.AppendLine("metadataRepositoryType|" +FormBase.ConfigurationSettings.MetadataRepositoryType +"");
 
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
 
                 using (var outfile =
-                    new StreamWriter(Form_Base.GlobalParameters.ConfigurationPath +
-                                     Form_Base.GlobalParameters.ConfigFileName + '_' +
-                                     Form_Base.GlobalParameters.WorkingEnvironment +
-                                     Form_Base.GlobalParameters.FileExtension))
+                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
+                                     FormBase.GlobalParameters.ConfigFileName + '_' +
+                                     FormBase.GlobalParameters.WorkingEnvironment +
+                                     FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(configurationFile.ToString());
                     outfile.Flush();
@@ -531,70 +531,70 @@ namespace TEAM
 
                 // These variables are used as global variables throughout the application
                 // They will be set once after startup
-                Form_Base.ConfigurationSettings.ConnectionStringSource = connectionStringSource;
-                Form_Base.ConfigurationSettings.ConnectionStringStg = connectionStringStg;
-                Form_Base.ConfigurationSettings.ConnectionStringHstg = connectionStringHstg;
-                Form_Base.ConfigurationSettings.ConnectionStringInt = connectionStringInt;
-                Form_Base.ConfigurationSettings.ConnectionStringOmd = connectionStringOmd;
-                Form_Base.ConfigurationSettings.ConnectionStringPres = connectionStringPres;
+                FormBase.ConfigurationSettings.ConnectionStringSource = connectionStringSource;
+                FormBase.ConfigurationSettings.ConnectionStringStg = connectionStringStg;
+                FormBase.ConfigurationSettings.ConnectionStringHstg = connectionStringHstg;
+                FormBase.ConfigurationSettings.ConnectionStringInt = connectionStringInt;
+                FormBase.ConfigurationSettings.ConnectionStringOmd = connectionStringOmd;
+                FormBase.ConfigurationSettings.ConnectionStringPres = connectionStringPres;
 
-                Form_Base.ConfigurationSettings.MetadataRepositoryType = configList["metadataRepositoryType"];
+                FormBase.ConfigurationSettings.MetadataRepositoryType = configList["metadataRepositoryType"];
 
-                Form_Base.ConfigurationSettings.StgTablePrefixValue = configList["StagingAreaPrefix"];
-                Form_Base.ConfigurationSettings.PsaTablePrefixValue = configList["PersistentStagingAreaPrefix"];
-                Form_Base.ConfigurationSettings.HubTablePrefixValue = configList["HubTablePrefix"];
-                Form_Base.ConfigurationSettings.SatTablePrefixValue = configList["SatTablePrefix"];
-                Form_Base.ConfigurationSettings.LinkTablePrefixValue = configList["LinkTablePrefix"];
-                Form_Base.ConfigurationSettings.LsatTablePrefixValue = configList["LinkSatTablePrefix"];
-                Form_Base.ConfigurationSettings.DwhKeyIdentifier = configList["KeyIdentifier"];
-                Form_Base.ConfigurationSettings.PsaKeyLocation = configList["PSAKeyLocation"];
-                Form_Base.ConfigurationSettings.TableNamingLocation = configList["TableNamingLocation"];
-                Form_Base.ConfigurationSettings.KeyNamingLocation = configList["KeyNamingLocation"];
-                Form_Base.ConfigurationSettings.SchemaName = configList["SchemaName"];
-                Form_Base.ConfigurationSettings.EventDateTimeAttribute = configList["EventDateTimeStamp"];
-                Form_Base.ConfigurationSettings.LoadDateTimeAttribute = configList["LoadDateTimeStamp"];
-                Form_Base.ConfigurationSettings.ExpiryDateTimeAttribute = configList["ExpiryDateTimeStamp"];
-                Form_Base.ConfigurationSettings.ChangeDataCaptureAttribute = configList["ChangeDataIndicator"];
-                Form_Base.ConfigurationSettings.RecordSourceAttribute = configList["RecordSourceAttribute"];
-                Form_Base.ConfigurationSettings.EtlProcessAttribute = configList["ETLProcessID"];
-                Form_Base.ConfigurationSettings.EtlProcessUpdateAttribute = configList["ETLUpdateProcessID"];
-                Form_Base.ConfigurationSettings.RowIdAttribute = configList["RowID"];
-                Form_Base.ConfigurationSettings.RecordChecksumAttribute = configList["RecordChecksum"];
-                Form_Base.ConfigurationSettings.CurrentRowAttribute = configList["CurrentRecordAttribute"];
-                Form_Base.ConfigurationSettings.LogicalDeleteAttribute = configList["LogicalDeleteAttribute"];
-                Form_Base.ConfigurationSettings.EnableAlternativeRecordSourceAttribute =configList["AlternativeRecordSourceFunction"];
-                Form_Base.ConfigurationSettings.AlternativeRecordSourceAttribute = configList["AlternativeRecordSource"];
-                Form_Base.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute =configList["AlternativeHubLDTSFunction"];
-                Form_Base.ConfigurationSettings.AlternativeLoadDateTimeAttribute = configList["AlternativeHubLDTS"];
-                Form_Base.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTSFunction"];
-                Form_Base.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTS"];
+                FormBase.ConfigurationSettings.StgTablePrefixValue = configList["StagingAreaPrefix"];
+                FormBase.ConfigurationSettings.PsaTablePrefixValue = configList["PersistentStagingAreaPrefix"];
+                FormBase.ConfigurationSettings.HubTablePrefixValue = configList["HubTablePrefix"];
+                FormBase.ConfigurationSettings.SatTablePrefixValue = configList["SatTablePrefix"];
+                FormBase.ConfigurationSettings.LinkTablePrefixValue = configList["LinkTablePrefix"];
+                FormBase.ConfigurationSettings.LsatTablePrefixValue = configList["LinkSatTablePrefix"];
+                FormBase.ConfigurationSettings.DwhKeyIdentifier = configList["KeyIdentifier"];
+                FormBase.ConfigurationSettings.PsaKeyLocation = configList["PSAKeyLocation"];
+                FormBase.ConfigurationSettings.TableNamingLocation = configList["TableNamingLocation"];
+                FormBase.ConfigurationSettings.KeyNamingLocation = configList["KeyNamingLocation"];
+                FormBase.ConfigurationSettings.SchemaName = configList["SchemaName"];
+                FormBase.ConfigurationSettings.EventDateTimeAttribute = configList["EventDateTimeStamp"];
+                FormBase.ConfigurationSettings.LoadDateTimeAttribute = configList["LoadDateTimeStamp"];
+                FormBase.ConfigurationSettings.ExpiryDateTimeAttribute = configList["ExpiryDateTimeStamp"];
+                FormBase.ConfigurationSettings.ChangeDataCaptureAttribute = configList["ChangeDataIndicator"];
+                FormBase.ConfigurationSettings.RecordSourceAttribute = configList["RecordSourceAttribute"];
+                FormBase.ConfigurationSettings.EtlProcessAttribute = configList["ETLProcessID"];
+                FormBase.ConfigurationSettings.EtlProcessUpdateAttribute = configList["ETLUpdateProcessID"];
+                FormBase.ConfigurationSettings.RowIdAttribute = configList["RowID"];
+                FormBase.ConfigurationSettings.RecordChecksumAttribute = configList["RecordChecksum"];
+                FormBase.ConfigurationSettings.CurrentRowAttribute = configList["CurrentRecordAttribute"];
+                FormBase.ConfigurationSettings.LogicalDeleteAttribute = configList["LogicalDeleteAttribute"];
+                FormBase.ConfigurationSettings.EnableAlternativeRecordSourceAttribute =configList["AlternativeRecordSourceFunction"];
+                FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute = configList["AlternativeRecordSource"];
+                FormBase.ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute =configList["AlternativeHubLDTSFunction"];
+                FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute = configList["AlternativeHubLDTS"];
+                FormBase.ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTSFunction"];
+                FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTS"];
 
                 // Databases
-                Form_Base.ConfigurationSettings.SourceDatabaseName = configList["SourceDatabase"];
-                Form_Base.ConfigurationSettings.StagingDatabaseName = configList["StagingDatabase"];
-                Form_Base.ConfigurationSettings.PsaDatabaseName = configList["PersistentStagingDatabase"];
-                Form_Base.ConfigurationSettings.IntegrationDatabaseName = configList["IntegrationDatabase"];
-                Form_Base.ConfigurationSettings.PresentationDatabaseName = configList["PresentationDatabase"];
-                Form_Base.ConfigurationSettings.MetadataDatabaseName = configList["MetadataDatabase"];
+                FormBase.ConfigurationSettings.SourceDatabaseName = configList["SourceDatabase"];
+                FormBase.ConfigurationSettings.StagingDatabaseName = configList["StagingDatabase"];
+                FormBase.ConfigurationSettings.PsaDatabaseName = configList["PersistentStagingDatabase"];
+                FormBase.ConfigurationSettings.IntegrationDatabaseName = configList["IntegrationDatabase"];
+                FormBase.ConfigurationSettings.PresentationDatabaseName = configList["PresentationDatabase"];
+                FormBase.ConfigurationSettings.MetadataDatabaseName = configList["MetadataDatabase"];
 
                 // Servers (instances)
-                Form_Base.ConfigurationSettings.PhysicalModelServerName = configList["PhysicalModelServerName"];
-                Form_Base.ConfigurationSettings.MetadataServerName = configList["MetadataServerName"];
+                FormBase.ConfigurationSettings.PhysicalModelServerName = configList["PhysicalModelServerName"];
+                FormBase.ConfigurationSettings.MetadataServerName = configList["MetadataServerName"];
 
                 // Authentication & connectivity
-                Form_Base.ConfigurationSettings.MetadataSSPI = configList["MetadataSSPI"];
-                Form_Base.ConfigurationSettings.MetadataNamed = configList["MetadataNamed"];
-                Form_Base.ConfigurationSettings.MetadataUserName = configList["MetadataUserName"];
-                Form_Base.ConfigurationSettings.MetadataPassword = configList["MetadataPassword"];
+                FormBase.ConfigurationSettings.MetadataSspi = configList["MetadataSSPI"];
+                FormBase.ConfigurationSettings.MetadataNamed = configList["MetadataNamed"];
+                FormBase.ConfigurationSettings.MetadataUserName = configList["MetadataUserName"];
+                FormBase.ConfigurationSettings.MetadataPassword = configList["MetadataPassword"];
 
-                Form_Base.ConfigurationSettings.PhysicalModelSSPI = configList["PhysicalModelSSPI"];
-                Form_Base.ConfigurationSettings.PhysicalModelNamed = configList["PhysicalModelNamed"];
-                Form_Base.ConfigurationSettings.PhysicalModelUserName = configList["PhysicalModelUserName"];
-                Form_Base.ConfigurationSettings.PhysicalModelPassword = configList["PhysicalModelPassword"];
+                FormBase.ConfigurationSettings.PhysicalModelSspi = configList["PhysicalModelSSPI"];
+                FormBase.ConfigurationSettings.PhysicalModelNamed = configList["PhysicalModelNamed"];
+                FormBase.ConfigurationSettings.PhysicalModelUserName = configList["PhysicalModelUserName"];
+                FormBase.ConfigurationSettings.PhysicalModelPassword = configList["PhysicalModelPassword"];
 
                 // Paths
-                Form_Base.GlobalParameters.OutputPath = configList["OutputPath"];
-                Form_Base.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
+                FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
+                FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
 
             }
             catch (Exception)
@@ -628,16 +628,16 @@ namespace TEAM
                 sr.Close();
                 fs.Close();
 
-                Form_Base.ValidationSettings.SourceObjectExistence = configList["SourceObjectExistence"];
-                Form_Base.ValidationSettings.TargetObjectExistence = configList["TargetObjectExistence"];
-                Form_Base.ValidationSettings.SourceBusinessKeyExistence = configList["BusinessKeyExistence"];
-                Form_Base.ValidationSettings.SourceAttributeExistence = configList["SourceAttributeExistence"];
-                Form_Base.ValidationSettings.TargetAttributeExistence = configList["TargetAttributeExistence"];
+                FormBase.ValidationSettings.SourceObjectExistence = configList["SourceObjectExistence"];
+                FormBase.ValidationSettings.TargetObjectExistence = configList["TargetObjectExistence"];
+                FormBase.ValidationSettings.SourceBusinessKeyExistence = configList["BusinessKeyExistence"];
+                FormBase.ValidationSettings.SourceAttributeExistence = configList["SourceAttributeExistence"];
+                FormBase.ValidationSettings.TargetAttributeExistence = configList["TargetAttributeExistence"];
 
-                Form_Base.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
-                Form_Base.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
+                FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
+                FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
 
-                Form_Base.ValidationSettings.BusinessKeySyntax = configList["BusinessKeySyntax"];
+                FormBase.ValidationSettings.BusinessKeySyntax = configList["BusinessKeySyntax"];
             }
             catch (Exception)
             {
@@ -657,23 +657,23 @@ namespace TEAM
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM Validation Settings */");
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-                validationFile.AppendLine("SourceObjectExistence|" + Form_Base.ValidationSettings.SourceObjectExistence +"");
-                validationFile.AppendLine("TargetObjectExistence|" + Form_Base.ValidationSettings.TargetObjectExistence +"");
-                validationFile.AppendLine("BusinessKeyExistence|" +Form_Base.ValidationSettings.SourceBusinessKeyExistence + "");
-                validationFile.AppendLine("SourceAttributeExistence|" + Form_Base.ValidationSettings.SourceAttributeExistence + "");
-                validationFile.AppendLine("TargetAttributeExistence|" + Form_Base.ValidationSettings.TargetAttributeExistence + "");
-                validationFile.AppendLine("LogicalGroup|" +Form_Base.ValidationSettings.LogicalGroup + "");
-                validationFile.AppendLine("LinkKeyOrder|" + Form_Base.ValidationSettings.LinkKeyOrder + "");
-                validationFile.AppendLine("BusinessKeySyntax|" + Form_Base.ValidationSettings.BusinessKeySyntax + "");
+                validationFile.AppendLine("SourceObjectExistence|" + FormBase.ValidationSettings.SourceObjectExistence +"");
+                validationFile.AppendLine("TargetObjectExistence|" + FormBase.ValidationSettings.TargetObjectExistence +"");
+                validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.SourceBusinessKeyExistence + "");
+                validationFile.AppendLine("SourceAttributeExistence|" + FormBase.ValidationSettings.SourceAttributeExistence + "");
+                validationFile.AppendLine("TargetAttributeExistence|" + FormBase.ValidationSettings.TargetAttributeExistence + "");
+                validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
+                validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
+                validationFile.AppendLine("BusinessKeySyntax|" + FormBase.ValidationSettings.BusinessKeySyntax + "");
 
                 // Closing off
                 validationFile.AppendLine("/* End of file */");
 
                 using (var outfile =
-                    new StreamWriter(Form_Base.GlobalParameters.ConfigurationPath +
-                                     Form_Base.GlobalParameters.ValidationFileName + '_' +
-                                     Form_Base.GlobalParameters.WorkingEnvironment +
-                                     Form_Base.GlobalParameters.FileExtension))
+                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
+                                     FormBase.GlobalParameters.ValidationFileName + '_' +
+                                     FormBase.GlobalParameters.WorkingEnvironment +
+                                     FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();

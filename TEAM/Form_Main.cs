@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace TEAM
 {
-    public partial class FormMain : Form_Base
+    public partial class FormMain : FormBase
     {
         internal bool RevalidateFlag = true;
         public FormMain()
@@ -237,7 +237,7 @@ namespace TEAM
 
             try
             {
-                var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+                var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
 
                 if (versionList != null && versionList.Rows.Count > 0)
                 {
@@ -261,7 +261,7 @@ namespace TEAM
             var sqlStatementForCurrentVersion = new StringBuilder();
             sqlStatementForCurrentVersion.AppendLine("SELECT [REPOSITORY_VERSION],[REPOSITORY_UPDATE_DATETIME] FROM [MD_REPOSITORY_VERSION]");
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+            var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
 
             try
             {

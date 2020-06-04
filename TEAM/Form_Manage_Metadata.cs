@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormManageMetadata : Form_Base
+    public partial class FormManageMetadata : FormBase
     {
         Form_Alert _alert;
         Form_Alert _alertValidation;
@@ -272,7 +272,7 @@ namespace TEAM
                     sqlStatementForLatestVersion.AppendLine(" [MULTI_ACTIVE_INDICATOR]");
                     sqlStatementForLatestVersion.AppendLine("FROM [MD_VERSION_ATTRIBUTE]");
 
-                    var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+                    var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
                     _bindingSourcePhysicalModelMetadata.DataSource = versionList;
 
                     // Set the column header names.
@@ -322,7 +322,7 @@ namespace TEAM
                 // Load the file, convert it to a DataTable and bind it to the source
                 List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath +GlobalParameters.JsonModelMetadataFileName+ FileConfiguration.jsonVersionExtension));
 
-                DataTable dt = ConvertToDataTable(jsonArray);
+                DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
                 //Make sure the changes are seen as committed, so that changes can be detected later on.
                 dt.AcceptChanges();
@@ -388,7 +388,7 @@ namespace TEAM
                     sqlStatementForLatestVersion.AppendLine("FROM [MD_TABLE_MAPPING]");
                     sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + versionId);
 
-                    var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+                    var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
 
                     // Order by Source Table, Integration_Area table, Business Key Attribute
                     //versionList.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
@@ -436,7 +436,7 @@ namespace TEAM
 
                 // Load the file, convert it to a DataTable and bind it to the source
                 List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
-                DataTable dt = ConvertToDataTable(jsonArray);
+                DataTable dt = Utility.ConvertToDataTable(jsonArray);
                 // Order by Source Table, Integration_Area table, Business Key Attribute
 
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
@@ -508,7 +508,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine("FROM [MD_ATTRIBUTE_MAPPING]");
                 sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
 
-                var versionList = GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
+                var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForLatestVersion.ToString());
                 
                 _bindingSourceAttributeMetadata.DataSource = versionList;
 
@@ -542,7 +542,7 @@ namespace TEAM
 
                 // Load the file, convert it to a DataTable and bind it to the source
                 List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension));
-                DataTable dt = ConvertToDataTable(jsonArray);
+                DataTable dt = Utility.ConvertToDataTable(jsonArray);
                 dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
                 SetTeamDataTableMapping.SetAttributeDataTableColumns(dt);
 
@@ -2778,7 +2778,7 @@ namespace TEAM
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
             List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + JsonVersionExtension));
-            DataTable dt = ConvertToDataTable(jsonArray);
+            DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             dt.AcceptChanges(); 
@@ -2794,7 +2794,7 @@ namespace TEAM
 
             // Load the attribute mapping file, convert it to a DataTable and bind it to the source
             List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName + JsonVersionExtension));
-            DataTable dt = ConvertToDataTable(jsonArray);
+            DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             dt.AcceptChanges(); 
@@ -2810,7 +2810,7 @@ namespace TEAM
 
             // Load the table mapping file, convert it to a DataTable and bind it to the source
             List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + JsonVersionExtension));
-            DataTable dt = ConvertToDataTable(jsonArray);
+            DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             dt.AcceptChanges(); 
@@ -2861,7 +2861,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new JsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId +".json", Form_Base.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId +".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text ="A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -2879,7 +2879,7 @@ namespace TEAM
 
                         // Load the file, convert it to a DataTable and bind it to the source
                         List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
-                        DataTable dt = ConvertToDataTable(jsonArray);
+                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
                         // Setup the datatable with proper headings.
                         SetTeamDataTableMapping.SetTableDataTableColumns(dt);
@@ -2979,7 +2979,7 @@ namespace TEAM
 
                     // Load the file, convert it to a DataTable and bind it to the source
                     List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
-                    DataTable dt = ConvertToDataTable(jsonArray);
+                    DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
                     // Set the column names in the datatable.
                     SetTeamDataTableMapping.SetAttributeDataTableColumns(dt);
@@ -3355,7 +3355,7 @@ namespace TEAM
 
                     versionExistenceCheck.AppendLine("SELECT * FROM TMP_MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
 
-                    var versionExistenceCheckDataTable = GetDataTable(ref connOmd, versionExistenceCheck.ToString());
+                    var versionExistenceCheckDataTable = Utility.GetDataTable(ref connOmd, versionExistenceCheck.ToString());
 
                     if (versionExistenceCheckDataTable != null && versionExistenceCheckDataTable.Rows.Count > 0)
                     {
@@ -4271,7 +4271,7 @@ namespace TEAM
                                                ClassMetadataHandling.TableTypes.Context + "' ");
                 prepareSatStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
 
-                var listSat = GetDataTable(ref connOmd, prepareSatStatement.ToString());
+                var listSat = Utility.GetDataTable(ref connOmd, prepareSatStatement.ToString());
 
                 foreach (DataRow satelliteName in listSat.Rows)
                 {
@@ -4367,7 +4367,7 @@ namespace TEAM
                 prepareLsatStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
 
 
-                var listLsat = GetDataTable(ref connOmd, prepareLsatStatement.ToString());
+                var listLsat = Utility.GetDataTable(ref connOmd, prepareLsatStatement.ToString());
 
                 foreach (DataRow satelliteName in listLsat.Rows)
                 {
@@ -4464,7 +4464,7 @@ namespace TEAM
                                                    "'");
                 prepareSatXrefStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
 
-                var listSatXref = GetDataTable(ref connOmd, prepareSatXrefStatement.ToString());
+                var listSatXref = Utility.GetDataTable(ref connOmd, prepareSatXrefStatement.ToString());
 
                 foreach (DataRow tableName in listSatXref.Rows)
                 {
@@ -4564,7 +4564,7 @@ namespace TEAM
                 prepareStgHubXrefStatement.AppendLine(") hubsub");
                 prepareStgHubXrefStatement.AppendLine("ON hub.TARGET_TABLE=hubsub.[SCHEMA_NAME]+'.'+hubsub.HUB_NAME");
 
-                var listXref = GetDataTable(ref connOmd, prepareStgHubXrefStatement.ToString());
+                var listXref = Utility.GetDataTable(ref connOmd, prepareStgHubXrefStatement.ToString());
 
                 foreach (DataRow tableName in listXref.Rows)
                 {
@@ -4638,7 +4638,7 @@ namespace TEAM
                 var intTableFilterObjects = "";
                 var presTableFilterObjects = "";
 
-                var tableDataTable = GetDataTable(ref connOmd, tableFilterQuery);
+                var tableDataTable = Utility.GetDataTable(ref connOmd, tableFilterQuery);
 
                 // Creating the filters
                 int objectCounter = 1;
@@ -4748,7 +4748,7 @@ namespace TEAM
                     preparePhysicalModelStgStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
                     preparePhysicalModelStgStatement.AppendLine(") sub");
 
-                    var physicalModelDataTableStg = GetDataTable(ref connStg, preparePhysicalModelStgStatement.ToString());
+                    var physicalModelDataTableStg = Utility.GetDataTable(ref connStg, preparePhysicalModelStgStatement.ToString());
 
                     // PSA
                     var preparePhysicalModelPsaStatement = new StringBuilder();
@@ -4767,7 +4767,7 @@ namespace TEAM
                     preparePhysicalModelPsaStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
                     preparePhysicalModelPsaStatement.AppendLine(") sub");
 
-                    var physicalModelDataTablePsa = GetDataTable(ref connPsa, preparePhysicalModelPsaStatement.ToString());
+                    var physicalModelDataTablePsa = Utility.GetDataTable(ref connPsa, preparePhysicalModelPsaStatement.ToString());
 
                     // INT
                     var preparePhysicalModelIntStatement = new StringBuilder();
@@ -4786,7 +4786,7 @@ namespace TEAM
                     preparePhysicalModelIntStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
                     preparePhysicalModelIntStatement.AppendLine(") sub");
 
-                    var physicalModelDataTableInt = GetDataTable(ref connInt, preparePhysicalModelIntStatement.ToString());
+                    var physicalModelDataTableInt = Utility.GetDataTable(ref connInt, preparePhysicalModelIntStatement.ToString());
 
                     // PRES
                     var preparePhysicalModelPresStatement = new StringBuilder();
@@ -4805,7 +4805,7 @@ namespace TEAM
                     preparePhysicalModelPresStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
                     preparePhysicalModelPresStatement.AppendLine(") sub");
 
-                    var physicalModelDataTablePres = GetDataTable(ref connPres, preparePhysicalModelPresStatement.ToString());
+                    var physicalModelDataTablePres = Utility.GetDataTable(ref connPres, preparePhysicalModelPresStatement.ToString());
 
 
                     if (physicalModelDataTableStg != null)
@@ -4845,7 +4845,7 @@ namespace TEAM
                     allVirtualDatabaseAttributes.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
                     allVirtualDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
 
-                    physicalModelDataTable = GetDataTable(ref connOmd, allVirtualDatabaseAttributes.ToString());
+                    physicalModelDataTable = Utility.GetDataTable(ref connOmd, allVirtualDatabaseAttributes.ToString());
                 }
 
                 try
@@ -5014,7 +5014,7 @@ namespace TEAM
                 prepareAttStatement.AppendLine("  ) ");
 
                 // Load the data table, get the attributes
-                var listAtt = GetDataTable(ref connOmd, prepareAttStatement.ToString());
+                var listAtt = Utility.GetDataTable(ref connOmd, prepareAttStatement.ToString());
 
                 // Check if there are any attributes found, otherwise insert into the repository
                 if (listAtt.Rows.Count == 0)
@@ -5155,7 +5155,7 @@ namespace TEAM
                     "ON pivotsub.TARGET_TABLE = hubsub.[SCHEMA_NAME]+'.'+hubsub.TARGET_NAME");
                 prepareKeyStatement.AppendLine("ORDER BY stgsub.SOURCE_NAME, hubsub.TARGET_NAME, COMPONENT_ORDER");
 
-                var listKeys = GetDataTable(ref connOmd, prepareKeyStatement.ToString());
+                var listKeys = Utility.GetDataTable(ref connOmd, prepareKeyStatement.ToString());
 
                 if (listKeys.Rows.Count == 0)
                 {
@@ -5264,7 +5264,7 @@ namespace TEAM
                                                             WHERE COMPONENT_VALUE <> 'N/A' AND A.COMPONENT_VALUE != ''
                                                             ORDER BY A.SOURCE_NAME, A.HUB_NAME, BUSINESS_KEY_DEFINITION, A.COMPONENT_ID, COMPONENT_ELEMENT_ORDER
                                                         ");
-                var listKeyParts = GetDataTable(ref connOmd, prepareKeyComponentStatement.ToString());
+                var listKeyParts = Utility.GetDataTable(ref connOmd, prepareKeyComponentStatement.ToString());
 
                 if (listKeyParts.Rows.Count == 0)
                 {
@@ -5365,7 +5365,7 @@ namespace TEAM
                                                      ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
                                                      ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
                                                      "','" + ConfigurationSettings.EtlProcessAttribute + "','" +
-                                                     Form_Base.ConfigurationSettings.LoadDateTimeAttribute + "')");
+                                                     FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
                 }
                 else
                 {
@@ -5383,8 +5383,8 @@ namespace TEAM
                                                      ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
                                                      ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
                                                      ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
-                                                     "','" + Form_Base.ConfigurationSettings.EtlProcessAttribute +
-                                                     "','" + Form_Base.ConfigurationSettings.LoadDateTimeAttribute +
+                                                     "','" + FormBase.ConfigurationSettings.EtlProcessAttribute +
+                                                     "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute +
                                                      "')");
 
                 }
@@ -5454,7 +5454,7 @@ namespace TEAM
                 prepareHubLnkXrefStatement.AppendLine(
                     "     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
 
-                var listHlXref = GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
+                var listHlXref = Utility.GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
                 if (listHlXref != null)
                 {
@@ -5593,7 +5593,7 @@ namespace TEAM
                                                       "'");
                 preparestgLnkXrefStatement.AppendLine("AND[PROCESS_INDICATOR] = 'Y'");
 
-                var listStgLinkXref = GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
+                var listStgLinkXref = Utility.GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
 
                 foreach (DataRow tableName in listStgLinkXref.Rows)
                 {
@@ -5800,7 +5800,7 @@ namespace TEAM
                 prepareMappingStagingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
 
-                var automaticAttributeMappings = GetDataTable(ref connOmd, prepareMappingStagingStatement.ToString());
+                var automaticAttributeMappings = Utility.GetDataTable(ref connOmd, prepareMappingStagingStatement.ToString());
 
                 if (automaticAttributeMappings.Rows.Count == 0)
                 {
@@ -5995,7 +5995,7 @@ namespace TEAM
                 prepareMappingPersistentStagingStatement.AppendLine(")");
                 prepareMappingPersistentStagingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
-                var automaticAttributeMappingsPsa = GetDataTable(ref connOmd, prepareMappingPersistentStagingStatement.ToString());
+                var automaticAttributeMappingsPsa = Utility.GetDataTable(ref connOmd, prepareMappingPersistentStagingStatement.ToString());
 
                 if (automaticAttributeMappingsPsa.Rows.Count == 0)
                 {
@@ -6095,7 +6095,7 @@ namespace TEAM
                 prepareMappingStatementManual.AppendLine("   AND table_mapping.PROCESS_INDICATOR = 'Y' ");
 
 
-                var attributeMappingsSatellites = GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
+                var attributeMappingsSatellites = Utility.GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
 
                 if (attributeMappingsSatellites.Rows.Count == 0)
                 {
@@ -6244,7 +6244,7 @@ namespace TEAM
                 prepareMappingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
                 var automaticAttributeMappingsSatellites =
-                    GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                    Utility.GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
                 if (automaticAttributeMappingsSatellites.Rows.Count == 0)
                 {
@@ -6345,7 +6345,7 @@ namespace TEAM
                                                        "')");
                 prepareMappingStatementLink.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
 
-                var degenerateMappings = GetDataTable(ref connOmd, prepareMappingStatementLink.ToString());
+                var degenerateMappings = Utility.GetDataTable(ref connOmd, prepareMappingStatementLink.ToString());
 
                 if (degenerateMappings.Rows.Count == 0)
                 {
@@ -6428,7 +6428,7 @@ namespace TEAM
                 }
 
                 var automaticDegenerateMappings =
-                    GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
+                    Utility.GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
 
                 if (automaticDegenerateMappings.Rows.Count == 0)
                 {
@@ -6587,7 +6587,7 @@ namespace TEAM
                     prepareMultiKeyStatement.AppendLine("AND xref.ATTRIBUTE_NAME_TO = sub.ATTRIBUTE_NAME");
                 }
 
-                var listMultiKeys = GetDataTable(ref connOmd, prepareMultiKeyStatement.ToString());
+                var listMultiKeys = Utility.GetDataTable(ref connOmd, prepareMultiKeyStatement.ToString());
 
                 if (listMultiKeys == null || listMultiKeys.Rows.Count == 0)
                 {
@@ -6713,7 +6713,7 @@ namespace TEAM
                 prepareDrivingKeyStatement.AppendLine(" AND [PROCESS_INDICATOR] = 'Y'");
 
 
-                var listDrivingKeys = GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
+                var listDrivingKeys = Utility.GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
 
                 if (listDrivingKeys.Rows.Count == 0)
                 {
@@ -7092,7 +7092,7 @@ namespace TEAM
             sqlStatementForActivationMetadata.AppendLine("FROM [dbo].[MD_MODEL_METADATA]");
             sqlStatementForActivationMetadata.AppendLine("GROUP BY [VERSION_NAME]");
 
-            var activationMetadata = GetDataTable(ref connOmd, sqlStatementForActivationMetadata.ToString());
+            var activationMetadata = Utility.GetDataTable(ref connOmd, sqlStatementForActivationMetadata.ToString());
 
             if (activationMetadata != null)
             {
@@ -7214,7 +7214,7 @@ namespace TEAM
                     sqlStatementForSatelliteAttributes.AppendLine("SELECT *");
                     sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
 
-                    var satelliteAttributes = GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
+                    var satelliteAttributes = Utility.GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
                     foreach (DataRow row in satelliteAttributes.Rows)
                     {
                         var sourceNodeLabel = (string) row["SOURCE_ATTRIBUTE_NAME"];
@@ -7255,7 +7255,7 @@ namespace TEAM
                         sqlStatementForSubjectAreas.AppendLine("SELECT DISTINCT SUBJECT_AREA");
                         sqlStatementForSubjectAreas.AppendLine("FROM [interface].[INTERFACE_SUBJECT_AREA]");
 
-                        var modelRelationshipsLinksDataTable = GetDataTable(ref connOmd, sqlStatementForSubjectAreas.ToString());
+                        var modelRelationshipsLinksDataTable = Utility.GetDataTable(ref connOmd, sqlStatementForSubjectAreas.ToString());
 
                         foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
                         {
@@ -7309,7 +7309,7 @@ namespace TEAM
                         sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
                         sqlStatementForHubCategories.AppendLine("WHERE TARGET_TYPE = 'Normal'");
 
-                        modelRelationshipsHubDataTable = GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
+                        modelRelationshipsHubDataTable = Utility.GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
                     }
                     catch
                     {
@@ -7337,7 +7337,7 @@ namespace TEAM
                         sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
                         sqlStatementForRelationships.AppendLine("WHERE HUB_NAME NOT IN ('N/A')");
 
-                        var businessConceptsRelationships = GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
+                        var businessConceptsRelationships = Utility.GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
 
                         foreach (DataRow row in businessConceptsRelationships.Rows)
                         {
@@ -7359,7 +7359,7 @@ namespace TEAM
                         sqlStatementForLinkCategories.AppendLine("SELECT *");
                         sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SUBJECT_AREA]");
 
-                        var modelRelationshipsLinksDataTable = GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
+                        var modelRelationshipsLinksDataTable = Utility.GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
 
                         foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
                         {
@@ -7378,7 +7378,7 @@ namespace TEAM
                         }
 
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         errorCounter++;
                         errorLog.AppendLine("The following query caused an issue when generating the DGML file: " + sqlStatementForLinkCategories);
@@ -7983,7 +7983,7 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("  )");
             sqlStatementForAttributeVersion.AppendLine("ORDER BY main.column_id");
 
-            var reverseEngineerResults = GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
+            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
             conn.Close();
             return reverseEngineerResults;
         }
@@ -8626,7 +8626,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new JsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", Form_Base.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -8644,7 +8644,7 @@ namespace TEAM
 
                         // Load the file, convert it to a DataTable and bind it to the source
                         List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(chosenFile));
-                        DataTable dt = ConvertToDataTable(jsonArray);
+                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
                         // Setup the datatable with proper column headings.
                         SetTeamDataTableMapping.SetPhysicalModelDataTableColumns(dt);
@@ -8835,7 +8835,7 @@ namespace TEAM
                 try
                 {
                     var metadataQuery = pattern.LoadPatternBaseQuery;
-                    metadataDataTable = GetDataTable(ref conn, metadataQuery);
+                    metadataDataTable = Utility.GetDataTable(ref conn, metadataQuery);
                 }
                 catch (Exception ex)
                 {
@@ -8845,11 +8845,11 @@ namespace TEAM
                 // Populate the attribute mappings
                 // Create the column-to-column mapping
                 var columnMetadataQuery = pattern.LoadPatternAttributeQuery;
-                var columnMetadataDataTable = GetDataTable(ref conn, columnMetadataQuery);
+                var columnMetadataDataTable = Utility.GetDataTable(ref conn, columnMetadataQuery);
 
                 // Populate the additional business key information (i.e. links)
                 var additionalBusinessKeyQuery = pattern.LoadPatternAdditionalBusinessKeyQuery;
-                var additionalBusinessKeyDataTable = GetDataTable(ref conn, additionalBusinessKeyQuery);
+                var additionalBusinessKeyDataTable = Utility.GetDataTable(ref conn, additionalBusinessKeyQuery);
 
                 // Loop through the available items, select the right mapping and map the metadata to the DWH automation schema
                 foreach (string item in itemList)

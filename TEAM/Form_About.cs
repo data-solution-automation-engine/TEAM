@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class FormAbout : Form_Base
+    public partial class FormAbout : FormBase
     {
         private readonly FormMain _myParent;
 
@@ -61,7 +61,7 @@ namespace TEAM
                 sqlForWorkCountDown.AppendLine(") as sub");
 
                 //  MessageBox.Show(sqlForWorkCountdDown.ToString());
-                var workCountDownDatatable = GetDataTable(ref connHstg, sqlForWorkCountDown.ToString());
+                var workCountDownDatatable = Utility.GetDataTable(ref connHstg, sqlForWorkCountDown.ToString());
 
                 //var workCountDownDatatable = _myParent.Invoke((MethodInvoker)delegate() { _myParent.GetDataTable(ref connHstg, sqlForWorkCountdDown.ToString()); });
 

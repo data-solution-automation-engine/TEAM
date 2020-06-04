@@ -10,10 +10,9 @@ using Newtonsoft.Json.Linq;
 
 namespace TEAM
 {
-    public partial class FormManagePattern: Form_Base
+    public partial class FormManagePattern: FormBase
     {
-        private bool _formLoading = true;
-        private FormMain parentFormMain;
+        //private FormMain parentFormMain;
 
         private BindingSource _bindingSourceLoadPatternDefinition = new BindingSource();
 
@@ -26,7 +25,7 @@ namespace TEAM
         // TEAM form constructor
         public FormManagePattern(FormMain parent) : base(parent)
         {
-            parentFormMain = parent;
+            //parentFormMain = parent;
             InitializeComponent();
 
             //var patternDefinition = new LoadPatternDefinition.LoadPatternDefinitionFileHandling();
@@ -36,7 +35,6 @@ namespace TEAM
             UpdatePatternDefinitions(filePath);
 
             dataGridViewLoadPatternDefinition.Focus();
-            _formLoading = false;
         }
 
         private void UpdatePatternDefinitions(string filePath)

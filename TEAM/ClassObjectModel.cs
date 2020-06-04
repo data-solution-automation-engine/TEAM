@@ -34,44 +34,44 @@ namespace TEAM
     class MetadataConfiguration
     {
         // Databases
-        public string sourceDatabaseName { get; } = Form_Base.ConfigurationSettings.SourceDatabaseName;
-        public string sourceDatabaseConnection { get; } = Form_Base.ConfigurationSettings.ConnectionStringSource;
-        public string stagingAreaDatabaseName { get; } = Form_Base.ConfigurationSettings.StagingDatabaseName;
+        public string sourceDatabaseName { get; } = FormBase.ConfigurationSettings.SourceDatabaseName;
+        public string sourceDatabaseConnection { get; } = FormBase.ConfigurationSettings.ConnectionStringSource;
+        public string stagingAreaDatabaseName { get; } = FormBase.ConfigurationSettings.StagingDatabaseName;
 
         public string stagingAreaDatabaseConnection { get; } =
-            Form_Base.ConfigurationSettings.ConnectionStringSource;
+            FormBase.ConfigurationSettings.ConnectionStringSource;
 
-        public string persistentStagingDatabaseName { get; } = Form_Base.ConfigurationSettings.PsaDatabaseName;
+        public string persistentStagingDatabaseName { get; } = FormBase.ConfigurationSettings.PsaDatabaseName;
 
         public string persistentStagingDatabaseConnection { get; } =
-            Form_Base.ConfigurationSettings.ConnectionStringSource;
+            FormBase.ConfigurationSettings.ConnectionStringSource;
 
-        public string persistentStagingSchemaName { get; } = Form_Base.ConfigurationSettings.SchemaName;
-        public string integrationDatabaseName { get; } = Form_Base.ConfigurationSettings.IntegrationDatabaseName;
+        public string persistentStagingSchemaName { get; } = FormBase.ConfigurationSettings.SchemaName;
+        public string integrationDatabaseName { get; } = FormBase.ConfigurationSettings.IntegrationDatabaseName;
 
         public string integrationDatabaseConnection { get; } =
-            Form_Base.ConfigurationSettings.ConnectionStringSource;
+            FormBase.ConfigurationSettings.ConnectionStringSource;
 
-        public string presentationDatabaseName { get; } = Form_Base.ConfigurationSettings.PresentationDatabaseName;
+        public string presentationDatabaseName { get; } = FormBase.ConfigurationSettings.PresentationDatabaseName;
 
         public string presentationDatabaseConnection { get; } =
-            Form_Base.ConfigurationSettings.ConnectionStringSource;
+            FormBase.ConfigurationSettings.ConnectionStringSource;
 
         //public string vedwSchemaName { get; } = FormBase.VedwConfigurationSettings.VedwSchema;
 
         // Attributes
         public string changeDataCaptureAttribute { get; set; } =
-            Form_Base.ConfigurationSettings.ChangeDataCaptureAttribute;
+            FormBase.ConfigurationSettings.ChangeDataCaptureAttribute;
 
-        public string recordSourceAttribute { get; } = Form_Base.ConfigurationSettings.RecordSourceAttribute;
-        public string loadDateTimeAttribute { get; } = Form_Base.ConfigurationSettings.LoadDateTimeAttribute;
-        public string eventDateTimeAttribute { get; set; } = Form_Base.ConfigurationSettings.EventDateTimeAttribute;
+        public string recordSourceAttribute { get; } = FormBase.ConfigurationSettings.RecordSourceAttribute;
+        public string loadDateTimeAttribute { get; } = FormBase.ConfigurationSettings.LoadDateTimeAttribute;
+        public string eventDateTimeAttribute { get; set; } = FormBase.ConfigurationSettings.EventDateTimeAttribute;
 
         public string recordChecksumAttribute { get; set; } =
-            Form_Base.ConfigurationSettings.RecordChecksumAttribute;
+            FormBase.ConfigurationSettings.RecordChecksumAttribute;
 
-        public string etlProcessAttribute { get; } = Form_Base.ConfigurationSettings.EtlProcessAttribute;
-        public string sourceRowIdAttribute { get; } = Form_Base.ConfigurationSettings.RowIdAttribute;
+        public string etlProcessAttribute { get; } = FormBase.ConfigurationSettings.EtlProcessAttribute;
+        public string sourceRowIdAttribute { get; } = FormBase.ConfigurationSettings.RowIdAttribute;
     }
 
     class InterfaceHandling

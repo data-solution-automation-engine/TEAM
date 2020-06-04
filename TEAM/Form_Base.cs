@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
@@ -8,28 +7,31 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class Form_Base : Form
+    public partial class FormBase : Form
     {
         protected FormMain MyParent;
 
-        public Form_Base()
+        public FormBase()
         {
             InitializeComponent();
         }
 
-        public Form_Base(FormMain myParent)
+        public FormBase(FormMain myParent)
         {
             MyParent = myParent;
             InitializeComponent();
         }
 
-
-
         /// <summary>
-        ///    Gets or sets the values from the most common configuration settings
+        /// Gets or sets the values from the most common configuration settings.
         /// </summary>
         internal static class ConfigurationSettings
         {
+            #region Connectivity (connection objects, connection strings etc.)
+
+            #endregion
+
+            #region Prefixes
             //Prefixes
             internal static string StgTablePrefixValue { get; set; }
             internal static string PsaTablePrefixValue { get; set; }
@@ -37,6 +39,7 @@ namespace TEAM
             internal static string SatTablePrefixValue { get; set; }
             internal static string LinkTablePrefixValue { get; set; }
             internal static string LsatTablePrefixValue { get; set; }
+            #endregion
 
             //Connection strings
             internal static string ConnectionStringSource { get; set; }
@@ -47,12 +50,12 @@ namespace TEAM
             internal static string ConnectionStringOmd { get; set; }
 
             //Connection & authentication information
-            internal static string MetadataSSPI { get; set; }
+            internal static string MetadataSspi { get; set; }
             internal static string MetadataNamed { get; set; }
             internal static string MetadataUserName { get; set; }
             internal static string MetadataPassword { get; set; }
 
-            internal static string PhysicalModelSSPI { get; set; }
+            internal static string PhysicalModelSspi { get; set; }
             internal static string PhysicalModelNamed { get; set; }
             internal static string PhysicalModelUserName { get; set; }
             internal static string PhysicalModelPassword { get; set; }
@@ -120,7 +123,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Gets or sets the values for the validation of the metadata
+        /// Gets or sets the values for the validation of the metadata.
         /// </summary>
         internal static class ValidationSettings
         {
@@ -140,7 +143,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///    These variables are used as global variables throughout the application
+        /// These parameters are used as global constants throughout the application.
         /// </summary>
         internal static class GlobalParameters
         {
@@ -177,31 +180,6 @@ namespace TEAM
             public static int HighestVersionId { get; set; } = 0;
         }
 
-
-        public static DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
-        {
-            // Pass the connection to a command object
-            var sqlCommand = new SqlCommand(sql, sqlConnection);
-            var sqlDataAdapter = new SqlDataAdapter { SelectCommand = sqlCommand };
-
-            var dataTable = new DataTable();
-
-            // Adds or refreshes rows in the DataSet to match those in the data source
-            try
-            {
-                sqlDataAdapter.Fill(dataTable);
-            }
-
-            catch (Exception)
-            {
-                //  MessageBox.Show(@"SQL error: " + exception.Message + "\r\n\r\n The executed query was: " + sql + "\r\n\r\n The connection used was " + sqlConnection.ConnectionString, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            return dataTable;
-
-        }
-
-
         public KeyValuePair<int, int> GetVersion(int selectedVersion, SqlConnection sqlConnection)
         {
             var currentVersion = selectedVersion;
@@ -214,7 +192,7 @@ namespace TEAM
             sqlStatementForVersion.AppendLine("FROM MD_VERSION");
             sqlStatementForVersion.AppendLine("WHERE VERSION_ID = " + currentVersion);
 
-            var versionList = GetDataTable(ref sqlConnection, sqlStatementForVersion.ToString());
+            var versionList = Utility.GetDataTable(ref sqlConnection, sqlStatementForVersion.ToString());
 
             if (versionList != null)
             {
@@ -241,33 +219,7 @@ namespace TEAM
                 return new KeyValuePair<int, int>(0, 0);
             }
         }
-
-
-        public DataTable ConvertToDataTable<T>(IList<T> data)
-        {
-            DataTable table = new DataTable();
-
-            try
-            {
-                PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
-                foreach (PropertyDescriptor prop in properties)
-                    table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-                foreach (T item in data)
-                {
-                    DataRow row = table.NewRow();
-                    foreach (PropertyDescriptor prop in properties)
-                        row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
-                    table.Rows.Add(row);
-                }
-            }
-            catch (Exception)
-            { 
-                // IGNORE
-            }
-            return table;
-        }
-
-
+        
         protected int GetMaxVersionId(SqlConnection sqlConnection)
         {
             var versionId = new int();
@@ -286,7 +238,7 @@ namespace TEAM
             sqlStatementForVersion.AppendLine("SELECT COALESCE(MAX(VERSION_ID),0) AS VERSION_ID");
             sqlStatementForVersion.AppendLine("FROM MD_VERSION");
 
-            var versionList = GetDataTable(ref sqlConnection, sqlStatementForVersion.ToString());
+            var versionList = Utility.GetDataTable(ref sqlConnection, sqlStatementForVersion.ToString());
 
             if (versionList!= null)
             {
@@ -302,7 +254,6 @@ namespace TEAM
             }
          
         }
-
 
         protected int GetVersionCount()
         {
@@ -323,7 +274,7 @@ namespace TEAM
             sqlStatementForVersion.AppendLine("SELECT COUNT(*) AS VERSION_COUNT");
             sqlStatementForVersion.AppendLine("FROM MD_VERSION");
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForVersion.ToString());
+            var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForVersion.ToString());
 
             if (versionList != null)
             {
@@ -347,10 +298,5 @@ namespace TEAM
             }
         }
 
-
-        private void Form_Base_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }
