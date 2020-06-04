@@ -211,6 +211,25 @@ namespace TEAM
             _radioButtonNamedUserSecurity.Checked = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
             _radioButtonNamedUserSecurity.CheckedChanged += new EventHandler(RadioButtonNamedUserCheckedChanged);
 
+            // Add Save Button
+            Button saveButton = new Button();
+            localPanel.Controls.Add(saveButton);
+            saveButton.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            saveButton.Location = new Point(6, 536);
+            saveButton.Size = new Size(120, 40);
+            saveButton.Name = $"saveButton";
+            saveButton.Text = $"Save Connection";
+
+            // Add Delete Button
+            Button deleteButton = new Button();
+            localPanel.Controls.Add(deleteButton);
+            deleteButton.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            deleteButton.Location = new Point(132, 536);
+            deleteButton.Size = new Size(120, 40);
+            deleteButton.Name = $"deleteButton";
+            deleteButton.Text = $"Delete Connection";
+
+
             #endregion
 
             #region Constructor Methods

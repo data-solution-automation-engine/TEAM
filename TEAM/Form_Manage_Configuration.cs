@@ -1134,15 +1134,42 @@ namespace TEAM
 
                 connectionProfile.databaseServer = connectionDatabase;
 
-                CustomTabPage localCustomTabPage = new CustomTabPage(connectionProfile);
+
                 //localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                 //localCustomTabPage.OnClearMainText += (ClearMainInformationTextBox);
 
-                localCustomTabPageList.Add(localCustomTabPage);
-                tabControlConnections.TabPages.Insert(lastIndex,localCustomTabPage);
-                
-                tabControlConnections.SelectedIndex = lastIndex;
+                bool newTabExists = false;
+                foreach (TabPage customTabPage in tabControlConnections.TabPages)
+                {
+                    if (customTabPage.Name == "New")
+                    {
+                        newTabExists = true;
+                    }
+                    else
+                    {
+                        // Do nothing
+                    }
+                }
+
+                if (newTabExists == false)
+                {
+                    CustomTabPage localCustomTabPage = new CustomTabPage(connectionProfile);
+                    localCustomTabPageList.Add(localCustomTabPage);
+                    tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
+                    tabControlConnections.SelectedIndex = lastIndex;
+                }
+                else
+                {
+                    richTextBoxInformation.AppendText("There is already a 'new connection' tab open. Please close or save this first.\r\n");
+                }
             }
+        }
+
+        private void tabControlConnections_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (e.TabPageIndex == this.tabControlConnections.TabCount - 1)
+                    e.Cancel = true;
+
         }
     }
 }

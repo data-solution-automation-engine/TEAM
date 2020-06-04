@@ -165,8 +165,8 @@
             this.tabPageConnectionsWIP = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
             this.tabPageMain = new System.Windows.Forms.TabPage();
-            this.tabPageNewTab = new System.Windows.Forms.TabPage();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.tabPageNewTab = new System.Windows.Forms.TabPage();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControlDefaultDetails.SuspendLayout();
@@ -1529,6 +1529,7 @@
             this.tabControlConnections.SelectedIndex = 0;
             this.tabControlConnections.Size = new System.Drawing.Size(1114, 608);
             this.tabControlConnections.TabIndex = 0;
+            this.tabControlConnections.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlConnections_Selecting);
             this.tabControlConnections.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlConnections_MouseDown);
             // 
             // tabPageMain
@@ -1543,15 +1544,6 @@
             this.tabPageMain.UseVisualStyleBackColor = true;
             this.tabPageMain.Click += new System.EventHandler(this.tabPageMain_Click);
             // 
-            // tabPageNewTab
-            // 
-            this.tabPageNewTab.Location = new System.Drawing.Point(4, 22);
-            this.tabPageNewTab.Name = "tabPageNewTab";
-            this.tabPageNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageNewTab.Size = new System.Drawing.Size(1106, 582);
-            this.tabPageNewTab.TabIndex = 1;
-            this.tabPageNewTab.UseVisualStyleBackColor = true;
-            // 
             // richTextBox2
             // 
             this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -1560,6 +1552,15 @@
             this.richTextBox2.Size = new System.Drawing.Size(487, 61);
             this.richTextBox2.TabIndex = 73;
             this.richTextBox2.Text = "Create new data connections so these can be assigned to metadata.";
+            // 
+            // tabPageNewTab
+            // 
+            this.tabPageNewTab.Location = new System.Drawing.Point(4, 22);
+            this.tabPageNewTab.Name = "tabPageNewTab";
+            this.tabPageNewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageNewTab.TabIndex = 1;
+            this.tabPageNewTab.UseVisualStyleBackColor = true;
             // 
             // FormManageConfiguration
             // 
