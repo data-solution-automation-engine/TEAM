@@ -7,7 +7,6 @@ namespace TEAM
     public class TeamDatabaseConnection
     {
         public string databaseName { get; set; }
-
         public string schemaName { get; set; }
         public string serverName { get; set; }
         public ServerAuthenticationTypes authenticationType { get; set; }
@@ -56,6 +55,8 @@ namespace TEAM
         public string databaseConnectionName { get; set; }
         public string databaseConnectionKey { get; set; }
 
+        public string databaseConnectionNotes { get; set; }
+
         public TeamDatabaseConnection databaseServer { get; set; }
 
         public string CreateConnectionString(bool mask, bool SSPI, bool namedUser)
@@ -92,10 +93,4 @@ namespace TEAM
             return outputConnectionString;
         }
     }
-
-    public class TeamDatabaseConnectionList
-    {
-        public List<TeamDatabaseConnection> teamDatabaseConnectionList { get; set; }
-    }
-
 }

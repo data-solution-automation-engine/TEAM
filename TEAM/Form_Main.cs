@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
@@ -82,6 +83,18 @@ namespace TEAM
             catch 
             {
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
+            }
+
+            // Load the connections
+            // TBD - WIP
+            try
+            {
+                ConfigurationSettings.connectionDictionary = new Dictionary<string, TeamConnectionProfile>();
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The connections file was loaded successfully.\r\n"));
+            }
+            catch
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the connections file."));
             }
 
 

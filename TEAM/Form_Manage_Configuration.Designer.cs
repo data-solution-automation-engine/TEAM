@@ -202,8 +202,10 @@
             this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxInformation.Location = new System.Drawing.Point(12, 685);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
+            this.richTextBoxInformation.ReadOnly = true;
             this.richTextBoxInformation.Size = new System.Drawing.Size(1009, 100);
             this.richTextBoxInformation.TabIndex = 2;
+            this.richTextBoxInformation.TabStop = false;
             this.richTextBoxInformation.Text = "";
             // 
             // menuStripMainMenu
@@ -1542,7 +1544,6 @@
             this.tabPageMain.TabIndex = 0;
             this.tabPageMain.Text = "Overview of data connections";
             this.tabPageMain.UseVisualStyleBackColor = true;
-            this.tabPageMain.Click += new System.EventHandler(this.tabPageMain_Click);
             // 
             // richTextBox2
             // 

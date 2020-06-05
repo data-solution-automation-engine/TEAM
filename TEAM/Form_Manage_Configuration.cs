@@ -12,9 +12,6 @@ namespace TEAM
         private bool _formLoading = true;
         private FormMain parentFormMain;
 
-        // In-memory list of the known connection tabpages.
-        private List<CustomTabPage> localCustomTabPageList = new List<CustomTabPage>();
-
         public FormManageConfiguration()
         {
             InitializeComponent();
@@ -67,19 +64,19 @@ namespace TEAM
         /// <param name="mask"></param>
         /// <param name="databaseName"></param>
         /// <param name="serverName"></param>
-        /// <param name="SSPI"></param>
+        /// <param name="sspi"></param>
         /// <param name="namedUser"></param>
         /// <param name="userName"></param>
         /// <param name="passWord"></param>
         /// <returns></returns>
-        private string GenerateConnectionString(bool mask, string databaseName, string serverName, bool SSPI, bool namedUser, string userName, string passWord)
+        private string GenerateConnectionString(bool mask, string databaseName, string serverName, bool sspi, bool namedUser, string userName, string passWord)
         {
-            var outputConnectionString = "";
+            string outputConnectionString;
             var connectionString = new StringBuilder();
 
             connectionString.Append("Server=" + serverName + ";");
             connectionString.Append("Initial Catalog=" + databaseName + ";");
-            if (SSPI)
+            if (sspi)
             {
                 connectionString.Append("Integrated Security=SSPI;");
             }
@@ -89,7 +86,7 @@ namespace TEAM
                 connectionString.Append("password=" + passWord + ";");
             }
 
-            if (passWord.Length > 0 && mask==true)
+            if (passWord.Length > 0 && mask)
             {
                 outputConnectionString = connectionString.ToString().Replace(passWord, "*****");
             }
@@ -1044,71 +1041,6 @@ namespace TEAM
             parentFormMain.RevalidateFlag=true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            CreateCustomTabPages();
-        }
-
-        /// <summary>
-        /// Generates the Custom Tab Pages using the pattern metadata. This method will remove any non-standard Tab Pages and create these using the Load Pattern Definition metadata.
-        /// </summary>
-        internal void CreateCustomTabPages()
-        {
-            // Remove any existing Custom Tab Pages before rebuild
-            localCustomTabPageList.Clear();
-
-            //foreach (TabPage customTabPage in tabControlConnections.TabPages)
-            //{
-            //    if ((customTabPage.Name == "tabPageHome") || (customTabPage.Name == "tabPageSettings"))
-            //    {
-            //        // Do nothing, as only the two standard Tab Pages exist.
-            //    }
-            //    else
-            //    {
-            //        // Remove the Tab Page from the Tab Control
-            //        tabControlConnections.Controls.Remove((customTabPage));
-            //    }
-            //}
-
-            //List<LocalPattern> finalMappingList = Patternlist();
-
-            TeamConnectionProfile connectionProfile = new TeamConnectionProfile();
-
-            connectionProfile.databaseConnectionName = "PersistentStagingArea";
-            connectionProfile.databaseConnectionKey = "PSA";
-
-            TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
-
-            connectionDatabase.namedUserName = "sa";
-            connectionDatabase.namedUserPassword = "test";
-            connectionDatabase.authenticationType = ServerAuthenticationTypes.SSPI;
-
-            connectionProfile.databaseServer = connectionDatabase;
-
-
-            List<TeamConnectionProfile> connectionList = new List<TeamConnectionProfile>();
-
-            connectionList.Add(connectionProfile);
-            //var sortedMappingList = finalMappingList.OrderBy(x => x.id);
-
-            // Add the Custom Tab Pages
-            foreach (var databaseConnection in connectionList)
-            {
-                CustomTabPage localCustomTabPage = new CustomTabPage(databaseConnection);
-                //localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
-                //localCustomTabPage.OnClearMainText += (ClearMainInformationTextBox);
-
-                localCustomTabPageList.Add(localCustomTabPage);
-                tabControlConnections.TabPages.Add(localCustomTabPage);
-            }
-        }
-
-        private void tabPageMain_Click(object sender, EventArgs e)
-        {
-
-        }
-
-
         /// <summary>
         /// Check if the last tab rectangle contains the mouse clicked point, then insert a tab before the last tab.
         /// </summary>
@@ -1154,7 +1086,8 @@ namespace TEAM
                 if (newTabExists == false)
                 {
                     CustomTabPage localCustomTabPage = new CustomTabPage(connectionProfile);
-                    localCustomTabPageList.Add(localCustomTabPage);
+                    localCustomTabPage.OnDeleteConnection += DeleteConnection;
+                    localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                     tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                     tabControlConnections.SelectedIndex = lastIndex;
                 }
@@ -1165,11 +1098,36 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// Update the main information RichTextBox (used as delegate in generates tabs).
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
+        private void UpdateMainInformationTextBox(Object o, MyEventArgs e)
+        {
+            richTextBoxInformation.AppendText(e.Value);
+        }
+
+        /// <summary>
+        /// Delete tab page from tab control (via delegate method)
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
+        private void DeleteConnection(Object o, MyEventArgs e)
+        {
+            // Remove the tab page from the tab control
+            tabControlConnections.TabPages.RemoveByKey(e.Value);
+        }
+
+        /// <summary>
+        /// Prevent selecting the last tab in the connections tab control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tabControlConnections_Selecting(object sender, TabControlCancelEventArgs e)
         {
             if (e.TabPageIndex == this.tabControlConnections.TabCount - 1)
                     e.Cancel = true;
-
         }
     }
 }

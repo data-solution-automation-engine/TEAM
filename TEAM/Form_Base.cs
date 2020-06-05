@@ -28,7 +28,7 @@ namespace TEAM
         internal static class ConfigurationSettings
         {
             #region Connectivity (connection objects, connection strings etc.)
-
+            internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; }
             #endregion
 
             #region Prefixes
@@ -159,22 +159,19 @@ namespace TEAM
             public static string PathFileName { get; set; } = "TEAM_Path_configuration";
             public static string ValidationFileName { get; set; } = "TEAM_validation";
             public static string FileExtension { get; set; } = ".txt";
-
             internal static string WorkingEnvironment { get; set; } = "Development";
-
             public static string SandingElement { get; set; } = "^@#%7!";
-
-
             public static string DefaultSchema { get; set; } = "dbo";
 
             // Json file name parameters
-            public static string JsonTableMappingFileName { get; set; } = "TEAM_Table_Mapping";
-            public static string JsonAttributeMappingFileName { get; set; } = "TEAM_Attribute_Mapping";
-            public static string JsonModelMetadataFileName { get; set; } = "TEAM_Model_Metadata";
-            public static string JsonExtension { get; set; } = ".json";
-
+            public static string JsonTableMappingFileName { get; } = "TEAM_Table_Mapping";
+            public static string JsonAttributeMappingFileName { get; } = "TEAM_Attribute_Mapping";
+            public static string JsonModelMetadataFileName { get; } = "TEAM_Model_Metadata";
+            public static string JsonConnectionFileName { get; } = "teamConnections";
+            public static string JsonExtension { get;  } = ".json";
 
             public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";
+
             // Version handling
             public static int CurrentVersionId { get; set; } = 0;
             public static int HighestVersionId { get; set; } = 0;
