@@ -75,6 +75,20 @@ namespace TEAM
             {
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
             }
+
+            // Environments file
+            ConfigurationSettings.environmentDictionary = new Dictionary<string, TeamWorkingEnvironment>();
+            string environmentFile = GlobalParameters.RootPath + GlobalParameters.JsonEnvironmentFileName +
+                                     GlobalParameters.JsonExtension;
+            try
+            {
+                EnvironmentConfiguration.LoadEnvironmentFile(environmentFile);
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment file {environmentFile} has been loaded."));
+            }
+            catch
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
+            }
             #endregion
 
             #region Check if user configured path exists, and create dummy Configuration and Validation files if necessary
@@ -171,6 +185,18 @@ namespace TEAM
             catch 
             {
                 eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
+            }
+
+            // Load the environments
+            // TBD - WIP
+            try
+            {
+                ConfigurationSettings.environmentDictionary = new Dictionary<string, TeamWorkingEnvironment>();
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "The environment file was loaded successfully."));
+            }
+            catch
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the environment file."));
             }
 
             // Load the connections
@@ -704,7 +730,7 @@ namespace TEAM
             }
         }
 
-        private void backgroundWorkerEventLog_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void backgroundWorkerEventLog_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 

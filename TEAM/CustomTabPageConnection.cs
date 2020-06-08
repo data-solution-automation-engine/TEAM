@@ -9,21 +9,10 @@ using Newtonsoft.Json;
 
 namespace TEAM
 {
-    // Delegate to control main form text box (append text)
-    public class MyEventArgs : EventArgs
-    {
-        public string Value { get; set; }
-
-        public MyEventArgs(string value)
-        {
-            Value = value;
-        }
-    }
-
     /// <summary>
     /// Derived Custom Connection TabPage inherited from the TabPage class.
     /// </summary>
-    internal class CustomTabPage : TabPage
+    internal class CustomTabPageConnection : TabPage
     {
         // Startup flag, disabled in constructor. Used to prevent some events from firing twice (creation and value setting).
         internal bool StartUpIndicator = true;
@@ -53,7 +42,7 @@ namespace TEAM
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page
         /// </summary>
-        public CustomTabPage(object input)
+        public CustomTabPageConnection(object input)
         {
             _localConnection = (TeamConnectionProfile) input;
 
@@ -90,6 +79,7 @@ namespace TEAM
             _textBoxConnectionString.Location = new Point(6, 187);
             _textBoxConnectionString.Size = new Size(502, 21);
             _textBoxConnectionString.BorderStyle = BorderStyle.None;
+            _textBoxConnectionString.BackColor = Color.White;
             _textBoxConnectionString.Name = $"textBoxConnectionString";
             _textBoxConnectionString.ReadOnly = true;
             _textBoxConnectionString.TabStop = false;
@@ -380,16 +370,16 @@ namespace TEAM
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back information to be updated on the main textbox. E.g. status updates.
         /// </summary>
-        public event EventHandler<MyEventArgs> OnChangeMainText = delegate { };
+        public event EventHandler<MyConnectionEventArgs> OnChangeMainText = delegate { };
         public void UpdateRichTextBoxInformation(string inputText)
         {
-            OnChangeMainText(this, new MyEventArgs(inputText));
+            OnChangeMainText(this, new MyConnectionEventArgs(inputText));
         }
 
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back the name of the tab page to the control (so that it can be deleted from there).
         /// </summary>
-        public event EventHandler<MyEventArgs> OnDeleteConnection = delegate { };
+        public event EventHandler<MyConnectionEventArgs> OnDeleteConnection = delegate { };
         public void DeleteConnection(object sender, EventArgs e)
         {
             if (_localConnection.databaseConnectionKey != "New")
@@ -439,7 +429,7 @@ namespace TEAM
             }
 
             // The name of the tab page is passed back to the original control (the tab control).
-            OnDeleteConnection(this, new MyEventArgs(this.Name));
+            OnDeleteConnection(this, new MyConnectionEventArgs(this.Name));
 
         }
 
@@ -451,19 +441,14 @@ namespace TEAM
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.ConfigurationSettings.connectionDictionary.ContainsKey(_localConnection
-                    .databaseConnectionKey))
+                if (FormBase.ConfigurationSettings.connectionDictionary.ContainsKey(_localConnection.databaseConnectionKey))
                 {
-                    FormBase.ConfigurationSettings.connectionDictionary[_localConnection.databaseConnectionKey] =
-                        _localConnection;
+                    FormBase.ConfigurationSettings.connectionDictionary[_localConnection.databaseConnectionKey] = _localConnection;
                 }
                 else
                 {
-                    FormBase.ConfigurationSettings.connectionDictionary.Add(_localConnection.databaseConnectionKey,
-                        _localConnection);
+                    FormBase.ConfigurationSettings.connectionDictionary.Add(_localConnection.databaseConnectionKey, _localConnection);
                 }
-
-
 
                 // Update the connection on disk
 
@@ -475,14 +460,12 @@ namespace TEAM
                 // Check if the value already exists in the file
                 var jsonKeyLookup = new TeamConnectionProfile();
 
-                TeamConnectionProfile[] jsonArray = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(
-                    File.ReadAllText(_connectionFileName));
+                TeamConnectionProfile[] jsonArray = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(File.ReadAllText(_connectionFileName));
 
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
                 {
-                    jsonKeyLookup = jsonArray.FirstOrDefault(obj =>
-                        obj.databaseConnectionKey == _localConnection.databaseConnectionKey);
+                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.databaseConnectionKey == _localConnection.databaseConnectionKey);
                 }
 
                 // If nothing yet exists int he file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
@@ -506,9 +489,9 @@ namespace TEAM
                 }
 
                 // Save the updated file to disk.
+                EnvironmentConfiguration.CreateFileBackup(_connectionFileName);
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                File.WriteAllText(
-                    _connectionFileName, output);
+                File.WriteAllText(_connectionFileName, output);
 
                 UpdateRichTextBoxInformation($"The connection {_localConnection.databaseConnectionKey} was saved to {_connectionFileName}.\r\n");
             }
@@ -650,6 +633,17 @@ namespace TEAM
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSSPI, localNamed);
+        }
+    }
+
+    // Delegate to control main form text box (append text)
+    public class MyConnectionEventArgs : EventArgs
+    {
+        public string Value { get; set; }
+
+        public MyConnectionEventArgs(string value)
+        {
+            Value = value;
         }
     }
 }

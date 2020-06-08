@@ -460,7 +460,7 @@ namespace TEAM
             // Create a file backup for the configuration file
             try
             {
-                EnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
+                EnvironmentConfiguration.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment  + GlobalParameters.FileExtension);
                 richTextBoxInformation.Text = "A backup of the current configuration was made at " + DateTime.Now + " in " + textBoxConfigurationPath.Text + ".";
             }
             catch (Exception)
@@ -1086,7 +1086,7 @@ namespace TEAM
 
                 if (newTabExists == false)
                 {
-                    CustomTabPage localCustomTabPage = new CustomTabPage(connectionProfile);
+                    CustomTabPageConnection localCustomTabPage = new CustomTabPageConnection(connectionProfile);
                     localCustomTabPage.OnDeleteConnection += DeleteConnection;
                     localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                     tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
@@ -1099,12 +1099,14 @@ namespace TEAM
             }
         }
 
+
+
         /// <summary>
         /// Update the main information RichTextBox (used as delegate in generates tabs).
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void UpdateMainInformationTextBox(Object o, MyEventArgs e)
+        private void UpdateMainInformationTextBox(Object o, MyConnectionEventArgs e)
         {
             richTextBoxInformation.AppendText(e.Value);
         }
@@ -1114,10 +1116,21 @@ namespace TEAM
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void DeleteConnection(Object o, MyEventArgs e)
+        private void DeleteConnection(Object o, MyConnectionEventArgs e)
         {
             // Remove the tab page from the tab control
             tabControlConnections.TabPages.RemoveByKey(e.Value);
+        }
+
+        /// <summary>
+        /// Delete tab page from tab control (via delegate method)
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="e"></param>
+        private void DeleteEnvironment(Object o, MyConnectionEventArgs e)
+        {
+            // Remove the tab page from the tab control
+            tabControlEnvironments.TabPages.RemoveByKey(e.Value);
         }
 
         /// <summary>
@@ -1130,5 +1143,56 @@ namespace TEAM
             if (e.TabPageIndex == this.tabControlConnections.TabCount - 1)
                     e.Cancel = true;
         }
+
+        /// <summary>
+        /// Prevent selecting the last tab in the connections tab control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabControlEnvironments_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (e.TabPageIndex == this.tabControlEnvironments.TabCount - 1)
+                e.Cancel = true;
+
+        }
+
+        private void tabControlEnvironments_MouseDown(object sender, MouseEventArgs e)
+        {
+            var lastIndex = tabControlEnvironments.TabCount - 1;
+            if (tabControlEnvironments.GetTabRect(lastIndex).Contains(e.Location))
+            {
+                TeamWorkingEnvironment workingEnvironment = new TeamWorkingEnvironment();
+                workingEnvironment.environmentName = "New environment";
+                workingEnvironment.environmentKey = "New";
+
+                bool newTabExists = false;
+                foreach (TabPage customTabPage in tabControlEnvironments.TabPages)
+                {
+                    if (customTabPage.Name == "New environment")
+                    {
+                        newTabExists = true;
+                    }
+                    else
+                    {
+                        // Do nothing
+                    }
+                }
+
+                if (newTabExists == false)
+                {
+                    CustomTabPageEnvironment localCustomTabPage = new CustomTabPageEnvironment(workingEnvironment);
+                    localCustomTabPage.OnDeleteEnvironment += DeleteEnvironment;
+                    localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
+                    tabControlEnvironments.TabPages.Insert(lastIndex, localCustomTabPage);
+                    tabControlEnvironments.SelectedIndex = lastIndex;
+                }
+                else
+                {
+                    richTextBoxInformation.AppendText("There is already a 'new environment' tab open. Please close or save this first.\r\n");
+                }
+            }
+        }
+
+ 
     }
 }

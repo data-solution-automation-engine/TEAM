@@ -31,6 +31,8 @@ namespace TEAM
             internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; }
             #endregion
 
+            internal static Dictionary<string, TeamWorkingEnvironment> environmentDictionary { get; set; }
+
             #region Prefixes
             //Prefixes
             internal static string StgTablePrefixValue { get; set; }
@@ -167,7 +169,8 @@ namespace TEAM
             public static string JsonTableMappingFileName { get; } = "TEAM_Table_Mapping";
             public static string JsonAttributeMappingFileName { get; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; } = "TEAM_Model_Metadata";
-            public static string JsonConnectionFileName { get; } = "teamConnections";
+            public static string JsonConnectionFileName { get; } = "TEAM_Connections";
+            public static string JsonEnvironmentFileName { get; } = "TEAM_Environments";
             public static string JsonExtension { get;  } = ".json";
 
             public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";

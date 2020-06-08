@@ -486,7 +486,7 @@ namespace TEAM
         {
             if (checkBoxConfigurationSettings.Checked)
             {
-                EnvironmentConfiguration.CreateEnvironmentConfigurationBackupFile();
+                EnvironmentConfiguration.CreateFileBackup(GlobalParameters.ConfigurationPath +GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
 
                 // Shared values (same for all samples)
                 //var metadataRepositoryType = "SQLServer";

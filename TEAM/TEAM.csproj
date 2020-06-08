@@ -232,7 +232,10 @@
     <Compile Include="ClassExtensionMethods.cs" />
     <Compile Include="ClassMetadataHandling.cs" />
     <Compile Include="ClassObjectModel.cs" />
-    <Compile Include="CustomConnectionTabPage.cs">
+    <Compile Include="CustomTabPageEnvironment.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomTabPageConnection.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomDataGridViewAttribute.cs">

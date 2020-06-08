@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace TEAM
 {
@@ -175,25 +177,23 @@ namespace TEAM
         /// <summary>
         ///    Create a file backup for the configuration file at the provided location
         /// </summary>
-        internal static void CreateEnvironmentConfigurationBackupFile()
+        internal static void CreateFileBackup(string fileName)
         {
+            //FormBase.GlobalParameters.ConfigurationPath +
+            //FormBase.GlobalParameters.ConfigFileName +
+            //'_' +
+            //FormBase.GlobalParameters.WorkingEnvironment +
+            //FormBase.GlobalParameters.FileExtension
+
+            var filePath = Path.GetDirectoryName(fileName);
+
             try
             {
-                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
-                                FormBase.GlobalParameters.ConfigFileName + '_' +
-                                FormBase.GlobalParameters.WorkingEnvironment +
-                                FormBase.GlobalParameters.FileExtension))
+                if (File.Exists(fileName))
                 {
-                    var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                             string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_",
-                                                 FormBase.GlobalParameters.ConfigFileName + '_' +
-                                                 FormBase.GlobalParameters.WorkingEnvironment +
-                                                 FormBase.GlobalParameters.FileExtension);
+                    var targetFilePathName = filePath + string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_", fileName);
 
-                    File.Copy(
-                        FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName +
-                        '_' + FormBase.GlobalParameters.WorkingEnvironment +
-                        FormBase.GlobalParameters.FileExtension, targetFilePathName);
+                    File.Copy(fileName, targetFilePathName);
 
                 }
                 else
@@ -295,6 +295,60 @@ namespace TEAM
             catch (Exception)
             {
                 // richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+            }
+        }
+
+
+
+        public static void LoadEnvironmentFile(string fileName)
+        {
+            var jsonArray = new List<TeamWorkingEnvironment>();
+           // var 
+
+            // Create a new file if it doesn't exist.
+            if (!File.Exists(fileName))
+            {
+                File.Create(fileName).Close();
+
+                // There was no key in the file for this connection, so it's new.
+                // Create two initial environments, development and production.
+                var list = new List<TeamWorkingEnvironment>();
+
+                var developmentEnvironment = new TeamWorkingEnvironment
+                {
+                    environmentKey = "Development",
+                    environmentName = "Development environment",
+                    environmentNotes = "Environment created as initial / starter environment."
+                };
+
+                list.Add(developmentEnvironment);
+
+                var productionEnvironment = new TeamWorkingEnvironment
+                {
+                    environmentKey = "Production",
+                    environmentName = "Production environment",
+                    environmentNotes = "Environment created as initial / starter environment."
+                };
+
+                list.Add(productionEnvironment);
+
+                string output = JsonConvert.SerializeObject(jsonArray.ToArray(), Formatting.Indented);
+                File.WriteAllText(fileName, output);
+
+                // Commit to memory also.
+                 
+                FormBase.ConfigurationSettings.environmentDictionary.Add("Development", developmentEnvironment);
+                FormBase.ConfigurationSettings.environmentDictionary.Add("Production", productionEnvironment);
+            }
+            else
+            {
+                FormBase.ConfigurationSettings.environmentDictionary.Clear();
+                TeamWorkingEnvironment[] environmentJson = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(fileName));
+
+                foreach (var environment in environmentJson)
+                {
+                    FormBase.ConfigurationSettings.environmentDictionary.Add(environment.environmentKey, environment);
+                }
             }
         }
 
