@@ -26,7 +26,7 @@ namespace TEAM
 
         // Objects on main Tab Page
         private TextBox _textBoxEnvironmentName;
-        private TextBox _textBoxEnvironmentKey;
+        public TextBox _textBoxEnvironmentKey;
         private RichTextBox _richTextBoxNotes;
 
         /// <summary>
@@ -189,17 +189,17 @@ namespace TEAM
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back information to be updated on the main textbox. E.g. status updates.
         /// </summary>
-        public event EventHandler<MyConnectionEventArgs> OnChangeMainText = delegate { };
+        public event EventHandler<MyStringEventArgs> OnChangeMainText = delegate { };
 
         public void UpdateRichTextBoxInformation(string inputText)
         {
-            OnChangeMainText(this, new MyConnectionEventArgs(inputText));
+            OnChangeMainText(this, new MyStringEventArgs(inputText));
         }
 
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back the name of the tab page to the control (so that it can be deleted from there).
         /// </summary>
-        public event EventHandler<MyConnectionEventArgs> OnDeleteEnvironment = delegate { };
+        public event EventHandler<MyStringEventArgs> OnDeleteEnvironment = delegate { };
 
         public void DeleteEnvironment(object sender, EventArgs e)
         {
@@ -248,9 +248,15 @@ namespace TEAM
             }
 
             // The name of the tab page is passed back to the original control (the tab control).
-            OnDeleteEnvironment(this, new MyConnectionEventArgs(this.Name));
+            OnDeleteEnvironment(this, new MyStringEventArgs(this.Name));
 
         }
+
+
+        /// <summary>
+        /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back the name of the tab page to the control (so that it can be deleted from there).
+        /// </summary>
+        public event EventHandler<MyStringEventArgs> OnSaveEnvironment = delegate { };
 
         public void SaveEnvironment(object sender, EventArgs e)
         {
@@ -286,7 +292,7 @@ namespace TEAM
                     jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.environmentKey == _localEnvironment.environmentKey);
                 }
 
-                // If nothing yet exists int he file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
+                // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
                 if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.environmentKey == "")
                 {
                     //  There was no key in the file for this connection, so it's new.
@@ -312,7 +318,11 @@ namespace TEAM
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                 File.WriteAllText(_environmentFileName, output);
 
-                UpdateRichTextBoxInformation($"The environment {_localEnvironment.environmentKey} was saved to {_environmentFileName}.\r\n");
+                UpdateRichTextBoxInformation($"The environment {_localEnvironment.environmentKey} was saved to {_environmentFileName}. A backup was made in the Backups directory also.\r\n");
+
+
+                // The name of the tab page is passed back to the original control (the tab control).
+                OnSaveEnvironment(this, new MyStringEventArgs(this.Name));
             }
             else
             {

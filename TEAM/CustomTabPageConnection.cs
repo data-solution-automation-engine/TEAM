@@ -370,16 +370,16 @@ namespace TEAM
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back information to be updated on the main textbox. E.g. status updates.
         /// </summary>
-        public event EventHandler<MyConnectionEventArgs> OnChangeMainText = delegate { };
+        public event EventHandler<MyStringEventArgs> OnChangeMainText = delegate { };
         public void UpdateRichTextBoxInformation(string inputText)
         {
-            OnChangeMainText(this, new MyConnectionEventArgs(inputText));
+            OnChangeMainText(this, new MyStringEventArgs(inputText));
         }
 
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back the name of the tab page to the control (so that it can be deleted from there).
         /// </summary>
-        public event EventHandler<MyConnectionEventArgs> OnDeleteConnection = delegate { };
+        public event EventHandler<MyStringEventArgs> OnDeleteConnection = delegate { };
         public void DeleteConnection(object sender, EventArgs e)
         {
             if (_localConnection.databaseConnectionKey != "New")
@@ -429,7 +429,7 @@ namespace TEAM
             }
 
             // The name of the tab page is passed back to the original control (the tab control).
-            OnDeleteConnection(this, new MyConnectionEventArgs(this.Name));
+            OnDeleteConnection(this, new MyStringEventArgs(this.Name));
 
         }
 
@@ -493,7 +493,7 @@ namespace TEAM
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                 File.WriteAllText(_connectionFileName, output);
 
-                UpdateRichTextBoxInformation($"The connection {_localConnection.databaseConnectionKey} was saved to {_connectionFileName}.\r\n");
+                UpdateRichTextBoxInformation($"The connection {_localConnection.databaseConnectionKey} was saved to {_connectionFileName}. A backup was made in the Backups directory also.\r\n");
             }
             else
             {
@@ -633,17 +633,6 @@ namespace TEAM
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSSPI, localNamed);
-        }
-    }
-
-    // Delegate to control main form text box (append text)
-    public class MyConnectionEventArgs : EventArgs
-    {
-        public string Value { get; set; }
-
-        public MyConnectionEventArgs(string value)
-        {
-            Value = value;
         }
     }
 }

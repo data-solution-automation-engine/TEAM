@@ -50,9 +50,36 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
 
+            IntPtr h = tabControlEnvironments.Handle;
+            foreach (var environment in ConfigurationSettings.environmentDictionary)
+            {
+                // Adding tabs on the Tab Control
+                var lastIndex = tabControlEnvironments.TabCount - 1;
+                CustomTabPageEnvironment localCustomTabPage = new CustomTabPageEnvironment(environment.Value);
+                localCustomTabPage.OnDeleteEnvironment += DeleteEnvironment;
+                localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox; 
+                tabControlEnvironments.TabPages.Insert(lastIndex, localCustomTabPage);
+                tabControlEnvironments.SelectedIndex = 0;
+
+                // Adding items in the drop down list
+                comboBoxEnvironments.Items.Add(environment.Key);
+            }
+
+            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
+
             _formLoading = false;
         }
-        
+
+        /// <summary>
+        /// Delegate event handler from the 'main' form to pass back information when the environment is updated.
+        /// </summary>
+        public event EventHandler<MyWorkingEnvironmentEventArgs> OnUpdateEnvironment = delegate { };
+        //Object o, MyConnectionEventArgs e
+
+        public void UpdateEnvironment(TeamWorkingEnvironment environment)
+        {
+            OnUpdateEnvironment(this, new MyWorkingEnvironmentEventArgs(environment));
+        }
 
         /// <summary>
         /// Build a connection string using the relevant components, including a masking flag to display the password masked or not.
@@ -1106,7 +1133,7 @@ namespace TEAM
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void UpdateMainInformationTextBox(Object o, MyConnectionEventArgs e)
+        private void UpdateMainInformationTextBox(Object o, MyStringEventArgs e)
         {
             richTextBoxInformation.AppendText(e.Value);
         }
@@ -1116,7 +1143,7 @@ namespace TEAM
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void DeleteConnection(Object o, MyConnectionEventArgs e)
+        private void DeleteConnection(Object o, MyStringEventArgs e)
         {
             // Remove the tab page from the tab control
             tabControlConnections.TabPages.RemoveByKey(e.Value);
@@ -1127,10 +1154,18 @@ namespace TEAM
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void DeleteEnvironment(Object o, MyConnectionEventArgs e)
+        private void DeleteEnvironment(Object o, MyStringEventArgs e)
         {
             // Remove the tab page from the tab control
             tabControlEnvironments.TabPages.RemoveByKey(e.Value);
+
+            comboBoxEnvironments.Items.Remove(((TEAM.CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
+        }
+
+        private void SaveEnvironment(object o, MyStringEventArgs e)
+        {
+            //var localEnvironment = (TeamWorkingEnvironment)o;
+            comboBoxEnvironments.Items.Add(((TEAM.CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
         }
 
         /// <summary>
@@ -1159,6 +1194,7 @@ namespace TEAM
         private void tabControlEnvironments_MouseDown(object sender, MouseEventArgs e)
         {
             var lastIndex = tabControlEnvironments.TabCount - 1;
+
             if (tabControlEnvironments.GetTabRect(lastIndex).Contains(e.Location))
             {
                 TeamWorkingEnvironment workingEnvironment = new TeamWorkingEnvironment();
@@ -1182,6 +1218,7 @@ namespace TEAM
                 {
                     CustomTabPageEnvironment localCustomTabPage = new CustomTabPageEnvironment(workingEnvironment);
                     localCustomTabPage.OnDeleteEnvironment += DeleteEnvironment;
+                    localCustomTabPage.OnSaveEnvironment += SaveEnvironment;
                     localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                     tabControlEnvironments.TabPages.Insert(lastIndex, localCustomTabPage);
                     tabControlEnvironments.SelectedIndex = lastIndex;
@@ -1193,6 +1230,19 @@ namespace TEAM
             }
         }
 
- 
+        private void comboBoxEnvironments_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_formLoading == false)
+            {
+                var localComboBox = (ComboBox) sender;
+                var selectedItem = localComboBox.SelectedItem;
+
+                // Get the full environment from the dictionary.
+                var localEnvironment = ConfigurationSettings.environmentDictionary[selectedItem.ToString()];
+                // Initialise new environment in configuration settings.
+
+                UpdateEnvironment(localEnvironment);
+            }
+        }
     }
 }

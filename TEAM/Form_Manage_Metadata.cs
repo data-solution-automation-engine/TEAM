@@ -3408,7 +3408,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Multithreading for informaing the user when version changes (to other forms)
+        /// Multithreading for informing the user when version changes (to other forms).
         /// </summary>
         /// <returns></returns>
         delegate int GetVersionFromTrackBarCallBack();

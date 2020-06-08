@@ -11,14 +11,14 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing && (components != null))
+        //    {
+        //        components.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
 
         #region Windows Form Designer generated code
 
@@ -42,7 +42,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
-            this.tabPageDataVaultSpecific = new System.Windows.Forms.TabPage();
+            this.tabPageIntegrationLayerSpecific = new System.Windows.Forms.TabPage();
             this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
             this.label41 = new System.Windows.Forms.Label();
             this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
@@ -117,12 +117,14 @@
             this.tabPageEnvironments = new System.Windows.Forms.TabPage();
             this.tabControlEnvironments = new System.Windows.Forms.TabControl();
             this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
+            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
+            this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.radioButtonProduction = new System.Windows.Forms.RadioButton();
             this.radioButtonDevelopment = new System.Windows.Forms.RadioButton();
-            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
+            this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
-            this.tabPageConnections = new System.Windows.Forms.TabPage();
+            this.tabPageConnectionsOld = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBoxPresentationConnection = new System.Windows.Forms.TextBox();
             this.textBoxPSAConnection = new System.Windows.Forms.TextBox();
@@ -166,7 +168,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.radioButtonMetadataNamed = new System.Windows.Forms.RadioButton();
             this.radioButtonMetadataSSPI = new System.Windows.Forms.RadioButton();
-            this.tabPageConnectionsWIP = new System.Windows.Forms.TabPage();
+            this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
             this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
@@ -174,7 +176,7 @@
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControlDefaultDetails.SuspendLayout();
-            this.tabPageDataVaultSpecific.SuspendLayout();
+            this.tabPageIntegrationLayerSpecific.SuspendLayout();
             this.tabPageETLFrameworkSpecific.SuspendLayout();
             this.tabPagePrefixesSuffixex.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -187,7 +189,7 @@
             this.tabControlEnvironments.SuspendLayout();
             this.tabPageEnvironmentMain.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.tabPageConnections.SuspendLayout();
+            this.tabPageConnectionsOld.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBoxPhysicalModelNamedUser.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -195,7 +197,7 @@
             this.groupBoxDatabase.SuspendLayout();
             this.groupBoxMetadataNamedUser.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.tabPageConnectionsWIP.SuspendLayout();
+            this.tabPageConnections.SuspendLayout();
             this.tabControlConnections.SuspendLayout();
             this.tabPageConnectionMain.SuspendLayout();
             this.SuspendLayout();
@@ -308,14 +310,14 @@
             this.tabControlDefaultDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageDataVaultSpecific);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageEnvironments);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnections);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageIntegrationLayerSpecific);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageETLFrameworkSpecific);
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePrefixesSuffixex);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageRepository);
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePaths);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageEnvironments);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnections);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnectionsWIP);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnectionsOld);
             this.tabControlDefaultDetails.Location = new System.Drawing.Point(12, 32);
             this.tabControlDefaultDetails.Multiline = true;
             this.tabControlDefaultDetails.Name = "tabControlDefaultDetails";
@@ -323,40 +325,40 @@
             this.tabControlDefaultDetails.Size = new System.Drawing.Size(1128, 647);
             this.tabControlDefaultDetails.TabIndex = 0;
             // 
-            // tabPageDataVaultSpecific
+            // tabPageIntegrationLayerSpecific
             // 
-            this.tabPageDataVaultSpecific.Controls.Add(this.checkBoxAlternativeSatLDTS);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label41);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label39);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label38);
-            this.tabPageDataVaultSpecific.Controls.Add(this.checkBoxAlternativeHubLDTS);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label37);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
-            this.tabPageDataVaultSpecific.Controls.Add(this.checkBoxAlternativeRecordSource);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label36);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxAlternativeRecordSource);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label35);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label11);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxRecordSource);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label18);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxLDST);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label14);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxHubTablePrefix);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label17);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxSatPrefix);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label16);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxLinkTablePrefix);
-            this.tabPageDataVaultSpecific.Controls.Add(this.label15);
-            this.tabPageDataVaultSpecific.Controls.Add(this.textBoxLinkSatPrefix);
-            this.tabPageDataVaultSpecific.Location = new System.Drawing.Point(4, 22);
-            this.tabPageDataVaultSpecific.Name = "tabPageDataVaultSpecific";
-            this.tabPageDataVaultSpecific.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataVaultSpecific.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageDataVaultSpecific.TabIndex = 0;
-            this.tabPageDataVaultSpecific.Text = "Integration Layer specific";
-            this.tabPageDataVaultSpecific.UseVisualStyleBackColor = true;
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.checkBoxAlternativeSatLDTS);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label41);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label39);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label38);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.checkBoxAlternativeHubLDTS);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label37);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.checkBoxAlternativeRecordSource);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label36);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxAlternativeRecordSource);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label35);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label11);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxRecordSource);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label18);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxLDST);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label14);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxHubTablePrefix);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label17);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxSatPrefix);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label16);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxLinkTablePrefix);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label15);
+            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxLinkSatPrefix);
+            this.tabPageIntegrationLayerSpecific.Location = new System.Drawing.Point(4, 22);
+            this.tabPageIntegrationLayerSpecific.Name = "tabPageIntegrationLayerSpecific";
+            this.tabPageIntegrationLayerSpecific.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageIntegrationLayerSpecific.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageIntegrationLayerSpecific.TabIndex = 0;
+            this.tabPageIntegrationLayerSpecific.Text = "Integration Layer specific";
+            this.tabPageIntegrationLayerSpecific.UseVisualStyleBackColor = true;
             // 
             // checkBoxAlternativeSatLDTS
             // 
@@ -1044,8 +1046,10 @@
             // 
             // tabPageEnvironmentMain
             // 
+            this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
+            this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
             this.tabPageEnvironmentMain.Controls.Add(this.groupBox3);
-            this.tabPageEnvironmentMain.Controls.Add(this.richTextBox3);
+            this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
             this.tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
             this.tabPageEnvironmentMain.Name = "tabPageEnvironmentMain";
             this.tabPageEnvironmentMain.Padding = new System.Windows.Forms.Padding(3);
@@ -1054,11 +1058,31 @@
             this.tabPageEnvironmentMain.Text = "Overview of working environments";
             this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
             // 
+            // richTextBox4
+            // 
+            this.richTextBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox4.Location = new System.Drawing.Point(6, 91);
+            this.richTextBox4.Name = "richTextBox4";
+            this.richTextBox4.Size = new System.Drawing.Size(116, 22);
+            this.richTextBox4.TabIndex = 75;
+            this.richTextBox4.Text = "Selected environment:";
+
+            // 
+            // comboBoxEnvironments
+            // 
+            this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxEnvironments.FormattingEnabled = true;
+            this.comboBoxEnvironments.Location = new System.Drawing.Point(128, 88);
+            this.comboBoxEnvironments.Name = "comboBoxEnvironments";
+            this.comboBoxEnvironments.Size = new System.Drawing.Size(292, 21);
+            this.comboBoxEnvironments.TabIndex = 74;
+            this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.radioButtonProduction);
             this.groupBox3.Controls.Add(this.radioButtonDevelopment);
-            this.groupBox3.Location = new System.Drawing.Point(6, 38);
+            this.groupBox3.Location = new System.Drawing.Point(949, 17);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(140, 70);
             this.groupBox3.TabIndex = 72;
@@ -1087,14 +1111,14 @@
             this.radioButtonDevelopment.UseVisualStyleBackColor = true;
             this.radioButtonDevelopment.CheckedChanged += new System.EventHandler(this.radioButtonDevelopment_CheckedChanged);
             // 
-            // richTextBox3
+            // richTextBoxEnvironmentsInformation
             // 
-            this.richTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox3.Location = new System.Drawing.Point(6, 6);
-            this.richTextBox3.Name = "richTextBox3";
-            this.richTextBox3.Size = new System.Drawing.Size(487, 61);
-            this.richTextBox3.TabIndex = 73;
-            this.richTextBox3.Text = "The overview and management of working environments.";
+            this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
+            this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
+            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(463, 70);
+            this.richTextBoxEnvironmentsInformation.TabIndex = 73;
+            this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
             // 
             // tabPageEnvironmentNewTab
             // 
@@ -1105,16 +1129,16 @@
             this.tabPageEnvironmentNewTab.TabIndex = 1;
             this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
             // 
-            // tabPageConnections
+            // tabPageConnectionsOld
             // 
-            this.tabPageConnections.Controls.Add(this.panel2);
-            this.tabPageConnections.Controls.Add(this.panel1);
-            this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnections.Name = "tabPageConnections";
-            this.tabPageConnections.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageConnections.TabIndex = 6;
-            this.tabPageConnections.Text = "Connections";
-            this.tabPageConnections.UseVisualStyleBackColor = true;
+            this.tabPageConnectionsOld.Controls.Add(this.panel2);
+            this.tabPageConnectionsOld.Controls.Add(this.panel1);
+            this.tabPageConnectionsOld.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnectionsOld.Name = "tabPageConnectionsOld";
+            this.tabPageConnectionsOld.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageConnectionsOld.TabIndex = 6;
+            this.tabPageConnectionsOld.Text = "Connections Old";
+            this.tabPageConnectionsOld.UseVisualStyleBackColor = true;
             // 
             // panel2
             // 
@@ -1560,15 +1584,15 @@
             this.radioButtonMetadataSSPI.UseVisualStyleBackColor = true;
             this.radioButtonMetadataSSPI.CheckedChanged += new System.EventHandler(this.radioButtonMetadataSSPI_CheckedChanged);
             // 
-            // tabPageConnectionsWIP
+            // tabPageConnections
             // 
-            this.tabPageConnectionsWIP.Controls.Add(this.tabControlConnections);
-            this.tabPageConnectionsWIP.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnectionsWIP.Name = "tabPageConnectionsWIP";
-            this.tabPageConnectionsWIP.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageConnectionsWIP.TabIndex = 7;
-            this.tabPageConnectionsWIP.Text = "Connections_WIP";
-            this.tabPageConnectionsWIP.UseVisualStyleBackColor = true;
+            this.tabPageConnections.Controls.Add(this.tabControlConnections);
+            this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnections.Name = "tabPageConnections";
+            this.tabPageConnections.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageConnections.TabIndex = 7;
+            this.tabPageConnections.Text = "Connections";
+            this.tabPageConnections.UseVisualStyleBackColor = true;
             // 
             // tabControlConnections
             // 
@@ -1637,8 +1661,8 @@
             this.menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabControlDefaultDetails.ResumeLayout(false);
-            this.tabPageDataVaultSpecific.ResumeLayout(false);
-            this.tabPageDataVaultSpecific.PerformLayout();
+            this.tabPageIntegrationLayerSpecific.ResumeLayout(false);
+            this.tabPageIntegrationLayerSpecific.PerformLayout();
             this.tabPageETLFrameworkSpecific.ResumeLayout(false);
             this.tabPageETLFrameworkSpecific.PerformLayout();
             this.tabPagePrefixesSuffixex.ResumeLayout(false);
@@ -1659,7 +1683,7 @@
             this.tabPageEnvironmentMain.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.tabPageConnections.ResumeLayout(false);
+            this.tabPageConnectionsOld.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.groupBoxPhysicalModelNamedUser.ResumeLayout(false);
@@ -1674,7 +1698,7 @@
             this.groupBoxMetadataNamedUser.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.tabPageConnectionsWIP.ResumeLayout(false);
+            this.tabPageConnections.ResumeLayout(false);
             this.tabControlConnections.ResumeLayout(false);
             this.tabPageConnectionMain.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -1692,7 +1716,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         internal System.Windows.Forms.RichTextBox richTextBoxInformation;
         private System.Windows.Forms.TabControl tabControlDefaultDetails;
-        private System.Windows.Forms.TabPage tabPageDataVaultSpecific;
+        private System.Windows.Forms.TabPage tabPageIntegrationLayerSpecific;
         internal System.Windows.Forms.CheckBox checkBoxAlternativeSatLDTS;
         private System.Windows.Forms.Label label41;
         internal System.Windows.Forms.TextBox textBoxSatelliteAlternativeLDTSAttribute;
@@ -1771,7 +1795,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.TabPage tabPageEnvironments;
-        private System.Windows.Forms.TabPage tabPageConnections;
+        private System.Windows.Forms.TabPage tabPageConnectionsOld;
         private System.Windows.Forms.Panel panel2;
         internal System.Windows.Forms.TextBox textBoxPresentationConnection;
         internal System.Windows.Forms.TextBox textBoxPSAConnection;
@@ -1814,7 +1838,7 @@
         internal System.Windows.Forms.TextBox textBoxMetadataServerName;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TabPage tabPageConnectionsWIP;
+        private System.Windows.Forms.TabPage tabPageConnections;
         private System.Windows.Forms.TabControl tabControlConnections;
         private System.Windows.Forms.GroupBox groupBoxDatabase;
         private System.Windows.Forms.TabPage tabPageConnectionMain;
@@ -1822,8 +1846,10 @@
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.TabControl tabControlEnvironments;
         private System.Windows.Forms.TabPage tabPageEnvironmentMain;
-        private System.Windows.Forms.RichTextBox richTextBox3;
+        private System.Windows.Forms.RichTextBox richTextBoxEnvironmentsInformation;
         private System.Windows.Forms.TabPage tabPageEnvironmentNewTab;
+        private System.Windows.Forms.ComboBox comboBoxEnvironments;
+        private System.Windows.Forms.RichTextBox richTextBox4;
     }
 }
 

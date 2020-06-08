@@ -177,21 +177,25 @@ namespace TEAM
         /// <summary>
         ///    Create a file backup for the configuration file at the provided location
         /// </summary>
-        internal static void CreateFileBackup(string fileName)
+        internal static void CreateFileBackup(string fileName, string filePath = "")
         {
-            //FormBase.GlobalParameters.ConfigurationPath +
-            //FormBase.GlobalParameters.ConfigFileName +
-            //'_' +
-            //FormBase.GlobalParameters.WorkingEnvironment +
-            //FormBase.GlobalParameters.FileExtension
+            var localFileName = Path.GetFileName(fileName);
 
-            var filePath = Path.GetDirectoryName(fileName);
+            // Manage that the backup path can be defaulted or derived.
+            if (filePath == "")
+            {
+                filePath = FormBase.GlobalParameters.BackupPath;
+            }
+            else
+            {
+                filePath = Path.GetDirectoryName(fileName);
+            }
 
             try
             {
                 if (File.Exists(fileName))
                 {
-                    var targetFilePathName = filePath + string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_", fileName);
+                    var targetFilePathName = filePath + string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_", localFileName);
 
                     File.Copy(fileName, targetFilePathName);
 
@@ -302,9 +306,6 @@ namespace TEAM
 
         public static void LoadEnvironmentFile(string fileName)
         {
-            var jsonArray = new List<TeamWorkingEnvironment>();
-           // var 
-
             // Create a new file if it doesn't exist.
             if (!File.Exists(fileName))
             {
@@ -332,13 +333,16 @@ namespace TEAM
 
                 list.Add(productionEnvironment);
 
-                string output = JsonConvert.SerializeObject(jsonArray.ToArray(), Formatting.Indented);
+                string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
                 File.WriteAllText(fileName, output);
 
                 // Commit to memory also.
-                 
-                FormBase.ConfigurationSettings.environmentDictionary.Add("Development", developmentEnvironment);
-                FormBase.ConfigurationSettings.environmentDictionary.Add("Production", productionEnvironment);
+                var localDictionary = new Dictionary<string, TeamWorkingEnvironment>();
+
+                localDictionary.Add("Development", developmentEnvironment);
+                localDictionary.Add("Production", productionEnvironment);
+
+                FormBase.ConfigurationSettings.environmentDictionary = localDictionary;
             }
             else
             {
@@ -641,6 +645,29 @@ namespace TEAM
                 MessageBox.Show("An error occured saving the Validation File. The error message is " + ex,
                     "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+    }
+
+
+    // Delegate to pass through a string (for example to update text boxes in a delegate function).
+    public class MyStringEventArgs : EventArgs
+    {
+        public string Value { get; set; }
+
+        public MyStringEventArgs(string value)
+        {
+            Value = value;
+        }
+    }
+
+    // Delegate to pass through a TEAM working environment.
+    public class MyWorkingEnvironmentEventArgs : EventArgs
+    {
+        public TeamWorkingEnvironment Value { get; set; }
+
+        public MyWorkingEnvironmentEventArgs(TeamWorkingEnvironment value)
+        {
+            Value = value;
         }
     }
 }
