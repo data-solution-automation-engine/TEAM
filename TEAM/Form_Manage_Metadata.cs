@@ -94,8 +94,7 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    var newEnvironmentConfiguration = new EnvironmentConfiguration();
-                    newEnvironmentConfiguration.CreateDummyValidationConfiguration(validationFile);
+                    EnvironmentConfiguration.CreateDummyValidationFile(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)

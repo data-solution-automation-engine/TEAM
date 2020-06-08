@@ -148,12 +148,12 @@ namespace TEAM
         internal static class GlobalParameters
         {
             // TEAM core path parameters
-            public static string RootPath { get; } = Application.StartupPath;
-            public static string ConfigurationPath { get; set; } = RootPath + @"\Configuration\";
-            public static string OutputPath { get; set; } = RootPath + @"\Output\";
-            public static string ScriptPath { get; set; } = RootPath + @"\Scripts\";
-            public static string FilesPath { get; set; } = RootPath + @"\Files\";
-            internal static string LoadPatternPath { get; set; } = RootPath + @"\LoadPatterns\";
+            public static string RootPath { get; } = Application.StartupPath + @"\";
+            public static string ConfigurationPath { get; set; } = RootPath + @"Configuration\";
+            public static string OutputPath { get; set; } = RootPath + @"Output\";
+            public static string ScriptPath { get; set; } = RootPath + @"Scripts\";
+            public static string FilesPath { get; set; } = RootPath + @"Files\";
+            internal static string LoadPatternPath { get; set; } = RootPath + @"LoadPatterns\";
 
             public static string ConfigFileName { get; set; } = "TEAM_configuration";
             public static string PathFileName { get; set; } = "TEAM_Path_configuration";

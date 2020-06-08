@@ -22,10 +22,6 @@ namespace TEAM
             this.parentFormMain = parent;
             InitializeComponent();
 
-            //Make sure the root directories exist, based on hard-coded (tool) parameters
-            //Also create the initial file with the configuration if it doesn't exist already
-            EnvironmentConfiguration.InitialiseRootPath();
-
             // Set the core TEAM (path) file using the information retrieved from memory. These values were loaded into memory from the path file in the main form.
             //Dev or prod environment (working environment)
             RadioButton radioButtonWorkingEnvironment;
@@ -109,8 +105,7 @@ namespace TEAM
             // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
             if (!File.Exists(chosenFile))
             {
-                var newEnvironmentConfiguration = new EnvironmentConfiguration();
-                newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(chosenFile);
+                EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(chosenFile);
             }
 
 
@@ -411,7 +406,7 @@ namespace TEAM
 
 
         /// <summary>
-        ///    Commit the changes to memory, save the configuration settings to disk and create a backup
+        /// Commit the changes to memory, save the configuration settings to disk and create a backup.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -441,6 +436,9 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + workingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
+
+
+            //using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
             using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
             {
                 outfile.Write(rootPathConfigurationFile.ToString());
@@ -450,12 +448,15 @@ namespace TEAM
             // Update the paths in memory
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
-
             GlobalParameters.WorkingEnvironment = workingEnvironment;
 
             // Make sure the new paths as updated are available upon save for backup etc.
-            EnvironmentConfiguration.InitialiseConfigurationPath();
-
+            // Check if the paths and files are available, just to be sure.
+            EnvironmentConfiguration.InitialiseRootPath(GlobalParameters.ConfigurationPath);
+            EnvironmentConfiguration.InitialiseRootPath(GlobalParameters.OutputPath);
+            EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
+            EnvironmentConfiguration.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+            
             // Create a file backup for the configuration file
             try
             {

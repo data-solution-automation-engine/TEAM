@@ -57,6 +57,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.viewEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
             this.groupBox2.SuspendLayout();
             this.groupBoxVersionSelection.SuspendLayout();
             this.menuStripMainMenu.SuspendLayout();
@@ -278,7 +280,8 @@
             // 
             this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generalSettingsToolStripMenuItem,
-            this.patternDefinitionsToolStripMenuItem});
+            this.patternDefinitionsToolStripMenuItem,
+            this.viewEventLogToolStripMenuItem});
             this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
             this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
             this.configurationToolStripMenuItem.Text = "&Configuration";
@@ -327,6 +330,22 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
+            // 
+            // viewEventLogToolStripMenuItem
+            // 
+            this.viewEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.HelpIconSmall;
+            this.viewEventLogToolStripMenuItem.Name = "viewEventLogToolStripMenuItem";
+            this.viewEventLogToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.viewEventLogToolStripMenuItem.Text = "View Event Log";
+            this.viewEventLogToolStripMenuItem.Click += new System.EventHandler(this.viewEventLogToolStripMenuItem_Click);
+            // 
+            // backgroundWorkerEventLog
+            // 
+            this.backgroundWorkerEventLog.WorkerReportsProgress = true;
+            this.backgroundWorkerEventLog.WorkerSupportsCancellation = true;
+            this.backgroundWorkerEventLog.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerEventLog_DoWork);
+            this.backgroundWorkerEventLog.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerEventLog_ProgressChanged);
+            this.backgroundWorkerEventLog.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerEventLog_RunWorkerCompleted);
             // 
             // FormMain
             // 
@@ -388,6 +407,8 @@
         private System.Windows.Forms.ToolStripMenuItem repositoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem patternDefinitionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewEventLogToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerEventLog;
     }
 }
 

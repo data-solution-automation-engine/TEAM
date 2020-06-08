@@ -12,11 +12,12 @@ namespace TEAM
     internal class EnvironmentConfiguration
     {
         /// <summary>
-        ///    Method to create a new configuration file with default values at the default location
+        /// Method to create a new configuration file with default values at the default location.
+        /// Checks if the file already exists. If it does, nothing will happen.
         /// </summary>
-        internal void CreateDummyEnvironmentConfiguration(string filename)
+        internal static void CreateDummyEnvironmentConfigurationFile(string fileName)
         {
-            if (FormBase.GlobalParameters.WorkingEnvironment == "Development")
+            if (!File.Exists(fileName))
             {
                 // Create a completely new file
                 var initialConfigurationFile = new StringBuilder();
@@ -47,12 +48,18 @@ namespace TEAM
                 initialConfigurationFile.AppendLine("PhysicalModelPassword|");
 
                 // Connection strings
-                initialConfigurationFile.AppendLine(@"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(@"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(@"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(@"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(@"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(@"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
+                initialConfigurationFile.AppendLine(
+                    @"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
 
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
@@ -86,83 +93,81 @@ namespace TEAM
 
                 initialConfigurationFile.AppendLine("/* End of file */");
 
-                using (var outfile = new StreamWriter(filename))
+                using (var outfile = new StreamWriter(fileName))
                 {
                     outfile.Write(initialConfigurationFile.ToString());
                     outfile.Close();
                 }
-            } else if (FormBase.GlobalParameters.WorkingEnvironment == "Production")
-            {
-                // Just copy the dev file to a prod version to retain settings
-                // Check if the paths are available, just to be sure
-                InitialiseRootPath();
+            }
+        }
 
-                try
+        internal void CopyExistingFile()
+        {
+            try
+            {
+                var sourceFilePathName = FormBase.GlobalParameters.ConfigurationPath +
+                                         FormBase.GlobalParameters.ConfigFileName + '_' + "Development" +
+                                         FormBase.GlobalParameters.FileExtension;
+
+                if (File.Exists(sourceFilePathName))
                 {
-                    var sourceFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                             FormBase.GlobalParameters.ConfigFileName + '_' + "Development" +
+                    var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
+                                             FormBase.GlobalParameters.ConfigFileName + '_' + "Production" +
                                              FormBase.GlobalParameters.FileExtension;
 
-                    if (File.Exists(sourceFilePathName))
-                    {
-                        var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + "Production" + FormBase.GlobalParameters.FileExtension;
+                    File.Copy(sourceFilePathName, targetFilePathName);
 
-                        File.Copy(sourceFilePathName, targetFilePathName);
-
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "TEAM couldn't locate a development configuration file! Can you check the paths and existence of directories?",
-                            "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("An error has occured during the creating of the production settings file. The error message is " + ex,
+                    MessageBox.Show(
+                        "TEAM couldn't locate a development configuration file! Can you check the paths and existence of directories?",
                         "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            else
+            catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Either a Development or Production environment was expected! Can you check the radiobox settings for the environment?",
-                    "An issue has been enountered.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "An error has occured during the creating of the production settings file. The error message is " +
+                    ex,
+                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-
         }
 
 
         /// <summary>
-        ///    Method to create a new validation file with default values at the default location
+        /// Method to create a new validation file with default values at the default location
+        /// Checks if the file already exists. If it does, nothing will happen.
         /// </summary>
-        internal void CreateDummyValidationConfiguration(string filename)
+        internal static void CreateDummyValidationFile(string fileName)
         {
-            var validationFile = new StringBuilder();
-
-            validationFile.AppendLine("/* TEAM Validation Settings */");
-
-            // Object existence validation
-            validationFile.AppendLine("SourceObjectExistence|True");
-            validationFile.AppendLine("TargetObjectExistence|True");
-            validationFile.AppendLine("BusinessKeyExistence|True");
-
-            validationFile.AppendLine("SourceAttributeExistence|True");
-            validationFile.AppendLine("TargetAttributeExistence|True");
-
-            // Consistency validation
-            validationFile.AppendLine("LogicalGroup|True");
-            validationFile.AppendLine("LinkKeyOrder|True");
-            validationFile.AppendLine("BusinessKeySyntax|True"); 
-
-
-            validationFile.AppendLine("/* End of file */");
-
-            using (var outfile = new StreamWriter(filename))
+            if (!File.Exists(fileName))
             {
-                outfile.Write(validationFile.ToString());
-                outfile.Close();
+                var validationFile = new StringBuilder();
+
+                validationFile.AppendLine("/* TEAM Validation Settings */");
+
+                // Object existence validation
+                validationFile.AppendLine("SourceObjectExistence|True");
+                validationFile.AppendLine("TargetObjectExistence|True");
+                validationFile.AppendLine("BusinessKeyExistence|True");
+
+                validationFile.AppendLine("SourceAttributeExistence|True");
+                validationFile.AppendLine("TargetAttributeExistence|True");
+
+                // Consistency validation
+                validationFile.AppendLine("LogicalGroup|True");
+                validationFile.AppendLine("LinkKeyOrder|True");
+                validationFile.AppendLine("BusinessKeySyntax|True");
+
+
+                validationFile.AppendLine("/* End of file */");
+
+                using (var outfile = new StreamWriter(fileName))
+                {
+                    outfile.Write(validationFile.ToString());
+                    outfile.Close();
+                }
             }
         }
 
@@ -172,9 +177,6 @@ namespace TEAM
         /// </summary>
         internal static void CreateEnvironmentConfigurationBackupFile()
         {
-            // Check if the paths are available, just to be sure
-            InitialiseRootPath();
-
             try
             {
                 if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
@@ -210,58 +212,49 @@ namespace TEAM
 
 
         /// <summary>
-        ///    Check if the paths exists and create them if necessary
+        /// Check if the path exists and create it if necessary.
+        /// Is often used for both the Configuration Path and Output Path - both being essential TEAM paths.
         /// </summary>
-        internal static void InitialiseRootPath()
+        internal static void InitialiseRootPath(string inputPath)
         {
             // Create the configuration directory if it does not exist yet
             try
             {
-                if (!Directory.Exists(FormBase.GlobalParameters.ConfigurationPath))
+                if (!Directory.Exists(inputPath))
                 {
-                    Directory.CreateDirectory(FormBase.GlobalParameters.ConfigurationPath);
+                    Directory.CreateDirectory(inputPath);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Error creation default directory at " + FormBase.GlobalParameters.ConfigurationPath +
+                    "Error creation default directory at " + inputPath +
                     " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
 
-            // Create the output directory if it does not exist yet
-            try
-            {
-                if (!Directory.Exists(FormBase.GlobalParameters.OutputPath))
-                {
-                    Directory.CreateDirectory(FormBase.GlobalParameters.OutputPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error creation default directory at " + FormBase.GlobalParameters.OutputPath + " the message is " +
-                    ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
 
+        /// <summary>
+        /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
+        /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
+        /// </summary>
+        public static void LoadRootPathFile(string fileName, string configurationPath, string outputPath)
+        {
             // Create root path file, with dummy values if it doesn't exist already
             try
             {
-                if (!File.Exists(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
-                                 FormBase.GlobalParameters.FileExtension))
+                if (!File.Exists(fileName))
                 {
                     var initialConfigurationFile = new StringBuilder();
 
                     initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
-                    initialConfigurationFile.AppendLine("ConfigurationPath|" +FormBase.GlobalParameters.ConfigurationPath);
-                    initialConfigurationFile.AppendLine("OutputPath|" + FormBase.GlobalParameters.OutputPath);
+                    initialConfigurationFile.AppendLine("ConfigurationPath|" + configurationPath);
+                    initialConfigurationFile.AppendLine("OutputPath|" + outputPath);
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
                     initialConfigurationFile.AppendLine("/* End of file */");
 
-                    using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                                          FormBase.GlobalParameters.PathFileName +
-                                                          FormBase.GlobalParameters.FileExtension))
+                    using (var outfile = new StreamWriter(fileName))
                     {
                         outfile.Write(initialConfigurationFile.ToString());
                         outfile.Close();
@@ -270,102 +263,12 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "An error occurred while creation the default path file. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
-        /// <summary>
-        ///    Check if the paths exists and create them if necessary
-        /// </summary>
-        internal static void InitialiseConfigurationPath()
-        {
-            // Create the configuration directory if it does not exist yet
-            try
-            {
-                if (!Directory.Exists(FormBase.GlobalParameters.ConfigurationPath))
-                {
-                    Directory.CreateDirectory(FormBase.GlobalParameters.ConfigurationPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error creation default directory at " + FormBase.GlobalParameters.ConfigurationPath +
-                    " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show("An error occurred while creation the default path file. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            // Create the output directory if it does not exist yet
-            try
-            {
-                if (!Directory.Exists(FormBase.GlobalParameters.OutputPath))
-                {
-                    Directory.CreateDirectory(FormBase.GlobalParameters.OutputPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error creation default directory at " + FormBase.GlobalParameters.OutputPath +
-                    " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            // Create a new dummy configuration file
-            try
-            {
-                // Create a default configuration file if the file does not exist as expected
-                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
-                                FormBase.GlobalParameters.ConfigFileName + '_' +
-                                FormBase.GlobalParameters.WorkingEnvironment +
-                                FormBase.GlobalParameters.FileExtension)) return;
-                var newEnvironmentConfiguration = new EnvironmentConfiguration();
-                newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' +
-                    FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "An error occurred while creation the default Configuration File. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Create a new dummy validation file
-            try
-            {
-                // Create a default configuration file if the file does not exist as expected
-                if (File.Exists(FormBase.GlobalParameters.ConfigurationPath +
-                                FormBase.GlobalParameters.ValidationFileName + '_' +
-                                FormBase.GlobalParameters.WorkingEnvironment +
-                                FormBase.GlobalParameters.FileExtension)) return;
-                var newEnvironmentConfiguration = new EnvironmentConfiguration();
-                newEnvironmentConfiguration.CreateDummyEnvironmentConfiguration(
-                    FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName +
-                    '_' + FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "An error occurred while creation the default Configuration File. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
-        /// <summary>
-        /// Retrieve the values of the application root path (where the paths to the configuration file is maintained)
-        /// </summary>
-        public static void LoadRootPathFile()
-        {
-            // This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration
+            
             var configList = new Dictionary<string, string>();
-            var fs = new FileStream(
-                FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.PathFileName +
-                FormBase.GlobalParameters.FileExtension, FileMode.Open, FileAccess.Read);
+            var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
             try
