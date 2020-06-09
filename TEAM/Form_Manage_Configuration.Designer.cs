@@ -42,6 +42,18 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
+            this.tabPageEnvironments = new System.Windows.Forms.TabPage();
+            this.tabControlEnvironments = new System.Windows.Forms.TabControl();
+            this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
+            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
+            this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
+            this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
+            this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
+            this.tabPageConnections = new System.Windows.Forms.TabPage();
+            this.tabControlConnections = new System.Windows.Forms.TabControl();
+            this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
             this.tabPageIntegrationLayerSpecific = new System.Windows.Forms.TabPage();
             this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
             this.label41 = new System.Windows.Forms.Label();
@@ -114,16 +126,6 @@
             this.label45 = new System.Windows.Forms.Label();
             this.OutputPathLabel = new System.Windows.Forms.Label();
             this.textBoxOutputPath = new System.Windows.Forms.TextBox();
-            this.tabPageEnvironments = new System.Windows.Forms.TabPage();
-            this.tabControlEnvironments = new System.Windows.Forms.TabControl();
-            this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
-            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
-            this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.radioButtonProduction = new System.Windows.Forms.RadioButton();
-            this.radioButtonDevelopment = new System.Windows.Forms.RadioButton();
-            this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
-            this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
             this.tabPageConnectionsOld = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBoxPresentationConnection = new System.Windows.Forms.TextBox();
@@ -168,14 +170,15 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.radioButtonMetadataNamed = new System.Windows.Forms.RadioButton();
             this.radioButtonMetadataSSPI = new System.Windows.Forms.RadioButton();
-            this.tabPageConnections = new System.Windows.Forms.TabPage();
-            this.tabControlConnections = new System.Windows.Forms.TabControl();
-            this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabControlDefaultDetails.SuspendLayout();
+            this.tabPageEnvironments.SuspendLayout();
+            this.tabControlEnvironments.SuspendLayout();
+            this.tabPageEnvironmentMain.SuspendLayout();
+            this.tabPageConnections.SuspendLayout();
+            this.tabControlConnections.SuspendLayout();
+            this.tabPageConnectionMain.SuspendLayout();
             this.tabPageIntegrationLayerSpecific.SuspendLayout();
             this.tabPageETLFrameworkSpecific.SuspendLayout();
             this.tabPagePrefixesSuffixex.SuspendLayout();
@@ -185,10 +188,6 @@
             this.tabPageRepository.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPagePaths.SuspendLayout();
-            this.tabPageEnvironments.SuspendLayout();
-            this.tabControlEnvironments.SuspendLayout();
-            this.tabPageEnvironmentMain.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.tabPageConnectionsOld.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBoxPhysicalModelNamedUser.SuspendLayout();
@@ -197,9 +196,6 @@
             this.groupBoxDatabase.SuspendLayout();
             this.groupBoxMetadataNamedUser.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.tabPageConnections.SuspendLayout();
-            this.tabControlConnections.SuspendLayout();
-            this.tabPageConnectionMain.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
@@ -324,6 +320,138 @@
             this.tabControlDefaultDetails.SelectedIndex = 0;
             this.tabControlDefaultDetails.Size = new System.Drawing.Size(1128, 647);
             this.tabControlDefaultDetails.TabIndex = 0;
+            // 
+            // tabPageEnvironments
+            // 
+            this.tabPageEnvironments.Controls.Add(this.tabControlEnvironments);
+            this.tabPageEnvironments.Location = new System.Drawing.Point(4, 22);
+            this.tabPageEnvironments.Name = "tabPageEnvironments";
+            this.tabPageEnvironments.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageEnvironments.TabIndex = 5;
+            this.tabPageEnvironments.Text = "Environments";
+            this.tabPageEnvironments.UseVisualStyleBackColor = true;
+            // 
+            // tabControlEnvironments
+            // 
+            this.tabControlEnvironments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControlEnvironments.Controls.Add(this.tabPageEnvironmentMain);
+            this.tabControlEnvironments.Controls.Add(this.tabPageEnvironmentNewTab);
+            this.tabControlEnvironments.Location = new System.Drawing.Point(3, 10);
+            this.tabControlEnvironments.Multiline = true;
+            this.tabControlEnvironments.Name = "tabControlEnvironments";
+            this.tabControlEnvironments.SelectedIndex = 0;
+            this.tabControlEnvironments.Size = new System.Drawing.Size(1114, 608);
+            this.tabControlEnvironments.TabIndex = 1;
+            this.tabControlEnvironments.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlEnvironments_Selecting);
+            this.tabControlEnvironments.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlEnvironments_MouseDown);
+            // 
+            // tabPageEnvironmentMain
+            // 
+            this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
+            this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
+            this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
+            this.tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
+            this.tabPageEnvironmentMain.Name = "tabPageEnvironmentMain";
+            this.tabPageEnvironmentMain.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageEnvironmentMain.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageEnvironmentMain.TabIndex = 0;
+            this.tabPageEnvironmentMain.Text = "Overview of working environments";
+            this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
+            // 
+            // richTextBox4
+            // 
+            this.richTextBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox4.Location = new System.Drawing.Point(6, 91);
+            this.richTextBox4.Name = "richTextBox4";
+            this.richTextBox4.Size = new System.Drawing.Size(116, 22);
+            this.richTextBox4.TabIndex = 75;
+            this.richTextBox4.TabStop = false;
+            this.richTextBox4.Text = "Selected environment:";
+            // 
+            // comboBoxEnvironments
+            // 
+            this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxEnvironments.FormattingEnabled = true;
+            this.comboBoxEnvironments.Location = new System.Drawing.Point(128, 88);
+            this.comboBoxEnvironments.Name = "comboBoxEnvironments";
+            this.comboBoxEnvironments.Size = new System.Drawing.Size(292, 21);
+            this.comboBoxEnvironments.TabIndex = 1;
+            this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
+            // 
+            // richTextBoxEnvironmentsInformation
+            // 
+            this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
+            this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
+            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(463, 70);
+            this.richTextBoxEnvironmentsInformation.TabIndex = 73;
+            this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
+            // 
+            // tabPageEnvironmentNewTab
+            // 
+            this.tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 22);
+            this.tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
+            this.tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageEnvironmentNewTab.TabIndex = 1;
+            this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
+            // 
+            // tabPageConnections
+            // 
+            this.tabPageConnections.Controls.Add(this.tabControlConnections);
+            this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnections.Name = "tabPageConnections";
+            this.tabPageConnections.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageConnections.TabIndex = 7;
+            this.tabPageConnections.Text = "Connections";
+            this.tabPageConnections.UseVisualStyleBackColor = true;
+            // 
+            // tabControlConnections
+            // 
+            this.tabControlConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControlConnections.Controls.Add(this.tabPageConnectionMain);
+            this.tabControlConnections.Controls.Add(this.tabPageConnectionNewTab);
+            this.tabControlConnections.Location = new System.Drawing.Point(3, 10);
+            this.tabControlConnections.Multiline = true;
+            this.tabControlConnections.Name = "tabControlConnections";
+            this.tabControlConnections.SelectedIndex = 0;
+            this.tabControlConnections.Size = new System.Drawing.Size(1114, 608);
+            this.tabControlConnections.TabIndex = 0;
+            this.tabControlConnections.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlConnections_Selecting);
+            this.tabControlConnections.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlConnections_MouseDown);
+            // 
+            // tabPageConnectionMain
+            // 
+            this.tabPageConnectionMain.Controls.Add(this.richTextBox2);
+            this.tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnectionMain.Name = "tabPageConnectionMain";
+            this.tabPageConnectionMain.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageConnectionMain.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageConnectionMain.TabIndex = 0;
+            this.tabPageConnectionMain.Text = "Overview of data connections";
+            this.tabPageConnectionMain.UseVisualStyleBackColor = true;
+            // 
+            // richTextBox2
+            // 
+            this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBox2.Location = new System.Drawing.Point(6, 6);
+            this.richTextBox2.Name = "richTextBox2";
+            this.richTextBox2.Size = new System.Drawing.Size(487, 61);
+            this.richTextBox2.TabIndex = 73;
+            this.richTextBox2.Text = "Create new data connections so these can be assigned to metadata.";
+            // 
+            // tabPageConnectionNewTab
+            // 
+            this.tabPageConnectionNewTab.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnectionNewTab.Name = "tabPageConnectionNewTab";
+            this.tabPageConnectionNewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageConnectionNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageConnectionNewTab.TabIndex = 1;
+            this.tabPageConnectionNewTab.UseVisualStyleBackColor = true;
             // 
             // tabPageIntegrationLayerSpecific
             // 
@@ -1018,117 +1146,6 @@
             this.textBoxOutputPath.Size = new System.Drawing.Size(1094, 27);
             this.textBoxOutputPath.TabIndex = 40;
             // 
-            // tabPageEnvironments
-            // 
-            this.tabPageEnvironments.Controls.Add(this.tabControlEnvironments);
-            this.tabPageEnvironments.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEnvironments.Name = "tabPageEnvironments";
-            this.tabPageEnvironments.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageEnvironments.TabIndex = 5;
-            this.tabPageEnvironments.Text = "Environments";
-            this.tabPageEnvironments.UseVisualStyleBackColor = true;
-            // 
-            // tabControlEnvironments
-            // 
-            this.tabControlEnvironments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlEnvironments.Controls.Add(this.tabPageEnvironmentMain);
-            this.tabControlEnvironments.Controls.Add(this.tabPageEnvironmentNewTab);
-            this.tabControlEnvironments.Location = new System.Drawing.Point(3, 10);
-            this.tabControlEnvironments.Multiline = true;
-            this.tabControlEnvironments.Name = "tabControlEnvironments";
-            this.tabControlEnvironments.SelectedIndex = 0;
-            this.tabControlEnvironments.Size = new System.Drawing.Size(1114, 608);
-            this.tabControlEnvironments.TabIndex = 1;
-            this.tabControlEnvironments.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlEnvironments_Selecting);
-            this.tabControlEnvironments.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlEnvironments_MouseDown);
-            // 
-            // tabPageEnvironmentMain
-            // 
-            this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
-            this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
-            this.tabPageEnvironmentMain.Controls.Add(this.groupBox3);
-            this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
-            this.tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEnvironmentMain.Name = "tabPageEnvironmentMain";
-            this.tabPageEnvironmentMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentMain.Size = new System.Drawing.Size(1106, 582);
-            this.tabPageEnvironmentMain.TabIndex = 0;
-            this.tabPageEnvironmentMain.Text = "Overview of working environments";
-            this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
-            // 
-            // richTextBox4
-            // 
-            this.richTextBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox4.Location = new System.Drawing.Point(6, 91);
-            this.richTextBox4.Name = "richTextBox4";
-            this.richTextBox4.Size = new System.Drawing.Size(116, 22);
-            this.richTextBox4.TabIndex = 75;
-            this.richTextBox4.Text = "Selected environment:";
-
-            // 
-            // comboBoxEnvironments
-            // 
-            this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxEnvironments.FormattingEnabled = true;
-            this.comboBoxEnvironments.Location = new System.Drawing.Point(128, 88);
-            this.comboBoxEnvironments.Name = "comboBoxEnvironments";
-            this.comboBoxEnvironments.Size = new System.Drawing.Size(292, 21);
-            this.comboBoxEnvironments.TabIndex = 74;
-            this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.radioButtonProduction);
-            this.groupBox3.Controls.Add(this.radioButtonDevelopment);
-            this.groupBox3.Location = new System.Drawing.Point(949, 17);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(140, 70);
-            this.groupBox3.TabIndex = 72;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Working environment";
-            // 
-            // radioButtonProduction
-            // 
-            this.radioButtonProduction.AutoSize = true;
-            this.radioButtonProduction.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonProduction.Name = "radioButtonProduction";
-            this.radioButtonProduction.Size = new System.Drawing.Size(76, 17);
-            this.radioButtonProduction.TabIndex = 39;
-            this.radioButtonProduction.Text = "Production";
-            this.radioButtonProduction.UseVisualStyleBackColor = true;
-            this.radioButtonProduction.CheckedChanged += new System.EventHandler(this.radioButtonProduction_CheckedChanged);
-            // 
-            // radioButtonDevelopment
-            // 
-            this.radioButtonDevelopment.AutoSize = true;
-            this.radioButtonDevelopment.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonDevelopment.Name = "radioButtonDevelopment";
-            this.radioButtonDevelopment.Size = new System.Drawing.Size(88, 17);
-            this.radioButtonDevelopment.TabIndex = 38;
-            this.radioButtonDevelopment.Text = "Development";
-            this.radioButtonDevelopment.UseVisualStyleBackColor = true;
-            this.radioButtonDevelopment.CheckedChanged += new System.EventHandler(this.radioButtonDevelopment_CheckedChanged);
-            // 
-            // richTextBoxEnvironmentsInformation
-            // 
-            this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
-            this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
-            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(463, 70);
-            this.richTextBoxEnvironmentsInformation.TabIndex = 73;
-            this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
-            // 
-            // tabPageEnvironmentNewTab
-            // 
-            this.tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
-            this.tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1106, 582);
-            this.tabPageEnvironmentNewTab.TabIndex = 1;
-            this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
-            // 
             // tabPageConnectionsOld
             // 
             this.tabPageConnectionsOld.Controls.Add(this.panel2);
@@ -1584,61 +1601,6 @@
             this.radioButtonMetadataSSPI.UseVisualStyleBackColor = true;
             this.radioButtonMetadataSSPI.CheckedChanged += new System.EventHandler(this.radioButtonMetadataSSPI_CheckedChanged);
             // 
-            // tabPageConnections
-            // 
-            this.tabPageConnections.Controls.Add(this.tabControlConnections);
-            this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnections.Name = "tabPageConnections";
-            this.tabPageConnections.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageConnections.TabIndex = 7;
-            this.tabPageConnections.Text = "Connections";
-            this.tabPageConnections.UseVisualStyleBackColor = true;
-            // 
-            // tabControlConnections
-            // 
-            this.tabControlConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlConnections.Controls.Add(this.tabPageConnectionMain);
-            this.tabControlConnections.Controls.Add(this.tabPageConnectionNewTab);
-            this.tabControlConnections.Location = new System.Drawing.Point(3, 10);
-            this.tabControlConnections.Multiline = true;
-            this.tabControlConnections.Name = "tabControlConnections";
-            this.tabControlConnections.SelectedIndex = 0;
-            this.tabControlConnections.Size = new System.Drawing.Size(1114, 608);
-            this.tabControlConnections.TabIndex = 0;
-            this.tabControlConnections.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlConnections_Selecting);
-            this.tabControlConnections.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlConnections_MouseDown);
-            // 
-            // tabPageConnectionMain
-            // 
-            this.tabPageConnectionMain.Controls.Add(this.richTextBox2);
-            this.tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnectionMain.Name = "tabPageConnectionMain";
-            this.tabPageConnectionMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConnectionMain.Size = new System.Drawing.Size(1106, 582);
-            this.tabPageConnectionMain.TabIndex = 0;
-            this.tabPageConnectionMain.Text = "Overview of data connections";
-            this.tabPageConnectionMain.UseVisualStyleBackColor = true;
-            // 
-            // richTextBox2
-            // 
-            this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox2.Location = new System.Drawing.Point(6, 6);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(487, 61);
-            this.richTextBox2.TabIndex = 73;
-            this.richTextBox2.Text = "Create new data connections so these can be assigned to metadata.";
-            // 
-            // tabPageConnectionNewTab
-            // 
-            this.tabPageConnectionNewTab.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnectionNewTab.Name = "tabPageConnectionNewTab";
-            this.tabPageConnectionNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConnectionNewTab.Size = new System.Drawing.Size(1106, 582);
-            this.tabPageConnectionNewTab.TabIndex = 1;
-            this.tabPageConnectionNewTab.UseVisualStyleBackColor = true;
-            // 
             // FormManageConfiguration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1661,6 +1623,12 @@
             this.menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabControlDefaultDetails.ResumeLayout(false);
+            this.tabPageEnvironments.ResumeLayout(false);
+            this.tabControlEnvironments.ResumeLayout(false);
+            this.tabPageEnvironmentMain.ResumeLayout(false);
+            this.tabPageConnections.ResumeLayout(false);
+            this.tabControlConnections.ResumeLayout(false);
+            this.tabPageConnectionMain.ResumeLayout(false);
             this.tabPageIntegrationLayerSpecific.ResumeLayout(false);
             this.tabPageIntegrationLayerSpecific.PerformLayout();
             this.tabPageETLFrameworkSpecific.ResumeLayout(false);
@@ -1678,11 +1646,6 @@
             this.groupBox2.PerformLayout();
             this.tabPagePaths.ResumeLayout(false);
             this.tabPagePaths.PerformLayout();
-            this.tabPageEnvironments.ResumeLayout(false);
-            this.tabControlEnvironments.ResumeLayout(false);
-            this.tabPageEnvironmentMain.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.tabPageConnectionsOld.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
@@ -1698,9 +1661,6 @@
             this.groupBoxMetadataNamedUser.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.tabPageConnections.ResumeLayout(false);
-            this.tabControlConnections.ResumeLayout(false);
-            this.tabPageConnectionMain.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1787,9 +1747,6 @@
         internal System.Windows.Forms.RadioButton radioButtonJSON;
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.TextBox textBoxConfigurationPath;
-        private System.Windows.Forms.GroupBox groupBox3;
-        internal System.Windows.Forms.RadioButton radioButtonProduction;
-        internal System.Windows.Forms.RadioButton radioButtonDevelopment;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

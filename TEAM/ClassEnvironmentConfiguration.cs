@@ -13,6 +13,58 @@ namespace TEAM
     /// </summary>
     internal class EnvironmentConfiguration
     {
+        internal static void InitialiseEnvironment()
+        {
+            CreateConfigurationPath();
+            CreateOutputPath();
+            CreateBackupPath();
+        }
+
+        internal static void CreateConfigurationPath()
+        {
+            try
+            {
+                InitialiseRootPath(FormBase.GlobalParameters.ConfigurationPath);
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The TEAM directory {FormBase.GlobalParameters.ConfigurationPath} is available."));
+            }
+            catch
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+            }
+        }
+
+        internal static void CreateOutputPath()
+        {
+            try
+            {
+                InitialiseRootPath(FormBase.GlobalParameters.OutputPath);
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The TEAM directory {FormBase.GlobalParameters.OutputPath} is available."));
+            }
+            catch
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+            }
+        }
+
+        internal static void CreateBackupPath()
+        {
+            try
+            {
+                EnvironmentConfiguration.InitialiseRootPath(FormBase.GlobalParameters.BackupPath);
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The TEAM directory {FormBase.GlobalParameters.BackupPath} is available."));
+            }
+            catch
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+            }
+        }
+
         /// <summary>
         /// Method to create a new configuration file with default values at the default location.
         /// Checks if the file already exists. If it does, nothing will happen.
@@ -303,7 +355,10 @@ namespace TEAM
         }
 
 
-
+        /// <summary>
+        /// Load a TEAM environment file into memory.
+        /// </summary>
+        /// <param name="fileName"></param>
         public static void LoadEnvironmentFile(string fileName)
         {
             // Create a new file if it doesn't exist.
@@ -311,7 +366,7 @@ namespace TEAM
             {
                 File.Create(fileName).Close();
 
-                // There was no key in the file for this connection, so it's new.
+                // There was no key in the file for this environment, so it's new.
                 // Create two initial environments, development and production.
                 var list = new List<TeamWorkingEnvironment>();
 
@@ -358,7 +413,41 @@ namespace TEAM
 
 
         /// <summary>
-        ///    Retrieve the configuration information from memory and save this to disk
+        /// Load a TEAM connections file into memory (for a specific environment).
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void LoadConnectionsFile(string fileName)
+        {
+            // Create a new empty file if it doesn't exist.
+            if (!File.Exists(fileName))
+            {
+                File.Create(fileName).Close();
+
+                // There was no key in the file for this connection, so it's new.
+                var list = new List<TeamConnectionProfile>();
+
+                string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
+                File.WriteAllText(fileName, output);
+
+                // Commit the nothing to memory also.
+                var localDictionary = new Dictionary<string, TeamConnectionProfile>();
+                FormBase.ConfigurationSettings.connectionDictionary = localDictionary;
+            }
+            else
+            {
+                FormBase.ConfigurationSettings.connectionDictionary.Clear();
+                TeamConnectionProfile[] connectionJson = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(File.ReadAllText(fileName));
+
+                foreach (var connection in connectionJson)
+                {
+                    FormBase.ConfigurationSettings.connectionDictionary.Add(connection.databaseConnectionKey, connection);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Retrieve the configuration information from memory and save this to disk
         /// </summary>
         internal static void SaveConfigurationFile()
         {

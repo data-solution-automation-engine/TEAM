@@ -22,19 +22,6 @@ namespace TEAM
             this.parentFormMain = parent;
             InitializeComponent();
 
-            // Set the core TEAM (path) file using the information retrieved from memory. These values were loaded into memory from the path file in the main form.
-            //Dev or prod environment (working environment)
-            RadioButton radioButtonWorkingEnvironment;
-            if (GlobalParameters.WorkingEnvironment == "Development")
-            {
-                radioButtonWorkingEnvironment = radioButtonDevelopment;
-                radioButtonWorkingEnvironment.Checked = true;
-            }
-            else if (GlobalParameters.WorkingEnvironment == "Production")
-            {
-                radioButtonWorkingEnvironment = radioButtonProduction;
-                radioButtonWorkingEnvironment.Checked = true;
-            }
 
             //Paths
             textBoxOutputPath.Text = GlobalParameters.OutputPath;
@@ -50,6 +37,8 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
 
+
+            // Environment tab
             IntPtr h = tabControlEnvironments.Handle;
             foreach (var environment in ConfigurationSettings.environmentDictionary)
             {
@@ -66,6 +55,22 @@ namespace TEAM
             }
 
             comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
+
+
+            // Connection tab
+            IntPtr x = tabControlConnections.Handle;
+            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            {
+                // Adding tabs on the Tab Control
+                var lastIndex = tabControlConnections.TabCount - 1;
+                CustomTabPageConnection localCustomTabPage = new CustomTabPageConnection(connection.Value);
+                localCustomTabPage.OnDeleteConnection += DeleteConnection;
+                localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
+                tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
+                tabControlConnections.SelectedIndex = 0;
+            }
+
+
 
             _formLoading = false;
         }
@@ -439,43 +444,13 @@ namespace TEAM
         /// <param name="e"></param>
         private void saveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string workingEnvironment = "";
-
-            if (radioButtonDevelopment.Checked)
-            {
-                workingEnvironment = "Development";
-            }
-            else if (radioButtonProduction.Checked)
-            {
-                workingEnvironment = "Production";
-            }
-            else
-            {
-                MessageBox.Show("An error occurred: neither the Development or Production radiobutton was selected.", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Update the root path file, part of the core solution to be able to store the config and output path
-            var rootPathConfigurationFile = new StringBuilder();
-            rootPathConfigurationFile.AppendLine("/* TEAM File Path Settings */");
-            rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-            rootPathConfigurationFile.AppendLine("ConfigurationPath|" + textBoxConfigurationPath.Text + "");
-            rootPathConfigurationFile.AppendLine("OutputPath|" + textBoxOutputPath.Text + "");
-            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + workingEnvironment + "");
-            rootPathConfigurationFile.AppendLine("/* End of file */");
-
-
-
-            //using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
-            using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
-            {
-                outfile.Write(rootPathConfigurationFile.ToString());
-                outfile.Close();
-            }
-
             // Update the paths in memory
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
-            GlobalParameters.WorkingEnvironment = workingEnvironment;
+            GlobalParameters.WorkingEnvironment = comboBoxEnvironments.SelectedItem.ToString();
+
+            // Save the paths from memory to disk.
+            UpdateRootPathFile();
 
             // Make sure the new paths as updated are available upon save for backup etc.
             // Check if the paths and files are available, just to be sure.
@@ -504,6 +479,27 @@ namespace TEAM
             // Save the information 
             EnvironmentConfiguration.SaveConfigurationFile();
             parentFormMain.RevalidateFlag = true;
+        }
+
+        // Save the root path file (configuration path, output path and working environment).
+        private void UpdateRootPathFile()
+        {
+            // Update the root path file, part of the core solution to be able to store the config and output path
+            var rootPathConfigurationFile = new StringBuilder();
+            rootPathConfigurationFile.AppendLine("/* TEAM File Path Settings */");
+            rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
+            rootPathConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath + "");
+            rootPathConfigurationFile.AppendLine("OutputPath|" + GlobalParameters.OutputPath + "");
+            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.WorkingEnvironment + "");
+            rootPathConfigurationFile.AppendLine("/* End of file */");
+
+            //using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+            using (var outfile =
+                new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+            {
+                outfile.Write(rootPathConfigurationFile.ToString());
+                outfile.Close();
+            }
         }
 
 
@@ -1230,18 +1226,33 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// Manage the event when the environment selection changes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void comboBoxEnvironments_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_formLoading == false)
             {
+                // Retrieve the object from the event.
                 var localComboBox = (ComboBox) sender;
                 var selectedItem = localComboBox.SelectedItem;
 
-                // Get the full environment from the dictionary.
+                // Get the full environment from the in-memory dictionary.
                 var localEnvironment = ConfigurationSettings.environmentDictionary[selectedItem.ToString()];
-                // Initialise new environment in configuration settings.
 
+                // Set the working environment in memory.
+                GlobalParameters.WorkingEnvironment = localEnvironment.environmentKey;
+
+                // Update the root path file with the new working directory.
+                UpdateRootPathFile();
+
+                // Initialise new environment in configuration settings.
                 UpdateEnvironment(localEnvironment);
+
+                // Report back to the event log.
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
             }
         }
     }

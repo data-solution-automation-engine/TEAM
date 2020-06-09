@@ -14,12 +14,14 @@ namespace TEAM
         public FormBase()
         {
             InitializeComponent();
+         //   GlobalParameters.TeamEventLog = new EventLog();
         }
 
         public FormBase(FormMain myParent)
         {
             MyParent = myParent;
             InitializeComponent();
+            
         }
 
         /// <summary>
@@ -28,10 +30,10 @@ namespace TEAM
         internal static class ConfigurationSettings
         {
             #region Connectivity (connection objects, connection strings etc.)
-            internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; }
+            internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; } = new Dictionary<string, TeamConnectionProfile>();
             #endregion
 
-            internal static Dictionary<string, TeamWorkingEnvironment> environmentDictionary { get; set; }
+            internal static Dictionary<string, TeamWorkingEnvironment> environmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
 
             #region Prefixes
             //Prefixes
@@ -149,6 +151,7 @@ namespace TEAM
         /// </summary>
         internal static class GlobalParameters
         {
+            internal static EventLog TeamEventLog { get; set; } = new EventLog();
             // TEAM core path parameters
             public static string RootPath { get; } = Application.StartupPath + @"\";
             public static string ConfigurationPath { get; set; } = RootPath + @"Configuration\";
@@ -171,8 +174,8 @@ namespace TEAM
             public static string JsonTableMappingFileName { get; } = "TEAM_Table_Mapping";
             public static string JsonAttributeMappingFileName { get; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; } = "TEAM_Model_Metadata";
-            public static string JsonConnectionFileName { get; } = "TEAM_Connections";
-            public static string JsonEnvironmentFileName { get; } = "TEAM_Environments";
+            public static string JsonConnectionFileName { get; } = "TEAM_connections";
+            public static string JsonEnvironmentFileName { get; } = "TEAM_environments";
             public static string JsonExtension { get;  } = ".json";
 
             public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";

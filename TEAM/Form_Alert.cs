@@ -58,7 +58,7 @@ namespace TEAM
         {
             if (buttonShowLog.InvokeRequired)
             {
-                var d = new ShowCancelButtonCallBack(ShowLogButton);
+                var d = new ShowLogButtonCallBack(ShowLogButton);
                 try
                 {
                     Invoke(d, showLogButton);
