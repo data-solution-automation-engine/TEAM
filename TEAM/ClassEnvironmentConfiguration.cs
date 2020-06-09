@@ -13,6 +13,57 @@ namespace TEAM
     /// </summary>
     internal class EnvironmentConfiguration
     {
+
+        /// <summary>
+        /// Load in to memory (deserialise) a TEAM connection file.
+        /// </summary>
+        public static void LoadConnectionFile()
+        {
+            var connectionFileName = FormBase.GlobalParameters.ConfigurationPath +
+                                     FormBase.GlobalParameters.JsonConnectionFileName + '_' +
+                                     FormBase.GlobalParameters.WorkingEnvironment +
+                                     FormBase.GlobalParameters.JsonExtension;
+
+            // Load the connections
+            try
+            {
+
+
+                // Create a new empty file if it doesn't exist.
+                if (!File.Exists(connectionFileName))
+                {
+                    File.Create(connectionFileName).Close();
+
+                    // There was no key in the file for this connection, so it's new.
+                    var list = new List<TeamConnectionProfile>();
+
+                    string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
+                    File.WriteAllText(connectionFileName, output);
+
+                    // Commit the nothing to memory also.
+                    var localDictionary = new Dictionary<string, TeamConnectionProfile>();
+                    FormBase.ConfigurationSettings.connectionDictionary = localDictionary;
+                }
+                else
+                {
+                    // Clear the in-memory dictionary and load the file
+                    FormBase.ConfigurationSettings.connectionDictionary.Clear();
+                    TeamConnectionProfile[] connectionJson = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(File.ReadAllText(connectionFileName));
+
+                    foreach (var connection in connectionJson)
+                    {
+                        FormBase.ConfigurationSettings.connectionDictionary.Add(connection.databaseConnectionKey, connection);
+                    }
+                }
+
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The connections file {connectionFileName}was loaded successfully."));
+            }
+            catch
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the connections file {connectionFileName}."));
+            }
+        }
+
         internal static void InitialiseEnvironment()
         {
             CreateConfigurationPath();
@@ -410,41 +461,6 @@ namespace TEAM
                 }
             }
         }
-
-
-        /// <summary>
-        /// Load a TEAM connections file into memory (for a specific environment).
-        /// </summary>
-        /// <param name="fileName"></param>
-        public static void LoadConnectionsFile(string fileName)
-        {
-            // Create a new empty file if it doesn't exist.
-            if (!File.Exists(fileName))
-            {
-                File.Create(fileName).Close();
-
-                // There was no key in the file for this connection, so it's new.
-                var list = new List<TeamConnectionProfile>();
-
-                string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
-                File.WriteAllText(fileName, output);
-
-                // Commit the nothing to memory also.
-                var localDictionary = new Dictionary<string, TeamConnectionProfile>();
-                FormBase.ConfigurationSettings.connectionDictionary = localDictionary;
-            }
-            else
-            {
-                FormBase.ConfigurationSettings.connectionDictionary.Clear();
-                TeamConnectionProfile[] connectionJson = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(File.ReadAllText(fileName));
-
-                foreach (var connection in connectionJson)
-                {
-                    FormBase.ConfigurationSettings.connectionDictionary.Add(connection.databaseConnectionKey, connection);
-                }
-            }
-        }
-
 
         /// <summary>
         /// Retrieve the configuration information from memory and save this to disk

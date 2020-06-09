@@ -189,29 +189,8 @@ namespace TEAM
                     "An issue was encountered loading the pattern definition file."));
             }
 
-            // Load the connections
-            // TBD - WIP
-            try
-            {
-
-                var localConnectionName = GlobalParameters.ConfigurationPath +
-                                          GlobalParameters.JsonConnectionFileName + '_' +
-                                          GlobalParameters.WorkingEnvironment +
-                                          GlobalParameters.JsonExtension;
-
-                EnvironmentConfiguration.LoadConnectionsFile(localConnectionName);
-
-
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    "The connections file was loaded successfully."));
-
-                var bla = ConfigurationSettings.connectionDictionary;
-            }
-            catch
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    "An issue was encountered loading the connections file."));
-            }
+            // Load the connections file for the respective environment.
+            EnvironmentConfiguration.LoadConnectionFile();
 
 
             // Report the events (including errors) back to the user
@@ -743,6 +722,9 @@ namespace TEAM
                 _alertEventLog = new Form_Alert();
                 _alertEventLog.ShowLogButton(false);
                 _alertEventLog.ShowCancelButton(false);
+                _alertEventLog.ShowProgressBar(false);
+                _alertEventLog.ShowProgressLabel(false);
+                
                 // event handler for the Cancel button in AlertForm
                 _alertEventLog.Canceled += buttonCancelEventLogForm_Click;
                 _alertEventLog.Show();

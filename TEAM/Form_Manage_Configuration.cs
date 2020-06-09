@@ -26,7 +26,7 @@ namespace TEAM
             //Paths
             textBoxOutputPath.Text = GlobalParameters.OutputPath;
             textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
-
+            
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
             {
@@ -38,7 +38,7 @@ namespace TEAM
             }
 
 
-            // Environment tab
+            // Adding tab pages to the Environment tabs.
             IntPtr h = tabControlEnvironments.Handle;
             foreach (var environment in ConfigurationSettings.environmentDictionary)
             {
@@ -56,8 +56,14 @@ namespace TEAM
 
             comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
 
+            // Connection tabs for the specific environment.
+            AddConnectionTabPages();
 
-            // Connection tab
+            _formLoading = false;
+        }
+
+        private void AddConnectionTabPages()
+        {
             IntPtr x = tabControlConnections.Handle;
             foreach (var connection in ConfigurationSettings.connectionDictionary)
             {
@@ -69,10 +75,6 @@ namespace TEAM
                 tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                 tabControlConnections.SelectedIndex = 0;
             }
-
-
-
-            _formLoading = false;
         }
 
         /// <summary>
@@ -358,7 +360,7 @@ namespace TEAM
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
 
-                richTextBoxInformation.AppendText(@"The file " + chosenFile + " was uploaded successfully. \r\n\r\n");
+                richTextBoxInformation.AppendText(@"The file " + chosenFile + " was uploaded successfully.\r\n");
             }
             catch (Exception ex)
             {
@@ -463,7 +465,7 @@ namespace TEAM
             try
             {
                 EnvironmentConfiguration.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment  + GlobalParameters.FileExtension);
-                richTextBoxInformation.Text = "A backup of the current configuration was made at " + DateTime.Now + " in " + textBoxConfigurationPath.Text + ".";
+                richTextBoxInformation.Text = "A backup of the current configuration was made at " + DateTime.Now + " in " + textBoxConfigurationPath.Text + ".\r\n";
             }
             catch (Exception)
             {
@@ -1250,6 +1252,31 @@ namespace TEAM
 
                 // Initialise new environment in configuration settings.
                 UpdateEnvironment(localEnvironment);
+
+                foreach (TabPage customTabPage in tabControlConnections.TabPages)
+                {
+                    if ((customTabPage.Name == "tabPageConnectionMain") || (customTabPage.Name == "tabPageConnectionNewTab"))
+                    {
+                        // Do nothing, as only the two standard Tab Pages exist.
+                    }
+                    else
+                    {
+                        // Remove the Tab Page from the Tab Control
+                        tabControlConnections.Controls.Remove((customTabPage));
+                    }
+                }
+
+                EnvironmentConfiguration.LoadConnectionFile();
+                AddConnectionTabPages();
+
+                try
+                {
+                    LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
+                }
 
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
