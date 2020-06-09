@@ -16,12 +16,10 @@ namespace TEAM
         {
             InitializeComponent();
         }
-
         public FormManageConfiguration(FormMain parent) : base(parent)
         {
             this.parentFormMain = parent;
             InitializeComponent();
-
 
             //Paths
             textBoxOutputPath.Text = GlobalParameters.OutputPath;
@@ -36,7 +34,6 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
-
 
             // Adding tab pages to the Environment tabs.
             IntPtr h = tabControlEnvironments.Handle;
@@ -55,6 +52,7 @@ namespace TEAM
             }
 
             comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataDatabaseName);
 
             // Connection tabs for the specific environment.
             AddConnectionTabPages();
@@ -90,56 +88,14 @@ namespace TEAM
         {
             OnUpdateEnvironment(this, new MyWorkingEnvironmentEventArgs(environment));
         }
-
-        /// <summary>
-        /// Build a connection string using the relevant components, including a masking flag to display the password masked or not.
-        /// </summary>
-        /// <param name="mask"></param>
-        /// <param name="databaseName"></param>
-        /// <param name="serverName"></param>
-        /// <param name="sspi"></param>
-        /// <param name="namedUser"></param>
-        /// <param name="userName"></param>
-        /// <param name="passWord"></param>
-        /// <returns></returns>
-        private string GenerateConnectionString(bool mask, string databaseName, string serverName, bool sspi, bool namedUser, string userName, string passWord)
-        {
-            string outputConnectionString;
-            var connectionString = new StringBuilder();
-
-            connectionString.Append("Server=" + serverName + ";");
-            connectionString.Append("Initial Catalog=" + databaseName + ";");
-            if (sspi)
-            {
-                connectionString.Append("Integrated Security=SSPI;");
-            }
-            else if (namedUser)
-            {
-                connectionString.Append("user id=" + userName + ";");
-                connectionString.Append("password=" + passWord + ";");
-            }
-
-            if (passWord.Length > 0 && mask)
-            {
-                outputConnectionString = connectionString.ToString().Replace(passWord, "*****");
-            }
-            else
-            {
-                outputConnectionString = connectionString.ToString();
-            }
-
-            return outputConnectionString;
-        }
         
-
-
         /// <summary>
-        ///    This method will load an existing configuration file and display the values on the form, or create a new dummy one if not available
+        /// This method will load an existing configuration file and display the values on the form, or create a new dummy one if not available.
         /// </summary>
         /// <param name="chosenFile"></param>
         private void LocalInitialiseConnections(string chosenFile)
         {
-            // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
+            // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
             if (!File.Exists(chosenFile))
             {
                 EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(chosenFile);
@@ -171,7 +127,6 @@ namespace TEAM
                 textBoxLinkTablePrefix.Text = configList["LinkTablePrefix"];
                 textBoxLinkSatPrefix.Text = configList["LinkSatTablePrefix"];
                 textBoxDWHKeyIdentifier.Text = configList["KeyIdentifier"];
-                textBoxSchemaName.Text = configList["SchemaName"];
                 textBoxEventDateTime.Text = configList["EventDateTimeStamp"];
                 textBoxLDST.Text = configList["LoadDateTimeStamp"];
                 textBoxExpiryDateTimeName.Text = configList["ExpiryDateTimeStamp"];
@@ -188,7 +143,6 @@ namespace TEAM
                 textBoxHubAlternativeLDTSAttribute.Text = configList["AlternativeHubLDTS"];
                 textBoxSatelliteAlternativeLDTSAttribute.Text = configList["AlternativeSatelliteLDTS"];
                 textBoxLogicalDeleteAttributeName.Text = configList["LogicalDeleteAttribute"];
-
 
                 //Checkbox setting based on loaded configuration
                 CheckBox myConfigurationCheckBox;
@@ -376,6 +330,7 @@ namespace TEAM
         /// <param name="e"></param>
         private void saveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            #region root path file
             // Update the paths in memory
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
@@ -383,6 +338,7 @@ namespace TEAM
 
             // Save the paths from memory to disk.
             UpdateRootPathFile();
+            #endregion
 
             // Make sure the new paths as updated are available upon save for backup etc.
             // Check if the paths and files are available, just to be sure.
@@ -440,18 +396,25 @@ namespace TEAM
         /// </summary>
         private void UpdateConfigurationInMemory()
         {
- 
+            // Save radio buttons Json / SQL Server.
             if (radioButtonJSON.Checked)
             {
-                ConfigurationSettings.MetadataRepositoryType = "JSON";
+                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.JSON;
             }
             else if (radioButtonSQLServer.Checked)
             {
-                ConfigurationSettings.MetadataRepositoryType = "SQLServer";
+                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.SQLServer;
             }
             else
             {
                 richTextBoxInformation.AppendText("Issues storing the metadata repository type. Is one of the radio buttons checked?");
+            }
+
+            if (comboBoxMetadataConnection.SelectedItem!=null)
+            {
+                var selectedMetadataValue = ConfigurationSettings.connectionDictionary[comboBoxMetadataConnection.SelectedItem.ToString()];
+                
+                ConfigurationSettings.MetadataConnection = ConfigurationSettings.connectionDictionary[comboBoxMetadataConnection.SelectedItem.ToString()];
             }
 
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
@@ -478,7 +441,6 @@ namespace TEAM
             }
 
             ConfigurationSettings.DwhKeyIdentifier = textBoxDWHKeyIdentifier.Text;
-            ConfigurationSettings.SchemaName = textBoxSchemaName.Text;
             ConfigurationSettings.RowIdAttribute = textBoxSourceRowId.Text;
             ConfigurationSettings.EventDateTimeAttribute = textBoxEventDateTime.Text;
             ConfigurationSettings.LoadDateTimeAttribute = textBoxLDST.Text;
@@ -550,9 +512,6 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Issues storing the table prefix location (prefix/suffix). Is one of the radio buttons checked?");
             }
 
-  
-            ConfigurationSettings.PhysicalModelPassword = textBoxPhysicalModelPassword.Text;
-
         }
 
 
@@ -578,61 +537,6 @@ namespace TEAM
             catch (Exception ex)
             {
                 richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
-            }
-        }
-
-        private void radioButtonDevelopment_CheckedChanged(object sender, EventArgs e)
-        {
-            richTextBoxInformation.Clear();
-            RadioButton rb = sender as RadioButton;
-            if (rb != null)
-            {
-                if (rb.Checked && _formLoading == false)
-                {
-                    GlobalParameters.WorkingEnvironment = "Development";
-                    //MessageBox.Show("Dev");
-                    try
-                    {
-                        LocalInitialiseConnections(GlobalParameters.ConfigurationPath +
-                                                   GlobalParameters.ConfigFileName + '_' +
-                                                   GlobalParameters.WorkingEnvironment +
-                                                   GlobalParameters.FileExtension);
-                    }
-                    catch (Exception ex)
-                    {
-                        richTextBoxInformation.AppendText(
-                            "Errors occured trying to load the configuration file, the message is " + ex +
-                            ". No default values were loaded. \r\n\r\n");
-                    }
-
-                }
-            }
-        }
-
-        private void radioButtonProduction_CheckedChanged(object sender, EventArgs e)
-        {
-            richTextBoxInformation.Clear();
-            RadioButton rb = sender as RadioButton;
-            if (rb != null)
-            {
-                if (rb.Checked && _formLoading == false)
-                {
-                    GlobalParameters.WorkingEnvironment = "Production";
-                    //MessageBox.Show("Prod");
-                    try
-                    {
-                        LocalInitialiseConnections(GlobalParameters.ConfigurationPath +
-                                                   GlobalParameters.ConfigFileName + '_' +
-                                                   GlobalParameters.WorkingEnvironment +
-                                                   GlobalParameters.FileExtension);
-                    }
-                    catch (Exception ex)
-                    {
-                        richTextBoxInformation.AppendText(
-                            "Errors occured trying to load the configuration file, the message is " + ex +
-                            ". No default values were loaded. \r\n\r\n");
-                    }
-                }
             }
         }
 
@@ -672,214 +576,6 @@ namespace TEAM
                 textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
             }
         }
-
-
-        /// <summary>
-        /// Changing of the Metadata SSPI radiobutton.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void radioButtonMetadataSSPI_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonMetadataNamed.Checked==false)
-            {
-                groupBoxMetadataNamedUser.Visible=false;
-            }
-
-            if (radioButtonMetadataSSPI.Checked)
-            {
-                ConfigurationSettings.MetadataNamed = "False";
-                ConfigurationSettings.MetadataSspi = "True";
-            }
-
-            UpdateDatabaseConnectionStrings();
-        }
-
-        private void radioButtonPhysicalModelSSPI_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonPhysicalModelNamed.Checked == false)
-            {
-                groupBoxPhysicalModelNamedUser.Visible = false;
-            }
-
-            if (radioButtonPhysicalModelSSPI.Checked)
-            {
-                ConfigurationSettings.PhysicalModelNamed = "False";
-                ConfigurationSettings.PhysicalModelSspi = "True";
-            }
-
-            UpdateDatabaseConnectionStrings();
-        }
-
-
-
-
-
-        private void radioButtonMetadataNamed_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonMetadataNamed.Checked)
-            {
-                groupBoxMetadataNamedUser.Visible = true;
-                ConfigurationSettings.MetadataNamed = "True";
-                ConfigurationSettings.MetadataSspi = "False";
-            }
-
-            UpdateDatabaseConnectionStrings();
-        }
-
-
-
-        private void radioButtonPhysicalModelNamed_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonPhysicalModelNamed.Checked)
-            {
-                groupBoxPhysicalModelNamedUser.Visible = true;
-                ConfigurationSettings.PhysicalModelNamed = "True";
-                ConfigurationSettings.PhysicalModelSspi = "False";
-            }
-
-            UpdateDatabaseConnectionStrings();
-        }
-
-        /// <summary>
-        /// Generate all connection string when content changes (i.e. user input)
-        /// </summary>
-        private void UpdateDatabaseConnectionStrings()
-        {
-            // SOURCE
-            textBoxSourceConnection.Text = GenerateConnectionString(
-                true,
-                textBoxSourceDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            // STG
-            textBoxStagingConnection.Text = GenerateConnectionString(
-                true,
-                textBoxStagingDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            // PSA
-            textBoxPSAConnection.Text = GenerateConnectionString(
-                true,
-                textBoxPSADatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            // INT
-            textBoxIntegrationConnection.Text = GenerateConnectionString(
-                true,
-                textBoxIntegrationDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            // PRES
-            textBoxPresentationConnection.Text = GenerateConnectionString(
-                true,
-                textBoxPresentationDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-        }
-
-        /// <summary>
-        /// Generate all connection string when content changes (i.e. user input)
-        /// </summary>
-        private void UpdateMetadataConnectionStrings()
-        {
-            // METADATA
-            textBoxMetadataConnection.Text = GenerateConnectionString(
-                true,
-                textBoxMetadataDatabaseName.Text,
-                textBoxMetadataServerName.Text,
-                radioButtonMetadataSSPI.Checked,
-                radioButtonMetadataNamed.Checked,
-                textBoxMetadataUserName.Text,
-                textBoxMetadataPassword.Text
-            );
-        }
-
-        private void textBoxMetadataServerName_TextChanged(object sender, EventArgs e)
-        {
-            UpdateMetadataConnectionStrings();
-        }
-
-        private void textBoxMetadataUserName_TextChanged(object sender, EventArgs e)
-        {
-            UpdateMetadataConnectionStrings();
-        }
-
-        private void textBoxMetadataPassword_TextChanged(object sender, EventArgs e)
-        {
-            UpdateMetadataConnectionStrings();
-        }
-
-        private void textBoxSourceDatabase_TextChanged(object sender, EventArgs e)
-        {
-            UpdateMetadataConnectionStrings();
-        }
-
-        private void textBoxPhysicalModelServerName_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDatabaseConnectionStrings();
-        }
-
-        private void textBoxPhysicalModelUserName_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDatabaseConnectionStrings();
-        }
-
-
-        private void textBoxPhysicalModelPassword_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDatabaseConnectionStrings();
-        }
-
-        private void textBoxStagingDatabase_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDatabaseConnectionStrings();
-        }
-
-        private void textBoxPSADatabase_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDatabaseConnectionStrings();
-        }
-
-        private void textBoxIntegrationDatabase_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDatabaseConnectionStrings();
-        }
-
-        private void textBoxPresentationDatabase_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDatabaseConnectionStrings();
-        }
-
-        private void textBoxMetadataDatabaseName_TextChanged(object sender, EventArgs e)
-        {
-            UpdateMetadataConnectionStrings();
-        }
-
 
         private void FormManageConfiguration_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -977,18 +673,18 @@ namespace TEAM
             // Remove the tab page from the tab control
             tabControlEnvironments.TabPages.RemoveByKey(e.Value);
 
-            comboBoxEnvironments.Items.Remove(((TEAM.CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
+            comboBoxEnvironments.Items.Remove(((CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
         }
 
         private void SaveEnvironment(object o, MyStringEventArgs e)
         {
-            comboBoxEnvironments.Items.Add(((TEAM.CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
+            comboBoxEnvironments.Items.Add(((CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
         }
 
         private void SaveConnection(object o, MyStringEventArgs e)
         {
             //var localEnvironment = (TeamWorkingEnvironment)o;
-            comboBoxMetadataConnection.Items.Add(((TEAM.CustomTabPageConnection)o)._textBoxConnectionKey.Text);
+            comboBoxMetadataConnection.Items.Add(((CustomTabPageConnection)o)._textBoxConnectionKey.Text);
         }
 
         /// <summary>
@@ -1092,6 +788,7 @@ namespace TEAM
                 }
 
                 EnvironmentConfiguration.LoadConnectionFile();
+                comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
 
                 try

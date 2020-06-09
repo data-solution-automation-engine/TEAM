@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
@@ -155,8 +154,12 @@ namespace TEAM
 
             #endregion
 
-            #region Load configuration file
+            // Load the connections file for the respective environment.
+            EnvironmentConfiguration.LoadConnectionFile();
 
+            var test = ConfigurationSettings.connectionDictionary;
+
+            #region Load configuration file
             // Load the available configuration file into memory.
             var configurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' +
                                     GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
@@ -174,6 +177,8 @@ namespace TEAM
 
             #endregion
 
+            var test2 = ConfigurationSettings.MetadataConnection;
+
             // Load the pattern definition file.
             try
             {
@@ -188,9 +193,6 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
                     "An issue was encountered loading the pattern definition file."));
             }
-
-            // Load the connections file for the respective environment.
-            EnvironmentConfiguration.LoadConnectionFile();
 
 
             // Report the events (including errors) back to the user
@@ -229,9 +231,9 @@ namespace TEAM
             RevalidateFlag = false;
             //MessageBox.Show("Validating Connections");
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-            var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
-            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try

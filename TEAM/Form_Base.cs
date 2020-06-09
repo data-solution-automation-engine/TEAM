@@ -32,8 +32,9 @@ namespace TEAM
             #region Connectivity (connection objects, connection strings etc.)
             internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; } = new Dictionary<string, TeamConnectionProfile>();
             #endregion
-
             internal static Dictionary<string, TeamWorkingEnvironment> environmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
+
+            internal static TeamConnectionProfile MetadataConnection { get; set; } = new TeamConnectionProfile();
 
             #region Prefixes
             //Prefixes
@@ -45,24 +46,24 @@ namespace TEAM
             internal static string LsatTablePrefixValue { get; set; }
             #endregion
 
-            //Connection strings
-            internal static string ConnectionStringSource { get; set; }
-            internal static string ConnectionStringStg { get; set; }
-            internal static string ConnectionStringHstg { get; set; }
-            internal static string ConnectionStringInt { get; set; }
-            internal static string ConnectionStringPres { get; set; }
-            internal static string ConnectionStringOmd { get; set; }
+            ////Connection strings
+            //internal static string ConnectionStringSource { get; set; }
+            //internal static string ConnectionStringStg { get; set; }
+            //internal static string ConnectionStringHstg { get; set; }
+            //internal static string ConnectionStringInt { get; set; }
+            //internal static string ConnectionStringPres { get; set; }
+            //internal static string ConnectionStringMetadata { get; set; }
 
             //Connection & authentication information
-            internal static string MetadataSspi { get; set; }
-            internal static string MetadataNamed { get; set; }
-            internal static string MetadataUserName { get; set; }
-            internal static string MetadataPassword { get; set; }
+            //internal static string MetadataSspi { get; set; }
+            //internal static string MetadataNamed { get; set; }
+            //internal static string MetadataUserName { get; set; }
+            //internal static string MetadataPassword { get; set; }
 
-            internal static string PhysicalModelSspi { get; set; }
-            internal static string PhysicalModelNamed { get; set; }
-            internal static string PhysicalModelUserName { get; set; }
-            internal static string PhysicalModelPassword { get; set; }
+            //internal static string PhysicalModelSspi { get; set; }
+            //internal static string PhysicalModelNamed { get; set; }
+            //internal static string PhysicalModelUserName { get; set; }
+            //internal static string PhysicalModelPassword { get; set; }
 
 
             internal static string DwhKeyIdentifier { get; set; }
@@ -120,10 +121,16 @@ namespace TEAM
 
             internal static string EnableAlternativeLoadDateTimeAttribute { get; set; }
 
-            internal static string MetadataRepositoryType { get; set; }
+            internal static MetadataRepositoryStorageType MetadataRepositoryType { get; set; }
 
             // File paths
             public static List<LoadPatternDefinition> patternDefinitionList { get; set; }
+        }
+
+        public enum MetadataRepositoryStorageType
+        {
+            JSON,
+            SQLServer
         }
 
         /// <summary>
@@ -262,12 +269,13 @@ namespace TEAM
 
         protected int GetVersionCount()
         {
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+
+            var conn = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var versionCount = new int();
 
             try
             {
-                connOmd.Open();
+                conn.Open();
             }
             catch (Exception)
             {
@@ -279,7 +287,7 @@ namespace TEAM
             sqlStatementForVersion.AppendLine("SELECT COUNT(*) AS VERSION_COUNT");
             sqlStatementForVersion.AppendLine("FROM MD_VERSION");
 
-            var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForVersion.ToString());
+            var versionList = Utility.GetDataTable(ref conn, sqlStatementForVersion.ToString());
 
             if (versionList != null)
             {

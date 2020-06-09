@@ -297,7 +297,7 @@ namespace TEAM
                 sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
 
                 // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
-                var connTarget = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt };
+                var connTarget = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
                 connTarget.Open();
                 var linkList = Utility.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
                 connTarget.Close();

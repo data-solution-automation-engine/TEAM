@@ -25,11 +25,11 @@ namespace TEAM
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var connHstg = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringHstg };
-
+            var conn = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            
             try
             {
-                connHstg.Open();
+                conn.Open();
 
                 var sqlForWorkCountDown = new StringBuilder();
 
@@ -61,7 +61,7 @@ namespace TEAM
                 sqlForWorkCountDown.AppendLine(") as sub");
 
                 //  MessageBox.Show(sqlForWorkCountdDown.ToString());
-                var workCountDownDatatable = Utility.GetDataTable(ref connHstg, sqlForWorkCountDown.ToString());
+                var workCountDownDatatable = Utility.GetDataTable(ref conn, sqlForWorkCountDown.ToString());
 
                 //var workCountDownDatatable = _myParent.Invoke((MethodInvoker)delegate() { _myParent.GetDataTable(ref connHstg, sqlForWorkCountdDown.ToString()); });
 

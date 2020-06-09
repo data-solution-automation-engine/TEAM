@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Newtonsoft.Json;
 
 namespace TEAM
@@ -61,7 +59,7 @@ namespace TEAM
 
         public TeamDatabaseConnection databaseServer { get; set; }
 
-        public string CreateConnectionString(bool mask, bool SSPI, bool namedUser)
+        public string CreateConnectionString(bool mask)
         {
             // Initialise the return variable
             var outputConnectionString = "";
@@ -73,11 +71,11 @@ namespace TEAM
             connectionString.Append("Server=" + localDatabaseConnection.serverName + ";");
             connectionString.Append("Initial Catalog=" + localDatabaseConnection.databaseName + ";");
             
-            if (SSPI)
+            if (databaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
             {
                 connectionString.Append("Integrated Security=SSPI;");
             }
-            else if (namedUser)
+            else if (databaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
             {
                 connectionString.Append("user id=" + localDatabaseConnection.namedUserName + ";");
                 connectionString.Append("password=" + localDatabaseConnection.namedUserPassword + ";");

@@ -57,7 +57,7 @@ namespace TEAM
             radiobuttonNoVersionChange.Checked = true;
 
             // Retrieve the version from the database
-            var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
+            var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var selectedVersion = GetMaxVersionId(connOmd);
             
             // Set the version in memory
@@ -245,11 +245,11 @@ namespace TEAM
         {
             var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
-            if (repositoryTarget == "SQLServer") //Queries the tables in SQL Server
+            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer) //Queries the tables in SQL Server
             {
                 // open latest version
                 //LBM: 17/05/2019 moving the code inside the catch for error handling
-                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
                 
                 try
                 {
@@ -309,7 +309,7 @@ namespace TEAM
 
 
             }
-            else if (repositoryTarget == "JSON") //Update the JSON
+            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
             {
                 //Check if the file exists, otherwise create a dummy / empty file   
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension))
@@ -367,9 +367,9 @@ namespace TEAM
             //var selectedVersion = versionId;
             var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
-            if (repositoryTarget == "SQLServer") //Queries the tables in SQL Server
+            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer) //Queries the tables in SQL Server
             {
-                var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
+                var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
                 try
                 {
@@ -424,7 +424,7 @@ namespace TEAM
                 }
 
             }
-            else if (repositoryTarget == "JSON") // Retrieve from the JSON file
+            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) // Retrieve from the JSON file
             {
                 // Check if the file exists, otherwise create a dummy / empty file   
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension))
@@ -482,9 +482,9 @@ namespace TEAM
             var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
 
-            if (repositoryTarget == "SQLServer")
+            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
             {
-                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
                 try
                 {
@@ -530,7 +530,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                 }
             }
-            else if (repositoryTarget == "JSON") //Update the JSON
+            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
             {
                 //Check if the file exists, otherwise create a dummy / empty file   
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension))
@@ -818,7 +818,7 @@ namespace TEAM
             insertStatement.AppendLine("VALUES ");
             insertStatement.AppendLine("('N/A', 'N/A', " + majorVersion + "," + minorVersion + ")");
 
-            using (var connectionVersion = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+            using (var connectionVersion = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
             {
                 var commandVersion = new SqlCommand(insertStatement.ToString(), connectionVersion);
 
@@ -844,7 +844,7 @@ namespace TEAM
                                        "TRUNCATE TABLE [MD_VERSION_ATTRIBUTE]; " + //This is the model metadata
                                        "TRUNCATE TABLE [MD_VERSION];";
 
-            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+            using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
             {
                 var command = new SqlCommand(commandText, connection);
 
@@ -871,7 +871,7 @@ namespace TEAM
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
             PopulatePhysicalModelGridWithVersion(trackBarVersioning.Value);
 
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
             var majorVersion = versionMajorMinor.Key;
             var minorVersion = versionMajorMinor.Value;
@@ -930,11 +930,11 @@ namespace TEAM
                         int versionId = CreateOrRetrieveVersion();
 
                         //Commit the save of the metadata, one for each grid
-                        if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+                        if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
                         {
                             SaveTableMappingMetadataSql(versionId, dataTableTableMappingChanges);
                         }
-                        else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+                        else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
                         {
                             SaveTableMappingMetadataJson(versionId, dataTableTableMappingChanges);
                         }
@@ -945,11 +945,9 @@ namespace TEAM
                                 ConfigurationSettings.MetadataRepositoryType;
                         }
 
-                        SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges,
-                            ConfigurationSettings.MetadataRepositoryType);
+                        SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges, ConfigurationSettings.MetadataRepositoryType);
 
-                        SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges,
-                            ConfigurationSettings.MetadataRepositoryType);
+                        SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges, ConfigurationSettings.MetadataRepositoryType);
 
 
                         //Load the grids from the repository after being updated
@@ -961,7 +959,7 @@ namespace TEAM
                         if (oldVersionId != versionId)
                         {
                             var connOmd = new SqlConnection
-                                {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
+                                {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
                             trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
                             trackBarVersioning.TickFrequency = GetVersionCount();
                             trackBarVersioning.Value = GetMaxVersionId(connOmd);
@@ -988,7 +986,7 @@ namespace TEAM
         /// <returns></returns>
         private int CreateOrRetrieveVersion()
         {
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
             if (!radiobuttonNoVersionChange.Checked)
             {
@@ -1143,7 +1141,7 @@ namespace TEAM
             }
             else
             {
-                using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+                using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -1353,7 +1351,7 @@ namespace TEAM
             }
             else
             {
-                using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+                using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
                 {
                     var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -1517,7 +1515,7 @@ namespace TEAM
 
             // Execute the statement, if the repository is SQL Server
             // If the source is JSON this is done in separate calls for now
-            if (repositoryTarget == "SQLServer")
+            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
             {
                 if (insertQueryTables.ToString() == "")
                 {
@@ -1525,7 +1523,7 @@ namespace TEAM
                 }
                 else
                 {
-                    using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+                    using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
                     {
                         var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -1770,7 +1768,7 @@ namespace TEAM
                     }
                     else
                     {
-                        using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+                        using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
                         {
                             var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -2069,7 +2067,7 @@ namespace TEAM
             } // End of constructing the statements for insert / update / delete
         }
 
-        private void SaveModelPhysicalModelMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
+        private void SaveModelPhysicalModelMetadata(int versionId, DataTable dataTableChanges, MetadataRepositoryStorageType repositoryTarget)
         {
             if (FileConfiguration.newFilePhysicalModel == "true")
             {
@@ -2081,11 +2079,11 @@ namespace TEAM
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+                if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
                 {
                     CreateNewPhysicalModelMetadataVersionSqlServer(versionId);
                 }
-                else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+                else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
                 {
                     CreateNewPhysicalModelMetadataVersionJson(versionId);
                 }
@@ -2118,7 +2116,7 @@ namespace TEAM
                             var multiActiveIndicator = (string)row["MULTI_ACTIVE_INDICATOR"];
                             var versionKey = row["VERSION_ID"].ToString();
 
-                            if (repositoryTarget == "SQLServer")
+                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                             {
                                 insertQueryTables.AppendLine("UPDATE MD_VERSION_ATTRIBUTE");
                                 insertQueryTables.AppendLine("SET " +
@@ -2136,7 +2134,7 @@ namespace TEAM
                                 insertQueryTables.AppendLine("WHERE [VERSION_ATTRIBUTE_HASH] = '" + hashKey +
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
-                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Insert a new segment (row) in the JSON
                             {
 
                                 try
@@ -2244,7 +2242,7 @@ namespace TEAM
                                 multiActiveIndicator = (string)row[11];
                             }
 
-                            if (repositoryTarget == "SQLServer")
+                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                             {
                                 insertQueryTables.AppendLine("IF NOT EXISTS (SELECT * FROM [MD_VERSION_ATTRIBUTE] WHERE [VERSION_ID]= " + versionId + " AND [DATABASE_NAME] = '"+ databaseName+"' AND [SCHEMA_NAME]='" + schemaName + "' AND [TABLE_NAME]='" + tableName + "' AND [COLUMN_NAME]='" + columnName + "')");
                                 insertQueryTables.AppendLine("INSERT INTO [MD_VERSION_ATTRIBUTE]");
@@ -2255,7 +2253,7 @@ namespace TEAM
                                                              numericPrecision + "','" + ordinalPosition + "','" +
                                                              primaryKeyIndicator + "','" + multiActiveIndicator + "')");
                             }
-                            else if (repositoryTarget == "JSON") //Update the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
                             {
                                 try
                                 {
@@ -2320,12 +2318,12 @@ namespace TEAM
                             var hashKey = row["VERSION_ATTRIBUTE_HASH", DataRowVersion.Original].ToString();
                             var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
 
-                            if (repositoryTarget == "SQLServer")
+                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                             {
                                 insertQueryTables.AppendLine("DELETE FROM MD_VERSION_ATTRIBUTE");
                                 insertQueryTables.AppendLine("WHERE [VERSION_ATTRIBUTE_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
                             }
-                            else if (repositoryTarget == "JSON") //Remove a segment (row) from the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Remove a segment (row) from the JSON
                             {
                                 try
                                 {
@@ -2370,7 +2368,7 @@ namespace TEAM
                     #region Statement execution
                     // Execute the statement, if the repository is SQL Server
                     // If the source is JSON this is done in separate calls for now
-                    if (repositoryTarget == "SQLServer")
+                    if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                     {
                         if (insertQueryTables.ToString() == null || insertQueryTables.ToString() == "")
                         {
@@ -2378,7 +2376,7 @@ namespace TEAM
                         }
                         else
                         {
-                            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+                            using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
                             {
                                 var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -2402,7 +2400,7 @@ namespace TEAM
                     ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).AcceptChanges();
 
                     //The JSON needs to be re-bound to the datatable / datagrid after being updated to allow all values to be present
-                    if (repositoryTarget == "JSON")
+                    if (repositoryTarget == MetadataRepositoryStorageType.JSON)
                     {
                         BindModelMetadataJsonToDataTable();
                     }
@@ -2413,7 +2411,7 @@ namespace TEAM
             }
         }
 
-        private void SaveAttributeMappingMetadata(int versionId, DataTable dataTableChanges, string repositoryTarget)
+        private void SaveAttributeMappingMetadata(int versionId, DataTable dataTableChanges, MetadataRepositoryStorageType repositoryTarget)
         {
             if (FileConfiguration.newFileAttributeMapping == "true")
             {
@@ -2425,11 +2423,11 @@ namespace TEAM
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+                if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
                 {
                     CreateNewAttributeMappingMetadataVersionSqlServer(versionId);
                 }
-                else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+                else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
                 {
                     CreateNewAttributeMappingMetadataVersionJson(versionId);
                 }
@@ -2487,14 +2485,14 @@ namespace TEAM
                             }
 
                             //Double quotes for composites, but only if things are written to the database otherwise it's already OK
-                            if (repositoryTarget == "SQLServer") //Update the tables in SQL Server
+                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer) //Update the tables in SQL Server
                             {
                                 transformationRule = transformationRule.Replace("'", "''");
                             }
 
 
 
-                            if (repositoryTarget == "SQLServer")
+                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                             {
                                 insertQueryTables.AppendLine("UPDATE MD_ATTRIBUTE_MAPPING");
                                 insertQueryTables.AppendLine("SET [SOURCE_TABLE] = '" + stagingTable +
@@ -2506,7 +2504,7 @@ namespace TEAM
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
 
-                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Insert a new segment (row) in the JSON
                             {
 
                                 try
@@ -2590,7 +2588,7 @@ namespace TEAM
                                 transformationRule = (string)row[6];
                             }
 
-                            if (repositoryTarget == "SQLServer")
+                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                             {
                                 insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
                                 insertQueryTables.AppendLine(
@@ -2599,7 +2597,7 @@ namespace TEAM
                                                              stagingColumn + "','" + integrationTable + "','" +
                                                              integrationColumn + "','" + transformationRule + "')");
                             }
-                            else if (repositoryTarget == "JSON") //Update the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
                             {
                                 try
                                 {
@@ -2666,13 +2664,13 @@ namespace TEAM
                             var hashKey = row["ATTRIBUTE_MAPPING_HASH", DataRowVersion.Original].ToString();
                             var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
 
-                            if (repositoryTarget == "SQLServer")
+                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                             {
                                 insertQueryTables.AppendLine("DELETE FROM MD_ATTRIBUTE_MAPPING");
                                 insertQueryTables.AppendLine("WHERE [ATTRIBUTE_MAPPING_HASH] = '" + hashKey +
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
-                            else if (repositoryTarget == "JSON") //Insert a new segment (row) in the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Insert a new segment (row) in the JSON
                             {
                                 try
                                 {
@@ -2724,7 +2722,7 @@ namespace TEAM
 
                     // Execute the statement, if the repository is SQL Server
                     // If the source is JSON this is done in separate calls for now
-                    if (repositoryTarget == "SQLServer")
+                    if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
                     {
                         if (insertQueryTables.ToString() == "")
                         {
@@ -2733,7 +2731,7 @@ namespace TEAM
                         }
                         else
                         {
-                            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+                            using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
                             {
                                 var command = new SqlCommand(insertQueryTables.ToString(), connection);
 
@@ -2755,7 +2753,7 @@ namespace TEAM
                     ((DataTable)_bindingSourceAttributeMetadata.DataSource).AcceptChanges();
 
                     //The JSON needs to be re-bound to the datatable / datagrid after being updated to allow all values to be present
-                    if (repositoryTarget == "JSON")
+                    if (repositoryTarget == MetadataRepositoryStorageType.JSON)
                     {
                         BindAttributeMappingJsonToDataTable();
                     }
@@ -3336,7 +3334,7 @@ namespace TEAM
             if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0))
             {
                 // Commence the activation
-                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
                 richTextBoxInformation.Clear();
 
@@ -3346,7 +3344,7 @@ namespace TEAM
                 richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n";
 
                 // Move data from the grids into temp tables
-                createTemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
+                createTemporaryWorkerTable(ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
 
                 if (radioButtonPhysicalMode.Checked == false)
                 {
@@ -3490,13 +3488,13 @@ namespace TEAM
             var errorLog = new StringBuilder();
             var errorCounter = new int();
 
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-            var connStg= new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
-            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg};
-            var connInt = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringInt };
-            var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringPres };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connStg= new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connInt = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
-            var metaDataConnection = ConfigurationSettings.ConnectionStringOmd;
+            var metaDataConnection = ConfigurationSettings.MetadataConnection.CreateConnectionString(false);
 
             // Get everything as local variables to reduce multi-threading issues
             var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';
@@ -6822,7 +6820,7 @@ namespace TEAM
                 }
 
                 // Remove the temporary tables that have been used
-                droptemporaryWorkerTable(ConfigurationSettings.ConnectionStringOmd);
+                droptemporaryWorkerTable(ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
 
                 // Report completion
                 totalProcess.Stop();
@@ -7084,7 +7082,7 @@ namespace TEAM
         {
             DateTime mostRecentActivationDateTime = DateTime.MinValue; 
 
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
             var sqlStatementForActivationMetadata = new StringBuilder();
             sqlStatementForActivationMetadata.AppendLine("SELECT [VERSION_NAME], MAX([ACTIVATION_DATETIME]) AS [ACTIVATION_DATETIME]");
@@ -7138,7 +7136,7 @@ namespace TEAM
 
                 if (dataGridViewTableMetadata != null) // There needs to be metadata available
                 {
-                    var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringOmd};
+                    var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
                     //Write the DGML file
                     var dgmlExtract = new StringBuilder();
@@ -7767,10 +7765,10 @@ namespace TEAM
             var psaDatabase = ConfigurationSettings.PsaDatabaseName;
             var presDatabase = ConfigurationSettings.PresentationDatabaseName;
 
-            var connStg = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringStg};
-            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg };
-            var connInt = new SqlConnection {ConnectionString = ConfigurationSettings.ConnectionStringInt};
-            var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringPres };
+            var connStg = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connInt = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
             var stgPrefix = ConfigurationSettings.StgTablePrefixValue;
             var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
@@ -8385,7 +8383,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.MetadataConnection.CreateConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -8449,7 +8447,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.ConnectionStringOmd, GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, ConfigurationSettings.MetadataConnection.CreateConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -8805,7 +8803,7 @@ namespace TEAM
             int fileCounter = 0;
 
             EventLog eventLog = new EventLog();
-            SqlConnection conn = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
+            SqlConnection conn = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
 
             foreach (LoadPatternDefinition pattern in LoadPatternDefinitionList)

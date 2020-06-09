@@ -178,27 +178,25 @@ namespace TEAM
             if (new string[] { TableTypes.Context.ToString(), TableTypes.CoreBusinessConcept.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString(), TableTypes.Derived.ToString()}.Contains(tableType))
             {
                 localConnectionInformation.Add(FormBase.ConfigurationSettings.IntegrationDatabaseName,
-                    FormBase.ConfigurationSettings.ConnectionStringInt);
+                    FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.StagingArea.ToString())
             {
                 localConnectionInformation.Add(FormBase.ConfigurationSettings.StagingDatabaseName,
-                    FormBase.ConfigurationSettings.ConnectionStringStg);
+                    FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.PersistentStagingArea.ToString())
             {
                 localConnectionInformation.Add(FormBase.ConfigurationSettings.PsaDatabaseName,
-                    FormBase.ConfigurationSettings.ConnectionStringHstg);
+                    FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.Presentation.ToString())
             {
-                localConnectionInformation.Add(FormBase.ConfigurationSettings.PresentationDatabaseName,
-                    FormBase.ConfigurationSettings.ConnectionStringPres);
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.PresentationDatabaseName, FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.Source.ToString())
             {
-                localConnectionInformation.Add(FormBase.ConfigurationSettings.SourceDatabaseName,
-                    FormBase.ConfigurationSettings.ConnectionStringSource);
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.SourceDatabaseName, FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else // Return error
             {
@@ -338,7 +336,7 @@ namespace TEAM
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var conn = queryMode == "physical" ? new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.ConnectionStringInt} : new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = queryMode == "physical" ? new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) } : new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
             try
             {
@@ -418,7 +416,7 @@ namespace TEAM
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
             var conn = new SqlConnection();
-            conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
             try
             {

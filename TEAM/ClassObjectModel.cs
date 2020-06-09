@@ -33,42 +33,14 @@ namespace TEAM
     /// </summary>
     class MetadataConfiguration
     {
-        // Databases
-        public string sourceDatabaseName { get; } = FormBase.ConfigurationSettings.SourceDatabaseName;
-        public string sourceDatabaseConnection { get; } = FormBase.ConfigurationSettings.ConnectionStringSource;
-        public string stagingAreaDatabaseName { get; } = FormBase.ConfigurationSettings.StagingDatabaseName;
-
-        public string stagingAreaDatabaseConnection { get; } =
-            FormBase.ConfigurationSettings.ConnectionStringSource;
-
-        public string persistentStagingDatabaseName { get; } = FormBase.ConfigurationSettings.PsaDatabaseName;
-
-        public string persistentStagingDatabaseConnection { get; } =
-            FormBase.ConfigurationSettings.ConnectionStringSource;
-
-        public string persistentStagingSchemaName { get; } = FormBase.ConfigurationSettings.SchemaName;
-        public string integrationDatabaseName { get; } = FormBase.ConfigurationSettings.IntegrationDatabaseName;
-
-        public string integrationDatabaseConnection { get; } =
-            FormBase.ConfigurationSettings.ConnectionStringSource;
-
-        public string presentationDatabaseName { get; } = FormBase.ConfigurationSettings.PresentationDatabaseName;
-
-        public string presentationDatabaseConnection { get; } =
-            FormBase.ConfigurationSettings.ConnectionStringSource;
-
-        //public string vedwSchemaName { get; } = FormBase.VedwConfigurationSettings.VedwSchema;
-
         // Attributes
-        public string changeDataCaptureAttribute { get; set; } =
-            FormBase.ConfigurationSettings.ChangeDataCaptureAttribute;
+        public string changeDataCaptureAttribute { get; set; } = FormBase.ConfigurationSettings.ChangeDataCaptureAttribute;
 
         public string recordSourceAttribute { get; } = FormBase.ConfigurationSettings.RecordSourceAttribute;
         public string loadDateTimeAttribute { get; } = FormBase.ConfigurationSettings.LoadDateTimeAttribute;
         public string eventDateTimeAttribute { get; set; } = FormBase.ConfigurationSettings.EventDateTimeAttribute;
 
-        public string recordChecksumAttribute { get; set; } =
-            FormBase.ConfigurationSettings.RecordChecksumAttribute;
+        public string recordChecksumAttribute { get; set; } = FormBase.ConfigurationSettings.RecordChecksumAttribute;
 
         public string etlProcessAttribute { get; } = FormBase.ConfigurationSettings.EtlProcessAttribute;
         public string sourceRowIdAttribute { get; } = FormBase.ConfigurationSettings.RowIdAttribute;

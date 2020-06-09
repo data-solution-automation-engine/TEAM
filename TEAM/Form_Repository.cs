@@ -152,7 +152,7 @@ namespace TEAM
             //}
 
 
-            using (var connection = new SqlConnection(ConfigurationSettings.ConnectionStringOmd))
+            using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
             {
                 var command = new SqlCommand(commandText.ToString(), connection);
 
@@ -171,7 +171,7 @@ namespace TEAM
                 }
             }
 
-            if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+            if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
             {
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
@@ -187,7 +187,7 @@ namespace TEAM
             ErrorHandlingParameters.ErrorCatcher = 0;
             ErrorHandlingParameters.ErrorLog = new StringBuilder();
             
-            var connOmdString = ConfigurationSettings.ConnectionStringOmd;
+            var connOmdString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false);
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -351,7 +351,7 @@ namespace TEAM
             #region Source
             if (checkBoxCreateSampleSource.Checked)
             {
-                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.ConnectionStringSource);
+                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
 
             #endregion
@@ -363,13 +363,13 @@ namespace TEAM
                 {
                     PopulateSqlCommandDictionaryFromFile(
                         GlobalParameters.ScriptPath + @"generateSampleStagingSchemaDIRECT.sql",
-                        commandDictionary, ConfigurationSettings.ConnectionStringStg);
+                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
                 }
                 else
                 {
                     PopulateSqlCommandDictionaryFromFile(
                         GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql", commandDictionary,
-                        ConfigurationSettings.ConnectionStringStg);
+                        ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
                 }
             }
 
@@ -382,13 +382,13 @@ namespace TEAM
                 {
                     PopulateSqlCommandDictionaryFromFile(
                         GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchemaDIRECT.sql",
-                        commandDictionary, ConfigurationSettings.ConnectionStringHstg);
+                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
                 }
                 else
                 {
                     PopulateSqlCommandDictionaryFromFile(
                         GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql",
-                        commandDictionary, ConfigurationSettings.ConnectionStringHstg);
+                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
                 }
             }
 
@@ -401,13 +401,13 @@ namespace TEAM
                 {
                     PopulateSqlCommandDictionaryFromFile(
                         GlobalParameters.ScriptPath + @"generateSampleIntegrationSchemaDIRECT.sql",
-                        commandDictionary, ConfigurationSettings.ConnectionStringInt);
+                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
                 }
                 else
                 {
                     PopulateSqlCommandDictionaryFromFile(
                         GlobalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary,
-                        ConfigurationSettings.ConnectionStringInt);
+                        ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
                 }
             }
 
@@ -758,11 +758,11 @@ namespace TEAM
 
                 try
                 {
-                    if (ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+                    if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
                     {
                         GenerateMetadataInDatabase(worker);
                     }
-                    else if (ConfigurationSettings.MetadataRepositoryType == "JSON")
+                    else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
                     {
                         Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 
@@ -850,13 +850,13 @@ namespace TEAM
             {
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
-                    commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+                    commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else
             {
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
-                    commandDictionary, ConfigurationSettings.ConnectionStringOmd);
+                    commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
 
             // Execute the SQL statements

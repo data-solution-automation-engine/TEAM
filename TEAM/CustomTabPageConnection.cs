@@ -362,7 +362,7 @@ namespace TEAM
             bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSSPI, localNamed);
+            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
 
             if (_radioButtonIntegratedSecurity.Checked)
             {
@@ -575,7 +575,7 @@ namespace TEAM
             bool localSspi = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
             bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
 
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSspi, localNamed);
+            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
         }
 
         /// <summary>
@@ -592,7 +592,7 @@ namespace TEAM
             bool localSspi = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
             bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
 
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSspi, localNamed);
+            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
         }
 
         /// <summary>
@@ -610,8 +610,6 @@ namespace TEAM
 
             if (_radioButtonIntegratedSecurity.Checked)
             {
-                FormBase.ConfigurationSettings.MetadataNamed = "False";
-                FormBase.ConfigurationSettings.MetadataSspi = "True";
                 _localConnection.databaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
             }
 
@@ -620,7 +618,7 @@ namespace TEAM
             bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSspi, localNamed);
+            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
         }
 
         /// <summary>
@@ -642,7 +640,7 @@ namespace TEAM
             bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSSPI, localNamed);
+            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
         }
     }
 }

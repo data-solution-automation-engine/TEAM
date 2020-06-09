@@ -147,7 +147,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
 
@@ -204,7 +204,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_BUSINESS_KEY_COMPONENT_PART]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
 
@@ -255,7 +255,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_DRIVING_KEY]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
 
@@ -302,7 +302,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_HUB_LINK_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -356,7 +356,7 @@ namespace TEAM
               FROM [interface].[INTERFACE_PHYSICAL_MODEL]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
 
@@ -409,7 +409,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_HUB_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -458,7 +458,7 @@ namespace TEAM
               FROM [interface].[INTERFACE_SOURCE_LINK_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -508,7 +508,7 @@ namespace TEAM
              FROM [interface].[INTERFACE_SOURCE_LINK_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -558,7 +558,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -608,7 +608,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -662,7 +662,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_STAGING_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -716,7 +716,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_PERSISTENT_STAGING_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -765,7 +765,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
@@ -809,7 +809,7 @@ namespace TEAM
             FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]
             ");
 
-            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.ConnectionStringOmd };
+            var conn = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var inputDataTable = Utility.GetDataTable(ref conn, sqlStatement.ToString());
 
             // Make sure the output is sorted to persist in JSON
