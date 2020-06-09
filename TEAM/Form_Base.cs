@@ -14,14 +14,12 @@ namespace TEAM
         public FormBase()
         {
             InitializeComponent();
-         //   GlobalParameters.TeamEventLog = new EventLog();
         }
 
         public FormBase(FormMain myParent)
         {
             MyParent = myParent;
             InitializeComponent();
-            
         }
 
         /// <summary>
@@ -31,12 +29,11 @@ namespace TEAM
         {
             #region Connectivity (connection objects, connection strings etc.)
             internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; } = new Dictionary<string, TeamConnectionProfile>();
-            #endregion
             internal static Dictionary<string, TeamWorkingEnvironment> environmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
-
             internal static TeamConnectionProfile MetadataConnection { get; set; } = new TeamConnectionProfile();
+            #endregion
 
-            #region Prefixes
+            #region Configuration values
             //Prefixes
             internal static string StgTablePrefixValue { get; set; }
             internal static string PsaTablePrefixValue { get; set; }
@@ -45,31 +42,9 @@ namespace TEAM
             internal static string LinkTablePrefixValue { get; set; }
             internal static string LsatTablePrefixValue { get; set; }
             #endregion
-
-            ////Connection strings
-            //internal static string ConnectionStringSource { get; set; }
-            //internal static string ConnectionStringStg { get; set; }
-            //internal static string ConnectionStringHstg { get; set; }
-            //internal static string ConnectionStringInt { get; set; }
-            //internal static string ConnectionStringPres { get; set; }
-            //internal static string ConnectionStringMetadata { get; set; }
-
-            //Connection & authentication information
-            //internal static string MetadataSspi { get; set; }
-            //internal static string MetadataNamed { get; set; }
-            //internal static string MetadataUserName { get; set; }
-            //internal static string MetadataPassword { get; set; }
-
-            //internal static string PhysicalModelSspi { get; set; }
-            //internal static string PhysicalModelNamed { get; set; }
-            //internal static string PhysicalModelUserName { get; set; }
-            //internal static string PhysicalModelPassword { get; set; }
-
-
             internal static string DwhKeyIdentifier { get; set; }
             internal static string PsaKeyLocation { get; set; }
             internal static string SchemaName { get; set; }
-
 
             internal static string EventDateTimeAttribute { get; set; }
 
@@ -100,7 +75,6 @@ namespace TEAM
             internal static string LogicalDeleteAttribute { get; set; }
 
             // Database names
-            internal static string MetadataDatabaseName { get; set; }
             internal static string SourceDatabaseName { get; set; }
             internal static string StagingDatabaseName { get; set; }
             internal static string PsaDatabaseName { get; set; }
@@ -108,7 +82,7 @@ namespace TEAM
             internal static string PresentationDatabaseName { get; set; }
 
             // Servers (instances)
-            internal static string MetadataServerName { get; set; }
+
             internal static string PhysicalModelServerName { get; set; }
 
             // Prefixes and suffixes

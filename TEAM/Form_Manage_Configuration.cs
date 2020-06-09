@@ -52,10 +52,11 @@ namespace TEAM
             }
 
             comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
-            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataDatabaseName);
-
+            
             // Connection tabs for the specific environment.
             AddConnectionTabPages();
+
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
             _formLoading = false;
         }
@@ -120,6 +121,19 @@ namespace TEAM
 
                 sr.Close();
                 fs.Close();
+
+
+                // Databases
+                if (configList["MetadataConnectionKey"] != null)
+                {
+                    //comboBoxMetadataConnection.SelectedItem = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionKey"]];
+                   
+                    var metadataKey = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionKey"]];
+
+                    comboBoxMetadataConnection.SelectedItem = metadataKey.databaseConnectionKey;
+
+                }
+
 
                 //DWH settings
                 textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
@@ -240,7 +254,7 @@ namespace TEAM
                     myMetadatarepositoryType.Checked = true;
                 }
 
-
+             
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
 
@@ -412,8 +426,6 @@ namespace TEAM
 
             if (comboBoxMetadataConnection.SelectedItem!=null)
             {
-                var selectedMetadataValue = ConfigurationSettings.connectionDictionary[comboBoxMetadataConnection.SelectedItem.ToString()];
-                
                 ConfigurationSettings.MetadataConnection = ConfigurationSettings.connectionDictionary[comboBoxMetadataConnection.SelectedItem.ToString()];
             }
 
@@ -791,6 +803,7 @@ namespace TEAM
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
 
+
                 try
                 {
                     LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
@@ -800,8 +813,40 @@ namespace TEAM
                     richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
                 }
 
+                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+
+
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
+            }
+        }
+
+        private void openRootPathFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension);
+
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text =
+                    "An error has occured while attempting to open the root path file. The error message is: " + ex;
+            }
+        }
+
+        private void openActiveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' +
+                              GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text =
+                    "An error has occured while attempting to open the active configuration file. The error message is: " + ex;
             }
         }
     }

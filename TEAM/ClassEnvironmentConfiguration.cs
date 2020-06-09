@@ -582,7 +582,7 @@ namespace TEAM
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                configurationFile.AppendLine("MetadataConnectionKey" + FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionKey + "");
+                configurationFile.AppendLine("MetadataConnectionKey|" + FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionKey + "");
 
                 configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +"");
                 configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
@@ -700,6 +700,7 @@ namespace TEAM
                 {
                     FormBase.ConfigurationSettings.MetadataConnection = null;
                 }
+
             }
             catch (Exception ex)
             {

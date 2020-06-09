@@ -9,7 +9,6 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -3334,11 +3333,11 @@ namespace TEAM
             if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0))
             {
                 // Commence the activation
-                var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+                var conn = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
                 richTextBoxInformation.Clear();
 
-                var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
+                var versionMajorMinor = GetVersion(trackBarVersioning.Value, conn);
                 var majorVersion = versionMajorMinor.Key;
                 var minorVersion = versionMajorMinor.Value;
                 richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n";
@@ -3352,7 +3351,7 @@ namespace TEAM
 
                     versionExistenceCheck.AppendLine("SELECT * FROM TMP_MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
 
-                    var versionExistenceCheckDataTable = Utility.GetDataTable(ref connOmd, versionExistenceCheck.ToString());
+                    var versionExistenceCheckDataTable = Utility.GetDataTable(ref conn, versionExistenceCheck.ToString());
 
                     if (versionExistenceCheckDataTable != null && versionExistenceCheckDataTable.Rows.Count > 0)
                     {
@@ -3500,7 +3499,7 @@ namespace TEAM
             var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';
 
             var linkedServer = ConfigurationSettings.PhysicalModelServerName;
-            var metadataServer = ConfigurationSettings.MetadataServerName;
+            var metadataServer = ConfigurationSettings.MetadataConnection.databaseServer.databaseName;
             if (linkedServer != "" && linkedServer != metadataServer)
             {
                 linkedServer = '[' + linkedServer + "].";

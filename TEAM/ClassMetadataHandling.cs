@@ -177,26 +177,26 @@ namespace TEAM
 
             if (new string[] { TableTypes.Context.ToString(), TableTypes.CoreBusinessConcept.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString(), TableTypes.Derived.ToString()}.Contains(tableType))
             {
-                localConnectionInformation.Add(FormBase.ConfigurationSettings.IntegrationDatabaseName,
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionName,
                     FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.StagingArea.ToString())
             {
-                localConnectionInformation.Add(FormBase.ConfigurationSettings.StagingDatabaseName,
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionName,
                     FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.PersistentStagingArea.ToString())
             {
-                localConnectionInformation.Add(FormBase.ConfigurationSettings.PsaDatabaseName,
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionName,
                     FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.Presentation.ToString())
             {
-                localConnectionInformation.Add(FormBase.ConfigurationSettings.PresentationDatabaseName, FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionName, FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else if (tableType == TableTypes.Source.ToString())
             {
-                localConnectionInformation.Add(FormBase.ConfigurationSettings.SourceDatabaseName, FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                localConnectionInformation.Add(FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionName, FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else // Return error
             {

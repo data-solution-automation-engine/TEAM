@@ -254,25 +254,25 @@ namespace TEAM
             groupBoxConnection.Text = $"Connection";
             groupBoxConnection.TabStop = false;
 
-            // Add Connection Name Label
-            var labelConnectionName = new Label();
-            groupBoxConnection.Controls.Add(labelConnectionName);
-            //labelConnectionName.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            labelConnectionName.Location = new Point(6, 19);
-            labelConnectionName.Size = new Size(160, 13);
-            labelConnectionName.Name = $"labelConnectionName";
-            labelConnectionName.Text = $"Connection name";
-            labelConnectionName.TabStop = false;
-
             // Add Connection Key Label
             var labelConnectionKey = new Label();
             groupBoxConnection.Controls.Add(labelConnectionKey);
             //labelConnectionKey.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            labelConnectionKey.Location = new Point(6, 44);
+            labelConnectionKey.Location = new Point(6, 19);
             labelConnectionKey.Size = new Size(160, 13);
             labelConnectionKey.Name = $"labelConnectionKey";
             labelConnectionKey.Text = $"Connection key";
             labelConnectionKey.TabStop = false;
+
+            // Add Connection Name Label
+            var labelConnectionName = new Label();
+            groupBoxConnection.Controls.Add(labelConnectionName);
+            //labelConnectionName.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            labelConnectionName.Location = new Point(6, 44);
+            labelConnectionName.Size = new Size(160, 13);
+            labelConnectionName.Name = $"labelConnectionName";
+            labelConnectionName.Text = $"Connection name";
+            labelConnectionName.TabStop = false;
 
             // Add Connection Notes Label
             var labelConnectionNotes = new Label();
@@ -294,27 +294,31 @@ namespace TEAM
             panelConnectionNotes.BorderStyle = BorderStyle.FixedSingle;
             panelConnectionNotes.TabIndex = 52;
 
+
+            // Add Connection Key TextBox
+            _textBoxConnectionKey = new TextBox();
+            groupBoxConnection.Controls.Add(_textBoxConnectionKey);
+            //_textBoxConnectionKey.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxConnectionKey.Location = new Point(172, 16);
+            _textBoxConnectionKey.Size = new Size(317, 20);
+            _textBoxConnectionKey.Name = $"textBoxServerName";
+            _textBoxConnectionKey.Text = _localConnection.databaseConnectionKey;
+            _textBoxConnectionKey.TextChanged += (UpdateConnectionKey);
+            _textBoxConnectionKey.TabIndex = 51;
+
+
             // Add Connection Name TextBox
             _textBoxConnectionName = new TextBox();
             groupBoxConnection.Controls.Add(_textBoxConnectionName);
             //_textBoxConnectioName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxConnectionName.Location = new Point(172, 16);
+            _textBoxConnectionName.Location = new Point(172, 41);
             _textBoxConnectionName.Size = new Size(317, 20);
             _textBoxConnectionName.Name = $"textBoxConnectionName";
             _textBoxConnectionName.Text = _localConnection.databaseConnectionName;
             _textBoxConnectionName.TextChanged += (UpdateConnectionName);
             _textBoxConnectionName.TabIndex = 50;
 
-            // Add Connection Key TextBox
-            _textBoxConnectionKey = new TextBox();
-            groupBoxConnection.Controls.Add(_textBoxConnectionKey);
-            //_textBoxConnectionKey.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxConnectionKey.Location = new Point(172, 41);
-            _textBoxConnectionKey.Size = new Size(317, 20);
-            _textBoxConnectionKey.Name = $"textBoxServerName";
-            _textBoxConnectionKey.Text = _localConnection.databaseConnectionKey;
-            _textBoxConnectionKey.TextChanged += (UpdateConnectionKey);
-            _textBoxConnectionKey.TabIndex = 51;
+
 
             // Add Connection Notes RichTextBox
             _richTextBoxConnectionNotes = new RichTextBox();

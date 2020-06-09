@@ -157,8 +157,6 @@ namespace TEAM
             // Load the connections file for the respective environment.
             EnvironmentConfiguration.LoadConnectionFile();
 
-            var test = ConfigurationSettings.connectionDictionary;
-
             #region Load configuration file
             // Load the available configuration file into memory.
             var configurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' +
