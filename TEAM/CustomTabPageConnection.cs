@@ -36,7 +36,7 @@ namespace TEAM
         private MaskedTextBox _textBoxPassword;
         private readonly TextBox _textBoxConnectionString;
         private TextBox _textBoxConnectionName;
-        private TextBox _textBoxConnectionKey;
+        public TextBox _textBoxConnectionKey;
         private RichTextBox _richTextBoxConnectionNotes;
 
         /// <summary>
@@ -364,6 +364,11 @@ namespace TEAM
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true, localSSPI, localNamed);
 
+            if (_radioButtonIntegratedSecurity.Checked)
+            {
+                _groupBoxNamedUser.Visible = false;
+            }
+
             #endregion
         }
 
@@ -433,6 +438,11 @@ namespace TEAM
 
         }
 
+        /// <summary>
+        /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back the name of the tab page to the control (so that it can be deleted from there).
+        /// </summary>
+        public event EventHandler<MyStringEventArgs> OnSaveConnection = delegate { };
+
         public void SaveConnection(object sender, EventArgs e)
         {
             if (_localConnection.databaseConnectionKey != "New")
@@ -494,6 +504,9 @@ namespace TEAM
                 File.WriteAllText(_connectionFileName, output);
 
                 UpdateRichTextBoxInformation($"The connection {_localConnection.databaseConnectionKey} was saved to {_connectionFileName}. A backup was made in the Backups directory also.\r\n");
+
+                // The name of the tab page is passed back to the original control (the tab control).
+                OnSaveConnection(this, new MyStringEventArgs(this.Name));
             }
             else
             {
@@ -591,12 +604,9 @@ namespace TEAM
         /// <param name="e"></param>
         public void RadioButtonIntegratedSecurityCheckedChanged(object sender, EventArgs e)
         {
-            if (_radioButtonNamedUserSecurity.Checked == false)
-            {
-                _groupBoxNamedUser.Visible = false;
+            _groupBoxNamedUser.Visible = false;
 
-                _localConnection.databaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
-            }
+            _localConnection.databaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
 
             if (_radioButtonIntegratedSecurity.Checked)
             {

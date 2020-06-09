@@ -74,6 +74,9 @@ namespace TEAM
                 localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                 tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                 tabControlConnections.SelectedIndex = 0;
+
+                // Adding items in the drop down list
+                comboBoxMetadataConnection.Items.Add(connection.Key);
             }
         }
 
@@ -142,7 +145,6 @@ namespace TEAM
                 EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(chosenFile);
             }
 
-
             // Open the configuration file
             var configList = new Dictionary<string, string>();
             var fs = new FileStream(chosenFile, FileMode.Open, FileAccess.Read);
@@ -163,7 +165,6 @@ namespace TEAM
                 sr.Close();
                 fs.Close();
 
-
                 //DWH settings
                 textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
                 textBoxSatPrefix.Text = configList["SatTablePrefix"];
@@ -181,15 +182,6 @@ namespace TEAM
                 textBoxStagingAreaPrefix.Text = configList["StagingAreaPrefix"];
                 textBoxPSAPrefix.Text = configList["PersistentStagingAreaPrefix"];
                 textBoxSourceRowId.Text = configList["RowID"];
-
-                // Databases
-                textBoxSourceDatabase.Text = configList["SourceDatabase"];
-                textBoxStagingDatabase.Text = configList["StagingDatabase"];
-                textBoxPSADatabase.Text = configList["PersistentStagingDatabase"];
-                textBoxIntegrationDatabase.Text = configList["IntegrationDatabase"];
-                textBoxPresentationDatabase.Text = configList["PresentationDatabase"];
-                textBoxMetadataDatabaseName.Text = configList["MetadataDatabase"];
-
                 textBoxRecordChecksum.Text = configList["RecordChecksum"];
                 textBoxCurrentRecordAttributeName.Text = configList["CurrentRecordAttribute"];
                 textBoxAlternativeRecordSource.Text = configList["AlternativeRecordSource"];
@@ -197,9 +189,6 @@ namespace TEAM
                 textBoxSatelliteAlternativeLDTSAttribute.Text = configList["AlternativeSatelliteLDTS"];
                 textBoxLogicalDeleteAttributeName.Text = configList["LogicalDeleteAttribute"];
 
-                // Servers (instances)
-                textBoxPhysicalModelServerName.Text = configList["PhysicalModelServerName"];
-                textBoxMetadataServerName.Text = configList["MetadataServerName"];
 
                 //Checkbox setting based on loaded configuration
                 CheckBox myConfigurationCheckBox;
@@ -297,65 +286,6 @@ namespace TEAM
                     myMetadatarepositoryType.Checked = true;
                 }
 
-
-                // Authentication approach for metadata
-                var myRadioButtonMetadataSspi = radioButtonMetadataSSPI;
-                var myRadioButtonMetadataNamed = radioButtonMetadataNamed;
-
-                if (configList["MetadataSSPI"] == "True")
-                {
-                    myRadioButtonMetadataSspi.Checked = true;
-                    myRadioButtonMetadataNamed.Checked = false;
-                    groupBoxMetadataNamedUser.Visible = false;
-                }
-                else
-                {
-                    myRadioButtonMetadataSspi.Checked = false;
-                }
-
-                if (configList["MetadataNamed"] == "True")
-                {
-                    myRadioButtonMetadataNamed.Checked = true;
-                    myRadioButtonMetadataSspi.Checked = false;
-                    groupBoxMetadataNamedUser.Visible = true;
-                }
-                else
-                {
-                    myRadioButtonMetadataNamed.Checked = false;
-                    groupBoxMetadataNamedUser.Visible = false;
-                }
-
-                // Authentication approach for the physical model
-                var myRadioButtonPhysicalModelSspi = radioButtonPhysicalModelSSPI;
-                var myRadioButtonPhysicalModelNamed = radioButtonPhysicalModelNamed;
-
-                if (configList["PhysicalModelSSPI"] == "True")
-                {
-                    myRadioButtonPhysicalModelSspi.Checked = true;
-                    myRadioButtonPhysicalModelNamed.Checked = false;
-                    groupBoxMetadataNamedUser.Visible = false;
-                }
-                else
-                {
-                    myRadioButtonPhysicalModelSspi.Checked = false;
-                }
-
-                if (configList["PhysicalModelNamed"] == "True")
-                {
-                    myRadioButtonPhysicalModelNamed.Checked = true;
-                    myRadioButtonPhysicalModelSspi.Checked = false;
-                    groupBoxPhysicalModelNamedUser.Visible = true;
-                }
-                else
-                {
-                    myRadioButtonPhysicalModelNamed.Checked = false;
-                    groupBoxPhysicalModelNamedUser.Visible = false;
-                }
-
-                textBoxMetadataUserName.Text = configList["MetadataUserName"];
-                textBoxMetadataPassword.Text = configList["MetadataPassword"];
-                textBoxPhysicalModelUserName.Text = configList["PhysicalModelUserName"];
-                textBoxPhysicalModelPassword.Text = configList["PhysicalModelPassword"];
 
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
@@ -510,74 +440,7 @@ namespace TEAM
         /// </summary>
         private void UpdateConfigurationInMemory()
         {
-            ConfigurationSettings.SourceDatabaseName = textBoxSourceDatabase.Text;
-            ConfigurationSettings.StagingDatabaseName = textBoxStagingDatabase.Text;
-            ConfigurationSettings.PsaDatabaseName = textBoxPSADatabase.Text;
-            ConfigurationSettings.IntegrationDatabaseName = textBoxIntegrationDatabase.Text;
-            ConfigurationSettings.PresentationDatabaseName = textBoxPresentationDatabase.Text;
-            ConfigurationSettings.MetadataDatabaseName = textBoxMetadataDatabaseName.Text;
-
-
-            ConfigurationSettings.ConnectionStringSource = GenerateConnectionString(
-                false,
-                textBoxSourceDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            ConfigurationSettings.ConnectionStringStg = GenerateConnectionString(
-                false,
-                textBoxStagingDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            ConfigurationSettings.ConnectionStringHstg = GenerateConnectionString(
-                false,
-                textBoxPSADatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            ConfigurationSettings.ConnectionStringInt = GenerateConnectionString(
-                false,
-                textBoxIntegrationDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            ConfigurationSettings.ConnectionStringPres = GenerateConnectionString(
-                false,
-                textBoxPresentationDatabase.Text,
-                textBoxPhysicalModelServerName.Text,
-                radioButtonPhysicalModelSSPI.Checked,
-                radioButtonPhysicalModelNamed.Checked,
-                textBoxPhysicalModelUserName.Text,
-                textBoxPhysicalModelPassword.Text
-            );
-
-            ConfigurationSettings.ConnectionStringOmd = GenerateConnectionString(
-                false,
-                textBoxMetadataDatabaseName.Text,
-                textBoxMetadataServerName.Text,
-                radioButtonMetadataSSPI.Checked,
-                radioButtonMetadataNamed.Checked,
-                textBoxMetadataUserName.Text,
-                textBoxMetadataPassword.Text
-            );
-
+ 
             if (radioButtonJSON.Checked)
             {
                 ConfigurationSettings.MetadataRepositoryType = "JSON";
@@ -593,9 +456,6 @@ namespace TEAM
 
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
-
-            ConfigurationSettings.PhysicalModelServerName = textBoxPhysicalModelServerName.Text;
-            ConfigurationSettings.MetadataServerName = textBoxMetadataServerName.Text;
 
             ConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
             ConfigurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
@@ -690,48 +550,7 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Issues storing the table prefix location (prefix/suffix). Is one of the radio buttons checked?");
             }
 
-            // Authentication & connectivity
-            if (radioButtonMetadataSSPI.Checked)
-            {
-                ConfigurationSettings.MetadataSspi = "True";
-            }
-            else
-            {
-                ConfigurationSettings.MetadataSspi = "False";
-            }
-
-            if (radioButtonMetadataNamed.Checked)
-            {
-                ConfigurationSettings.MetadataNamed = "True";
-            }
-            else
-            {
-                ConfigurationSettings.MetadataNamed = "False";
-            }
-
-
-            if (radioButtonPhysicalModelSSPI.Checked)
-            {
-                ConfigurationSettings.PhysicalModelSspi = "True";
-            }
-            else
-            {
-                ConfigurationSettings.PhysicalModelSspi = "False";
-            }
-
-            if (radioButtonPhysicalModelNamed.Checked)
-            {
-                ConfigurationSettings.PhysicalModelNamed = "True";
-            }
-            else
-            {
-                ConfigurationSettings.PhysicalModelNamed = "False";
-            }
-
-
-            ConfigurationSettings.MetadataUserName = textBoxMetadataUserName.Text;
-            ConfigurationSettings.MetadataPassword = textBoxMetadataPassword.Text;
-            ConfigurationSettings.PhysicalModelUserName = textBoxPhysicalModelUserName.Text;
+  
             ConfigurationSettings.PhysicalModelPassword = textBoxPhysicalModelPassword.Text;
 
         }
@@ -1114,6 +933,7 @@ namespace TEAM
                     CustomTabPageConnection localCustomTabPage = new CustomTabPageConnection(connectionProfile);
                     localCustomTabPage.OnDeleteConnection += DeleteConnection;
                     localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
+                    localCustomTabPage.OnSaveConnection += SaveConnection;
                     tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                     tabControlConnections.SelectedIndex = lastIndex;
                 }
@@ -1162,8 +982,13 @@ namespace TEAM
 
         private void SaveEnvironment(object o, MyStringEventArgs e)
         {
-            //var localEnvironment = (TeamWorkingEnvironment)o;
             comboBoxEnvironments.Items.Add(((TEAM.CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
+        }
+
+        private void SaveConnection(object o, MyStringEventArgs e)
+        {
+            //var localEnvironment = (TeamWorkingEnvironment)o;
+            comboBoxMetadataConnection.Items.Add(((TEAM.CustomTabPageConnection)o)._textBoxConnectionKey.Text);
         }
 
         /// <summary>

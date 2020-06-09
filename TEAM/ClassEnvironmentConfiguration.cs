@@ -27,26 +27,27 @@ namespace TEAM
             // Load the connections
             try
             {
-
-
                 // Create a new empty file if it doesn't exist.
                 if (!File.Exists(connectionFileName))
                 {
                     File.Create(connectionFileName).Close();
 
+                    FormBase.ConfigurationSettings.connectionDictionary = CreateDummyConnections();
+
                     // There was no key in the file for this connection, so it's new.
                     var list = new List<TeamConnectionProfile>();
 
+                    foreach (var connection in FormBase.ConfigurationSettings.connectionDictionary)
+                    {
+                        list.Add(connection.Value);
+                    }
+
                     string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
                     File.WriteAllText(connectionFileName, output);
-
-                    // Commit the nothing to memory also.
-                    var localDictionary = new Dictionary<string, TeamConnectionProfile>();
-                    FormBase.ConfigurationSettings.connectionDictionary = localDictionary;
                 }
                 else
                 {
-                    // Clear the in-memory dictionary and load the file
+                    // Clear the in-memory dictionary and load the file.
                     FormBase.ConfigurationSettings.connectionDictionary.Clear();
                     TeamConnectionProfile[] connectionJson = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(File.ReadAllText(connectionFileName));
 
@@ -116,6 +117,144 @@ namespace TEAM
             }
         }
 
+        internal static Dictionary<string, TeamConnectionProfile> CreateDummyConnections()
+        {
+            var localDictionary = new Dictionary<string, TeamConnectionProfile>();
+
+            // Metadata
+            var newTeamConnectionProfileMetadata = new TeamConnectionProfile
+            {
+                databaseConnectionKey = "Metadata",
+                databaseConnectionName = "Metadata Repository",
+                databaseConnectionNotes = ""
+            };
+
+            var newTeamDatabaseConnectionMetadata = new TeamDatabaseConnection
+            {
+                authenticationType = ServerAuthenticationTypes.SSPI,
+                databaseName = "900_Metadata",
+                schemaName = "dbo",
+                namedUserName = "sa",
+                namedUserPassword = "",
+                serverName = "localhost"
+            };
+
+            newTeamConnectionProfileMetadata.databaseServer = newTeamDatabaseConnectionMetadata;
+
+            // Source
+            var newTeamConnectionProfileSource = new TeamConnectionProfile
+            {
+                databaseConnectionKey = "Source",
+                databaseConnectionName = "Source System",
+                databaseConnectionNotes = ""
+            };
+
+            var newTeamDatabaseConnectionSource = new TeamDatabaseConnection
+            {
+                authenticationType = ServerAuthenticationTypes.SSPI,
+                databaseName = "000_Source",
+                schemaName = "dbo",
+                namedUserName = "sa",
+                namedUserPassword = "",
+                serverName = "localhost"
+            };
+
+            newTeamConnectionProfileSource.databaseServer = newTeamDatabaseConnectionSource;
+
+            // Staging
+            var newTeamConnectionProfileStaging = new TeamConnectionProfile
+            {
+                databaseConnectionKey = "Staging",
+                databaseConnectionName = "Staging / Landing Area",
+                databaseConnectionNotes = ""
+            };
+
+            var newTeamDatabaseConnectionStaging = new TeamDatabaseConnection
+            {
+                authenticationType = ServerAuthenticationTypes.SSPI,
+                databaseName = "100_Staging_Area",
+                schemaName = "dbo",
+                namedUserName = "sa",
+                namedUserPassword = "",
+                serverName = "localhost"
+            };
+
+            newTeamConnectionProfileStaging.databaseServer = newTeamDatabaseConnectionStaging;
+
+            // PSA
+            var newTeamConnectionProfilePsa = new TeamConnectionProfile
+            {
+                databaseConnectionKey = "PersistentStagingArea",
+                databaseConnectionName = "Persistent Staging Area",
+                databaseConnectionNotes = ""
+            };
+
+            var newTeamDatabaseConnectionPsa = new TeamDatabaseConnection
+            {
+                authenticationType = ServerAuthenticationTypes.SSPI,
+                databaseName = "150_Persistent_Staging_Area",
+                schemaName = "dbo",
+                namedUserName = "sa",
+                namedUserPassword = "",
+                serverName = "localhost"
+            };
+
+            newTeamConnectionProfilePsa.databaseServer = newTeamDatabaseConnectionPsa;
+
+            // Integration
+            var newTeamConnectionProfileIntegration = new TeamConnectionProfile
+            {
+                databaseConnectionKey = "Integration",
+                databaseConnectionName = "Integration Layer",
+                databaseConnectionNotes = ""
+            };
+
+            var newTeamDatabaseConnectionIntegration= new TeamDatabaseConnection
+            {
+                authenticationType = ServerAuthenticationTypes.SSPI,
+                databaseName = "200_Integration_Layer",
+                schemaName = "dbo",
+                namedUserName = "sa",
+                namedUserPassword = "",
+                serverName = "localhost"
+            };
+
+            newTeamConnectionProfileIntegration.databaseServer = newTeamDatabaseConnectionIntegration;
+
+            // Presentation
+            var newTeamConnectionProfilePresentation = new TeamConnectionProfile
+            {
+                databaseConnectionKey = "Presentation",
+                databaseConnectionName = "Presentation Layer",
+                databaseConnectionNotes = ""
+            };
+
+            var newTeamDatabaseConnectionPresentation = new TeamDatabaseConnection
+            {
+                authenticationType = ServerAuthenticationTypes.SSPI,
+                databaseName = "300_Presentation_Layer",
+                schemaName = "dbo",
+                namedUserName = "sa",
+                namedUserPassword = "",
+                serverName = "localhost"
+            };
+
+            newTeamConnectionProfilePresentation.databaseServer = newTeamDatabaseConnectionPresentation;
+
+            // Compile the dictionary
+            localDictionary.Add("Metadata", newTeamConnectionProfileMetadata);
+            localDictionary.Add("Source", newTeamConnectionProfileSource);
+            localDictionary.Add("Staging", newTeamConnectionProfileStaging);
+            localDictionary.Add("PersistentStagingArea", newTeamConnectionProfilePsa);
+            localDictionary.Add("Integration", newTeamConnectionProfileIntegration);
+            localDictionary.Add("Presentation", newTeamConnectionProfilePresentation);
+
+            // Commit to memory.
+            FormBase.ConfigurationSettings.connectionDictionary = localDictionary;
+
+            return localDictionary;
+        }
+
         /// <summary>
         /// Method to create a new configuration file with default values at the default location.
         /// Checks if the file already exists. If it does, nothing will happen.
@@ -130,41 +269,41 @@ namespace TEAM
                 initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
 
                 // Databases
-                initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
-                initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
-                initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
-                initialConfigurationFile.AppendLine("IntegrationDatabase|Data_Vault_Database");
-                initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
-                initialConfigurationFile.AppendLine("MetadataDatabase|Metadata_Database");
+                //initialConfigurationFile.AppendLine("SourceDatabase|Source_Database");
+                //initialConfigurationFile.AppendLine("StagingDatabase|Staging_Area_Database");
+                //initialConfigurationFile.AppendLine("PersistentStagingDatabase|Persistent_Staging_Area_Database");
+                //initialConfigurationFile.AppendLine("IntegrationDatabase|Integration_Database");
+                //initialConfigurationFile.AppendLine("PresentationDatabase|Presentation_Database");
+                //initialConfigurationFile.AppendLine("MetadataDatabase|Metadata_Database");
 
                 // Instances
-                initialConfigurationFile.AppendLine("PhysicalModelServerName|");
-                initialConfigurationFile.AppendLine("MetadataServerName|");
+                //initialConfigurationFile.AppendLine("PhysicalModelServerName|");
+                //initialConfigurationFile.AppendLine("MetadataServerName|");
 
                 // Connectivity
-                initialConfigurationFile.AppendLine("MetadataSSPI|False");
-                initialConfigurationFile.AppendLine("MetadataNamed|True");
-                initialConfigurationFile.AppendLine("MetadataUserName|sa");
-                initialConfigurationFile.AppendLine("MetadataPassword|");
+                //initialConfigurationFile.AppendLine("MetadataSSPI|False");
+                //initialConfigurationFile.AppendLine("MetadataNamed|True");
+                //initialConfigurationFile.AppendLine("MetadataUserName|sa");
+                //initialConfigurationFile.AppendLine("MetadataPassword|");
 
-                initialConfigurationFile.AppendLine("PhysicalModelSSPI|False");
-                initialConfigurationFile.AppendLine("PhysicalModelNamed|True");
-                initialConfigurationFile.AppendLine("PhysicalModelUserName|sa");
-                initialConfigurationFile.AppendLine("PhysicalModelPassword|");
+                //initialConfigurationFile.AppendLine("PhysicalModelSSPI|False");
+                //initialConfigurationFile.AppendLine("PhysicalModelNamed|True");
+                //initialConfigurationFile.AppendLine("PhysicalModelUserName|sa");
+                //initialConfigurationFile.AppendLine("PhysicalModelPassword|");
 
                 // Connection strings
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
-                initialConfigurationFile.AppendLine(
-                    @"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
+                //initialConfigurationFile.AppendLine(
+                //    @"connectionStringSource|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Source_Database>;user id=sa; password=<>");
+                //initialConfigurationFile.AppendLine(
+                //    @"connectionStringStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>");
+                //initialConfigurationFile.AppendLine(
+                //    @"connectionStringPersistentStaging|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>");
+                //initialConfigurationFile.AppendLine(
+                //    @"connectionStringMetadata|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>");
+                //initialConfigurationFile.AppendLine(
+                //    @"connectionStringIntegration|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Data_Vault>;user id=sa; password=<>");
+                //initialConfigurationFile.AppendLine(
+                //    @"connectionStringPresentation|Provider=SQLNCLI11;Server=<>;Initial Catalog=<Presentation>;user id=sa; password=<>");
 
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");

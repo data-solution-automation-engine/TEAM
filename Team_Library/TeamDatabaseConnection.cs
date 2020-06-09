@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace TEAM
 {
@@ -10,9 +11,10 @@ namespace TEAM
         public string schemaName { get; set; }
         public string serverName { get; set; }
         public ServerAuthenticationTypes authenticationType { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string namedUserName { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string namedUserPassword { get; set; }
-
         public bool integratedSecuritySelectionEvaluation()
         {
             bool returnValue = true;
@@ -27,7 +29,6 @@ namespace TEAM
 
             return returnValue;
         }
-
         public bool namedUserSecuritySelectionEvaluation()
         {
             bool returnValue = true;
@@ -55,6 +56,7 @@ namespace TEAM
         public string databaseConnectionName { get; set; }
         public string databaseConnectionKey { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string databaseConnectionNotes { get; set; }
 
         public TeamDatabaseConnection databaseServer { get; set; }
@@ -81,13 +83,17 @@ namespace TEAM
                 connectionString.Append("password=" + localDatabaseConnection.namedUserPassword + ";");
             }
 
-            if (localDatabaseConnection.namedUserPassword.Length > 0 && mask == true)
+            if (localDatabaseConnection.namedUserPassword != null)
             {
-                outputConnectionString = connectionString.ToString().Replace(localDatabaseConnection.namedUserPassword, "*****");
-            }
-            else
-            {
-                outputConnectionString = connectionString.ToString();
+                if (localDatabaseConnection.namedUserPassword.Length > 0 && mask == true)
+                {
+                    outputConnectionString = connectionString.ToString()
+                        .Replace(localDatabaseConnection.namedUserPassword, "*****");
+                }
+                else
+                {
+                    outputConnectionString = connectionString.ToString();
+                }
             }
 
             return outputConnectionString;

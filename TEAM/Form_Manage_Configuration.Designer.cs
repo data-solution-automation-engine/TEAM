@@ -52,7 +52,9 @@
             this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
             this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.richTextBoxMetadataConnection = new System.Windows.Forms.RichTextBox();
+            this.comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
+            this.richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
             this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
             this.tabPageIntegrationLayerSpecific = new System.Windows.Forms.TabPage();
             this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
@@ -362,9 +364,11 @@
             // 
             // richTextBox4
             // 
+            this.richTextBox4.BackColor = System.Drawing.SystemColors.Window;
             this.richTextBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox4.Location = new System.Drawing.Point(6, 91);
             this.richTextBox4.Name = "richTextBox4";
+            this.richTextBox4.ReadOnly = true;
             this.richTextBox4.Size = new System.Drawing.Size(116, 22);
             this.richTextBox4.TabIndex = 75;
             this.richTextBox4.TabStop = false;
@@ -426,7 +430,9 @@
             // 
             // tabPageConnectionMain
             // 
-            this.tabPageConnectionMain.Controls.Add(this.richTextBox2);
+            this.tabPageConnectionMain.Controls.Add(this.richTextBoxMetadataConnection);
+            this.tabPageConnectionMain.Controls.Add(this.comboBoxMetadataConnection);
+            this.tabPageConnectionMain.Controls.Add(this.richTextBoxConnectionMain);
             this.tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnectionMain.Name = "tabPageConnectionMain";
             this.tabPageConnectionMain.Padding = new System.Windows.Forms.Padding(3);
@@ -435,14 +441,35 @@
             this.tabPageConnectionMain.Text = "Overview of data connections";
             this.tabPageConnectionMain.UseVisualStyleBackColor = true;
             // 
-            // richTextBox2
+            // richTextBoxMetadataConnection
             // 
-            this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox2.Location = new System.Drawing.Point(6, 6);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(487, 61);
-            this.richTextBox2.TabIndex = 73;
-            this.richTextBox2.Text = "Create new data connections so these can be assigned to metadata.";
+            this.richTextBoxMetadataConnection.BackColor = System.Drawing.SystemColors.Window;
+            this.richTextBoxMetadataConnection.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxMetadataConnection.Location = new System.Drawing.Point(6, 73);
+            this.richTextBoxMetadataConnection.Name = "richTextBoxMetadataConnection";
+            this.richTextBoxMetadataConnection.ReadOnly = true;
+            this.richTextBoxMetadataConnection.Size = new System.Drawing.Size(116, 22);
+            this.richTextBoxMetadataConnection.TabIndex = 77;
+            this.richTextBoxMetadataConnection.TabStop = false;
+            this.richTextBoxMetadataConnection.Text = "Metadata connection:";
+            // 
+            // comboBoxMetadataConnection
+            // 
+            this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxMetadataConnection.FormattingEnabled = true;
+            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(128, 70);
+            this.comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
+            this.comboBoxMetadataConnection.Size = new System.Drawing.Size(292, 21);
+            this.comboBoxMetadataConnection.TabIndex = 76;
+            // 
+            // richTextBoxConnectionMain
+            // 
+            this.richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
+            this.richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
+            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(487, 61);
+            this.richTextBoxConnectionMain.TabIndex = 73;
+            this.richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
             // 
             // tabPageConnectionNewTab
             // 
@@ -1800,13 +1827,15 @@
         private System.Windows.Forms.GroupBox groupBoxDatabase;
         private System.Windows.Forms.TabPage tabPageConnectionMain;
         private System.Windows.Forms.TabPage tabPageConnectionNewTab;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.RichTextBox richTextBoxConnectionMain;
         private System.Windows.Forms.TabControl tabControlEnvironments;
         private System.Windows.Forms.TabPage tabPageEnvironmentMain;
         private System.Windows.Forms.RichTextBox richTextBoxEnvironmentsInformation;
         private System.Windows.Forms.TabPage tabPageEnvironmentNewTab;
         private System.Windows.Forms.ComboBox comboBoxEnvironments;
         private System.Windows.Forms.RichTextBox richTextBox4;
+        private System.Windows.Forms.RichTextBox richTextBoxMetadataConnection;
+        private System.Windows.Forms.ComboBox comboBoxMetadataConnection;
     }
 }
 

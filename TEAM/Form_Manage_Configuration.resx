@@ -126,6 +126,11 @@
 Environments are the main tenant in TEAM and capture all further configuration settings. 
 All subsequent tabs are applicable for the selected working environment.</value>
   </data>
+  <data name="richTextBoxConnectionMain.Text" xml:space="preserve">
+    <value>Create new data connections so these can be assigned to metadata.
+
+A unique connection for the metadata repository needs to be assigned from the available connections. All connections can be assigned to metadata mappings.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>55</value>
   </metadata>
