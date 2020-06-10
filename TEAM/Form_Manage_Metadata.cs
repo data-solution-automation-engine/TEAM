@@ -258,7 +258,7 @@ namespace TEAM
         {
             var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
-            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer) //Queries the tables in SQL Server
+            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer) //Queries the tables in SQL Server
             {
                 // open latest version
                 //LBM: 17/05/2019 moving the code inside the catch for error handling
@@ -322,7 +322,7 @@ namespace TEAM
 
 
             }
-            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
+            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Update the JSON
             {
                 //Check if the file exists, otherwise create a dummy / empty file   
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonModelMetadataFileName + FileConfiguration.jsonVersionExtension))
@@ -380,7 +380,7 @@ namespace TEAM
             //var selectedVersion = versionId;
             var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
-            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer) //Queries the tables in SQL Server
+            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer) //Queries the tables in SQL Server
             {
                 var connOmd = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
@@ -437,7 +437,7 @@ namespace TEAM
                 }
 
             }
-            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) // Retrieve from the JSON file
+            else if (repositoryTarget == MetadataRepositoryStorageType.Json) // Retrieve from the JSON file
             {
                 // Check if the file exists, otherwise create a dummy / empty file   
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension))
@@ -495,7 +495,7 @@ namespace TEAM
             var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
 
-            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
             {
                 var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
@@ -543,7 +543,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
                 }
             }
-            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
+            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Update the JSON
             {
                 //Check if the file exists, otherwise create a dummy / empty file   
                 if (!File.Exists(GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension))
@@ -943,11 +943,11 @@ namespace TEAM
                         int versionId = CreateOrRetrieveVersion();
 
                         //Commit the save of the metadata, one for each grid
-                        if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
+                        if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SqlServer)
                         {
                             SaveTableMappingMetadataSql(versionId, dataTableTableMappingChanges);
                         }
-                        else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
+                        else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                         {
                             SaveTableMappingMetadataJson(versionId, dataTableTableMappingChanges);
                         }
@@ -1528,7 +1528,7 @@ namespace TEAM
 
             // Execute the statement, if the repository is SQL Server
             // If the source is JSON this is done in separate calls for now
-            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
             {
                 if (insertQueryTables.ToString() == "")
                 {
@@ -2092,11 +2092,11 @@ namespace TEAM
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
+                if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SqlServer)
                 {
                     CreateNewPhysicalModelMetadataVersionSqlServer(versionId);
                 }
-                else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
+                else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                 {
                     CreateNewPhysicalModelMetadataVersionJson(versionId);
                 }
@@ -2129,7 +2129,7 @@ namespace TEAM
                             var multiActiveIndicator = (string)row["MULTI_ACTIVE_INDICATOR"];
                             var versionKey = row["VERSION_ID"].ToString();
 
-                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                             {
                                 insertQueryTables.AppendLine("UPDATE MD_VERSION_ATTRIBUTE");
                                 insertQueryTables.AppendLine("SET " +
@@ -2147,7 +2147,7 @@ namespace TEAM
                                 insertQueryTables.AppendLine("WHERE [VERSION_ATTRIBUTE_HASH] = '" + hashKey +
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
-                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Insert a new segment (row) in the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Insert a new segment (row) in the JSON
                             {
 
                                 try
@@ -2255,7 +2255,7 @@ namespace TEAM
                                 multiActiveIndicator = (string)row[11];
                             }
 
-                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                             {
                                 insertQueryTables.AppendLine("IF NOT EXISTS (SELECT * FROM [MD_VERSION_ATTRIBUTE] WHERE [VERSION_ID]= " + versionId + " AND [DATABASE_NAME] = '"+ databaseName+"' AND [SCHEMA_NAME]='" + schemaName + "' AND [TABLE_NAME]='" + tableName + "' AND [COLUMN_NAME]='" + columnName + "')");
                                 insertQueryTables.AppendLine("INSERT INTO [MD_VERSION_ATTRIBUTE]");
@@ -2266,7 +2266,7 @@ namespace TEAM
                                                              numericPrecision + "','" + ordinalPosition + "','" +
                                                              primaryKeyIndicator + "','" + multiActiveIndicator + "')");
                             }
-                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Update the JSON
                             {
                                 try
                                 {
@@ -2331,12 +2331,12 @@ namespace TEAM
                             var hashKey = row["VERSION_ATTRIBUTE_HASH", DataRowVersion.Original].ToString();
                             var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
 
-                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                             {
                                 insertQueryTables.AppendLine("DELETE FROM MD_VERSION_ATTRIBUTE");
                                 insertQueryTables.AppendLine("WHERE [VERSION_ATTRIBUTE_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
                             }
-                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Remove a segment (row) from the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Remove a segment (row) from the JSON
                             {
                                 try
                                 {
@@ -2381,7 +2381,7 @@ namespace TEAM
                     #region Statement execution
                     // Execute the statement, if the repository is SQL Server
                     // If the source is JSON this is done in separate calls for now
-                    if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                    if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                     {
                         if (insertQueryTables.ToString() == null || insertQueryTables.ToString() == "")
                         {
@@ -2413,7 +2413,7 @@ namespace TEAM
                     ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).AcceptChanges();
 
                     //The JSON needs to be re-bound to the datatable / datagrid after being updated to allow all values to be present
-                    if (repositoryTarget == MetadataRepositoryStorageType.JSON)
+                    if (repositoryTarget == MetadataRepositoryStorageType.Json)
                     {
                         BindModelMetadataJsonToDataTable();
                     }
@@ -2436,11 +2436,11 @@ namespace TEAM
             //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
             if (!radiobuttonNoVersionChange.Checked)
             {
-                if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
+                if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SqlServer)
                 {
                     CreateNewAttributeMappingMetadataVersionSqlServer(versionId);
                 }
-                else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
+                else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                 {
                     CreateNewAttributeMappingMetadataVersionJson(versionId);
                 }
@@ -2498,14 +2498,14 @@ namespace TEAM
                             }
 
                             //Double quotes for composites, but only if things are written to the database otherwise it's already OK
-                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer) //Update the tables in SQL Server
+                            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer) //Update the tables in SQL Server
                             {
                                 transformationRule = transformationRule.Replace("'", "''");
                             }
 
 
 
-                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                             {
                                 insertQueryTables.AppendLine("UPDATE MD_ATTRIBUTE_MAPPING");
                                 insertQueryTables.AppendLine("SET [SOURCE_TABLE] = '" + stagingTable +
@@ -2517,7 +2517,7 @@ namespace TEAM
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
 
-                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Insert a new segment (row) in the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Insert a new segment (row) in the JSON
                             {
 
                                 try
@@ -2601,7 +2601,7 @@ namespace TEAM
                                 transformationRule = (string)row[6];
                             }
 
-                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                             {
                                 insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
                                 insertQueryTables.AppendLine(
@@ -2610,7 +2610,7 @@ namespace TEAM
                                                              stagingColumn + "','" + integrationTable + "','" +
                                                              integrationColumn + "','" + transformationRule + "')");
                             }
-                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Update the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Update the JSON
                             {
                                 try
                                 {
@@ -2677,13 +2677,13 @@ namespace TEAM
                             var hashKey = row["ATTRIBUTE_MAPPING_HASH", DataRowVersion.Original].ToString();
                             var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
 
-                            if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                             {
                                 insertQueryTables.AppendLine("DELETE FROM MD_ATTRIBUTE_MAPPING");
                                 insertQueryTables.AppendLine("WHERE [ATTRIBUTE_MAPPING_HASH] = '" + hashKey +
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
-                            else if (repositoryTarget == MetadataRepositoryStorageType.JSON) //Insert a new segment (row) in the JSON
+                            else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Insert a new segment (row) in the JSON
                             {
                                 try
                                 {
@@ -2735,7 +2735,7 @@ namespace TEAM
 
                     // Execute the statement, if the repository is SQL Server
                     // If the source is JSON this is done in separate calls for now
-                    if (repositoryTarget == MetadataRepositoryStorageType.SQLServer)
+                    if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                     {
                         if (insertQueryTables.ToString() == "")
                         {
@@ -2766,7 +2766,7 @@ namespace TEAM
                     ((DataTable)_bindingSourceAttributeMetadata.DataSource).AcceptChanges();
 
                     //The JSON needs to be re-bound to the datatable / datagrid after being updated to allow all values to be present
-                    if (repositoryTarget == MetadataRepositoryStorageType.JSON)
+                    if (repositoryTarget == MetadataRepositoryStorageType.Json)
                     {
                         BindAttributeMappingJsonToDataTable();
                     }
@@ -3403,7 +3403,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// This event handler cancels the backgroundworker, fired from Cancel button in AlertForm.
+        /// This event handler cancels the background worker, fired from Cancel button in AlertForm.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>        
@@ -3419,7 +3419,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Multithreading for informing the user when version changes (to other forms).
+        /// Multi-threading for informing the user when version changes (to other forms).
         /// </summary>
         /// <returns></returns>
         delegate int GetVersionFromTrackBarCallBack();
@@ -4637,8 +4637,7 @@ namespace TEAM
                 subProcess.Reset();
                 subProcess.Start();
 
-                string tableFilterQuery =
-                    @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
+                string tableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
                                             UNION
                                             SELECT DISTINCT [TARGET_TABLE] AS [TABLE_NAME], [TARGET_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]";
 
@@ -4647,6 +4646,8 @@ namespace TEAM
                 var psaTableFilterObjects = "";
                 var intTableFilterObjects = "";
                 var presTableFilterObjects = "";
+
+                var tableFilterObjects = "";
 
                 var tableDataTable = Utility.GetDataTable(ref connOmd, tableFilterQuery);
 
@@ -4658,11 +4659,12 @@ namespace TEAM
                     Dictionary<string, string> databaseNameDictionary = ClassMetadataHandling.GetConnectionInformationForTableType(tableRow["TABLE_TYPE"].ToString());
                     
                     string databaseNameKey = databaseNameDictionary.FirstOrDefault().Key;
-                   
+
+                    tableFilterObjects = tableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
 
                     // Regular processing
-                  //  if (databaseNameKey == ConfigurationSettings.StagingDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.StgTablePrefixValue) ||
-                   //    tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.StgTablePrefixValue)))
+                    // if (databaseNameKey == ConfigurationSettings.StagingDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.StgTablePrefixValue) ||
+                    // tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.StgTablePrefixValue)))
 
                     if (databaseNameKey == ConfigurationSettings.StagingDatabaseName)
                     {
@@ -4741,102 +4743,131 @@ namespace TEAM
                 {
                     var physicalModelInstantiation = new AttributeSelection();
 
-                    // Staging / landing
-                    var preparePhysicalModelStgStatement = new StringBuilder();
-                    preparePhysicalModelStgStatement.AppendLine("SELECT ");
-                    preparePhysicalModelStgStatement.AppendLine(" [DATABASE_NAME] ");
-                    preparePhysicalModelStgStatement.AppendLine(",[SCHEMA_NAME]");
-                    preparePhysicalModelStgStatement.AppendLine(",[TABLE_NAME]");
-                    preparePhysicalModelStgStatement.AppendLine(",[COLUMN_NAME]");
-                    preparePhysicalModelStgStatement.AppendLine(",[DATA_TYPE]");
-                    preparePhysicalModelStgStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    preparePhysicalModelStgStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    preparePhysicalModelStgStatement.AppendLine(",[ORDINAL_POSITION]");
-                    preparePhysicalModelStgStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    preparePhysicalModelStgStatement.AppendLine("FROM");
-                    preparePhysicalModelStgStatement.AppendLine("(");
-                    preparePhysicalModelStgStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
-                    preparePhysicalModelStgStatement.AppendLine(") sub");
-
-                    var physicalModelDataTableStg = Utility.GetDataTable(ref connStg, preparePhysicalModelStgStatement.ToString());
-
-                    // PSA
-                    var preparePhysicalModelPsaStatement = new StringBuilder();
-                    preparePhysicalModelPsaStatement.AppendLine("SELECT ");
-                    preparePhysicalModelPsaStatement.AppendLine(" [DATABASE_NAME] ");
-                    preparePhysicalModelPsaStatement.AppendLine(",[SCHEMA_NAME]");
-                    preparePhysicalModelPsaStatement.AppendLine(",[TABLE_NAME]");
-                    preparePhysicalModelPsaStatement.AppendLine(",[COLUMN_NAME]");
-                    preparePhysicalModelPsaStatement.AppendLine(",[DATA_TYPE]");
-                    preparePhysicalModelPsaStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    preparePhysicalModelPsaStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    preparePhysicalModelPsaStatement.AppendLine(",[ORDINAL_POSITION]");
-                    preparePhysicalModelPsaStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    preparePhysicalModelPsaStatement.AppendLine("FROM");
-                    preparePhysicalModelPsaStatement.AppendLine("(");
-                    preparePhysicalModelPsaStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
-                    preparePhysicalModelPsaStatement.AppendLine(") sub");
-
-                    var physicalModelDataTablePsa = Utility.GetDataTable(ref connPsa, preparePhysicalModelPsaStatement.ToString());
-
-                    // INT
-                    var preparePhysicalModelIntStatement = new StringBuilder();
-                    preparePhysicalModelIntStatement.AppendLine("SELECT ");
-                    preparePhysicalModelIntStatement.AppendLine(" [DATABASE_NAME] ");
-                    preparePhysicalModelIntStatement.AppendLine(",[SCHEMA_NAME]");
-                    preparePhysicalModelIntStatement.AppendLine(",[TABLE_NAME]");
-                    preparePhysicalModelIntStatement.AppendLine(",[COLUMN_NAME]");
-                    preparePhysicalModelIntStatement.AppendLine(",[DATA_TYPE]");
-                    preparePhysicalModelIntStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    preparePhysicalModelIntStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    preparePhysicalModelIntStatement.AppendLine(",[ORDINAL_POSITION]");
-                    preparePhysicalModelIntStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    preparePhysicalModelIntStatement.AppendLine("FROM");
-                    preparePhysicalModelIntStatement.AppendLine("(");
-                    preparePhysicalModelIntStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
-                    preparePhysicalModelIntStatement.AppendLine(") sub");
-
-                    var physicalModelDataTableInt = Utility.GetDataTable(ref connInt, preparePhysicalModelIntStatement.ToString());
-
-                    // PRES
-                    var preparePhysicalModelPresStatement = new StringBuilder();
-                    preparePhysicalModelPresStatement.AppendLine("SELECT ");
-                    preparePhysicalModelPresStatement.AppendLine(" [DATABASE_NAME] ");
-                    preparePhysicalModelPresStatement.AppendLine(",[SCHEMA_NAME]");
-                    preparePhysicalModelPresStatement.AppendLine(",[TABLE_NAME]");
-                    preparePhysicalModelPresStatement.AppendLine(",[COLUMN_NAME]");
-                    preparePhysicalModelPresStatement.AppendLine(",[DATA_TYPE]");
-                    preparePhysicalModelPresStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    preparePhysicalModelPresStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    preparePhysicalModelPresStatement.AppendLine(",[ORDINAL_POSITION]");
-                    preparePhysicalModelPresStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    preparePhysicalModelPresStatement.AppendLine("FROM");
-                    preparePhysicalModelPresStatement.AppendLine("(");
-                    preparePhysicalModelPresStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
-                    preparePhysicalModelPresStatement.AppendLine(") sub");
-
-                    var physicalModelDataTablePres = Utility.GetDataTable(ref connPres, preparePhysicalModelPresStatement.ToString());
-
-
-                    if (physicalModelDataTableStg != null)
+                    foreach (var connection in ConfigurationSettings.connectionDictionary)
                     {
-                        physicalModelDataTable.Merge(physicalModelDataTableStg);
+                        var localConnectionObject = (TeamConnectionProfile)connection.Value;
+                        var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.CreateConnectionString(false) };
+
+                        var physicalModelStatement = new StringBuilder();
+                        physicalModelStatement.AppendLine("SELECT ");
+                        physicalModelStatement.AppendLine(" [DATABASE_NAME] ");
+                        physicalModelStatement.AppendLine(",[SCHEMA_NAME]");
+                        physicalModelStatement.AppendLine(",[TABLE_NAME]");
+                        physicalModelStatement.AppendLine(",[COLUMN_NAME]");
+                        physicalModelStatement.AppendLine(",[DATA_TYPE]");
+                        physicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                        physicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
+                        physicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
+                        physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                        physicalModelStatement.AppendLine("FROM");
+                        physicalModelStatement.AppendLine("(");
+                        physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.databaseServer.databaseName, "").ToString());
+                        physicalModelStatement.AppendLine(") sub");
+
+                        var localPhysicalModelDataTable = Utility.GetDataTable(ref connStg, physicalModelStatement.ToString());
+
+                        if (localPhysicalModelDataTable != null)
+                        {
+                            physicalModelDataTable.Merge(localPhysicalModelDataTable);
+                        }
                     }
 
-                    if (physicalModelDataTablePsa != null)
-                    {
-                        physicalModelDataTable.Merge(physicalModelDataTablePsa);
-                    }
+                    //// Staging / landing
+                    //var preparePhysicalModelStgStatement = new StringBuilder();
+                    //preparePhysicalModelStgStatement.AppendLine("SELECT ");
+                    //preparePhysicalModelStgStatement.AppendLine(" [DATABASE_NAME] ");
+                    //preparePhysicalModelStgStatement.AppendLine(",[SCHEMA_NAME]");
+                    //preparePhysicalModelStgStatement.AppendLine(",[TABLE_NAME]");
+                    //preparePhysicalModelStgStatement.AppendLine(",[COLUMN_NAME]");
+                    //preparePhysicalModelStgStatement.AppendLine(",[DATA_TYPE]");
+                    //preparePhysicalModelStgStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    //preparePhysicalModelStgStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    //preparePhysicalModelStgStatement.AppendLine(",[ORDINAL_POSITION]");
+                    //preparePhysicalModelStgStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    //preparePhysicalModelStgStatement.AppendLine("FROM");
+                    //preparePhysicalModelStgStatement.AppendLine("(");
+                    //preparePhysicalModelStgStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
+                    //preparePhysicalModelStgStatement.AppendLine(") sub");
 
-                    if (physicalModelDataTableInt != null)
-                    {
-                        physicalModelDataTable.Merge(physicalModelDataTableInt);
-                    }
+                    //var physicalModelDataTableStg = Utility.GetDataTable(ref connStg, preparePhysicalModelStgStatement.ToString());
 
-                    if (physicalModelDataTablePres != null)
-                    {
-                        physicalModelDataTable.Merge(physicalModelDataTablePres);
-                    }
+                    //// PSA
+                    //var preparePhysicalModelPsaStatement = new StringBuilder();
+                    //preparePhysicalModelPsaStatement.AppendLine("SELECT ");
+                    //preparePhysicalModelPsaStatement.AppendLine(" [DATABASE_NAME] ");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[SCHEMA_NAME]");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[TABLE_NAME]");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[COLUMN_NAME]");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[DATA_TYPE]");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[ORDINAL_POSITION]");
+                    //preparePhysicalModelPsaStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    //preparePhysicalModelPsaStatement.AppendLine("FROM");
+                    //preparePhysicalModelPsaStatement.AppendLine("(");
+                    //preparePhysicalModelPsaStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
+                    //preparePhysicalModelPsaStatement.AppendLine(") sub");
+
+                    //var physicalModelDataTablePsa = Utility.GetDataTable(ref connPsa, preparePhysicalModelPsaStatement.ToString());
+
+                    //// INT
+                    //var preparePhysicalModelIntStatement = new StringBuilder();
+                    //preparePhysicalModelIntStatement.AppendLine("SELECT ");
+                    //preparePhysicalModelIntStatement.AppendLine(" [DATABASE_NAME] ");
+                    //preparePhysicalModelIntStatement.AppendLine(",[SCHEMA_NAME]");
+                    //preparePhysicalModelIntStatement.AppendLine(",[TABLE_NAME]");
+                    //preparePhysicalModelIntStatement.AppendLine(",[COLUMN_NAME]");
+                    //preparePhysicalModelIntStatement.AppendLine(",[DATA_TYPE]");
+                    //preparePhysicalModelIntStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    //preparePhysicalModelIntStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    //preparePhysicalModelIntStatement.AppendLine(",[ORDINAL_POSITION]");
+                    //preparePhysicalModelIntStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    //preparePhysicalModelIntStatement.AppendLine("FROM");
+                    //preparePhysicalModelIntStatement.AppendLine("(");
+                    //preparePhysicalModelIntStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
+                    //preparePhysicalModelIntStatement.AppendLine(") sub");
+
+                    //var physicalModelDataTableInt = Utility.GetDataTable(ref connInt, preparePhysicalModelIntStatement.ToString());
+
+                    //// PRES
+                    //var preparePhysicalModelPresStatement = new StringBuilder();
+                    //preparePhysicalModelPresStatement.AppendLine("SELECT ");
+                    //preparePhysicalModelPresStatement.AppendLine(" [DATABASE_NAME] ");
+                    //preparePhysicalModelPresStatement.AppendLine(",[SCHEMA_NAME]");
+                    //preparePhysicalModelPresStatement.AppendLine(",[TABLE_NAME]");
+                    //preparePhysicalModelPresStatement.AppendLine(",[COLUMN_NAME]");
+                    //preparePhysicalModelPresStatement.AppendLine(",[DATA_TYPE]");
+                    //preparePhysicalModelPresStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                    //preparePhysicalModelPresStatement.AppendLine(",[NUMERIC_PRECISION]");
+                    //preparePhysicalModelPresStatement.AppendLine(",[ORDINAL_POSITION]");
+                    //preparePhysicalModelPresStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                    //preparePhysicalModelPresStatement.AppendLine("FROM");
+                    //preparePhysicalModelPresStatement.AppendLine("(");
+                    //preparePhysicalModelPresStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
+                    //preparePhysicalModelPresStatement.AppendLine(") sub");
+
+                    //var physicalModelDataTablePres = Utility.GetDataTable(ref connPres, preparePhysicalModelPresStatement.ToString());
+
+
+                    //if (physicalModelDataTableStg != null)
+                    //{
+                    //    physicalModelDataTable.Merge(physicalModelDataTableStg);
+                    //}
+
+                    //if (physicalModelDataTablePsa != null)
+                    //{
+                    //    physicalModelDataTable.Merge(physicalModelDataTablePsa);
+                    //}
+
+                    //if (physicalModelDataTableInt != null)
+                    //{
+                    //    physicalModelDataTable.Merge(physicalModelDataTableInt);
+                    //}
+
+                    //if (physicalModelDataTablePres != null)
+                    //{
+                    //    physicalModelDataTable.Merge(physicalModelDataTablePres);
+                    //}
 
                 }
                 else // Get the values from the data grid or worker table (virtual mode)
@@ -7779,7 +7810,6 @@ namespace TEAM
                 var localConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)item;
 
                 var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateConnectionString(false) };
-
                 var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.databaseServer.databaseName);
 
                 if (reverseEngineerResults != null)
@@ -7787,7 +7817,6 @@ namespace TEAM
                     completeDataTable.Merge(reverseEngineerResults);
                 }
             }
-
 
             DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
 

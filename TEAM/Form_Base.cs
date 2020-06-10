@@ -75,7 +75,6 @@ namespace TEAM
             internal static string LogicalDeleteAttribute { get; set; }
 
             // Database names
-            internal static string SourceDatabaseName { get; set; }
             internal static string StagingDatabaseName { get; set; }
             internal static string PsaDatabaseName { get; set; }
             internal static string IntegrationDatabaseName { get; set; }
@@ -103,8 +102,8 @@ namespace TEAM
 
         public enum MetadataRepositoryStorageType
         {
-            JSON,
-            SQLServer
+            Json,
+            SqlServer
         }
 
         /// <summary>

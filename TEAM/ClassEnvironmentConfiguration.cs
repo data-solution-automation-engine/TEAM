@@ -192,8 +192,8 @@ namespace TEAM
             // PSA
             var newTeamConnectionProfilePsa = new TeamConnectionProfile
             {
-                connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "PersistentStagingAreae" }, "%$@"),
-                databaseConnectionKey = "PersistentStagingArea",
+                connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "PersistentStagingArea" }, "%$@"),
+                databaseConnectionKey = "PSA",
                 databaseConnectionName = "Persistent Staging Area",
                 databaseConnectionNotes = ""
             };
@@ -307,7 +307,7 @@ namespace TEAM
                 initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
                 initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
                 initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
-                initialConfigurationFile.AppendLine("metadataRepositoryType|JSON");
+                initialConfigurationFile.AppendLine("metadataRepositoryType|Json");
 
                 initialConfigurationFile.AppendLine("/* End of file */");
 
@@ -680,7 +680,7 @@ namespace TEAM
                 sr.Close();
                 fs.Close();
 
-                FormBase.ConfigurationSettings.MetadataRepositoryType = configList["metadataRepositoryType"] == "SQLServer" ? FormBase.MetadataRepositoryStorageType.SQLServer : FormBase.MetadataRepositoryStorageType.JSON;
+                FormBase.ConfigurationSettings.MetadataRepositoryType = configList["metadataRepositoryType"] == "SqlServer" ? FormBase.MetadataRepositoryStorageType.SqlServer : FormBase.MetadataRepositoryStorageType.Json;
 
                 FormBase.ConfigurationSettings.StgTablePrefixValue = configList["StagingAreaPrefix"];
                 FormBase.ConfigurationSettings.PsaTablePrefixValue = configList["PersistentStagingAreaPrefix"];

@@ -153,7 +153,7 @@ namespace TEAM
             // buttonValidation
             // 
             this.buttonValidation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonValidation.Location = new System.Drawing.Point(1376, 643);
+            this.buttonValidation.Location = new System.Drawing.Point(1304, 643);
             this.buttonValidation.Name = "buttonValidation";
             this.buttonValidation.Size = new System.Drawing.Size(120, 40);
             this.buttonValidation.TabIndex = 24;
@@ -165,7 +165,7 @@ namespace TEAM
             // 
             this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(1251, 437);
+            this.labelResult.Location = new System.Drawing.Point(1303, 437);
             this.labelResult.Name = "labelResult";
             this.labelResult.Size = new System.Drawing.Size(38, 13);
             this.labelResult.TabIndex = 23;
@@ -174,7 +174,7 @@ namespace TEAM
             // buttonStart
             // 
             this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStart.Location = new System.Drawing.Point(1252, 393);
+            this.buttonStart.Location = new System.Drawing.Point(1304, 394);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(120, 40);
             this.buttonStart.TabIndex = 22;
@@ -188,7 +188,7 @@ namespace TEAM
             // buttonSaveMetadataChanges
             // 
             this.buttonSaveMetadataChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSaveMetadataChanges.Location = new System.Drawing.Point(1252, 149);
+            this.buttonSaveMetadataChanges.Location = new System.Drawing.Point(1304, 149);
             this.buttonSaveMetadataChanges.Name = "buttonSaveMetadataChanges";
             this.buttonSaveMetadataChanges.Size = new System.Drawing.Size(120, 40);
             this.buttonSaveMetadataChanges.TabIndex = 1;
@@ -233,9 +233,9 @@ namespace TEAM
             this.groupBoxMetadataCounts.Controls.Add(this.labelLnkCount);
             this.groupBoxMetadataCounts.Controls.Add(this.labelSatCount);
             this.groupBoxMetadataCounts.Controls.Add(this.labelHubCount);
-            this.groupBoxMetadataCounts.Location = new System.Drawing.Point(1252, 764);
+            this.groupBoxMetadataCounts.Location = new System.Drawing.Point(1304, 764);
             this.groupBoxMetadataCounts.Name = "groupBoxMetadataCounts";
-            this.groupBoxMetadataCounts.Size = new System.Drawing.Size(244, 86);
+            this.groupBoxMetadataCounts.Size = new System.Drawing.Size(192, 86);
             this.groupBoxMetadataCounts.TabIndex = 16;
             this.groupBoxMetadataCounts.TabStop = false;
             this.groupBoxMetadataCounts.Text = "This metadata contains:";
@@ -287,7 +287,7 @@ namespace TEAM
             this.tabControl1.Location = new System.Drawing.Point(16, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1230, 731);
+            this.tabControl1.Size = new System.Drawing.Size(1281, 731);
             this.tabControl1.TabIndex = 15;
             // 
             // tabPage1
@@ -296,7 +296,7 @@ namespace TEAM
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1222, 705);
+            this.tabPage1.Size = new System.Drawing.Size(1273, 705);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Table Mappings";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -311,7 +311,7 @@ namespace TEAM
             this.dataGridViewTableMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewTableMetadata.MinimumSize = new System.Drawing.Size(964, 511);
             this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
-            this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1217, 699);
+            this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1268, 699);
             this.dataGridViewTableMetadata.TabIndex = 1;
             this.dataGridViewTableMetadata.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DataGridViewTableMetadata_CellFormatting);
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
@@ -347,7 +347,7 @@ namespace TEAM
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1222, 705);
+            this.tabPage2.Size = new System.Drawing.Size(1273, 705);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Attribute Mappings";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -389,7 +389,7 @@ namespace TEAM
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1222, 705);
+            this.tabPage3.Size = new System.Drawing.Size(1273, 705);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Physical Model";
             // 
@@ -397,7 +397,7 @@ namespace TEAM
             // 
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
-            this.groupBox4.Location = new System.Drawing.Point(1096, 52);
+            this.groupBox4.Location = new System.Drawing.Point(1147, 52);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(120, 647);
             this.groupBox4.TabIndex = 27;
@@ -417,7 +417,7 @@ namespace TEAM
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(1096, 6);
+            this.button2.Location = new System.Drawing.Point(1147, 6);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 40);
             this.button2.TabIndex = 20;
@@ -434,7 +434,7 @@ namespace TEAM
             this.dataGridViewPhysicalModelMetadata.ContextMenuStrip = this.contextMenuStripModel;
             this.dataGridViewPhysicalModelMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewPhysicalModelMetadata.Name = "dataGridViewPhysicalModelMetadata";
-            this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1088, 699);
+            this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1139, 699);
             this.dataGridViewPhysicalModelMetadata.TabIndex = 2;
             this.dataGridViewPhysicalModelMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewPhysicalModelMetadataKeyDown);
             this.dataGridViewPhysicalModelMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewModelMetadata_MouseDown);
@@ -467,9 +467,9 @@ namespace TEAM
             this.outputGroupBoxVersioning.Controls.Add(this.radioButtonMinorRelease);
             this.outputGroupBoxVersioning.Controls.Add(this.radiobuttonMajorRelease);
             this.outputGroupBoxVersioning.Controls.Add(this.radiobuttonNoVersionChange);
-            this.outputGroupBoxVersioning.Location = new System.Drawing.Point(1252, 49);
+            this.outputGroupBoxVersioning.Location = new System.Drawing.Point(1304, 49);
             this.outputGroupBoxVersioning.Name = "outputGroupBoxVersioning";
-            this.outputGroupBoxVersioning.Size = new System.Drawing.Size(243, 94);
+            this.outputGroupBoxVersioning.Size = new System.Drawing.Size(191, 94);
             this.outputGroupBoxVersioning.TabIndex = 2;
             this.outputGroupBoxVersioning.TabStop = false;
             this.outputGroupBoxVersioning.Text = "Versioning";
@@ -512,9 +512,9 @@ namespace TEAM
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonPhysicalMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonVirtualMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
-            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1252, 249);
+            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1304, 249);
             this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
-            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(243, 139);
+            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(191, 139);
             this.MetadataGenerationGroupBox.TabIndex = 3;
             this.MetadataGenerationGroupBox.TabStop = false;
             this.MetadataGenerationGroupBox.Text = "Metadata activation options";
@@ -591,7 +591,8 @@ namespace TEAM
             // 
             // richTextBoxInformation
             // 
-            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxInformation.Location = new System.Drawing.Point(520, 780);
@@ -753,9 +754,9 @@ namespace TEAM
             this.checkBoxMergeFiles.AutoSize = true;
             this.checkBoxMergeFiles.Location = new System.Drawing.Point(6, 19);
             this.checkBoxMergeFiles.Name = "checkBoxMergeFiles";
-            this.checkBoxMergeFiles.Size = new System.Drawing.Size(208, 17);
+            this.checkBoxMergeFiles.Size = new System.Drawing.Size(173, 17);
             this.checkBoxMergeFiles.TabIndex = 9;
-            this.checkBoxMergeFiles.Text = "Append loaded files to existing content";
+            this.checkBoxMergeFiles.Text = "Append files to existing content";
             this.toolTipMetadata.SetToolTip(this.checkBoxMergeFiles, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
         "t having this option checked will overwrite the mapping information for the sele" +
         "cted version (in the datagrid).");
@@ -804,9 +805,9 @@ namespace TEAM
             this.groupBoxJsonOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxBackupFiles);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxMergeFiles);
-            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1252, 689);
+            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1304, 689);
             this.groupBoxJsonOptions.Name = "groupBoxJsonOptions";
-            this.groupBoxJsonOptions.Size = new System.Drawing.Size(243, 66);
+            this.groupBoxJsonOptions.Size = new System.Drawing.Size(191, 66);
             this.groupBoxJsonOptions.TabIndex = 26;
             this.groupBoxJsonOptions.TabStop = false;
             this.groupBoxJsonOptions.Text = "Json / XML load options";
@@ -814,7 +815,7 @@ namespace TEAM
             // buttonGenerateJsonInterface
             // 
             this.buttonGenerateJsonInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonGenerateJsonInterface.Location = new System.Drawing.Point(1252, 643);
+            this.buttonGenerateJsonInterface.Location = new System.Drawing.Point(1304, 597);
             this.buttonGenerateJsonInterface.Name = "buttonGenerateJsonInterface";
             this.buttonGenerateJsonInterface.Size = new System.Drawing.Size(120, 40);
             this.buttonGenerateJsonInterface.TabIndex = 28;

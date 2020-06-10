@@ -165,7 +165,7 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
-            //if (!checkBoxRetainManualMapping.Checked && ConfigurationSettings.MetadataRepositoryType == "SQLServer")
+            //if (!checkBoxRetainManualMapping.Checked && ConfigurationSettings.MetadataRepositoryType == "SqlServer")
             //{
             commandText.AppendLine("DELETE FROM [MD_TABLE_MAPPING];");
             commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE_MAPPING];");
@@ -192,7 +192,7 @@ namespace TEAM
                 }
             }
 
-            if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
+            if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
             {
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
@@ -374,6 +374,7 @@ namespace TEAM
             var localPsaConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
             var localStagingConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
             var localIntegrationConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
+            var localPresentationConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
 
 
             comboBoxSourceConnection.Invoke((MethodInvoker)delegate
@@ -382,6 +383,7 @@ namespace TEAM
             });
 
             var localSourceConnectionString = localSourceConnectionObject.Key.CreateConnectionString(false);
+            var localSourceDatabaseName = localSourceConnectionObject.Key.databaseServer.databaseName;
 
 
             comboBoxStagingConnection.Invoke((MethodInvoker)delegate
@@ -390,6 +392,7 @@ namespace TEAM
             });
 
             var localStagingConnectionString = localStagingConnectionObject.Key.CreateConnectionString(false);
+            var localStagingDatabaseName = localStagingConnectionObject.Key.databaseServer.databaseName;
 
 
             comboBoxPsaConnection.Invoke((MethodInvoker)delegate
@@ -397,6 +400,7 @@ namespace TEAM
                 localPsaConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxPsaConnection.SelectedItem;
             });
             var localPsaConnectionString = localPsaConnectionObject.Key.CreateConnectionString(false);
+            var localPsaDatabaseName = localPsaConnectionObject.Key.databaseServer.databaseName;
 
 
             comboBoxIntegrationConnection.Invoke((MethodInvoker)delegate
@@ -404,8 +408,16 @@ namespace TEAM
                 localIntegrationConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxIntegrationConnection.SelectedItem;
             });
             var localIntegrationConnectionString = localIntegrationConnectionObject.Key.CreateConnectionString(false);
+            var localIntegrationDatabaseName = localIntegrationConnectionObject.Key.databaseServer.databaseName;
 
-            
+
+            //comboBoxPresentationConnection.Invoke((MethodInvoker)delegate
+            //{
+            //    localPresentationConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxPresentationConnection.SelectedItem;
+            //});
+            //var localPresentationConnectionString = localPresentationConnectionObject.Key.CreateConnectionString(false);
+            //var localPresentationDatabaseName = localPresentationConnectionObject.Key.databaseServer.databaseName;
+
             #region Source
             if (checkBoxCreateSampleSource.Checked)
             {
@@ -465,24 +477,23 @@ namespace TEAM
 
                 if (sqlCommand.Contains("N'100_Staging_Area',"))
                 {
-                    sqlCommand = sqlCommand.Replace("N'100_Staging_Area',",
-                        "N'" + ConfigurationSettings.StagingDatabaseName + "',");
+                    sqlCommand = sqlCommand.Replace("N'100_Staging_Area',", "N'" + localStagingDatabaseName + "',");
                 }
 
                 if (sqlCommand.Contains("N'150_Persistent_Staging_Area',"))
                 {
-                    sqlCommand = sqlCommand.Replace("N'150_Persistent_Staging_Area',", "N'" + ConfigurationSettings.PsaDatabaseName + "',");
+                    sqlCommand = sqlCommand.Replace("N'150_Persistent_Staging_Area',", "N'" + localPsaDatabaseName + "',");
                 }
 
                 if (sqlCommand.Contains("N'200_Integration_Layer',"))
                 {
-                    sqlCommand = sqlCommand.Replace("N'200_Integration_Layer',", "N'" + ConfigurationSettings.IntegrationDatabaseName + "',");
+                    sqlCommand = sqlCommand.Replace("N'200_Integration_Layer',", "N'" + localIntegrationDatabaseName + "',");
                 }
 
-                if (sqlCommand.Contains("N'300_Presentation_Layer',"))
-                {
-                    sqlCommand = sqlCommand.Replace("N'300_Presentation_Layer',", "N'" + ConfigurationSettings.PresentationDatabaseName + "',");
-                }
+                //if (sqlCommand.Contains("N'300_Presentation_Layer',"))
+                //{
+                //    sqlCommand = sqlCommand.Replace("N'300_Presentation_Layer',", "N'" + localPresentationDatabaseName + "',");
+                //}
 
                 // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
                 var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
@@ -531,7 +542,7 @@ namespace TEAM
                 EnvironmentConfiguration.CreateFileBackup(GlobalParameters.ConfigurationPath +GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
 
                 // Shared values (same for all samples)
-                //var metadataRepositoryType = "SQLServer";
+                //var metadataRepositoryType = "SqlServer";
                 var stagingAreaPrefix = "STG";
                 var hubTablePrefix = "HUB";
                 var satTablePrefix = "SAT";
@@ -800,11 +811,11 @@ namespace TEAM
 
                 try
                 {
-                    if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SQLServer)
+                    if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SqlServer)
                     {
                         GenerateMetadataInDatabase(worker);
                     }
-                    else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.JSON)
+                    else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                     {
                         Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 

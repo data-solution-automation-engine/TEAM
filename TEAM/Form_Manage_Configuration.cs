@@ -250,7 +250,7 @@ namespace TEAM
                 //Radiobutton settings for repository type
                 RadioButton myMetadatarepositoryType;
 
-                if (configList["metadataRepositoryType"] == "JSON")
+                if (configList["metadataRepositoryType"] == "Json")
                 {
                     myMetadatarepositoryType = radioButtonJSON;
                     myMetadatarepositoryType.Checked = true;
@@ -422,11 +422,11 @@ namespace TEAM
             // Save radio buttons Json / SQL Server.
             if (radioButtonJSON.Checked)
             {
-                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.JSON;
+                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.Json;
             }
             else if (radioButtonSQLServer.Checked)
             {
-                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.SQLServer;
+                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.SqlServer;
             }
             else
             {
