@@ -1,10 +1,4 @@
-﻿using System;
-using System.Data;
-using System.IO;
-using System.Text;
-using Microsoft.Data.SqlClient;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Data;
 
 namespace TEAM
 {
@@ -18,7 +12,7 @@ namespace TEAM
         public string businessKeyDefinition { get; set; }
         public string drivingKeyDefinition { get; set; }
         public string filterCriteria { get; set; }
-        public string processIndicator { get; set; }
+        public string enabledIndicator { get; set; }
     }
 
     public class AttributeMappingJson
@@ -30,7 +24,7 @@ namespace TEAM
         public string sourceAttribute { get; set; }
         public string targetTable { get; set; }
         public string targetAttribute { get; set; }
-        public string transformationRule { get; set; }
+        public string notes { get; set; }
     }
 
     public class PhysicalModelMetadataJson
@@ -60,7 +54,7 @@ namespace TEAM
             dataTable.Columns[3].ColumnName = "SOURCE_COLUMN";
             dataTable.Columns[4].ColumnName = "TARGET_TABLE";
             dataTable.Columns[5].ColumnName = "TARGET_COLUMN";
-            dataTable.Columns[6].ColumnName = "TRANSFORMATION_RULE";
+            dataTable.Columns[6].ColumnName = "NOTES";
         }
 
         public static void SetAttributeDatTableSorting(DataTable dataTable)
@@ -81,7 +75,7 @@ namespace TEAM
             dataTable.Columns[4].ColumnName = "BUSINESS_KEY_ATTRIBUTE";
             dataTable.Columns[5].ColumnName = "DRIVING_KEY_ATTRIBUTE";
             dataTable.Columns[6].ColumnName = "FILTER_CRITERIA";
-            dataTable.Columns[7].ColumnName = "PROCESS_INDICATOR";
+            dataTable.Columns[7].ColumnName = "ENABLED_INDICATOR";
         }
 
         /// <summary>

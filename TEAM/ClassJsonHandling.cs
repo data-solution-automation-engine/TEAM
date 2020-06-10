@@ -10,19 +10,6 @@ namespace TEAM
 {
     internal class JsonHandling
     {
-        //public class TableMappingJson
-        //{
-        //    //JSON representation of the table mapping metadata
-        //    public string tableMappingHash { get; set; }
-        //    public string versionId { get; set; }
-        //    public string sourceTable { get; set; }
-        //    public string targetTable { get; set; }
-        //    public string businessKeyDefinition { get; set; }
-        //    public string drivingKeyDefinition { get; set; }
-        //    public string filterCriteria { get; set; }
-        //    public string processIndicator { get; set; }
-        //}
-
         /// <summary>
         ///    Method to create a new dummy JSON file in the designated working directory.
         /// </summary>
@@ -44,7 +31,7 @@ namespace TEAM
                     new JProperty("businessKeyDefinition", "EXAMPLE"),
                     new JProperty("drivingKeyDefinition", ""),
                     new JProperty("filterCriteria", ""),
-                    new JProperty("processIndicator", "Y")
+                    new JProperty("enabledIndicator", "Y")
                 );
             } else if (fileType == FormBase.GlobalParameters.JsonModelMetadataFileName) // Physical Model
             {
@@ -70,7 +57,7 @@ namespace TEAM
                     new JProperty("sourceAttribute", "EXAMPLE_FROM_ATTRIBUTE"),
                     new JProperty("targetTable", "TARGET_TABLE"),
                     new JProperty("targetAttribute", "EXAMPLE_TO_ATTRIBUTE"),
-                    new JProperty("transformationRule", "")
+                    new JProperty("notes", "")
                 );
             }
             else

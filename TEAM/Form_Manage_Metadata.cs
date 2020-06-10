@@ -396,7 +396,7 @@ namespace TEAM
                     sqlStatementForLatestVersion.AppendLine(" [BUSINESS_KEY_ATTRIBUTE],");
                     sqlStatementForLatestVersion.AppendLine(" [DRIVING_KEY_ATTRIBUTE],");
                     sqlStatementForLatestVersion.AppendLine(" [FILTER_CRITERIA],");
-                    sqlStatementForLatestVersion.AppendLine(" [PROCESS_INDICATOR]");
+                    sqlStatementForLatestVersion.AppendLine(" [ENABLED_INDICATOR]");
                     sqlStatementForLatestVersion.AppendLine("FROM [MD_TABLE_MAPPING]");
                     sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + versionId);
 
@@ -422,7 +422,7 @@ namespace TEAM
                         dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                         dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                         dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
-                        dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
+                        dataGridViewTableMetadata.Columns[7].HeaderText = "Enabled";
                     }
                 }
                 catch (Exception exception)
@@ -473,7 +473,7 @@ namespace TEAM
                     dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                     dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                     dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
-                    dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
+                    dataGridViewTableMetadata.Columns[7].HeaderText = "Enabled";
                 }
 
                 richTextBoxInformation.AppendText("The file "+ GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
@@ -516,7 +516,7 @@ namespace TEAM
                 sqlStatementForLatestVersion.AppendLine(" [SOURCE_COLUMN],");
                 sqlStatementForLatestVersion.AppendLine(" [TARGET_TABLE],");
                 sqlStatementForLatestVersion.AppendLine(" [TARGET_COLUMN],");
-                sqlStatementForLatestVersion.AppendLine(" [TRANSFORMATION_RULE]");
+                sqlStatementForLatestVersion.AppendLine(" [NOTES]");
                 sqlStatementForLatestVersion.AppendLine("FROM [MD_ATTRIBUTE_MAPPING]");
                 sqlStatementForLatestVersion.AppendLine("WHERE [VERSION_ID] = " + selectedVersion);
 
@@ -531,7 +531,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
                     dataGridViewAttributeMetadata.Columns[0].Visible = false;
                     dataGridViewAttributeMetadata.Columns[1].Visible = false;
-                    dataGridViewAttributeMetadata.Columns[6].ReadOnly = true;
+                    dataGridViewAttributeMetadata.Columns[6].ReadOnly = false;
                     //dataGridViewAttributeMetadata.Columns[6].DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
 
                     dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
@@ -540,7 +540,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
                     dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
                     dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
-                    dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
+                    dataGridViewAttributeMetadata.Columns[6].HeaderText = "Notes";
                 }
             }
             else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Update the JSON
@@ -567,7 +567,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
                     dataGridViewAttributeMetadata.Columns[0].Visible = false;
                     dataGridViewAttributeMetadata.Columns[1].Visible = false;
-                    dataGridViewAttributeMetadata.Columns[6].ReadOnly = true;
+                    dataGridViewAttributeMetadata.Columns[6].ReadOnly = false;
 
                     dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
                     dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
@@ -575,7 +575,7 @@ namespace TEAM
                     dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
                     dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
                     dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
-                    dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
+                    dataGridViewAttributeMetadata.Columns[6].HeaderText = "Notes";
                 }
 
                 richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath + GlobalParameters.JsonAttributeMappingFileName+FileConfiguration.jsonVersionExtension + " was loaded.\r\n");
@@ -1348,7 +1348,7 @@ namespace TEAM
                     }
 
                     insertQueryTables.AppendLine("INSERT INTO MD_TABLE_MAPPING");
-                    insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [PROCESS_INDICATOR])");
+                    insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [ENABLED_INDICATOR])");
                     insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                  businessKeyDefinition + "','" + integrationTable + "','" +
                                                  drivingKeyDefinition + "','" + filterCriterion + "','" +
@@ -1451,7 +1451,7 @@ namespace TEAM
                         new JProperty("businessKeyDefinition", businessKeyDefinition),
                         new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                         new JProperty("filterCriteria", filterCriterion),
-                        new JProperty("processIndicator", generateIndicator)
+                        new JProperty("enabledIndicator", generateIndicator)
                     );
 
                     jsonTableMappingFull.Add(newJsonSegment);
@@ -1490,7 +1490,7 @@ namespace TEAM
                     var stagingColumn = "";
                     var integrationTable = "";
                     var integrationColumn = "";
-                    var transformationRule = "";
+                    var notes = "";
 
                     if (row.Cells[2].Value != DBNull.Value)
                     {
@@ -1514,15 +1514,15 @@ namespace TEAM
 
                     if (row.Cells[6].Value != DBNull.Value)
                     {
-                        transformationRule = (string)row.Cells[6].Value;
+                        notes = (string)row.Cells[6].Value;
                     }
 
                     insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
-                    insertQueryTables.AppendLine("([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[TRANSFORMATION_RULE])");
+                    insertQueryTables.AppendLine("([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[NOTES])");
                     insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                  stagingColumn +
                                                  "','" + integrationTable + "','" + integrationColumn + "','" +
-                                                 transformationRule + "')");
+                                                 notes + "')");
                 }
             }
 
@@ -1573,7 +1573,7 @@ namespace TEAM
                     var stagingColumn = "";
                     var integrationTable = "";
                     var integrationColumn = "";
-                    var transformationRule = "";
+                    var notes = "";
 
                     if (row.Cells[2].Value != DBNull.Value)
                     {
@@ -1597,11 +1597,11 @@ namespace TEAM
 
                     if (row.Cells[6].Value != DBNull.Value)
                     {
-                        transformationRule = (string)row.Cells[6].Value;
+                        notes = (string)row.Cells[6].Value;
                     }
 
 
-                    string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, transformationRule };
+                    string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, notes };
                     var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
 
                    
@@ -1612,7 +1612,7 @@ namespace TEAM
                         new JProperty("sourceAttribute", stagingColumn),
                         new JProperty("targetTable", integrationTable),
                         new JProperty("targetAttribute", integrationColumn),
-                        new JProperty("transformationRule", transformationRule)
+                        new JProperty("notes", notes)
                     );
 
                     jsonAttributeMappingFull.Add(newJsonSegment);
@@ -1688,9 +1688,9 @@ namespace TEAM
                             {
                                 filterCriterion = (string)row["FILTER_CRITERIA"];
                             }
-                            if (row["PROCESS_INDICATOR"] != DBNull.Value)
+                            if (row["ENABLED_INDICATOR"] != DBNull.Value)
                             {
-                                generateIndicator = (string)row["PROCESS_INDICATOR"];
+                                generateIndicator = (string)row["ENABLED_INDICATOR"];
                             }
 
                             //Double quotes for composites, but only if things are written to the database otherwise it's already OK
@@ -1705,7 +1705,7 @@ namespace TEAM
                                                             "',[TARGET_TABLE] = '" + integrationTable +
                                                             "',[DRIVING_KEY_ATTRIBUTE] = '" + drivingKeyDefinition +
                                                             "',[FILTER_CRITERIA] = '" + filterCriterion +
-                                                            "',[PROCESS_INDICATOR] = '" + generateIndicator + "'");
+                                                            "',[ENABLED_INDICATOR] = '" + generateIndicator + "'");
                             insertQueryTables.AppendLine("WHERE [TABLE_MAPPING_HASH] = '" + hashKey + "' AND [VERSION_ID] = " + versionKey);
                         }
                         #endregion
@@ -1751,7 +1751,7 @@ namespace TEAM
                             }
 
                             insertQueryTables.AppendLine("INSERT INTO [MD_TABLE_MAPPING]");
-                            insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [PROCESS_INDICATOR])");
+                            insertQueryTables.AppendLine("([VERSION_ID], [SOURCE_TABLE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [DRIVING_KEY_ATTRIBUTE], [FILTER_CRITERIA], [ENABLED_INDICATOR])");
                             insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                          businessKeyDefinition + "','" + integrationTable + "','" +
                                                          drivingKeyDefinition + "','" + filterCriterion + "','" +
@@ -1866,9 +1866,9 @@ namespace TEAM
                             {
                                 filterCriterion = (string)row["FILTER_CRITERIA"];
                             }
-                            if (row["PROCESS_INDICATOR"] != DBNull.Value)
+                            if (row["ENABLED_INDICATOR"] != DBNull.Value)
                             {
-                                generateIndicator = (string)row["PROCESS_INDICATOR"];
+                                generateIndicator = (string)row["ENABLED_INDICATOR"];
                             }
 
                             //Read the file in memory
@@ -1887,7 +1887,7 @@ namespace TEAM
                                 jsonHash.businessKeyDefinition = businessKeyDefinition;
                                 jsonHash.drivingKeyDefinition = drivingKeyDefinition;
                                 jsonHash.filterCriteria = filterCriterion;
-                                jsonHash.processIndicator = generateIndicator;
+                                jsonHash.enabledIndicator = generateIndicator;
                                 jsonHash.targetTable = integrationTable;
                                 jsonHash.sourceTable = stagingTable;
                             }
@@ -1996,7 +1996,7 @@ namespace TEAM
                                     new JProperty("businessKeyDefinition", businessKeyDefinition),
                                     new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                                     new JProperty("filterCriteria", filterCriterion),
-                                    new JProperty("processIndicator", generateIndicator)
+                                    new JProperty("enabledIndicator", generateIndicator)
                                     );
 
                                 jsonTableMappingFull.Add(newJsonSegment);
@@ -2470,7 +2470,7 @@ namespace TEAM
                             var stagingColumn = "";
                             var integrationTable = "";
                             var integrationColumn = "";
-                            var transformationRule = "";
+                            var notes = "";
 
                             if (row["SOURCE_TABLE"] != DBNull.Value)
                             {
@@ -2492,15 +2492,15 @@ namespace TEAM
                                 integrationColumn = (string)row["TARGET_COLUMN"];
                             }
 
-                            if (row["TRANSFORMATION_RULE"] != DBNull.Value)
+                            if (row["NOTES"] != DBNull.Value)
                             {
-                                transformationRule = (string)row["TRANSFORMATION_RULE"];
+                                notes = (string)row["NOTES"];
                             }
 
                             //Double quotes for composites, but only if things are written to the database otherwise it's already OK
                             if (repositoryTarget == MetadataRepositoryStorageType.SqlServer) //Update the tables in SQL Server
                             {
-                                transformationRule = transformationRule.Replace("'", "''");
+                                notes = notes.Replace("'", "''");
                             }
 
 
@@ -2512,7 +2512,7 @@ namespace TEAM
                                                              "',[SOURCE_COLUMN] = '" + stagingColumn +
                                                              "', [TARGET_TABLE] = '" + integrationTable +
                                                              "', [TARGET_COLUMN] = '" + integrationColumn +
-                                                             "',[TRANSFORMATION_RULE] = '" + transformationRule + "'");
+                                                             "',[NOTES] = '" + notes + "'");
                                 insertQueryTables.AppendLine("WHERE [ATTRIBUTE_MAPPING_HASH] = '" + hashKey +
                                                              "' AND [VERSION_ID] = " + versionKey);
                             }
@@ -2542,7 +2542,7 @@ namespace TEAM
                                         jsonHash.sourceAttribute = stagingColumn;
                                         jsonHash.targetTable = integrationTable;
                                         jsonHash.targetAttribute = integrationColumn;
-                                        jsonHash.transformationRule = transformationRule;
+                                        jsonHash.notes = notes;
                                     }
 
                                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
@@ -2574,7 +2574,7 @@ namespace TEAM
                             var stagingColumn = "";
                             var integrationTable = "";
                             var integrationColumn = "";
-                            var transformationRule = "";
+                            var notes = "";
 
                             if (row[2] != DBNull.Value)
                             {
@@ -2598,17 +2598,17 @@ namespace TEAM
 
                             if (row[6] != DBNull.Value)
                             {
-                                transformationRule = (string)row[6];
+                                notes = (string)row[6];
                             }
 
                             if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
                             {
                                 insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
                                 insertQueryTables.AppendLine(
-                                    "([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[TRANSFORMATION_RULE])");
+                                    "([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[NOTES])");
                                 insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
                                                              stagingColumn + "','" + integrationTable + "','" +
-                                                             integrationColumn + "','" + transformationRule + "')");
+                                                             integrationColumn + "','" + notes + "')");
                             }
                             else if (repositoryTarget == MetadataRepositoryStorageType.Json) //Update the JSON
                             {
@@ -2629,7 +2629,7 @@ namespace TEAM
                                         jsonAttributeMappingFull = JArray.FromObject(jsonArray);
                                     }
 
-                                    string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, transformationRule };
+                                    string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, notes };
                                     var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
 
                                     JObject newJsonSegment = new JObject(
@@ -2639,7 +2639,7 @@ namespace TEAM
                                         new JProperty("sourceAttribute", stagingColumn),
                                         new JProperty("targetTable", integrationTable),
                                         new JProperty("targetAttribute", integrationColumn),
-                                        new JProperty("transformationRule", transformationRule)
+                                        new JProperty("notes", notes)
                                         );
 
                                     jsonAttributeMappingFull.Add(newJsonSegment);
@@ -2920,7 +2920,7 @@ namespace TEAM
                             dataGridViewTableMetadata.Columns[4].HeaderText = "Business Key Definition";
                             dataGridViewTableMetadata.Columns[5].HeaderText = "Driving Key Definition";
                             dataGridViewTableMetadata.Columns[6].HeaderText = "Filter Criteria";
-                            dataGridViewTableMetadata.Columns[7].HeaderText = "Process Indicator";
+                            dataGridViewTableMetadata.Columns[7].HeaderText = "Enabled";
                         }
                     }
 
@@ -3011,7 +3011,7 @@ namespace TEAM
                             dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
                             dataGridViewAttributeMetadata.Columns[0].Visible = false;
                             dataGridViewAttributeMetadata.Columns[1].Visible = false;
-                            dataGridViewAttributeMetadata.Columns[6].ReadOnly = true;
+                            dataGridViewAttributeMetadata.Columns[6].ReadOnly = false;
 
                             dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
                             dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
@@ -3019,7 +3019,7 @@ namespace TEAM
                             dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
                             dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
                             dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
-                            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Transformation Rule";
+                            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Notes";
                         }
                     }
 
@@ -3055,7 +3055,7 @@ namespace TEAM
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TARGET_COLUMN])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_TABLE])),'NA')+'|'+");
             createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SOURCE_COLUMN])),'NA')+'|' +");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TRANSFORMATION_RULE])),'NA')+'|'");
+            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[NOTES])),'NA')+'|'");
             createStatement.AppendLine("			),(2)");
             createStatement.AppendLine("		)");
             createStatement.AppendLine("	) PERSISTED NOT NULL,");
@@ -3066,7 +3066,7 @@ namespace TEAM
             createStatement.AppendLine("	[TARGET_TABLE]        varchar(100)  NULL,");
             createStatement.AppendLine("	[TARGET_TABLE_TYPE]   varchar(100)  NULL,");
             createStatement.AppendLine("	[TARGET_COLUMN]       varchar(100)  NULL,");
-            createStatement.AppendLine("	[TRANSFORMATION_RULE] varchar(4000)  NULL,");
+            createStatement.AppendLine("	[NOTES] varchar(4000)  NULL,");
             createStatement.AppendLine("   CONSTRAINT [PK_TMP_MD_ATTRIBUTE_MAPPING] PRIMARY KEY CLUSTERED ([ATTRIBUTE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
             createStatement.AppendLine(")");
 
@@ -3080,7 +3080,7 @@ namespace TEAM
                 string SOURCE_COLUMN      ="";
                 string targetTable       ="";
                 string TARGET_COLUMN      ="";
-                string TRANSFORMATION_RULE="";
+                string NOTES="";
 
                 if (row["SOURCE_TABLE"] != DBNull.Value)
                     sourceTable = (string)row["SOURCE_TABLE"];
@@ -3090,8 +3090,8 @@ namespace TEAM
                     targetTable = (string)row["TARGET_TABLE"];
                 if (row["TARGET_COLUMN"] != DBNull.Value)
                     TARGET_COLUMN = (string)row["TARGET_COLUMN"];
-                if (row["TRANSFORMATION_RULE"] != DBNull.Value)
-                    TRANSFORMATION_RULE = (string)row["TRANSFORMATION_RULE"];
+                if (row["NOTES"] != DBNull.Value)
+                    NOTES = (string)row["NOTES"];
 
                 var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable, "");
@@ -3099,7 +3099,7 @@ namespace TEAM
                 var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
                 var targetType = ClassMetadataHandling.GetTableType(targetTable, "");
 
-                createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_TABLE_TYPE], [TARGET_COLUMN], [TRANSFORMATION_RULE]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' ,N'" + SOURCE_COLUMN + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + TARGET_COLUMN + "', N'" + TRANSFORMATION_RULE+ "');");
+                createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [SOURCE_COLUMN], [TARGET_TABLE], [TARGET_TABLE_TYPE], [TARGET_COLUMN], [NOTES]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' ,N'" + SOURCE_COLUMN + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + TARGET_COLUMN + "', N'" + NOTES+ "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3132,7 +3132,7 @@ namespace TEAM
             createStatement.AppendLine("	[TARGET_TABLE] varchar(100)  NULL,");
             createStatement.AppendLine("	[TARGET_TABLE_TYPE] varchar(100)  NULL,");
             createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
-            createStatement.AppendLine("	[PROCESS_INDICATOR] varchar(1)  NULL,");
+            createStatement.AppendLine("	[ENABLED_INDICATOR] varchar(1)  NULL,");
             createStatement.AppendLine("    CONSTRAINT [PK_TMP_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
             createStatement.AppendLine(")");
 
@@ -3146,7 +3146,7 @@ namespace TEAM
                 string targetTable = "";
                 string FILTER_CRITERIA = "";
                 string DRIVING_KEY_ATTRIBUTE = "";
-                string PROCESS_INDICATOR = "";
+                string ENABLED_INDICATOR = "";
 
                 if (row["SOURCE_TABLE"] != DBNull.Value)
                     sourceTable = (string)row["SOURCE_TABLE"];
@@ -3161,8 +3161,8 @@ namespace TEAM
                 }
                 if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
                     DRIVING_KEY_ATTRIBUTE = (string)row["DRIVING_KEY_ATTRIBUTE"];
-                if (row["PROCESS_INDICATOR"] != DBNull.Value)
-                    PROCESS_INDICATOR = (string)row["PROCESS_INDICATOR"];
+                if (row["ENABLED_INDICATOR"] != DBNull.Value)
+                    ENABLED_INDICATOR = (string)row["ENABLED_INDICATOR"];
 
                 var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable,"");
@@ -3170,7 +3170,7 @@ namespace TEAM
                 var fullyQualifiedTargetName = ClassMetadataHandling.GetFullyQualifiedTableName(targetTable);
                 var targetType = ClassMetadataHandling.GetTableType(targetTable, "");
 
-                createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [PROCESS_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + PROCESS_INDICATOR + "');");
+                createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [ENABLED_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + ENABLED_INDICATOR + "');");
             }
 
             executeSqlCommand(createStatement, connString);
@@ -3707,7 +3707,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the source metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the 'source'
-                selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y'");
+                selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y'");
 
                 var distinctListSource = new List<string>
                 {
@@ -3780,12 +3780,12 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
                                                               ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
                                                               ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
@@ -3862,12 +3862,12 @@ namespace TEAM
                 // Getting the mapping list from the data table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
                                                               ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
                                                               ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
@@ -3945,12 +3945,12 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
                                                               ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
                                                               ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
@@ -4024,11 +4024,11 @@ namespace TEAM
                 // Getting the mapping list from the data table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
                 // Process the unique Staging Area records
@@ -4095,7 +4095,7 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_HUB table
                 selectionRows =
                     inputTableMetadata.Select(
-                        "PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
+                        "ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
 
                 var distinctListHub = new List<string>();
 
@@ -4177,7 +4177,7 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_LINK table
                 selectionRows =
                     inputTableMetadata.Select(
-                        "PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+                        "ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
 
                 var distinctListLinks = new List<string>();
 
@@ -4272,14 +4272,14 @@ namespace TEAM
                     "  MD_HUB hub ON hub.[SCHEMA_NAME]+'.'+hub.HUB_NAME=spec2.TARGET_TABLE ");
                 prepareSatStatement.AppendLine("  WHERE TARGET_TABLE_TYPE = '" +
                                                ClassMetadataHandling.TableTypes.CoreBusinessConcept +
-                                               "' AND [PROCESS_INDICATOR] = 'Y'                                                        ");
+                                               "' AND [ENABLED_INDICATOR] = 'Y'                                                        ");
                 prepareSatStatement.AppendLine(") hubkeysub ");
                 prepareSatStatement.AppendLine("        ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE ");
                 prepareSatStatement.AppendLine(
                     "        AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') ");
                 prepareSatStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
                                                ClassMetadataHandling.TableTypes.Context + "' ");
-                prepareSatStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
+                prepareSatStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
 
                 var listSat = Utility.GetDataTable(ref connOmd, prepareSatStatement.ToString());
 
@@ -4363,7 +4363,7 @@ namespace TEAM
                     "                MD_LINK lnk ON lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=spec2.TARGET_TABLE");
                 prepareLsatStatement.AppendLine("        WHERE TARGET_TABLE_TYPE = '" +
                                                 ClassMetadataHandling.TableTypes.NaturalBusinessRelationship + "' ");
-                prepareLsatStatement.AppendLine("        AND [PROCESS_INDICATOR] = 'Y'");
+                prepareLsatStatement.AppendLine("        AND [ENABLED_INDICATOR] = 'Y'");
                 prepareLsatStatement.AppendLine(") lnkkeysub");
                 prepareLsatStatement.AppendLine(
                     "    ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT");
@@ -4374,7 +4374,7 @@ namespace TEAM
                 prepareLsatStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
                                                 ClassMetadataHandling.TableTypes.NaturalBusinessRelationshipContext +
                                                 "'");
-                prepareLsatStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
+                prepareLsatStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
 
 
                 var listLsat = Utility.GetDataTable(ref connOmd, prepareLsatStatement.ToString());
@@ -4454,7 +4454,7 @@ namespace TEAM
                     "        MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE");
                 prepareSatXrefStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
                                                    ClassMetadataHandling.TableTypes.Context + "'");
-                prepareSatXrefStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
+                prepareSatXrefStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
                 prepareSatXrefStatement.AppendLine("UNION");
                 prepareSatXrefStatement.AppendLine("SELECT");
                 prepareSatXrefStatement.AppendLine("        sat.SATELLITE_NAME,");
@@ -4472,7 +4472,7 @@ namespace TEAM
                 prepareSatXrefStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
                                                    ClassMetadataHandling.TableTypes.NaturalBusinessRelationshipContext +
                                                    "'");
-                prepareSatXrefStatement.AppendLine("AND [PROCESS_INDICATOR] = 'Y'");
+                prepareSatXrefStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
 
                 var listSatXref = Utility.GetDataTable(ref connOmd, prepareSatXrefStatement.ToString());
 
@@ -4558,7 +4558,7 @@ namespace TEAM
                 prepareStgHubXrefStatement.AppendLine("    WHERE ");
                 prepareStgHubXrefStatement.AppendLine("        TARGET_TABLE_TYPE = '" +
                                                       ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
-                prepareStgHubXrefStatement.AppendLine("    AND [PROCESS_INDICATOR] = 'Y'");
+                prepareStgHubXrefStatement.AppendLine("    AND [ENABLED_INDICATOR] = 'Y'");
                 prepareStgHubXrefStatement.AppendLine(") hub");
                 prepareStgHubXrefStatement.AppendLine("LEFT OUTER JOIN");
                 prepareStgHubXrefStatement.AppendLine("( ");
@@ -5173,7 +5173,7 @@ namespace TEAM
                 prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
                 prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE_TYPE = '" +
                                                ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
-                prepareKeyStatement.AppendLine("              AND [PROCESS_INDICATOR] = 'Y'");
+                prepareKeyStatement.AppendLine("              AND [ENABLED_INDICATOR] = 'Y'");
                 prepareKeyStatement.AppendLine("        ) TableName");
                 prepareKeyStatement.AppendLine(
                     "    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
@@ -5463,7 +5463,7 @@ namespace TEAM
                 prepareHubLnkXrefStatement.AppendLine("       WHERE [TARGET_TABLE_TYPE] = '" +
                                                       ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
                                                       "'");
-                prepareHubLnkXrefStatement.AppendLine("           AND [PROCESS_INDICATOR] = 'Y'");
+                prepareHubLnkXrefStatement.AppendLine("           AND [ENABLED_INDICATOR] = 'Y'");
                 prepareHubLnkXrefStatement.AppendLine(
                     "     ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
                 prepareHubLnkXrefStatement.AppendLine(
@@ -5486,7 +5486,7 @@ namespace TEAM
                     "     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
                 prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE_TYPE] = '" +
                                                       ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
-                prepareHubLnkXrefStatement.AppendLine("     AND hub.[PROCESS_INDICATOR] = 'Y'");
+                prepareHubLnkXrefStatement.AppendLine("     AND hub.[ENABLED_INDICATOR] = 'Y'");
                 prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
                 prepareHubLnkXrefStatement.AppendLine(
@@ -5556,7 +5556,7 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_LINK table
                 selectionRows =
                     inputTableMetadata.Select(
-                        "PROCESS_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+                        "ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
 
                 var distincLinksForBusinessKey = new List<string>();
 
@@ -5632,7 +5632,7 @@ namespace TEAM
                 preparestgLnkXrefStatement.AppendLine("WHERE lnk.TARGET_TABLE_TYPE = '" +
                                                       ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
                                                       "'");
-                preparestgLnkXrefStatement.AppendLine("AND[PROCESS_INDICATOR] = 'Y'");
+                preparestgLnkXrefStatement.AppendLine("AND[ENABLED_INDICATOR] = 'Y'");
 
                 var listStgLinkXref = Utility.GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
 
@@ -6133,7 +6133,7 @@ namespace TEAM
                                                          ClassMetadataHandling.TableTypes.Context + "', '" +
                                                          ClassMetadataHandling.TableTypes
                                                              .NaturalBusinessRelationshipContext + "')");
-                prepareMappingStatementManual.AppendLine("   AND table_mapping.PROCESS_INDICATOR = 'Y' ");
+                prepareMappingStatementManual.AppendLine("   AND table_mapping.ENABLED_INDICATOR = 'Y' ");
 
 
                 var attributeMappingsSatellites = Utility.GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
@@ -6384,7 +6384,7 @@ namespace TEAM
                 prepareMappingStatementLink.AppendLine("WHERE mapping.TARGET_TABLE_TYPE = ('" +
                                                        ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
                                                        "')");
-                prepareMappingStatementLink.AppendLine("      AND table_mapping.PROCESS_INDICATOR = 'Y'");
+                prepareMappingStatementLink.AppendLine("      AND table_mapping.ENABLED_INDICATOR = 'Y'");
 
                 var degenerateMappings = Utility.GetDataTable(ref connOmd, prepareMappingStatementLink.ToString());
 
@@ -6730,7 +6730,7 @@ namespace TEAM
                                                       ClassMetadataHandling.TableTypes
                                                           .NaturalBusinessRelationshipContext +
                                                       "') AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
-                prepareDrivingKeyStatement.AppendLine("                         AND [PROCESS_INDICATOR] = 'Y'");
+                prepareDrivingKeyStatement.AppendLine("                         AND [ENABLED_INDICATOR] = 'Y'");
                 prepareDrivingKeyStatement.AppendLine("                 ) TableName");
                 prepareDrivingKeyStatement.AppendLine(
                     "         ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
@@ -6751,7 +6751,7 @@ namespace TEAM
                 prepareDrivingKeyStatement.AppendLine(" WHERE 1=1");
                 prepareDrivingKeyStatement.AppendLine(" AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
                 prepareDrivingKeyStatement.AppendLine(" AND base.BUSINESS_KEY_ATTRIBUTE!=''");
-                prepareDrivingKeyStatement.AppendLine(" AND [PROCESS_INDICATOR] = 'Y'");
+                prepareDrivingKeyStatement.AppendLine(" AND [ENABLED_INDICATOR] = 'Y'");
 
 
                 var listDrivingKeys = Utility.GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
@@ -7608,7 +7608,7 @@ namespace TEAM
                                 businessKeyDefinition = singleRow[4].ToString(),
                                 drivingKeyDefinition = singleRow[5].ToString(),
                                 filterCriteria = singleRow[6].ToString(),
-                                processIndicator = singleRow[7].ToString()
+                                enabledIndicator = singleRow[7].ToString()
                             });
                             outputFileArray.Add(individualRow);
                         }
@@ -7706,7 +7706,7 @@ namespace TEAM
                                 sourceAttribute = singleRow[3].ToString(),
                                 targetTable = singleRow[4].ToString(),
                                 targetAttribute = singleRow[5].ToString(),
-                                transformationRule = singleRow[6].ToString()
+                                Notes = singleRow[6].ToString()
                             });
                             outputFileArray.Add(individualRow);
                         }

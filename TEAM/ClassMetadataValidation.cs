@@ -192,7 +192,7 @@ namespace TEAM
                     foreach (DataRow row in inputDataTable.Rows)
                     {
                         if (
-                             (string)row["PROCESS_INDICATOR"] == "Y" && // Only active generated objects
+                             (string)row["ENABLED_INDICATOR"] == "Y" && // Only active generated objects
                              (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
                              (string)row["BUSINESS_KEY_ATTRIBUTE"] == businessKeyComponent.Trim() &&
                              (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself
@@ -210,7 +210,7 @@ namespace TEAM
                 foreach (DataRow row in inputDataTable.Rows)
                 {
                     if (
-                         (string)row["PROCESS_INDICATOR"] == "Y" && // Only active generated objects
+                         (string)row["ENABLED_INDICATOR"] == "Y" && // Only active generated objects
                          (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
                          (string)row["BUSINESS_KEY_ATTRIBUTE"] == validationObject.Item3.Trim() &&
                          (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself

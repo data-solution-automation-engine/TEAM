@@ -7,7 +7,7 @@
     "businessKeyDefinition": "COMPOSITE(CustomerID; Plan_Code)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "8B944F0BCB1BE4DFC73366FDC7E3607E",
@@ -17,7 +17,7 @@
     "businessKeyDefinition": "COMPOSITE(CustomerID; OfferID)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "A3D7B5908AA0209776360A8E8ED3C7B1",
@@ -27,7 +27,7 @@
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "10F64C7F68BCC0AA7AECCBFD13C8F60D",
@@ -37,7 +37,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code; Date_effective)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "A9FF8C9D6B1AAF8F168DA4F2D54B5F23",
@@ -47,7 +47,7 @@
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
     "filterCriteria": "15=15",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "2E85A694E5682CE77DEE6878395F8DE8",
@@ -57,7 +57,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "14=14",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "588394BC8E641E57A4F910073897B3CA",
@@ -67,7 +67,7 @@
     "businessKeyDefinition": "CustomerID, COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "16=16",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "179F20884B62E3A2FFFBA0050BD4EEF2",
@@ -77,7 +77,7 @@
     "businessKeyDefinition": "CustomerID, COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "17=17",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "824EB230DE4F2872CE4F56F24BFF1003",
@@ -87,7 +87,7 @@
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
     "filterCriteria": "5=5",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "009E622F408ADEF5808FE761FED7E9A6",
@@ -97,7 +97,7 @@
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
     "filterCriteria": "6=6",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "42BB9F204258A65045DB75FDAA1C2E3B",
@@ -107,7 +107,7 @@
     "businessKeyDefinition": "CustomerID, OfferID",
     "drivingKeyDefinition": "",
     "filterCriteria": "7=7",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "11ABE61E4169CB0E7F51CD183F0DBF80",
@@ -117,7 +117,7 @@
     "businessKeyDefinition": "CustomerID, OfferID",
     "drivingKeyDefinition": "CustomerID",
     "filterCriteria": "7=7",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "24672D816D14B56B180CAC947F30E400",
@@ -127,7 +127,7 @@
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
     "filterCriteria": "1=1",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "A427DA18DD960073CA7EB266C5909256",
@@ -137,7 +137,7 @@
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
     "filterCriteria": "2=2",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "E3AB7D4DA144D3B864C0F6F882A29393",
@@ -147,7 +147,7 @@
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "C0231664D8CD1447550CFC7AEBF9790F",
@@ -157,7 +157,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "12=12",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "FBAB2B1A9A19B8A2187DA5669646FE7B",
@@ -167,7 +167,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "13=13",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "1ECAFBED6ACE547B7D727D3DC7E0671B",
@@ -177,7 +177,7 @@
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
     "filterCriteria": "3=3",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "A3BFC9C49A788CB5F8F078D7F0AE8EB2",
@@ -187,7 +187,7 @@
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
     "filterCriteria": "4=4",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "F50F04E313C108794C5834D0358DD5DA",
@@ -197,7 +197,7 @@
     "businessKeyDefinition": "Member",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "89752F030FE9446ED95A373388272FF2",
@@ -207,7 +207,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "18=18",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "81E1AB67BF5D884A846CDBDC685A85D6",
@@ -217,7 +217,7 @@
     "businessKeyDefinition": "CONCATENATE(Segment;'TEST')",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "C40FA0EE64CDBE6DABF322F0ACC67C48",
@@ -227,7 +227,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ'), Member, CONCATENATE(Segment;'TEST')",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "13F765F4B79D1D9FAFE1E1EDADDA5708",
@@ -237,7 +237,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ'), Member, CONCATENATE(Segment;'TEST')",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "C8F7C7AB67E541390081A57DEE22B4E5",
@@ -247,7 +247,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "10=10",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "75299DCBD9B4939ECEAE7A0AD6DB314B",
@@ -257,7 +257,7 @@
     "businessKeyDefinition": "COMPOSITE(Renewal_Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "1=1",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "C1F07CF73301D88B9F2044A28BD79C98",
@@ -267,7 +267,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ'),COMPOSITE(Renewal_Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "1=1",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "8733CC60CDE81110D67892D8E16669BA",
@@ -277,7 +277,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
     "filterCriteria": "11=11",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "71532280016C1B45630A82B97790DE4F",
@@ -287,7 +287,7 @@
     "businessKeyDefinition": "CONCATENATE(Demographic_Segment_Code;'TEST')",
     "drivingKeyDefinition": "",
     "filterCriteria": "8=8",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "BEBB395A893B4F9645E8C54E846C4998",
@@ -297,7 +297,7 @@
     "businessKeyDefinition": "CONCATENATE(Demographic_Segment_Code;'TEST')",
     "drivingKeyDefinition": "",
     "filterCriteria": "9=9",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "1A355AC5CD1F36F2C8BE439A8321B1FD",
@@ -307,7 +307,7 @@
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "616EA2CDDB10F14E7143C0B128A55167",
@@ -317,7 +317,7 @@
     "businessKeyDefinition": "COMPOSITE(Member; Segment; Plan_Code; Date_effective)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "7DA9F00BEB242E77A8CCE4ACBB794C5B",
@@ -327,7 +327,7 @@
     "businessKeyDefinition": "Plan_Code",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "1ED755E7B15CC5F6006D3AF7ED256BFC",
@@ -337,7 +337,7 @@
     "businessKeyDefinition": "COMPOSITE(CustomerID; Plan_Code)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "E0E3793B24B37C1A218A5C753FB2033D",
@@ -347,7 +347,7 @@
     "businessKeyDefinition": "COMPOSITE(CustomerID; OfferID)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "3ADB80B6B5B1F8495AB7CCAEDCB6CF26",
@@ -357,7 +357,7 @@
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "B2EF1820B3969D11C88998D186B6DA99",
@@ -367,7 +367,7 @@
     "businessKeyDefinition": "COMPOSITE(Plan_Code; Date_effective)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "0931ADD71CCEBC4808AC36B2EC47F804",
@@ -377,7 +377,7 @@
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "2CEFEEC6E7AC978E5CF6110B2DC578AC",
@@ -387,7 +387,7 @@
     "businessKeyDefinition": "COMPOSITE(Member; Segment; Plan_Code; Date_effective)",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "982338A9D5B5F1DAC97B03DDEE8B8919",
@@ -397,7 +397,7 @@
     "businessKeyDefinition": "Plan_Code",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   },
   {
     "tableMappingHash": "853253EA288839CF891349189CC285DA",
@@ -407,6 +407,6 @@
     "businessKeyDefinition": "Demographic_Segment_Code",
     "drivingKeyDefinition": "",
     "filterCriteria": "",
-    "processIndicator": "Y"
+    "enabledIndicator": "Y"
   }
 ]
