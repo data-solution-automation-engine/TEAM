@@ -126,9 +126,6 @@
   <metadata name="backgroundWorkerSampleData.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>232, 17</value>
   </metadata>
-  <metadata name="toolTipRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>448, 19</value>
-  </metadata>
   <data name="checkBoxDIRECT.ToolTip" xml:space="preserve">
     <value>This generates the sample code with the standard DIRECT ETL control framework attributes. This is not required for virtualisation, but can be used to integrate the sample code into ETL software (i.e. SSIS using Biml).</value>
   </data>
@@ -143,13 +140,6 @@ When generating the sample schema using the configuration settings option enable
 However, if you would like to separately changes standard configuration settings (default or using DIRECT integration)
 this button can be used.
 </value>
-  </data>
-  <data name="label3.Text" xml:space="preserve">
-    <value>WARNING - the databases must already exist and existing information
- will be removed.
-
-Connections as defined in the Configuration Settings screen will be 
-used to generate content in the associated areas.</value>
   </data>
   <metadata name="backgroundWorkerMetadata.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>596, 19</value>

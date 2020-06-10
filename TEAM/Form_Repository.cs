@@ -19,6 +19,29 @@ namespace TEAM
             InitializeComponent();
 
             labelMetadataRepository.Text = "Repository type in configuration is set to " + ConfigurationSettings.MetadataRepositoryType;
+
+            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            {
+                // Adding items in the drop down list
+                comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxStagingConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxPsaConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxIntegrationConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+            }
+
+            comboBoxSourceConnection.ValueMember = "Key";
+            comboBoxSourceConnection.DisplayMember = "Value";
+            comboBoxStagingConnection.ValueMember = "Key";
+            comboBoxStagingConnection.DisplayMember = "Value";
+            comboBoxPsaConnection.ValueMember = "Key";
+            comboBoxPsaConnection.DisplayMember = "Value";
+            comboBoxIntegrationConnection.ValueMember = "Key";
+            comboBoxIntegrationConnection.DisplayMember = "Value";
+
+            comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
         }
 
         private void buttonDeploy_Click(object sender, EventArgs e)
@@ -110,7 +133,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Event to truncate the existing MD schema
+        /// Truncate the existing metdata (MD) schema.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -142,7 +165,6 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
-
             //if (!checkBoxRetainManualMapping.Checked && ConfigurationSettings.MetadataRepositoryType == "SQLServer")
             //{
             commandText.AppendLine("DELETE FROM [MD_TABLE_MAPPING];");
@@ -150,7 +172,6 @@ namespace TEAM
             commandText.AppendLine("TRUNCATE TABLE [MD_VERSION_ATTRIBUTE];");
             commandText.AppendLine("TRUNCATE TABLE [MD_VERSION];");
             //}
-
 
             using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
             {
@@ -187,7 +208,7 @@ namespace TEAM
             ErrorHandlingParameters.ErrorCatcher = 0;
             ErrorHandlingParameters.ErrorLog = new StringBuilder();
             
-            var connOmdString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false);
+            var localMetadataConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false);
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -212,7 +233,7 @@ namespace TEAM
                             // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
                             var normalisedValue = 1 + (counter - 0) * (100 - 1) / (sqlCommands.Length - 0);
 
-                            RunSqlCommandRepositoryForm(connOmdString, command+"\r\n\r\n", worker, normalisedValue);
+                            RunSqlCommandRepositoryForm(localMetadataConnectionString, command+"\r\n\r\n", worker, normalisedValue);
                             counter++;
                         }
                         worker.ReportProgress(100);
@@ -348,12 +369,48 @@ namespace TEAM
             // Create a dictionary for all SQL files to execute
             Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
+            // Retrieve the connection strings from the ComboBox objects.
+            var localSourceConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
+            var localPsaConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
+            var localStagingConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
+            var localIntegrationConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
+
+
+            comboBoxSourceConnection.Invoke((MethodInvoker)delegate
+            {
+                localSourceConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxSourceConnection.SelectedItem;
+            });
+
+            var localSourceConnectionString = localSourceConnectionObject.Key.CreateConnectionString(false);
+
+
+            comboBoxStagingConnection.Invoke((MethodInvoker)delegate
+            {
+                localStagingConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxStagingConnection.SelectedItem;
+            });
+
+            var localStagingConnectionString = localStagingConnectionObject.Key.CreateConnectionString(false);
+
+
+            comboBoxPsaConnection.Invoke((MethodInvoker)delegate
+            {
+                localPsaConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxPsaConnection.SelectedItem;
+            });
+            var localPsaConnectionString = localPsaConnectionObject.Key.CreateConnectionString(false);
+
+
+            comboBoxIntegrationConnection.Invoke((MethodInvoker)delegate
+            {
+                localIntegrationConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxIntegrationConnection.SelectedItem;
+            });
+            var localIntegrationConnectionString = localIntegrationConnectionObject.Key.CreateConnectionString(false);
+
+            
             #region Source
             if (checkBoxCreateSampleSource.Checked)
             {
-                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary, localSourceConnectionString);
             }
-
             #endregion
 
             #region Staging
@@ -361,18 +418,13 @@ namespace TEAM
             {
                 if (checkBoxDIRECT.Checked)
                 {
-                    PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.ScriptPath + @"generateSampleStagingSchemaDIRECT.sql",
-                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchemaDIRECT.sql", commandDictionary, localStagingConnectionString);
                 }
                 else
                 {
-                    PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql", commandDictionary,
-                        ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql", commandDictionary, localStagingConnectionString);
                 }
             }
-
             #endregion
 
             #region Persistent Staging
@@ -380,18 +432,13 @@ namespace TEAM
             {
                 if (checkBoxDIRECT.Checked)
                 {
-                    PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchemaDIRECT.sql",
-                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchemaDIRECT.sql", commandDictionary, localPsaConnectionString);
                 }
                 else
                 {
-                    PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql",
-                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql", commandDictionary, localPsaConnectionString);
                 }
             }
-
             #endregion
 
             #region Integration Layer
@@ -399,18 +446,13 @@ namespace TEAM
             {
                 if (checkBoxDIRECT.Checked)
                 {
-                    PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.ScriptPath + @"generateSampleIntegrationSchemaDIRECT.sql",
-                        commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleIntegrationSchemaDIRECT.sql", commandDictionary, localIntegrationConnectionString);
                 }
                 else
                 {
-                    PopulateSqlCommandDictionaryFromFile(
-                        GlobalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary,
-                        ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary, localIntegrationConnectionString);
                 }
             }
-
             #endregion
 
 
