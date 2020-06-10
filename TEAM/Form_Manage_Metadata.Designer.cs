@@ -58,11 +58,8 @@ namespace TEAM
             this.contextMenuStripAttributeMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteThisRowFromTheGridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBoxPresentationLayer = new System.Windows.Forms.CheckBox();
-            this.checkBoxPsa = new System.Windows.Forms.CheckBox();
-            this.checkBoxIntegrationLayer = new System.Windows.Forms.CheckBox();
-            this.checkBoxStagingArea = new System.Windows.Forms.CheckBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
             this.button2 = new System.Windows.Forms.Button();
             this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewPhysicalModel();
             this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -116,7 +113,7 @@ namespace TEAM
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).BeginInit();
             this.contextMenuStripAttributeMapping.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPhysicalModelMetadata)).BeginInit();
             this.contextMenuStripModel.SuspendLayout();
             this.outputGroupBoxVersioning.SuspendLayout();
@@ -386,7 +383,7 @@ namespace TEAM
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage3.Controls.Add(this.groupBox3);
+            this.tabPage3.Controls.Add(this.groupBox4);
             this.tabPage3.Controls.Add(this.button2);
             this.tabPage3.Controls.Add(this.dataGridViewPhysicalModelMetadata);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -396,67 +393,26 @@ namespace TEAM
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Physical Model";
             // 
-            // groupBox3
+            // groupBox4
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.checkBoxPresentationLayer);
-            this.groupBox3.Controls.Add(this.checkBoxPsa);
-            this.groupBox3.Controls.Add(this.checkBoxIntegrationLayer);
-            this.groupBox3.Controls.Add(this.checkBoxStagingArea);
-            this.groupBox3.Location = new System.Drawing.Point(1096, 52);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(120, 115);
-            this.groupBox3.TabIndex = 26;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Target area";
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
+            this.groupBox4.Location = new System.Drawing.Point(1096, 52);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(120, 647);
+            this.groupBox4.TabIndex = 27;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Target area";
             // 
-            // checkBoxPresentationLayer
+            // checkedListBoxReverseEngineeringAreas
             // 
-            this.checkBoxPresentationLayer.AutoSize = true;
-            this.checkBoxPresentationLayer.Checked = true;
-            this.checkBoxPresentationLayer.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxPresentationLayer.Location = new System.Drawing.Point(6, 88);
-            this.checkBoxPresentationLayer.Name = "checkBoxPresentationLayer";
-            this.checkBoxPresentationLayer.Size = new System.Drawing.Size(79, 17);
-            this.checkBoxPresentationLayer.TabIndex = 12;
-            this.checkBoxPresentationLayer.Text = "Pres. Layer";
-            this.checkBoxPresentationLayer.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxPsa
-            // 
-            this.checkBoxPsa.AutoSize = true;
-            this.checkBoxPsa.Checked = true;
-            this.checkBoxPsa.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxPsa.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxPsa.Name = "checkBoxPsa";
-            this.checkBoxPsa.Size = new System.Drawing.Size(114, 17);
-            this.checkBoxPsa.TabIndex = 11;
-            this.checkBoxPsa.Text = "Pers. Staging Area";
-            this.checkBoxPsa.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxIntegrationLayer
-            // 
-            this.checkBoxIntegrationLayer.AutoSize = true;
-            this.checkBoxIntegrationLayer.Checked = true;
-            this.checkBoxIntegrationLayer.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxIntegrationLayer.Location = new System.Drawing.Point(6, 65);
-            this.checkBoxIntegrationLayer.Name = "checkBoxIntegrationLayer";
-            this.checkBoxIntegrationLayer.Size = new System.Drawing.Size(105, 17);
-            this.checkBoxIntegrationLayer.TabIndex = 10;
-            this.checkBoxIntegrationLayer.Text = "Integration Layer";
-            this.checkBoxIntegrationLayer.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxStagingArea
-            // 
-            this.checkBoxStagingArea.AutoSize = true;
-            this.checkBoxStagingArea.Checked = true;
-            this.checkBoxStagingArea.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxStagingArea.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxStagingArea.Name = "checkBoxStagingArea";
-            this.checkBoxStagingArea.Size = new System.Drawing.Size(87, 17);
-            this.checkBoxStagingArea.TabIndex = 9;
-            this.checkBoxStagingArea.Text = "Staging Area";
-            this.checkBoxStagingArea.UseVisualStyleBackColor = true;
+            this.checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
+            this.checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
+            this.checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(6, 16);
+            this.checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
+            this.checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(108, 495);
+            this.checkedListBoxReverseEngineeringAreas.TabIndex = 0;
             // 
             // button2
             // 
@@ -911,8 +867,7 @@ namespace TEAM
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).EndInit();
             this.contextMenuStripAttributeMapping.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPhysicalModelMetadata)).EndInit();
             this.contextMenuStripModel.ResumeLayout(false);
             this.outputGroupBoxVersioning.ResumeLayout(false);
@@ -977,9 +932,6 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem openModelMetadataFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveModelMetadataFileAsJSONToolStripMenuItem;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox checkBoxIntegrationLayer;
-        private System.Windows.Forms.CheckBox checkBoxStagingArea;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripTableMapping;
         private System.Windows.Forms.ToolStripMenuItem exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem;
         private System.Windows.Forms.ToolTip toolTipMetadata;
@@ -989,8 +941,6 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxBackupFiles;
         private System.Windows.Forms.CheckBox checkBoxResizeDataGrid;
         private System.Windows.Forms.CheckBox checkBoxSaveInterfaceToJson;
-        private System.Windows.Forms.CheckBox checkBoxPresentationLayer;
-        private System.Windows.Forms.CheckBox checkBoxPsa;
         private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
         private System.Windows.Forms.RadioButton radioButtonVirtualMode;
         private System.Windows.Forms.ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem;
@@ -1002,5 +952,7 @@ namespace TEAM
         private System.Windows.Forms.Button buttonGenerateJsonInterface;
         private System.Windows.Forms.CheckBox checkBoxShowJsonOutput;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.CheckedListBox checkedListBoxReverseEngineeringAreas;
     }
 }

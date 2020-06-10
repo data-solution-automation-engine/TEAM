@@ -352,7 +352,6 @@ namespace TEAM
             }
         }
 
-
         /// <summary>
         /// Method to create a new validation file with default values at the default location
         /// Checks if the file already exists. If it does, nothing will happen.
@@ -386,6 +385,15 @@ namespace TEAM
                     outfile.Write(validationFile.ToString());
                     outfile.Close();
                 }
+
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"A new configuration file was created for {fileName}."));
+
+            }
+            else
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The existing configuration file {fileName} was detected."));
             }
         }
 

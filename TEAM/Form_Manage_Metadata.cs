@@ -84,11 +84,12 @@ namespace TEAM
             richTextBoxInformation.Text +="The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
             ContentCounter();
 
+
+
             // Make sure the validation information is available in this form
             try
             {
-                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
-                                     GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
@@ -105,7 +106,20 @@ namespace TEAM
             {
                 // ignored
             }
-            
+
+            #region CheckedListBox for reverse engineering
+            checkedListBoxReverseEngineeringAreas.CheckOnClick = true;
+            checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
+            checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
+
+            // Load the checkboxes for reverse-engineering
+            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            {
+                checkedListBoxReverseEngineeringAreas.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+            }
+            #endregion
+
+
         }
 
 
@@ -7758,67 +7772,22 @@ namespace TEAM
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text += "Commencing reverse-engineering the model metadata from the database.\r\n";
 
-            // Populate table / attribute version table
-            var intDatabase = ConfigurationSettings.IntegrationDatabaseName;
-            var stgDatabase = ConfigurationSettings.StagingDatabaseName;
-            var psaDatabase = ConfigurationSettings.PsaDatabaseName;
-            var presDatabase = ConfigurationSettings.PresentationDatabaseName;
-
-            var connStg = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connInt = new SqlConnection {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connPres = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-
-            var stgPrefix = ConfigurationSettings.StgTablePrefixValue;
-            var psaPrefix = ConfigurationSettings.PsaTablePrefixValue;
-
-            // Process changes
-            var stagingReverseEngineerResults = new DataTable();
-            if (checkBoxStagingArea.Checked)
-            {
-                stagingReverseEngineerResults = ReverseEngineerModelMetadata(connStg, stgPrefix, stgDatabase); 
-            }
-
-            var psaReverseEngineerResults = new DataTable();
-            if (checkBoxPsa.Checked)
-            {
-                psaReverseEngineerResults = ReverseEngineerModelMetadata(connPsa, psaPrefix, psaDatabase);
-            }
-
-            var integrationReverseEngineerResults = new DataTable();
-            if (checkBoxIntegrationLayer.Checked)
-            {
-                integrationReverseEngineerResults = ReverseEngineerModelMetadata(connInt, @"", intDatabase);
-            }
-
-            var presentationReverseEngineerResults = new DataTable();
-            if (checkBoxPresentationLayer.Checked)
-            {
-                presentationReverseEngineerResults = ReverseEngineerModelMetadata(connPres, @"", presDatabase);
-            }
-
-            // Merge the data tables
             var completeDataTable = new DataTable();
 
-            if (stagingReverseEngineerResults != null)
+            foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
-                completeDataTable.Merge(stagingReverseEngineerResults);
+                var localConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)item;
+
+                var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateConnectionString(false) };
+
+                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.databaseServer.databaseName);
+
+                if (reverseEngineerResults != null)
+                {
+                    completeDataTable.Merge(reverseEngineerResults);
+                }
             }
 
-            if (integrationReverseEngineerResults != null)
-            {
-                completeDataTable.Merge(integrationReverseEngineerResults);
-            }
-
-            if (psaReverseEngineerResults != null)
-            {
-                completeDataTable.Merge(psaReverseEngineerResults);
-            }
-
-            if (presentationReverseEngineerResults != null)
-            {
-                completeDataTable.Merge(presentationReverseEngineerResults);
-            }
 
             DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
 
@@ -7859,7 +7828,7 @@ namespace TEAM
         /// <param name="conn"></param>
         /// <param name="prefix"></param>
         /// <param name="databaseName"></param>
-        private DataTable ReverseEngineerModelMetadata(SqlConnection conn, string prefix, string databaseName)
+        private DataTable ReverseEngineerModelMetadata(SqlConnection conn, string databaseName)
         {
             try
             {
