@@ -262,6 +262,7 @@ namespace TEAM
             labelConnectionKey.Size = new Size(160, 13);
             labelConnectionKey.Name = $"labelConnectionKey";
             labelConnectionKey.Text = $"Connection key";
+            //labelConnectionKey.TextChanged += new EventHandler(ManageKeyNameChange);
             labelConnectionKey.TabStop = false;
 
             // Add Connection Name Label
@@ -304,7 +305,7 @@ namespace TEAM
             _textBoxConnectionKey.Name = $"textBoxServerName";
             _textBoxConnectionKey.Text = _localConnection.databaseConnectionKey;
             _textBoxConnectionKey.TextChanged += (UpdateConnectionKey);
-            _textBoxConnectionKey.TabIndex = 51;
+            _textBoxConnectionKey.TabIndex = 50;
 
 
             // Add Connection Name TextBox
@@ -316,7 +317,7 @@ namespace TEAM
             _textBoxConnectionName.Name = $"textBoxConnectionName";
             _textBoxConnectionName.Text = _localConnection.databaseConnectionName;
             _textBoxConnectionName.TextChanged += (UpdateConnectionName);
-            _textBoxConnectionName.TabIndex = 50;
+            _textBoxConnectionName.TabIndex = 51;
 
 
 
@@ -388,7 +389,7 @@ namespace TEAM
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back the name of the tab page to the control (so that it can be deleted from there).
         /// </summary>
-        public event EventHandler<MyStringEventArgs> OnDeleteConnection = delegate { };
+        public event EventHandler<MyConnectionProfileEventArgs> OnDeleteConnection = delegate { };
         public void DeleteConnection(object sender, EventArgs e)
         {
             if (_localConnection.databaseConnectionKey != "New")
@@ -409,7 +410,7 @@ namespace TEAM
                 if (jsonArray != null)
                 {
                     jsonKeyLookup = jsonArray.FirstOrDefault(obj =>
-                        obj.databaseConnectionKey == _localConnection.databaseConnectionKey);
+                        obj.connectionInternalId == _localConnection.connectionInternalId);
                 }
 
                 // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file.
@@ -423,13 +424,15 @@ namespace TEAM
                     // Remove the Json segment.
                     var list = jsonArray.ToList();
                     var itemToRemove =
-                        list.Single(r => r.databaseConnectionKey == _localConnection.databaseConnectionKey);
+                        list.Single(r => r.connectionInternalId == _localConnection.connectionInternalId);
                     list.Remove(itemToRemove);
                     jsonArray = list.ToArray();
 
                     UpdateRichTextBoxInformation(
                         $"The connection {_localConnection.databaseConnectionKey} was removed from {_connectionFileName}.\r\n");
 
+                    // Remove the connection from the global dictionary
+                    FormBase.ConfigurationSettings.connectionDictionary.Remove(_localConnection.connectionInternalId);
                 }
 
                 // Save the updated file to disk.
@@ -438,7 +441,7 @@ namespace TEAM
             }
 
             // The name of the tab page is passed back to the original control (the tab control).
-            OnDeleteConnection(this, new MyStringEventArgs(this.Name));
+            OnDeleteConnection(this, new MyConnectionProfileEventArgs(_localConnection));
 
         }
 
@@ -455,13 +458,13 @@ namespace TEAM
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.ConfigurationSettings.connectionDictionary.ContainsKey(_localConnection.databaseConnectionKey))
+                if (FormBase.ConfigurationSettings.connectionDictionary.ContainsKey(_localConnection.connectionInternalId))
                 {
-                    FormBase.ConfigurationSettings.connectionDictionary[_localConnection.databaseConnectionKey] = _localConnection;
+                    FormBase.ConfigurationSettings.connectionDictionary[_localConnection.connectionInternalId] = _localConnection;
                 }
                 else
                 {
-                    FormBase.ConfigurationSettings.connectionDictionary.Add(_localConnection.databaseConnectionKey, _localConnection);
+                    FormBase.ConfigurationSettings.connectionDictionary.Add(_localConnection.connectionInternalId, _localConnection);
                 }
 
                 // Update the connection on disk
@@ -479,7 +482,7 @@ namespace TEAM
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
                 {
-                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.databaseConnectionKey == _localConnection.databaseConnectionKey);
+                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.connectionInternalId == _localConnection.connectionInternalId);
                 }
 
                 // If nothing yet exists int he file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
@@ -497,6 +500,7 @@ namespace TEAM
                 else
                 {
                     // Update the values in an existing JSON segment
+                    jsonKeyLookup.connectionInternalId = _localConnection.connectionInternalId;
                     jsonKeyLookup.databaseConnectionKey = _localConnection.databaseConnectionKey;
                     jsonKeyLookup.databaseConnectionName = _localConnection.databaseConnectionName;
                     jsonKeyLookup.databaseConnectionNotes = _localConnection.databaseConnectionNotes;
@@ -581,6 +585,8 @@ namespace TEAM
 
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
         }
+
+
 
         /// <summary>
         /// Receive a MaskedTextBox control and use the contents to update the in-memory connection object, as well as display the connectionstring value updated with the text box content.s

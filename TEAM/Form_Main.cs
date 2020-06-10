@@ -35,7 +35,7 @@ namespace TEAM
 
             //Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
-            EnvironmentConfiguration.InitialiseEnvironment();
+            EnvironmentConfiguration.InitialiseEnvironmentPaths();
 
             #region Load the root path configuration settings (user defined paths and working environment)
 
@@ -172,9 +172,10 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
                     $"An issue was encountered loading the user configuration file ({configurationFile})."));
             }
-
             #endregion
 
+
+            
             var test2 = ConfigurationSettings.MetadataConnection;
 
             // Load the pattern definition file.
@@ -205,12 +206,10 @@ namespace TEAM
 
             richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup.\r\n\r\n");
 
-
             TestConnections();
 
             //Startup information
-            richTextBoxInformation.AppendText(
-                "\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
+            richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
             richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
 
             labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
@@ -228,10 +227,15 @@ namespace TEAM
                 return;
             RevalidateFlag = false;
             //MessageBox.Show("Validating Connections");
+
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+
+            var connOmd = new SqlConnection
+                {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
+            var connStg = new SqlConnection
+                {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
+            var connPsa = new SqlConnection
+                {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try
@@ -240,17 +244,19 @@ namespace TEAM
                 }
                 catch
                 {
-                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    richTextBoxInformation.AppendText(
+                        "There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
                     DisableMenu();
                     return;
                 }
             else
-            { 
-                richTextBoxInformation.AppendText("Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+            {
+                richTextBoxInformation.AppendText(
+                    "Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
                 DisableMenu();
                 return;
             }
-            
+
 
             if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>")
                 try
@@ -261,17 +267,21 @@ namespace TEAM
                 }
                 catch
                 {
-                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    richTextBoxInformation.AppendText(
+                        "There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
                     DisableMenu();
                     return;
                 }
             else
             {
-                richTextBoxInformation.AppendText("Staging Area connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+                richTextBoxInformation.AppendText(
+                    "Staging Area connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
                 DisableMenu();
                 return;
             }
-            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>")
+
+            if (connStg.ConnectionString !=
+                "Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>")
                 try
                 {
                     connPsa.Open();
@@ -280,16 +290,19 @@ namespace TEAM
                 }
                 catch
                 {
-                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Persistent Staging Area (PSA) Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    richTextBoxInformation.AppendText(
+                        "There was an issue establishing a database connection to the Persistent Staging Area (PSA) Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
                     DisableMenu();
                     return;
                 }
             else
-            { 
-                richTextBoxInformation.AppendText("Persistent Staging Area (PSA) connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+            {
+                richTextBoxInformation.AppendText(
+                    "Persistent Staging Area (PSA) connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
                 DisableMenu();
                 return;
             }
+
             EnableMenu();
             richTextBoxInformation.AppendText("Database connections have been successfully validated.\r\n");
 
@@ -305,7 +318,8 @@ namespace TEAM
             }
             catch
             {
-                richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables  \r\n");
+                richTextBoxInformation.AppendText(
+                    "There was an issue while reading Metadata Database. The Database is missing tables.\r\n");
                 openMetadataFormToolStripMenuItem.Enabled = false;
                 RevalidateFlag = true;
             }
@@ -314,7 +328,6 @@ namespace TEAM
                 connOmd.Close();
                 connOmd.Dispose();
             }
-
         }
 
         public void DisableMenu()
@@ -472,7 +485,7 @@ namespace TEAM
         private void UpdateEnvironment(object sender, MyWorkingEnvironmentEventArgs e)
         {
             var localEnvironment = e.Value;
-            var localTextForLabel = "The working environment is: " + localEnvironment.environmentName;
+            var localTextForLabel = "The working environment is: " + localEnvironment.environmentKey;
 
             if (labelWorkingEnvironment.InvokeRequired)
             {
@@ -484,7 +497,7 @@ namespace TEAM
             }
 
 
-            EnvironmentConfiguration.InitialiseEnvironment();
+            EnvironmentConfiguration.InitialiseEnvironmentPaths();
 
 
         }

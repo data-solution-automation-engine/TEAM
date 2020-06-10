@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -42,6 +41,39 @@ namespace TEAM
             }
         }
 
+        public static int GetRandomNumber(int maxNumber)
+        {
+            if (maxNumber < 1)
+                throw new Exception("The maxNumber value should be greater than 1");
+            var b = new byte[4];
+            new System.Security.Cryptography.RNGCryptoServiceProvider().GetBytes(b);
+            var seed = (b[0] & 0x7f) << 24 | b[1] << 16 | b[2] << 8 | b[3];
+            var r = new Random(seed);
+            return r.Next(1, maxNumber);
+        }
+
+        public static DateTime GetRandomDate(int startYear = 1995)
+        {
+            var start = new DateTime(startYear, 1, 1);
+            var range = (DateTime.Today - start).Days;
+            var b = new byte[4];
+            new System.Security.Cryptography.RNGCryptoServiceProvider().GetBytes(b);
+            var seed = (b[0] & 0x7f) << 24 | b[1] << 16 | b[2] << 8 | b[3];
+            return start.AddDays(new Random(seed).Next(1, range)).AddSeconds(new Random(seed).Next(1, 86400));
+        }
+
+        public static string GetRandomString(int length)
+        {
+            var array = new[]
+            {
+                "0","2","3","4","5","6","8","9",
+                "a","b","c","d","e","f","g","h","j","k","m","n","p","q","r","s","t","u","v","w","x","y","z",
+                "A","B","C","D","E","F","G","H","J","K","L","M","N","P","R","S","T","U","V","W","X","Y","Z"
+            };
+            var sb = new StringBuilder();
+            for (var i = 0; i < length; i++) sb.Append(array[GetRandomNumber(53)]);
+            return sb.ToString();
+        }
         public static DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
         {
             // Pass the connection to a command object

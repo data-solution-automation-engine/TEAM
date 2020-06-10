@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace TEAM
@@ -46,11 +47,13 @@ namespace TEAM
     public enum ServerAuthenticationTypes
     {
         NamedUser,
-        SSPI
+        SSPI,
+        Undefined
     }
 
     public class TeamConnectionProfile
     {
+        public string connectionInternalId { get; set; }
         public string databaseConnectionName { get; set; }
         public string databaseConnectionKey { get; set; }
 
@@ -64,34 +67,46 @@ namespace TEAM
             // Initialise the return variable
             var outputConnectionString = "";
 
-            var localDatabaseConnection = databaseServer;
-
-            var connectionString = new StringBuilder();
-
-            connectionString.Append("Server=" + localDatabaseConnection.serverName + ";");
-            connectionString.Append("Initial Catalog=" + localDatabaseConnection.databaseName + ";");
-            
-            if (databaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
+            if (databaseServer != null)
             {
-                connectionString.Append("Integrated Security=SSPI;");
-            }
-            else if (databaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
-            {
-                connectionString.Append("user id=" + localDatabaseConnection.namedUserName + ";");
-                connectionString.Append("password=" + localDatabaseConnection.namedUserPassword + ";");
-            }
+                var localDatabaseConnection = databaseServer;
 
-            if (localDatabaseConnection.namedUserPassword != null)
-            {
-                if (localDatabaseConnection.namedUserPassword.Length > 0 && mask == true)
+                var localServerName = localDatabaseConnection.serverName ?? "<>";
+                var localDatabaseName = localDatabaseConnection.databaseName ?? "<>";
+                var localNamedUserName = localDatabaseConnection.namedUserName ?? "<>";
+                var localNamedUserPassword = localDatabaseConnection.namedUserPassword ?? "<>";
+
+                var connectionString = new StringBuilder();
+
+                connectionString.Append("Server=" + localServerName + ";");
+                connectionString.Append("Initial Catalog=" + localDatabaseName + ";");
+
+                if (databaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
                 {
-                    outputConnectionString = connectionString.ToString()
-                        .Replace(localDatabaseConnection.namedUserPassword, "*****");
+                    connectionString.Append("Integrated Security=SSPI;");
                 }
-                else
+                else if (databaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
                 {
-                    outputConnectionString = connectionString.ToString();
+                    connectionString.Append("user id=" + localNamedUserName + ";");
+                    connectionString.Append("password=" + localNamedUserPassword + ";");
                 }
+
+                if (localNamedUserPassword != null)
+                {
+                    if (localNamedUserPassword.Length > 0 && mask == true)
+                    {
+                        outputConnectionString = connectionString.ToString()
+                            .Replace(localNamedUserPassword, "*****");
+                    }
+                    else
+                    {
+                        outputConnectionString = connectionString.ToString();
+                    }
+                }
+            }
+            else
+            {
+                outputConnectionString = "Server=<undefined>;Initial Catalog=<undefined>;user id=<>; password=<>";
             }
 
             return outputConnectionString;

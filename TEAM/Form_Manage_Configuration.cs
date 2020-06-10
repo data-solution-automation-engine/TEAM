@@ -25,6 +25,31 @@ namespace TEAM
             textBoxOutputPath.Text = GlobalParameters.OutputPath;
             textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
             
+            // Adding tab pages to the Environment tabs.
+            IntPtr localHandle = tabControlEnvironments.Handle;
+            foreach (var environment in ConfigurationSettings.environmentDictionary)
+            {
+                // Adding tabs on the Tab Control
+                var lastIndex = tabControlEnvironments.TabCount - 1;
+                CustomTabPageEnvironment localCustomTabPage = new CustomTabPageEnvironment(environment.Value);
+                localCustomTabPage.OnDeleteEnvironment += DeleteEnvironment;
+                localCustomTabPage.OnSaveEnvironment += SaveEnvironment;
+                localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox; 
+                tabControlEnvironments.TabPages.Insert(lastIndex, localCustomTabPage);
+                tabControlEnvironments.SelectedIndex = 0;
+
+                // Adding items in the drop down list
+                comboBoxEnvironments.Items.Add(new KeyValuePair<TeamWorkingEnvironment, string>(environment.Value, environment.Value.environmentKey));
+                comboBoxEnvironments.DisplayMember = "Value";
+            }
+
+            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
+            
+            // Connection tabs for the specific environment.
+            AddConnectionTabPages();
+
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
             {
@@ -35,35 +60,15 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
 
-            // Adding tab pages to the Environment tabs.
-            IntPtr h = tabControlEnvironments.Handle;
-            foreach (var environment in ConfigurationSettings.environmentDictionary)
-            {
-                // Adding tabs on the Tab Control
-                var lastIndex = tabControlEnvironments.TabCount - 1;
-                CustomTabPageEnvironment localCustomTabPage = new CustomTabPageEnvironment(environment.Value);
-                localCustomTabPage.OnDeleteEnvironment += DeleteEnvironment;
-                localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox; 
-                tabControlEnvironments.TabPages.Insert(lastIndex, localCustomTabPage);
-                tabControlEnvironments.SelectedIndex = 0;
-
-                // Adding items in the drop down list
-                comboBoxEnvironments.Items.Add(environment.Key);
-            }
-
-            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
-            
-            // Connection tabs for the specific environment.
-            AddConnectionTabPages();
-
-            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
-
             _formLoading = false;
         }
 
+        /// <summary>
+        /// Add Tabs to the Connections Tab Control based on the in-memory values (connection dictionary).
+        /// </summary>
         private void AddConnectionTabPages()
         {
-            IntPtr x = tabControlConnections.Handle;
+            IntPtr localHandle = tabControlConnections.Handle;
             foreach (var connection in ConfigurationSettings.connectionDictionary)
             {
                 // Adding tabs on the Tab Control
@@ -71,11 +76,14 @@ namespace TEAM
                 CustomTabPageConnection localCustomTabPage = new CustomTabPageConnection(connection.Value);
                 localCustomTabPage.OnDeleteConnection += DeleteConnection;
                 localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
+                localCustomTabPage.OnSaveConnection += SaveConnection;
                 tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                 tabControlConnections.SelectedIndex = 0;
 
                 // Adding items in the drop down list
-                comboBoxMetadataConnection.Items.Add(connection.Key);
+                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxMetadataConnection.ValueMember = "Key";
+                comboBoxMetadataConnection.DisplayMember = "Value";
             }
         }
 
@@ -83,7 +91,6 @@ namespace TEAM
         /// Delegate event handler from the 'main' form to pass back information when the environment is updated.
         /// </summary>
         public event EventHandler<MyWorkingEnvironmentEventArgs> OnUpdateEnvironment = delegate { };
-        //Object o, MyConnectionEventArgs e
 
         public void UpdateEnvironment(TeamWorkingEnvironment environment)
         {
@@ -124,14 +131,14 @@ namespace TEAM
 
 
                 // Databases
-                if (configList["MetadataConnectionKey"] != null)
+                if (configList["MetadataConnectionId"] != null)
                 {
-                    //comboBoxMetadataConnection.SelectedItem = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionKey"]];
+                    //comboBoxMetadataConnection.SelectedItem = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
                    
-                    var metadataKey = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionKey"]];
+                    var metadataKey = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
+                    comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(metadataKey.databaseConnectionKey);
 
-                    comboBoxMetadataConnection.SelectedItem = metadataKey.databaseConnectionKey;
-
+                    //comboBoxMetadataConnection.SelectedItem = metadataKey.databaseConnectionKey;
                 }
 
 
@@ -348,7 +355,9 @@ namespace TEAM
             // Update the paths in memory
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
-            GlobalParameters.WorkingEnvironment = comboBoxEnvironments.SelectedItem.ToString();
+
+            var localEnvironment = (KeyValuePair<TeamWorkingEnvironment, string>) comboBoxEnvironments.SelectedItem;
+            GlobalParameters.WorkingEnvironment = localEnvironment.Key.environmentKey;
 
             // Save the paths from memory to disk.
             UpdateRootPathFile();
@@ -426,7 +435,11 @@ namespace TEAM
 
             if (comboBoxMetadataConnection.SelectedItem!=null)
             {
-                ConfigurationSettings.MetadataConnection = ConfigurationSettings.connectionDictionary[comboBoxMetadataConnection.SelectedItem.ToString()];
+                // Get the object in the Combobox into a Key Value Pair (object / id)
+                var localConnectionKeyValuePair = (KeyValuePair<TeamConnectionProfile, string>)(comboBoxMetadataConnection.SelectedItem);
+
+                // Lookup the object in the dictionary using the key (id)
+                ConfigurationSettings.MetadataConnection = ConfigurationSettings.connectionDictionary[localConnectionKeyValuePair.Key.connectionInternalId];
             }
 
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
@@ -606,6 +619,7 @@ namespace TEAM
             {
                 //tabControlConnections.TabPages.Insert(lastIndex, "New Tab");
                 TeamConnectionProfile connectionProfile = new TeamConnectionProfile();
+                connectionProfile.connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
                 connectionProfile.databaseConnectionName = "New connection";
                 connectionProfile.databaseConnectionKey = "New";
 
@@ -644,6 +658,8 @@ namespace TEAM
                     localCustomTabPage.OnSaveConnection += SaveConnection;
                     tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                     tabControlConnections.SelectedIndex = lastIndex;
+
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new environment was created."));
                 }
                 else
                 {
@@ -651,9 +667,7 @@ namespace TEAM
                 }
             }
         }
-
-
-
+        
         /// <summary>
         /// Update the main information RichTextBox (used as delegate in generates tabs).
         /// </summary>
@@ -669,34 +683,55 @@ namespace TEAM
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void DeleteConnection(Object o, MyStringEventArgs e)
+        private void DeleteConnection(Object o, MyConnectionProfileEventArgs e)
         {
             // Remove the tab page from the tab control
-            tabControlConnections.TabPages.RemoveByKey(e.Value);
+            var localKey = e.Value.databaseConnectionKey;
+            tabControlConnections.TabPages.RemoveByKey(localKey);
+
+            comboBoxMetadataConnection.Items.Remove(new KeyValuePair<TeamConnectionProfile, string>(e.Value, e.Value.databaseConnectionKey));
         }
 
         /// <summary>
-        /// Delete tab page from tab control (via delegate method)
+        /// Delete tab page from tab control and remove item from Combobox (via delegate method)
         /// </summary>
         /// <param name="o"></param>
         /// <param name="e"></param>
-        private void DeleteEnvironment(Object o, MyStringEventArgs e)
+        private void DeleteEnvironment(Object o, MyWorkingEnvironmentEventArgs e)
         {
-            // Remove the tab page from the tab control
-            tabControlEnvironments.TabPages.RemoveByKey(e.Value);
+            var localKey = e.Value.environmentName;
+            tabControlEnvironments.TabPages.RemoveByKey(localKey);
 
-            comboBoxEnvironments.Items.Remove(((CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
+            comboBoxEnvironments.Items.Remove(new KeyValuePair<TeamWorkingEnvironment, string>(e.Value, e.Value.environmentKey));
         }
 
         private void SaveEnvironment(object o, MyStringEventArgs e)
         {
-            comboBoxEnvironments.Items.Add(((CustomTabPageEnvironment)o)._textBoxEnvironmentKey.Text);
+            comboBoxEnvironments.Items.Clear();
+
+            foreach (var environment in ConfigurationSettings.environmentDictionary)
+            {
+                comboBoxEnvironments.Items.Add(new KeyValuePair<TeamWorkingEnvironment, string>(environment.Value, environment.Value.environmentKey));
+                comboBoxEnvironments.DisplayMember = "Value";
+            }
+
+            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
         }
 
         private void SaveConnection(object o, MyStringEventArgs e)
         {
-            //var localEnvironment = (TeamWorkingEnvironment)o;
-            comboBoxMetadataConnection.Items.Add(((CustomTabPageConnection)o)._textBoxConnectionKey.Text);
+            // Just adding is not enough as it can happen that the name has changed for an existing connection.
+            comboBoxMetadataConnection.Items.Clear();
+
+            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            {
+                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxMetadataConnection.ValueMember = "Key";
+                comboBoxMetadataConnection.DisplayMember = "Value";
+
+            }
+
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
         }
 
         /// <summary>
@@ -722,6 +757,11 @@ namespace TEAM
 
         }
 
+        /// <summary>
+        /// OnMouseDown event on the Environments Tab, if New is clicked instantiate a new environment tab.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tabControlEnvironments_MouseDown(object sender, MouseEventArgs e)
         {
             var lastIndex = tabControlEnvironments.TabCount - 1;
@@ -729,6 +769,7 @@ namespace TEAM
             if (tabControlEnvironments.GetTabRect(lastIndex).Contains(e.Location))
             {
                 TeamWorkingEnvironment workingEnvironment = new TeamWorkingEnvironment();
+                workingEnvironment.environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100)}, " % $@");
                 workingEnvironment.environmentName = "New environment";
                 workingEnvironment.environmentKey = "New";
 
@@ -762,6 +803,45 @@ namespace TEAM
         }
 
         /// <summary>
+        /// Open the Root Path File
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void openRootPathFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension);
+
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text =
+                    "An error has occured while attempting to open the root path file. The error message is: " + ex;
+            }
+        }
+
+        /// <summary>
+        /// Open the active Configuration File.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void openActiveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' +
+                              GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text =
+                    "An error has occured while attempting to open the active configuration file. The error message is: " + ex;
+            }
+        }
+
+        /// <summary>
         /// Manage the event when the environment selection changes.
         /// </summary>
         /// <param name="sender"></param>
@@ -771,11 +851,14 @@ namespace TEAM
             if (_formLoading == false)
             {
                 // Retrieve the object from the event.
-                var localComboBox = (ComboBox) sender;
-                var selectedItem = localComboBox.SelectedItem;
+                var localComboBox = (ComboBox)sender;
+
+                var localComboBoxSelection = (KeyValuePair<TeamWorkingEnvironment, string>) localComboBox.SelectedItem;
+
+                var selectedItem = localComboBoxSelection.Key;
 
                 // Get the full environment from the in-memory dictionary.
-                var localEnvironment = ConfigurationSettings.environmentDictionary[selectedItem.ToString()];
+                var localEnvironment = ConfigurationSettings.environmentDictionary[selectedItem.environmentInternalId];
 
                 // Set the working environment in memory.
                 GlobalParameters.WorkingEnvironment = localEnvironment.environmentKey;
@@ -800,9 +883,9 @@ namespace TEAM
                 }
 
                 EnvironmentConfiguration.LoadConnectionFile();
+
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
-
 
                 try
                 {
@@ -813,40 +896,12 @@ namespace TEAM
                     richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
                 }
 
-                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(ConfigurationSettings.MetadataConnection, ConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
+                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
-            }
-        }
-
-        private void openRootPathFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension);
-
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.Text =
-                    "An error has occured while attempting to open the root path file. The error message is: " + ex;
-            }
-        }
-
-        private void openActiveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' +
-                              GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.Text =
-                    "An error has occured while attempting to open the active configuration file. The error message is: " + ex;
             }
         }
     }

@@ -12,13 +12,13 @@ namespace TEAM
     /// </summary>
     internal class EnvironmentConfiguration
     {
-
         /// <summary>
         /// Load in to memory (deserialise) a TEAM connection file.
         /// </summary>
         public static void LoadConnectionFile()
         {
-            var connectionFileName = FormBase.GlobalParameters.ConfigurationPath +
+            var connectionFileName = 
+                                     FormBase.GlobalParameters.ConfigurationPath +
                                      FormBase.GlobalParameters.JsonConnectionFileName + '_' +
                                      FormBase.GlobalParameters.WorkingEnvironment +
                                      FormBase.GlobalParameters.JsonExtension;
@@ -31,7 +31,8 @@ namespace TEAM
                 {
                     File.Create(connectionFileName).Close();
 
-                    FormBase.ConfigurationSettings.connectionDictionary = CreateDummyConnections();
+                    // Generate the sample connection dictionary and commit to memory.
+                    CreateDummyConnectionDictionary();
 
                     // There was no key in the file for this connection, so it's new.
                     var list = new List<TeamConnectionProfile>();
@@ -52,11 +53,11 @@ namespace TEAM
 
                     foreach (var connection in connectionJson)
                     {
-                        FormBase.ConfigurationSettings.connectionDictionary.Add(connection.databaseConnectionKey, connection);
+                        FormBase.ConfigurationSettings.connectionDictionary.Add(connection.connectionInternalId, connection);
                     }
                 }
 
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The connections file {connectionFileName}was loaded successfully."));
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The connections file {connectionFileName} was loaded successfully."));
             }
             catch
             {
@@ -64,7 +65,10 @@ namespace TEAM
             }
         }
 
-        internal static void InitialiseEnvironment()
+        /// <summary>
+        /// Create the paths in the TEAM application (configuration, output and backup).
+        /// </summary>
+        internal static void InitialiseEnvironmentPaths()
         {
             CreateConfigurationPath();
             CreateOutputPath();
@@ -115,13 +119,17 @@ namespace TEAM
             }
         }
 
-        internal static Dictionary<string, TeamConnectionProfile> CreateDummyConnections()
+        /// <summary>
+        /// Create the sample / start dictionary of connections and commit to memory (global parameter connection dictionary).
+        /// </summary>
+        internal static void CreateDummyConnectionDictionary()
         {
             var localDictionary = new Dictionary<string, TeamConnectionProfile>();
 
             // Metadata
             var newTeamConnectionProfileMetadata = new TeamConnectionProfile
             {
+                connectionInternalId = "Metadata",
                 databaseConnectionKey = "Metadata",
                 databaseConnectionName = "Metadata Repository",
                 databaseConnectionNotes = ""
@@ -142,6 +150,7 @@ namespace TEAM
             // Source
             var newTeamConnectionProfileSource = new TeamConnectionProfile
             {
+                connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Source" }, "%$@"),
                 databaseConnectionKey = "Source",
                 databaseConnectionName = "Source System",
                 databaseConnectionNotes = ""
@@ -162,6 +171,7 @@ namespace TEAM
             // Staging
             var newTeamConnectionProfileStaging = new TeamConnectionProfile
             {
+                connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Staging" }, "%$@"),
                 databaseConnectionKey = "Staging",
                 databaseConnectionName = "Staging / Landing Area",
                 databaseConnectionNotes = ""
@@ -182,6 +192,7 @@ namespace TEAM
             // PSA
             var newTeamConnectionProfilePsa = new TeamConnectionProfile
             {
+                connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "PersistentStagingAreae" }, "%$@"),
                 databaseConnectionKey = "PersistentStagingArea",
                 databaseConnectionName = "Persistent Staging Area",
                 databaseConnectionNotes = ""
@@ -202,6 +213,7 @@ namespace TEAM
             // Integration
             var newTeamConnectionProfileIntegration = new TeamConnectionProfile
             {
+                connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Integration" }, "%$@"),
                 databaseConnectionKey = "Integration",
                 databaseConnectionName = "Integration Layer",
                 databaseConnectionNotes = ""
@@ -222,6 +234,7 @@ namespace TEAM
             // Presentation
             var newTeamConnectionProfilePresentation = new TeamConnectionProfile
             {
+                connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Presentation" }, "%$@"),
                 databaseConnectionKey = "Presentation",
                 databaseConnectionName = "Presentation Layer",
                 databaseConnectionNotes = ""
@@ -240,17 +253,15 @@ namespace TEAM
             newTeamConnectionProfilePresentation.databaseServer = newTeamDatabaseConnectionPresentation;
 
             // Compile the dictionary
-            localDictionary.Add("Metadata", newTeamConnectionProfileMetadata);
-            localDictionary.Add("Source", newTeamConnectionProfileSource);
-            localDictionary.Add("Staging", newTeamConnectionProfileStaging);
-            localDictionary.Add("PersistentStagingArea", newTeamConnectionProfilePsa);
-            localDictionary.Add("Integration", newTeamConnectionProfileIntegration);
-            localDictionary.Add("Presentation", newTeamConnectionProfilePresentation);
+            localDictionary.Add(newTeamConnectionProfileMetadata.connectionInternalId, newTeamConnectionProfileMetadata);
+            localDictionary.Add(newTeamConnectionProfileSource.connectionInternalId, newTeamConnectionProfileSource);
+            localDictionary.Add(newTeamConnectionProfileStaging.connectionInternalId, newTeamConnectionProfileStaging);
+            localDictionary.Add(newTeamConnectionProfilePsa.connectionInternalId, newTeamConnectionProfilePsa);
+            localDictionary.Add(newTeamConnectionProfileIntegration.databaseConnectionNotes, newTeamConnectionProfileIntegration);
+            localDictionary.Add(newTeamConnectionProfilePresentation.connectionInternalId, newTeamConnectionProfilePresentation);
 
             // Commit to memory.
             FormBase.ConfigurationSettings.connectionDictionary = localDictionary;
-
-            return localDictionary;
         }
 
         /// <summary>
@@ -266,8 +277,7 @@ namespace TEAM
 
                 initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
 
-                initialConfigurationFile.AppendLine("MetadataConnectionKey|Metadata");
-
+                initialConfigurationFile.AppendLine("MetadataConnectionId|Metadata");
 
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
@@ -409,7 +419,7 @@ namespace TEAM
                     }
                     else
                     {
-                        FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file {fileName} cannot be backed up because it cannot be identified."));
+                        FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file cannot be backed up because it cannot be identified."));
                     }
                 }
                 else
@@ -532,6 +542,7 @@ namespace TEAM
 
                 var developmentEnvironment = new TeamWorkingEnvironment
                 {
+                    environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Development" }, "%$@"),
                     environmentKey = "Development",
                     environmentName = "Development environment",
                     environmentNotes = "Environment created as initial / starter environment."
@@ -541,6 +552,7 @@ namespace TEAM
 
                 var productionEnvironment = new TeamWorkingEnvironment
                 {
+                    environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Production" }, "%$@"),
                     environmentKey = "Production",
                     environmentName = "Production environment",
                     environmentNotes = "Environment created as initial / starter environment."
@@ -554,8 +566,8 @@ namespace TEAM
                 // Commit to memory also.
                 var localDictionary = new Dictionary<string, TeamWorkingEnvironment>();
 
-                localDictionary.Add("Development", developmentEnvironment);
-                localDictionary.Add("Production", productionEnvironment);
+                localDictionary.Add(developmentEnvironment.environmentInternalId, developmentEnvironment);
+                localDictionary.Add(productionEnvironment.environmentInternalId, productionEnvironment);
 
                 FormBase.ConfigurationSettings.environmentDictionary = localDictionary;
             }
@@ -566,7 +578,7 @@ namespace TEAM
 
                 foreach (var environment in environmentJson)
                 {
-                    FormBase.ConfigurationSettings.environmentDictionary.Add(environment.environmentKey, environment);
+                    FormBase.ConfigurationSettings.environmentDictionary.Add(environment.environmentInternalId, environment);
                 }
             }
         }
@@ -582,7 +594,7 @@ namespace TEAM
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                configurationFile.AppendLine("MetadataConnectionKey|" + FormBase.ConfigurationSettings.MetadataConnection.databaseConnectionKey + "");
+                configurationFile.AppendLine("MetadataConnectionId|" + FormBase.ConfigurationSettings.MetadataConnection.connectionInternalId + "");
 
                 configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.ConfigurationSettings.StgTablePrefixValue +"");
                 configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.ConfigurationSettings.PsaTablePrefixValue + "");
@@ -692,9 +704,9 @@ namespace TEAM
                 FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTS"];
 
                 // Databases
-                if (configList["MetadataConnectionKey"] != null)
+                if (configList["MetadataConnectionId"] != null)
                 {
-                    FormBase.ConfigurationSettings.MetadataConnection = FormBase.ConfigurationSettings.connectionDictionary[configList["MetadataConnectionKey"]];
+                    FormBase.ConfigurationSettings.MetadataConnection = FormBase.ConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
                 }
                 else
                 {
@@ -810,6 +822,17 @@ namespace TEAM
         public TeamWorkingEnvironment Value { get; set; }
 
         public MyWorkingEnvironmentEventArgs(TeamWorkingEnvironment value)
+        {
+            Value = value;
+        }
+    }
+
+    // Delegate to pass through a TEAM connection.
+    public class MyConnectionProfileEventArgs : EventArgs
+    {
+        public TeamConnectionProfile Value { get; set; }
+
+        public MyConnectionProfileEventArgs(TeamConnectionProfile value)
         {
             Value = value;
         }

@@ -30,7 +30,7 @@ namespace TEAM
         private RichTextBox _richTextBoxNotes;
 
         /// <summary>
-        /// Constructor to instantiate a new Custom Tab Page
+        /// Constructor to instantiate a new Custom Tab Page, using a TeamWorkingEnvironment as input.
         /// </summary>
         public CustomTabPageEnvironment(object input)
         {
@@ -166,7 +166,7 @@ namespace TEAM
             deleteButton.Size = new Size(120, 40);
             deleteButton.Name = $"deleteButton";
             deleteButton.Text = $"Delete Connection";
-            deleteButton.Click += (DeleteEnvironment);
+            deleteButton.Click += DeleteEnvironment;
             deleteButton.TabIndex = 70;
 
             #endregion
@@ -199,7 +199,7 @@ namespace TEAM
         /// <summary>
         /// Delegate event handler from the 'main' form (Form Manage Configurations) to pass back the name of the tab page to the control (so that it can be deleted from there).
         /// </summary>
-        public event EventHandler<MyStringEventArgs> OnDeleteEnvironment = delegate { };
+        public event EventHandler<MyWorkingEnvironmentEventArgs> OnDeleteEnvironment = delegate { };
 
         public void DeleteEnvironment(object sender, EventArgs e)
         {
@@ -219,7 +219,7 @@ namespace TEAM
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
                 {
-                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.environmentKey == _localEnvironment.environmentKey);
+                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.environmentInternalId == _localEnvironment.environmentInternalId);
                 }
 
                 // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file.
@@ -233,13 +233,15 @@ namespace TEAM
                     // Remove the Json segment.
                     var list = jsonArray.ToList();
                     var itemToRemove =
-                        list.Single(r => r.environmentKey == _localEnvironment.environmentKey);
+                        list.Single(r => r.environmentInternalId == _localEnvironment.environmentInternalId);
                     list.Remove(itemToRemove);
                     jsonArray = list.ToArray();
 
                     UpdateRichTextBoxInformation(
                         $"The environment {_localEnvironment.environmentKey} was removed from {_environmentFileName}.\r\n");
 
+                    // Remove the value from the global parameter dictionary.
+                    FormBase.ConfigurationSettings.environmentDictionary.Remove(_localEnvironment.environmentInternalId);
                 }
 
                 // Save the updated file to disk.
@@ -248,7 +250,7 @@ namespace TEAM
             }
 
             // The name of the tab page is passed back to the original control (the tab control).
-            OnDeleteEnvironment(this, new MyStringEventArgs(this.Name));
+            OnDeleteEnvironment(this, new MyWorkingEnvironmentEventArgs(_localEnvironment));
 
         }
 
@@ -266,13 +268,13 @@ namespace TEAM
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.ConfigurationSettings.environmentDictionary.ContainsKey(_localEnvironment.environmentKey))
+                if (FormBase.ConfigurationSettings.environmentDictionary.ContainsKey(_localEnvironment.environmentInternalId))
                 {
-                    FormBase.ConfigurationSettings.environmentDictionary[_localEnvironment.environmentKey] = _localEnvironment;
+                    FormBase.ConfigurationSettings.environmentDictionary[_localEnvironment.environmentInternalId] = _localEnvironment;
                 }
                 else
                 {
-                    FormBase.ConfigurationSettings.environmentDictionary.Add(_localEnvironment.environmentKey, _localEnvironment);
+                    FormBase.ConfigurationSettings.environmentDictionary.Add(_localEnvironment.environmentInternalId, _localEnvironment);
                 }
 
                 // Update the environment on disk
@@ -289,11 +291,11 @@ namespace TEAM
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
                 {
-                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.environmentKey == _localEnvironment.environmentKey);
+                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.environmentInternalId == _localEnvironment.environmentInternalId);
                 }
 
                 // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
-                if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.environmentKey == "")
+                if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.environmentInternalId == "")
                 {
                     //  There was no key in the file for this connection, so it's new.
                     var list = new List<TeamWorkingEnvironment>();
@@ -308,6 +310,7 @@ namespace TEAM
                 else
                 {
                     // Update the values in an existing JSON segment
+                    jsonKeyLookup.environmentInternalId = _localEnvironment.environmentInternalId;
                     jsonKeyLookup.environmentKey = _localEnvironment.environmentKey;
                     jsonKeyLookup.environmentName = _localEnvironment.environmentName;
                     jsonKeyLookup.environmentNotes = _localEnvironment.environmentNotes;

@@ -35,9 +35,11 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRootPathFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openActiveConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -128,8 +130,6 @@
             this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
-            this.openRootPathFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openActiveConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
@@ -208,6 +208,11 @@
             this.toolStripMenuItem2.Text = "&Save Configuration File";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.saveConfigurationFileToolStripMenuItem_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(268, 6);
+            // 
             // openConfigurationDirectoryToolStripMenuItem
             // 
             this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
@@ -217,11 +222,6 @@
             this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
             this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(268, 6);
-            // 
             // openOutputDirectoryToolStripMenuItem
             // 
             this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
@@ -230,6 +230,22 @@
             this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            // 
+            // openRootPathFileToolStripMenuItem
+            // 
+            this.openRootPathFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
+            this.openRootPathFileToolStripMenuItem.Name = "openRootPathFileToolStripMenuItem";
+            this.openRootPathFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.openRootPathFileToolStripMenuItem.Text = "Open Root Path File";
+            this.openRootPathFileToolStripMenuItem.Click += new System.EventHandler(this.openRootPathFileToolStripMenuItem_Click);
+            // 
+            // openActiveConfigurationFileToolStripMenuItem
+            // 
+            this.openActiveConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
+            this.openActiveConfigurationFileToolStripMenuItem.Name = "openActiveConfigurationFileToolStripMenuItem";
+            this.openActiveConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.openActiveConfigurationFileToolStripMenuItem.Text = "Open Active Configuration File";
+            this.openActiveConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openActiveConfigurationFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -322,7 +338,7 @@
             this.tabPageRepository.Name = "tabPageRepository";
             this.tabPageRepository.Size = new System.Drawing.Size(1120, 621);
             this.tabPageRepository.TabIndex = 3;
-            this.tabPageRepository.Text = "Repository";
+            this.tabPageRepository.Text = "Metadata Store";
             this.tabPageRepository.UseVisualStyleBackColor = true;
             // 
             // richTextBox1
@@ -1123,22 +1139,6 @@
             this.tabControlDefaultDetails.SelectedIndex = 0;
             this.tabControlDefaultDetails.Size = new System.Drawing.Size(1128, 647);
             this.tabControlDefaultDetails.TabIndex = 0;
-            // 
-            // openRootPathFileToolStripMenuItem
-            // 
-            this.openRootPathFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openRootPathFileToolStripMenuItem.Name = "openRootPathFileToolStripMenuItem";
-            this.openRootPathFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openRootPathFileToolStripMenuItem.Text = "Open Root Path File";
-            this.openRootPathFileToolStripMenuItem.Click += new System.EventHandler(this.openRootPathFileToolStripMenuItem_Click);
-            // 
-            // openActiveConfigurationFileToolStripMenuItem
-            // 
-            this.openActiveConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openActiveConfigurationFileToolStripMenuItem.Name = "openActiveConfigurationFileToolStripMenuItem";
-            this.openActiveConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openActiveConfigurationFileToolStripMenuItem.Text = "Open Active Configuration File";
-            this.openActiveConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openActiveConfigurationFileToolStripMenuItem_Click);
             // 
             // FormManageConfiguration
             // 
