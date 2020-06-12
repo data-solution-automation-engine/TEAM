@@ -24,14 +24,16 @@ namespace TEAM
             if (fileType == FormBase.GlobalParameters.JsonTableMappingFileName) // Table Mapping
             {
                 dummyJsonFile = new JObject(
+                    new JProperty("enabledIndicator", true),
                     new JProperty("tableMappingHash", "NewHash"),
                     new JProperty("versionId", "versionId"),
                     new JProperty("sourceTable", "STG_EXAMPLESYSTEM_EXAMPLETABLE"),
+                    new JProperty("sourceConnectionKey", null),
                     new JProperty("targetTable", "HUB_EXAMPLE"),
+                    new JProperty("targetConnectionKey", null),
                     new JProperty("businessKeyDefinition", "EXAMPLE"),
                     new JProperty("drivingKeyDefinition", ""),
-                    new JProperty("filterCriteria", ""),
-                    new JProperty("enabledIndicator", "Y")
+                    new JProperty("filterCriteria", "")
                 );
             } else if (fileType == FormBase.GlobalParameters.JsonModelMetadataFileName) // Physical Model
             {

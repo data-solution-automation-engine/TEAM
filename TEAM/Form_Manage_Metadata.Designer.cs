@@ -308,6 +308,7 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridViewTableMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewTableMetadata.ContextMenuStrip = this.contextMenuStripTableMapping;
+            this.dataGridViewTableMetadata.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.dataGridViewTableMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewTableMetadata.MinimumSize = new System.Drawing.Size(964, 511);
             this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
@@ -528,7 +529,6 @@ namespace TEAM
             this.checkBoxShowJsonOutput.TabIndex = 10;
             this.checkBoxShowJsonOutput.Text = "Display Json output";
             this.checkBoxShowJsonOutput.UseVisualStyleBackColor = true;
-            this.checkBoxShowJsonOutput.CheckedChanged += new System.EventHandler(this.checkBoxShowJsonOutput_CheckedChanged);
             // 
             // checkBoxSaveInterfaceToJson
             // 
