@@ -173,6 +173,9 @@ namespace TEAM
 
         internal static Dictionary<string,string> GetConnectionInformationForTableType(string tableType)
         {
+
+          
+
             Dictionary<string, string> localConnectionInformation = new Dictionary<string, string>();
 
             if (new string[] { TableTypes.Context.ToString(), TableTypes.CoreBusinessConcept.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString(), TableTypes.Derived.ToString()}.Contains(tableType))

@@ -3156,11 +3156,11 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
                 var distinctListPsa = new List<string>
@@ -3233,11 +3233,11 @@ namespace TEAM
                 // Getting the mapping list from the data table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
                 // Process the unique Staging Area records
@@ -3256,8 +3256,8 @@ namespace TEAM
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_XREF]");
                         insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
-                        insertStatement.AppendLine("VALUES ('" + row["SOURCE_TABLE"] + "','" +
-                                                   row["TARGET_TABLE"] + 
+                        insertStatement.AppendLine("VALUES ('" + row[TableMetadataColumns.SourceTable.ToString()] + "','" +
+                                                   row[TableMetadataColumns.TargetTable.ToString()] + 
                                                    "', NULL, '" +
                                                    businessKeyDefinition + "', '" + 
                                                    filterCriterion + "')");
@@ -3304,7 +3304,7 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_HUB table
                 selectionRows =
                     inputTableMetadata.Select(
-                        "ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + hubTablePrefix + "%'");
+                        TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + hubTablePrefix + "%'");
 
                 var distinctListHub = new List<string>();
 
@@ -3386,7 +3386,7 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_LINK table
                 selectionRows =
                     inputTableMetadata.Select(
-                        "ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+                        TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
 
                 var distinctListLinks = new List<string>();
 
@@ -4765,7 +4765,7 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_LINK table
                 selectionRows =
                     inputTableMetadata.Select(
-                        "ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + lnkTablePrefix + "%'");
+                        TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
 
                 var distincLinksForBusinessKey = new List<string>();
 
@@ -7381,13 +7381,16 @@ namespace TEAM
 
             // Map the area to the column in the datagrid (e.g. source or target)
             int areaColumnIndex = 0;
+            int connectionColumnIndex = 0;
             switch (area)
             {
                 case "source":
-                    areaColumnIndex = 2;
+                    areaColumnIndex = (int)TableMetadataColumns.SourceTable;
+                    connectionColumnIndex = (int)TableMetadataColumns.SourceConnection;
                     break;
                 case "target":
-                    areaColumnIndex = 3;
+                    areaColumnIndex = (int)TableMetadataColumns.TargetTable;
+                    connectionColumnIndex = (int)TableMetadataColumns.TargetConnection;
                     break;
                 default:
                     // Do nothing
@@ -7405,16 +7408,22 @@ namespace TEAM
                 {
                     string objectValidated;
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
+                    var connectionObject = row.Cells[connectionColumnIndex].Value.ToString();
+
+                    var bla = ConfigurationSettings.connectionDictionary[connectionObject];
+
                     if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject, ""));
+                       
+
                         string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                   
 
                         try
                         {
-                            objectValidated =
-                                ClassMetadataValidation.ValidateObjectExistencePhysical(validationObject,
-                                    connectionValue);
+                            objectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(validationObject, connectionValue);
                         }
                         catch
                         {
