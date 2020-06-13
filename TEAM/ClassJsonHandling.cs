@@ -28,7 +28,7 @@ namespace TEAM
                     new JProperty("tableMappingHash", "NewHash"),
                     new JProperty("versionId", "versionId"),
                     new JProperty("sourceTable", "STG_EXAMPLESYSTEM_EXAMPLETABLE"),
-                    new JProperty("sourceConnectionKey", null),
+                    new JProperty("sourceConnection", null),
                     new JProperty("targetTable", "HUB_EXAMPLE"),
                     new JProperty("targetConnectionKey", null),
                     new JProperty("businessKeyDefinition", "EXAMPLE"),

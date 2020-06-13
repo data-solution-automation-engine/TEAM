@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using Newtonsoft.Json;
 
 namespace TEAM
@@ -10,13 +11,9 @@ namespace TEAM
         public string tableMappingHash { get; set; }
         public int versionId { get; set; }
         public string sourceTable { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public TeamConnectionProfile sourceConnectionKey { get; set; }
+        public string sourceConnectionKey { get; set; }
         public string targetTable { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public TeamConnectionProfile targetConnectionKey { get; set; }
+        public string targetConnectionKey { get; set; }
         public string businessKeyDefinition { get; set; }
         public string drivingKeyDefinition { get; set; }
         public string filterCriteria { get; set; }

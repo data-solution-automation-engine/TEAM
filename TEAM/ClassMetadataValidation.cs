@@ -196,7 +196,7 @@ namespace TEAM
                              (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
                              (string)row["BUSINESS_KEY_ATTRIBUTE"] == businessKeyComponent.Trim() &&
                              (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself
-                             row["TARGET_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion) 
+                             row[TableMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion) 
                            )
                         {
                             numberOfDependents++;
@@ -214,7 +214,7 @@ namespace TEAM
                          (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
                          (string)row["BUSINESS_KEY_ATTRIBUTE"] == validationObject.Item3.Trim() &&
                          (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself
-                         row["TARGET_TABLE"].ToString().StartsWith(tableInclusionFilterCriterion)
+                         row[TableMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
                        )
                     {
                         numberOfDependents++;
@@ -272,7 +272,7 @@ namespace TEAM
                 string hubSurrogateKeyName;
                 foreach (DataRow row in selectionRows)
                 {
-                    string hubTableName = row["TARGET_TABLE"].ToString();
+                    string hubTableName = row[TableMetadataColumns.TargetTable.ToString()].ToString();
                     hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.ConfigurationSettings.DwhKeyIdentifier;
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
                 }

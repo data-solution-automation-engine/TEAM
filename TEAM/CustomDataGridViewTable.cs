@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -7,10 +8,13 @@ namespace TEAM
 {
     internal class CustomDataGridViewTable : DataGridView 
     {
-
         private void DataGridView_DataError(object sender, DataGridViewDataErrorEventArgs anError)
         {
-            MessageBox.Show("Error happened " + anError.Context);
+           // var test = (DataGridView) sender;
+
+           // var bla =Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText;
+
+            MessageBox.Show("Error " + anError.Context);
 
             if (anError.Context == DataGridViewDataErrorContexts.Commit)
             {
@@ -45,7 +49,7 @@ namespace TEAM
             ColumnHeadersVisible = true;
             EditMode = DataGridViewEditMode.EditOnEnter;
 
-            //DataError += new DataGridViewDataErrorEventHandler(DataGridView_DataError);
+            DataError += (DataGridView_DataError);
 
             DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
             enabledIndicator.Name = TableMetadataColumns.Enabled.ToString();
@@ -78,13 +82,10 @@ namespace TEAM
             sourceConnection.HeaderText = "Source Connection";
             sourceConnection.DataPropertyName = TableMetadataColumns.SourceConnection.ToString();
             sourceConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            foreach (var connection in FormBase.ConfigurationSettings.connectionDictionary)
-            {
-                // Adding items in the drop down list
-                sourceConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
-            }
-            sourceConnection.DisplayMember = "Value";
-            sourceConnection.ValueMember = "Key";
+            sourceConnection.DataSource = LocalConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
+            sourceConnection.DisplayMember = "ConnectionKey";
+            sourceConnection.ValueMember = "ConnectionKey";
+            sourceConnection.ValueType = typeof(string);
             Columns.Add(sourceConnection);
 
             DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
@@ -94,17 +95,14 @@ namespace TEAM
             Columns.Add(targetTable);
 
             DataGridViewComboBoxColumn targetConnection = new DataGridViewComboBoxColumn();
-            sourceConnection.Name = TableMetadataColumns.TargetConnection.ToString();
+            targetConnection.Name = TableMetadataColumns.TargetConnection.ToString();
             targetConnection.HeaderText = "Target Connection";
             targetConnection.DataPropertyName = TableMetadataColumns.TargetConnection.ToString();
             targetConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            foreach (var connection in FormBase.ConfigurationSettings.connectionDictionary)
-            {
-                // Adding items in the drop down list
-                targetConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
-            }
-            targetConnection.DisplayMember = "Value";
-            targetConnection.ValueMember = "Key";
+            targetConnection.DataSource = LocalConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
+            targetConnection.DisplayMember = "ConnectionKey";
+            targetConnection.ValueMember = "ConnectionKey";
+            targetConnection.ValueType = typeof(string);
             Columns.Add(targetConnection);
 
             DataGridViewTextBoxColumn businessKeyDefinition = new DataGridViewTextBoxColumn();
@@ -125,6 +123,42 @@ namespace TEAM
             filterCriterion.DataPropertyName = TableMetadataColumns.FilterCriterion.ToString();
             Columns.Add(filterCriterion);
         }
+
+      //  protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, System.Windows.Forms.Keys keyData)
+      //  {
+
+            //MessageBox.Show("Key Press Detected");
+
+         //   if ((keyData == (Keys.Control | Keys.C)))
+         //   {
+                //Copy data
+
+          //  }
+
+
+            //try
+            //{
+            //    if (e.Modifiers == Keys.Control)
+            //    {
+            //        switch (e.KeyCode)
+            //        {
+            //            case Keys.V:
+            //                PasteClipboardTableMetadata();
+            //                break;
+            //            //case Keys.C:
+            //            //    Clipboard.SetText(e.ToString());
+            //            //    break;
+            //        }
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    MessageBox.Show("Pasting into the data grid has failed", "Copy/Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //}
+
+          //  return base.ProcessCmdKey(ref msg, keyData);
+       // }
+
 
         protected override void OnPaint(PaintEventArgs e)
         {

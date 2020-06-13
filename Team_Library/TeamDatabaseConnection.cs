@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -111,5 +113,33 @@ namespace TEAM
 
             return outputConnectionString;
         }
+    }
+
+    public class LocalConnection
+    {
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string ConnectionKey { get; }
+
+        public LocalConnection(string connectionKey)
+        {
+            ConnectionKey = connectionKey;
+        }
+
+        /// <summary>
+        /// Used to populate combo boxes in a key/value setting.
+        /// </summary>
+        /// <param name="localConnectionDictionary"></param>
+        /// <returns></returns>
+        public static List<LocalConnection> GetConnections(Dictionary<string, TeamConnectionProfile> localConnectionDictionary)
+        {
+            var possibleConnections = new List<LocalConnection>();
+            foreach (var connection in localConnectionDictionary)
+            {
+                possibleConnections.Add(new LocalConnection(connection.Value.databaseConnectionKey));
+            }
+
+            return possibleConnections;
+        }
+
     }
 }

@@ -31,7 +31,6 @@ namespace TEAM
         {
             InitializeComponent();
         }
-
         internal static class FileConfiguration
         {
             internal static string newFileTableMapping { get; set; }
@@ -328,9 +327,8 @@ namespace TEAM
             }
 
             // Load the file, convert it to a DataTable and bind it to the source
-            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(
-                File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName +
-                                 FileConfiguration.jsonVersionExtension));
+            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
+
 
             DataTable dt = Utility.ConvertToDataTable(jsonArray);
             // Order by Source Table, Integration_Area table, Business Key Attribute
@@ -342,26 +340,10 @@ namespace TEAM
 
             _bindingSourceTableMetadata.DataSource = dt;
 
-            var test = dataGridViewTableMetadata.DataSource;
-
             if (jsonArray != null)
             {
                 // Set the column header names etc. for the data grid view.
                 dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
-
-                //foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
-                //{
-                //    if (row.IsNewRow == false)
-                //    {
-                //        var test = row.Cells[(int)TableMetadataColumns.SourceConnection];
-                //        foreach (var bla in row.Cells)
-                //        {
-                //            var test2 = bla;
-                //        }
-                //        //More code here
-                //    }
-
-                //}
             }
 
             richTextBoxInformation.AppendText("The file " + GlobalParameters.ConfigurationPath +
@@ -372,7 +354,7 @@ namespace TEAM
             // Resize the grid
             GridAutoLayoutTableMappingMetadata();
         }
-
+        
 
         /// <summary>
         /// Populates the data grid directly from a database or an existing JSON file
@@ -380,7 +362,6 @@ namespace TEAM
         /// <param name="versionId"></param>
         private void PopulateAttributeGridWithVersion(int versionId)
         {
-            var selectedVersion = versionId;
             var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
 
             if (repositoryTarget == MetadataRepositoryStorageType.Json) //Update the JSON
@@ -1326,7 +1307,6 @@ namespace TEAM
             //... otherwise an in-place update to the existing version is done (insert / update / delete)
             else
             {
-
                 if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0)) //Double-check if there are any changes made at all
                 {
                     foreach (DataRow row in dataTableChanges.Rows) //Start looping through the changes
@@ -1339,13 +1319,21 @@ namespace TEAM
                             string hashKey = (string)row[TableMetadataColumns.HashKey.ToString()];
                             int versionKey = (int)row[TableMetadataColumns.VersionId.ToString()];
                             var stagingTable = "";
-                            var sourceConnection = new TeamConnectionProfile();
-                            var targetConnection = new TeamConnectionProfile();
+                            //var sourceConnection = new KeyValuePair<TeamConnectionProfile, string>();
+                            //var sourceConnection = new TeamConnectionProfile();
+                            var sourceConnectionKey = "";
+                            //var targetConnection = new KeyValuePair<TeamConnectionProfile, string>();
+                            var targetConnectionKey = "";
                             var integrationTable = "";
                             var businessKeyDefinition = "";
                             var drivingKeyDefinition = "";
                             var filterCriterion = "";
                             bool generateIndicator = true;
+
+                            if (row[TableMetadataColumns.Enabled.ToString()] != DBNull.Value)
+                            {
+                                generateIndicator = (bool)row[TableMetadataColumns.Enabled.ToString()];
+                            }
 
                             if (row[TableMetadataColumns.SourceTable.ToString()] != DBNull.Value)
                             {
@@ -1354,35 +1342,34 @@ namespace TEAM
 
                             if (row[TableMetadataColumns.SourceConnection.ToString()] != DBNull.Value)
                             {
-                                sourceConnection = (TeamConnectionProfile)row[TableMetadataColumns.SourceConnection.ToString()];
+                                sourceConnectionKey = (string)row[TableMetadataColumns.SourceConnection.ToString()];
+                                //sourceConnection = new KeyValuePair<TeamConnectionProfile, string>(tempVariable, tempVariable.databaseConnectionKey);
+                            }
+
+                            if (row[TableMetadataColumns.TargetTable.ToString()] != DBNull.Value)
+                            {
+                                integrationTable = (string)row[TableMetadataColumns.TargetTable.ToString()];
                             }
 
                             if (row[TableMetadataColumns.TargetConnection.ToString()] != DBNull.Value)
                             {
-                                targetConnection = (TeamConnectionProfile)row[TableMetadataColumns.TargetConnection.ToString()];
+                                targetConnectionKey = (string)row[TableMetadataColumns.TargetConnection.ToString()];
+                                //targetConnection = new KeyValuePair<TeamConnectionProfile, string>(tempVariable, tempVariable.databaseConnectionKey);
                             }
 
+                            if (row[TableMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
+                            {
+                                businessKeyDefinition = (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()];
+                            }
+                            if (row[TableMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
+                            {
+                                drivingKeyDefinition = (string)row[TableMetadataColumns.DrivingKeyDefinition.ToString()];
+                            }
+                            if (row[TableMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
+                            {
+                                filterCriterion = (string)row[TableMetadataColumns.FilterCriterion.ToString()];
+                            }
 
-                            if (row["TARGET_TABLE"] != DBNull.Value)
-                            {
-                                integrationTable = (string)row["TARGET_TABLE"];
-                            }
-                            if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value)
-                            {
-                                businessKeyDefinition = (string)row["BUSINESS_KEY_ATTRIBUTE"];
-                            }
-                            if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
-                            {
-                                drivingKeyDefinition = (string)row["DRIVING_KEY_ATTRIBUTE"];
-                            }
-                            if (row["FILTER_CRITERIA"] != DBNull.Value)
-                            {
-                                filterCriterion = (string)row["FILTER_CRITERIA"];
-                            }
-                            if (row["ENABLED_INDICATOR"] != DBNull.Value)
-                            {
-                                generateIndicator = (bool)row["ENABLED_INDICATOR"];
-                            }
 
                             //Read the file in memory
                             TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
@@ -1392,45 +1379,33 @@ namespace TEAM
 
                             if (jsonHash.tableMappingHash == "")
                             {
-                                richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                                richTextBoxInformation.Text += "The correct segment in the Json file was not found.\r\n";
                             }
                             else
                             {
                                 // Update the values in the JSON segment
+                                jsonHash.enabledIndicator = generateIndicator;
+                                jsonHash.sourceTable = stagingTable;
+                                jsonHash.sourceConnectionKey = sourceConnectionKey;
+                                jsonHash.targetTable = integrationTable;
+                                jsonHash.targetConnectionKey = targetConnectionKey;
                                 jsonHash.businessKeyDefinition = businessKeyDefinition;
                                 jsonHash.drivingKeyDefinition = drivingKeyDefinition;
                                 jsonHash.filterCriteria = filterCriterion;
-                                jsonHash.enabledIndicator = generateIndicator;
-                                jsonHash.targetTable = integrationTable;
-                                jsonHash.targetConnectionKey = targetConnection;
-                                jsonHash.sourceTable = stagingTable;
-                                jsonHash.sourceConnectionKey = sourceConnection;
                             }
 
                             string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
 
                             try
                             {
-                                // The below is not really necessary and was added as an attempt to work around limitations in WriteAllText, but turns out to be handy nonetheless
-                                //var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
-                                //var targetFilePathName = GlobalParameters.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
-
-                                //File.Copy(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension, targetFilePathName);
-                                //File.Delete(GlobalParameters.ConfigurationPath + GlobalParameters.jsonTableMappingFileName+JsonVersionExtension);
-
-
                                 // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
                                 File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
-
-                                // Wait for half a second for I/O operations to complete
-                                // Thread.Sleep(500);
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues saving the JSON update to disk.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues saving the Json update to disk.\r\n" + ex;
                             }
                             //var bla2 = jsonArray.Any(obj => obj.tableMappingHash == "1029C102DE45D40066210E426B605885"); // Returns true if any is found
-
                         }
                         #endregion
 
@@ -1446,6 +1421,12 @@ namespace TEAM
                             var drivingKeyDefinition = "";
                             var filterCriterion = "";
                             var generateIndicator = "";
+
+                            if (row[(int)TableMetadataColumns.Enabled] != DBNull.Value)
+                            {
+                                generateIndicator = (string)row[(int)TableMetadataColumns.Enabled];
+                                //generateIndicator = generateIndicator.Replace("'", "''");
+                            }
 
                             // Source
                             if (row[(int)TableMetadataColumns.SourceTable] != DBNull.Value)
@@ -1490,22 +1471,12 @@ namespace TEAM
                                 //filterCriterion = filterCriterion.Replace("'", "''");
                             }
 
-                            if (row[(int)TableMetadataColumns.Enabled] != DBNull.Value)
-                            {
-                                generateIndicator = (string)row[(int)TableMetadataColumns.Enabled];
-                                //generateIndicator = generateIndicator.Replace("'", "''");
-                            }
-
-
                             try
                             {
                                 var jsonTableMappingFull = new JArray();
 
                                 // Load the file, if existing information needs to be merged
-                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(
-                                        File.ReadAllText(
-                                            GlobalParameters.ConfigurationPath +
-                                            GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
+                                TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension));
 
                                 // Convert it into a JArray so segments can be added easily
                                 if (jsonArray != null)
@@ -1518,30 +1489,30 @@ namespace TEAM
 
                                 // Convert it into a JArray so segments can be added easily
                                 JObject newJsonSegment = new JObject(
+                                    new JProperty("enabledIndicator", generateIndicator),
                                     new JProperty("tableMappingHash", hashKey),
                                     new JProperty("versionId", versionId),
                                     new JProperty("sourceTable", sourceTable),
-                                    new JProperty("sourceConnectionKey", sourceConnection),
+                                    new JProperty("sourceConnection", sourceConnection),
                                     new JProperty("targetTable", targetTable),
-                                    new JProperty("targetConnectionKey", targetConnection),
+                                    new JProperty("targetConnection", targetConnection),
                                     new JProperty("businessKeyDefinition", businessKeyDefinition),
                                     new JProperty("drivingKeyDefinition", drivingKeyDefinition),
-                                    new JProperty("filterCriteria", filterCriterion),
-                                    new JProperty("enabledIndicator", generateIndicator)
-                                    );
+                                    new JProperty("filterCriteria", filterCriterion)
+                                );
 
                                 jsonTableMappingFull.Add(newJsonSegment);
 
                                 string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
                                 File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension, output);
 
-                                //Making sure the hash key value is added to the datatable as well
+                                //Making sure the hash key value is added to the data table as well
                                 row[(int)TableMetadataColumns.HashKey] = hashKey;
 
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues inserting the Json segment / record.\r\n" + ex;
                             }
 
                         }
@@ -1551,16 +1522,13 @@ namespace TEAM
                         //Deleted rows
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
-                            var hashKey = row["TABLE_MAPPING_HASH", DataRowVersion.Original].ToString();
-                            var versionKey = row["VERSION_ID", DataRowVersion.Original].ToString();
-
+                            var hashKey = row[TableMetadataColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
+                            var versionKey = row[TableMetadataColumns.VersionId.ToString(), DataRowVersion.Original].ToString();
 
                             try
                             {
                                 var jsonArray =
-                                    JsonConvert.DeserializeObject<TableMappingJson[]>(
-                                        File.ReadAllText(GlobalParameters.ConfigurationPath +
-                                                         GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
+                                    JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension)).ToList();
 
                                 //Retrieves the json segment in the file for the given hash returns value or NULL
                                 var jsonSegment = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
@@ -1569,7 +1537,7 @@ namespace TEAM
 
                                 if (jsonSegment.tableMappingHash == "")
                                 {
-                                    richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                                    richTextBoxInformation.Text += "The correct segment in the Json file was not found.\r\n";
                                 }
                                 else
                                 {
@@ -1578,14 +1546,13 @@ namespace TEAM
                                 }
 
                                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                File.WriteAllText(
-                                    GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension,
+                                File.WriteAllText(GlobalParameters.ConfigurationPath + GlobalParameters.JsonTableMappingFileName + FileConfiguration.jsonVersionExtension,
                                     output);
 
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues applying the Json update.\r\n" + ex;
                             }
 
                         }
@@ -1595,7 +1562,7 @@ namespace TEAM
                     #region Statement execution
                     // Execute the statement. If the source is JSON this is done in separate calls for now
 
-                    //Committing the changes to the datatable - making sure new changes can be picked up
+                    //Committing the changes to the data table - making sure new changes can be picked up
                     // AcceptChanges will clear all New, Deleted and/or Modified settings
                     dataTableChanges.AcceptChanges();
                     ((DataTable)_bindingSourceTableMetadata.DataSource).AcceptChanges();
@@ -2281,104 +2248,7 @@ namespace TEAM
             }
         }
 
-        private void OpenAttributeFileMenuItem_Click(object sender, EventArgs e)
-        {
-            var theDialog = new OpenFileDialog
-            {
-                Title = @"Open Attribute Mapping Metadata File",
-                Filter = @"Attribute Mapping files|*.xml;*.json",
-                InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
-            };
-            
-            var ret = STAShowDialog(theDialog);
 
-            if (ret == DialogResult.OK)
-            {
-                try
-                {
-                    var chosenFile = theDialog.FileName;
-                    var dataSet = new DataSet();
-
-                    string fileExtension = Path.GetExtension(theDialog.FileName);
-
-                    if (fileExtension == ".xml")
-                    {
-                        dataSet.ReadXml(chosenFile);
-
-                        dataGridViewAttributeMetadata.DataSource = dataSet.Tables[0];
-                        _bindingSourceAttributeMetadata.DataSource = dataGridViewAttributeMetadata.DataSource;
-                    }
-                    else if (fileExtension == ".json")
-                    {
-                        // Create a backup file, if enabled
-                        if (checkBoxBackupFiles.Checked)
-                        {
-                            try
-                            {
-                                var backupFile = new JsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", GlobalParameters.ConfigurationPath);
-                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
-                            }
-                        }
-
-                    // If the information needs to be merged, a global parameter needs to be set.
-                    // This will overwrite existing files for the in-use version.
-                    if (!checkBoxMergeFiles.Checked)
-                    {
-                        FileConfiguration.newFileAttributeMapping = "true";
-                    }                                           
-
-
-                    // Load the file, convert it to a DataTable and bind it to the source
-                    List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
-                    DataTable dt = Utility.ConvertToDataTable(jsonArray);
-
-                    // Set the column names in the datatable.
-                    SetTeamDataTableProperties.SetAttributeDataTableColumns(dt);
-                    // Sort the columns in the datatable.
-                    SetTeamDataTableProperties.SetAttributeDatTableSorting(dt);
-
-                    // Clear out the existing data from the grid
-                    _bindingSourceAttributeMetadata.DataSource = null;
-                    _bindingSourceAttributeMetadata.Clear();
-                    dataGridViewAttributeMetadata.DataSource = null;
-
-                    // Bind the datatable to the gridview
-                    _bindingSourceAttributeMetadata.DataSource = dt;
-
-                    if (jsonArray != null)
-                        {
-                            // Set the column header names.
-                            dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
-                            dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
-                            dataGridViewAttributeMetadata.Columns[0].Visible = false;
-                            dataGridViewAttributeMetadata.Columns[1].Visible = false;
-                            dataGridViewAttributeMetadata.Columns[6].ReadOnly = false;
-
-                            dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
-                            dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
-                            dataGridViewAttributeMetadata.Columns[2].HeaderText = "Source Table";
-                            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
-                            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
-                            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
-                            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Notes";
-                        }
-                    }
-
-                    GridAutoLayoutAttributeMetadata();
-                    richTextBoxInformation.Text = "The metadata has been loaded from file.\r\n";
-                    ContentCounter();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-        }
 
         private void CreateTemporaryWorkerTable(string connString)
         {
@@ -2494,21 +2364,22 @@ namespace TEAM
                 string DRIVING_KEY_ATTRIBUTE = "";
                 string ENABLED_INDICATOR = "";
 
-                if (row["SOURCE_TABLE"] != DBNull.Value)
-                    sourceTable = (string)row["SOURCE_TABLE"];
-                if (row["BUSINESS_KEY_ATTRIBUTE"] != DBNull.Value) 
-                    BUSINESS_KEY_ATTRIBUTE = (string)row["BUSINESS_KEY_ATTRIBUTE"];
-                if (row["TARGET_TABLE"] != DBNull.Value)
-                    targetTable = (string)row["TARGET_TABLE"];
-                if (row["FILTER_CRITERIA"] != DBNull.Value)
+                if (row[TableMetadataColumns.SourceTable.ToString()] != DBNull.Value)
+                    sourceTable = (string)row[TableMetadataColumns.SourceTable.ToString()];
+                if (row[TableMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value) 
+                    BUSINESS_KEY_ATTRIBUTE = (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()];
+                if (row[TableMetadataColumns.TargetTable.ToString()] != DBNull.Value)
+                    targetTable = (string)row[TableMetadataColumns.TargetTable.ToString()];
+                if (row[TableMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
                 {
-                    FILTER_CRITERIA = (string)row["FILTER_CRITERIA"];
+                    FILTER_CRITERIA = (string)row[TableMetadataColumns.FilterCriterion.ToString()];
                     FILTER_CRITERIA = FILTER_CRITERIA.Replace("'", "''");
                 }
-                if (row["DRIVING_KEY_ATTRIBUTE"] != DBNull.Value)
-                    DRIVING_KEY_ATTRIBUTE = (string)row["DRIVING_KEY_ATTRIBUTE"];
-                if (row["ENABLED_INDICATOR"] != DBNull.Value)
-                    ENABLED_INDICATOR = (string)row["ENABLED_INDICATOR"];
+                if (row[TableMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
+                    DRIVING_KEY_ATTRIBUTE = (string)row[TableMetadataColumns.DrivingKeyDefinition.ToString()];
+
+                if (row[TableMetadataColumns.Enabled.ToString()] != DBNull.Value)
+                    ENABLED_INDICATOR = (string)row[TableMetadataColumns.Enabled.ToString()].ToString();
 
                 var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable,"");
@@ -3053,7 +2924,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the source metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the 'source'
-                selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y'");
+                selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString()+" = 'true'");
 
                 var distinctListSource = new List<string>
                 {
@@ -3064,7 +2935,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string source_table = row["SOURCE_TABLE"].ToString().Trim();
+                    string source_table = row[TableMetadataColumns.SourceTable.ToString()].ToString().Trim();
                     if (!distinctListSource.Contains(source_table))
                     {
                         distinctListSource.Add(source_table);
@@ -3126,13 +2997,11 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
-                                                              ConfigurationSettings.StgTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND "+TableMetadataColumns.TargetTable.ToString()+" LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
-                                                              ConfigurationSettings.StgTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
                 var distinctListStg = new List<string>
@@ -3144,7 +3013,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row["TARGET_TABLE"].ToString().Trim();
+                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListStg.Contains(target_table))
                     {
                         distinctListStg.Add(target_table);
@@ -3208,13 +3077,11 @@ namespace TEAM
                 // Getting the mapping list from the data table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
-                                                              ConfigurationSettings.StgTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
-                                                              ConfigurationSettings.StgTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
                 // Process the unique Staging Area records
@@ -3222,24 +3089,22 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row["SOURCE_TABLE"].ToString())
+                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row[TableMetadataColumns.SourceTable.ToString()].ToString())
                             .FirstOrDefault();
-                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row["TARGET_TABLE"].ToString())
+                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row[TableMetadataColumns.TargetTable.ToString()].ToString())
                             .FirstOrDefault();
 
-                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " +
-                                              targetFullyQualifiedName.Value + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
 
-                        var filterCriterion = row["FILTER_CRITERIA"].ToString().Trim();
+                        var filterCriterion = row[TableMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
 
-                        var businessKeyDefinition = row["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
+                        var businessKeyDefinition = row[TableMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_XREF]");
-                        insertStatement.AppendLine(
-                            "([SOURCE_NAME], [STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [CHANGE_DATA_CAPTURE_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
+                        insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [CHANGE_DATA_CAPTURE_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
                         insertStatement.AppendLine("VALUES (" +
                                                    "'" + sourceFullyQualifiedName.Value + "', " +
                                                    "'" + targetFullyQualifiedName.Value + "', " +
@@ -3291,13 +3156,11 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" +
-                                                              ConfigurationSettings.PsaTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" +
-                                                              ConfigurationSettings.PsaTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select("ENABLED_INDICATOR = 'Y' AND TARGET_TABLE LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
                 var distinctListPsa = new List<string>
@@ -3309,7 +3172,7 @@ namespace TEAM
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    var target_table = row["TARGET_TABLE"].ToString().Trim();
+                    var target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListPsa.Contains(target_table))
                     {
                         distinctListPsa.Add(target_table);
@@ -3382,12 +3245,12 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + row["SOURCE_TABLE"] + " to " + row["TARGET_TABLE"] + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + row[TableMetadataColumns.SourceTable.ToString()] + " to " + row[TableMetadataColumns.TargetTable.ToString()] + " relationship.\r\n");
 
-                        var filterCriterion = row["FILTER_CRITERIA"].ToString().Trim();
+                        var filterCriterion = row[TableMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
 
-                        var businessKeyDefinition = row["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
+                        var businessKeyDefinition = row[TableMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                         var insertStatement = new StringBuilder();
@@ -3451,7 +3314,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row["TARGET_TABLE"].ToString().Trim();
+                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListHub.Contains(target_table))
                     {
                         distinctListHub.Add(target_table);
@@ -3533,7 +3396,7 @@ namespace TEAM
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row["TARGET_TABLE"].ToString().Trim();
+                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListLinks.Contains(target_table))
                     {
                         distinctListLinks.Add(target_table);
@@ -4909,7 +4772,7 @@ namespace TEAM
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row["TARGET_TABLE"].ToString().Trim();
+                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distincLinksForBusinessKey.Contains(target_table))
                     {
                         distincLinksForBusinessKey.Add(target_table);
@@ -5277,7 +5140,7 @@ namespace TEAM
                                                   (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " +
                                                   (string) row["TARGET_COLUMN"] + ".\r\n");
 
-                            //var localTableName = ClassMetadataHandling.GetNonQualifiedTableName(row["TARGET_TABLE"].ToString());
+                            //var localTableName = ClassMetadataHandling.GetNonQualifiedTableName(row[TableMetadataColumns.TargetTable.ToString()].ToString());
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
@@ -6218,20 +6081,26 @@ namespace TEAM
                 worker.ReportProgress(100);
             }
         }
-
-
-
-
+        
         private void DataGridViewTableMetadataKeyDown(object sender, KeyEventArgs e)
         {
+            // Only works when not in edit mode.
             try
             {
                 if (e.Modifiers == Keys.Control)
                 {
-                    switch(e.KeyCode)
+                    switch (e.KeyCode)
                     {
                         case Keys.V:
                             PasteClipboardTableMetadata();
+                            break;
+                        case Keys.C:
+                            if (sender.GetType() == typeof(DataGridViewComboBoxEditingControl))
+                            {
+                                var temp = (DataGridViewComboBoxEditingControl) sender;
+                                Clipboard.SetText(temp.SelectedValue.ToString());
+                            }
+
                             break;
                     }
                 }
@@ -6327,7 +6196,7 @@ namespace TEAM
             }
             catch (FormatException)
             {
-                MessageBox.Show("There is an issue with the data formate for this cell!");
+                MessageBox.Show("There is an issue with the data format for this cell!");
             }
         }
 
@@ -6932,7 +6801,7 @@ namespace TEAM
             {
                 var theDialog = new SaveFileDialog
                 {
-                    Title = @"Save Business Key Metadata File",
+                    Title = @"Save Table Mapping Metadata File",
                     Filter = @"JSON files|*.json",
                     InitialDirectory =  GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
                 };
@@ -6948,8 +6817,8 @@ namespace TEAM
                         DataTable gridDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
 
                         // Make sure the output is sorted
-                        gridDataTable.DefaultView.Sort = "[SOURCE_TABLE] ASC, [TARGET_TABLE] ASC, [BUSINESS_KEY_ATTRIBUTE] ASC";
-
+                        SetTeamDataTableProperties.SetTableDataTableSorting(gridDataTable);
+                        
                         gridDataTable.TableName = "TableMappingMetadata";
 
                         JArray outputFileArray = new JArray();
@@ -6957,14 +6826,16 @@ namespace TEAM
                         {
                             JObject individualRow = JObject.FromObject(new
                             {
-                                tableMappingHash = singleRow[0].ToString(),
-                                versionId = singleRow[1].ToString(),
-                                sourceTable = singleRow[2].ToString(),
-                                targetTable = singleRow[3].ToString(),
-                                businessKeyDefinition = singleRow[4].ToString(),
-                                drivingKeyDefinition = singleRow[5].ToString(),
-                                filterCriteria = singleRow[6].ToString(),
-                                enabledIndicator = singleRow[7].ToString()
+                                enabledIndicator = singleRow[(int)TableMetadataColumns.Enabled].ToString(),
+                                tableMappingHash = singleRow[(int)TableMetadataColumns.HashKey].ToString(),
+                                versionId = singleRow[(int)TableMetadataColumns.VersionId].ToString(),
+                                sourceTable = singleRow[(int)TableMetadataColumns.SourceTable].ToString(),
+                                sourceConnection = singleRow[(int)TableMetadataColumns.SourceConnection].ToString(),
+                                targetTable = singleRow[(int)TableMetadataColumns.TargetTable].ToString(),
+                                targetConnection = singleRow[(int)TableMetadataColumns.TargetConnection].ToString(),
+                                businessKeyDefinition = singleRow[(int)TableMetadataColumns.BusinessKeyDefinition].ToString(),
+                                drivingKeyDefinition = singleRow[(int)TableMetadataColumns.DrivingKeyDefinition].ToString(),
+                                filterCriteria = singleRow[(int)TableMetadataColumns.FilterCriterion].ToString()
                             });
                             outputFileArray.Add(individualRow);
                         }
@@ -6973,7 +6844,7 @@ namespace TEAM
 
                         File.WriteAllText(chosenFile, json);
 
-                        richTextBoxInformation.Text = "The Business Key metadata file " + chosenFile + " saved successfully.";
+                        richTextBoxInformation.Text = "The Table Mapping metadata file " + chosenFile + " saved successfully.";
                     }
                     catch (Exception ex)
                     {
@@ -7025,129 +6896,6 @@ namespace TEAM
             }
         }
 
-        private void saveAttributeMappingAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var theDialog = new SaveFileDialog
-                {
-                    Title = @"Save Attribute Mapping Metadata File",
-                    Filter = @"JSON files|*.json",
-                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
-                };
-
-                var ret = STAShowDialog(theDialog);
-
-                if (ret == DialogResult.OK)
-                {
-                    try
-                    {
-                        var chosenFile = theDialog.FileName;
-
-                        DataTable gridDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
-
-                        // Make sure the output is sorted
-                        gridDataTable.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
-
-                        gridDataTable.TableName = "AttributeMappingMetadata";
-
-                        JArray outputFileArray = new JArray();
-                        foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
-                        {
-                            JObject individualRow = JObject.FromObject(new
-                            {
-                                attributeMappingHash = singleRow[0].ToString(),
-                                versionId = singleRow[1].ToString(),
-                                sourceTable = singleRow[2].ToString(),
-                                sourceAttribute = singleRow[3].ToString(),
-                                targetTable = singleRow[4].ToString(),
-                                targetAttribute = singleRow[5].ToString(),
-                                Notes = singleRow[6].ToString()
-                            });
-                            outputFileArray.Add(individualRow);
-                        }
-
-                        string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
-
-                        File.WriteAllText(chosenFile, json);
-
-                        richTextBoxInformation.Text = "The Attribute Mapping metadata file " + chosenFile + " saved successfully.";
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
-            }
-        }
-
-        private void saveModelMetadataFileAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var theDialog = new SaveFileDialog
-                {
-                    Title = @"Save Model Metadata File",
-                    Filter = @"JSON files|*.json",
-                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
-                };
-
-                var ret = STAShowDialog(theDialog);
-
-                if (ret == DialogResult.OK)
-                {
-                    try
-                    {
-                        var chosenFile = theDialog.FileName;
-
-                        DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
-
-                        gridDataTable.DefaultView.Sort = "[DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-
-                        gridDataTable.TableName = "ModelMetadata";
-
-                        JArray outputFileArray = new JArray();
-                        foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
-                        {
-                            JObject individualRow = JObject.FromObject(new
-                            {
-                                versionAttributeHash = singleRow[0].ToString(),
-                                versionId = singleRow[1].ToString(),
-                                databaseName = singleRow[2].ToString(),
-                                schemaName = singleRow[3].ToString(),
-                                tableName = singleRow[4].ToString(),
-                                columnName = singleRow[5].ToString(),
-                                dataType = singleRow[6].ToString(),
-                                characterMaximumLength = singleRow[7].ToString(),
-                                numericPrecision = singleRow[8].ToString(),
-                                ordinalPosition = singleRow[9].ToString(),
-                                primaryKeyIndicator = singleRow[10].ToString(),
-                                multiActiveIndicator = singleRow[11].ToString()
-                            });
-                            outputFileArray.Add(individualRow);
-                        }
-
-                        string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
-
-                        File.WriteAllText(chosenFile, json);
-
-                        richTextBoxInformation.Text = "The model metadata file " + chosenFile + " saved successfully.";
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
-            }
-        }
 
         /// <summary>
         ///   Method called when clicking the Reverse Engineer button
@@ -7357,9 +7105,42 @@ namespace TEAM
             if (e.Button == MouseButtons.Right)
             {
                 var hti = dataGridViewTableMetadata.HitTest(e.X, e.Y);
-                dataGridViewTableMetadata.ClearSelection();
-                dataGridViewTableMetadata.Rows[hti.RowIndex].Selected = true;
+
+                // If the column in the selected cell is a Combobox and there are multiple cells selected then c\setup a separate context menu
+                //var currentCell = dataGridViewTableMetadata.Rows[hti.RowIndex].Cells[hti.ColumnIndex];
+                //var currentColumn = dataGridViewTableMetadata.Columns[hti.ColumnIndex];
+
+                //if (currentColumn.GetType() == typeof(DataGridViewComboBoxColumn))
+                //{
+                //    var selectedCellCollection = dataGridViewTableMetadata.SelectedCells;
+
+
+                //    //if (currentCell.Value != DBNull.Value)
+                //    //{
+                //    //    string currentValue = (string) currentCell.Value;
+                //    //}
+                //}
+                //else
+                //{
+                    // Normal selection
+                    dataGridViewTableMetadata.ClearSelection();
+                    dataGridViewTableMetadata.Rows[hti.RowIndex].Selected = true;
+                //}
             }
+            //if (e.Button == MouseButtons.Left)
+            //{
+            //    var hti = dataGridViewTableMetadata.HitTest(e.X, e.Y);
+            //    var currentCell = dataGridViewTableMetadata.Rows[hti.RowIndex].Cells[hti.ColumnIndex];
+
+            //    if (currentCell.GetType() == typeof(DataGridViewComboBoxCell))
+            //    {
+                   
+            //       if (currentCell.Value != DBNull.Value)
+            //       {
+            //           string currentValue = (string)currentCell.Value;
+            //        }
+            //    }
+            //}
         }
 
         private void dataGridViewAttributeMetadata_MouseDown(object sender, MouseEventArgs e)
@@ -7383,7 +7164,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// This method is called from the context menu on the data grid. It exports the selected row to Json.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -7395,12 +7176,12 @@ namespace TEAM
             Int32 selectedRow = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
             List<string> selectionFilter = new List<string>();            
-            selectionFilter.Add(dataGridViewTableMetadata.Rows[selectedRow].Cells[3].Value.ToString());
+            selectionFilter.Add(dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMetadataColumns.TargetTable].Value.ToString());
 
-            string additionalInfoForDrivingKey = dataGridViewTableMetadata.Rows[selectedRow].Cells[5].Value.ToString();
+            string additionalInfoForDrivingKey = dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMetadataColumns.DrivingKeyDefinition].Value.ToString();
 
             List<LoadPatternDefinition> patternlist = new List<LoadPatternDefinition>();
-            var tableType = ClassMetadataHandling.GetTableType(dataGridViewTableMetadata.Rows[selectedRow].Cells[3].Value.ToString(), additionalInfoForDrivingKey);
+            var tableType = ClassMetadataHandling.GetTableType(dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(), additionalInfoForDrivingKey);
 
             foreach (LoadPatternDefinition pattern in ConfigurationSettings.patternDefinitionList)
             {
@@ -7422,42 +7203,6 @@ namespace TEAM
         {
             Int32 rowToDelete = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
             dataGridViewTableMetadata.Rows.RemoveAt(rowToDelete);
-        }
-        
-        /// <summary>
-        /// Write out a row in the DataGrid to file
-        /// </summary>
-        /// <param name="sourceTableName"></param>
-        /// <param name="targetTableName"></param>
-        /// <param name="businessKeyDefinition"></param>
-        public void CreateJsonSourceToTargetMapping(string sourceTableName, string targetTableName,string businessKeyDefinition)
-        {
-            try
-            {
-                var jsonTableMappingFull = new JArray();
-                var outputFileName = sourceTableName+"_"+targetTableName+".json";
-
-                //Create a segment to work with
-                JObject newJsonSegment = new JObject(
-                    new JProperty("sourceTableName", sourceTableName),
-                    //new JProperty("versionId", versionId),
-                    new JProperty("targetTableName", targetTableName),
-                    new JProperty("businessKeyDefinition", businessKeyDefinition)
-                    );
-
-                //Add the segment to the array
-                jsonTableMappingFull.Add(newJsonSegment);
-
-                //Spool to disk
-                string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                File.WriteAllText(GlobalParameters.OutputPath + outputFileName, output);
-
-                richTextBoxInformation.Text = "File "+ outputFileName + " has been saved to "+ GlobalParameters.OutputPath + ".";
-            }
-            catch (JsonReaderException ex)
-            {
-                richTextBoxInformation.Text += "There were issues saving the JSON file.\r\n" + ex;
-            }
         }
         #endregion
 
@@ -7949,111 +7694,6 @@ namespace TEAM
             {
                 labelResult.Text = "Done!";
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
-            }
-        }
-
-        private void openModelMetadataFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var theDialog = new OpenFileDialog
-            {
-                Title = @"Open Physical Model Metadata File",
-                Filter = @"Physical Model files|*.xml;*.json",
-                InitialDirectory = GlobalParameters.ConfigurationPath 
-            };
-
-            var ret = STAShowDialog(theDialog);
-
-            if (ret == DialogResult.OK)
-            {
-                richTextBoxInformation.Clear();
-                try
-                {
-                    var chosenFile = theDialog.FileName;
-                    var dataSet = new DataSet();
-
-                    string fileExtension = Path.GetExtension(theDialog.FileName);
-
-                    if (fileExtension == ".xml")
-                    {
-                        dataSet.ReadXml(chosenFile);
-
-                        dataGridViewPhysicalModelMetadata.DataSource = dataSet.Tables[0];
-                        _bindingSourcePhysicalModelMetadata.DataSource = dataGridViewPhysicalModelMetadata.DataSource;
-
-                    }
-                    else if (fileExtension == ".json")
-                    {
-                        // Create a backup file, if enabled
-                        if (checkBoxBackupFiles.Checked)
-                        {
-                            try
-                            {
-                                var backupFile = new JsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
-                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
-                            }
-                        }
-
-                        // If the information needs to be merged, a global parameter needs to be set.
-                        // This will overwrite existing files for the in-use version.
-                        if (!checkBoxMergeFiles.Checked)
-                        {
-                            FileConfiguration.newFilePhysicalModel = "true";
-                        }
-
-                        // Load the file, convert it to a DataTable and bind it to the source
-                        List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(chosenFile));
-                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
-
-                        // Setup the datatable with proper column headings.
-                        SetTeamDataTableProperties.SetPhysicalModelDataTableColumns(dt);
-                        // Sort the columns.
-                        SetTeamDataTableProperties.SetPhysicalModelDataTableSorting(dt);
-
-                        // Clear out the existing data from the grid
-                        _bindingSourcePhysicalModelMetadata.DataSource = null;
-                        _bindingSourcePhysicalModelMetadata.Clear();
-                        dataGridViewPhysicalModelMetadata.DataSource = null;
-
-                        // Bind the datatable to the gridview
-                        _bindingSourcePhysicalModelMetadata.DataSource = dt;
-
-                        if (jsonArray != null)
-                        {
-                            // Set the column header names
-                            dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
-
-                            dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
-                            dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
-                            dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
-
-                            dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
-                            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
-                            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
-                            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
-                            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
-                            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
-                            dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
-                        }
-                    }
-
-                    GridAutoLayoutPhysicalModelMetadata();
-                    ContentCounter();
-                    richTextBoxInformation.AppendText("The file " + chosenFile + " was loaded.\r\n");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("An error has been encountered! The reported error is: " + ex);
-                }
             }
         }
 
@@ -8563,6 +8203,341 @@ namespace TEAM
             }
         }
 
+        private void dataGridViewTableMetadata_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (e.Control is DataGridViewComboBoxEditingControl tb)
+            {
+                tb.KeyDown -= DataGridViewTableMetadataKeyDown;
+                tb.KeyDown += DataGridViewTableMetadataKeyDown;
+            }
+        }
 
+        private void openAttributeMappingFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var theDialog = new OpenFileDialog
+            {
+                Title = @"Open Attribute Mapping Metadata File",
+                Filter = @"Attribute Mapping files|*.xml;*.json",
+                InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+            };
+
+            var ret = STAShowDialog(theDialog);
+
+            if (ret == DialogResult.OK)
+            {
+                try
+                {
+                    var chosenFile = theDialog.FileName;
+                    var dataSet = new DataSet();
+
+                    string fileExtension = Path.GetExtension(theDialog.FileName);
+
+                    if (fileExtension == ".xml")
+                    {
+                        dataSet.ReadXml(chosenFile);
+
+                        dataGridViewAttributeMetadata.DataSource = dataSet.Tables[0];
+                        _bindingSourceAttributeMetadata.DataSource = dataGridViewAttributeMetadata.DataSource;
+                    }
+                    else if (fileExtension == ".json")
+                    {
+                        // Create a backup file, if enabled
+                        if (checkBoxBackupFiles.Checked)
+                        {
+                            try
+                            {
+                                var backupFile = new JsonHandling();
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", GlobalParameters.ConfigurationPath);
+                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
+                            }
+                            catch (Exception exception)
+                            {
+                                richTextBoxInformation.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
+                            }
+                        }
+
+                        // If the information needs to be merged, a global parameter needs to be set.
+                        // This will overwrite existing files for the in-use version.
+                        if (!checkBoxMergeFiles.Checked)
+                        {
+                            FileConfiguration.newFileAttributeMapping = "true";
+                        }
+
+
+                        // Load the file, convert it to a DataTable and bind it to the source
+                        List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
+                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
+
+                        // Set the column names in the datatable.
+                        SetTeamDataTableProperties.SetAttributeDataTableColumns(dt);
+                        // Sort the columns in the datatable.
+                        SetTeamDataTableProperties.SetAttributeDatTableSorting(dt);
+
+                        // Clear out the existing data from the grid
+                        _bindingSourceAttributeMetadata.DataSource = null;
+                        _bindingSourceAttributeMetadata.Clear();
+                        dataGridViewAttributeMetadata.DataSource = null;
+
+                        // Bind the datatable to the gridview
+                        _bindingSourceAttributeMetadata.DataSource = dt;
+
+                        if (jsonArray != null)
+                        {
+                            // Set the column header names.
+                            dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
+                            dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
+                            dataGridViewAttributeMetadata.Columns[0].Visible = false;
+                            dataGridViewAttributeMetadata.Columns[1].Visible = false;
+                            dataGridViewAttributeMetadata.Columns[6].ReadOnly = false;
+
+                            dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
+                            dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
+                            dataGridViewAttributeMetadata.Columns[2].HeaderText = "Source Table";
+                            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
+                            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
+                            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
+                            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Notes";
+                        }
+                    }
+
+                    GridAutoLayoutAttributeMetadata();
+                    richTextBoxInformation.Text = "The metadata has been loaded from file.\r\n";
+                    ContentCounter();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+        private void saveAttributeMappingAsJSONToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var theDialog = new SaveFileDialog
+                {
+                    Title = @"Save Attribute Mapping Metadata File",
+                    Filter = @"JSON files|*.json",
+                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                };
+
+                var ret = STAShowDialog(theDialog);
+
+                if (ret == DialogResult.OK)
+                {
+                    try
+                    {
+                        var chosenFile = theDialog.FileName;
+
+                        DataTable gridDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
+
+                        // Make sure the output is sorted
+                        gridDataTable.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
+
+                        gridDataTable.TableName = "AttributeMappingMetadata";
+
+                        JArray outputFileArray = new JArray();
+                        foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
+                        {
+                            JObject individualRow = JObject.FromObject(new
+                            {
+                                attributeMappingHash = singleRow[0].ToString(),
+                                versionId = singleRow[1].ToString(),
+                                sourceTable = singleRow[2].ToString(),
+                                sourceAttribute = singleRow[3].ToString(),
+                                targetTable = singleRow[4].ToString(),
+                                targetAttribute = singleRow[5].ToString(),
+                                Notes = singleRow[6].ToString()
+                            });
+                            outputFileArray.Add(individualRow);
+                        }
+
+                        string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+                        File.WriteAllText(chosenFile, json);
+
+                        richTextBoxInformation.Text = "The Attribute Mapping metadata file " + chosenFile + " saved successfully.";
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
+            }
+        }
+
+        private void openPhysicalModelFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var theDialog = new OpenFileDialog
+            {
+                Title = @"Open Physical Model Metadata File",
+                Filter = @"Physical Model files|*.xml;*.json",
+                InitialDirectory = GlobalParameters.ConfigurationPath
+            };
+
+            var ret = STAShowDialog(theDialog);
+
+            if (ret == DialogResult.OK)
+            {
+                richTextBoxInformation.Clear();
+                try
+                {
+                    var chosenFile = theDialog.FileName;
+                    var dataSet = new DataSet();
+
+                    string fileExtension = Path.GetExtension(theDialog.FileName);
+
+                    if (fileExtension == ".xml")
+                    {
+                        dataSet.ReadXml(chosenFile);
+
+                        dataGridViewPhysicalModelMetadata.DataSource = dataSet.Tables[0];
+                        _bindingSourcePhysicalModelMetadata.DataSource = dataGridViewPhysicalModelMetadata.DataSource;
+
+                    }
+                    else if (fileExtension == ".json")
+                    {
+                        // Create a backup file, if enabled
+                        if (checkBoxBackupFiles.Checked)
+                        {
+                            try
+                            {
+                                var backupFile = new JsonHandling();
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
+                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
+                            }
+                            catch (Exception exception)
+                            {
+                                richTextBoxInformation.Text = "An issue occured when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
+                            }
+                        }
+
+                        // If the information needs to be merged, a global parameter needs to be set.
+                        // This will overwrite existing files for the in-use version.
+                        if (!checkBoxMergeFiles.Checked)
+                        {
+                            FileConfiguration.newFilePhysicalModel = "true";
+                        }
+
+                        // Load the file, convert it to a DataTable and bind it to the source
+                        List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(chosenFile));
+                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
+
+                        // Setup the datatable with proper column headings.
+                        SetTeamDataTableProperties.SetPhysicalModelDataTableColumns(dt);
+                        // Sort the columns.
+                        SetTeamDataTableProperties.SetPhysicalModelDataTableSorting(dt);
+
+                        // Clear out the existing data from the grid
+                        _bindingSourcePhysicalModelMetadata.DataSource = null;
+                        _bindingSourcePhysicalModelMetadata.Clear();
+                        dataGridViewPhysicalModelMetadata.DataSource = null;
+
+                        // Bind the datatable to the gridview
+                        _bindingSourcePhysicalModelMetadata.DataSource = dt;
+
+                        if (jsonArray != null)
+                        {
+                            // Set the column header names
+                            dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
+
+                            dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
+                            dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
+                            dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
+
+                            dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
+                            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
+                            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
+                            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
+                            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Position";
+                            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Primary Key";
+                            dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Multi-Active";
+                        }
+                    }
+
+                    GridAutoLayoutPhysicalModelMetadata();
+                    ContentCounter();
+                    richTextBoxInformation.AppendText("The file " + chosenFile + " was loaded.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error has been encountered! The reported error is: " + ex);
+                }
+            }
+        }
+
+        private void exportPhysicalModelFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var theDialog = new SaveFileDialog
+                {
+                    Title = @"Save Model Metadata File",
+                    Filter = @"JSON files|*.json",
+                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                };
+
+                var ret = STAShowDialog(theDialog);
+
+                if (ret == DialogResult.OK)
+                {
+                    try
+                    {
+                        var chosenFile = theDialog.FileName;
+
+                        DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
+
+                        gridDataTable.DefaultView.Sort = "[DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
+                        gridDataTable.TableName = "ModelMetadata";
+
+                        JArray outputFileArray = new JArray();
+                        foreach (DataRow singleRow in gridDataTable.DefaultView.ToTable().Rows)
+                        {
+                            JObject individualRow = JObject.FromObject(new
+                            {
+                                versionAttributeHash = singleRow[0].ToString(),
+                                versionId = singleRow[1].ToString(),
+                                databaseName = singleRow[2].ToString(),
+                                schemaName = singleRow[3].ToString(),
+                                tableName = singleRow[4].ToString(),
+                                columnName = singleRow[5].ToString(),
+                                dataType = singleRow[6].ToString(),
+                                characterMaximumLength = singleRow[7].ToString(),
+                                numericPrecision = singleRow[8].ToString(),
+                                ordinalPosition = singleRow[9].ToString(),
+                                primaryKeyIndicator = singleRow[10].ToString(),
+                                multiActiveIndicator = singleRow[11].ToString()
+                            });
+                            outputFileArray.Add(individualRow);
+                        }
+
+                        string json = JsonConvert.SerializeObject(outputFileArray, Formatting.Indented);
+
+                        File.WriteAllText(chosenFile, json);
+
+                        richTextBoxInformation.Text = "The model metadata file " + chosenFile + " saved successfully.";
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
+            }
+        }
     }
 }
