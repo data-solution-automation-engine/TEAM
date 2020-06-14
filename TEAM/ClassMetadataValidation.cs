@@ -27,15 +27,10 @@ namespace TEAM
             var cmd = new SqlCommand(
                 "SELECT CASE WHEN EXISTS ((SELECT * " +
                 "FROM sys.objects a " +
-                "JOIN sys.schemas b on a.schema_id = b.schema_id" +
+                "JOIN sys.schemas b on a.schema_id = b.schema_id " +
                 "WHERE a.[name] = '" + objectName + "' and b.[name]= '"+ schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key + "')) THEN 1 ELSE 0 END", conn);
 
-
-            //SELECT * FROM sys.objects a
-            // JOIN sys.schemas b ON a.schema_id = b.schema_id
-            // WHERE a.[name] = 'dim_holder'
-            // AND b.[name] = 'landing'
-
+            
             var exists = (int) cmd.ExecuteScalar() == 1;
             returnExistenceEvaluation = exists.ToString();
 

@@ -811,11 +811,7 @@ namespace TEAM
 
                 try
                 {
-                    if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.SqlServer)
-                    {
-                        GenerateMetadataInDatabase(worker);
-                    }
-                    else if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+                    if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                     {
                         Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 

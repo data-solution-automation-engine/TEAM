@@ -44,101 +44,94 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPagePaths = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
-            this.textBoxOutputPath = new System.Windows.Forms.TextBox();
-            this.label45 = new System.Windows.Forms.Label();
             this.OutputPathLabel = new System.Windows.Forms.Label();
-            this.tabPageRepository = new System.Windows.Forms.TabPage();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.radioButtonSQLServer = new System.Windows.Forms.RadioButton();
-            this.radioButtonJSON = new System.Windows.Forms.RadioButton();
+            this.label45 = new System.Windows.Forms.Label();
+            this.textBoxOutputPath = new System.Windows.Forms.TextBox();
+            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabPagePrefixesSuffixex = new System.Windows.Forms.TabPage();
-            this.label48 = new System.Windows.Forms.Label();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
-            this.radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
-            this.label34 = new System.Windows.Forms.Label();
-            this.textBoxPSAPrefix = new System.Windows.Forms.TextBox();
-            this.textBoxStagingAreaPrefix = new System.Windows.Forms.TextBox();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.keySuffixRadiobutton = new System.Windows.Forms.RadioButton();
-            this.keyPrefixRadiobutton = new System.Windows.Forms.RadioButton();
             this.grpTableName = new System.Windows.Forms.GroupBox();
-            this.tableSuffixRadiobutton = new System.Windows.Forms.RadioButton();
             this.tablePrefixRadiobutton = new System.Windows.Forms.RadioButton();
+            this.tableSuffixRadiobutton = new System.Windows.Forms.RadioButton();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.keyPrefixRadiobutton = new System.Windows.Forms.RadioButton();
+            this.keySuffixRadiobutton = new System.Windows.Forms.RadioButton();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.textBoxStagingAreaPrefix = new System.Windows.Forms.TextBox();
+            this.textBoxPSAPrefix = new System.Windows.Forms.TextBox();
+            this.label34 = new System.Windows.Forms.Label();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
+            this.radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
+            this.label48 = new System.Windows.Forms.Label();
             this.tabPageETLFrameworkSpecific = new System.Windows.Forms.TabPage();
-            this.label46 = new System.Windows.Forms.Label();
-            this.textBoxLogicalDeleteAttributeName = new System.Windows.Forms.TextBox();
-            this.textBoxETLUpdateProcessID = new System.Windows.Forms.TextBox();
-            this.textBoxCurrentRecordAttributeName = new System.Windows.Forms.TextBox();
-            this.textBoxRecordChecksum = new System.Windows.Forms.TextBox();
-            this.textBoxSourceRowId = new System.Windows.Forms.TextBox();
-            this.textBoxEventDateTime = new System.Windows.Forms.TextBox();
-            this.textBoxETLProcessID = new System.Windows.Forms.TextBox();
-            this.textBoxChangeDataCaptureIndicator = new System.Windows.Forms.TextBox();
-            this.textBoxDWHKeyIdentifier = new System.Windows.Forms.TextBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.label42 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.label43 = new System.Windows.Forms.Label();
+            this.textBoxDWHKeyIdentifier = new System.Windows.Forms.TextBox();
+            this.textBoxChangeDataCaptureIndicator = new System.Windows.Forms.TextBox();
+            this.textBoxETLProcessID = new System.Windows.Forms.TextBox();
+            this.textBoxEventDateTime = new System.Windows.Forms.TextBox();
+            this.textBoxSourceRowId = new System.Windows.Forms.TextBox();
+            this.textBoxRecordChecksum = new System.Windows.Forms.TextBox();
+            this.textBoxCurrentRecordAttributeName = new System.Windows.Forms.TextBox();
+            this.textBoxETLUpdateProcessID = new System.Windows.Forms.TextBox();
+            this.textBoxLogicalDeleteAttributeName = new System.Windows.Forms.TextBox();
+            this.label46 = new System.Windows.Forms.Label();
             this.tabPageIntegrationLayerSpecific = new System.Windows.Forms.TabPage();
-            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
-            this.label41 = new System.Windows.Forms.Label();
-            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
-            this.textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
-            this.textBoxRecordSource = new System.Windows.Forms.TextBox();
-            this.textBoxLDST = new System.Windows.Forms.TextBox();
-            this.textBoxHubTablePrefix = new System.Windows.Forms.TextBox();
-            this.textBoxSatPrefix = new System.Windows.Forms.TextBox();
-            this.textBoxLinkTablePrefix = new System.Windows.Forms.TextBox();
-            this.textBoxLinkSatPrefix = new System.Windows.Forms.TextBox();
-            this.label39 = new System.Windows.Forms.Label();
-            this.label38 = new System.Windows.Forms.Label();
-            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
-            this.label37 = new System.Windows.Forms.Label();
-            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
-            this.label36 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
+            this.label38 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.textBoxLinkSatPrefix = new System.Windows.Forms.TextBox();
+            this.textBoxLinkTablePrefix = new System.Windows.Forms.TextBox();
+            this.textBoxSatPrefix = new System.Windows.Forms.TextBox();
+            this.textBoxHubTablePrefix = new System.Windows.Forms.TextBox();
+            this.textBoxLDST = new System.Windows.Forms.TextBox();
+            this.textBoxRecordSource = new System.Windows.Forms.TextBox();
+            this.textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
+            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
+            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
             this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
-            this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
-            this.richTextBoxMetadataConnection = new System.Windows.Forms.RichTextBox();
-            this.comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
-            this.richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
             this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
+            this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
+            this.richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
+            this.comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
+            this.richTextBoxMetadataConnection = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironments = new System.Windows.Forms.TabPage();
             this.tabControlEnvironments = new System.Windows.Forms.TabControl();
-            this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
-            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
-            this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
-            this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
+            this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
+            this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
+            this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
+            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
-            this.tabPageRepository.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.tabPagePrefixesSuffixex.SuspendLayout();
-            this.groupBox8.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.grpTableName.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.groupBox8.SuspendLayout();
             this.tabPageETLFrameworkSpecific.SuspendLayout();
             this.tabPageIntegrationLayerSpecific.SuspendLayout();
             this.tabPageConnections.SuspendLayout();
@@ -285,32 +278,14 @@
             this.tabPagePaths.Text = "Paths";
             this.tabPagePaths.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // OutputPathLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 12);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 13);
-            this.label1.TabIndex = 74;
-            this.label1.Text = "Configuration path";
-            // 
-            // textBoxConfigurationPath
-            // 
-            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxConfigurationPath.Location = new System.Drawing.Point(12, 30);
-            this.textBoxConfigurationPath.Multiline = true;
-            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
-            this.textBoxConfigurationPath.Size = new System.Drawing.Size(1094, 27);
-            this.textBoxConfigurationPath.TabIndex = 41;
-            // 
-            // textBoxOutputPath
-            // 
-            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxOutputPath.Location = new System.Drawing.Point(12, 84);
-            this.textBoxOutputPath.Multiline = true;
-            this.textBoxOutputPath.Name = "textBoxOutputPath";
-            this.textBoxOutputPath.Size = new System.Drawing.Size(1094, 27);
-            this.textBoxOutputPath.TabIndex = 40;
+            this.OutputPathLabel.AutoSize = true;
+            this.OutputPathLabel.Location = new System.Drawing.Point(9, 66);
+            this.OutputPathLabel.Name = "OutputPathLabel";
+            this.OutputPathLabel.Size = new System.Drawing.Size(63, 13);
+            this.OutputPathLabel.TabIndex = 65;
+            this.OutputPathLabel.Text = "Output path";
             // 
             // label45
             // 
@@ -321,67 +296,32 @@
             this.label45.TabIndex = 72;
             this.label45.Text = "Paths and connections used for debugging and automation.\r\n";
             // 
-            // OutputPathLabel
+            // textBoxOutputPath
             // 
-            this.OutputPathLabel.AutoSize = true;
-            this.OutputPathLabel.Location = new System.Drawing.Point(9, 66);
-            this.OutputPathLabel.Name = "OutputPathLabel";
-            this.OutputPathLabel.Size = new System.Drawing.Size(63, 13);
-            this.OutputPathLabel.TabIndex = 65;
-            this.OutputPathLabel.Text = "Output path";
+            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.textBoxOutputPath.Location = new System.Drawing.Point(12, 84);
+            this.textBoxOutputPath.Multiline = true;
+            this.textBoxOutputPath.Name = "textBoxOutputPath";
+            this.textBoxOutputPath.Size = new System.Drawing.Size(1094, 27);
+            this.textBoxOutputPath.TabIndex = 40;
             // 
-            // tabPageRepository
+            // textBoxConfigurationPath
             // 
-            this.tabPageRepository.Controls.Add(this.richTextBox1);
-            this.tabPageRepository.Controls.Add(this.groupBox2);
-            this.tabPageRepository.Location = new System.Drawing.Point(4, 22);
-            this.tabPageRepository.Name = "tabPageRepository";
-            this.tabPageRepository.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageRepository.TabIndex = 3;
-            this.tabPageRepository.Text = "Metadata Store";
-            this.tabPageRepository.UseVisualStyleBackColor = true;
+            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.textBoxConfigurationPath.Location = new System.Drawing.Point(12, 30);
+            this.textBoxConfigurationPath.Multiline = true;
+            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
+            this.textBoxConfigurationPath.Size = new System.Drawing.Size(1094, 27);
+            this.textBoxConfigurationPath.TabIndex = 41;
             // 
-            // richTextBox1
+            // label1
             // 
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.Location = new System.Drawing.Point(12, 86);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(487, 61);
-            this.richTextBox1.TabIndex = 72;
-            this.richTextBox1.Text = "Note: the repository storage type only affects the base metadata (Table Mapping, " +
-    "Attribute Mapping and Physical Model). SQL Server is still required for the deli" +
-    "very (activation) of metadata.";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.radioButtonSQLServer);
-            this.groupBox2.Controls.Add(this.radioButtonJSON);
-            this.groupBox2.Location = new System.Drawing.Point(12, 10);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(140, 70);
-            this.groupBox2.TabIndex = 71;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Metadata storage type";
-            // 
-            // radioButtonSQLServer
-            // 
-            this.radioButtonSQLServer.AutoSize = true;
-            this.radioButtonSQLServer.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonSQLServer.Name = "radioButtonSQLServer";
-            this.radioButtonSQLServer.Size = new System.Drawing.Size(80, 17);
-            this.radioButtonSQLServer.TabIndex = 39;
-            this.radioButtonSQLServer.Text = "SQL Server";
-            this.radioButtonSQLServer.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonJSON
-            // 
-            this.radioButtonJSON.AutoSize = true;
-            this.radioButtonJSON.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonJSON.Name = "radioButtonJSON";
-            this.radioButtonJSON.Size = new System.Drawing.Size(53, 17);
-            this.radioButtonJSON.TabIndex = 38;
-            this.radioButtonJSON.Text = "JSON";
-            this.radioButtonJSON.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.TabIndex = 74;
+            this.label1.Text = "Configuration path";
             // 
             // tabPagePrefixesSuffixex
             // 
@@ -402,86 +342,36 @@
             this.tabPagePrefixesSuffixex.Text = "Prefixes & Suffixes";
             this.tabPagePrefixesSuffixex.UseVisualStyleBackColor = true;
             // 
-            // label48
+            // grpTableName
             // 
-            this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(230, 80);
-            this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(178, 13);
-            this.label48.TabIndex = 75;
-            this.label48.Text = "Determination of natural key for PSA";
+            this.grpTableName.Controls.Add(this.tableSuffixRadiobutton);
+            this.grpTableName.Controls.Add(this.tablePrefixRadiobutton);
+            this.grpTableName.Location = new System.Drawing.Point(6, 105);
+            this.grpTableName.Name = "grpTableName";
+            this.grpTableName.Size = new System.Drawing.Size(140, 70);
+            this.grpTableName.TabIndex = 65;
+            this.grpTableName.TabStop = false;
+            this.grpTableName.Text = "Table naming location";
             // 
-            // groupBox8
+            // tablePrefixRadiobutton
             // 
-            this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyPK);
-            this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyIndex);
-            this.groupBox8.Location = new System.Drawing.Point(233, 105);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(175, 70);
-            this.groupBox8.TabIndex = 74;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "PSA natural key location";
+            this.tablePrefixRadiobutton.AutoSize = true;
+            this.tablePrefixRadiobutton.Location = new System.Drawing.Point(6, 19);
+            this.tablePrefixRadiobutton.Name = "tablePrefixRadiobutton";
+            this.tablePrefixRadiobutton.Size = new System.Drawing.Size(51, 17);
+            this.tablePrefixRadiobutton.TabIndex = 25;
+            this.tablePrefixRadiobutton.Text = "Prefix";
+            this.tablePrefixRadiobutton.UseVisualStyleBackColor = true;
             // 
-            // radioButtonPSABusinessKeyPK
+            // tableSuffixRadiobutton
             // 
-            this.radioButtonPSABusinessKeyPK.AutoSize = true;
-            this.radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonPSABusinessKeyPK.Name = "radioButtonPSABusinessKeyPK";
-            this.radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(167, 17);
-            this.radioButtonPSABusinessKeyPK.TabIndex = 28;
-            this.radioButtonPSABusinessKeyPK.Text = "Primary Key Constraint / Index";
-            this.radioButtonPSABusinessKeyPK.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonPSABusinessKeyIndex
-            // 
-            this.radioButtonPSABusinessKeyIndex.AutoSize = true;
-            this.radioButtonPSABusinessKeyIndex.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonPSABusinessKeyIndex.Name = "radioButtonPSABusinessKeyIndex";
-            this.radioButtonPSABusinessKeyIndex.Size = new System.Drawing.Size(88, 17);
-            this.radioButtonPSABusinessKeyIndex.TabIndex = 27;
-            this.radioButtonPSABusinessKeyIndex.Text = "Unique Index";
-            this.radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(5, 37);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(175, 13);
-            this.label34.TabIndex = 71;
-            this.label34.Text = "Persistent Staging Area (PSA) prefix";
-            // 
-            // textBoxPSAPrefix
-            // 
-            this.textBoxPSAPrefix.Location = new System.Drawing.Point(233, 34);
-            this.textBoxPSAPrefix.Name = "textBoxPSAPrefix";
-            this.textBoxPSAPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxPSAPrefix.TabIndex = 23;
-            // 
-            // textBoxStagingAreaPrefix
-            // 
-            this.textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 8);
-            this.textBoxStagingAreaPrefix.Name = "textBoxStagingAreaPrefix";
-            this.textBoxStagingAreaPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxStagingAreaPrefix.TabIndex = 22;
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(5, 11);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(145, 13);
-            this.label33.TabIndex = 69;
-            this.label33.Text = "Staging / Landing Area prefix";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(3, 80);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(165, 13);
-            this.label19.TabIndex = 67;
-            this.label19.Text = "Define the location of the prefixes";
+            this.tableSuffixRadiobutton.AutoSize = true;
+            this.tableSuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
+            this.tableSuffixRadiobutton.Name = "tableSuffixRadiobutton";
+            this.tableSuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
+            this.tableSuffixRadiobutton.TabIndex = 26;
+            this.tableSuffixRadiobutton.Text = "Suffix";
+            this.tableSuffixRadiobutton.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -494,16 +384,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Key naming location";
             // 
-            // keySuffixRadiobutton
-            // 
-            this.keySuffixRadiobutton.AutoSize = true;
-            this.keySuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
-            this.keySuffixRadiobutton.Name = "keySuffixRadiobutton";
-            this.keySuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.keySuffixRadiobutton.TabIndex = 30;
-            this.keySuffixRadiobutton.Text = "Suffix";
-            this.keySuffixRadiobutton.UseVisualStyleBackColor = true;
-            // 
             // keyPrefixRadiobutton
             // 
             this.keyPrefixRadiobutton.AutoSize = true;
@@ -514,36 +394,96 @@
             this.keyPrefixRadiobutton.Text = "Prefix";
             this.keyPrefixRadiobutton.UseVisualStyleBackColor = true;
             // 
-            // grpTableName
+            // keySuffixRadiobutton
             // 
-            this.grpTableName.Controls.Add(this.tableSuffixRadiobutton);
-            this.grpTableName.Controls.Add(this.tablePrefixRadiobutton);
-            this.grpTableName.Location = new System.Drawing.Point(6, 105);
-            this.grpTableName.Name = "grpTableName";
-            this.grpTableName.Size = new System.Drawing.Size(140, 70);
-            this.grpTableName.TabIndex = 65;
-            this.grpTableName.TabStop = false;
-            this.grpTableName.Text = "Table naming location";
+            this.keySuffixRadiobutton.AutoSize = true;
+            this.keySuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
+            this.keySuffixRadiobutton.Name = "keySuffixRadiobutton";
+            this.keySuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
+            this.keySuffixRadiobutton.TabIndex = 30;
+            this.keySuffixRadiobutton.Text = "Suffix";
+            this.keySuffixRadiobutton.UseVisualStyleBackColor = true;
             // 
-            // tableSuffixRadiobutton
+            // label19
             // 
-            this.tableSuffixRadiobutton.AutoSize = true;
-            this.tableSuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
-            this.tableSuffixRadiobutton.Name = "tableSuffixRadiobutton";
-            this.tableSuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.tableSuffixRadiobutton.TabIndex = 26;
-            this.tableSuffixRadiobutton.Text = "Suffix";
-            this.tableSuffixRadiobutton.UseVisualStyleBackColor = true;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(3, 80);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(165, 13);
+            this.label19.TabIndex = 67;
+            this.label19.Text = "Define the location of the prefixes";
             // 
-            // tablePrefixRadiobutton
+            // label33
             // 
-            this.tablePrefixRadiobutton.AutoSize = true;
-            this.tablePrefixRadiobutton.Location = new System.Drawing.Point(6, 19);
-            this.tablePrefixRadiobutton.Name = "tablePrefixRadiobutton";
-            this.tablePrefixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.tablePrefixRadiobutton.TabIndex = 25;
-            this.tablePrefixRadiobutton.Text = "Prefix";
-            this.tablePrefixRadiobutton.UseVisualStyleBackColor = true;
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(5, 11);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(145, 13);
+            this.label33.TabIndex = 69;
+            this.label33.Text = "Staging / Landing Area prefix";
+            // 
+            // textBoxStagingAreaPrefix
+            // 
+            this.textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 8);
+            this.textBoxStagingAreaPrefix.Name = "textBoxStagingAreaPrefix";
+            this.textBoxStagingAreaPrefix.Size = new System.Drawing.Size(276, 20);
+            this.textBoxStagingAreaPrefix.TabIndex = 22;
+            // 
+            // textBoxPSAPrefix
+            // 
+            this.textBoxPSAPrefix.Location = new System.Drawing.Point(233, 34);
+            this.textBoxPSAPrefix.Name = "textBoxPSAPrefix";
+            this.textBoxPSAPrefix.Size = new System.Drawing.Size(276, 20);
+            this.textBoxPSAPrefix.TabIndex = 23;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(5, 37);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(175, 13);
+            this.label34.TabIndex = 71;
+            this.label34.Text = "Persistent Staging Area (PSA) prefix";
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyPK);
+            this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyIndex);
+            this.groupBox8.Location = new System.Drawing.Point(233, 105);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(175, 70);
+            this.groupBox8.TabIndex = 74;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "PSA natural key location";
+            // 
+            // radioButtonPSABusinessKeyIndex
+            // 
+            this.radioButtonPSABusinessKeyIndex.AutoSize = true;
+            this.radioButtonPSABusinessKeyIndex.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonPSABusinessKeyIndex.Name = "radioButtonPSABusinessKeyIndex";
+            this.radioButtonPSABusinessKeyIndex.Size = new System.Drawing.Size(88, 17);
+            this.radioButtonPSABusinessKeyIndex.TabIndex = 27;
+            this.radioButtonPSABusinessKeyIndex.Text = "Unique Index";
+            this.radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonPSABusinessKeyPK
+            // 
+            this.radioButtonPSABusinessKeyPK.AutoSize = true;
+            this.radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonPSABusinessKeyPK.Name = "radioButtonPSABusinessKeyPK";
+            this.radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(167, 17);
+            this.radioButtonPSABusinessKeyPK.TabIndex = 28;
+            this.radioButtonPSABusinessKeyPK.Text = "Primary Key Constraint / Index";
+            this.radioButtonPSABusinessKeyPK.UseVisualStyleBackColor = true;
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(230, 80);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(178, 13);
+            this.label48.TabIndex = 75;
+            this.label48.Text = "Determination of natural key for PSA";
             // 
             // tabPageETLFrameworkSpecific
             // 
@@ -573,131 +513,14 @@
             this.tabPageETLFrameworkSpecific.Text = "Data Warehouse generic";
             this.tabPageETLFrameworkSpecific.UseVisualStyleBackColor = true;
             // 
-            // label46
+            // label13
             // 
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(6, 218);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(145, 13);
-            this.label46.TabIndex = 66;
-            this.label46.Text = "Logical Delete attribute name";
-            // 
-            // textBoxLogicalDeleteAttributeName
-            // 
-            this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(233, 215);
-            this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
-            this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
-            // 
-            // textBoxETLUpdateProcessID
-            // 
-            this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(233, 85);
-            this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
-            this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(276, 20);
-            this.textBoxETLUpdateProcessID.TabIndex = 16;
-            // 
-            // textBoxCurrentRecordAttributeName
-            // 
-            this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(233, 189);
-            this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
-            this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxCurrentRecordAttributeName.TabIndex = 20;
-            // 
-            // textBoxRecordChecksum
-            // 
-            this.textBoxRecordChecksum.Location = new System.Drawing.Point(233, 163);
-            this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
-            this.textBoxRecordChecksum.Size = new System.Drawing.Size(276, 20);
-            this.textBoxRecordChecksum.TabIndex = 19;
-            // 
-            // textBoxSourceRowId
-            // 
-            this.textBoxSourceRowId.Location = new System.Drawing.Point(233, 137);
-            this.textBoxSourceRowId.Name = "textBoxSourceRowId";
-            this.textBoxSourceRowId.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSourceRowId.TabIndex = 18;
-            // 
-            // textBoxEventDateTime
-            // 
-            this.textBoxEventDateTime.Location = new System.Drawing.Point(233, 111);
-            this.textBoxEventDateTime.Name = "textBoxEventDateTime";
-            this.textBoxEventDateTime.Size = new System.Drawing.Size(276, 20);
-            this.textBoxEventDateTime.TabIndex = 17;
-            // 
-            // textBoxETLProcessID
-            // 
-            this.textBoxETLProcessID.Location = new System.Drawing.Point(233, 59);
-            this.textBoxETLProcessID.Name = "textBoxETLProcessID";
-            this.textBoxETLProcessID.Size = new System.Drawing.Size(276, 20);
-            this.textBoxETLProcessID.TabIndex = 15;
-            // 
-            // textBoxChangeDataCaptureIndicator
-            // 
-            this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(233, 33);
-            this.textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
-            this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(276, 20);
-            this.textBoxChangeDataCaptureIndicator.TabIndex = 14;
-            // 
-            // textBoxDWHKeyIdentifier
-            // 
-            this.textBoxDWHKeyIdentifier.Location = new System.Drawing.Point(233, 8);
-            this.textBoxDWHKeyIdentifier.Name = "textBoxDWHKeyIdentifier";
-            this.textBoxDWHKeyIdentifier.Size = new System.Drawing.Size(276, 20);
-            this.textBoxDWHKeyIdentifier.TabIndex = 13;
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(6, 88);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(190, 13);
-            this.label43.TabIndex = 64;
-            this.label43.Text = "ETL Update Process ID attribute name";
-            // 
-            // label42
-            // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(6, 192);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(149, 13);
-            this.label42.TabIndex = 62;
-            this.label42.Text = "Current Record attribute name";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(6, 166);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(165, 13);
-            this.label32.TabIndex = 60;
-            this.label32.Text = "Record Checksum attribute name";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(6, 140);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(113, 13);
-            this.label30.TabIndex = 58;
-            this.label30.Text = "Row ID attribute name";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(6, 114);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(159, 13);
-            this.label29.TabIndex = 56;
-            this.label29.Text = "Event Date/Time attribute name";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(6, 62);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(181, 13);
-            this.label21.TabIndex = 54;
-            this.label21.Text = "ETL Insert Process ID attribute name";
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(5, 11);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(137, 13);
+            this.label13.TabIndex = 44;
+            this.label13.Text = "Data Platform Key identifyer";
             // 
             // label10
             // 
@@ -708,14 +531,131 @@
             this.label10.TabIndex = 49;
             this.label10.Text = "Change Data Capture Indicator attribute name";
             // 
-            // label13
+            // label21
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(5, 11);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(137, 13);
-            this.label13.TabIndex = 44;
-            this.label13.Text = "Data Platform Key identifyer";
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 62);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(181, 13);
+            this.label21.TabIndex = 54;
+            this.label21.Text = "ETL Insert Process ID attribute name";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(6, 114);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(159, 13);
+            this.label29.TabIndex = 56;
+            this.label29.Text = "Event Date/Time attribute name";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(6, 140);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(113, 13);
+            this.label30.TabIndex = 58;
+            this.label30.Text = "Row ID attribute name";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(6, 166);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(165, 13);
+            this.label32.TabIndex = 60;
+            this.label32.Text = "Record Checksum attribute name";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(6, 192);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(149, 13);
+            this.label42.TabIndex = 62;
+            this.label42.Text = "Current Record attribute name";
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(6, 88);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(190, 13);
+            this.label43.TabIndex = 64;
+            this.label43.Text = "ETL Update Process ID attribute name";
+            // 
+            // textBoxDWHKeyIdentifier
+            // 
+            this.textBoxDWHKeyIdentifier.Location = new System.Drawing.Point(233, 8);
+            this.textBoxDWHKeyIdentifier.Name = "textBoxDWHKeyIdentifier";
+            this.textBoxDWHKeyIdentifier.Size = new System.Drawing.Size(276, 20);
+            this.textBoxDWHKeyIdentifier.TabIndex = 13;
+            // 
+            // textBoxChangeDataCaptureIndicator
+            // 
+            this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(233, 33);
+            this.textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
+            this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(276, 20);
+            this.textBoxChangeDataCaptureIndicator.TabIndex = 14;
+            // 
+            // textBoxETLProcessID
+            // 
+            this.textBoxETLProcessID.Location = new System.Drawing.Point(233, 59);
+            this.textBoxETLProcessID.Name = "textBoxETLProcessID";
+            this.textBoxETLProcessID.Size = new System.Drawing.Size(276, 20);
+            this.textBoxETLProcessID.TabIndex = 15;
+            // 
+            // textBoxEventDateTime
+            // 
+            this.textBoxEventDateTime.Location = new System.Drawing.Point(233, 111);
+            this.textBoxEventDateTime.Name = "textBoxEventDateTime";
+            this.textBoxEventDateTime.Size = new System.Drawing.Size(276, 20);
+            this.textBoxEventDateTime.TabIndex = 17;
+            // 
+            // textBoxSourceRowId
+            // 
+            this.textBoxSourceRowId.Location = new System.Drawing.Point(233, 137);
+            this.textBoxSourceRowId.Name = "textBoxSourceRowId";
+            this.textBoxSourceRowId.Size = new System.Drawing.Size(276, 20);
+            this.textBoxSourceRowId.TabIndex = 18;
+            // 
+            // textBoxRecordChecksum
+            // 
+            this.textBoxRecordChecksum.Location = new System.Drawing.Point(233, 163);
+            this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
+            this.textBoxRecordChecksum.Size = new System.Drawing.Size(276, 20);
+            this.textBoxRecordChecksum.TabIndex = 19;
+            // 
+            // textBoxCurrentRecordAttributeName
+            // 
+            this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(233, 189);
+            this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
+            this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(276, 20);
+            this.textBoxCurrentRecordAttributeName.TabIndex = 20;
+            // 
+            // textBoxETLUpdateProcessID
+            // 
+            this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(233, 85);
+            this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
+            this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(276, 20);
+            this.textBoxETLUpdateProcessID.TabIndex = 16;
+            // 
+            // textBoxLogicalDeleteAttributeName
+            // 
+            this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(233, 215);
+            this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
+            this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(276, 20);
+            this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(6, 218);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(145, 13);
+            this.label46.TabIndex = 66;
+            this.label46.Text = "Logical Delete attribute name";
             // 
             // tabPageIntegrationLayerSpecific
             // 
@@ -752,134 +692,77 @@
             this.tabPageIntegrationLayerSpecific.Text = "Integration Layer specific";
             this.tabPageIntegrationLayerSpecific.UseVisualStyleBackColor = true;
             // 
-            // checkBoxAlternativeSatLDTS
+            // label15
             // 
-            this.checkBoxAlternativeSatLDTS.AutoSize = true;
-            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(406, 298);
-            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
-            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
-            this.checkBoxAlternativeSatLDTS.Text = "Enable";
-            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeSatLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeSatLDTS_CheckedChanged);
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(5, 63);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(192, 13);
+            this.label15.TabIndex = 24;
+            this.label15.Text = "Natural Business Relationship identifyer";
             // 
-            // label41
+            // label16
             // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(5, 299);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(197, 13);
-            this.label41.TabIndex = 69;
-            this.label41.Text = "Alternative Context LDTS attribute name";
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(5, 37);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(114, 13);
+            this.label16.TabIndex = 22;
+            this.label16.Text = "Context table identifyer";
             // 
-            // textBoxSatelliteAlternativeLDTSAttribute
+            // label17
             // 
-            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 296);
-            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
-            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(5, 11);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(192, 13);
+            this.label17.TabIndex = 19;
+            this.label17.Text = "Core Business Concept (CBC) identifyer";
             // 
-            // textBoxHubAlternativeLDTSAttribute
+            // label14
             // 
-            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 270);
-            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
-            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(5, 89);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(175, 13);
+            this.label14.TabIndex = 26;
+            this.label14.Text = "Relationship Context table identifyer";
             // 
-            // textBoxAlternativeRecordSource
+            // label18
             // 
-            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(234, 244);
-            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
-            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(166, 20);
-            this.textBoxAlternativeRecordSource.TabIndex = 7;
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(5, 116);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(225, 13);
+            this.label18.TabIndex = 53;
+            this.label18.Text = "Load Date/Time Stamp (LDTS) attribute name";
             // 
-            // textBoxExpiryDateTimeName
+            // label11
             // 
-            this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(233, 139);
-            this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
-            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxExpiryDateTimeName.TabIndex = 5;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(5, 168);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(149, 13);
+            this.label11.TabIndex = 55;
+            this.label11.Text = "Record Source attribute name";
             // 
-            // textBoxRecordSource
+            // label35
             // 
-            this.textBoxRecordSource.Location = new System.Drawing.Point(233, 165);
-            this.textBoxRecordSource.Name = "textBoxRecordSource";
-            this.textBoxRecordSource.Size = new System.Drawing.Size(276, 20);
-            this.textBoxRecordSource.TabIndex = 6;
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(5, 142);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(159, 13);
+            this.label35.TabIndex = 57;
+            this.label35.Text = "Expiry Date/Time attribute name";
             // 
-            // textBoxLDST
+            // label36
             // 
-            this.textBoxLDST.Location = new System.Drawing.Point(233, 113);
-            this.textBoxLDST.Name = "textBoxLDST";
-            this.textBoxLDST.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLDST.TabIndex = 4;
-            // 
-            // textBoxHubTablePrefix
-            // 
-            this.textBoxHubTablePrefix.Location = new System.Drawing.Point(233, 8);
-            this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
-            this.textBoxHubTablePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxHubTablePrefix.TabIndex = 0;
-            // 
-            // textBoxSatPrefix
-            // 
-            this.textBoxSatPrefix.Location = new System.Drawing.Point(233, 34);
-            this.textBoxSatPrefix.Name = "textBoxSatPrefix";
-            this.textBoxSatPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSatPrefix.TabIndex = 1;
-            // 
-            // textBoxLinkTablePrefix
-            // 
-            this.textBoxLinkTablePrefix.Location = new System.Drawing.Point(233, 60);
-            this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
-            this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLinkTablePrefix.TabIndex = 2;
-            // 
-            // textBoxLinkSatPrefix
-            // 
-            this.textBoxLinkSatPrefix.Location = new System.Drawing.Point(233, 86);
-            this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
-            this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLinkSatPrefix.TabIndex = 3;
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(6, 228);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(367, 13);
-            this.label39.TabIndex = 66;
-            this.label39.Text = "If diabled the default conventions as entered in the above fields will be used.";
-            // 
-            // label38
-            // 
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(5, 215);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(448, 13);
-            this.label38.TabIndex = 65;
-            this.label38.Text = "In some models you may want to use specific alternative names depending on the en" +
-    "tity type. ";
-            // 
-            // checkBoxAlternativeHubLDTS
-            // 
-            this.checkBoxAlternativeHubLDTS.AutoSize = true;
-            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(406, 272);
-            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
-            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
-            this.checkBoxAlternativeHubLDTS.Text = "Enable";
-            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeHubLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeHubLDTS_CheckedChanged);
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(5, 273);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(182, 13);
-            this.label37.TabIndex = 62;
-            this.label37.Text = "Alternative CBC LDTS attribute name";
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(5, 247);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(187, 13);
+            this.label36.TabIndex = 59;
+            this.label36.Text = "Alternative Record Source ID or name";
             // 
             // checkBoxAlternativeRecordSource
             // 
@@ -892,77 +775,134 @@
             this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
             this.checkBoxAlternativeRecordSource.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeRecordSource_CheckedChanged);
             // 
-            // label36
+            // label37
             // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(5, 247);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(187, 13);
-            this.label36.TabIndex = 59;
-            this.label36.Text = "Alternative Record Source ID or name";
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(5, 273);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(182, 13);
+            this.label37.TabIndex = 62;
+            this.label37.Text = "Alternative CBC LDTS attribute name";
             // 
-            // label35
+            // checkBoxAlternativeHubLDTS
             // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(5, 142);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(159, 13);
-            this.label35.TabIndex = 57;
-            this.label35.Text = "Expiry Date/Time attribute name";
+            this.checkBoxAlternativeHubLDTS.AutoSize = true;
+            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(406, 272);
+            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
+            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
+            this.checkBoxAlternativeHubLDTS.Text = "Enable";
+            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeHubLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeHubLDTS_CheckedChanged);
             // 
-            // label11
+            // label38
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(5, 168);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(149, 13);
-            this.label11.TabIndex = 55;
-            this.label11.Text = "Record Source attribute name";
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(5, 215);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(448, 13);
+            this.label38.TabIndex = 65;
+            this.label38.Text = "In some models you may want to use specific alternative names depending on the en" +
+    "tity type. ";
             // 
-            // label18
+            // label39
             // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(5, 116);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(225, 13);
-            this.label18.TabIndex = 53;
-            this.label18.Text = "Load Date/Time Stamp (LDTS) attribute name";
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(6, 228);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(367, 13);
+            this.label39.TabIndex = 66;
+            this.label39.Text = "If diabled the default conventions as entered in the above fields will be used.";
             // 
-            // label14
+            // textBoxLinkSatPrefix
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(5, 89);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(175, 13);
-            this.label14.TabIndex = 26;
-            this.label14.Text = "Relationship Context table identifyer";
+            this.textBoxLinkSatPrefix.Location = new System.Drawing.Point(233, 86);
+            this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
+            this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(276, 20);
+            this.textBoxLinkSatPrefix.TabIndex = 3;
             // 
-            // label17
+            // textBoxLinkTablePrefix
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(5, 11);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(192, 13);
-            this.label17.TabIndex = 19;
-            this.label17.Text = "Core Business Concept (CBC) identifyer";
+            this.textBoxLinkTablePrefix.Location = new System.Drawing.Point(233, 60);
+            this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
+            this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(276, 20);
+            this.textBoxLinkTablePrefix.TabIndex = 2;
             // 
-            // label16
+            // textBoxSatPrefix
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(5, 37);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(114, 13);
-            this.label16.TabIndex = 22;
-            this.label16.Text = "Context table identifyer";
+            this.textBoxSatPrefix.Location = new System.Drawing.Point(233, 34);
+            this.textBoxSatPrefix.Name = "textBoxSatPrefix";
+            this.textBoxSatPrefix.Size = new System.Drawing.Size(276, 20);
+            this.textBoxSatPrefix.TabIndex = 1;
             // 
-            // label15
+            // textBoxHubTablePrefix
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(5, 63);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(192, 13);
-            this.label15.TabIndex = 24;
-            this.label15.Text = "Natural Business Relationship identifyer";
+            this.textBoxHubTablePrefix.Location = new System.Drawing.Point(233, 8);
+            this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
+            this.textBoxHubTablePrefix.Size = new System.Drawing.Size(276, 20);
+            this.textBoxHubTablePrefix.TabIndex = 0;
+            // 
+            // textBoxLDST
+            // 
+            this.textBoxLDST.Location = new System.Drawing.Point(233, 113);
+            this.textBoxLDST.Name = "textBoxLDST";
+            this.textBoxLDST.Size = new System.Drawing.Size(276, 20);
+            this.textBoxLDST.TabIndex = 4;
+            // 
+            // textBoxRecordSource
+            // 
+            this.textBoxRecordSource.Location = new System.Drawing.Point(233, 165);
+            this.textBoxRecordSource.Name = "textBoxRecordSource";
+            this.textBoxRecordSource.Size = new System.Drawing.Size(276, 20);
+            this.textBoxRecordSource.TabIndex = 6;
+            // 
+            // textBoxExpiryDateTimeName
+            // 
+            this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(233, 139);
+            this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
+            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(276, 20);
+            this.textBoxExpiryDateTimeName.TabIndex = 5;
+            // 
+            // textBoxAlternativeRecordSource
+            // 
+            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(234, 244);
+            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
+            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(166, 20);
+            this.textBoxAlternativeRecordSource.TabIndex = 7;
+            // 
+            // textBoxHubAlternativeLDTSAttribute
+            // 
+            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 270);
+            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
+            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
+            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
+            // 
+            // textBoxSatelliteAlternativeLDTSAttribute
+            // 
+            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 296);
+            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
+            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
+            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(5, 299);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(197, 13);
+            this.label41.TabIndex = 69;
+            this.label41.Text = "Alternative Context LDTS attribute name";
+            // 
+            // checkBoxAlternativeSatLDTS
+            // 
+            this.checkBoxAlternativeSatLDTS.AutoSize = true;
+            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(406, 298);
+            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
+            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
+            this.checkBoxAlternativeSatLDTS.Text = "Enable";
+            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeSatLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeSatLDTS_CheckedChanged);
             // 
             // tabPageConnections
             // 
@@ -990,6 +930,15 @@
             this.tabControlConnections.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlConnections_Selecting);
             this.tabControlConnections.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlConnections_MouseDown);
             // 
+            // tabPageConnectionNewTab
+            // 
+            this.tabPageConnectionNewTab.Location = new System.Drawing.Point(4, 22);
+            this.tabPageConnectionNewTab.Name = "tabPageConnectionNewTab";
+            this.tabPageConnectionNewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageConnectionNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageConnectionNewTab.TabIndex = 1;
+            this.tabPageConnectionNewTab.UseVisualStyleBackColor = true;
+            // 
             // tabPageConnectionMain
             // 
             this.tabPageConnectionMain.Controls.Add(this.richTextBoxMetadataConnection);
@@ -1003,6 +952,24 @@
             this.tabPageConnectionMain.Text = "Overview of data connections";
             this.tabPageConnectionMain.UseVisualStyleBackColor = true;
             // 
+            // richTextBoxConnectionMain
+            // 
+            this.richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
+            this.richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
+            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(487, 61);
+            this.richTextBoxConnectionMain.TabIndex = 73;
+            this.richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
+            // 
+            // comboBoxMetadataConnection
+            // 
+            this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxMetadataConnection.FormattingEnabled = true;
+            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(145, 70);
+            this.comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
+            this.comboBoxMetadataConnection.Size = new System.Drawing.Size(292, 21);
+            this.comboBoxMetadataConnection.TabIndex = 76;
+            // 
             // richTextBoxMetadataConnection
             // 
             this.richTextBoxMetadataConnection.BackColor = System.Drawing.SystemColors.Window;
@@ -1014,33 +981,6 @@
             this.richTextBoxMetadataConnection.TabIndex = 77;
             this.richTextBoxMetadataConnection.TabStop = false;
             this.richTextBoxMetadataConnection.Text = "Metadata connection key:";
-            // 
-            // comboBoxMetadataConnection
-            // 
-            this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxMetadataConnection.FormattingEnabled = true;
-            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(145, 70);
-            this.comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
-            this.comboBoxMetadataConnection.Size = new System.Drawing.Size(292, 21);
-            this.comboBoxMetadataConnection.TabIndex = 76;
-            // 
-            // richTextBoxConnectionMain
-            // 
-            this.richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
-            this.richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
-            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(487, 61);
-            this.richTextBoxConnectionMain.TabIndex = 73;
-            this.richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
-            // 
-            // tabPageConnectionNewTab
-            // 
-            this.tabPageConnectionNewTab.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnectionNewTab.Name = "tabPageConnectionNewTab";
-            this.tabPageConnectionNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConnectionNewTab.Size = new System.Drawing.Size(1106, 582);
-            this.tabPageConnectionNewTab.TabIndex = 1;
-            this.tabPageConnectionNewTab.UseVisualStyleBackColor = true;
             // 
             // tabPageEnvironments
             // 
@@ -1068,6 +1008,15 @@
             this.tabControlEnvironments.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlEnvironments_Selecting);
             this.tabControlEnvironments.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlEnvironments_MouseDown);
             // 
+            // tabPageEnvironmentNewTab
+            // 
+            this.tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 22);
+            this.tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
+            this.tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageEnvironmentNewTab.TabIndex = 1;
+            this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
+            // 
             // tabPageEnvironmentMain
             // 
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
@@ -1081,6 +1030,25 @@
             this.tabPageEnvironmentMain.Text = "Overview of working environments";
             this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
             // 
+            // richTextBoxEnvironmentsInformation
+            // 
+            this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
+            this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
+            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(463, 70);
+            this.richTextBoxEnvironmentsInformation.TabIndex = 73;
+            this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
+            // 
+            // comboBoxEnvironments
+            // 
+            this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxEnvironments.FormattingEnabled = true;
+            this.comboBoxEnvironments.Location = new System.Drawing.Point(98, 88);
+            this.comboBoxEnvironments.Name = "comboBoxEnvironments";
+            this.comboBoxEnvironments.Size = new System.Drawing.Size(292, 21);
+            this.comboBoxEnvironments.TabIndex = 1;
+            this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
+            // 
             // richTextBox4
             // 
             this.richTextBox4.BackColor = System.Drawing.SystemColors.Window;
@@ -1093,34 +1061,6 @@
             this.richTextBox4.TabStop = false;
             this.richTextBox4.Text = "Environment key:";
             // 
-            // comboBoxEnvironments
-            // 
-            this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxEnvironments.FormattingEnabled = true;
-            this.comboBoxEnvironments.Location = new System.Drawing.Point(98, 88);
-            this.comboBoxEnvironments.Name = "comboBoxEnvironments";
-            this.comboBoxEnvironments.Size = new System.Drawing.Size(292, 21);
-            this.comboBoxEnvironments.TabIndex = 1;
-            this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
-            // 
-            // richTextBoxEnvironmentsInformation
-            // 
-            this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
-            this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
-            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(463, 70);
-            this.richTextBoxEnvironmentsInformation.TabIndex = 73;
-            this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
-            // 
-            // tabPageEnvironmentNewTab
-            // 
-            this.tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
-            this.tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1106, 582);
-            this.tabPageEnvironmentNewTab.TabIndex = 1;
-            this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
-            // 
             // tabControlDefaultDetails
             // 
             this.tabControlDefaultDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1131,7 +1071,6 @@
             this.tabControlDefaultDetails.Controls.Add(this.tabPageIntegrationLayerSpecific);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageETLFrameworkSpecific);
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePrefixesSuffixex);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageRepository);
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePaths);
             this.tabControlDefaultDetails.Location = new System.Drawing.Point(12, 32);
             this.tabControlDefaultDetails.Multiline = true;
@@ -1163,17 +1102,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPagePaths.ResumeLayout(false);
             this.tabPagePaths.PerformLayout();
-            this.tabPageRepository.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.tabPagePrefixesSuffixex.ResumeLayout(false);
             this.tabPagePrefixesSuffixex.PerformLayout();
-            this.groupBox8.ResumeLayout(false);
-            this.groupBox8.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.grpTableName.ResumeLayout(false);
             this.grpTableName.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
             this.tabPageETLFrameworkSpecific.ResumeLayout(false);
             this.tabPageETLFrameworkSpecific.PerformLayout();
             this.tabPageIntegrationLayerSpecific.ResumeLayout(false);
@@ -1202,17 +1138,14 @@
         private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem openRootPathFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openActiveConfigurationFileToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPagePaths;
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.TextBox textBoxConfigurationPath;
         internal System.Windows.Forms.TextBox textBoxOutputPath;
         private System.Windows.Forms.Label label45;
         private System.Windows.Forms.Label OutputPathLabel;
-        private System.Windows.Forms.TabPage tabPageRepository;
-        private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        internal System.Windows.Forms.RadioButton radioButtonSQLServer;
-        internal System.Windows.Forms.RadioButton radioButtonJSON;
         private System.Windows.Forms.TabPage tabPagePrefixesSuffixex;
         private System.Windows.Forms.Label label48;
         internal System.Windows.Forms.GroupBox groupBox8;
@@ -1289,8 +1222,6 @@
         private System.Windows.Forms.RichTextBox richTextBoxEnvironmentsInformation;
         private System.Windows.Forms.TabPage tabPageEnvironmentNewTab;
         private System.Windows.Forms.TabControl tabControlDefaultDetails;
-        private System.Windows.Forms.ToolStripMenuItem openRootPathFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openActiveConfigurationFileToolStripMenuItem;
     }
 }
 

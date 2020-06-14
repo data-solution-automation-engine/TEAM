@@ -142,4 +142,36 @@ namespace TEAM
         }
 
     }
+
+    public class LocalConnectionDictionary
+    {
+        public Dictionary<string, TeamConnectionProfile> ConnectionDictionary { get; set; }
+
+        public string connectionKey;
+        public string connectionString;
+
+        //public LocalConnectionDictionary(Dictionary<string, TeamConnectionProfile> localConnectionDictionary)
+        //{
+        //    connectionKey = localConnectionDictionary.
+        //    ConnectionDictionary = localConnectionDictionary;
+        //}
+
+
+        /// <summary>
+        /// Create a key/value pair of the database keys and the connection string.
+        /// </summary>
+        /// <param name="connectionDictionary"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> GetLocalConnectionDictionary(Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        {
+            Dictionary<string, string> returnDictionary = new Dictionary<string, string>();
+
+            foreach (var connection in connectionDictionary)
+            {
+                returnDictionary.Add(connection.Value.databaseConnectionKey, connection.Value.CreateConnectionString(false));
+            }
+
+            return returnDictionary;
+        }
+    }
 }

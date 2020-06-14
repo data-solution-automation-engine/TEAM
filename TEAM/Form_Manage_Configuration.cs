@@ -246,21 +246,6 @@ namespace TEAM
                     myPsaBusinessKeyLocation = radioButtonPSABusinessKeyIndex;
                     myPsaBusinessKeyLocation.Checked = true;
                 }
-
-                //Radiobutton settings for repository type
-                RadioButton myMetadatarepositoryType;
-
-                if (configList["metadataRepositoryType"] == "Json")
-                {
-                    myMetadatarepositoryType = radioButtonJSON;
-                    myMetadatarepositoryType.Checked = true;
-                }
-                else
-                {
-                    myMetadatarepositoryType = radioButtonSQLServer;
-                    myMetadatarepositoryType.Checked = true;
-                }
-
              
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
@@ -419,19 +404,6 @@ namespace TEAM
         /// </summary>
         private void UpdateConfigurationInMemory()
         {
-            // Save radio buttons Json / SQL Server.
-            if (radioButtonJSON.Checked)
-            {
-                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.Json;
-            }
-            else if (radioButtonSQLServer.Checked)
-            {
-                ConfigurationSettings.MetadataRepositoryType = MetadataRepositoryStorageType.SqlServer;
-            }
-            else
-            {
-                richTextBoxInformation.AppendText("Issues storing the metadata repository type. Is one of the radio buttons checked?");
-            }
 
             if (comboBoxMetadataConnection.SelectedItem!=null)
             {

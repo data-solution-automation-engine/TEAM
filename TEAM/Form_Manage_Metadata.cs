@@ -7283,7 +7283,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// This method runs a check against the DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
+        /// This method runs a check against the Attribute Mappings DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
         /// </summary>
         /// <param name="area"></param>
         private void ValidateAttributeExistence(string area)
@@ -7293,6 +7293,8 @@ namespace TEAM
             // Map the area to the column in the datagrid (e.g. source or target)
             int areaColumnIndex = 0;
             int areaAttributeColumnIndex = 0;
+
+            var localTableMappingConnectionDictionary = GetTableMappingConnections();
 
             switch (area)
             {
@@ -7314,6 +7316,7 @@ namespace TEAM
             _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the attributes in the {area} metadata exists in the model.\r\n");
 
             var resultList = new Dictionary<string, string>();
+       
 
             foreach (DataGridViewRow row in dataGridViewAttributeMetadata.Rows)
             {
@@ -7325,8 +7328,16 @@ namespace TEAM
 
                     if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject,""));
-                        string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        // Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject, ""));
+                        //string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        if (!localTableMappingConnectionDictionary.TryGetValue(validationObject, out var connectionValue))
+                        {
+                            // the key isn't in the dictionary.
+                            MessageBox.Show("The connection string for " + validationObject + " could not be derived.");
+                            return;
+                        }
 
                         objectValidated = ClassMetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
                     }
@@ -7372,12 +7383,54 @@ namespace TEAM
         }
 
         /// <summary>
+        /// Create a dictionary of all tables in the table mapping metadata grid and their connection strings.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetTableMappingConnections()
+        {
+            Dictionary<string, string> returnDictionary = new Dictionary<string, string>();
+
+            // Create the dictionary of the connection keys and their connection strings.
+            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(ConfigurationSettings.connectionDictionary);
+
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            {
+                if (row.IsNewRow == false)
+                {
+                    var sourceDataObject = row.Cells[TableMetadataColumns.SourceTable.ToString()].Value.ToString();
+                    var sourceDataObjectConnectionKey = row.Cells[TableMetadataColumns.SourceConnection.ToString()].Value.ToString();
+
+                    var targetDataObject = row.Cells[TableMetadataColumns.TargetTable.ToString()].Value.ToString();
+                    var targetDataObjectConnectionKey = row.Cells[TableMetadataColumns.TargetConnection.ToString()].Value.ToString();
+
+                    if (localConnectionDictionary.TryGetValue(sourceDataObjectConnectionKey, out var sourceConnectionValue))
+                    {
+                        returnDictionary[sourceDataObject] = sourceConnectionValue;
+                        //returnDictionary.Add(sourceDataObject, sourceConnectionValue);
+                    }
+
+                    if (localConnectionDictionary.TryGetValue(targetDataObjectConnectionKey, out var targetConnectionValue))
+                    {
+                        returnDictionary[targetDataObject] = targetConnectionValue;
+                        //returnDictionary.Add(targetDataObject, targetConnectionValue);
+                    }
+                }
+            }
+
+            return returnDictionary;
+        }
+
+
+
+        /// <summary>
         /// This method runs a check against the DataGrid to assert if model metadata is available for the object. The object needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run succesfully.
         /// </summary>
         /// <param name="area"></param>
         private void ValidateObjectExistence(string area)
         {
             string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
+
+            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(ConfigurationSettings.connectionDictionary);
 
             // Map the area to the column in the datagrid (e.g. source or target)
             int areaColumnIndex = 0;
@@ -7410,16 +7463,15 @@ namespace TEAM
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
                     var connectionObject = row.Cells[connectionColumnIndex].Value.ToString();
 
-                    var bla = ConfigurationSettings.connectionDictionary[connectionObject];
-
                     if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject, ""));
-                       
 
-                        string connectionValue = connectionInformation.FirstOrDefault().Value;
-
-                   
+                        if (!localConnectionDictionary.TryGetValue(connectionObject, out var connectionValue))
+                        {
+                            // the key isn't in the dictionary.
+                            MessageBox.Show("The connection string for " + connectionObject + " could not be derived.");
+                            return;
+                        }
 
                         try
                         {
