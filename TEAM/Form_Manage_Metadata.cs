@@ -1129,88 +1129,6 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Creates a new snapshot of the Attribute Mapping metadata for a Sql Server repository, with the versionId as input parameter. A new file will created for the provided version Id.
-        /// </summary>
-        /// <param name="versionId"></param>
-        internal void CreateNewAttributeMappingMetadataVersionSqlServer(int versionId)
-        {
-            var repositoryTarget = ConfigurationSettings.MetadataRepositoryType;
-
-            var insertQueryTables = new StringBuilder();
-
-            foreach (DataGridViewRow row in dataGridViewAttributeMetadata.Rows)
-            {
-                if (!row.IsNewRow)
-                {
-                    var stagingTable = "";
-                    var stagingColumn = "";
-                    var integrationTable = "";
-                    var integrationColumn = "";
-                    var notes = "";
-
-                    if (row.Cells[2].Value != DBNull.Value)
-                    {
-                        stagingTable = (string)row.Cells[2].Value;
-                    }
-
-                    if (row.Cells[3].Value != DBNull.Value)
-                    {
-                        stagingColumn = (string)row.Cells[3].Value;
-                    }
-
-                    if (row.Cells[4].Value != DBNull.Value)
-                    {
-                        integrationTable = (string)row.Cells[4].Value;
-                    }
-
-                    if (row.Cells[5].Value != DBNull.Value)
-                    {
-                        integrationColumn = (string)row.Cells[5].Value;
-                    }
-
-                    if (row.Cells[6].Value != DBNull.Value)
-                    {
-                        notes = (string)row.Cells[6].Value;
-                    }
-
-                    insertQueryTables.AppendLine("INSERT INTO MD_ATTRIBUTE_MAPPING");
-                    insertQueryTables.AppendLine("([VERSION_ID],[SOURCE_TABLE],[SOURCE_COLUMN],[TARGET_TABLE],[TARGET_COLUMN],[NOTES])");
-                    insertQueryTables.AppendLine("VALUES (" + versionId + ",'" + stagingTable + "','" +
-                                                 stagingColumn +
-                                                 "','" + integrationTable + "','" + integrationColumn + "','" +
-                                                 notes + "')");
-                }
-            }
-
-            // Execute the statement, if the repository is SQL Server
-            // If the source is JSON this is done in separate calls for now
-            if (repositoryTarget == MetadataRepositoryStorageType.SqlServer)
-            {
-                if (insertQueryTables.ToString() == "")
-                {
-                    richTextBoxInformation.Text += "No new version was saved.\r\n";
-                }
-                else
-                {
-                    using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
-                    {
-                        var command = new SqlCommand(insertQueryTables.ToString(), connection);
-
-                        try
-                        {
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            richTextBoxInformation.Text += "An issue has occurred: " + ex;
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Creates a new snapshot of the Attribute Mapping metadata for a JSON repository, with the versionId as input parameter. A new file will created for the provided version Id.
         /// </summary>
         /// <param name="versionId"></param>
@@ -2256,6 +2174,7 @@ namespace TEAM
             var inputAttributeMapping = (DataTable)_bindingSourceAttributeMetadata.DataSource;
             var inputPhysicalModel = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
 
+            #region Attribute Mapping
             // Attribute mapping
             var createStatement = new StringBuilder();
             createStatement.AppendLine();
@@ -2320,6 +2239,7 @@ namespace TEAM
 
             executeSqlCommand(createStatement, connString);
             createStatement.Clear();
+            #endregion
 
 
             // Table Mapping
@@ -2348,7 +2268,7 @@ namespace TEAM
             createStatement.AppendLine("	[TARGET_TABLE] varchar(100)  NULL,");
             createStatement.AppendLine("	[TARGET_TABLE_TYPE] varchar(100)  NULL,");
             createStatement.AppendLine("	[FILTER_CRITERIA] varchar(4000)  NULL,");
-            createStatement.AppendLine("	[ENABLED_INDICATOR] varchar(1)  NULL,");
+            createStatement.AppendLine("	[ENABLED_INDICATOR] varchar(5)  NULL,");
             createStatement.AppendLine("    CONSTRAINT [PK_TMP_MD_TABLE_MAPPING] PRIMARY KEY CLUSTERED([TABLE_MAPPING_HASH] ASC, [VERSION_ID] ASC)");
             createStatement.AppendLine(")");
 
@@ -2390,7 +2310,15 @@ namespace TEAM
                 createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] ([VERSION_ID], [SOURCE_TABLE], [SOURCE_TABLE_TYPE], [BUSINESS_KEY_ATTRIBUTE], [TARGET_TABLE], [TARGET_TABLE_TYPE], [FILTER_CRITERIA], [DRIVING_KEY_ATTRIBUTE], [ENABLED_INDICATOR]) VALUES(0, N'" + fullyQualifiedSourceName + "', '"+sourceType+"' , N'" + BUSINESS_KEY_ATTRIBUTE.Replace("'","''") + "', N'" + fullyQualifiedTargetName + "', '"+targetType+"' , N'" + FILTER_CRITERIA + "', '" + DRIVING_KEY_ATTRIBUTE + "', '" + ENABLED_INDICATOR + "');");
             }
 
-            executeSqlCommand(createStatement, connString);
+            try
+            {
+                executeSqlCommand(createStatement, connString);
+            }
+            catch (Exception ex)
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"A row could not be inserted into the temporary worker table TMP_MD_TABLE_MAPPING. The message is {ex} for the statement {createStatement}."));
+            }
+
             createStatement.Clear();
 
 
@@ -2712,7 +2640,6 @@ namespace TEAM
             DataRow[] selectionRows;
 
             // Create an instance of the EventLog to information capture.
-            EventLog eventLog = new EventLog();
             string eventMessage = "";
 
             var errorLog = new StringBuilder();
@@ -2804,15 +2731,17 @@ namespace TEAM
                 // Determine the query type (physical or virtual)
                 var queryMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
+                // Get the full dictionary of objects and connections
+                var localTableMappingConnectionDictionary = GetTableMappingConnections();
+
                 // Event reporting - informing the user that the activation process has started
-                eventMessage = "Commencing metadata preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n\r\n";
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage));
-                _alert.SetTextLogging(eventMessage);
+                eventMessage = "Commencing metadata preparation / activation for version " + majorVersion + "." + minorVersion + ".";
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage)); _alert.SetTextLogging(eventMessage);
 
                 // Event reporting - alerting the user what kind of metadata is prepared
-                eventMessage = queryMode == "physical" ? "Physical Mode has been selected as metadata source for activation. This means that the database will be used to query physical model (table and attribute) metadata. In other words, the physical model versioning is ignored.\r\n\r\n" : "Virtual Mode has been selected. This means that the versioned physical model in the data grid will be used as table and attribute metadata.\r\n\r\n";
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage));
-                _alert.SetTextLogging(eventMessage);
+                eventMessage = queryMode == "physical" ? "Physical Mode has been selected as metadata source for activation. This means that the database will be used to query physical model (table and attribute) metadata. In other words, the physical model versioning is ignored." : "Virtual Mode has been selected. This means that the versioned physical model in the data grid will be used as table and attribute metadata.";
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage));
+                _alert.SetTextLogging("\r\n\r\n"+eventMessage);
                 #endregion
 
                 #region Delete Metadata - 2%
@@ -3324,27 +3253,40 @@ namespace TEAM
                 // Process the unique Hub records
                 foreach (var tableName in distinctListHub)
                 {
+                    var hubBusinessKey = new List<string>();
+
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
                         if (tableName != "Not applicable")
                         {
                             _alert.SetTextLogging("--> " + tableName + "\r\n");
+
+                            // Retrieve the business key
+                            if (queryMode == "physical")
+                            {
+                                if (!localTableMappingConnectionDictionary.TryGetValue(tableName, out var connectionValue))
+                                {
+                                    // the key isn't in the dictionary.
+                                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The connection string for {tableName} could not be found."));
+                                }
+
+                                hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyListPhysical(tableName, connectionValue);
+                            }
+                            else
+                            {
+                                hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyListVirtual(tableName, versionId);
+                            }
                         }
 
                         var fullyQualifiedName = ClassMetadataHandling.GetSchema(tableName).FirstOrDefault();
 
-                        // Retrieve the business key
-                        var hubBusinessKey = ClassMetadataHandling.GetHubTargetBusinessKeyList(fullyQualifiedName.Key,
-                            fullyQualifiedName.Value, versionId, queryMode);
                         string businessKeyString = string.Join(",", hubBusinessKey);
                         string surrogateKey = ClassMetadataHandling.GetSurrogateKey(tableName);
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_HUB]");
                         insertStatement.AppendLine("([HUB_NAME], [SCHEMA_NAME], [BUSINESS_KEY], [SURROGATE_KEY])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" +
-                                                   fullyQualifiedName.Key + "', '" + businessKeyString + "', '" +
-                                                   surrogateKey + "')");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + fullyQualifiedName.Key + "', '" + businessKeyString + "', '" + surrogateKey + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -3384,9 +3326,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Link metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_LINK table
-                selectionRows =
-                    inputTableMetadata.Select(
-                        TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
+                selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
 
                 var distinctListLinks = new List<string>();
 
@@ -3422,8 +3362,7 @@ namespace TEAM
 
                         insertStatement.AppendLine("INSERT INTO [MD_LINK]");
                         insertStatement.AppendLine("([LINK_NAME], [SCHEMA_NAME], [SURROGATE_KEY])");
-                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" +
-                                                   fullyQualifiedName.Key + "','" + surrogateKey + "')");
+                        insertStatement.AppendLine("VALUES ('" + fullyQualifiedName.Value + "','" + fullyQualifiedName.Key + "','" + surrogateKey + "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -3447,8 +3386,7 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(20);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
                 #endregion
 
@@ -3468,27 +3406,20 @@ namespace TEAM
                 prepareSatStatement.AppendLine("  spec.TARGET_TABLE AS SATELLITE_NAME,");
                 prepareSatStatement.AppendLine("  hubkeysub.HUB_NAME, ");
                 prepareSatStatement.AppendLine("  'Normal' AS SATELLITE_TYPE, ");
-                prepareSatStatement.AppendLine(
-                    "  (SELECT LINK_NAME FROM MD_LINK WHERE LINK_NAME='Not applicable') AS LINK_NAME -- No link for normal Satellites ");
+                prepareSatStatement.AppendLine("  (SELECT LINK_NAME FROM MD_LINK WHERE LINK_NAME='Not applicable') AS LINK_NAME -- No link for normal Satellites ");
                 prepareSatStatement.AppendLine("FROM TMP_MD_TABLE_MAPPING spec ");
                 prepareSatStatement.AppendLine("LEFT OUTER JOIN ");
                 prepareSatStatement.AppendLine("(");
-                prepareSatStatement.AppendLine(
-                    "  SELECT DISTINCT TARGET_TABLE, hub.HUB_NAME, SOURCE_TABLE, BUSINESS_KEY_ATTRIBUTE ");
+                prepareSatStatement.AppendLine("  SELECT DISTINCT TARGET_TABLE, hub.HUB_NAME, SOURCE_TABLE, BUSINESS_KEY_ATTRIBUTE ");
                 prepareSatStatement.AppendLine("  FROM TMP_MD_TABLE_MAPPING spec2 ");
                 prepareSatStatement.AppendLine("  LEFT OUTER JOIN -- Join in the Hub NAME from the MD table ");
-                prepareSatStatement.AppendLine(
-                    "  MD_HUB hub ON hub.[SCHEMA_NAME]+'.'+hub.HUB_NAME=spec2.TARGET_TABLE ");
-                prepareSatStatement.AppendLine("  WHERE TARGET_TABLE_TYPE = '" +
-                                               ClassMetadataHandling.TableTypes.CoreBusinessConcept +
-                                               "' AND [ENABLED_INDICATOR] = 'Y'                                                        ");
+                prepareSatStatement.AppendLine("  MD_HUB hub ON hub.[SCHEMA_NAME]+'.'+hub.HUB_NAME=spec2.TARGET_TABLE ");
+                prepareSatStatement.AppendLine("  WHERE TARGET_TABLE_TYPE = '" + ClassMetadataHandling.TableTypes.CoreBusinessConcept + "' AND [ENABLED_INDICATOR] = 'True'                                                        ");
                 prepareSatStatement.AppendLine(") hubkeysub ");
                 prepareSatStatement.AppendLine("        ON spec.SOURCE_TABLE=hubkeysub.SOURCE_TABLE ");
-                prepareSatStatement.AppendLine(
-                    "        AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') ");
-                prepareSatStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
-                                               ClassMetadataHandling.TableTypes.Context + "' ");
-                prepareSatStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
+                prepareSatStatement.AppendLine("        AND replace(spec.BUSINESS_KEY_ATTRIBUTE,' ','')=replace(hubkeysub.BUSINESS_KEY_ATTRIBUTE,' ','') ");
+                prepareSatStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" + ClassMetadataHandling.TableTypes.Context + "' ");
+                prepareSatStatement.AppendLine("AND [ENABLED_INDICATOR] = 'True'");
 
                 var listSat = Utility.GetDataTable(ref connOmd, prepareSatStatement.ToString());
 
@@ -3572,7 +3503,7 @@ namespace TEAM
                     "                MD_LINK lnk ON lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=spec2.TARGET_TABLE");
                 prepareLsatStatement.AppendLine("        WHERE TARGET_TABLE_TYPE = '" +
                                                 ClassMetadataHandling.TableTypes.NaturalBusinessRelationship + "' ");
-                prepareLsatStatement.AppendLine("        AND [ENABLED_INDICATOR] = 'Y'");
+                prepareLsatStatement.AppendLine("        AND [ENABLED_INDICATOR] = 'True'");
                 prepareLsatStatement.AppendLine(") lnkkeysub");
                 prepareLsatStatement.AppendLine(
                     "    ON spec.SOURCE_TABLE=lnkkeysub.SOURCE_TABLE -- Only the combination of Link table and Business key can belong to the LSAT");
@@ -3583,7 +3514,7 @@ namespace TEAM
                 prepareLsatStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
                                                 ClassMetadataHandling.TableTypes.NaturalBusinessRelationshipContext +
                                                 "'");
-                prepareLsatStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
+                prepareLsatStatement.AppendLine("AND [ENABLED_INDICATOR] = 'True'");
 
 
                 var listLsat = Utility.GetDataTable(ref connOmd, prepareLsatStatement.ToString());
@@ -3663,7 +3594,7 @@ namespace TEAM
                     "        MD_SATELLITE sat ON sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=spec.TARGET_TABLE");
                 prepareSatXrefStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
                                                    ClassMetadataHandling.TableTypes.Context + "'");
-                prepareSatXrefStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
+                prepareSatXrefStatement.AppendLine("AND [ENABLED_INDICATOR] = 'True'");
                 prepareSatXrefStatement.AppendLine("UNION");
                 prepareSatXrefStatement.AppendLine("SELECT");
                 prepareSatXrefStatement.AppendLine("        sat.SATELLITE_NAME,");
@@ -3681,7 +3612,7 @@ namespace TEAM
                 prepareSatXrefStatement.AppendLine("WHERE spec.TARGET_TABLE_TYPE = '" +
                                                    ClassMetadataHandling.TableTypes.NaturalBusinessRelationshipContext +
                                                    "'");
-                prepareSatXrefStatement.AppendLine("AND [ENABLED_INDICATOR] = 'Y'");
+                prepareSatXrefStatement.AppendLine("AND [ENABLED_INDICATOR] = 'True'");
 
                 var listSatXref = Utility.GetDataTable(ref connOmd, prepareSatXrefStatement.ToString());
 
@@ -3767,7 +3698,7 @@ namespace TEAM
                 prepareStgHubXrefStatement.AppendLine("    WHERE ");
                 prepareStgHubXrefStatement.AppendLine("        TARGET_TABLE_TYPE = '" +
                                                       ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
-                prepareStgHubXrefStatement.AppendLine("    AND [ENABLED_INDICATOR] = 'Y'");
+                prepareStgHubXrefStatement.AppendLine("    AND [ENABLED_INDICATOR] = 'True'");
                 prepareStgHubXrefStatement.AppendLine(") hub");
                 prepareStgHubXrefStatement.AppendLine("LEFT OUTER JOIN");
                 prepareStgHubXrefStatement.AppendLine("( ");
@@ -3841,100 +3772,7 @@ namespace TEAM
                 #endregion
 
 
-                #region Filter Variables  - 35%
 
-                subProcess.Reset();
-                subProcess.Start();
-
-                string tableFilterQuery = @"SELECT DISTINCT [SOURCE_TABLE] AS [TABLE_NAME], [SOURCE_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]
-                                            UNION
-                                            SELECT DISTINCT [TARGET_TABLE] AS [TABLE_NAME], [TARGET_TABLE_TYPE] AS [TABLE_TYPE] FROM [TMP_MD_TABLE_MAPPING]";
-
-                // Filters need to be executed against specific databases, so each filter is setup to be used against a specific database connection
-                var stgTableFilterObjects = "";
-                var psaTableFilterObjects = "";
-                var intTableFilterObjects = "";
-                var presTableFilterObjects = "";
-
-                var tableFilterObjects = "";
-
-                var tableDataTable = Utility.GetDataTable(ref connOmd, tableFilterQuery);
-
-                // Creating the filters
-                int objectCounter = 1;
-                foreach (DataRow tableRow in tableDataTable.Rows)
-                {
-                    // Get the right database name for the table type (which can be anything including STG, PSA, base- and derived DV and Dimension or Facts)
-                    Dictionary<string, string> databaseNameDictionary = ClassMetadataHandling.GetConnectionInformationForTableType(tableRow["TABLE_TYPE"].ToString());
-                    
-                    string databaseNameKey = databaseNameDictionary.FirstOrDefault().Key;
-
-                    tableFilterObjects = tableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
-
-                    // Regular processing
-                    // if (databaseNameKey == ConfigurationSettings.StagingDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.StgTablePrefixValue) ||
-                    // tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.StgTablePrefixValue)))
-
-                    if (databaseNameKey == ConfigurationSettings.StagingDatabaseName)
-                    {
-                        // Staging filter
-                        stgTableFilterObjects = stgTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
-                    }
-                    //else if (databaseNameKey == ConfigurationSettings.PsaDatabaseName && (tableRow["TABLE_NAME"].ToString().StartsWith(ConfigurationSettings.PsaTablePrefixValue) ||
-                    //                                                                      tableRow["TABLE_NAME"].ToString().EndsWith(ConfigurationSettings.PsaTablePrefixValue)))
-                    else if (databaseNameKey == ConfigurationSettings.PsaDatabaseName)
-                    {
-                        // Persistent Staging Area filter
-                        psaTableFilterObjects = psaTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
-                    }
-                    else if (databaseNameKey == ConfigurationSettings.IntegrationDatabaseName)
-                    {
-                        // Integration Layer filter
-                        intTableFilterObjects = intTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
-                    }
-                    else if (databaseNameKey == ConfigurationSettings.PresentationDatabaseName)
-                    {
-                        // Presentation Layer filter
-                        presTableFilterObjects = presTableFilterObjects + "OBJECT_ID(N'[" + databaseNameKey + "]." + tableRow["TABLE_NAME"] + "') ,";
-                    }
-
-                    objectCounter++;
-                }
-
-                // Remove trailing commas
-                stgTableFilterObjects = stgTableFilterObjects.TrimEnd(',');
-                psaTableFilterObjects = psaTableFilterObjects.TrimEnd(',');
-                intTableFilterObjects = intTableFilterObjects.TrimEnd(',');
-                presTableFilterObjects = presTableFilterObjects.TrimEnd(',');
-
-                // Making sure a NULL value is returned if the filter doesn't contain any results
-                if (stgTableFilterObjects == "")
-                {
-                    stgTableFilterObjects = "NULL";
-                }
-
-                if (psaTableFilterObjects == "")
-                {
-                    psaTableFilterObjects = "NULL";
-                }
-
-                if (intTableFilterObjects == "")
-                {
-                    intTableFilterObjects = "NULL";
-                }
-
-                if (presTableFilterObjects == "")
-                {
-                    presTableFilterObjects = "NULL";
-                }
-
-                worker.ReportProgress(35);
-                subProcess.Stop();
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Filter variables created successfully, this took " +
-                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
-
-                #endregion
 
                 #region Physical Model dump- 40%
 
@@ -3954,130 +3792,67 @@ namespace TEAM
 
                     foreach (var connection in ConfigurationSettings.connectionDictionary)
                     {
-                        var localConnectionObject = (TeamConnectionProfile)connection.Value;
-                        var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.CreateConnectionString(false) };
-
-                        var physicalModelStatement = new StringBuilder();
-                        physicalModelStatement.AppendLine("SELECT ");
-                        physicalModelStatement.AppendLine(" [DATABASE_NAME] ");
-                        physicalModelStatement.AppendLine(",[SCHEMA_NAME]");
-                        physicalModelStatement.AppendLine(",[TABLE_NAME]");
-                        physicalModelStatement.AppendLine(",[COLUMN_NAME]");
-                        physicalModelStatement.AppendLine(",[DATA_TYPE]");
-                        physicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                        physicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
-                        physicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
-                        physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                        physicalModelStatement.AppendLine("FROM");
-                        physicalModelStatement.AppendLine("(");
-                        physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.databaseServer.databaseName, "").ToString());
-                        physicalModelStatement.AppendLine(") sub");
-
-                        var localPhysicalModelDataTable = Utility.GetDataTable(ref connStg, physicalModelStatement.ToString());
-
-                        if (localPhysicalModelDataTable != null)
+                        if (connection.Key != "Metadata")
                         {
-                            physicalModelDataTable.Merge(localPhysicalModelDataTable);
+                            var localConnectionObject = (TeamConnectionProfile) connection.Value;
+                            var localSqlConnection = new SqlConnection {ConnectionString = localConnectionObject.CreateConnectionString(false)};
+
+                            // Build up the filter criteria to only select information for tables that are associated with the connection
+                            var tableFilterObjects = "";
+                            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                            {
+                                if (row.IsNewRow == false)
+                                {
+                                    if (row.Cells[TableMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
+                                        connection.Value.databaseConnectionKey)
+                                    {
+                                        var localTable = row.Cells[TableMetadataColumns.SourceTable.ToString()].Value.ToString();
+                                        localTable = ClassMetadataHandling.GetFullyQualifiedTableName(localTable);
+                                        tableFilterObjects =
+                                            tableFilterObjects + "OBJECT_ID(N'[" +
+                                            connection.Value.databaseServer.databaseName + "]." + localTable + "') ,";
+                                    }
+
+                                    if (row.Cells[TableMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
+                                        connection.Value.databaseConnectionKey)
+                                    {
+                                        var localTable = row.Cells[TableMetadataColumns.TargetTable.ToString()].Value.ToString();
+                                        localTable = ClassMetadataHandling.GetFullyQualifiedTableName(localTable);
+                                        tableFilterObjects =
+                                            tableFilterObjects + "OBJECT_ID(N'[" +
+                                            connection.Value.databaseServer.databaseName + "]." + localTable + "') ,";
+                                    }
+                                }
+                            }
+                            tableFilterObjects = tableFilterObjects.TrimEnd(',');
+
+
+                            var physicalModelStatement = new StringBuilder();
+                            physicalModelStatement.AppendLine("SELECT ");
+                            physicalModelStatement.AppendLine(" [DATABASE_NAME] ");
+                            physicalModelStatement.AppendLine(",[SCHEMA_NAME]");
+                            physicalModelStatement.AppendLine(",[TABLE_NAME]");
+                            physicalModelStatement.AppendLine(",[COLUMN_NAME]");
+                            physicalModelStatement.AppendLine(",[DATA_TYPE]");
+                            physicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                            physicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
+                            physicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
+                            physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                            physicalModelStatement.AppendLine("FROM");
+                            physicalModelStatement.AppendLine("(");
+                            physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.databaseServer.databaseName, tableFilterObjects)
+                                .ToString());
+                            physicalModelStatement.AppendLine(") sub");
+
+                            var localPhysicalModelDataTable = Utility.GetDataTable(ref localSqlConnection,
+                                physicalModelStatement.ToString());
+
+                            if (localPhysicalModelDataTable != null)
+                            {
+                                physicalModelDataTable.Merge(localPhysicalModelDataTable);
+                            }
                         }
                     }
-
-                    //// Staging / landing
-                    //var preparePhysicalModelStgStatement = new StringBuilder();
-                    //preparePhysicalModelStgStatement.AppendLine("SELECT ");
-                    //preparePhysicalModelStgStatement.AppendLine(" [DATABASE_NAME] ");
-                    //preparePhysicalModelStgStatement.AppendLine(",[SCHEMA_NAME]");
-                    //preparePhysicalModelStgStatement.AppendLine(",[TABLE_NAME]");
-                    //preparePhysicalModelStgStatement.AppendLine(",[COLUMN_NAME]");
-                    //preparePhysicalModelStgStatement.AppendLine(",[DATA_TYPE]");
-                    //preparePhysicalModelStgStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    //preparePhysicalModelStgStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    //preparePhysicalModelStgStatement.AppendLine(",[ORDINAL_POSITION]");
-                    //preparePhysicalModelStgStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    //preparePhysicalModelStgStatement.AppendLine("FROM");
-                    //preparePhysicalModelStgStatement.AppendLine("(");
-                    //preparePhysicalModelStgStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.StagingDatabaseName, stgTableFilterObjects).ToString());
-                    //preparePhysicalModelStgStatement.AppendLine(") sub");
-
-                    //var physicalModelDataTableStg = Utility.GetDataTable(ref connStg, preparePhysicalModelStgStatement.ToString());
-
-                    //// PSA
-                    //var preparePhysicalModelPsaStatement = new StringBuilder();
-                    //preparePhysicalModelPsaStatement.AppendLine("SELECT ");
-                    //preparePhysicalModelPsaStatement.AppendLine(" [DATABASE_NAME] ");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[SCHEMA_NAME]");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[TABLE_NAME]");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[COLUMN_NAME]");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[DATA_TYPE]");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[ORDINAL_POSITION]");
-                    //preparePhysicalModelPsaStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    //preparePhysicalModelPsaStatement.AppendLine("FROM");
-                    //preparePhysicalModelPsaStatement.AppendLine("(");
-                    //preparePhysicalModelPsaStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PsaDatabaseName, psaTableFilterObjects).ToString());
-                    //preparePhysicalModelPsaStatement.AppendLine(") sub");
-
-                    //var physicalModelDataTablePsa = Utility.GetDataTable(ref connPsa, preparePhysicalModelPsaStatement.ToString());
-
-                    //// INT
-                    //var preparePhysicalModelIntStatement = new StringBuilder();
-                    //preparePhysicalModelIntStatement.AppendLine("SELECT ");
-                    //preparePhysicalModelIntStatement.AppendLine(" [DATABASE_NAME] ");
-                    //preparePhysicalModelIntStatement.AppendLine(",[SCHEMA_NAME]");
-                    //preparePhysicalModelIntStatement.AppendLine(",[TABLE_NAME]");
-                    //preparePhysicalModelIntStatement.AppendLine(",[COLUMN_NAME]");
-                    //preparePhysicalModelIntStatement.AppendLine(",[DATA_TYPE]");
-                    //preparePhysicalModelIntStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    //preparePhysicalModelIntStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    //preparePhysicalModelIntStatement.AppendLine(",[ORDINAL_POSITION]");
-                    //preparePhysicalModelIntStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    //preparePhysicalModelIntStatement.AppendLine("FROM");
-                    //preparePhysicalModelIntStatement.AppendLine("(");
-                    //preparePhysicalModelIntStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.IntegrationDatabaseName, intTableFilterObjects).ToString());
-                    //preparePhysicalModelIntStatement.AppendLine(") sub");
-
-                    //var physicalModelDataTableInt = Utility.GetDataTable(ref connInt, preparePhysicalModelIntStatement.ToString());
-
-                    //// PRES
-                    //var preparePhysicalModelPresStatement = new StringBuilder();
-                    //preparePhysicalModelPresStatement.AppendLine("SELECT ");
-                    //preparePhysicalModelPresStatement.AppendLine(" [DATABASE_NAME] ");
-                    //preparePhysicalModelPresStatement.AppendLine(",[SCHEMA_NAME]");
-                    //preparePhysicalModelPresStatement.AppendLine(",[TABLE_NAME]");
-                    //preparePhysicalModelPresStatement.AppendLine(",[COLUMN_NAME]");
-                    //preparePhysicalModelPresStatement.AppendLine(",[DATA_TYPE]");
-                    //preparePhysicalModelPresStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                    //preparePhysicalModelPresStatement.AppendLine(",[NUMERIC_PRECISION]");
-                    //preparePhysicalModelPresStatement.AppendLine(",[ORDINAL_POSITION]");
-                    //preparePhysicalModelPresStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                    //preparePhysicalModelPresStatement.AppendLine("FROM");
-                    //preparePhysicalModelPresStatement.AppendLine("(");
-                    //preparePhysicalModelPresStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(ConfigurationSettings.PresentationDatabaseName, presTableFilterObjects).ToString());
-                    //preparePhysicalModelPresStatement.AppendLine(") sub");
-
-                    //var physicalModelDataTablePres = Utility.GetDataTable(ref connPres, preparePhysicalModelPresStatement.ToString());
-
-
-                    //if (physicalModelDataTableStg != null)
-                    //{
-                    //    physicalModelDataTable.Merge(physicalModelDataTableStg);
-                    //}
-
-                    //if (physicalModelDataTablePsa != null)
-                    //{
-                    //    physicalModelDataTable.Merge(physicalModelDataTablePsa);
-                    //}
-
-                    //if (physicalModelDataTableInt != null)
-                    //{
-                    //    physicalModelDataTable.Merge(physicalModelDataTableInt);
-                    //}
-
-                    //if (physicalModelDataTablePres != null)
-                    //{
-                    //    physicalModelDataTable.Merge(physicalModelDataTablePres);
-                    //}
-
                 }
                 else // Get the values from the data grid or worker table (virtual mode)
                 {
@@ -4106,69 +3881,68 @@ namespace TEAM
                     }
                     else
                     {
+                        // Create a large insert string to save per-row database connection.
+                        var createStatement = new StringBuilder();
+
                         foreach (DataRow tableName in physicalModelDataTable.Rows)
                         {
-                            using (var connection = new SqlConnection(metaDataConnection))
+                            var insertKeyStatement = new StringBuilder();
+
+                            insertKeyStatement.AppendLine("INSERT INTO [MD_PHYSICAL_MODEL]");
+                            insertKeyStatement.AppendLine("([DATABASE_NAME], " +
+                                                          "[SCHEMA_NAME], " +
+                                                          "[TABLE_NAME], " +
+                                                          "[COLUMN_NAME], " +
+                                                          "[DATA_TYPE], " +
+                                                          "[CHARACTER_MAXIMUM_LENGTH], " +
+                                                          "[NUMERIC_PRECISION], " +
+                                                          "[ORDINAL_POSITION], " +
+                                                          "[PRIMARY_KEY_INDICATOR])");
+                            insertKeyStatement.AppendLine("VALUES ('" +
+                                                          tableName["DATABASE_NAME"].ToString().Trim() +
+                                                          "','" + tableName["SCHEMA_NAME"].ToString().Trim() +
+                                                          "','" + tableName["TABLE_NAME"].ToString().Trim() +
+                                                          "','" + tableName["COLUMN_NAME"].ToString().Trim() +
+                                                          "','" + tableName["DATA_TYPE"].ToString().Trim() +
+                                                          "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString()
+                                                              .Trim() +
+                                                          "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
+                                                          "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
+                                                          "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString().Trim() +
+                                                          "')");
+
+                            createStatement.AppendLine(insertKeyStatement.ToString());
+                        }
+
+                        using (var connection = new SqlConnection(metaDataConnection))
+                        {
+                            // Execute the statement
+                            var command = new SqlCommand(createStatement.ToString(), connection);
+
+                            try
                             {
-                                var insertKeyStatement = new StringBuilder();
-
-                                insertKeyStatement.AppendLine("INSERT INTO [MD_PHYSICAL_MODEL]");
-                                insertKeyStatement.AppendLine("([DATABASE_NAME], " +
-                                                              "[SCHEMA_NAME], " +
-                                                              "[TABLE_NAME], " +
-                                                              "[COLUMN_NAME], " +
-                                                              "[DATA_TYPE], " +
-                                                              "[CHARACTER_MAXIMUM_LENGTH], " +
-                                                              "[NUMERIC_PRECISION], " +
-                                                              "[ORDINAL_POSITION], " +
-                                                              "[PRIMARY_KEY_INDICATOR])");
-                                insertKeyStatement.AppendLine("VALUES ('" +
-                                                              tableName["DATABASE_NAME"].ToString().Trim() +
-                                                              "','" + tableName["SCHEMA_NAME"].ToString().Trim() +
-                                                              "','" + tableName["TABLE_NAME"].ToString().Trim() +
-                                                              "','" + tableName["COLUMN_NAME"].ToString().Trim() +
-                                                              "','" + tableName["DATA_TYPE"].ToString().Trim() +
-                                                              "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString()
-                                                                  .Trim() +
-                                                              "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
-                                                              "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
-                                                              "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString()
-                                                                  .Trim() + "')");
-
-                                var command = new SqlCommand(insertKeyStatement.ToString(), connection);
-
-                                try
-                                {
-                                    connection.Open();
-                                    command.ExecuteNonQuery();
-                                }
-                                catch (Exception ex)
-                                {
-                                    errorCounter++;
-                                    _alert.SetTextLogging(
-                                        "An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
-                                    errorLog.AppendLine(
-                                        "\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" +
-                                        ex);
-                                }
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCounter++;
+                                _alert.SetTextLogging("An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
                             }
                         }
                     }
 
                     worker.ReportProgress(40);
                     subProcess.Stop();
-                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " +
-                                          subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 }
                 catch (Exception ex)
                 {
                     errorCounter++;
-                    _alert.SetTextLogging(
-                        "An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine(
-                        "\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
+                    _alert.SetTextLogging("An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
+                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
                 }
-
                 #endregion
 
 
@@ -4269,8 +4043,7 @@ namespace TEAM
                 // Check if there are any attributes found, otherwise insert into the repository
                 if (listAtt.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging(
-                        "--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    _alert.SetTextLogging("--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
                 }
                 else
                 {
@@ -4297,12 +4070,9 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
+                                errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
+                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
                             }
                         }
                     }
@@ -4312,10 +4082,7 @@ namespace TEAM
 
                 worker.ReportProgress(45);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the attributes completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
-
-
+                _alert.SetTextLogging("Preparation of the attributes completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
@@ -4382,7 +4149,7 @@ namespace TEAM
                 prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
                 prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE_TYPE = '" +
                                                ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
-                prepareKeyStatement.AppendLine("              AND [ENABLED_INDICATOR] = 'Y'");
+                prepareKeyStatement.AppendLine("              AND [ENABLED_INDICATOR] = 'True'");
                 prepareKeyStatement.AppendLine("        ) TableName");
                 prepareKeyStatement.AppendLine(
                     "    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
@@ -4582,7 +4349,6 @@ namespace TEAM
 
 
                 #region Hub / Link relationship - 75%
-
                 //Prepare HUB / LNK xref
                 subProcess.Reset();
                 subProcess.Start();
@@ -4593,29 +4359,40 @@ namespace TEAM
                 var virtualisationSnippet = new StringBuilder();
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    virtualisationSnippet.AppendLine(" SELECT ");
-                    virtualisationSnippet.AppendLine("     OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" +
-                                                     ConfigurationSettings.IntegrationDatabaseName +
-                                                     "')) AS LINK_SCHEMA,");
-                    virtualisationSnippet.AppendLine("     OBJECT_NAME(OBJECT_ID,DB_ID('" +
-                                                     ConfigurationSettings.IntegrationDatabaseName +
-                                                     "'))  AS LINK_NAME,");
-                    virtualisationSnippet.AppendLine("     [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    virtualisationSnippet.AppendLine(
-                        "     ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" +
-                        ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
-                    virtualisationSnippet.AppendLine(" FROM " + linkedServer + integrationDatabase + @".sys.columns");
-                    virtualisationSnippet.AppendLine(" WHERE [column_id] > 1");
-                    virtualisationSnippet.AppendLine("   AND OBJECT_NAME(OBJECT_ID,DB_ID('" +
-                                                     ConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" +
-                                                     lnkTablePrefix + @"'");
-                    virtualisationSnippet.AppendLine("   AND [name] NOT IN ('" +
+                    //virtualisationSnippet.AppendLine("SELECT ");
+                    //virtualisationSnippet.AppendLine("  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
+                    //virtualisationSnippet.AppendLine("  OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
+                    //virtualisationSnippet.AppendLine("  [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
+                    //virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
+                    //virtualisationSnippet.AppendLine("FROM " + linkedServer + integrationDatabase + @".sys.columns");
+                    //virtualisationSnippet.AppendLine("WHERE [column_id] > 1");
+                    //virtualisationSnippet.AppendLine("AND OBJECT_NAME(OBJECT_ID,DB_ID('" + ConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" + lnkTablePrefix + @"'");
+                    //virtualisationSnippet.AppendLine("   AND [name] NOT IN ('" +
+                    //                                 ConfigurationSettings.RecordSourceAttribute + "','" +
+                    //                                 ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
+                    //                                 ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
+                    //                                 ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                    //                                 ConfigurationSettings.EtlProcessAttribute + "','" +
+                    //                                 ConfigurationSettings.LoadDateTimeAttribute + "" +
+                    //                                 "')");
+
+                    // Use the physical model snapshot.
+                    virtualisationSnippet.AppendLine("SELECT");
+                    virtualisationSnippet.AppendLine("  [SCHEMA_NAME] AS LINK_SCHEMA,");
+                    virtualisationSnippet.AppendLine("  [TABLE_NAME]  AS LINK_NAME,");
+                    virtualisationSnippet.AppendLine("  [COLUMN_NAME] AS HUB_TARGET_KEY_NAME_IN_LINK,");
+                    virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
+                    virtualisationSnippet.AppendLine("FROM MD_PHYSICAL_MODEL");
+                    virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
+                    virtualisationSnippet.AppendLine(" AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
+                    virtualisationSnippet.AppendLine(" AND COLUMN_NAME NOT IN ('" +
                                                      ConfigurationSettings.RecordSourceAttribute + "','" +
                                                      ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
                                                      ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
-                                                     ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
-                                                     "','" + ConfigurationSettings.EtlProcessAttribute + "','" +
-                                                     FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
+                                                     ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                                                     ConfigurationSettings.EtlProcessAttribute + "','" +
+                                                     ConfigurationSettings.LoadDateTimeAttribute +
+                                                     "')");
                 }
                 else
                 {
@@ -4623,86 +4400,69 @@ namespace TEAM
                     virtualisationSnippet.AppendLine("  [SCHEMA_NAME] AS LINK_SCHEMA,");
                     virtualisationSnippet.AppendLine("  [TABLE_NAME]  AS LINK_NAME,");
                     virtualisationSnippet.AppendLine("  [COLUMN_NAME] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    virtualisationSnippet.AppendLine(
-                        "  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
+                    virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
                     virtualisationSnippet.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
                     virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
                     virtualisationSnippet.AppendLine(" AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
-                    virtualisationSnippet.AppendLine("  AND COLUMN_NAME NOT IN ('" +
+                    virtualisationSnippet.AppendLine(" AND COLUMN_NAME NOT IN ('" +
                                                      ConfigurationSettings.RecordSourceAttribute + "','" +
                                                      ConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
                                                      ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
-                                                     ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +
-                                                     "','" + FormBase.ConfigurationSettings.EtlProcessAttribute +
-                                                     "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute +
+                                                     ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + 
+                                                     ConfigurationSettings.EtlProcessAttribute + "','" + 
+                                                     ConfigurationSettings.LoadDateTimeAttribute +
                                                      "')");
-
                 }
 
+         
 
                 var prepareHubLnkXrefStatement = new StringBuilder();
 
                 prepareHubLnkXrefStatement.AppendLine("SELECT");
-                prepareHubLnkXrefStatement.AppendLine("       hub_tbl.HUB_NAME,");
-                prepareHubLnkXrefStatement.AppendLine("       lnk_tbl.LINK_NAME,");
-                prepareHubLnkXrefStatement.AppendLine("       lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,");
-                prepareHubLnkXrefStatement.AppendLine("       lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK");
-                prepareHubLnkXrefStatement.AppendLine("   FROM");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "   -- This base query adds the Link and its Hubs and their order by pivoting on the full business key");
-                prepareHubLnkXrefStatement.AppendLine("   (");
-                prepareHubLnkXrefStatement.AppendLine("       SELECT");
-                prepareHubLnkXrefStatement.AppendLine("       TARGET_TABLE,");
-                prepareHubLnkXrefStatement.AppendLine("       SOURCE_TABLE,");
-                prepareHubLnkXrefStatement.AppendLine("       BUSINESS_KEY_ATTRIBUTE,");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "       LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "       ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS HUB_KEY_ORDER");
-                prepareHubLnkXrefStatement.AppendLine("       FROM");
-                prepareHubLnkXrefStatement.AppendLine("       (");
-                prepareHubLnkXrefStatement.AppendLine("       SELECT");
-                prepareHubLnkXrefStatement.AppendLine("           TARGET_TABLE,");
-                prepareHubLnkXrefStatement.AppendLine("           SOURCE_TABLE,");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "           ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS LINK_ORDER,");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "           BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
-                prepareHubLnkXrefStatement.AppendLine("       FROM  TMP_MD_TABLE_MAPPING");
-                prepareHubLnkXrefStatement.AppendLine("       WHERE [TARGET_TABLE_TYPE] = '" +
-                                                      ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
-                                                      "'");
-                prepareHubLnkXrefStatement.AppendLine("           AND [ENABLED_INDICATOR] = 'Y'");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "     ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "     WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same");
-                prepareHubLnkXrefStatement.AppendLine(" ) lnk_hubkey_order");
-                prepareHubLnkXrefStatement.AppendLine(
-                    " -- Adding the information required for the target model in the query");
+                prepareHubLnkXrefStatement.AppendLine("  hub_tbl.HUB_NAME,");
+                prepareHubLnkXrefStatement.AppendLine("  lnk_tbl.LINK_NAME,");
+                prepareHubLnkXrefStatement.AppendLine("  lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,");
+                prepareHubLnkXrefStatement.AppendLine("  lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK");
+                prepareHubLnkXrefStatement.AppendLine("FROM");
+                prepareHubLnkXrefStatement.AppendLine("-- This base query adds the Link and its Hubs and their order by pivoting on the full business key");
+                prepareHubLnkXrefStatement.AppendLine("(");
+                prepareHubLnkXrefStatement.AppendLine("  SELECT");
+                prepareHubLnkXrefStatement.AppendLine("    TARGET_TABLE,");
+                prepareHubLnkXrefStatement.AppendLine("    SOURCE_TABLE,");
+                prepareHubLnkXrefStatement.AppendLine("    BUSINESS_KEY_ATTRIBUTE,");
+                prepareHubLnkXrefStatement.AppendLine("    LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,");
+                prepareHubLnkXrefStatement.AppendLine("    ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS HUB_KEY_ORDER");
+                prepareHubLnkXrefStatement.AppendLine("  FROM");
+                prepareHubLnkXrefStatement.AppendLine("  (");
+                prepareHubLnkXrefStatement.AppendLine("    SELECT");
+                prepareHubLnkXrefStatement.AppendLine("      TARGET_TABLE,");
+                prepareHubLnkXrefStatement.AppendLine("      SOURCE_TABLE,");
+                prepareHubLnkXrefStatement.AppendLine("      ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS LINK_ORDER,");
+                prepareHubLnkXrefStatement.AppendLine("      BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
+                prepareHubLnkXrefStatement.AppendLine("    FROM  TMP_MD_TABLE_MAPPING");
+                prepareHubLnkXrefStatement.AppendLine("    WHERE [TARGET_TABLE_TYPE] = '" + ClassMetadataHandling.TableTypes.NaturalBusinessRelationship + "'");
+                prepareHubLnkXrefStatement.AppendLine("    AND [ENABLED_INDICATOR] = 'True'");
+                prepareHubLnkXrefStatement.AppendLine("  ) AS A CROSS APPLY BUSINESS_KEY_SOURCE_XML.nodes('/M') AS Split(a)");
+                prepareHubLnkXrefStatement.AppendLine("  WHERE LINK_ORDER=1 --Any link will do, the order of the Hub keys in the Link will always be the same");
+                prepareHubLnkXrefStatement.AppendLine(") lnk_hubkey_order");
+                prepareHubLnkXrefStatement.AppendLine("-- Adding the information required for the target model in the query");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN ");
                 prepareHubLnkXrefStatement.AppendLine(" (");
                 prepareHubLnkXrefStatement.AppendLine(virtualisationSnippet.ToString());
                 prepareHubLnkXrefStatement.AppendLine(" ) lnk_target_model");
-                prepareHubLnkXrefStatement.AppendLine(
-                    " ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_SCHEMA+'.'+lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
-                prepareHubLnkXrefStatement.AppendLine(
-                    " AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
+                prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_SCHEMA+'.'+lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
+                prepareHubLnkXrefStatement.AppendLine(" AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
                 prepareHubLnkXrefStatement.AppendLine(" --Adding the Hub mapping data to get the business keys");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN TMP_MD_TABLE_MAPPING hub");
                 prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[SOURCE_TABLE] = hub.SOURCE_TABLE");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
-                prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE_TYPE] = '" +
-                                                      ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
-                prepareHubLnkXrefStatement.AppendLine("     AND hub.[ENABLED_INDICATOR] = 'Y'");
+                prepareHubLnkXrefStatement.AppendLine("     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
+                prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE_TYPE] = '" + ClassMetadataHandling.TableTypes.CoreBusinessConcept + "'");
+                prepareHubLnkXrefStatement.AppendLine("     AND hub.[ENABLED_INDICATOR] = 'True'");
                 prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "     ON hub.TARGET_TABLE = hub_tbl.[SCHEMA_NAME]+'.'+hub_tbl.HUB_NAME");
+                prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.[SCHEMA_NAME]+'.'+hub_tbl.HUB_NAME");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_LINK lnk_tbl");
-                prepareHubLnkXrefStatement.AppendLine(
-                    "     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
+                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
 
                 var listHlXref = Utility.GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
@@ -4841,7 +4601,7 @@ namespace TEAM
                 preparestgLnkXrefStatement.AppendLine("WHERE lnk.TARGET_TABLE_TYPE = '" +
                                                       ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
                                                       "'");
-                preparestgLnkXrefStatement.AppendLine("AND[ENABLED_INDICATOR] = 'Y'");
+                preparestgLnkXrefStatement.AppendLine("AND[ENABLED_INDICATOR] = 'True'");
 
                 var listStgLinkXref = Utility.GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
 
@@ -5342,7 +5102,7 @@ namespace TEAM
                                                          ClassMetadataHandling.TableTypes.Context + "', '" +
                                                          ClassMetadataHandling.TableTypes
                                                              .NaturalBusinessRelationshipContext + "')");
-                prepareMappingStatementManual.AppendLine("   AND table_mapping.ENABLED_INDICATOR = 'Y' ");
+                prepareMappingStatementManual.AppendLine("   AND table_mapping.[ENABLED_INDICATOR] = 'True' ");
 
 
                 var attributeMappingsSatellites = Utility.GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
@@ -5593,7 +5353,7 @@ namespace TEAM
                 prepareMappingStatementLink.AppendLine("WHERE mapping.TARGET_TABLE_TYPE = ('" +
                                                        ClassMetadataHandling.TableTypes.NaturalBusinessRelationship +
                                                        "')");
-                prepareMappingStatementLink.AppendLine("      AND table_mapping.ENABLED_INDICATOR = 'Y'");
+                prepareMappingStatementLink.AppendLine("      AND table_mapping.[ENABLED_INDICATOR] = 'True'");
 
                 var degenerateMappings = Utility.GetDataTable(ref connOmd, prepareMappingStatementLink.ToString());
 
@@ -5939,7 +5699,7 @@ namespace TEAM
                                                       ClassMetadataHandling.TableTypes
                                                           .NaturalBusinessRelationshipContext +
                                                       "') AND DRIVING_KEY_ATTRIBUTE IS NOT NULL AND DRIVING_KEY_ATTRIBUTE != ''");
-                prepareDrivingKeyStatement.AppendLine("                         AND [ENABLED_INDICATOR] = 'Y'");
+                prepareDrivingKeyStatement.AppendLine("                         AND [ENABLED_INDICATOR] = 'True'");
                 prepareDrivingKeyStatement.AppendLine("                 ) TableName");
                 prepareDrivingKeyStatement.AppendLine(
                     "         ) AS A CROSS APPLY DRIVING_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
@@ -5960,7 +5720,7 @@ namespace TEAM
                 prepareDrivingKeyStatement.AppendLine(" WHERE 1=1");
                 prepareDrivingKeyStatement.AppendLine(" AND base.BUSINESS_KEY_ATTRIBUTE IS NOT NULL");
                 prepareDrivingKeyStatement.AppendLine(" AND base.BUSINESS_KEY_ATTRIBUTE!=''");
-                prepareDrivingKeyStatement.AppendLine(" AND [ENABLED_INDICATOR] = 'Y'");
+                prepareDrivingKeyStatement.AppendLine(" AND [ENABLED_INDICATOR] = 'True'");
 
 
                 var listDrivingKeys = Utility.GetDataTable(ref connOmd, prepareDrivingKeyStatement.ToString());
@@ -6021,29 +5781,29 @@ namespace TEAM
 
                 // Report the events (including errors) back to the user
                 // Clear out the existing error log, or create an empty new file
-                using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
-                {
-                    outfile.Write(String.Empty);
-                    outfile.Close();
-                }
+                //using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
+                //{
+                //    outfile.Write(String.Empty);
+                //    outfile.Close();
+                //}
 
-                int eventErrorCounter = 0;
-                StringBuilder logOutput = new StringBuilder();
-                foreach (Event individualEvent in eventLog)
-                {
-                    if (individualEvent.eventCode == (int)EventTypes.Error)
-                    {
-                        eventErrorCounter++;
-                    }
+                //int eventErrorCounter = 0;
+                //StringBuilder logOutput = new StringBuilder();
+                //foreach (Event individualEvent in eventLog)
+                //{
+                //    if (individualEvent.eventCode == (int)EventTypes.Error)
+                //    {
+                //        eventErrorCounter++;
+                //    }
 
-                    logOutput.AppendLine((EventTypes)individualEvent.eventCode + ": " + individualEvent.eventDescription);
-                }
+                //    logOutput.AppendLine((EventTypes)individualEvent.eventCode + ": " + individualEvent.eventDescription);
+                //}
 
-                using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
-                {
-                    outfile.Write(logOutput.ToString());
-                    outfile.Close();
-                }
+                //using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
+                //{
+                //    outfile.Write(logOutput.ToString());
+                //    outfile.Close();
+                //}
 
                 // Error handling
                 // Clear out the existing error log, or create an empty new file

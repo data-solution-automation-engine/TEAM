@@ -326,20 +326,25 @@ namespace TEAM
             return returnTableName;
         }
 
-
         /// <summary>
-        /// Returns a list of Business Key attributes as they are defined in the target Hub table.
+        /// Returns a list of Business Key attributes as they are defined in the target Hub table (virtual setup)
         /// </summary>
         /// <param name="schemaName"></param>
         /// <param name="tableName"></param>
         /// <param name="versionId"></param>
         /// <param name="queryMode"></param>
         /// <returns></returns>
-        public static List<string> GetHubTargetBusinessKeyList(string schemaName, string tableName, int versionId, string queryMode)
+        public static List<string> GetHubTargetBusinessKeyListVirtual(string fullyQualifiedTableName, int versionId)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var conn = queryMode == "physical" ? new SqlConnection {ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) } : new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var fullyQualifiedName = ClassMetadataHandling.GetSchema(fullyQualifiedTableName).FirstOrDefault();
+
+            // The metadata connection can be used.
+            var conn = new SqlConnection
+            {
+                ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false)
+            };
 
             try
             {
@@ -347,7 +352,8 @@ namespace TEAM
             }
             catch (Exception)
             {
-               // SetTextDebug("An error has occurred defining the Hub Business Key in the model due to connectivity issues (connection string " + conn.ConnectionString + "). The associated message is " + exception.Message);
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    $"The connection to the metadata repository could not be established via {conn.ConnectionString}."));
             }
 
             var sqlStatementForBusinessKeys = new StringBuilder();
@@ -357,34 +363,27 @@ namespace TEAM
             var localkeySubstring = localkeyLength + 1;
 
             // Make sure brackets are removed
-            schemaName = schemaName?.Replace("[", "").Replace("]", "");
+            var schemaName = fullyQualifiedName.Key?.Replace("[", "").Replace("]", "");
+            var tableName = fullyQualifiedName.Value?.Replace("[", "").Replace("]", "");
 
-            tableName = tableName?.Replace("[", "").Replace("]", "");
-
-            if (queryMode == "physical")
-            {
-                // Make sure the live database is hit when the checkbox is ticked
-                sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
-                sqlStatementForBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
-                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
-                sqlStatementForBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + schemaName + "'");
-                sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
-                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
-                                                          FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
-            }
-            else
-            {
-                //Ignore version is not checked, so versioning is used - meaning the business key metadata is sourced from the version history metadata.
-                sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
-                sqlStatementForBusinessKeys.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
-                sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength + "," + localkeySubstring + ")!='_" + FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
-                sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
-                sqlStatementForBusinessKeys.AppendLine("  AND SCHEMA_NAME= '" + schemaName + "'");
-                sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" + FormBase.ConfigurationSettings.RecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute + "','" + FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" + FormBase.ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
-                                                          FormBase.ConfigurationSettings.EtlProcessAttribute + "','" + FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
-                sqlStatementForBusinessKeys.AppendLine("  AND VERSION_ID = " + versionId + "");
-            }
-
+            //Ignore version is not checked, so versioning is used - meaning the business key metadata is sourced from the version history metadata.
+            sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
+            sqlStatementForBusinessKeys.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
+            sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength +
+                                                   "," + localkeySubstring + ")!='_" +
+                                                   FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
+            sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
+            sqlStatementForBusinessKeys.AppendLine("  AND SCHEMA_NAME= '" + schemaName + "'");
+            sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" +
+                                                   FormBase.ConfigurationSettings.RecordSourceAttribute + "','" +
+                                                   FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute +
+                                                   "','" +
+                                                   FormBase.ConfigurationSettings.AlternativeLoadDateTimeAttribute +
+                                                   "','" + FormBase.ConfigurationSettings
+                                                       .AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                                                   FormBase.ConfigurationSettings.EtlProcessAttribute + "','" +
+                                                   FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
+            sqlStatementForBusinessKeys.AppendLine("  AND VERSION_ID = " + versionId + "");
 
             var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
 
@@ -396,9 +395,87 @@ namespace TEAM
             var businessKeyList = new List<string>();
             foreach (DataRow row in keyList.Rows)
             {
-                if (!businessKeyList.Contains((string)row["COLUMN_NAME"]))
+                if (!businessKeyList.Contains((string) row["COLUMN_NAME"]))
                 {
-                    businessKeyList.Add((string)row["COLUMN_NAME"]);
+                    businessKeyList.Add((string) row["COLUMN_NAME"]);
+                }
+            }
+
+            return businessKeyList;
+        }
+
+
+        /// <summary>
+        /// Returns a list of Business Key attributes as they are defined in the target Hub table (physical setup).
+        /// </summary>
+        /// <param name="schemaName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="versionId"></param>
+        /// <param name="queryMode"></param>
+        /// <returns></returns>
+        public static List<string> GetHubTargetBusinessKeyListPhysical(string fullyQualifiedTableName, string connectionstring)
+        {
+            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
+
+            var fullyQualifiedName = ClassMetadataHandling.GetSchema(fullyQualifiedTableName).FirstOrDefault();
+
+            // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
+            var conn = new SqlConnection
+            {
+                ConnectionString = connectionstring
+            };
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception)
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    $"The connection to the database for object {fullyQualifiedTableName} could not be established via {conn.ConnectionString}."));
+            }
+
+            var sqlStatementForBusinessKeys = new StringBuilder();
+
+            var keyText = FormBase.ConfigurationSettings.DwhKeyIdentifier;
+            var localkeyLength = keyText.Length;
+            var localkeySubstring = localkeyLength + 1;
+
+            // Make sure brackets are removed
+            var schemaName = fullyQualifiedName.Key?.Replace("[", "").Replace("]", "");
+            var tableName = fullyQualifiedName.Value?.Replace("[", "").Replace("]", "");
+
+            // Make sure the live database is hit when the checkbox is ticked
+            sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
+            sqlStatementForBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
+            sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength +
+                                                   "," + localkeySubstring + ")!='_" +
+                                                   FormBase.ConfigurationSettings.DwhKeyIdentifier + "'");
+            sqlStatementForBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + schemaName + "'");
+            sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
+            sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" +
+                                                   FormBase.ConfigurationSettings.RecordSourceAttribute + "','" +
+                                                   FormBase.ConfigurationSettings.AlternativeRecordSourceAttribute +
+                                                   "','" + FormBase.ConfigurationSettings
+                                                       .AlternativeLoadDateTimeAttribute + "','" +
+                                                   FormBase.ConfigurationSettings
+                                                       .AlternativeSatelliteLoadDateTimeAttribute + "','" +
+                                                   FormBase.ConfigurationSettings.EtlProcessAttribute + "','" +
+                                                   FormBase.ConfigurationSettings.LoadDateTimeAttribute + "')");
+
+            var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
+
+            if (keyList == null)
+            {
+                //SetTextDebug("An error has occurred defining the Hub Business Key in the model for " + hubTableName + ". The Business Key was not found when querying the underlying metadata. This can be either that the attribute is missing in the metadata or in the table (depending if versioning is used). If the 'ignore versioning' option is checked, then the metadata will be retrieved directly from the data dictionary. Otherwise the metadata needs to be available in the repository (manage model metadata).");
+            }
+
+            var businessKeyList = new List<string>();
+            foreach (DataRow row in keyList.Rows)
+            {
+                if (!businessKeyList.Contains((string) row["COLUMN_NAME"]))
+                {
+                    businessKeyList.Add((string) row["COLUMN_NAME"]);
                 }
             }
 

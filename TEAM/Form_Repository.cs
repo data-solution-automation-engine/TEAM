@@ -165,13 +165,7 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
-            //if (!checkBoxRetainManualMapping.Checked && ConfigurationSettings.MetadataRepositoryType == "SqlServer")
-            //{
-            commandText.AppendLine("DELETE FROM [MD_TABLE_MAPPING];");
-            commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE_MAPPING];");
-            commandText.AppendLine("TRUNCATE TABLE [MD_VERSION_ATTRIBUTE];");
             commandText.AppendLine("TRUNCATE TABLE [MD_VERSION];");
-            //}
 
             using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
             {
