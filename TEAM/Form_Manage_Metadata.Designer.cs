@@ -51,6 +51,27 @@ namespace TEAM
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
+            this.dataGridViewComboBoxColumn33 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dataGridViewTextBoxColumn98 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewComboBoxColumn34 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dataGridViewTextBoxColumn99 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn100 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn101 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.contextMenuStripTableMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteThisRowFromTheGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
+            this.contextMenuStripAttributeMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteThisRowFromTheGridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewPhysicalModel();
+            this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteThisRowFromTheGridToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridViewComboBoxColumn31 = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dataGridViewTextBoxColumn94 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewComboBoxColumn32 = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -107,21 +128,6 @@ namespace TEAM
             this.dataGridViewTextBoxColumn60 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn61 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn62 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.contextMenuStripTableMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteThisRowFromTheGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
-            this.contextMenuStripAttributeMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.deleteThisRowFromTheGridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewPhysicalModel();
-            this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteThisRowFromTheGridToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridViewComboBoxColumn19 = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dataGridViewTextBoxColumn55 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewComboBoxColumn20 = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -328,6 +334,7 @@ namespace TEAM
             this.buttonSaveMetadataChanges.Size = new System.Drawing.Size(120, 40);
             this.buttonSaveMetadataChanges.TabIndex = 1;
             this.buttonSaveMetadataChanges.Text = "&Save Metadata Changes";
+            this.toolTipMetadata.SetToolTip(this.buttonSaveMetadataChanges, "Save the metadata (changes) to file.");
             this.buttonSaveMetadataChanges.UseVisualStyleBackColor = true;
             this.buttonSaveMetadataChanges.Click += new System.EventHandler(this.buttonSaveMetadata_Click);
             // 
@@ -456,14 +463,196 @@ namespace TEAM
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
             this.dataGridViewTableMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewTableMetadata_MouseDown);
             // 
+            // dataGridViewComboBoxColumn33
+            // 
+            this.dataGridViewComboBoxColumn33.DataPropertyName = "SourceConnection";
+            this.dataGridViewComboBoxColumn33.DisplayMember = "ConnectionKey";
+            this.dataGridViewComboBoxColumn33.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
+            this.dataGridViewComboBoxColumn33.HeaderText = "Source Connection";
+            this.dataGridViewComboBoxColumn33.Name = "dataGridViewComboBoxColumn33";
+            this.dataGridViewComboBoxColumn33.ValueMember = "ConnectionKey";
+            // 
+            // dataGridViewTextBoxColumn98
+            // 
+            this.dataGridViewTextBoxColumn98.DataPropertyName = "TargetTable";
+            this.dataGridViewTextBoxColumn98.HeaderText = "Target Data Object";
+            this.dataGridViewTextBoxColumn98.Name = "dataGridViewTextBoxColumn98";
+            // 
+            // dataGridViewComboBoxColumn34
+            // 
+            this.dataGridViewComboBoxColumn34.DataPropertyName = "TargetConnection";
+            this.dataGridViewComboBoxColumn34.DisplayMember = "ConnectionKey";
+            this.dataGridViewComboBoxColumn34.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
+            this.dataGridViewComboBoxColumn34.HeaderText = "Target Connection";
+            this.dataGridViewComboBoxColumn34.Name = "dataGridViewComboBoxColumn34";
+            this.dataGridViewComboBoxColumn34.ValueMember = "ConnectionKey";
+            // 
+            // dataGridViewTextBoxColumn99
+            // 
+            this.dataGridViewTextBoxColumn99.DataPropertyName = "BusinessKeyDefinition";
+            this.dataGridViewTextBoxColumn99.HeaderText = "Business Key Definition";
+            this.dataGridViewTextBoxColumn99.Name = "dataGridViewTextBoxColumn99";
+            // 
+            // dataGridViewTextBoxColumn100
+            // 
+            this.dataGridViewTextBoxColumn100.DataPropertyName = "DrivingKeyDefinition";
+            this.dataGridViewTextBoxColumn100.HeaderText = "Driving Key Definition";
+            this.dataGridViewTextBoxColumn100.Name = "dataGridViewTextBoxColumn100";
+            // 
+            // dataGridViewTextBoxColumn101
+            // 
+            this.dataGridViewTextBoxColumn101.DataPropertyName = "FilterCriterion";
+            this.dataGridViewTextBoxColumn101.HeaderText = "Filter Criterion";
+            this.dataGridViewTextBoxColumn101.Name = "dataGridViewTextBoxColumn101";
+            // 
+            // contextMenuStripTableMapping
+            // 
+            this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem,
+            this.deleteThisRowFromTheGridToolStripMenuItem});
+            this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
+            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 48);
+            // 
+            // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
+            // 
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = "Export this row as Source-to-Target interface JSON";
+            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTableDataGridToolStripMenuItem_Click);
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.dataGridViewAttributeMetadata);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1273, 705);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Attribute Mappings";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewAttributeMetadata
+            // 
+            this.dataGridViewAttributeMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewAttributeMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewAttributeMetadata.ContextMenuStrip = this.contextMenuStripAttributeMapping;
+            this.dataGridViewAttributeMetadata.Location = new System.Drawing.Point(2, 3);
+            this.dataGridViewAttributeMetadata.Name = "dataGridViewAttributeMetadata";
+            this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(1268, 699);
+            this.dataGridViewAttributeMetadata.TabIndex = 1;
+            this.dataGridViewAttributeMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewAttributeMetadataKeyDown);
+            this.dataGridViewAttributeMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewAttributeMetadata_MouseDown);
+            // 
+            // contextMenuStripAttributeMapping
+            // 
+            this.contextMenuStripAttributeMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteThisRowFromTheGridToolStripMenuItem1});
+            this.contextMenuStripAttributeMapping.Name = "contextMenuStripAttributeMapping";
+            this.contextMenuStripAttributeMapping.Size = new System.Drawing.Size(226, 26);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem1
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Name = "deleteThisRowFromTheGridToolStripMenuItem1";
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem1.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem1_Click);
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.groupBox4);
+            this.tabPage3.Controls.Add(this.button2);
+            this.tabPage3.Controls.Add(this.dataGridViewPhysicalModelMetadata);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(1273, 705);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Physical Model";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
+            this.groupBox4.Location = new System.Drawing.Point(1147, 52);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(120, 647);
+            this.groupBox4.TabIndex = 27;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Target area";
+            // 
+            // checkedListBoxReverseEngineeringAreas
+            // 
+            this.checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
+            this.checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
+            this.checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(6, 16);
+            this.checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
+            this.checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(108, 495);
+            this.checkedListBoxReverseEngineeringAreas.TabIndex = 0;
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(1147, 6);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(120, 40);
+            this.button2.TabIndex = 20;
+            this.button2.Text = "Reverse Engineer Model";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.ReverseEngineerMetadataButtonClick);
+            // 
+            // dataGridViewPhysicalModelMetadata
+            // 
+            this.dataGridViewPhysicalModelMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewPhysicalModelMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewPhysicalModelMetadata.ContextMenuStrip = this.contextMenuStripModel;
+            this.dataGridViewPhysicalModelMetadata.Location = new System.Drawing.Point(2, 3);
+            this.dataGridViewPhysicalModelMetadata.Name = "dataGridViewPhysicalModelMetadata";
+            this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1139, 699);
+            this.dataGridViewPhysicalModelMetadata.TabIndex = 2;
+            this.dataGridViewPhysicalModelMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewPhysicalModelMetadataKeyDown);
+            this.dataGridViewPhysicalModelMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewModelMetadata_MouseDown);
+            // 
+            // contextMenuStripModel
+            // 
+            this.contextMenuStripModel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.displayTableScriptToolStripMenuItem,
+            this.deleteThisRowFromTheGridToolStripMenuItem2});
+            this.contextMenuStripModel.Name = "contextMenuStripModel";
+            this.contextMenuStripModel.Size = new System.Drawing.Size(226, 48);
+            // 
+            // displayTableScriptToolStripMenuItem
+            // 
+            this.displayTableScriptToolStripMenuItem.Name = "displayTableScriptToolStripMenuItem";
+            this.displayTableScriptToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.displayTableScriptToolStripMenuItem.Text = "Display table script";
+            this.displayTableScriptToolStripMenuItem.Click += new System.EventHandler(this.displayTableScriptToolStripMenuItem_Click);
+            // 
+            // deleteThisRowFromTheGridToolStripMenuItem2
+            // 
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Name = "deleteThisRowFromTheGridToolStripMenuItem2";
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Text = "Delete this row from the grid";
+            this.deleteThisRowFromTheGridToolStripMenuItem2.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem2_Click);
+            // 
             // dataGridViewComboBoxColumn31
             // 
             this.dataGridViewComboBoxColumn31.DataPropertyName = "SourceConnection";
-            this.dataGridViewComboBoxColumn31.DisplayMember = "ConnectionKey";
             this.dataGridViewComboBoxColumn31.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
             this.dataGridViewComboBoxColumn31.HeaderText = "Source Connection";
             this.dataGridViewComboBoxColumn31.Name = "dataGridViewComboBoxColumn31";
-            this.dataGridViewComboBoxColumn31.ValueMember = "ConnectionKey";
             // 
             // dataGridViewTextBoxColumn94
             // 
@@ -474,11 +663,9 @@ namespace TEAM
             // dataGridViewComboBoxColumn32
             // 
             this.dataGridViewComboBoxColumn32.DataPropertyName = "TargetConnection";
-            this.dataGridViewComboBoxColumn32.DisplayMember = "ConnectionKey";
             this.dataGridViewComboBoxColumn32.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
             this.dataGridViewComboBoxColumn32.HeaderText = "Target Connection";
             this.dataGridViewComboBoxColumn32.Name = "dataGridViewComboBoxColumn32";
-            this.dataGridViewComboBoxColumn32.ValueMember = "ConnectionKey";
             // 
             // dataGridViewTextBoxColumn95
             // 
@@ -817,148 +1004,6 @@ namespace TEAM
             this.dataGridViewTextBoxColumn62.DataPropertyName = "FilterCriterion";
             this.dataGridViewTextBoxColumn62.HeaderText = "Filter Criterion";
             this.dataGridViewTextBoxColumn62.Name = "dataGridViewTextBoxColumn62";
-            // 
-            // contextMenuStripTableMapping
-            // 
-            this.contextMenuStripTableMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem,
-            this.deleteThisRowFromTheGridToolStripMenuItem});
-            this.contextMenuStripTableMapping.Name = "contextMenuStripTableMapping";
-            this.contextMenuStripTableMapping.Size = new System.Drawing.Size(340, 48);
-            // 
-            // exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem
-            // 
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = "Export this row as Source-to-Target interface JSON";
-            this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += new System.EventHandler(this.ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click);
-            // 
-            // deleteThisRowFromTheGridToolStripMenuItem
-            // 
-            this.deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
-            this.deleteThisRowFromTheGridToolStripMenuItem.Size = new System.Drawing.Size(339, 22);
-            this.deleteThisRowFromTheGridToolStripMenuItem.Text = "Delete this row from the grid";
-            this.deleteThisRowFromTheGridToolStripMenuItem.Click += new System.EventHandler(this.deleteThisRowFromTableDataGridToolStripMenuItem_Click);
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.dataGridViewAttributeMetadata);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1273, 705);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Attribute Mappings";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // dataGridViewAttributeMetadata
-            // 
-            this.dataGridViewAttributeMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridViewAttributeMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewAttributeMetadata.ContextMenuStrip = this.contextMenuStripAttributeMapping;
-            this.dataGridViewAttributeMetadata.Location = new System.Drawing.Point(2, 3);
-            this.dataGridViewAttributeMetadata.Name = "dataGridViewAttributeMetadata";
-            this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(1268, 699);
-            this.dataGridViewAttributeMetadata.TabIndex = 1;
-            this.dataGridViewAttributeMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewAttributeMetadataKeyDown);
-            this.dataGridViewAttributeMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewAttributeMetadata_MouseDown);
-            // 
-            // contextMenuStripAttributeMapping
-            // 
-            this.contextMenuStripAttributeMapping.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteThisRowFromTheGridToolStripMenuItem1});
-            this.contextMenuStripAttributeMapping.Name = "contextMenuStripAttributeMapping";
-            this.contextMenuStripAttributeMapping.Size = new System.Drawing.Size(226, 26);
-            // 
-            // deleteThisRowFromTheGridToolStripMenuItem1
-            // 
-            this.deleteThisRowFromTheGridToolStripMenuItem1.Name = "deleteThisRowFromTheGridToolStripMenuItem1";
-            this.deleteThisRowFromTheGridToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
-            this.deleteThisRowFromTheGridToolStripMenuItem1.Text = "Delete this row from the grid";
-            this.deleteThisRowFromTheGridToolStripMenuItem1.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem1_Click);
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage3.Controls.Add(this.groupBox4);
-            this.tabPage3.Controls.Add(this.button2);
-            this.tabPage3.Controls.Add(this.dataGridViewPhysicalModelMetadata);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1273, 705);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Physical Model";
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
-            this.groupBox4.Location = new System.Drawing.Point(1147, 52);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(120, 647);
-            this.groupBox4.TabIndex = 27;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Target area";
-            // 
-            // checkedListBoxReverseEngineeringAreas
-            // 
-            this.checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
-            this.checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
-            this.checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(6, 16);
-            this.checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
-            this.checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(108, 495);
-            this.checkedListBoxReverseEngineeringAreas.TabIndex = 0;
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(1147, 6);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(120, 40);
-            this.button2.TabIndex = 20;
-            this.button2.Text = "Reverse Engineer Model";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.ReverseEngineerMetadataButtonClick);
-            // 
-            // dataGridViewPhysicalModelMetadata
-            // 
-            this.dataGridViewPhysicalModelMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridViewPhysicalModelMetadata.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewPhysicalModelMetadata.ContextMenuStrip = this.contextMenuStripModel;
-            this.dataGridViewPhysicalModelMetadata.Location = new System.Drawing.Point(2, 3);
-            this.dataGridViewPhysicalModelMetadata.Name = "dataGridViewPhysicalModelMetadata";
-            this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1139, 699);
-            this.dataGridViewPhysicalModelMetadata.TabIndex = 2;
-            this.dataGridViewPhysicalModelMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewPhysicalModelMetadataKeyDown);
-            this.dataGridViewPhysicalModelMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewModelMetadata_MouseDown);
-            // 
-            // contextMenuStripModel
-            // 
-            this.contextMenuStripModel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.displayTableScriptToolStripMenuItem,
-            this.deleteThisRowFromTheGridToolStripMenuItem2});
-            this.contextMenuStripModel.Name = "contextMenuStripModel";
-            this.contextMenuStripModel.Size = new System.Drawing.Size(226, 48);
-            // 
-            // displayTableScriptToolStripMenuItem
-            // 
-            this.displayTableScriptToolStripMenuItem.Name = "displayTableScriptToolStripMenuItem";
-            this.displayTableScriptToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-            this.displayTableScriptToolStripMenuItem.Text = "Display table script";
-            this.displayTableScriptToolStripMenuItem.Click += new System.EventHandler(this.displayTableScriptToolStripMenuItem_Click);
-            // 
-            // deleteThisRowFromTheGridToolStripMenuItem2
-            // 
-            this.deleteThisRowFromTheGridToolStripMenuItem2.Name = "deleteThisRowFromTheGridToolStripMenuItem2";
-            this.deleteThisRowFromTheGridToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
-            this.deleteThisRowFromTheGridToolStripMenuItem2.Text = "Delete this row from the grid";
-            this.deleteThisRowFromTheGridToolStripMenuItem2.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem2_Click);
             // 
             // dataGridViewComboBoxColumn19
             // 
@@ -2082,5 +2127,11 @@ namespace TEAM
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn95;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn96;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn97;
+        private System.Windows.Forms.DataGridViewComboBoxColumn dataGridViewComboBoxColumn33;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn98;
+        private System.Windows.Forms.DataGridViewComboBoxColumn dataGridViewComboBoxColumn34;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn99;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn100;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn101;
     }
 }

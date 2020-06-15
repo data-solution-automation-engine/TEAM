@@ -541,10 +541,10 @@ namespace TEAM
                 counter++;
             }
 
-            labelHubCount.Text = hubSet.Count + " Hubs";
-            labelSatCount.Text = satSet.Count + " Satellites";
-            labelLnkCount.Text = lnkSet.Count + " Links";
-            labelLsatCount.Text = lsatSet.Count + " Link-Satellites";
+            labelHubCount.Text = hubSet.Count + " Core Business Concepts";
+            labelSatCount.Text = satSet.Count + " Context Entities";
+            labelLnkCount.Text = lnkSet.Count + " Natural Business Relationships";
+            labelLsatCount.Text = lsatSet.Count + " Relationship Context Entities";
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2534,9 +2534,6 @@ namespace TEAM
 
             DataRow[] selectionRows;
 
-            // Create an instance of the EventLog to information capture.
-            string eventMessage = "";
-
             var errorLog = new StringBuilder();
             var errorCounter = new int();
 
@@ -2616,24 +2613,28 @@ namespace TEAM
             }
             else
             {
-                // Determine the version
+                // Determine the version.
                 var versionId = GetVersionFromTrackBar();
 
                 var versionMajorMinor = GetVersion(versionId, connOmd);
                 var majorVersion = versionMajorMinor.Key;
                 var minorVersion = versionMajorMinor.Value;
 
-                // Determine the query type (physical or virtual)
+                // Determine the query type (physical or virtual).
                 var queryMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
 
-                // Get the full dictionary of objects and connections
+                // Get the full dictionary of objects and connections.
                 var localTableMappingConnectionDictionary = GetTableMappingConnections();
 
-                // Event reporting - informing the user that the activation process has started
+                // Get the dictionary of target data objects and their enabled / disabled flag.
+                var localTableEnabledDictionary = GetEnabledForDataObject();
+
+                // Event reporting - informing the user that the activation process has started.
+                string eventMessage = "";
                 eventMessage = "Commencing metadata preparation / activation for version " + majorVersion + "." + minorVersion + ".";
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage)); _alert.SetTextLogging(eventMessage);
 
-                // Event reporting - alerting the user what kind of metadata is prepared
+                // Event reporting - alerting the user what kind of metadata is prepared.
                 eventMessage = queryMode == "physical" ? "Physical Mode has been selected as metadata source for activation. This means that the database will be used to query physical model (table and attribute) metadata. In other words, the physical model versioning is ignored." : "Virtual Mode has been selected. This means that the versioned physical model in the data grid will be used as table and attribute metadata.";
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage));
                 _alert.SetTextLogging("\r\n\r\n"+eventMessage);
@@ -4574,50 +4575,63 @@ namespace TEAM
 
                 if (selectionRows.Length == 0)
                 {
-                    _alert.SetTextLogging(
-                        "No manual column-to-column mappings for Source-to-Staging were detected.\r\n");
+                    _alert.SetTextLogging("No manual column-to-column mappings for Source-to-Staging were detected.\r\n");
                 }
                 else
                 {
                     // Process the unique Staging Area records
                     foreach (var row in selectionRows)
                     {
-                        using (var connection = new SqlConnection(metaDataConnection))
+                        if (localTableEnabledDictionary.TryGetValue(row["TARGET_TABLE"].ToString(),
+                                out var enabledValue) == true)
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " +
-                                                  (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " +
-                                                  (string) row["TARGET_COLUMN"] + ".\r\n");
+                            // the key isn't in the dictionary.
 
-                            var insertStatement = new StringBuilder();
-                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
-                            insertStatement.AppendLine("VALUES (" +
-                                                       "'" + row["SOURCE_TABLE"] + "'," +
-                                                       "'" + row["TARGET_TABLE"] + "', " +
-                                                       "'" + (string) row["SOURCE_COLUMN"] + "', " +
-                                                       "'" + (string) row["TARGET_COLUMN"] + "', " +
-                                                       "'Manual mapping'" +
-                                                       ")");
 
-                            var command = new SqlCommand(insertStatement.ToString(), connection);
 
-                            try
+                            using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " +
+                                                      (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] +
+                                                      " - " +
+                                                      (string) row["TARGET_COLUMN"] + ".\r\n");
 
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                var insertStatement = new StringBuilder();
+                                insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
+                                insertStatement.AppendLine(
+                                    "([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                                insertStatement.AppendLine("VALUES (" +
+                                                           "'" + row["SOURCE_TABLE"] + "'," +
+                                                           "'" + row["TARGET_TABLE"] + "', " +
+                                                           "'" + (string) row["SOURCE_COLUMN"] + "', " +
+                                                           "'" + (string) row["TARGET_COLUMN"] + "', " +
+                                                           "'Manual mapping'" +
+                                                           ")");
+
+                                var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorCounter++;
+                                    _alert.SetTextLogging(
+                                        "An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
+
+                                    errorLog.AppendLine(
+                                        "\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" +
+                                        ex);
+                                    errorLog.AppendLine(
+                                        "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                }
                             }
+                        }
+                        else
+                        {
+                            errorLog.AppendLine($"\r\nThe enabled / disabled state for {row["TARGET_TABLE"].ToString()} could not be asserted.\r\n\r\n");
                         }
                     }
                 }
@@ -4789,44 +4803,57 @@ namespace TEAM
                     // Process the unique Persistent Staging Area records
                     foreach (var row in selectionRows)
                     {
-                        using (var connection = new SqlConnection(metaDataConnection))
+                        // Only process rows whose parent is enabled
+                        if (localTableEnabledDictionary.TryGetValue(row["SOURCE_TABLE"].ToString(),
+                                out var enabledValue) == true)
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " +
-                                                  (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] + " - " +
-                                                  (string) row["TARGET_COLUMN"] + ".\r\n");
 
-                            //var localTableName = ClassMetadataHandling.GetNonQualifiedTableName(row[TableMetadataColumns.TargetTable.ToString()].ToString());
 
-                            var insertStatement = new StringBuilder();
-                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
-                            insertStatement.AppendLine("VALUES (" + 
-                                                       "'" + row["SOURCE_TABLE"] + "', " +
-                                                       "'" + row["TARGET_TABLE"] + "', " +
-                                                       "'" + (string) row["SOURCE_COLUMN"] + "', " +
-                                                       "'" + (string) row["TARGET_COLUMN"] + "', " +
-                                                       "'Manual mapping'" +
-                                                       ")");
-
-                            var command = new SqlCommand(insertStatement.ToString(), connection);
-
-                            try
+                            using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+                                _alert.SetTextLogging("--> Processing the mapping from " + row["SOURCE_TABLE"] + " - " +
+                                                      (string) row["SOURCE_COLUMN"] + " to " + row["TARGET_TABLE"] +
+                                                      " - " +
+                                                      (string) row["TARGET_COLUMN"] + ".\r\n");
 
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                //var localTableName = ClassMetadataHandling.GetNonQualifiedTableName(row[TableMetadataColumns.TargetTable.ToString()].ToString());
+
+                                var insertStatement = new StringBuilder();
+                                insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
+                                insertStatement.AppendLine(
+                                    "([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                                insertStatement.AppendLine("VALUES (" +
+                                                           "'" + row["SOURCE_TABLE"] + "', " +
+                                                           "'" + row["TARGET_TABLE"] + "', " +
+                                                           "'" + (string) row["SOURCE_COLUMN"] + "', " +
+                                                           "'" + (string) row["TARGET_COLUMN"] + "', " +
+                                                           "'Manual mapping'" +
+                                                           ")");
+
+                                var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                                try
+                                {
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorCounter++;
+                                    _alert.SetTextLogging(
+                                        "An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
+
+                                    errorLog.AppendLine(
+                                        "\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" +
+                                        ex);
+                                    errorLog.AppendLine(
+                                        "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                }
                             }
+                        }
+                        else
+                        {
+                            errorLog.AppendLine($"\r\nThe enabled / disabled state for {row["TARGET_TABLE"].ToString()} could not be asserted.\r\n\r\n");
                         }
                     }
                 }
@@ -7084,6 +7111,31 @@ namespace TEAM
                     {
                         returnDictionary[targetDataObject] = targetConnectionValue;
                         //returnDictionary.Add(targetDataObject, targetConnectionValue);
+                    }
+                }
+            }
+
+            return returnDictionary;
+        }
+
+        /// <summary>
+        /// Create a dictionary of all target data objects and whether they are enabled in metadata or not (bool).
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, bool> GetEnabledForDataObject()
+        {
+            Dictionary<string, bool> returnDictionary = new Dictionary<string, bool>();
+
+            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            {
+                if (row.IsNewRow == false)
+                {
+                    string targetDataObject = row.Cells[TableMetadataColumns.TargetTable.ToString()].Value.ToString();
+                    bool rowEnabled = (bool)row.Cells[TableMetadataColumns.Enabled.ToString()].Value;
+
+                    if (rowEnabled)
+                    {
+                        returnDictionary[targetDataObject] = rowEnabled;
                     }
                 }
             }

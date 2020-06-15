@@ -44,11 +44,6 @@ namespace TEAM
             }
 
             comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
-            
-            // Connection tabs for the specific environment.
-            AddConnectionTabPages();
-
-            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
@@ -59,6 +54,13 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
+
+            // Connection tabs for the specific environment.
+            AddConnectionTabPages();
+
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+
+
 
             _formLoading = false;
         }
