@@ -23,7 +23,7 @@ namespace TEAM
     {
         //JSON representation of the attribute mapping metadata
         public string attributeMappingHash { get; set; }
-        public string versionId { get; set; }
+        public int versionId { get; set; }
         public string sourceTable { get; set; }
         public string sourceAttribute { get; set; }
         public string targetTable { get; set; }
@@ -35,7 +35,7 @@ namespace TEAM
     {
         //JSON representation of the physical model metadata
         public string versionAttributeHash { get; set; }
-        public string versionId { get; set; }
+        public int versionId { get; set; }
         public string databaseName { get; set; }
         public string schemaName { get; set; }
         public string tableName { get; set; }

@@ -818,7 +818,7 @@ namespace TEAM
                             {
                                 if (fileName.StartsWith("sample_DIRECT_"))
                                 {
-                                    fileName = fileName.Replace("sample_DIRECT_", "");
+                                    fileName = fileName.Replace("sample_DIRECT_", GlobalParameters.WorkingEnvironment+"_");
                                     fileDictionary.Add(filePath, fileName);
                                 }
                             }
@@ -826,7 +826,7 @@ namespace TEAM
                             {
                                 if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
                                 {
-                                    fileName = fileName.Replace("sample_", "");
+                                    fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment+"_");
                                     fileDictionary.Add(filePath, fileName);
                                 }
                             }

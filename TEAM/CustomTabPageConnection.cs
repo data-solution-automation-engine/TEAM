@@ -49,7 +49,7 @@ namespace TEAM
             var connectionKey = _localConnection.databaseConnectionKey;
             var connectionName = _localConnection.databaseConnectionName;
 
-            var inputNiceName = Regex.Replace(connectionName, "(\\B[A-Z])", " $1");
+            //var inputNiceName = Regex.Replace(connectionName, "(\\B[A-Z])", " $1");
 
             #region Main Tab Page controls
 
@@ -57,7 +57,7 @@ namespace TEAM
 
             // Base properties of the custom tab page
             Name = $"{connectionKey}";
-            Text = inputNiceName;
+            Text = connectionName;
             BackColor = Color.Transparent;
             BorderStyle = BorderStyle.None;
             UseVisualStyleBackColor = true;
@@ -77,7 +77,7 @@ namespace TEAM
             localPanel.Controls.Add(_textBoxConnectionString);
             _textBoxConnectionString.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxConnectionString.Location = new Point(6, 187);
-            _textBoxConnectionString.Size = new Size(502, 21);
+            _textBoxConnectionString.Size = new Size(850, 21);
             _textBoxConnectionString.BorderStyle = BorderStyle.None;
             _textBoxConnectionString.BackColor = Color.White;
             _textBoxConnectionString.Name = $"textBoxConnectionString";

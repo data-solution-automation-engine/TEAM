@@ -648,6 +648,7 @@ namespace TEAM
         private void UpdateMainInformationTextBox(Object o, MyStringEventArgs e)
         {
             richTextBoxInformation.AppendText(e.Value);
+            richTextBoxInformation.ScrollToCaret();
         }
 
         /// <summary>

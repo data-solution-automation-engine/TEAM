@@ -39,7 +39,7 @@ namespace TEAM
             var connectionKey = _localEnvironment.environmentKey;
             var connectionName = _localEnvironment.environmentName;
 
-            var inputNiceName = Regex.Replace(connectionName, "(\\B[A-Z])", " $1");
+            //var inputNiceName = Regex.Replace(connectionName, "(\\B[A-Z])", " $1");
 
             #region Main Tab Page controls
 
@@ -47,7 +47,7 @@ namespace TEAM
 
             // Base properties of the custom tab page
             Name = $"{connectionKey}";
-            Text = inputNiceName;
+            Text = connectionName;
             BackColor = Color.Transparent;
             BorderStyle = BorderStyle.None;
             UseVisualStyleBackColor = true;
@@ -154,7 +154,7 @@ namespace TEAM
             saveButton.Location = new Point(6, 555);
             saveButton.Size = new Size(120, 40);
             saveButton.Name = $"saveButton";
-            saveButton.Text = $"Save Connection";
+            saveButton.Text = $"Save Environment";
             saveButton.Click += (SaveEnvironment);
             saveButton.TabIndex = 60;
 
@@ -165,7 +165,7 @@ namespace TEAM
             deleteButton.Location = new Point(132, 555);
             deleteButton.Size = new Size(120, 40);
             deleteButton.Name = $"deleteButton";
-            deleteButton.Text = $"Delete Connection";
+            deleteButton.Text = $"Delete Environment";
             deleteButton.Click += DeleteEnvironment;
             deleteButton.TabIndex = 70;
 
