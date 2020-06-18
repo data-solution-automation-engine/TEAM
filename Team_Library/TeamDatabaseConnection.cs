@@ -52,7 +52,6 @@ namespace TEAM
         SSPI,
         Undefined
     }
-
     public class TeamConnectionProfile
     {
         public string connectionInternalId { get; set; }
@@ -117,7 +116,6 @@ namespace TEAM
 
     public class LocalConnection
     {
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ConnectionKey { get; }
 
         public LocalConnection(string connectionKey)
@@ -136,11 +134,11 @@ namespace TEAM
             foreach (var connection in localConnectionDictionary)
             {
                 possibleConnections.Add(new LocalConnection(connection.Value.databaseConnectionKey));
+
             }
 
             return possibleConnections;
         }
-
     }
 
     public class LocalConnectionDictionary

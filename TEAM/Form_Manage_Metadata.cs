@@ -319,12 +319,51 @@ namespace TEAM
             // Load the file, convert it to a DataTable and bind it to the source
             List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(jsonTableMappingFile));
 
-
             DataTable dt = Utility.ConvertToDataTable(jsonArray);
+
+            // Handle unknown combobox values, by setting them to empty.
+            var localConnectionKeyList = TeamConnectionKeyList();
+            List<string> userFeedbackList = new List<string>();
+            foreach (DataRow row in dt.Rows)
+            {
+                var comboBoxValueSource = row[(int)TableMetadataColumns.SourceConnection].ToString();
+                var comboBoxValueTarget= row[(int)TableMetadataColumns.TargetConnection].ToString();
+
+                if (!localConnectionKeyList.Contains(comboBoxValueSource))
+                {
+                    if (!userFeedbackList.Contains(comboBoxValueSource))
+                    {
+                        userFeedbackList.Add(comboBoxValueSource);
+                    }
+
+                    row[(int) TableMetadataColumns.SourceConnection] = DBNull.Value;
+                }
+
+                if (!localConnectionKeyList.Contains(comboBoxValueTarget))
+                {
+                    if (!userFeedbackList.Contains(comboBoxValueTarget))
+                    {
+                        userFeedbackList.Add(comboBoxValueTarget);
+                    }
+
+                    row[(int)TableMetadataColumns.TargetConnection] = DBNull.Value;
+                }
+            }
+
+            // Provide user feedback is any of the connections have been invalidated.
+            if (userFeedbackList.Count > 0)
+            {
+                foreach (string issue in userFeedbackList)
+                {
+                    richTextBoxInformation.AppendText($"The connection {issue} found in the metadata file does not seem to exist in TEAM. The value has been defaulted, but not saved yet.\r\n");
+                }
+            }
+
+            
+            //Make sure the changes are seen as committed, so that changes can be detected later on.
+            dt.AcceptChanges(); 
+
             // Order by Source Table, Integration_Area table, Business Key Attribute
-
-            dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
-
             SetTeamDataTableProperties.SetTableDataTableColumns(dt);
             SetTeamDataTableProperties.SetTableDataTableSorting(dt);
 
@@ -6101,8 +6140,8 @@ namespace TEAM
                     for (int i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
                         DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
-                        string sourceNode = row.Cells[2].Value.ToString();
-                        string targetNode = row.Cells[3].Value.ToString();
+                        string sourceNode = row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString();
+                        string targetNode = row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString();
 
                         // Add source tables to Node List
                         if (!nodeList.Contains(sourceNode))
@@ -6338,9 +6377,9 @@ namespace TEAM
                     for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
                         var row = dataGridViewTableMetadata.Rows[i];
-                        var sourceNode = row.Cells[2].Value.ToString();
-                        var targetNode = row.Cells[3].Value.ToString();
-                        var businessKey = row.Cells[4].Value.ToString();
+                        var sourceNode = row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString();
+                        var targetNode = row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString();
+                        var businessKey = row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString();
 
                         dgmlExtract.AppendLine("     <Link Source=\"" + sourceNode + "\" Target=\"" + targetNode + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
                     }
@@ -6464,9 +6503,9 @@ namespace TEAM
 
             foreach (DataGridViewRow dr in dataGridViewTableMetadata.Rows)
             {
-                if (dr.Cells[3].Value != null)
+                if (dr.Cells[(int)TableMetadataColumns.TargetTable].Value != null)
                 {
-                    if (!dr.Cells[3].Value.ToString().Contains(textBoxFilterCriterion.Text) && !dr.Cells[2].Value.ToString().Contains(textBoxFilterCriterion.Text))
+                    if (!dr.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().Contains(textBoxFilterCriterion.Text) && !dr.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString().Contains(textBoxFilterCriterion.Text))
                     {
                         CurrencyManager currencyManager1 = (CurrencyManager)BindingContext[dataGridViewTableMetadata.DataSource];
                         currencyManager1.SuspendBinding();
@@ -7257,17 +7296,34 @@ namespace TEAM
             // Informing the user.
             _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
 
+            var localConnectionDictionary =
+                LocalConnectionDictionary.GetLocalConnectionDictionary(FormBase.ConfigurationSettings
+                    .connectionDictionary);
+
 
             // Creating a list of unique Link business key combinations from the data grid / data table
-            var objectList = new List<Tuple<string, string, string>>();
+            var objectList = new List<Tuple<string, string, string, string>>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow && row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // Only select the lines that relate to a Link target
+                if (!row.IsNewRow && row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // Only select the lines that relate to a Link target
                 {
-                    var businessKey = row.Cells[4].Value.ToString().Replace("''''", "'");
-                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey)))
+                    // Derive the business key.
+                    var businessKey = row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString().Replace("''''", "'");
+
+                    // Derive the connection
+                    localConnectionDictionary.TryGetValue(row.Cells[(int) TableMetadataColumns.TargetConnection].Value.ToString(), out var connectionValue);
+
+                    var newValidationObject = new Tuple<string, string, string, string>
+                        (
+                        row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(),
+                        row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(),
+                        businessKey,
+                        connectionValue
+                        );
+                    
+                    if (!objectList.Contains(newValidationObject))
                     {
-                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey));
+                        objectList.Add(newValidationObject);
                     }
                 }
             } 
@@ -7278,7 +7334,13 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder(sourceObject, ConfigurationSettings.MetadataConnection.CreateConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,evaluationMode);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder
+                (
+                    sourceObject,
+                    (DataTable)_bindingSourceTableMetadata.DataSource,
+                    (DataTable)_bindingSourcePhysicalModelMetadata.DataSource,
+                    evaluationMode
+                    );
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7326,12 +7388,12 @@ namespace TEAM
             var objectList = new List<Tuple<string, string, string>>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow && (row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[3].Value.ToString().StartsWith(ConfigurationSettings.LsatTablePrefixValue))  )
+                if (!row.IsNewRow && (row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LsatTablePrefixValue))  )
                 {
-                    var businessKey = row.Cells[4].Value.ToString().Replace("''''", "'");
-                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey)))
+                    var businessKey = row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString().Replace("''''", "'");
+                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(), businessKey)))
                     {
-                        objectList.Add(new Tuple<string, string, string>(row.Cells[2].Value.ToString(), row.Cells[3].Value.ToString(), businessKey));
+                        objectList.Add(new Tuple<string, string, string>(row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(), businessKey));
                     }
                 }
             }
@@ -7385,19 +7447,24 @@ namespace TEAM
             // Informing the user.
             _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n");
 
+            var localConnectionDictionary =
+                LocalConnectionDictionary.GetLocalConnectionDictionary(FormBase.ConfigurationSettings
+                    .connectionDictionary);
+
+
             var resultList = new Dictionary<Tuple<string, string>, bool>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
                     Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
-                    Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[2].Value.ToString(), row.Cells[4].Value.ToString());
-
-                    //row.Cells[areaColumnIndex].Value.ToString();
+                    Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString());
+                    
                     if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject.Item1,"") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject.Item1,""));
-                        string connectionValue = connectionInformation.FirstOrDefault().Value;
+
+                        // Derive the connection
+                        localConnectionDictionary.TryGetValue(row.Cells[(int)TableMetadataColumns.SourceConnection].Value.ToString(), out var connectionValue);
 
                         try
                         {

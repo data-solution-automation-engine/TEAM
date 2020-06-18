@@ -23,12 +23,39 @@ namespace TEAM
         }
 
         /// <summary>
+        /// List of unique connection keys derived from the TEAM connections dictionary.
+        /// </summary>
+        /// <returns></returns>
+        internal static List<string> TeamConnectionKeyList()
+        {
+            List<string> returnList = new List<string>();
+
+            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            {
+                if (!returnList.Contains(connection.Value.databaseConnectionKey))
+                {
+                    returnList.Add(connection.Value.databaseConnectionKey);
+                }
+            }
+
+            return returnList;
+        }
+
+
+        /// <summary>
         /// Gets or sets the values from the most common configuration settings.
         /// </summary>
         internal static class ConfigurationSettings
         {
             #region Connectivity (connection objects, connection strings etc.)
+            /// <summary>
+            /// Dictionary to contain the connection internal ID and the corresponding object.
+            /// </summary>
             internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; } = new Dictionary<string, TeamConnectionProfile>();
+
+            /// <summary>
+            /// Dictionary to contain the available environments within TEAM.
+            /// </summary>
             internal static Dictionary<string, TeamWorkingEnvironment> environmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
             internal static TeamConnectionProfile MetadataConnection { get; set; } = new TeamConnectionProfile();
             #endregion

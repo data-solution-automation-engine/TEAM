@@ -12,7 +12,7 @@ namespace TEAM
         {
            // var test = (DataGridView) sender;
 
-           // var bla =Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText;
+           var bla =Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText;
 
             MessageBox.Show("Error " + anError.Context);
 
@@ -87,6 +87,8 @@ namespace TEAM
             sourceConnection.ValueMember = "ConnectionKey";
             sourceConnection.ValueType = typeof(string);
             Columns.Add(sourceConnection);
+
+        
 
             DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
             targetTable.Name = TableMetadataColumns.TargetTable.ToString();

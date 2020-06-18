@@ -187,10 +187,10 @@ namespace TEAM
                     foreach (DataRow row in inputDataTable.Rows)
                     {
                         if (
-                             (string)row["ENABLED_INDICATOR"] == "Y" && // Only active generated objects
-                             (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
-                             (string)row["BUSINESS_KEY_ATTRIBUTE"] == businessKeyComponent.Trim() &&
-                             (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself
+                             (bool)row[TableMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                             (string)row[TableMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
+                             (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
+                             (string)row[TableMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
                              row[TableMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion) 
                            )
                         {
@@ -205,10 +205,10 @@ namespace TEAM
                 foreach (DataRow row in inputDataTable.Rows)
                 {
                     if (
-                         (string)row["ENABLED_INDICATOR"] == "Y" && // Only active generated objects
-                         (string)row["SOURCE_TABLE"] == validationObject.Item1 &&
-                         (string)row["BUSINESS_KEY_ATTRIBUTE"] == validationObject.Item3.Trim() &&
-                         (string)row["TARGET_TABLE"] != validationObject.Item2 && // Exclude itself
+                         (bool)row[TableMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                         (string)row[TableMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
+                         (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
+                         (string)row[TableMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
                          row[TableMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
                        )
                     {
@@ -242,7 +242,7 @@ namespace TEAM
             return result;
         }
 
-        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string> validationObject, string connectionString, int versionId, DataTable inputDataTable, DataTable physicalModelDataTable, string evaluationMode)
+        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string, string> validationObject, DataTable inputDataTable, DataTable physicalModelDataTable, string evaluationMode)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to query the individual Hub information
@@ -250,29 +250,23 @@ namespace TEAM
 
             // Now iterate over each Hub, as identified by the business key.
             // Maintain the ordinal position of the business key
-
             var hubKeyOrder = new Dictionary<int, string>();
 
             int businessKeyOrder = 0;
-
             foreach (string hubBusinessKey in hubBusinessKeys)
             {
                 // Determine the order in the business key array
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select("SOURCE_TABLE = '"+validationObject.Item1+ "' AND [BUSINESS_KEY_ATTRIBUTE] = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND [TARGET_TABLE] NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select(TableMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
 
                 // Derive the Hub surrogate key name, as this can be compared against the Link
-                string hubSurrogateKeyName;
-                foreach (DataRow row in selectionRows)
-                {
-                    string hubTableName = row[TableMetadataColumns.TargetTable.ToString()].ToString();
-                    hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.ConfigurationSettings.DwhKeyIdentifier;
-                    hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
-                }
-
-                //hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
+                string hubTableName = selectionRows[0][TableMetadataColumns.TargetTable.ToString()].ToString();
+                string hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.ConfigurationSettings.DwhKeyIdentifier;
+                
+                // Add to the dictionary that contains the keys in order.
+                hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
             }
 
             // Derive the Hub surrogate key name, as this can be compared against the Link
@@ -280,19 +274,23 @@ namespace TEAM
 
             if (evaluationMode == "physical")
             {
+
+                var connTarget = new SqlConnection { ConnectionString = validationObject.Item4 };
+                var connDatabase = connTarget.Database;
+
                 var sqlStatementForLink = new StringBuilder();
                 sqlStatementForLink.AppendLine("SELECT");
                 sqlStatementForLink.AppendLine("   OBJECT_NAME([object_id]) AS [TABLE_NAME]");
                 sqlStatementForLink.AppendLine("  ,[name] AS [COLUMN_NAME]");
                 sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
                 sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
-                sqlStatementForLink.AppendLine("FROM [" + FormBase.ConfigurationSettings.IntegrationDatabaseName +"].sys.columns");
+                sqlStatementForLink.AppendLine("FROM [" + connDatabase + "].sys.columns");
                 sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.ConfigurationSettings.LinkTablePrefixValue + "_%'");
                 sqlStatementForLink.AppendLine("AND column_id > 4");
                 sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
 
                 // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
-                var connTarget = new SqlConnection { ConnectionString = FormBase.ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+
                 connTarget.Open();
                 var linkList = Utility.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
                 connTarget.Close();
@@ -388,6 +386,12 @@ namespace TEAM
             return result;
         }
 
+        /// <summary>
+        /// Validate the Business Key definition against the physical model, taking the source object and business key definition as input parameters, together with a connectionstring to validate against.
+        /// </summary>
+        /// <param name="validationObject"></param>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
         internal static Dictionary<Tuple<string,string>, bool> ValidateSourceBusinessKeyExistencePhysical(Tuple<string, string> validationObject, string connectionString)
         {
             // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
