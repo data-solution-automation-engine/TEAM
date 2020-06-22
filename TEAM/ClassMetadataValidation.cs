@@ -187,11 +187,11 @@ namespace TEAM
                     foreach (DataRow row in inputDataTable.Rows)
                     {
                         if (
-                             (bool)row[TableMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
-                             (string)row[TableMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
-                             (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
-                             (string)row[TableMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
-                             row[TableMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion) 
+                             (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                             (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
+                             (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
+                             (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
+                             row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion) 
                            )
                         {
                             numberOfDependents++;
@@ -205,11 +205,11 @@ namespace TEAM
                 foreach (DataRow row in inputDataTable.Rows)
                 {
                     if (
-                         (bool)row[TableMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
-                         (string)row[TableMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
-                         (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
-                         (string)row[TableMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
-                         row[TableMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                         (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                         (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
+                         (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
+                         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
+                         row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
                        )
                     {
                         numberOfDependents++;
@@ -259,10 +259,10 @@ namespace TEAM
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select(TableMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
 
                 // Derive the Hub surrogate key name, as this can be compared against the Link
-                string hubTableName = selectionRows[0][TableMetadataColumns.TargetTable.ToString()].ToString();
+                string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                 string hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.ConfigurationSettings.DwhKeyIdentifier;
                 
                 // Add to the dictionary that contains the keys in order.

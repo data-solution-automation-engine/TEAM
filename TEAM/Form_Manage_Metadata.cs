@@ -125,8 +125,8 @@ namespace TEAM
 
             if (selectedRow.IsNewRow == false)
             {
-                var sourceMapping = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMetadataColumns.SourceTable].Value.ToString();
-                var targetMapping = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMetadataColumns.TargetTable].Value.ToString();
+                var sourceMapping = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
+                var targetMapping = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
 
                 var loadVector = "";
                 var tableType = "";
@@ -138,7 +138,7 @@ namespace TEAM
                 }
 
                 // Assert table type for Source column, retrieve the specific cell value for the hover-over.
-                if (e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMetadataColumns.SourceTable].Index &&
+                if (e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceTable].Index &&
                     e.Value != null)
                 {
                     cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
@@ -146,13 +146,13 @@ namespace TEAM
                 }
                 // Assert table type for the Target column, , retrieve the specific cell value for the hover-over.
                 else if ((e.ColumnIndex ==
-                          dataGridViewTableMetadata.Columns[(int) TableMetadataColumns.TargetTable].Index &&
+                          dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.TargetTable].Index &&
                           e.Value != null))
                 {
                     cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
                     tableType = ClassMetadataHandling.GetTableType(e.Value.ToString(),
                         selectedRow.DataGridView.Rows[e.RowIndex]
-                            .Cells[(int) TableMetadataColumns.BusinessKeyDefinition].Value.ToString());
+                            .Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString());
                 }
                 else
                 {
@@ -326,8 +326,8 @@ namespace TEAM
             List<string> userFeedbackList = new List<string>();
             foreach (DataRow row in dt.Rows)
             {
-                var comboBoxValueSource = row[(int)TableMetadataColumns.SourceConnection].ToString();
-                var comboBoxValueTarget= row[(int)TableMetadataColumns.TargetConnection].ToString();
+                var comboBoxValueSource = row[(int)TableMappingMetadataColumns.SourceConnection].ToString();
+                var comboBoxValueTarget= row[(int)TableMappingMetadataColumns.TargetConnection].ToString();
 
                 if (!localConnectionKeyList.Contains(comboBoxValueSource))
                 {
@@ -336,7 +336,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueSource);
                     }
 
-                    row[(int) TableMetadataColumns.SourceConnection] = DBNull.Value;
+                    row[(int) TableMappingMetadataColumns.SourceConnection] = DBNull.Value;
                 }
 
                 if (!localConnectionKeyList.Contains(comboBoxValueTarget))
@@ -346,7 +346,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueTarget);
                     }
 
-                    row[(int)TableMetadataColumns.TargetConnection] = DBNull.Value;
+                    row[(int)TableMappingMetadataColumns.TargetConnection] = DBNull.Value;
                 }
             }
 
@@ -544,7 +544,7 @@ namespace TEAM
 
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                var integrationTable = row.Cells[(int)TableMetadataColumns.TargetTable].Value;
+                var integrationTable = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value;
 
                 if (gridViewRows != counter + 1 && integrationTable.ToString().Length>3)
                 {
@@ -982,53 +982,53 @@ namespace TEAM
                         var filterCriterion = "";
                         bool generateIndicator = true;
 
-                        if (row.Cells[TableMetadataColumns.SourceTable.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value != DBNull.Value)
                         {
-                            sourceTable = (string) row.Cells[TableMetadataColumns.SourceTable.ToString()].Value;
+                            sourceTable = (string) row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value;
                         }
 
                         // Source Connection
-                        if (row.Cells[TableMetadataColumns.SourceConnection.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value != DBNull.Value)
                         {
                             sourceConnectionKey =
-                                (string) row.Cells[TableMetadataColumns.SourceConnection.ToString()].Value;
+                                (string) row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value;
                         }
 
-                        if (row.Cells[TableMetadataColumns.TargetTable.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value != DBNull.Value)
                         {
-                            targetTable = (string) row.Cells[TableMetadataColumns.TargetTable.ToString()].Value;
+                            targetTable = (string) row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value;
                         }
 
                         // Target Connection
-                        if (row.Cells[TableMetadataColumns.TargetConnection.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value != DBNull.Value)
                         {
                             targetConnectionKey =
-                                (string) row.Cells[TableMetadataColumns.TargetConnection.ToString()].Value;
+                                (string) row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value;
                         }
 
-                        if (row.Cells[TableMetadataColumns.BusinessKeyDefinition.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].Value != DBNull.Value)
                         {
                             businessKeyDefinition =
-                                (string) row.Cells[TableMetadataColumns.BusinessKeyDefinition.ToString()].Value;
+                                (string) row.Cells[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].Value;
                             //businessKeyDefinition = businessKeyDefinition.Replace("'", "''");  //Double quotes for composites
                         }
 
-                        if (row.Cells[TableMetadataColumns.DrivingKeyDefinition.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].Value != DBNull.Value)
                         {
                             drivingKeyDefinition =
-                                (string) row.Cells[TableMetadataColumns.DrivingKeyDefinition.ToString()].Value;
+                                (string) row.Cells[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].Value;
                             //drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''"); //Double quotes for composites
                         }
 
-                        if (row.Cells[TableMetadataColumns.FilterCriterion.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.FilterCriterion.ToString()].Value != DBNull.Value)
                         {
-                            filterCriterion = (string) row.Cells[TableMetadataColumns.FilterCriterion.ToString()].Value;
+                            filterCriterion = (string) row.Cells[TableMappingMetadataColumns.FilterCriterion.ToString()].Value;
                             //filterCriterion = filterCriterion.Replace("'", "''"); //Double quotes for composites
                         }
 
-                        if (row.Cells[TableMetadataColumns.Enabled.ToString()].Value != DBNull.Value)
+                        if (row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value != DBNull.Value)
                         {
-                            generateIndicator = (bool) row.Cells[TableMetadataColumns.Enabled.ToString()].Value;
+                            generateIndicator = (bool) row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value;
                             //generateIndicator = generateIndicator.Replace("'", "''"); //Double quotes for composites
                         }
 
@@ -1183,8 +1183,8 @@ namespace TEAM
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
                             //Grab the attributes into local variables
-                            string hashKey = (string)row[TableMetadataColumns.HashKey.ToString()];
-                            int versionKey = (int)row[TableMetadataColumns.VersionId.ToString()];
+                            string hashKey = (string)row[TableMappingMetadataColumns.HashKey.ToString()];
+                            int versionKey = (int)row[TableMappingMetadataColumns.VersionId.ToString()];
                             var stagingTable = "";
                             var sourceConnectionKey= "";
                             var targetConnectionKey = "";
@@ -1194,42 +1194,42 @@ namespace TEAM
                             var filterCriterion = "";
                             bool generateIndicator = true;
 
-                            if (row[TableMetadataColumns.Enabled.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.Enabled.ToString()] != DBNull.Value)
                             {
-                                generateIndicator = (bool)row[TableMetadataColumns.Enabled.ToString()];
+                                generateIndicator = (bool)row[TableMappingMetadataColumns.Enabled.ToString()];
                             }
 
-                            if (row[TableMetadataColumns.SourceTable.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.SourceTable.ToString()] != DBNull.Value)
                             {
-                                stagingTable = (string)row[TableMetadataColumns.SourceTable.ToString()];
+                                stagingTable = (string)row[TableMappingMetadataColumns.SourceTable.ToString()];
                             }
 
-                            if (row[TableMetadataColumns.SourceConnection.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.SourceConnection.ToString()] != DBNull.Value)
                             {
-                                sourceConnectionKey = (string)row[TableMetadataColumns.SourceConnection.ToString()];
+                                sourceConnectionKey = (string)row[TableMappingMetadataColumns.SourceConnection.ToString()];
                             }
 
-                            if (row[TableMetadataColumns.TargetTable.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.TargetTable.ToString()] != DBNull.Value)
                             {
-                                integrationTable = (string)row[TableMetadataColumns.TargetTable.ToString()];
+                                integrationTable = (string)row[TableMappingMetadataColumns.TargetTable.ToString()];
                             }
 
-                            if (row[TableMetadataColumns.TargetConnection.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.TargetConnection.ToString()] != DBNull.Value)
                             {
-                                targetConnectionKey = (string)row[TableMetadataColumns.TargetConnection.ToString()];
+                                targetConnectionKey = (string)row[TableMappingMetadataColumns.TargetConnection.ToString()];
                             }
 
-                            if (row[TableMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
                             {
-                                businessKeyDefinition = (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()];
+                                businessKeyDefinition = (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
                             }
-                            if (row[TableMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
                             {
-                                drivingKeyDefinition = (string)row[TableMetadataColumns.DrivingKeyDefinition.ToString()];
+                                drivingKeyDefinition = (string)row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()];
                             }
-                            if (row[TableMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
+                            if (row[TableMappingMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
                             {
-                                filterCriterion = (string)row[TableMetadataColumns.FilterCriterion.ToString()];
+                                filterCriterion = (string)row[TableMappingMetadataColumns.FilterCriterion.ToString()];
                             }
 
                             //Read the file in memory
@@ -1285,52 +1285,52 @@ namespace TEAM
                             var filterCriterion = "";
                             bool generateIndicator = true;
 
-                            if (row[(int)TableMetadataColumns.Enabled] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.Enabled] != DBNull.Value)
                             {
-                                generateIndicator = (bool)row[(int)TableMetadataColumns.Enabled];
+                                generateIndicator = (bool)row[(int)TableMappingMetadataColumns.Enabled];
                                 //generateIndicator = generateIndicator.Replace("'", "''");
                             }
 
                             // Source
-                            if (row[(int)TableMetadataColumns.SourceTable] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.SourceTable] != DBNull.Value)
                             {
-                                sourceTable = (string)row[(int)TableMetadataColumns.SourceTable];
+                                sourceTable = (string)row[(int)TableMappingMetadataColumns.SourceTable];
                             }
 
                             // Source Connection
-                            if (row[(int)TableMetadataColumns.SourceConnection] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.SourceConnection] != DBNull.Value)
                             {
-                                sourceConnectionKey = (string)row[TableMetadataColumns.SourceConnection.ToString()];
+                                sourceConnectionKey = (string)row[TableMappingMetadataColumns.SourceConnection.ToString()];
                             }
 
                             // Target
-                            if (row[(int)TableMetadataColumns.TargetTable] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.TargetTable] != DBNull.Value)
                             {
-                                targetTable = (string)row[(int)TableMetadataColumns.TargetTable];
+                                targetTable = (string)row[(int)TableMappingMetadataColumns.TargetTable];
                             }
 
                             // Target Connection
-                            if (row[(int)TableMetadataColumns.TargetConnection] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.TargetConnection] != DBNull.Value)
                             {
-                                targetConnectionKey = (string)row[TableMetadataColumns.TargetConnection.ToString()];
+                                targetConnectionKey = (string)row[TableMappingMetadataColumns.TargetConnection.ToString()];
                             }
 
-                            if (row[(int)TableMetadataColumns.BusinessKeyDefinition] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.BusinessKeyDefinition] != DBNull.Value)
                             {
-                                businessKeyDefinition = (string)row[(int)TableMetadataColumns.BusinessKeyDefinition];
+                                businessKeyDefinition = (string)row[(int)TableMappingMetadataColumns.BusinessKeyDefinition];
                                 //businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
                                 //Double quotes for composites
                             }
 
-                            if (row[(int)TableMetadataColumns.DrivingKeyDefinition] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.DrivingKeyDefinition] != DBNull.Value)
                             {
-                                drivingKeyDefinition = (string)row[(int)TableMetadataColumns.DrivingKeyDefinition];
+                                drivingKeyDefinition = (string)row[(int)TableMappingMetadataColumns.DrivingKeyDefinition];
                                 //drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
                             }
 
-                            if (row[(int)TableMetadataColumns.FilterCriterion] != DBNull.Value)
+                            if (row[(int)TableMappingMetadataColumns.FilterCriterion] != DBNull.Value)
                             {
-                                filterCriterion = (string)row[(int)TableMetadataColumns.FilterCriterion];
+                                filterCriterion = (string)row[(int)TableMappingMetadataColumns.FilterCriterion];
                                 //filterCriterion = filterCriterion.Replace("'", "''");
                             }
 
@@ -1372,7 +1372,7 @@ namespace TEAM
                                 File.WriteAllText(outputFileName, output);
 
                                 //Making sure the hash key value is added to the data table as well
-                                row[(int)TableMetadataColumns.HashKey] = hashKey;
+                                row[(int)TableMappingMetadataColumns.HashKey] = hashKey;
 
                             }
                             catch (JsonReaderException ex)
@@ -1387,8 +1387,8 @@ namespace TEAM
                         //Deleted rows
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
-                            var hashKey = row[TableMetadataColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
-                            var versionKey = row[TableMetadataColumns.VersionId.ToString(), DataRowVersion.Original].ToString();
+                            var hashKey = row[TableMappingMetadataColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
+                            var versionKey = row[TableMappingMetadataColumns.VersionId.ToString(), DataRowVersion.Original].ToString();
 
                             try
                             {
@@ -1639,7 +1639,7 @@ namespace TEAM
                                     File.WriteAllText(outputFileName, output);
 
                                     //Making sure the hash key value is added to the datatable as well
-                                    row[(int)TableMetadataColumns.HashKey] = hashKey;
+                                    row[(int)TableMappingMetadataColumns.HashKey] = hashKey;
 
                                 }
                                 catch (JsonReaderException ex)
@@ -1878,7 +1878,7 @@ namespace TEAM
                                     File.WriteAllText(outputFileName, output);
 
                                     //Making sure the hash key value is added to the datatable as well
-                                    row[(int)TableMetadataColumns.HashKey] = hashKey;
+                                    row[(int)TableMappingMetadataColumns.HashKey] = hashKey;
 
                                 }
                                 catch (JsonReaderException ex)
@@ -2218,22 +2218,22 @@ namespace TEAM
                 string DRIVING_KEY_ATTRIBUTE = "";
                 string ENABLED_INDICATOR = "";
 
-                if (row[TableMetadataColumns.SourceTable.ToString()] != DBNull.Value)
-                    sourceTable = (string)row[TableMetadataColumns.SourceTable.ToString()];
-                if (row[TableMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value) 
-                    BUSINESS_KEY_ATTRIBUTE = (string)row[TableMetadataColumns.BusinessKeyDefinition.ToString()];
-                if (row[TableMetadataColumns.TargetTable.ToString()] != DBNull.Value)
-                    targetTable = (string)row[TableMetadataColumns.TargetTable.ToString()];
-                if (row[TableMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
+                if (row[TableMappingMetadataColumns.SourceTable.ToString()] != DBNull.Value)
+                    sourceTable = (string)row[TableMappingMetadataColumns.SourceTable.ToString()];
+                if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value) 
+                    BUSINESS_KEY_ATTRIBUTE = (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
+                if (row[TableMappingMetadataColumns.TargetTable.ToString()] != DBNull.Value)
+                    targetTable = (string)row[TableMappingMetadataColumns.TargetTable.ToString()];
+                if (row[TableMappingMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
                 {
-                    FILTER_CRITERIA = (string)row[TableMetadataColumns.FilterCriterion.ToString()];
+                    FILTER_CRITERIA = (string)row[TableMappingMetadataColumns.FilterCriterion.ToString()];
                     FILTER_CRITERIA = FILTER_CRITERIA.Replace("'", "''");
                 }
-                if (row[TableMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
-                    DRIVING_KEY_ATTRIBUTE = (string)row[TableMetadataColumns.DrivingKeyDefinition.ToString()];
+                if (row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
+                    DRIVING_KEY_ATTRIBUTE = (string)row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()];
 
-                if (row[TableMetadataColumns.Enabled.ToString()] != DBNull.Value)
-                    ENABLED_INDICATOR = (string)row[TableMetadataColumns.Enabled.ToString()].ToString();
+                if (row[TableMappingMetadataColumns.Enabled.ToString()] != DBNull.Value)
+                    ENABLED_INDICATOR = (string)row[TableMappingMetadataColumns.Enabled.ToString()].ToString();
 
                 var fullyQualifiedSourceName = ClassMetadataHandling.GetFullyQualifiedTableName(sourceTable);
                 var sourceType = ClassMetadataHandling.GetTableType(sourceTable,"");
@@ -2788,7 +2788,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the source metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the 'source'
-                selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString()+" = 'true'");
+                selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString()+" = 'true'");
 
                 var distinctListSource = new List<string>
                 {
@@ -2799,7 +2799,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string source_table = row[TableMetadataColumns.SourceTable.ToString()].ToString().Trim();
+                    string source_table = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString().Trim();
                     if (!distinctListSource.Contains(source_table))
                     {
                         distinctListSource.Add(source_table);
@@ -2861,11 +2861,11 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND "+TableMetadataColumns.TargetTable.ToString()+" LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND "+TableMappingMetadataColumns.TargetTable.ToString()+" LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
                 var distinctListStg = new List<string>
@@ -2877,7 +2877,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
+                    string target_table = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListStg.Contains(target_table))
                     {
                         distinctListStg.Add(target_table);
@@ -2941,11 +2941,11 @@ namespace TEAM
                 // Getting the mapping list from the data table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.StgTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.StgTablePrefixValue + "'");
                 }
 
                 // Process the unique Staging Area records
@@ -2953,17 +2953,17 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row[TableMetadataColumns.SourceTable.ToString()].ToString())
+                        var sourceFullyQualifiedName = ClassMetadataHandling.GetSchema(row[TableMappingMetadataColumns.SourceTable.ToString()].ToString())
                             .FirstOrDefault();
-                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row[TableMetadataColumns.TargetTable.ToString()].ToString())
+                        var targetFullyQualifiedName = ClassMetadataHandling.GetSchema(row[TableMappingMetadataColumns.TargetTable.ToString()].ToString())
                             .FirstOrDefault();
 
                         _alert.SetTextLogging("--> Processing the " + sourceFullyQualifiedName.Value + " to " + targetFullyQualifiedName.Value + " relationship.\r\n");
 
-                        var filterCriterion = row[TableMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
+                        var filterCriterion = row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
 
-                        var businessKeyDefinition = row[TableMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Trim();
+                        var businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                         var insertStatement = new StringBuilder();
@@ -3020,11 +3020,11 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
                 var distinctListPsa = new List<string>
@@ -3036,7 +3036,7 @@ namespace TEAM
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    var target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
+                    var target_table = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListPsa.Contains(target_table))
                     {
                         distinctListPsa.Add(target_table);
@@ -3097,11 +3097,11 @@ namespace TEAM
                 // Getting the mapping list from the data table
                 if (ConfigurationSettings.TableNamingLocation == "Prefix")
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '" + ConfigurationSettings.PsaTablePrefixValue + "%'");
                 }
                 else
                 {
-                    selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
+                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + ConfigurationSettings.PsaTablePrefixValue + "'");
                 }
 
                 // Process the unique Staging Area records
@@ -3109,19 +3109,19 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + row[TableMetadataColumns.SourceTable.ToString()] + " to " + row[TableMetadataColumns.TargetTable.ToString()] + " relationship.\r\n");
+                        _alert.SetTextLogging("--> Processing the " + row[TableMappingMetadataColumns.SourceTable.ToString()] + " to " + row[TableMappingMetadataColumns.TargetTable.ToString()] + " relationship.\r\n");
 
-                        var filterCriterion = row[TableMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
+                        var filterCriterion = row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
 
-                        var businessKeyDefinition = row[TableMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Trim();
+                        var businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_XREF]");
                         insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
-                        insertStatement.AppendLine("VALUES ('" + row[TableMetadataColumns.SourceTable.ToString()] + "','" +
-                                                   row[TableMetadataColumns.TargetTable.ToString()] + 
+                        insertStatement.AppendLine("VALUES ('" + row[TableMappingMetadataColumns.SourceTable.ToString()] + "','" +
+                                                   row[TableMappingMetadataColumns.TargetTable.ToString()] + 
                                                    "', NULL, '" +
                                                    businessKeyDefinition + "', '" + 
                                                    filterCriterion + "')");
@@ -3168,7 +3168,7 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_HUB table
                 selectionRows =
                     inputTableMetadata.Select(
-                        TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + hubTablePrefix + "%'");
+                        TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + hubTablePrefix + "%'");
 
                 var distinctListHub = new List<string>();
 
@@ -3178,7 +3178,7 @@ namespace TEAM
                 // Create a distinct list of sources from the datagrid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
+                    string target_table = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListHub.Contains(target_table))
                     {
                         distinctListHub.Add(target_table);
@@ -3261,7 +3261,7 @@ namespace TEAM
                 _alert.SetTextLogging("Commencing preparing the Link metadata.\r\n");
 
                 // Getting the distinct list of tables to go into the MD_LINK table
-                selectionRows = inputTableMetadata.Select(TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
+                selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
 
                 var distinctListLinks = new List<string>();
 
@@ -3271,7 +3271,7 @@ namespace TEAM
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
+                    string target_table = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distinctListLinks.Contains(target_table))
                     {
                         distinctListLinks.Add(target_table);
@@ -3738,20 +3738,20 @@ namespace TEAM
                             {
                                 if (row.IsNewRow == false)
                                 {
-                                    if (row.Cells[TableMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
+                                    if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
                                         connection.Value.databaseConnectionKey)
                                     {
-                                        var localTable = row.Cells[TableMetadataColumns.SourceTable.ToString()].Value.ToString();
+                                        var localTable = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
                                         localTable = ClassMetadataHandling.GetFullyQualifiedTableName(localTable);
                                         tableFilterObjects =
                                             tableFilterObjects + "OBJECT_ID(N'[" +
                                             connection.Value.databaseServer.databaseName + "]." + localTable + "') ,";
                                     }
 
-                                    if (row.Cells[TableMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
+                                    if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
                                         connection.Value.databaseConnectionKey)
                                     {
-                                        var localTable = row.Cells[TableMetadataColumns.TargetTable.ToString()].Value.ToString();
+                                        var localTable = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
                                         localTable = ClassMetadataHandling.GetFullyQualifiedTableName(localTable);
                                         tableFilterObjects =
                                             tableFilterObjects + "OBJECT_ID(N'[" +
@@ -4459,14 +4459,14 @@ namespace TEAM
                 // Getting the distinct list of tables to go into the MD_LINK table
                 selectionRows =
                     inputTableMetadata.Select(
-                        TableMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
+                        TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
 
                 var distincLinksForBusinessKey = new List<string>();
 
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    string target_table = row[TableMetadataColumns.TargetTable.ToString()].ToString().Trim();
+                    string target_table = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().Trim();
                     if (!distincLinksForBusinessKey.Contains(target_table))
                     {
                         distincLinksForBusinessKey.Add(target_table);
@@ -6000,7 +6000,7 @@ namespace TEAM
             var valueLength = e.FormattedValue.ToString().Length;
             
             // Source Table (Source)
-            if (e.ColumnIndex == (int)TableMetadataColumns.SourceTable)
+            if (e.ColumnIndex == (int)TableMappingMetadataColumns.SourceTable)
             {
                 dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
@@ -6012,7 +6012,7 @@ namespace TEAM
             }
 
             // Target Table
-            if (e.ColumnIndex == (int)TableMetadataColumns.TargetTable)
+            if (e.ColumnIndex == (int)TableMappingMetadataColumns.TargetTable)
             {
                 dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
@@ -6024,7 +6024,7 @@ namespace TEAM
             }
 
             // Business Key
-            if (e.ColumnIndex == (int)TableMetadataColumns.BusinessKeyDefinition)
+            if (e.ColumnIndex == (int)TableMappingMetadataColumns.BusinessKeyDefinition)
             {
                 dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
@@ -6036,7 +6036,7 @@ namespace TEAM
             }
 
             // Filter criteria
-            if (e.ColumnIndex == (int)TableMetadataColumns.FilterCriterion)
+            if (e.ColumnIndex == (int)TableMappingMetadataColumns.FilterCriterion)
             {
                 dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
                 //int newInteger;
@@ -6139,8 +6139,8 @@ namespace TEAM
                     for (int i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
                         DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
-                        string sourceNode = row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString();
-                        string targetNode = row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString();
+                        string sourceNode = row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString();
+                        string targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString();
 
                         // Add source tables to Node List
                         if (!nodeList.Contains(sourceNode))
@@ -6376,9 +6376,9 @@ namespace TEAM
                     for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
                         var row = dataGridViewTableMetadata.Rows[i];
-                        var sourceNode = row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString();
-                        var targetNode = row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString();
-                        var businessKey = row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString();
+                        var sourceNode = row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString();
+                        var targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString();
+                        var businessKey = row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString();
 
                         dgmlExtract.AppendLine("     <Link Source=\"" + sourceNode + "\" Target=\"" + targetNode + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
                     }
@@ -6502,9 +6502,9 @@ namespace TEAM
 
             foreach (DataGridViewRow dr in dataGridViewTableMetadata.Rows)
             {
-                if (dr.Cells[(int)TableMetadataColumns.TargetTable].Value != null)
+                if (dr.Cells[(int)TableMappingMetadataColumns.TargetTable].Value != null)
                 {
-                    if (!dr.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().Contains(textBoxFilterCriterion.Text) && !dr.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString().Contains(textBoxFilterCriterion.Text))
+                    if (!dr.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString().Contains(textBoxFilterCriterion.Text) && !dr.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString().Contains(textBoxFilterCriterion.Text))
                     {
                         CurrencyManager currencyManager1 = (CurrencyManager)BindingContext[dataGridViewTableMetadata.DataSource];
                         currencyManager1.SuspendBinding();
@@ -6546,16 +6546,16 @@ namespace TEAM
                         {
                             JObject individualRow = JObject.FromObject(new
                             {
-                                enabledIndicator = singleRow[(int)TableMetadataColumns.Enabled].ToString(),
-                                tableMappingHash = singleRow[(int)TableMetadataColumns.HashKey].ToString(),
-                                versionId = singleRow[(int)TableMetadataColumns.VersionId].ToString(),
-                                sourceTable = singleRow[(int)TableMetadataColumns.SourceTable].ToString(),
-                                sourceConnection = singleRow[(int)TableMetadataColumns.SourceConnection].ToString(),
-                                targetTable = singleRow[(int)TableMetadataColumns.TargetTable].ToString(),
-                                targetConnection = singleRow[(int)TableMetadataColumns.TargetConnection].ToString(),
-                                businessKeyDefinition = singleRow[(int)TableMetadataColumns.BusinessKeyDefinition].ToString(),
-                                drivingKeyDefinition = singleRow[(int)TableMetadataColumns.DrivingKeyDefinition].ToString(),
-                                filterCriteria = singleRow[(int)TableMetadataColumns.FilterCriterion].ToString()
+                                enabledIndicator = singleRow[(int)TableMappingMetadataColumns.Enabled].ToString(),
+                                tableMappingHash = singleRow[(int)TableMappingMetadataColumns.HashKey].ToString(),
+                                versionId = singleRow[(int)TableMappingMetadataColumns.VersionId].ToString(),
+                                sourceTable = singleRow[(int)TableMappingMetadataColumns.SourceTable].ToString(),
+                                sourceConnection = singleRow[(int)TableMappingMetadataColumns.SourceConnection].ToString(),
+                                targetTable = singleRow[(int)TableMappingMetadataColumns.TargetTable].ToString(),
+                                targetConnection = singleRow[(int)TableMappingMetadataColumns.TargetConnection].ToString(),
+                                businessKeyDefinition = singleRow[(int)TableMappingMetadataColumns.BusinessKeyDefinition].ToString(),
+                                drivingKeyDefinition = singleRow[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ToString(),
+                                filterCriteria = singleRow[(int)TableMappingMetadataColumns.FilterCriterion].ToString()
                             });
                             outputFileArray.Add(individualRow);
                         }
@@ -6896,12 +6896,12 @@ namespace TEAM
             Int32 selectedRow = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
             List<string> selectionFilter = new List<string>();            
-            selectionFilter.Add(dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMetadataColumns.TargetTable].Value.ToString());
+            selectionFilter.Add(dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString());
 
-            string additionalInfoForDrivingKey = dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMetadataColumns.DrivingKeyDefinition].Value.ToString();
+            string additionalInfoForDrivingKey = dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Value.ToString();
 
             List<LoadPatternDefinition> patternlist = new List<LoadPatternDefinition>();
-            var tableType = ClassMetadataHandling.GetTableType(dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(), additionalInfoForDrivingKey);
+            var tableType = ClassMetadataHandling.GetTableType(dataGridViewTableMetadata.Rows[selectedRow].Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString(), additionalInfoForDrivingKey);
 
             foreach (LoadPatternDefinition pattern in ConfigurationSettings.patternDefinitionList)
             {
@@ -7133,11 +7133,11 @@ namespace TEAM
             {
                 if (row.IsNewRow == false)
                 {
-                    var sourceDataObject = row.Cells[TableMetadataColumns.SourceTable.ToString()].Value.ToString();
-                    var sourceDataObjectConnectionKey = row.Cells[TableMetadataColumns.SourceConnection.ToString()].Value.ToString();
+                    var sourceDataObject = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
+                    var sourceDataObjectConnectionKey = row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString();
 
-                    var targetDataObject = row.Cells[TableMetadataColumns.TargetTable.ToString()].Value.ToString();
-                    var targetDataObjectConnectionKey = row.Cells[TableMetadataColumns.TargetConnection.ToString()].Value.ToString();
+                    var targetDataObject = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
+                    var targetDataObjectConnectionKey = row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString();
 
                     if (localConnectionDictionary.TryGetValue(sourceDataObjectConnectionKey, out var sourceConnectionValue))
                     {
@@ -7168,8 +7168,8 @@ namespace TEAM
             {
                 if (row.IsNewRow == false)
                 {
-                    string targetDataObject = row.Cells[TableMetadataColumns.TargetTable.ToString()].Value.ToString();
-                    bool rowEnabled = (bool)row.Cells[TableMetadataColumns.Enabled.ToString()].Value;
+                    string targetDataObject = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
+                    bool rowEnabled = (bool)row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value;
 
                     if (rowEnabled)
                     {
@@ -7199,12 +7199,12 @@ namespace TEAM
             switch (area)
             {
                 case "source":
-                    areaColumnIndex = (int)TableMetadataColumns.SourceTable;
-                    connectionColumnIndex = (int)TableMetadataColumns.SourceConnection;
+                    areaColumnIndex = (int)TableMappingMetadataColumns.SourceTable;
+                    connectionColumnIndex = (int)TableMappingMetadataColumns.SourceConnection;
                     break;
                 case "target":
-                    areaColumnIndex = (int)TableMetadataColumns.TargetTable;
-                    connectionColumnIndex = (int)TableMetadataColumns.TargetConnection;
+                    areaColumnIndex = (int)TableMappingMetadataColumns.TargetTable;
+                    connectionColumnIndex = (int)TableMappingMetadataColumns.TargetConnection;
                     break;
                 default:
                     // Do nothing
@@ -7304,18 +7304,18 @@ namespace TEAM
             var objectList = new List<Tuple<string, string, string, string>>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow && row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // Only select the lines that relate to a Link target
+                if (!row.IsNewRow && row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue)) // Only select the lines that relate to a Link target
                 {
                     // Derive the business key.
-                    var businessKey = row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString().Replace("''''", "'");
+                    var businessKey = row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString().Replace("''''", "'");
 
                     // Derive the connection
-                    localConnectionDictionary.TryGetValue(row.Cells[(int) TableMetadataColumns.TargetConnection].Value.ToString(), out var connectionValue);
+                    localConnectionDictionary.TryGetValue(row.Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString(), out var connectionValue);
 
                     var newValidationObject = new Tuple<string, string, string, string>
                         (
-                        row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(),
-                        row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(),
+                        row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString(),
+                        row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString(),
                         businessKey,
                         connectionValue
                         );
@@ -7387,12 +7387,12 @@ namespace TEAM
             var objectList = new List<Tuple<string, string, string>>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow && (row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LsatTablePrefixValue))  )
+                if (!row.IsNewRow && (row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LinkTablePrefixValue) || row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.SatTablePrefixValue) || row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString().StartsWith(ConfigurationSettings.LsatTablePrefixValue))  )
                 {
-                    var businessKey = row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString().Replace("''''", "'");
-                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(), businessKey)))
+                    var businessKey = row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString().Replace("''''", "'");
+                    if (!objectList.Contains(new Tuple<string, string, string>(row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString(), businessKey)))
                     {
-                        objectList.Add(new Tuple<string, string, string>(row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMetadataColumns.TargetTable].Value.ToString(), businessKey));
+                        objectList.Add(new Tuple<string, string, string>(row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString(), businessKey));
                     }
                 }
             }
@@ -7457,13 +7457,13 @@ namespace TEAM
                 if (!row.IsNewRow)
                 {
                     Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
-                    Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[(int)TableMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMetadataColumns.BusinessKeyDefinition].Value.ToString());
+                    Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString());
                     
                     if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject.Item1,"") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
 
                         // Derive the connection
-                        localConnectionDictionary.TryGetValue(row.Cells[(int)TableMetadataColumns.SourceConnection].Value.ToString(), out var connectionValue);
+                        localConnectionDictionary.TryGetValue(row.Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString(), out var connectionValue);
 
                         try
                         {

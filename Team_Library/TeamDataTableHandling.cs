@@ -5,7 +5,7 @@ namespace TEAM
     /// <summary>
     /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
     /// </summary>
-    public enum TableMetadataColumns
+    public enum TableMappingMetadataColumns
     {
         Enabled = 0,
         HashKey = 1,
@@ -18,23 +18,6 @@ namespace TEAM
         DrivingKeyDefinition = 8,
         FilterCriterion = 9
     }
-
-    /// <summary>
-    /// Enumerator to hold the column index for the columns in the Table Metadata data table.
-    /// </summary>
-    //public enum TableMetadataColumns
-    //{
-    //    Enabled = 0,
-    //    HashKey = 1,
-    //    VersionId = 2,
-    //    SourceTable = 3,
-    //    SourceConnection = 4,
-    //    TargetTable = 5,
-    //    TargetConnection = 6,
-    //    BusinessKeyDefinition = 7,
-    //    DrivingKeyDefinition = 8,
-    //    FilterCriterion = 9
-    //}
 
     public class SetTeamDataTableProperties
     {
@@ -61,16 +44,16 @@ namespace TEAM
         public static void SetTableDataTableColumns(DataTable dataTable)
         {
 
-            dataTable.Columns[(int)TableMetadataColumns.Enabled].ColumnName = TableMetadataColumns.Enabled.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.HashKey].ColumnName = TableMetadataColumns.HashKey.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.VersionId].ColumnName = TableMetadataColumns.VersionId.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.SourceTable].ColumnName = TableMetadataColumns.SourceTable.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.SourceConnection].ColumnName = TableMetadataColumns.SourceConnection.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.TargetTable].ColumnName = TableMetadataColumns.TargetTable.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.TargetConnection].ColumnName = TableMetadataColumns.TargetConnection.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.BusinessKeyDefinition].ColumnName = TableMetadataColumns.BusinessKeyDefinition.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.DrivingKeyDefinition].ColumnName = TableMetadataColumns.DrivingKeyDefinition.ToString();
-            dataTable.Columns[(int)TableMetadataColumns.FilterCriterion].ColumnName = TableMetadataColumns.FilterCriterion.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.Enabled].ColumnName = TableMappingMetadataColumns.Enabled.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.HashKey].ColumnName = TableMappingMetadataColumns.HashKey.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.VersionId].ColumnName = TableMappingMetadataColumns.VersionId.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.SourceTable].ColumnName = TableMappingMetadataColumns.SourceTable.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.SourceConnection].ColumnName = TableMappingMetadataColumns.SourceConnection.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.TargetTable].ColumnName = TableMappingMetadataColumns.TargetTable.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.TargetConnection].ColumnName = TableMappingMetadataColumns.TargetConnection.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.BusinessKeyDefinition].ColumnName = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ColumnName = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
+            dataTable.Columns[(int)TableMappingMetadataColumns.FilterCriterion].ColumnName = TableMappingMetadataColumns.FilterCriterion.ToString();
         }
 
         /// <summary>
@@ -79,7 +62,7 @@ namespace TEAM
         /// <param name="dataTable"></param>
         public static void SetTableDataTableSorting(DataTable dataTable)
         {
-            dataTable.DefaultView.Sort = $"[{TableMetadataColumns.SourceTable.ToString()}] ASC, [{TableMetadataColumns.TargetTable.ToString()}] ASC, [{TableMetadataColumns.BusinessKeyDefinition.ToString()}] ASC";
+            dataTable.DefaultView.Sort = $"[{TableMappingMetadataColumns.SourceTable.ToString()}] ASC, [{TableMappingMetadataColumns.TargetTable.ToString()}] ASC, [{TableMappingMetadataColumns.BusinessKeyDefinition.ToString()}] ASC";
         }
 
         /// <summary>
