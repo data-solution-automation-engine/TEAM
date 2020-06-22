@@ -501,9 +501,10 @@ namespace TEAM
                 {
                     // Update the values in an existing JSON segment
                     jsonKeyLookup.connectionInternalId = _localConnection.connectionInternalId;
-                    jsonKeyLookup.databaseConnectionKey = _localConnection.databaseConnectionKey;
                     jsonKeyLookup.databaseConnectionName = _localConnection.databaseConnectionName;
+                    jsonKeyLookup.databaseConnectionKey = _localConnection.databaseConnectionKey;
                     jsonKeyLookup.databaseConnectionNotes = _localConnection.databaseConnectionNotes;
+                    jsonKeyLookup.databaseServer = _localConnection.databaseServer;
                 }
 
                 // Save the updated file to disk.

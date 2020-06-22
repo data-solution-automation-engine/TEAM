@@ -3779,8 +3779,7 @@ namespace TEAM
                                 .ToString());
                             physicalModelStatement.AppendLine(") sub");
 
-                            var localPhysicalModelDataTable = Utility.GetDataTable(ref localSqlConnection,
-                                physicalModelStatement.ToString());
+                            var localPhysicalModelDataTable = Utility.GetDataTable(ref localSqlConnection, physicalModelStatement.ToString());
 
                             if (localPhysicalModelDataTable != null)
                             {
