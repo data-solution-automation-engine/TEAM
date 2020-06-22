@@ -3708,8 +3708,6 @@ namespace TEAM
                 #endregion
 
 
-
-
                 #region Physical Model dump- 40%
 
                 // Creating a point-in-time snapshot of the physical model used for export to the interface schemas
@@ -3740,7 +3738,7 @@ namespace TEAM
                                 if (row.IsNewRow == false)
                                 {
                                     if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
-                                        connection.Value.databaseConnectionKey)
+                                        connection.Value.connectionInternalId)
                                     {
                                         var localTable = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
                                         localTable = ClassMetadataHandling.GetFullyQualifiedTableName(localTable);
@@ -3750,7 +3748,7 @@ namespace TEAM
                                     }
 
                                     if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
-                                        connection.Value.databaseConnectionKey)
+                                        connection.Value.connectionInternalId)
                                     {
                                         var localTable = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
                                         localTable = ClassMetadataHandling.GetFullyQualifiedTableName(localTable);
@@ -4730,10 +4728,8 @@ namespace TEAM
                 prepareMappingStagingStatement.AppendLine("    src.[SCHEMA_NAME] AS SOURCE_SCHEMA_NAME,");
                 prepareMappingStagingStatement.AppendLine("    tgt.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME");
                 prepareMappingStagingStatement.AppendLine("  FROM MD_SOURCE_STAGING_XREF xref");
-                prepareMappingStagingStatement.AppendLine(
-                    "LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
-                prepareMappingStagingStatement.AppendLine(
-                    "LEFT OUTER JOIN dbo.MD_STAGING tgt ON xref.STAGING_NAME = tgt.STAGING_NAME");
+                prepareMappingStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                prepareMappingStagingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_STAGING tgt ON xref.STAGING_NAME = tgt.STAGING_NAME");
                 prepareMappingStagingStatement.AppendLine(") ");
                 prepareMappingStagingStatement.AppendLine("SELECT");
                 prepareMappingStagingStatement.AppendLine("  XREF.SOURCE_NAME, ");
@@ -4742,18 +4738,15 @@ namespace TEAM
                 prepareMappingStagingStatement.AppendLine("  ADC_TARGET.COLUMN_NAME AS ATTRIBUTE_NAME_TO,");
                 prepareMappingStagingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
                 prepareMappingStagingStatement.AppendLine("FROM XREF");
-                prepareMappingStagingStatement.AppendLine(
-                    "JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.STAGING_NAME = ADC_TARGET.TABLE_NAME");
-                prepareMappingStagingStatement.AppendLine(
-                    "JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                prepareMappingStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.STAGING_NAME = ADC_TARGET.TABLE_NAME");
+                prepareMappingStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
                 prepareMappingStagingStatement.AppendLine("WHERE NOT EXISTS (");
                 prepareMappingStagingStatement.AppendLine("  SELECT SOURCE_NAME, STAGING_NAME, ATTRIBUTE_NAME_FROM");
                 prepareMappingStagingStatement.AppendLine("  FROM MD_SOURCE_STAGING_ATTRIBUTE_XREF manualmapping");
                 prepareMappingStagingStatement.AppendLine("WHERE");
                 prepareMappingStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
                 prepareMappingStagingStatement.AppendLine("  AND manualmapping.STAGING_NAME = XREF.STAGING_NAME");
-                prepareMappingStagingStatement.AppendLine(
-                    "  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
+                prepareMappingStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_TARGET.COLUMN_NAME");
                 prepareMappingStagingStatement.AppendLine(")");
                 prepareMappingStagingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
@@ -5128,9 +5121,8 @@ namespace TEAM
                 worker.ReportProgress(90);
                 subProcess.Stop();
                 _alert.SetTextLogging("--> Processing " + manualSatMappingCounter + " manual attribute mappings.\r\n");
-                _alert.SetTextLogging(
-                    "Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed, and has taken " +
-                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
                 #endregion
 
@@ -6785,14 +6777,14 @@ namespace TEAM
             var filterList = new List<string>();
             foreach (DataRow row in ((DataTable)_bindingSourceTableMetadata.DataSource).Rows)
             {
-                if (!filterList.Contains((string)row["SOURCE_TABLE"]))
+                if (!filterList.Contains((string)row[TableMappingMetadataColumns.SourceTable.ToString()]))
                 {
-                    filterList.Add((string)row["SOURCE_TABLE"]);
+                    filterList.Add((string)row[TableMappingMetadataColumns.SourceTable.ToString()]);
                 }
 
-                if (!filterList.Contains((string)row["TARGET_TABLE"]))
+                if (!filterList.Contains((string)row[TableMappingMetadataColumns.TargetTable.ToString()]))
                 {
-                    filterList.Add((string)row["TARGET_TABLE"]);
+                    filterList.Add((string)row[TableMappingMetadataColumns.TargetTable.ToString()]);
                 }
             }
 
@@ -7065,10 +7057,7 @@ namespace TEAM
 
                     if (evaluationMode == "physical" && ClassMetadataHandling.GetTableType(validationObject, "") != ClassMetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-
-                        // Dictionary<string, string> connectionInformation = ClassMetadataHandling.GetConnectionInformationForTableType(ClassMetadataHandling.GetTableType(validationObject, ""));
-                        //string connectionValue = connectionInformation.FirstOrDefault().Value;
-
+                        
                         if (!localTableMappingConnectionDictionary.TryGetValue(validationObject, out var connectionValue))
                         {
                             // the key isn't in the dictionary.
@@ -7135,18 +7124,18 @@ namespace TEAM
                 if (row.IsNewRow == false)
                 {
                     var sourceDataObject = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
-                    var sourceDataObjectConnectionKey = row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString();
+                    var sourceDataObjectConnectionId = row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString();
 
                     var targetDataObject = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
-                    var targetDataObjectConnectionKey = row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString();
+                    var targetDataObjectConnectionId = row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString();
 
-                    if (localConnectionDictionary.TryGetValue(sourceDataObjectConnectionKey, out var sourceConnectionValue))
+                    if (localConnectionDictionary.TryGetValue(sourceDataObjectConnectionId, out var sourceConnectionValue))
                     {
                         returnDictionary[sourceDataObject] = sourceConnectionValue;
                         //returnDictionary.Add(sourceDataObject, sourceConnectionValue);
                     }
 
-                    if (localConnectionDictionary.TryGetValue(targetDataObjectConnectionKey, out var targetConnectionValue))
+                    if (localConnectionDictionary.TryGetValue(targetDataObjectConnectionId, out var targetConnectionValue))
                     {
                         returnDictionary[targetDataObject] = targetConnectionValue;
                         //returnDictionary.Add(targetDataObject, targetConnectionValue);

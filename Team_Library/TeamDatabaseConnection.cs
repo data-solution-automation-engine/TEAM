@@ -168,7 +168,7 @@ namespace TEAM
 
             foreach (var connection in connectionDictionary)
             {
-                returnDictionary.Add(connection.Value.databaseConnectionKey, connection.Value.CreateConnectionString(false));
+                returnDictionary.Add(connection.Value.connectionInternalId, connection.Value.CreateConnectionString(false));
             }
 
             return returnDictionary;
