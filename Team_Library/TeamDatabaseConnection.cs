@@ -117,10 +117,12 @@ namespace TEAM
     public class LocalConnection
     {
         public string ConnectionKey { get; }
+        public string ConnectionId { get; }
 
-        public LocalConnection(string connectionKey)
+        public LocalConnection(string connectionKey, string connectionId)
         {
             ConnectionKey = connectionKey;
+            ConnectionId = connectionId;
         }
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace TEAM
             var possibleConnections = new List<LocalConnection>();
             foreach (var connection in localConnectionDictionary)
             {
-                possibleConnections.Add(new LocalConnection(connection.Value.databaseConnectionKey));
+                possibleConnections.Add(new LocalConnection(connection.Value.databaseConnectionKey, connection.Value.connectionInternalId));
 
             }
 

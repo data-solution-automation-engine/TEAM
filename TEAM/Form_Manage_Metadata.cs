@@ -329,6 +329,7 @@ namespace TEAM
                 var comboBoxValueSource = row[(int)TableMappingMetadataColumns.SourceConnection].ToString();
                 var comboBoxValueTarget= row[(int)TableMappingMetadataColumns.TargetConnection].ToString();
 
+                
                 if (!localConnectionKeyList.Contains(comboBoxValueSource))
                 {
                     if (!userFeedbackList.Contains(comboBoxValueSource))

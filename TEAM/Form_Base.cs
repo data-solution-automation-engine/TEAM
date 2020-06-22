@@ -32,9 +32,9 @@ namespace TEAM
 
             foreach (var connection in ConfigurationSettings.connectionDictionary)
             {
-                if (!returnList.Contains(connection.Value.databaseConnectionKey))
+                if (!returnList.Contains(connection.Value.connectionInternalId))
                 {
-                    returnList.Add(connection.Value.databaseConnectionKey);
+                    returnList.Add(connection.Value.connectionInternalId);
                 }
             }
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Data;
+﻿using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -84,7 +82,7 @@ namespace TEAM
             sourceConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
             sourceConnection.DataSource = LocalConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
             sourceConnection.DisplayMember = "ConnectionKey";
-            sourceConnection.ValueMember = "ConnectionKey";
+            sourceConnection.ValueMember = "ConnectionId";
             sourceConnection.ValueType = typeof(string);
             Columns.Add(sourceConnection);
 
@@ -103,7 +101,7 @@ namespace TEAM
             targetConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
             targetConnection.DataSource = LocalConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
             targetConnection.DisplayMember = "ConnectionKey";
-            targetConnection.ValueMember = "ConnectionKey";
+            targetConnection.ValueMember = "ConnectionId";
             targetConnection.ValueType = typeof(string);
             Columns.Add(targetConnection);
 
