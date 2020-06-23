@@ -101,15 +101,6 @@ namespace TEAM
 
             internal static string LogicalDeleteAttribute { get; set; }
 
-            // Database names
-            internal static string StagingDatabaseName { get; set; }
-            internal static string PsaDatabaseName { get; set; }
-            internal static string IntegrationDatabaseName { get; set; }
-            internal static string PresentationDatabaseName { get; set; }
-
-            // Servers (instances)
-
-            internal static string PhysicalModelServerName { get; set; }
 
             // Prefixes and suffixes
             internal static string TableNamingLocation { get; set; } // The location if the table classification (i.e. HUB OR SAT) is a prefix (HUB_CUSTOMER) or suffix (CUSTOMER_HUB).

@@ -1046,9 +1046,9 @@ namespace TEAM
                             new JProperty("tableMappingHash", hashKey),
                             new JProperty("versionId", versionId),
                             new JProperty("sourceTable", sourceTable),
-                            new JProperty("sourceConnection", sourceConnectionKey),
+                            new JProperty("sourceConnectionKey", sourceConnectionKey),
                             new JProperty("targetTable", targetTable),
-                            new JProperty("targetConnection", targetConnectionKey),
+                            new JProperty("targetConnectionKey", targetConnectionKey),
                             new JProperty("businessKeyDefinition", businessKeyDefinition),
                             new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                             new JProperty("filterCriteria", filterCriterion)
@@ -1358,9 +1358,9 @@ namespace TEAM
                                     new JProperty("tableMappingHash", hashKey),
                                     new JProperty("versionId", versionId),
                                     new JProperty("sourceTable", sourceTable),
-                                    new JProperty("sourceConnection", sourceConnectionKey),
+                                    new JProperty("sourceConnectionKey", sourceConnectionKey),
                                     new JProperty("targetTable", targetTable),
-                                    new JProperty("targetConnection", targetConnectionKey),
+                                    new JProperty("targetConnectionKey", targetConnectionKey),
                                     new JProperty("businessKeyDefinition", businessKeyDefinition),
                                     new JProperty("drivingKeyDefinition", drivingKeyDefinition),
                                     new JProperty("filterCriteria", filterCriterion)
@@ -2585,17 +2585,17 @@ namespace TEAM
 
             var metaDataConnection = ConfigurationSettings.MetadataConnection.CreateConnectionString(false);
 
-            // Get everything as local variables to reduce multi-threading issues
-            var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';
+            //// Get everything as local variables to reduce multi-threading issues
+            //var integrationDatabase = '['+ ConfigurationSettings.IntegrationDatabaseName + ']';
 
-            var linkedServer = ConfigurationSettings.PhysicalModelServerName;
-            var metadataServer = ConfigurationSettings.MetadataConnection.databaseServer.databaseName;
-            if (linkedServer != "" && linkedServer != metadataServer)
-            {
-                linkedServer = '[' + linkedServer + "].";
-            }
-            else
-                linkedServer = "";
+            //var linkedServer = ConfigurationSettings.PhysicalModelServerName;
+            //var metadataServer = ConfigurationSettings.MetadataConnection.databaseServer.databaseName;
+            //if (linkedServer != "" && linkedServer != metadataServer)
+            //{
+            //    linkedServer = '[' + linkedServer + "].";
+            //}
+            //else
+            //    linkedServer = "";
 
             var effectiveDateTimeAttribute = ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute=="True" ? ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute : ConfigurationSettings.LoadDateTimeAttribute;
             var currentRecordAttribute = ConfigurationSettings.CurrentRowAttribute;
@@ -4314,7 +4314,7 @@ namespace TEAM
                     virtualisationSnippet.AppendLine("  [SCHEMA_NAME] AS LINK_SCHEMA,");
                     virtualisationSnippet.AppendLine("  [TABLE_NAME]  AS LINK_NAME,");
                     virtualisationSnippet.AppendLine("  [COLUMN_NAME] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY[TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
+                    virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY [TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
                     virtualisationSnippet.AppendLine("FROM MD_PHYSICAL_MODEL");
                     virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
                     virtualisationSnippet.AppendLine(" AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
@@ -5206,8 +5206,7 @@ namespace TEAM
                 prepareMappingStatement.AppendLine(")");
                 prepareMappingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
-                var automaticAttributeMappingsSatellites =
-                    Utility.GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                var automaticAttributeMappingsSatellites = Utility.GetDataTable(ref connOmd, prepareMappingStatement.ToString());
 
                 if (automaticAttributeMappingsSatellites.Rows.Count == 0)
                 {
@@ -5502,31 +5501,36 @@ namespace TEAM
                     prepareMultiKeyStatement.AppendLine("FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF xref");
                     prepareMultiKeyStatement.AppendLine("INNER JOIN ");
                     prepareMultiKeyStatement.AppendLine("(");
-                    prepareMultiKeyStatement.AppendLine("  SELECT ");
-                    prepareMultiKeyStatement.AppendLine("  	sc.name AS SATELLITE_NAME,");
-                    prepareMultiKeyStatement.AppendLine("  	C.name AS ATTRIBUTE_NAME");
-                    prepareMultiKeyStatement.AppendLine("  FROM " + linkedServer + integrationDatabase +
-                                                        ".sys.index_columns A");
-                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase +
-                                                        ".sys.indexes B");
-                    prepareMultiKeyStatement.AppendLine("    ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase +
-                                                        ".sys.columns C");
-                    prepareMultiKeyStatement.AppendLine("    ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-                    prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase +
-                                                        ".sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
-                    prepareMultiKeyStatement.AppendLine("    WHERE is_primary_key=1");
-                    prepareMultiKeyStatement.AppendLine("  AND C.name!='" + effectiveDateTimeAttribute +
-                                                        "' AND C.name!='" + currentRecordAttribute + "' AND C.name!='" +
-                                                        eventDateTimeAtttribute + "'");
-                    prepareMultiKeyStatement.AppendLine("  AND C.name NOT LIKE '" + dwhKeyIdentifier + "'");
+
+                    //prepareMultiKeyStatement.AppendLine("  SELECT ");
+                    //prepareMultiKeyStatement.AppendLine("  	sc.name AS SATELLITE_NAME,");
+                    //prepareMultiKeyStatement.AppendLine("  	C.name AS ATTRIBUTE_NAME");
+                    //prepareMultiKeyStatement.AppendLine("  FROM " + linkedServer + integrationDatabase + ".sys.index_columns A");
+                    //prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.indexes B");
+                    //prepareMultiKeyStatement.AppendLine("    ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
+                    //prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.columns C");
+                    //prepareMultiKeyStatement.AppendLine("    ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+                    //prepareMultiKeyStatement.AppendLine("  JOIN " + linkedServer + integrationDatabase + ".sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+                    //prepareMultiKeyStatement.AppendLine("    WHERE is_primary_key=1");
+                    //prepareMultiKeyStatement.AppendLine("  AND C.name!='" + effectiveDateTimeAttribute + "' AND C.name!='" + currentRecordAttribute + "' AND C.name!='" + eventDateTimeAtttribute + "'");
+                    //prepareMultiKeyStatement.AppendLine("  AND C.name NOT LIKE '" + dwhKeyIdentifier + "'");
+
+                    prepareMultiKeyStatement.AppendLine("  SELECT");
+                    prepareMultiKeyStatement.AppendLine("    [SCHEMA_NAME] AS LINK_SCHEMA,");
+                    prepareMultiKeyStatement.AppendLine("    [TABLE_NAME]  AS SATELLITE_NAME,");
+                    prepareMultiKeyStatement.AppendLine("    [COLUMN_NAME] AS ATTRIBUTE_NAME");
+                    prepareMultiKeyStatement.AppendLine("  FROM MD_PHYSICAL_MODEL");
+                    prepareMultiKeyStatement.AppendLine("  WHERE ");
+                    prepareMultiKeyStatement.AppendLine("        COLUMN_NAME != '" + effectiveDateTimeAttribute + "' AND COLUMN_NAME != '" + currentRecordAttribute + "' AND COLUMN_NAME != '" + eventDateTimeAtttribute + "'");
+                    prepareMultiKeyStatement.AppendLine("    AND COLUMN_NAME NOT LIKE '" + dwhKeyIdentifier + "'");
+                    prepareMultiKeyStatement.AppendLine("    AND (TABLE_NAME LIKE '" + satTablePrefix + "' OR TABLE_NAME LIKE '" + lsatTablePrefix + "')");
+                    prepareMultiKeyStatement.AppendLine("    AND PRIMARY_KEY_INDICATOR='Y'");
+
                     prepareMultiKeyStatement.AppendLine(") ddsub");
-                    prepareMultiKeyStatement.AppendLine(
-                        "ON xref.SATELLITE_NAME = ddsub.SATELLITE_NAME COLLATE DATABASE_DEFAULT");
-                    prepareMultiKeyStatement.AppendLine(
-                        "AND xref.ATTRIBUTE_NAME_TO = ddsub.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                    prepareMultiKeyStatement.AppendLine("  WHERE ddsub.SATELLITE_NAME LIKE '" + satTablePrefix +
-                                                        "' OR ddsub.SATELLITE_NAME LIKE '" + lsatTablePrefix + "'");
+                    prepareMultiKeyStatement.AppendLine("ON xref.SATELLITE_NAME = ddsub.SATELLITE_NAME");
+                    prepareMultiKeyStatement.AppendLine("AND xref.ATTRIBUTE_NAME_TO = ddsub.ATTRIBUTE_NAME");
+                    prepareMultiKeyStatement.AppendLine("  WHERE ddsub.SATELLITE_NAME LIKE '" + satTablePrefix + "' OR ddsub.SATELLITE_NAME LIKE '" + lsatTablePrefix + "'");
+
                 }
                 else
                 {
@@ -5602,9 +5606,7 @@ namespace TEAM
 
                 worker.ReportProgress(97);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Multi-Active Keys completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
-
+                _alert.SetTextLogging($"Preparation of the Multi-Active Keys completed, and has taken {subProcess.Elapsed.TotalSeconds} seconds.\r\n");
 
                 #endregion
 

@@ -352,8 +352,8 @@ namespace TEAM
 
             // Make sure the new paths as updated are available upon save for backup etc.
             // Check if the paths and files are available, just to be sure.
-            EnvironmentConfiguration.InitialiseRootPath(GlobalParameters.ConfigurationPath);
-            EnvironmentConfiguration.InitialiseRootPath(GlobalParameters.OutputPath);
+            FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
+            FileHandling.InitialisePath(GlobalParameters.OutputPath);
             EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
             EnvironmentConfiguration.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             

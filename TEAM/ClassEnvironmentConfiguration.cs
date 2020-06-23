@@ -79,14 +79,13 @@ namespace TEAM
         {
             try
             {
-                InitialiseRootPath(FormBase.GlobalParameters.ConfigurationPath);
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The TEAM directory {FormBase.GlobalParameters.ConfigurationPath} is available."));
+                FileHandling.InitialisePath(FormBase.GlobalParameters.ConfigurationPath);
+
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.ConfigurationPath} is available."));
             }
             catch
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
             }
         }
 
@@ -94,7 +93,7 @@ namespace TEAM
         {
             try
             {
-                InitialiseRootPath(FormBase.GlobalParameters.OutputPath);
+                FileHandling.InitialisePath(FormBase.GlobalParameters.OutputPath);
                 FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
                     $"The TEAM directory {FormBase.GlobalParameters.OutputPath} is available."));
             }
@@ -109,7 +108,7 @@ namespace TEAM
         {
             try
             {
-                InitialiseRootPath(FormBase.GlobalParameters.BackupPath);
+                FileHandling.InitialisePath(FormBase.GlobalParameters.BackupPath);
                 FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.BackupPath} is available."));
             }
             catch
@@ -319,39 +318,6 @@ namespace TEAM
             }
         }
 
-        internal void CopyExistingFile()
-        {
-            try
-            {
-                var sourceFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                         FormBase.GlobalParameters.ConfigFileName + '_' + "Development" +
-                                         FormBase.GlobalParameters.FileExtension;
-
-                if (File.Exists(sourceFilePathName))
-                {
-                    var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath +
-                                             FormBase.GlobalParameters.ConfigFileName + '_' + "Production" +
-                                             FormBase.GlobalParameters.FileExtension;
-
-                    File.Copy(sourceFilePathName, targetFilePathName);
-
-                }
-                else
-                {
-                    MessageBox.Show(
-                        "TEAM couldn't locate a development configuration file! Can you check the paths and existence of directories?",
-                        "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "An error has occured during the creating of the production settings file. The error message is " +
-                    ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         /// <summary>
         /// Method to create a new validation file with default values at the default location
         /// Checks if the file already exists. If it does, nothing will happen.
@@ -445,34 +411,10 @@ namespace TEAM
         }
 
 
-        /// <summary>
-        /// Check if the path exists and create it if necessary.
-        /// Is often used for both the Configuration Path and Output Path - both being essential TEAM paths.
-        /// </summary>
-        internal static void InitialiseRootPath(string inputPath)
-        {
-            // Create the configuration directory if it does not exist yet
-            try
-            {
-                if (!Directory.Exists(inputPath))
-                {
-                    Directory.CreateDirectory(inputPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error creation default directory at " + inputPath +
-                    " the message is " + ex, "An issue has been encountered", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
-
-        /// <summary>
+       /// <summary>
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
         /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
-        /// </summary>
+        /// </summary
         public static void LoadRootPathFile(string fileName, string configurationPath, string outputPath)
         {
             // Create root path file, with dummy values if it doesn't exist already

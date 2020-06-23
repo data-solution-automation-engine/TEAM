@@ -75,7 +75,7 @@ namespace TEAM
             // Configuration Path
             try
             {
-                EnvironmentConfiguration.InitialiseRootPath(GlobalParameters.ConfigurationPath);
+                FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined configuration path {GlobalParameters.ConfigurationPath} is available."));
             }
             catch
@@ -86,7 +86,7 @@ namespace TEAM
             // Output Path
             try
             {
-                EnvironmentConfiguration.InitialiseRootPath(GlobalParameters.OutputPath);
+                FileHandling.InitialisePath(GlobalParameters.OutputPath);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined output path {GlobalParameters.OutputPath} is available."));
             }
             catch

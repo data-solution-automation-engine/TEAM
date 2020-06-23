@@ -242,13 +242,13 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ClassJsonHandling.cs" />
-    <Compile Include="ClassEnvironmentConfiguration.cs" />
     <Compile Include="CustomDataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomTimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ClassEnvironmentConfiguration.cs" />
     <Compile Include="Form_Base.cs">
       <SubType>Form</SubType>
     </Compile>
