@@ -230,7 +230,6 @@
     <Compile Include="ClassLoadPatternHandling.cs" />
     <Compile Include="ClassUtility.cs" />
     <Compile Include="ClassExtensionMethods.cs" />
-    <Compile Include="ClassMetadataHandling.cs" />
     <Compile Include="ClassObjectModel.cs" />
     <Compile Include="CustomTabPageEnvironment.cs">
       <SubType>Component</SubType>

@@ -20,8 +20,8 @@ namespace TEAM
             var conn = new SqlConnection {ConnectionString = connectionString};
             conn.Open();
 
-            var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject);
-            var schemaName = ClassMetadataHandling.GetSchema(validationObject);
+            var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject);
+            var schemaName = MetadataHandling.GetSchema(validationObject);
 
             // Execute the check
             var cmd = new SqlCommand(
@@ -51,9 +51,9 @@ namespace TEAM
             if (validationAttribute != "NULL")
             {
 
-                var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject).Replace("[", "")
+                var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject).Replace("[", "")
                     .Replace("]", "");
-                var schemaName = ClassMetadataHandling.GetSchema(validationObject);
+                var schemaName = MetadataHandling.GetSchema(validationObject);
 
                 var conn = new SqlConnection {ConnectionString = connectionString};
                 conn.Open();
@@ -84,7 +84,7 @@ namespace TEAM
         {
             string returnExistenceEvaluation = "False";
 
-            var objectDetails = ClassMetadataHandling.GetSchema(validationObject).FirstOrDefault();
+            var objectDetails = MetadataHandling.GetSchema(validationObject).FirstOrDefault();
 
             //DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
 
@@ -120,7 +120,7 @@ namespace TEAM
                 //{
                 //    returnExistenceEvaluation = "True";
                 //}
-                var objectDetails = ClassMetadataHandling.GetSchema(validationObject).FirstOrDefault();
+                var objectDetails = MetadataHandling.GetSchema(validationObject).FirstOrDefault();
 
                 DataRow[] foundRows = inputDataTable.Select("TABLE_NAME = '" + objectDetails.Value + "' AND SCHEMA_NAME='" + objectDetails.Key + "' AND COLUMN_NAME = '"+validationAttribute+"'");
 
@@ -400,8 +400,8 @@ namespace TEAM
 
 
             // Get the table the component belongs to if available
-            var objectName = ClassMetadataHandling.GetNonQualifiedTableName(validationObject.Item1);
-            var schemaName = ClassMetadataHandling.GetSchema(validationObject.Item1);
+            var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject.Item1);
+            var schemaName = MetadataHandling.GetSchema(validationObject.Item1);
 
             // Now iterate over each table, as identified by the business key.
             var conn = new SqlConnection { ConnectionString = connectionString };
@@ -502,7 +502,7 @@ namespace TEAM
                     }
                     else
                     {
-                        var objectDetails = ClassMetadataHandling.GetSchema(validationObject.Item1).FirstOrDefault();
+                        var objectDetails = MetadataHandling.GetSchema(validationObject.Item1).FirstOrDefault();
 
                         bool returnExistenceEvaluation = false;
 
