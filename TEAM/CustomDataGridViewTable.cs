@@ -80,7 +80,7 @@ namespace TEAM
             sourceConnection.HeaderText = "Source Connection";
             sourceConnection.DataPropertyName = TableMappingMetadataColumns.SourceConnection.ToString();
             sourceConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            sourceConnection.DataSource = LocalConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
+            sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
             sourceConnection.DisplayMember = "ConnectionKey";
             sourceConnection.ValueMember = "ConnectionId";
             sourceConnection.ValueType = typeof(string);
@@ -99,7 +99,7 @@ namespace TEAM
             targetConnection.HeaderText = "Target Connection";
             targetConnection.DataPropertyName = TableMappingMetadataColumns.TargetConnection.ToString();
             targetConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            targetConnection.DataSource = LocalConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
+            targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
             targetConnection.DisplayMember = "ConnectionKey";
             targetConnection.ValueMember = "ConnectionId";
             targetConnection.ValueType = typeof(string);

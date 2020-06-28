@@ -5,10 +5,13 @@ using System.Text;
 
 namespace TEAM
 {
-    public class FileHandling
+    /// <summary>
+    /// The FileHandling class concerns the basic IO operations required to create directories and configuration files (without any specific content).
+    /// </summary>
+    public static class FileHandling
     {
         /// <summary>
-        /// Check if the path exists and create it if necessary.
+        /// Check if the path exists and create it if necessary. Returns an Event.
         /// </summary>
         /// <param name="inputPath"></param>
         public static Event InitialisePath(string inputPath)
@@ -34,7 +37,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Create a new file with input content, if it does not exist yet.
+        /// Create a new file with input content, if it does not exist yet. Returns an Event.
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="fileContent"></param>
@@ -65,7 +68,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Retrieve the values of a settings file and return this as a dictionary<string,string> object containing the configuration settings.
+        /// Retrieve the values of a settings file and return this as a dictionary<string,string> object containing the configuration settings. Returns an Event.
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>

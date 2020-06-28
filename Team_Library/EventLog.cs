@@ -1,11 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace TEAM
 {
-    public class EventLog : List<Event> { }
+    /// <summary>
+    /// An event log is a list of events.
+    /// </summary>
+    public class EventLog : List<Event>
+    {
+        //public List<Event> EventList;
 
+        public EventLog()
+        {
+            //EventList = null;
+        }
+
+        /// <summary>
+        /// Spool the Event Log to disk.
+        /// </summary>
+        /// <param name="targetFile"></param>
+        public void SaveEventLogToFile(string targetFile)
+        {
+            StringBuilder output = new StringBuilder();
+
+            try
+            {
+                //Output to file
+                using (var outfile = new StreamWriter(targetFile))
+                {
+                    foreach (Event localEvent in this)
+                    {
+                        output.AppendLine($"{localEvent.eventTime} - {localEvent.eventCode} : {localEvent.eventDescription}");
+                    }
+
+                    outfile.Write(output.ToString());
+                    outfile.Close();
+                }
+                
+                this.Add(Event.CreateNewEvent(EventTypes.Information, "The file was successfully saved to disk.\r\n"));
+            }
+            catch (Exception ex)
+            {
+                this.Add(Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n"));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Enumerator containing the types of allowed events (classifications).
+    /// </summary>
     public enum EventTypes
     {
         Information = 0,
@@ -13,13 +58,25 @@ namespace TEAM
         Warning = 2
     }
 
+    /// <summary>
+    /// Individual event.
+    /// </summary>
     public class Event
     {
+        /// <summary>
+        /// The classification of an event, following the EventTypes enumerator.
+        /// </summary>
         public int eventCode { get; set; }
+
+        /// <summary>
+        /// Free-format description for an event.
+        /// </summary>
         public string eventDescription { get; set; }
 
+        /// <summary>
+        /// Logging date/time for the event.
+        /// </summary>
         public DateTime eventTime { get; set; } = DateTime.Now;
-
 
         /// <summary>
         /// Constructor that only captures type and description of an event. This will assume 'now' as date/time of the event.
@@ -40,7 +97,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Constructor that also captures date / time.
+        /// Constructor that can override the date / time.
         /// </summary>
         /// <param name="eventType"></param>
         /// <param name="eventDateTime"></param>
@@ -54,28 +111,6 @@ namespace TEAM
                 eventTime = eventDateTime,
                 eventDescription = eventDescription
             };
-
-            return localEvent;
-        }
-
-        public static Event SaveEventToFile(string targetFile, Event inputEvent)
-        {
-            Event localEvent = new Event();
-            try
-            {
-                //Output to file
-                using (var outfile = new StreamWriter(targetFile))
-                {
-                    outfile.Write(inputEvent.eventCode + ": " + inputEvent.eventDescription);
-                    outfile.Close();
-                }
-
-                localEvent = Event.CreateNewEvent(EventTypes.Information, "The file was successfully saved to disk.\r\n");
-            }
-            catch (Exception ex)
-            {
-                localEvent = Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n");
-            }
 
             return localEvent;
         }

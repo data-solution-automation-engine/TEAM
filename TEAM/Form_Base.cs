@@ -45,7 +45,7 @@ namespace TEAM
         /// <summary>
         /// Gets or sets the values from the most common configuration settings.
         /// </summary>
-        internal static class ConfigurationSettings
+        internal class ConfigurationSettings
         {
             #region Connectivity (connection objects, connection strings etc.)
             /// <summary>

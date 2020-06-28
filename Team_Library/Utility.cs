@@ -41,6 +41,11 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// Generate a random number value.
+        /// </summary>
+        /// <param name="maxNumber"></param>
+        /// <returns></returns>
         public static int GetRandomNumber(int maxNumber)
         {
             if (maxNumber < 1)
@@ -52,6 +57,11 @@ namespace TEAM
             return r.Next(1, maxNumber);
         }
 
+        /// <summary>
+        /// Generate random date value.
+        /// </summary>
+        /// <param name="startYear"></param>
+        /// <returns></returns>
         public static DateTime GetRandomDate(int startYear = 1995)
         {
             var start = new DateTime(startYear, 1, 1);
@@ -62,6 +72,11 @@ namespace TEAM
             return start.AddDays(new Random(seed).Next(1, range)).AddSeconds(new Random(seed).Next(1, 86400));
         }
 
+        /// <summary>
+        /// Generate a random string value.
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public static string GetRandomString(int length)
         {
             var array = new[]
@@ -74,10 +89,17 @@ namespace TEAM
             for (var i = 0; i < length; i++) sb.Append(array[GetRandomNumber(53)]);
             return sb.ToString();
         }
-        public static DataTable GetDataTable(ref SqlConnection sqlConnection, string sql)
+
+        /// <summary>
+        /// Populate a datatable by loading from a database table.
+        /// </summary>
+        /// <param name="sqlConnection"></param>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public static DataTable GetDataTable(ref SqlConnection sqlConnection, string sqlQuery)
         {
             // Pass the connection to a command object
-            var sqlCommand = new SqlCommand(sql, sqlConnection);
+            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
             var sqlDataAdapter = new SqlDataAdapter { SelectCommand = sqlCommand };
 
             var dataTable = new DataTable();
@@ -97,6 +119,12 @@ namespace TEAM
 
         }
 
+        /// <summary>
+        /// Convert a list of objects into a datatable.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static DataTable ConvertToDataTable<T>(IList<T> data)
         {
             DataTable table = new DataTable();
@@ -121,6 +149,12 @@ namespace TEAM
             return table;
         }
 
+        /// <summary>
+        /// Returns the default type (e.g. null value, empty or default) for a given input object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static T ConvertFromDBVal<T>(object obj)
         {
             if (obj == null || obj == DBNull.Value)

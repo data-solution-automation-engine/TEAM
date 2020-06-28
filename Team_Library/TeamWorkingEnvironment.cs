@@ -2,7 +2,9 @@
 
 namespace TEAM
 {
-
+    /// <summary>
+    /// An unique working environment (tenant) containing all TEAM settings.
+    /// </summary>
     public class TeamWorkingEnvironment
     {
         public string environmentInternalId { get; set; }

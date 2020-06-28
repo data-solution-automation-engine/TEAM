@@ -1,7 +1,63 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace TEAM
 {
+    public class TeamTableMappingMetadata
+    {
+        public EventLog MappingDataTableEventLog { get; set; }
+
+        public List<TableMappingJson> TableMappingJsonList { get; set; }
+
+        public  DataTable TableMappingDataTable { get; set; }
+
+        public TeamTableMappingMetadata()
+        {
+            MappingDataTableEventLog = new EventLog();
+        }
+
+        /// <summary>
+        /// Creates a TeamMappingDataTable object (Json List and DataTable) from a Table Mapping Json file.
+        /// </summary>
+        /// <returns></returns>
+        public void GetTableMapping(string fileName)
+        {
+            MappingDataTableEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving Table Mapping metadata from {fileName}."));
+
+            DataTable dataTable = new DataTable();
+
+            // Check if the file exists
+            if (!File.Exists(fileName))
+            {
+                MappingDataTableEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "No Json Table Mapping file was found."));
+            }
+            else
+            {
+                MappingDataTableEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reading file {fileName}"));
+                // Load the file, convert it to a DataTable and bind it to the source
+                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(fileName));
+
+                // Commit to the object
+                TableMappingJsonList = jsonArray;
+                dataTable = Utility.ConvertToDataTable(jsonArray);
+
+                //Make sure the changes are seen as committed, so that changes can be detected later on.
+                dataTable.AcceptChanges();
+
+                // Set the column names.
+                SetTeamDataTableProperties.SetTableDataTableColumns(dataTable);
+
+                // Set the sort order.
+                SetTeamDataTableProperties.SetTableDataTableSorting(dataTable);
+
+                TableMappingDataTable = dataTable;
+            }
+        }
+    }
+
+
     /// <summary>
     /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
     /// </summary>

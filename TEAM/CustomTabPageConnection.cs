@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
@@ -175,7 +174,7 @@ namespace TEAM
             _radioButtonIntegratedSecurity.Size = new Size(106, 17);
             _radioButtonIntegratedSecurity.Name = $"radioButtonIntegratedSecurity";
             _radioButtonIntegratedSecurity.Text = $"Integrated (SSPI)"; 
-            _radioButtonIntegratedSecurity.Checked = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
+            _radioButtonIntegratedSecurity.Checked = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
             _radioButtonIntegratedSecurity.CheckedChanged += new EventHandler(RadioButtonIntegratedSecurityCheckedChanged);
             _radioButtonIntegratedSecurity.TabIndex = 4;
 
@@ -187,7 +186,7 @@ namespace TEAM
             _radioButtonNamedUserSecurity.Size = new Size(84, 17);
             _radioButtonNamedUserSecurity.Name = $"radioButtonNamedUserSecurity";
             _radioButtonNamedUserSecurity.Text = $"Named User details";
-            _radioButtonNamedUserSecurity.Checked = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
+            _radioButtonNamedUserSecurity.Checked = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
             _radioButtonNamedUserSecurity.CheckedChanged += new EventHandler(RadioButtonNamedUserCheckedChanged);
             _radioButtonNamedUserSecurity.TabIndex = 5;
 
@@ -363,8 +362,8 @@ namespace TEAM
             this.StartUpIndicator = false;
 
             // Retrieve the values from memory
-            bool localSSPI = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
+            bool localSSPI = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
@@ -581,8 +580,8 @@ namespace TEAM
                 _localConnection.databaseServer.namedUserName = localTextBox.Text;
             }
 
-            bool localSspi = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
+            bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
         }
@@ -600,8 +599,8 @@ namespace TEAM
 
             _localConnection.databaseServer.namedUserPassword = localTextBox.Text;
 
-            bool localSspi = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
+            bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
         }
@@ -625,8 +624,8 @@ namespace TEAM
             }
 
             // Retrieve the values from memory
-            bool localSspi = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
+            bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
@@ -647,8 +646,8 @@ namespace TEAM
             }
 
             // Retrieve the values from memory
-            bool localSSPI = _localConnection.databaseServer.integratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.namedUserSecuritySelectionEvaluation();
+            bool localSSPI = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);

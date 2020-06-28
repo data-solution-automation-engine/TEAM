@@ -55,8 +55,7 @@ namespace TEAM
             }
 
             // Environments file
-            string environmentFile = GlobalParameters.RootPath + GlobalParameters.JsonEnvironmentFileName +
-                                     GlobalParameters.JsonExtension;
+            string environmentFile = GlobalParameters.RootPath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
             try
             {
                 EnvironmentConfiguration.LoadEnvironmentFile(environmentFile);
@@ -136,7 +135,12 @@ namespace TEAM
             #endregion
 
             // Load the connections file for the respective environment.
-            EnvironmentConfiguration.LoadConnectionFile();
+            var connectionFileName =
+                FormBase.GlobalParameters.ConfigurationPath +
+                FormBase.GlobalParameters.JsonConnectionFileName + '_' +
+                FormBase.GlobalParameters.WorkingEnvironment +
+                FormBase.GlobalParameters.JsonExtension;
+            TeamConnectionFile.LoadConnectionFile(connectionFileName, ConfigurationSettings.connectionDictionary);
 
             #region Load configuration file
             // Load the available configuration file into memory.

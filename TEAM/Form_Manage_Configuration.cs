@@ -857,7 +857,12 @@ namespace TEAM
                     }
                 }
 
-                EnvironmentConfiguration.LoadConnectionFile();
+                var connectionFileName =
+                    FormBase.GlobalParameters.ConfigurationPath +
+                    FormBase.GlobalParameters.JsonConnectionFileName + '_' +
+                    FormBase.GlobalParameters.WorkingEnvironment +
+                    FormBase.GlobalParameters.JsonExtension;
+                TeamConnectionFile.LoadConnectionFile(connectionFileName, ConfigurationSettings.connectionDictionary);
 
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
