@@ -22,107 +22,9 @@ namespace TEAM
             InitializeComponent();
         }
 
-        /// <summary>
-        /// List of unique connection keys derived from the TEAM connections dictionary.
-        /// </summary>
-        /// <returns></returns>
-        internal static List<string> TeamConnectionKeyList()
-        {
-            List<string> returnList = new List<string>();
+        // TEAM configuration settings
+        public static TeamConfiguration TeamConfigurationSettings { get; set; } = new TeamConfiguration();
 
-            foreach (var connection in ConfigurationSettings.connectionDictionary)
-            {
-                if (!returnList.Contains(connection.Value.connectionInternalId))
-                {
-                    returnList.Add(connection.Value.connectionInternalId);
-                }
-            }
-
-            return returnList;
-        }
-
-
-        /// <summary>
-        /// Gets or sets the values from the most common configuration settings.
-        /// </summary>
-        internal class ConfigurationSettings
-        {
-            #region Connectivity (connection objects, connection strings etc.)
-            /// <summary>
-            /// Dictionary to contain the connection internal ID and the corresponding object.
-            /// </summary>
-            internal static Dictionary<string, TeamConnectionProfile> connectionDictionary { get; set; } = new Dictionary<string, TeamConnectionProfile>();
-
-            /// <summary>
-            /// Dictionary to contain the available environments within TEAM.
-            /// </summary>
-            internal static Dictionary<string, TeamWorkingEnvironment> environmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
-            internal static TeamConnectionProfile MetadataConnection { get; set; } = new TeamConnectionProfile();
-            #endregion
-
-            #region Configuration values
-            //Prefixes
-            internal static string StgTablePrefixValue { get; set; }
-            internal static string PsaTablePrefixValue { get; set; }
-            internal static string HubTablePrefixValue { get; set; }
-            internal static string SatTablePrefixValue { get; set; }
-            internal static string LinkTablePrefixValue { get; set; }
-            internal static string LsatTablePrefixValue { get; set; }
-            #endregion
-            internal static string DwhKeyIdentifier { get; set; }
-            internal static string PsaKeyLocation { get; set; }
-            internal static string SchemaName { get; set; }
-
-            internal static string EventDateTimeAttribute { get; set; }
-
-            internal static string LoadDateTimeAttribute { get; set; }
-
-            internal static string ExpiryDateTimeAttribute { get; set; }
-
-            internal static string ChangeDataCaptureAttribute { get; set; }
-
-            internal static string RecordSourceAttribute { get; set; }
-
-            internal static string EtlProcessAttribute { get; set; }
-
-            internal static string EtlProcessUpdateAttribute { get; set; }
-
-            internal static string RowIdAttribute { get; set; }
-
-            internal static string RecordChecksumAttribute { get; set; }
-
-            internal static string CurrentRowAttribute { get; set; }
-
-            internal static string AlternativeRecordSourceAttribute { get; set; }
-
-            internal static string AlternativeLoadDateTimeAttribute { get; set; }
-
-            internal static string AlternativeSatelliteLoadDateTimeAttribute { get; set; }
-
-            internal static string LogicalDeleteAttribute { get; set; }
-
-
-            // Prefixes and suffixes
-            internal static string TableNamingLocation { get; set; } // The location if the table classification (i.e. HUB OR SAT) is a prefix (HUB_CUSTOMER) or suffix (CUSTOMER_HUB).
-            internal static string KeyNamingLocation { get; set; } // The location if the key (i.e. HSH or SK), whether it is a prefix (SK_CUSTOMER) or a suffix (CUSTOMER_SK).
-
-            internal static string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }
-
-            internal static string EnableAlternativeRecordSourceAttribute { get; set; }
-
-            internal static string EnableAlternativeLoadDateTimeAttribute { get; set; }
-
-            internal static MetadataRepositoryStorageType MetadataRepositoryType { get; set; }
-
-            // File paths
-            public static List<LoadPatternDefinition> patternDefinitionList { get; set; }
-        }
-
-        public enum MetadataRepositoryStorageType
-        {
-            Json,
-            SqlServer
-        }
 
         /// <summary>
         /// Gets or sets the values for the validation of the metadata.
@@ -181,6 +83,9 @@ namespace TEAM
             // Version handling
             public static int CurrentVersionId { get; set; } = 0;
             public static int HighestVersionId { get; set; } = 0;
+
+            // File paths
+            public static List<LoadPatternDefinition> PatternDefinitionList { get; set; }
         }
 
         public KeyValuePair<int, int> GetVersion(int selectedVersion, SqlConnection sqlConnection)
@@ -261,7 +166,7 @@ namespace TEAM
         protected int GetVersionCount()
         {
 
-            var conn = new SqlConnection { ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var conn = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             var versionCount = new int();
 
             try

@@ -18,9 +18,9 @@ namespace TEAM
         {
             InitializeComponent();
 
-            labelMetadataRepository.Text = "Repository type in configuration is set to " + ConfigurationSettings.MetadataRepositoryType;
+            labelMetadataRepository.Text = "Repository type in configuration is set to " + TeamConfigurationSettings.MetadataRepositoryType;
 
-            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
                 // Adding items in the drop down list
                 comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
@@ -38,10 +38,10 @@ namespace TEAM
             comboBoxIntegrationConnection.ValueMember = "Key";
             comboBoxIntegrationConnection.DisplayMember = "Value";
 
-            comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
-            comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
-            comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
-            comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
         }
 
         private void buttonDeploy_Click(object sender, EventArgs e)
@@ -167,7 +167,7 @@ namespace TEAM
 
             commandText.AppendLine("TRUNCATE TABLE [MD_VERSION];");
 
-            using (var connection = new SqlConnection(ConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
+            using (var connection = new SqlConnection(TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
             {
                 var command = new SqlCommand(commandText.ToString(), connection);
 
@@ -186,7 +186,7 @@ namespace TEAM
                 }
             }
 
-            if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+            if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
             {
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
@@ -202,7 +202,7 @@ namespace TEAM
             ErrorHandlingParameters.ErrorCatcher = 0;
             ErrorHandlingParameters.ErrorLog = new StringBuilder();
             
-            var localMetadataConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false);
+            var localMetadataConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false);
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -619,37 +619,37 @@ namespace TEAM
                     alternativeSatelliteLoadDateTimeFunction = "False";
                 }
 
-                //ConfigurationSettings.MetadataRepositoryType = metadataRepositoryType;
+                //TeamConfigurationSettings.MetadataRepositoryType = metadataRepositoryType;
 
-                ConfigurationSettings.StgTablePrefixValue = stagingAreaPrefix;
-                ConfigurationSettings.PsaTablePrefixValue = persistentStagingAreaPrefix;
+                TeamConfigurationSettings.StgTablePrefixValue = stagingAreaPrefix;
+                TeamConfigurationSettings.PsaTablePrefixValue = persistentStagingAreaPrefix;
 
-                ConfigurationSettings.HubTablePrefixValue = hubTablePrefix;
-                ConfigurationSettings.SatTablePrefixValue = satTablePrefix;
-                ConfigurationSettings.LinkTablePrefixValue = linkTablePrefix;
-                ConfigurationSettings.LsatTablePrefixValue = linkSatTablePrefix;
-                ConfigurationSettings.DwhKeyIdentifier = keyIdentifier;
-                ConfigurationSettings.PsaKeyLocation = psaKeyLocation;
-                ConfigurationSettings.TableNamingLocation = tableNamingLocation;
-                ConfigurationSettings.KeyNamingLocation = keyNamingLocation;
+                TeamConfigurationSettings.HubTablePrefixValue = hubTablePrefix;
+                TeamConfigurationSettings.SatTablePrefixValue = satTablePrefix;
+                TeamConfigurationSettings.LinkTablePrefixValue = linkTablePrefix;
+                TeamConfigurationSettings.LsatTablePrefixValue = linkSatTablePrefix;
+                TeamConfigurationSettings.DwhKeyIdentifier = keyIdentifier;
+                TeamConfigurationSettings.PsaKeyLocation = psaKeyLocation;
+                TeamConfigurationSettings.TableNamingLocation = tableNamingLocation;
+                TeamConfigurationSettings.KeyNamingLocation = keyNamingLocation;
 
-                ConfigurationSettings.EventDateTimeAttribute = eventDateTime;
-                ConfigurationSettings.LoadDateTimeAttribute = loadDateTime;
-                ConfigurationSettings.ExpiryDateTimeAttribute = expiryDateTime;
-                ConfigurationSettings.ChangeDataCaptureAttribute = changeDataIndicator;
-                ConfigurationSettings.RecordSourceAttribute = recordSource;
-                ConfigurationSettings.EtlProcessAttribute = etlProcessId;
-                ConfigurationSettings.EtlProcessUpdateAttribute = etlUpdateProcessId;
-                ConfigurationSettings.RowIdAttribute = sourceRowId;
-                ConfigurationSettings.RecordChecksumAttribute = recordChecksum;
-                ConfigurationSettings.CurrentRowAttribute = currentRecordIndicator;
-                ConfigurationSettings.LogicalDeleteAttribute = logicalDeleteAttribute;
-                ConfigurationSettings.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
-                ConfigurationSettings.AlternativeRecordSourceAttribute = alternativeRecordSource;
-                ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;
-                ConfigurationSettings.AlternativeLoadDateTimeAttribute = alternativeHubLoadDateTime;
-                ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
-                ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
+                TeamConfigurationSettings.EventDateTimeAttribute = eventDateTime;
+                TeamConfigurationSettings.LoadDateTimeAttribute = loadDateTime;
+                TeamConfigurationSettings.ExpiryDateTimeAttribute = expiryDateTime;
+                TeamConfigurationSettings.ChangeDataCaptureAttribute = changeDataIndicator;
+                TeamConfigurationSettings.RecordSourceAttribute = recordSource;
+                TeamConfigurationSettings.EtlProcessAttribute = etlProcessId;
+                TeamConfigurationSettings.EtlProcessUpdateAttribute = etlUpdateProcessId;
+                TeamConfigurationSettings.RowIdAttribute = sourceRowId;
+                TeamConfigurationSettings.RecordChecksumAttribute = recordChecksum;
+                TeamConfigurationSettings.CurrentRowAttribute = currentRecordIndicator;
+                TeamConfigurationSettings.LogicalDeleteAttribute = logicalDeleteAttribute;
+                TeamConfigurationSettings.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
+                TeamConfigurationSettings.AlternativeRecordSourceAttribute = alternativeRecordSource;
+                TeamConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;
+                TeamConfigurationSettings.AlternativeLoadDateTimeAttribute = alternativeHubLoadDateTime;
+                TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
+                TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
 
                 EnvironmentConfiguration.SaveConfigurationFile();
             }
@@ -805,7 +805,7 @@ namespace TEAM
 
                 try
                 {
-                    if (ConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+                    if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                     {
                         Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 
@@ -893,13 +893,13 @@ namespace TEAM
             {
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
-                    commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
             else
             {
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
-                    commandDictionary, ConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false));
             }
 
             // Execute the SQL statements

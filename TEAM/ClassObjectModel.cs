@@ -34,16 +34,17 @@ namespace TEAM
     class MetadataConfiguration
     {
         // Attributes
-        public string changeDataCaptureAttribute { get; set; } = FormBase.ConfigurationSettings.ChangeDataCaptureAttribute;
+        public string changeDataCaptureAttribute { get; set; } 
 
-        public string recordSourceAttribute { get; } = FormBase.ConfigurationSettings.RecordSourceAttribute;
-        public string loadDateTimeAttribute { get; } = FormBase.ConfigurationSettings.LoadDateTimeAttribute;
-        public string eventDateTimeAttribute { get; set; } = FormBase.ConfigurationSettings.EventDateTimeAttribute;
+        public string recordSourceAttribute { get; set; } 
+        public string loadDateTimeAttribute { get; set; } 
+        public string eventDateTimeAttribute { get; set; } 
 
-        public string recordChecksumAttribute { get; set; } = FormBase.ConfigurationSettings.RecordChecksumAttribute;
+        public string recordChecksumAttribute { get; set; }
 
-        public string etlProcessAttribute { get; } = FormBase.ConfigurationSettings.EtlProcessAttribute;
-        public string sourceRowIdAttribute { get; } = FormBase.ConfigurationSettings.RowIdAttribute;
+        public string etlProcessAttribute { get; set; } 
+        public string sourceRowIdAttribute { get; set; }
+        
     }
 
     class InterfaceHandling

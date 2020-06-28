@@ -26,14 +26,12 @@ namespace TEAM
             const string versionNumberForTeamApplication = "v1.6.1";
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
 
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                $"The TEAM root path is {GlobalParameters.RootPath}."));
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                $"The TEAM script path is {GlobalParameters.ScriptPath}."));
+            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
+            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
 
             richTextBoxInformation.AppendText("Initialising the application.\r\n\r\n");
 
-            //Root paths (mandatory TEAM directories)
+            // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
             EnvironmentConfiguration.InitialiseEnvironmentPaths();
 
@@ -140,14 +138,14 @@ namespace TEAM
                 FormBase.GlobalParameters.JsonConnectionFileName + '_' +
                 FormBase.GlobalParameters.WorkingEnvironment +
                 FormBase.GlobalParameters.JsonExtension;
-            TeamConnectionFile.LoadConnectionFile(connectionFileName, ConfigurationSettings.connectionDictionary);
+            TeamConnectionFile.LoadConnectionFile(connectionFileName, TeamConfigurationSettings.ConnectionDictionary);
 
             #region Load configuration file
             // Load the available configuration file into memory.
             var configurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
             try
             {
-                EnvironmentConfiguration.LoadConfigurationFile(configurationFile);
+                TeamConfigurationSettings.LoadTeamConfigurationFile(configurationFile);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
             }
             catch
@@ -160,7 +158,7 @@ namespace TEAM
             // Load the pattern definition file.
             try
             {
-                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
+                GlobalParameters.PatternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, "The pattern definition file was loaded successfully."));
             }
             catch
@@ -206,11 +204,11 @@ namespace TEAM
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
 
             var connOmd = new SqlConnection
-                {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
+                {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
             var connStg = new SqlConnection
-                {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
+                {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
             var connPsa = new SqlConnection
-                {ConnectionString = ConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
+                {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try
@@ -289,7 +287,7 @@ namespace TEAM
                 openMetadataFormToolStripMenuItem.Enabled = true;
 
                 labelMetadataRepository.Text = "Repository type in configuration is set to: " +
-                                               ConfigurationSettings.MetadataRepositoryType;
+                                               TeamConfigurationSettings.MetadataRepositoryType;
             }
             catch
             {

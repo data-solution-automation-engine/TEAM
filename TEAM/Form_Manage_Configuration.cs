@@ -27,7 +27,7 @@ namespace TEAM
             
             // Adding tab pages to the Environment tabs.
             IntPtr localHandle = tabControlEnvironments.Handle;
-            foreach (var environment in ConfigurationSettings.environmentDictionary)
+            foreach (var environment in TeamConfigurationSettings.EnvironmentDictionary)
             {
                 // Adding tabs on the Tab Control
                 var lastIndex = tabControlEnvironments.TabCount - 1;
@@ -58,7 +58,7 @@ namespace TEAM
             // Connection tabs for the specific environment.
             AddConnectionTabPages();
 
-            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
 
 
@@ -71,7 +71,7 @@ namespace TEAM
         private void AddConnectionTabPages()
         {
             IntPtr localHandle = tabControlConnections.Handle;
-            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
                 // Adding tabs on the Tab Control
                 var lastIndex = tabControlConnections.TabCount - 1;
@@ -135,9 +135,9 @@ namespace TEAM
                 // Databases
                 if (configList["MetadataConnectionId"] != null)
                 {
-                    //comboBoxMetadataConnection.SelectedItem = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
+                    //comboBoxMetadataConnection.SelectedItem = TeamConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
                    
-                    var metadataKey = ConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
+                    var metadataKey = TeamConfigurationSettings.ConnectionDictionary[configList["MetadataConnectionId"]];
                     comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(metadataKey.databaseConnectionKey);
 
                     //comboBoxMetadataConnection.SelectedItem = metadataKey.databaseConnectionKey;
@@ -413,85 +413,85 @@ namespace TEAM
                 var localConnectionKeyValuePair = (KeyValuePair<TeamConnectionProfile, string>)(comboBoxMetadataConnection.SelectedItem);
 
                 // Lookup the object in the dictionary using the key (id)
-                ConfigurationSettings.MetadataConnection = ConfigurationSettings.connectionDictionary[localConnectionKeyValuePair.Key.connectionInternalId];
+                TeamConfigurationSettings.MetadataConnection = TeamConfigurationSettings.ConnectionDictionary[localConnectionKeyValuePair.Key.connectionInternalId];
             }
 
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
 
-            ConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
-            ConfigurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
-            ConfigurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
-            ConfigurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
-            ConfigurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
-            ConfigurationSettings.LsatTablePrefixValue = textBoxLinkSatPrefix.Text;
+            TeamConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
+            TeamConfigurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
+            TeamConfigurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
+            TeamConfigurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
+            TeamConfigurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
+            TeamConfigurationSettings.LsatTablePrefixValue = textBoxLinkSatPrefix.Text;
 
             if (keyPrefixRadiobutton.Checked)
             {
-                ConfigurationSettings.KeyNamingLocation = "Prefix";
+                TeamConfigurationSettings.KeyNamingLocation = "Prefix";
             }
             else if (keySuffixRadiobutton.Checked)
             {
-                ConfigurationSettings.KeyNamingLocation = "Suffix";
+                TeamConfigurationSettings.KeyNamingLocation = "Suffix";
             }
             else
             {
                 richTextBoxInformation.AppendText("Issues storing the key location (prefix/suffix). Is one of the radio buttons checked?");
             }
 
-            ConfigurationSettings.DwhKeyIdentifier = textBoxDWHKeyIdentifier.Text;
-            ConfigurationSettings.RowIdAttribute = textBoxSourceRowId.Text;
-            ConfigurationSettings.EventDateTimeAttribute = textBoxEventDateTime.Text;
-            ConfigurationSettings.LoadDateTimeAttribute = textBoxLDST.Text;
-            ConfigurationSettings.ExpiryDateTimeAttribute = textBoxExpiryDateTimeName.Text;
-            ConfigurationSettings.ChangeDataCaptureAttribute = textBoxChangeDataCaptureIndicator.Text;
-            ConfigurationSettings.RecordSourceAttribute = textBoxRecordSource.Text;
-            ConfigurationSettings.EtlProcessAttribute = textBoxETLProcessID.Text;
-            ConfigurationSettings.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
-            ConfigurationSettings.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
+            TeamConfigurationSettings.DwhKeyIdentifier = textBoxDWHKeyIdentifier.Text;
+            TeamConfigurationSettings.RowIdAttribute = textBoxSourceRowId.Text;
+            TeamConfigurationSettings.EventDateTimeAttribute = textBoxEventDateTime.Text;
+            TeamConfigurationSettings.LoadDateTimeAttribute = textBoxLDST.Text;
+            TeamConfigurationSettings.ExpiryDateTimeAttribute = textBoxExpiryDateTimeName.Text;
+            TeamConfigurationSettings.ChangeDataCaptureAttribute = textBoxChangeDataCaptureIndicator.Text;
+            TeamConfigurationSettings.RecordSourceAttribute = textBoxRecordSource.Text;
+            TeamConfigurationSettings.EtlProcessAttribute = textBoxETLProcessID.Text;
+            TeamConfigurationSettings.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
+            TeamConfigurationSettings.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
 
-            ConfigurationSettings.RecordChecksumAttribute = textBoxRecordChecksum.Text;
-            ConfigurationSettings.CurrentRowAttribute = textBoxCurrentRecordAttributeName.Text;
+            TeamConfigurationSettings.RecordChecksumAttribute = textBoxRecordChecksum.Text;
+            TeamConfigurationSettings.CurrentRowAttribute = textBoxCurrentRecordAttributeName.Text;
 
             // Alternative attributes
             if (checkBoxAlternativeHubLDTS.Checked)
             {
-                ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = "True";
-                ConfigurationSettings.AlternativeLoadDateTimeAttribute = textBoxHubAlternativeLDTSAttribute.Text;
+                TeamConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = "True";
+                TeamConfigurationSettings.AlternativeLoadDateTimeAttribute = textBoxHubAlternativeLDTSAttribute.Text;
             }
             else
             {
-                ConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = "False";
+                TeamConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = "False";
             }
 
             if (checkBoxAlternativeRecordSource.Checked)
             {
-                ConfigurationSettings.EnableAlternativeRecordSourceAttribute = "True";
-                ConfigurationSettings.AlternativeRecordSourceAttribute = textBoxAlternativeRecordSource.Text;
+                TeamConfigurationSettings.EnableAlternativeRecordSourceAttribute = "True";
+                TeamConfigurationSettings.AlternativeRecordSourceAttribute = textBoxAlternativeRecordSource.Text;
             }
             else
             {
-                ConfigurationSettings.EnableAlternativeRecordSourceAttribute = "False";
+                TeamConfigurationSettings.EnableAlternativeRecordSourceAttribute = "False";
             }
 
             if (checkBoxAlternativeSatLDTS.Checked)
             {
-                ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = "True";
-                ConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = textBoxSatelliteAlternativeLDTSAttribute.Text;
+                TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = "True";
+                TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = textBoxSatelliteAlternativeLDTSAttribute.Text;
             }
             else
             {
-                ConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = "False";
+                TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = "False";
             }
 
             // Prefix radio buttons
             if (tablePrefixRadiobutton.Checked)
             {
-                ConfigurationSettings.TableNamingLocation = "Prefix";
+                TeamConfigurationSettings.TableNamingLocation = "Prefix";
             }
             else if (tableSuffixRadiobutton.Checked)
             {
-                ConfigurationSettings.TableNamingLocation = "Suffix";
+                TeamConfigurationSettings.TableNamingLocation = "Suffix";
             }
             else
             {
@@ -500,11 +500,11 @@ namespace TEAM
 
             if (radioButtonPSABusinessKeyIndex.Checked)
             {
-                ConfigurationSettings.PsaKeyLocation = "UniqueIndex";
+                TeamConfigurationSettings.PsaKeyLocation = "UniqueIndex";
             }
             else if (radioButtonPSABusinessKeyPK.Checked)
             {
-                ConfigurationSettings.PsaKeyLocation = "PrimaryKey";
+                TeamConfigurationSettings.PsaKeyLocation = "PrimaryKey";
             }
             else
             {
@@ -684,7 +684,7 @@ namespace TEAM
         {
             comboBoxEnvironments.Items.Clear();
 
-            foreach (var environment in ConfigurationSettings.environmentDictionary)
+            foreach (var environment in TeamConfigurationSettings.EnvironmentDictionary)
             {
                 comboBoxEnvironments.Items.Add(new KeyValuePair<TeamWorkingEnvironment, string>(environment.Value, environment.Value.environmentKey));
                 comboBoxEnvironments.DisplayMember = "Value";
@@ -698,7 +698,7 @@ namespace TEAM
             // Just adding is not enough as it can happen that the name has changed for an existing connection.
             comboBoxMetadataConnection.Items.Clear();
 
-            foreach (var connection in ConfigurationSettings.connectionDictionary)
+            foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
                 comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
                 comboBoxMetadataConnection.ValueMember = "Key";
@@ -706,7 +706,7 @@ namespace TEAM
 
             }
 
-            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
         }
 
         /// <summary>
@@ -833,7 +833,7 @@ namespace TEAM
                 var selectedItem = localComboBoxSelection.Key;
 
                 // Get the full environment from the in-memory dictionary.
-                var localEnvironment = ConfigurationSettings.environmentDictionary[selectedItem.environmentInternalId];
+                var localEnvironment = TeamConfigurationSettings.EnvironmentDictionary[selectedItem.environmentInternalId];
 
                 // Set the working environment in memory.
                 GlobalParameters.WorkingEnvironment = localEnvironment.environmentKey;
@@ -862,7 +862,7 @@ namespace TEAM
                     FormBase.GlobalParameters.JsonConnectionFileName + '_' +
                     FormBase.GlobalParameters.WorkingEnvironment +
                     FormBase.GlobalParameters.JsonExtension;
-                TeamConnectionFile.LoadConnectionFile(connectionFileName, ConfigurationSettings.connectionDictionary);
+                TeamConnectionFile.LoadConnectionFile(connectionFileName, TeamConfigurationSettings.ConnectionDictionary);
 
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
@@ -876,9 +876,9 @@ namespace TEAM
                     richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
                 }
 
-                //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(ConfigurationSettings.MetadataConnection, ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(TeamConfigurationSettings.MetadataConnection, TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
-                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(ConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));

@@ -26,25 +26,25 @@ namespace TEAM
             var dimIdentifier = "";
             var factIdentifier = "";
 
-            if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix")
+            if (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix")
             {
-                hubIdentifier = FormBase.ConfigurationSettings.HubTablePrefixValue + "_";
-                satIdentifier = FormBase.ConfigurationSettings.SatTablePrefixValue + "_";
-                lnkIdentifier = FormBase.ConfigurationSettings.LinkTablePrefixValue + "_";
-                lsatIdentifier = FormBase.ConfigurationSettings.LsatTablePrefixValue + "_";
-                stgIdentifier = FormBase.ConfigurationSettings.StgTablePrefixValue + "_";
-                psaIdentifier = FormBase.ConfigurationSettings.PsaTablePrefixValue + "_";
+                hubIdentifier = FormBase.TeamConfigurationSettings.HubTablePrefixValue + "_";
+                satIdentifier = FormBase.TeamConfigurationSettings.SatTablePrefixValue + "_";
+                lnkIdentifier = FormBase.TeamConfigurationSettings.LinkTablePrefixValue + "_";
+                lsatIdentifier = FormBase.TeamConfigurationSettings.LsatTablePrefixValue + "_";
+                stgIdentifier = FormBase.TeamConfigurationSettings.StgTablePrefixValue + "_";
+                psaIdentifier = FormBase.TeamConfigurationSettings.PsaTablePrefixValue + "_";
                 dimIdentifier = "DIM_";
                 factIdentifier = "FACT_";
             }
             else
             {
-                hubIdentifier = '_' + FormBase.ConfigurationSettings.HubTablePrefixValue;
-                satIdentifier = '_' + FormBase.ConfigurationSettings.SatTablePrefixValue;
-                lnkIdentifier = '_' + FormBase.ConfigurationSettings.LinkTablePrefixValue;
-                lsatIdentifier = '_' + FormBase.ConfigurationSettings.LsatTablePrefixValue;
-                stgIdentifier = '_' + FormBase.ConfigurationSettings.StgTablePrefixValue;
-                psaIdentifier = '_' + FormBase.ConfigurationSettings.PsaTablePrefixValue;
+                hubIdentifier = '_' + FormBase.TeamConfigurationSettings.HubTablePrefixValue;
+                satIdentifier = '_' + FormBase.TeamConfigurationSettings.SatTablePrefixValue;
+                lnkIdentifier = '_' + FormBase.TeamConfigurationSettings.LinkTablePrefixValue;
+                lsatIdentifier = '_' + FormBase.TeamConfigurationSettings.LsatTablePrefixValue;
+                stgIdentifier = '_' + FormBase.TeamConfigurationSettings.StgTablePrefixValue;
+                psaIdentifier = '_' + FormBase.TeamConfigurationSettings.PsaTablePrefixValue;
                 dimIdentifier = "_DIM";
                 factIdentifier = "_FACT";
             }

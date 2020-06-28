@@ -41,15 +41,15 @@ namespace TEAM
         {
             filePath = Path.GetFullPath(filePath);
 
-            ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(filePath);
+            GlobalParameters.PatternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(filePath);
 
             // Load Pattern definition in memory
-            if ((ConfigurationSettings.patternDefinitionList != null) && (!ConfigurationSettings.patternDefinitionList.Any()))
+            if ((GlobalParameters.PatternDefinitionList != null) && (!GlobalParameters.PatternDefinitionList.Any()))
             {
                 richTextBoxInformationMain.Text = "There are no pattern definitions / types found in the designated load pattern directory. Please verify if the file " + filePath + " exists.";
             }
 
-            if (ConfigurationSettings.patternDefinitionList != null)
+            if (GlobalParameters.PatternDefinitionList != null)
             {
                 PopulateLoadPatternDefinitionDataGrid();
                 textBoxLoadPatternPath.Text = filePath;
@@ -66,7 +66,7 @@ namespace TEAM
         public void PopulateLoadPatternDefinitionDataGrid()
         {
             // Create a datatable 
-            DataTable dt = ConfigurationSettings.patternDefinitionList.ToDataTable();
+            DataTable dt = GlobalParameters.PatternDefinitionList.ToDataTable();
 
             dt.AcceptChanges(); //Make sure the changes are seen as committed, so that changes can be detected later on
             dt.Columns[0].ColumnName = "Key";
@@ -199,7 +199,7 @@ namespace TEAM
 
                 try
                 {
-                   ConfigurationSettings.patternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
+                   GlobalParameters.PatternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
         
                 }
                 catch (Exception ex)
@@ -307,7 +307,7 @@ namespace TEAM
                     //string filePath = Path.GetFullPath(theDialog.FileName);
 
                     // Save the list to memory
-                    ConfigurationSettings.patternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
+                    GlobalParameters.PatternDefinitionList = JsonConvert.DeserializeObject<List<LoadPatternDefinition>>(File.ReadAllText(chosenFile));
 
                     // ... and populate the data grid
                     PopulateLoadPatternDefinitionDataGrid();

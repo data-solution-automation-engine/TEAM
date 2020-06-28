@@ -80,7 +80,7 @@ namespace TEAM
             sourceConnection.HeaderText = "Source Connection";
             sourceConnection.DataPropertyName = TableMappingMetadataColumns.SourceConnection.ToString();
             sourceConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
+            sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfigurationSettings.ConnectionDictionary);
             sourceConnection.DisplayMember = "ConnectionKey";
             sourceConnection.ValueMember = "ConnectionId";
             sourceConnection.ValueType = typeof(string);
@@ -99,7 +99,7 @@ namespace TEAM
             targetConnection.HeaderText = "Target Connection";
             targetConnection.DataPropertyName = TableMappingMetadataColumns.TargetConnection.ToString();
             targetConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.ConfigurationSettings.connectionDictionary);
+            targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfigurationSettings.ConnectionDictionary);
             targetConnection.DisplayMember = "ConnectionKey";
             targetConnection.ValueMember = "ConnectionId";
             targetConnection.ValueType = typeof(string);
@@ -179,8 +179,8 @@ namespace TEAM
                 {
                     // Hub
                     if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.ConfigurationSettings.HubTablePrefixValue)) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.ConfigurationSettings.HubTablePrefixValue) )
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.HubTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.HubTablePrefixValue) )
                         )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.CornflowerBlue;
@@ -189,16 +189,16 @@ namespace TEAM
                     }
                     // Link-Sat
                     else if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue)) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue))
                         )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Gold;
                     }
                     // Sat
                     else if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.ConfigurationSettings.SatTablePrefixValue)) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.ConfigurationSettings.SatTablePrefixValue))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Yellow;
@@ -206,8 +206,8 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
                     else if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue)) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.OrangeRed;
@@ -215,8 +215,8 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
                     else if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue)) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.ConfigurationSettings.PsaTablePrefixValue))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.AntiqueWhite;
@@ -224,8 +224,8 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
                     else if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.ConfigurationSettings.StgTablePrefixValue)) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.ConfigurationSettings.StgTablePrefixValue))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.WhiteSmoke;
@@ -233,8 +233,8 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
                     else if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith("DIM_")) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith("_DIM"))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith("DIM_")) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith("_DIM"))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aqua;
@@ -242,8 +242,8 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
                     else if (
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith("FACT_")) ||
-                        (FormBase.ConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith("_FACT"))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith("FACT_")) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith("_FACT"))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.MediumAquamarine;

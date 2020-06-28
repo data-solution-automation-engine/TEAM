@@ -149,19 +149,19 @@ namespace TEAM
             // The only interest is whether the Hub is there...
             string tableInclusionFilterCriterion;
             var tableClassification = "";
-            if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
+            if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
             {
-                tableInclusionFilterCriterion = FormBase.ConfigurationSettings.HubTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.TeamConfigurationSettings.HubTablePrefixValue;
                 tableClassification = "SAT";
             }
-            else if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
+            else if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
             {
-                tableInclusionFilterCriterion = FormBase.ConfigurationSettings.HubTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.TeamConfigurationSettings.HubTablePrefixValue;
                 tableClassification = "LNK";
             }
-            else if (validationObject.Item2.StartsWith(FormBase.ConfigurationSettings.LsatTablePrefixValue)) // If the table is a Link-Satellite, only the Link is required
+            else if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue)) // If the table is a Link-Satellite, only the Link is required
             {
-                tableInclusionFilterCriterion = FormBase.ConfigurationSettings.LinkTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.TeamConfigurationSettings.LinkTablePrefixValue;
                 tableClassification = "LSAT";
             }
             else
@@ -259,11 +259,11 @@ namespace TEAM
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.ConfigurationSettings.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.TeamConfigurationSettings.SatTablePrefixValue + "_%'");
 
                 // Derive the Hub surrogate key name, as this can be compared against the Link
                 string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                string hubSurrogateKeyName = hubTableName.Replace(FormBase.ConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.ConfigurationSettings.DwhKeyIdentifier;
+                string hubSurrogateKeyName = hubTableName.Replace(FormBase.TeamConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.TeamConfigurationSettings.DwhKeyIdentifier;
                 
                 // Add to the dictionary that contains the keys in order.
                 hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -285,7 +285,7 @@ namespace TEAM
                 sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
                 sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
                 sqlStatementForLink.AppendLine("FROM [" + connDatabase + "].sys.columns");
-                sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.ConfigurationSettings.LinkTablePrefixValue + "_%'");
+                sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.TeamConfigurationSettings.LinkTablePrefixValue + "_%'");
                 sqlStatementForLink.AppendLine("AND column_id > 4");
                 sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
 
@@ -300,7 +300,7 @@ namespace TEAM
                     var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
                     int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
 
-                    if (linkHubSurrogateKeyName.Contains(FormBase.ConfigurationSettings.DwhKeyIdentifier)
+                    if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfigurationSettings.DwhKeyIdentifier)
                     ) // Exclude degenerate attributes from the order
                     {
                         linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
@@ -317,7 +317,7 @@ namespace TEAM
                 {
                     workingTable = physicalModelDataTable
                         .Select(
-                            "TABLE_NAME LIKE '" + FormBase.ConfigurationSettings.LinkTablePrefixValue +
+                            "TABLE_NAME LIKE '" + FormBase.TeamConfigurationSettings.LinkTablePrefixValue +
                             "_%' AND TABLE_NAME = '" + validationObject.Item2 + "' AND ORDINAL_POSITION > 4",
                             "ORDINAL_POSITION ASC").CopyToDataTable();
                 }
@@ -332,7 +332,7 @@ namespace TEAM
                     {
                         var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
 
-                        if (linkHubSurrogateKeyName.Contains(FormBase.ConfigurationSettings.DwhKeyIdentifier)
+                        if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfigurationSettings.DwhKeyIdentifier)
                         ) // Exclude degenerate attributes from the order
                         {
                             linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);

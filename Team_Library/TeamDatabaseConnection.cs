@@ -51,6 +51,7 @@ namespace TEAM
         SSPI,
         Undefined
     }
+
     public class TeamConnectionProfile
     {
         public string connectionInternalId { get; set; }
@@ -139,6 +140,25 @@ namespace TEAM
             }
 
             return possibleConnections;
+        }
+
+        /// <summary>
+        /// List of unique connection keys derived from the TEAM connections dictionary.
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> TeamConnectionKeyList(Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        {
+            List<string> returnList = new List<string>();
+
+            foreach (var connection in connectionDictionary)
+            {
+                if (!returnList.Contains(connection.Value.connectionInternalId))
+                {
+                    returnList.Add(connection.Value.connectionInternalId);
+                }
+            }
+
+            return returnList;
         }
     }
 

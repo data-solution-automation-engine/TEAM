@@ -241,7 +241,7 @@ namespace TEAM
                         $"The environment {_localEnvironment.environmentKey} was removed from {_environmentFileName}.\r\n");
 
                     // Remove the value from the global parameter dictionary.
-                    FormBase.ConfigurationSettings.environmentDictionary.Remove(_localEnvironment.environmentInternalId);
+                    FormBase.TeamConfigurationSettings.EnvironmentDictionary.Remove(_localEnvironment.environmentInternalId);
                 }
 
                 // Save the updated file to disk.
@@ -268,13 +268,13 @@ namespace TEAM
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.ConfigurationSettings.environmentDictionary.ContainsKey(_localEnvironment.environmentInternalId))
+                if (FormBase.TeamConfigurationSettings.EnvironmentDictionary.ContainsKey(_localEnvironment.environmentInternalId))
                 {
-                    FormBase.ConfigurationSettings.environmentDictionary[_localEnvironment.environmentInternalId] = _localEnvironment;
+                    FormBase.TeamConfigurationSettings.EnvironmentDictionary[_localEnvironment.environmentInternalId] = _localEnvironment;
                 }
                 else
                 {
-                    FormBase.ConfigurationSettings.environmentDictionary.Add(_localEnvironment.environmentInternalId, _localEnvironment);
+                    FormBase.TeamConfigurationSettings.EnvironmentDictionary.Add(_localEnvironment.environmentInternalId, _localEnvironment);
                 }
 
                 // Update the environment on disk
