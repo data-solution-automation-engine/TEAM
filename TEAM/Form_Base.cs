@@ -15,7 +15,6 @@ namespace TEAM
         {
             InitializeComponent();
         }
-
         public FormBase(FormMain myParent)
         {
             MyParent = myParent;
@@ -25,6 +24,8 @@ namespace TEAM
         // TEAM configuration settings
         public static TeamConfiguration TeamConfigurationSettings { get; set; } = new TeamConfiguration();
 
+        // Table Mapping Metadata
+        public static TeamTableMapping TableMapping { get; set; } = new TeamTableMapping();
 
         /// <summary>
         /// Gets or sets the values for the validation of the metadata.
@@ -206,6 +207,5 @@ namespace TEAM
                 return 0;
             }
         }
-
     }
 }

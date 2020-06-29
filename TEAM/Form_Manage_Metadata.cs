@@ -31,9 +31,7 @@ namespace TEAM
         {
             InitializeComponent();
         }
-
-
-
+        
         public FormManageMetadata(FormMain parent) : base(parent)
         {
             InitializeComponent();
@@ -129,7 +127,7 @@ namespace TEAM
                 var targetMapping = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
 
                 var loadVector = "";
-                var tableType = "";
+                MetadataHandling.TableTypes tableType = MetadataHandling.TableTypes.Unknown;
                 DataGridViewCell cell = null;
 
                 if (e.Value != null && sourceMapping != null && targetMapping != null)
@@ -315,15 +313,13 @@ namespace TEAM
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
             }
 
-            // Load the file, convert it to a DataTable and bind it to the source
-            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(jsonTableMappingFile));
-
-            DataTable dt = Utility.ConvertToDataTable(jsonArray);
+            // Load the file into memory (datatable and json list)
+            TableMapping.GetTableMapping(jsonTableMappingFile);
 
             // Handle unknown combobox values, by setting them to empty.
             var localConnectionKeyList = LocalTeamConnection.TeamConnectionKeyList(TeamConfigurationSettings.ConnectionDictionary);
             List<string> userFeedbackList = new List<string>();
-            foreach (DataRow row in dt.Rows)
+            foreach (DataRow row in TableMapping.TableMappingDataTable.Rows)
             {
                 var comboBoxValueSource = row[(int)TableMappingMetadataColumns.SourceConnection].ToString();
                 var comboBoxValueTarget= row[(int)TableMappingMetadataColumns.TargetConnection].ToString();
@@ -358,23 +354,19 @@ namespace TEAM
                     richTextBoxInformation.AppendText($"The connection {issue} found in the metadata file does not seem to exist in TEAM. The value has been defaulted, but not saved yet.\r\n");
                 }
             }
-
             
             //Make sure the changes are seen as committed, so that changes can be detected later on.
-            dt.AcceptChanges(); 
+            TableMapping.TableMappingDataTable.AcceptChanges(); 
 
-            // Order by Source Table, Integration_Area table, Business Key Attribute
-            SetTeamDataTableProperties.SetTableDataTableColumns(dt);
-            SetTeamDataTableProperties.SetTableDataTableSorting(dt);
+            // Order by Source Table, Integration_Area table, Business Key Attribute.
+            TableMapping.SetTableDataTableColumns();
+            TableMapping.SetTableDataTableSorting();
 
-            _bindingSourceTableMetadata.DataSource = dt;
+            _bindingSourceTableMetadata.DataSource = TableMapping.TableMappingDataTable;
 
-            if (jsonArray != null)
-            {
-                // Set the column header names etc. for the data grid view.
-                dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
-            }
-
+            // Set the column header names etc. for the data grid view.
+            dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
+            
             richTextBoxInformation.AppendText($"The file {jsonTableMappingFile} was loaded.\r\n");
 
             // Resize the grid
@@ -736,13 +728,32 @@ namespace TEAM
                     try
                     {
                         SaveTableMappingMetadataJson(versionId, dataTableTableMappingChanges);
+                    }
+                    catch (Exception exception)
+                    {
+                        richTextBoxInformation.Text +=
+                            "The Table Mapping metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
+                            exception;
+                    }
+
+                    try
+                    {
                         SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges);
+                    }
+                    catch (Exception exception)
+                    {
+                        richTextBoxInformation.Text +=
+                            "The Attribute Mapping metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
+                            exception;
+                    }
+                    try
+                    {
                         SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges);
                     }
                     catch (Exception exception)
                     {
                         richTextBoxInformation.Text +=
-                            "The metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
+                            "The Physical Model metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
                             exception;
                     }
 
@@ -750,8 +761,6 @@ namespace TEAM
                     PopulateTableMappingGridWithVersion(versionId);
                     PopulateAttributeGridWithVersion(versionId);
                     PopulatePhysicalModelGridWithVersion(versionId);
-
-
 
                     //Refresh the UI to display the newly created version
                     if (oldVersionId != versionId)
@@ -1165,7 +1174,7 @@ namespace TEAM
                 JsonHandling.FileConfiguration.newFileTableMapping = "false";
             }
 
-            //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created
+            //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created of everything.
             if (!radiobuttonNoVersionChange.Checked)
             {
                 CreateNewTableMappingMetadataVersionJson(versionId);
@@ -1434,7 +1443,7 @@ namespace TEAM
 
                     //The JSON needs to be re-bound to the datatable / datagrid after being updated (accepted) to allow all values to be present including the hash which may have changed
 
-                    BindTableMappingJsonToDataTable();
+                    //BindTableMappingJsonToDataTable();
 
                     #endregion
 
@@ -1961,20 +1970,20 @@ namespace TEAM
         /// <summary>
         /// Load a Json Table Mapping file and bind it to the bindingsource.
         /// </summary>
-        private void BindTableMappingJsonToDataTable()
-        {
-            var inputFileName = JsonHandling.FileConfiguration.tableMappingJsonFileName();
+        //private void BindTableMappingJsonToDataTable()
+        //{
+        //    var inputFileName = JsonHandling.FileConfiguration.tableMappingJsonFileName();
 
-            // Load the table mapping file, convert it to a DataTable and bind it to the source
-            List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(inputFileName));
-            DataTable dt = Utility.ConvertToDataTable(jsonArray);
+        //    Load the table mapping file, convert it to a DataTable and bind it to the source
+        //    List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(inputFileName));
+        //    DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
-            //Make sure the changes are seen as committed, so that changes can be detected later on.
-            dt.AcceptChanges(); 
+        //    Make sure the changes are seen as committed, so that changes can be detected later on.
+        //    dt.AcceptChanges();
 
-            SetTeamDataTableProperties.SetTableDataTableColumns(dt);
-            _bindingSourceTableMetadata.DataSource = dt;
-        }
+        //    SetTeamDataTableProperties.SetTableDataTableColumns(dt);
+        //    _bindingSourceTableMetadata.DataSource = dt;
+        //}
 
         private void BindAttributeMappingJsonToDataTable()
         {
@@ -2065,14 +2074,16 @@ namespace TEAM
                         }
 
                         // Load the file, convert it to a DataTable and bind it to the source
-                        List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
-                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
+                        //List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(chosenFile));
+                        //DataTable dt = Utility.ConvertToDataTable(jsonArray);
+
+                        TableMapping.GetTableMapping(chosenFile);
 
                         // Setup the datatable with proper headings.
-                        SetTeamDataTableProperties.SetTableDataTableColumns(dt);
+                        TableMapping.SetTableDataTableColumns();
 
                         // Sort the columns
-                        SetTeamDataTableProperties.SetTableDataTableSorting(dt);
+                        TableMapping.SetTableDataTableSorting();
 
                         // Clear out the existing data from the grid
                         _bindingSourceTableMetadata.DataSource = null;
@@ -2080,13 +2091,13 @@ namespace TEAM
                         dataGridViewTableMetadata.DataSource = null;
  
                         // Bind the datatable to the gridview
-                        _bindingSourceTableMetadata.DataSource = dt;
+                        _bindingSourceTableMetadata.DataSource = TableMapping.TableMappingDataTable;
 
-                        if (jsonArray != null)
-                        {
+                        //if (jsonArray != null)
+                        //{
                             // Set the column header names
                             dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
-                        }
+                        //}
                     }
 
                     GridAutoLayoutTableMappingMetadata();
@@ -6530,7 +6541,7 @@ namespace TEAM
                         DataTable gridDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
 
                         // Make sure the output is sorted
-                        SetTeamDataTableProperties.SetTableDataTableSorting(gridDataTable);
+                        TableMapping.SetTableDataTableSorting();
                         
                         gridDataTable.TableName = "TableMappingMetadata";
 
@@ -6898,7 +6909,7 @@ namespace TEAM
 
             foreach (LoadPatternDefinition pattern in GlobalParameters.PatternDefinitionList)
             {
-                if (pattern.LoadPatternType==tableType)
+                if (pattern.LoadPatternType==tableType.ToString())
                 {
                     patternlist.Add(pattern);
                 }
@@ -7055,7 +7066,7 @@ namespace TEAM
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
                     var validationAttribute = row.Cells[areaAttributeColumnIndex].Value.ToString();
 
-                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObject, "", TeamConfigurationSettings) != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObject, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         
                         if (!localTableMappingConnectionDictionary.TryGetValue(validationObject, out var connectionValue))
@@ -7071,7 +7082,7 @@ namespace TEAM
                     {
                         objectValidated = "";
                         // Exclude a lookup to the source
-                        if (MetadataHandling.GetTableType(validationObject, "", TeamConfigurationSettings) != MetadataHandling.TableTypes.Source.ToString())
+                        if (MetadataHandling.GetTableType(validationObject, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         {
                             objectValidated = ClassMetadataValidation.ValidateAttributeExistenceVirtual(validationObject, validationAttribute, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
@@ -7214,7 +7225,7 @@ namespace TEAM
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
                     var connectionObject = row.Cells[connectionColumnIndex].Value.ToString();
 
-                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObject, "", TeamConfigurationSettings) != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObject, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
 
                         if (!localConnectionDictionary.TryGetValue(connectionObject, out var connectionValue))
@@ -7237,7 +7248,7 @@ namespace TEAM
                     {
                         objectValidated = "";
                         // Exclude a lookup to the source
-                        if (MetadataHandling.GetTableType(validationObject,"", TeamConfigurationSettings) != MetadataHandling.TableTypes.Source.ToString())
+                        if (MetadataHandling.GetTableType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         {
                             objectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(validationObject,
                                 (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
@@ -7447,7 +7458,7 @@ namespace TEAM
                     Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
                     Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString());
                     
-                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObject.Item1,"", TeamConfigurationSettings) != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObject.Item1,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
 
                         // Derive the connection
@@ -7465,14 +7476,14 @@ namespace TEAM
                     else if (evaluationMode == "virtual")
                     {
                         // Exclude a lookup to the source
-                        if (MetadataHandling.GetTableType(validationObject.Item1,"", TeamConfigurationSettings) != MetadataHandling.TableTypes.Source.ToString())
+                        if (MetadataHandling.GetTableType(validationObject.Item1,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         { 
                             objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
                     else
                     {
-                        if (MetadataHandling.GetTableType(validationObject.Item1,"", TeamConfigurationSettings) !=
+                        if (MetadataHandling.GetTableType(validationObject.Item1,"", TeamConfigurationSettings).ToString() !=
                             MetadataHandling.TableTypes.Source.ToString())
                         {
                             _alertValidation.SetTextLogging("     The validation approach (physical/virtual) could not be asserted.\r\n");

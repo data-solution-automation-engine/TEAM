@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
-using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -83,7 +80,6 @@ namespace TEAM
             
             File.WriteAllText(outputFileName, json);
         }
-
 
         /// <summary>
         /// Local class to manage file names and changes thereof.

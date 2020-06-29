@@ -23,7 +23,8 @@ namespace TEAM
             PersistentStagingArea,
             Derived,
             Presentation,
-            Source
+            Source,
+            Unknown
         }
 
         /// <summary>
@@ -89,10 +90,12 @@ namespace TEAM
         /// This method returns the type of table (classification) based on the name and active conventions.
         /// </summary>
         /// <param name="tableName"></param>
+        /// <param name="additionalInformation"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static string GetTableType(string tableName, string additionalInformation, TeamConfiguration configuration)
+        public static TableTypes GetTableType(string tableName, string additionalInformation, TeamConfiguration configuration)
         {
-            string localType ="";
+            TableTypes localType;
 
             // Remove schema, if one is set
             //tableName = GetNonQualifiedTableName(tableName);
@@ -101,68 +104,68 @@ namespace TEAM
             {
                 // I.e. HUB_CUSTOMER
                 case "Prefix" when tableName.StartsWith(configuration.SatTablePrefixValue):
-                    localType = TableTypes.Context.ToString();
+                    localType = TableTypes.Context;
                     break;
                 case "Prefix" when tableName.StartsWith(configuration.HubTablePrefixValue):
-                    localType = TableTypes.CoreBusinessConcept.ToString();
+                    localType = TableTypes.CoreBusinessConcept;
                     break;
                 case "Prefix" when tableName.StartsWith(configuration.LinkTablePrefixValue):
-                    localType = TableTypes.NaturalBusinessRelationship.ToString();
+                    localType = TableTypes.NaturalBusinessRelationship;
                     break;
                 case "Prefix" when (tableName.StartsWith(configuration.LsatTablePrefixValue) && additionalInformation==""):
-                    localType = TableTypes.NaturalBusinessRelationshipContext.ToString();
+                    localType = TableTypes.NaturalBusinessRelationshipContext;
                     break;
                 case "Prefix" when (tableName.StartsWith(configuration.LsatTablePrefixValue) && additionalInformation != ""):
-                    localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey.ToString();
+                    localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey;
                     break;
                 case "Prefix" when tableName.StartsWith(configuration.StgTablePrefixValue):
-                    localType = TableTypes.StagingArea.ToString();
+                    localType = TableTypes.StagingArea;
                     break;
                 case "Prefix" when tableName.StartsWith(configuration.PsaTablePrefixValue):
-                    localType = TableTypes.PersistentStagingArea.ToString();
+                    localType = TableTypes.PersistentStagingArea;
                     break;
                 case "Prefix" when tableName.StartsWith("BDV_"):
-                    localType = TableTypes.Derived.ToString();
+                    localType = TableTypes.Derived;
                     break;
                 case "Prefix" when tableName.StartsWith("DIM_") && tableName.StartsWith("FACT_"):
-                    localType = TableTypes.Presentation.ToString();
+                    localType = TableTypes.Presentation;
                     break;
                 case "Prefix":
-                    localType = TableTypes.Source.ToString();
+                    localType = TableTypes.Source;
                     break;
                 // I.e. CUSTOMER_HUB
                 case "Suffix" when tableName.EndsWith(configuration.SatTablePrefixValue):
-                    localType = TableTypes.Context.ToString();
+                    localType = TableTypes.Context;
                     break;
                 case "Suffix" when tableName.EndsWith(configuration.HubTablePrefixValue):
-                    localType = TableTypes.CoreBusinessConcept.ToString();
+                    localType = TableTypes.CoreBusinessConcept;
                     break;
                 case "Suffix" when tableName.EndsWith(configuration.LinkTablePrefixValue):
-                    localType = TableTypes.NaturalBusinessRelationship.ToString();
+                    localType = TableTypes.NaturalBusinessRelationship;
                     break;
                 case "Suffix" when (tableName.EndsWith(configuration.LsatTablePrefixValue) && additionalInformation == ""):
-                    localType = TableTypes.NaturalBusinessRelationshipContext.ToString();
+                    localType = TableTypes.NaturalBusinessRelationshipContext;
                     break;
                 case "Suffix" when (tableName.EndsWith(configuration.LsatTablePrefixValue) && additionalInformation != ""):
-                    localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey.ToString();
+                    localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey;
                     break;
                 case "Suffix" when tableName.EndsWith(configuration.StgTablePrefixValue):
-                    localType = TableTypes.StagingArea.ToString();
+                    localType = TableTypes.StagingArea;
                     break;
                 case "Suffix" when tableName.EndsWith(configuration.PsaTablePrefixValue):
-                    localType = TableTypes.PersistentStagingArea.ToString();
+                    localType = TableTypes.PersistentStagingArea;
                     break;
                 case "Suffix" when tableName.EndsWith("BDV_"):
-                    localType = TableTypes.Derived.ToString();
+                    localType = TableTypes.Derived;
                     break;
                 case "Suffix" when tableName.EndsWith("DIM_") && tableName.EndsWith("FACT_"):
-                    localType = TableTypes.Presentation.ToString();
+                    localType = TableTypes.Presentation;
                     break;
                 case "Suffix":
-                    localType = TableTypes.Source.ToString();
+                    localType = TableTypes.Source;
                     break;
                 default:
-                    localType = "The table type cannot be defined because of an unknown prefix/suffix: "+ configuration.TableNamingLocation;
+                    localType = TableTypes.Unknown;
                     break;
             }
             // Return the table type
@@ -179,31 +182,31 @@ namespace TEAM
         {
             // This is used to evaluate the correct connection for the generated ETL processes.
 
-            string evaluatedSource = GetTableType(sourceMapping, "", configuration);
-            string evaluatedTarget = GetTableType(targetMapping, "", configuration);
+            TableTypes evaluatedSource = GetTableType(sourceMapping, "", configuration);
+            TableTypes evaluatedTarget = GetTableType(targetMapping, "", configuration);
 
             string loadVector = "";
 
-            if (new[] { TableTypes.StagingArea.ToString() }.Contains(evaluatedSource) && new[] { TableTypes.PersistentStagingArea.ToString()}.Contains(evaluatedTarget))
+            if (evaluatedSource == TableTypes.StagingArea && evaluatedTarget == TableTypes.PersistentStagingArea)
             {
                 loadVector = "Landing to Persistent Staging Area";
             }
             // If the source is not a DWH table, but the target is a DWH table then it's a base ('Raw') Data Warehouse ETL (load vector). - 'Staging Layer to Raw Data Warehouse'.
-            else if (!new[] {TableTypes.CoreBusinessConcept.ToString(), TableTypes.Context.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString(), TableTypes.Derived.ToString() }.Contains(evaluatedSource) && new[] { TableTypes.CoreBusinessConcept.ToString(), TableTypes.Context.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString() }.Contains(evaluatedTarget))
+            else if (!new[] {TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext, TableTypes.Derived }.Contains(evaluatedSource) && new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext }.Contains(evaluatedTarget))
             {
                 loadVector = "Staging Layer to Raw Data Warehouse";
             }
             // If the source is a DWH or Derived table, and the target is a DWH table then it's a Derived ('Business') DWH ETL - 'Raw Data Warehouse to Interpreted'.
-            else if (new[] { TableTypes.CoreBusinessConcept.ToString(), TableTypes.Context.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString(), TableTypes.Derived.ToString() }.Contains(evaluatedSource) && new[] { TableTypes.CoreBusinessConcept.ToString(), TableTypes.Context.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString() }.Contains(evaluatedTarget))
+            else if (new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext, TableTypes.Derived }.Contains(evaluatedSource) && new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext }.Contains(evaluatedTarget))
             {
                 loadVector = "Raw Data Warehouse to Interpreted";
             }
             // If the source is a DWH table, but target is not a DWH table then it's a Presentation Layer ETL. - 'Data Warehouse to Presentation Layer'.
-            else if (new[] { TableTypes.CoreBusinessConcept.ToString(), TableTypes.Context.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString() }.Contains(evaluatedSource) && !new[] { TableTypes.CoreBusinessConcept.ToString(), TableTypes.Context.ToString(), TableTypes.NaturalBusinessRelationship.ToString(), TableTypes.NaturalBusinessRelationshipContext.ToString() }.Contains(evaluatedTarget))
+            else if (new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext }.Contains(evaluatedSource) && !new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext }.Contains(evaluatedTarget))
             {
                 loadVector = "Data Warehouse to Presentation Layer";
             }
-            else if (new[] { TableTypes.Source.ToString() }.Contains(evaluatedSource) && new[] { TableTypes.StagingArea.ToString(), TableTypes.PersistentStagingArea.ToString()}.Contains(evaluatedTarget))
+            else if (evaluatedSource == TableTypes.Source && new[] { TableTypes.StagingArea, TableTypes.PersistentStagingArea}.Contains(evaluatedTarget))
             {
                 loadVector = "Source to Staging Layer";
             }
