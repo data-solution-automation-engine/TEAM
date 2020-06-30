@@ -10,6 +10,8 @@ namespace TEAM
 {
     public class Utility
     {
+        public static string SandingElement { get; set; } = "^@#%7!";
+
         /// <summary>
         /// Generate a MD5 hash based on the string input and sanding element.
         /// </summary>

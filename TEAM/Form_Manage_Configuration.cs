@@ -345,6 +345,7 @@ namespace TEAM
 
             var localEnvironment = (KeyValuePair<TeamWorkingEnvironment, string>) comboBoxEnvironments.SelectedItem;
             GlobalParameters.WorkingEnvironment = localEnvironment.Key.environmentKey;
+            GlobalParameters.WorkingEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
 
             // Save the paths from memory to disk.
             UpdateRootPathFile();
@@ -837,6 +838,7 @@ namespace TEAM
 
                 // Set the working environment in memory.
                 GlobalParameters.WorkingEnvironment = localEnvironment.environmentKey;
+                GlobalParameters.WorkingEnvironmentInternalId = localEnvironment.environmentInternalId;
 
                 // Update the root path file with the new working directory.
                 UpdateRootPathFile();

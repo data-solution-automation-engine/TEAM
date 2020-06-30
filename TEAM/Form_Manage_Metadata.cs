@@ -48,30 +48,31 @@ namespace TEAM
             radiobuttonNoVersionChange.Checked = true;
 
             // Retrieve the version from the repository database
-            var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var selectedVersion = GetMaxVersionId(connOmd);
+            //var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            //var selectedVersion = GetMaxVersionId(connOmd);
+            var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
             
             // Set the version in memory
-            GlobalParameters.CurrentVersionId = selectedVersion;
-            GlobalParameters.HighestVersionId = selectedVersion; // On startup, the highest version is the same as the current version
-            JsonHandling.FileConfiguration.jsonVersionExtension = @"_v" + selectedVersion + ".json";
+            GlobalParameters.CurrentVersionId = selectedVersion.Item1;
+            GlobalParameters.HighestVersionId = selectedVersion.Item1; // On startup, the highest version is the same as the current version
+            JsonHandling.FileConfiguration.jsonVersionExtension = @"_v" + selectedVersion.Item1 + ".json";
 
-            trackBarVersioning.Maximum = selectedVersion;
-            trackBarVersioning.TickFrequency = GetVersionCount();
+            trackBarVersioning.Maximum = selectedVersion.Item1;
+            trackBarVersioning.TickFrequency = EnvironmentVersion.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
 
             //Make sure the version is displayed
-            var versionMajorMinor = GetVersion(selectedVersion, connOmd);
-            var majorVersion = versionMajorMinor.Key;
-            var minorVersion = versionMajorMinor.Value;
+            var versionMajorMinor = EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, selectedVersion.Item1);
+            var majorVersion = versionMajorMinor.Item2;
+            var minorVersion = versionMajorMinor.Item3;
 
-            trackBarVersioning.Value = selectedVersion;
+            trackBarVersioning.Value = selectedVersion.Item1;
             labelVersion.Text = majorVersion + "." + minorVersion;
 
             //  Load the grids from the repository
             richTextBoxInformation.Clear();
-            PopulateTableMappingGridWithVersion(selectedVersion);
-            PopulateAttributeGridWithVersion(selectedVersion);
-            PopulatePhysicalModelGridWithVersion(selectedVersion);
+            PopulateTableMappingGridWithVersion(selectedVersion.Item1);
+            PopulateAttributeGridWithVersion(selectedVersion.Item1);
+            PopulatePhysicalModelGridWithVersion(selectedVersion.Item1);
 
             richTextBoxInformation.Text +="The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
             
@@ -632,34 +633,6 @@ namespace TEAM
             }
         }
 
-        private void SaveVersion(int majorVersion, int minorVersion)
-        {
-            //Insert or create version
-            var insertStatement = new StringBuilder();
-
-            insertStatement.AppendLine("INSERT INTO [dbo].[MD_VERSION] ");
-            insertStatement.AppendLine("([VERSION_NAME],[VERSION_NOTES],[MAJOR_RELEASE_NUMBER],[MINOR_RELEASE_NUMBER])");
-            insertStatement.AppendLine("VALUES ");
-            insertStatement.AppendLine("('N/A', 'N/A', " + majorVersion + "," + minorVersion + ")");
-
-            using (var connectionVersion = new SqlConnection(TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
-            {
-                var commandVersion = new SqlCommand(insertStatement.ToString(), connectionVersion);
-
-                try
-                {
-                    connectionVersion.Open();
-                    commandVersion.ExecuteNonQuery();
-                    richTextBoxInformation.Text += "A new version (" + majorVersion + "." + minorVersion +
-                                                    ") was created.\r\n";
-                }
-                catch (Exception ex)
-                {
-                    richTextBoxInformation.Text += "An issue has occurred: " + ex;
-                }
-            }
-        }
-
         private void trackBarVersioning_ValueChanged(object sender, EventArgs e)
         {
             richTextBoxInformation.Clear();
@@ -670,12 +643,9 @@ namespace TEAM
             PopulateAttributeGridWithVersion(trackBarVersioning.Value);
             PopulatePhysicalModelGridWithVersion(trackBarVersioning.Value);
 
-            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var versionMajorMinor = GetVersion(trackBarVersioning.Value, connOmd);
-            var majorVersion = versionMajorMinor.Key;
-            var minorVersion = versionMajorMinor.Value;
+            var versionMajorMinor = EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,trackBarVersioning.Value);
 
-            labelVersion.Text = majorVersion + "." + minorVersion;
+            labelVersion.Text = versionMajorMinor.Item2 + "." + versionMajorMinor.Item3;
 
             //richTextBoxInformation.Text = "The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
             ContentCounter();
@@ -765,17 +735,12 @@ namespace TEAM
                     //Refresh the UI to display the newly created version
                     if (oldVersionId != versionId)
                     {
-                        var connOmd = new SqlConnection
-                        {
-                            ConnectionString =
-                                TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)
-                        };
-                        trackBarVersioning.Maximum = GetMaxVersionId(connOmd);
-                        trackBarVersioning.TickFrequency = GetVersionCount();
-                        trackBarVersioning.Value = GetMaxVersionId(connOmd);
+                        var maxVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+
+                        trackBarVersioning.Maximum = maxVersion.Item1;
+                        trackBarVersioning.TickFrequency = EnvironmentVersion.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
+                        trackBarVersioning.Value = maxVersion.Item1;
                     }
-
-
                 }
                 else
                 {
@@ -785,20 +750,17 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Verifies the version checkbox (major or minor) and creates new version instance in the metadata repository. If 'no change' is checked this will return the current version Id.
+        /// Verifies the version checkbox (major or minor) and creates new version instance. If 'no change' is checked this will return the current version Id.
         /// </summary>
         /// <returns></returns>
         private int CreateOrRetrieveVersion()
         {
-            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-
             if (!radiobuttonNoVersionChange.Checked)
             {
                 //If nothing is checked, just retrieve and return the current version
-                var maxVersion = GetMaxVersionId(connOmd);
-                var versionKeyValuePair = GetVersion(maxVersion, connOmd);
-                var majorVersion = versionKeyValuePair.Key;
-                var minorVersion = versionKeyValuePair.Value;
+                var versionKeyValuePair = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+                var majorVersion = versionKeyValuePair.Item2;
+                var minorVersion = versionKeyValuePair.Item3;
 
                 //Increase the major version, if required
                 if (radiobuttonMajorRelease.Checked)
@@ -808,7 +770,8 @@ namespace TEAM
                         //Creates a new version
                         majorVersion++;
                         minorVersion = 0;
-                        SaveVersion(majorVersion, minorVersion);
+                        EnvironmentVersion.AddNewVersionToList(GlobalParameters.WorkingEnvironment,majorVersion, 0);
+                        EnvironmentVersion.SaveVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
                     }
                     catch (Exception ex)
                     {
@@ -823,7 +786,8 @@ namespace TEAM
                     {
                         //Creates a new version
                         minorVersion++;
-                        SaveVersion(majorVersion, minorVersion);
+                        EnvironmentVersion.AddNewVersionToList(GlobalParameters.WorkingEnvironment, majorVersion, minorVersion);
+                        EnvironmentVersion.SaveVersionList(GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension);
                     }
                     catch (Exception ex)
                     {
@@ -832,15 +796,17 @@ namespace TEAM
                 }
             }
 
-            //Retrieve the current version (again, may have changed)
-            var versionId = GetMaxVersionId(connOmd);
+            //Retrieve the current version (again, may have changed).
+            var newVersionKeyValuePair = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
 
             //Make sure the correct version is added to the global parameters
-            GlobalParameters.CurrentVersionId = versionId;
-            GlobalParameters.HighestVersionId = versionId;
-            JsonHandling.FileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
+            GlobalParameters.CurrentVersionId = newVersionKeyValuePair.Item1;
+            GlobalParameters.HighestVersionId = newVersionKeyValuePair.Item1;
+            JsonHandling.FileConfiguration.jsonVersionExtension = @"_v" + newVersionKeyValuePair.Item1 + ".json";
 
-            return versionId;
+            labelVersion.Text = newVersionKeyValuePair.Item2 + "." + newVersionKeyValuePair.Item3;
+
+            return newVersionKeyValuePair.Item1;
         }
 
         /// <summary>
@@ -924,7 +890,7 @@ namespace TEAM
                         }
 
                         string[] inputHashValue = new string[] { versionId.ToString(), tableName, columnName};
-                        var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
+                        var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
                       
                         JObject newJsonSegment = new JObject(
                             new JProperty("versionAttributeHash", hashKey),
@@ -1046,7 +1012,7 @@ namespace TEAM
                             versionId.ToString(), sourceTable, targetTable, businessKeyDefinition, drivingKeyDefinition,
                             filterCriterion
                         };
-                        var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
+                        var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                         // Convert it into a JArray so segments can be added easily
                         JObject newJsonSegment = new JObject(
@@ -1133,7 +1099,7 @@ namespace TEAM
 
 
                     string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, notes };
-                    var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
+                    var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                    
                     JObject newJsonSegment = new JObject(
@@ -1358,7 +1324,7 @@ namespace TEAM
                                 }
 
                                 string[] inputHashValue = new string[] { versionId.ToString(), sourceTable, targetTable, businessKeyDefinition, drivingKeyDefinition, filterCriterion };
-                                var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
+                                var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                                 // Convert it into a JArray so segments can be added easily
                                 JObject newJsonSegment = new JObject(
@@ -1624,7 +1590,7 @@ namespace TEAM
                                     //Generate a unique key using a hash
 
                                     string[] inputHashValue = new string[] { versionId.ToString(), tableName, columnName };
-                                    var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
+                                    var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                                     JObject newJsonSegment = new JObject(
                                             new JProperty("versionAttributeHash", hashKey),
@@ -1868,7 +1834,7 @@ namespace TEAM
                                     }
 
                                     string[] inputHashValue = new string[] { versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, notes };
-                                    var hashKey = Utility.CreateMd5(inputHashValue, GlobalParameters.SandingElement);
+                                    var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                                     JObject newJsonSegment = new JObject(
                                         new JProperty("attributeMappingHash", hashKey),
@@ -2441,9 +2407,11 @@ namespace TEAM
 
                 richTextBoxInformation.Clear();
 
-                var versionMajorMinor = GetVersion(trackBarVersioning.Value, conn);
-                var majorVersion = versionMajorMinor.Key;
-                var minorVersion = versionMajorMinor.Value;
+               // var versionMajorMinor = GetVersion(trackBarVersioning.Value, conn);
+                var versionMajorMinor = EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, trackBarVersioning.Value);
+                
+                var majorVersion = versionMajorMinor.Item2;
+                var minorVersion = versionMajorMinor.Item3;
                 richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n";
 
                 // Move data from the grids into temp tables
@@ -2666,9 +2634,9 @@ namespace TEAM
                 // Determine the version.
                 var versionId = GetVersionFromTrackBar();
 
-                var versionMajorMinor = GetVersion(versionId, connOmd);
-                var majorVersion = versionMajorMinor.Key;
-                var minorVersion = versionMajorMinor.Value;
+                var versionMajorMinor = EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,versionId);
+                var majorVersion = versionMajorMinor.Item2;
+                var minorVersion = versionMajorMinor.Item3;
 
                 // Determine the query type (physical or virtual).
                 var queryMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";

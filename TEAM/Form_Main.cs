@@ -39,7 +39,7 @@ namespace TEAM
 
             // Load the root file, to be able to locate the (customisable) configuration file.
             // This file contains the configuration directory, the output directory and the working environment.
-            string rootPathFileName = GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
+            string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
             try
             {
                 EnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
@@ -53,7 +53,7 @@ namespace TEAM
             }
 
             // Environments file
-            string environmentFile = GlobalParameters.RootPath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
+            string environmentFile = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
             try
             {
                 EnvironmentConfiguration.LoadEnvironmentFile(environmentFile);
@@ -134,10 +134,10 @@ namespace TEAM
 
             // Load the connections file for the respective environment.
             var connectionFileName =
-                FormBase.GlobalParameters.ConfigurationPath +
-                FormBase.GlobalParameters.JsonConnectionFileName + '_' +
-                FormBase.GlobalParameters.WorkingEnvironment +
-                FormBase.GlobalParameters.JsonExtension;
+                GlobalParameters.ConfigurationPath +
+                GlobalParameters.JsonConnectionFileName + '_' +
+                GlobalParameters.WorkingEnvironment +
+                GlobalParameters.JsonExtension;
             TeamConnectionFile.LoadConnectionFile(connectionFileName, TeamConfigurationSettings.ConnectionDictionary);
 
             #region Load configuration file
@@ -153,6 +153,10 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
             }
             #endregion
+
+            //FormBase.EnvironmentVersion.GetEnvironmentVersionsFromFile(Path.GetDirectoryName(configurationFile));
+
+            EnvironmentVersion.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
 
 
             // Load the pattern definition file.
@@ -185,7 +189,7 @@ namespace TEAM
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
             richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
 
-            labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
+            labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
         }
 
         public sealed override string Text
@@ -203,12 +207,7 @@ namespace TEAM
 
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
 
-            var connOmd = new SqlConnection
-                {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
-            var connStg = new SqlConnection
-                {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
-            var connPsa = new SqlConnection
-                {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
+            var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try
@@ -230,64 +229,18 @@ namespace TEAM
                 return;
             }
 
-
-            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>")
-                try
-                {
-                    connStg.Open();
-                    connStg.Close();
-                    connStg.Dispose();
-                }
-                catch
-                {
-                    richTextBoxInformation.AppendText(
-                        "There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-                    DisableMenu();
-                    return;
-                }
-            else
-            {
-                richTextBoxInformation.AppendText(
-                    "Staging Area connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
-                DisableMenu();
-                return;
-            }
-
-            if (connStg.ConnectionString !=
-                "Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>")
-                try
-                {
-                    connPsa.Open();
-                    connPsa.Close();
-                    connPsa.Dispose();
-                }
-                catch
-                {
-                    richTextBoxInformation.AppendText(
-                        "There was an issue establishing a database connection to the Persistent Staging Area (PSA) Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-                    DisableMenu();
-                    return;
-                }
-            else
-            {
-                richTextBoxInformation.AppendText(
-                    "Persistent Staging Area (PSA) connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
-                DisableMenu();
-                return;
-            }
-
             EnableMenu();
             richTextBoxInformation.AppendText("Database connections have been successfully validated.\r\n");
 
             try
             {
-                DisplayMaxVersion(connOmd);
-                DisplayCurrentVersion(connOmd);
+                
+                DisplayMaxVersion();
+                DisplayCurrentVersionFromRepository(connOmd);
                 DisplayRepositoryVersion(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
 
-                labelMetadataRepository.Text = "Repository type in configuration is set to: " +
-                                               TeamConfigurationSettings.MetadataRepositoryType;
+                labelMetadataSave.Text = TeamConfigurationSettings.MetadataRepositoryType.ToString();
             }
             catch
             {
@@ -312,21 +265,27 @@ namespace TEAM
             metadataToolStripMenuItem.Enabled = true;
         }
 
-        internal void DisplayMaxVersion(SqlConnection connOmd)
-        {
-            var selectedVersion = GetMaxVersionId(connOmd);
 
-            var versionMajorMinor = GetVersion(selectedVersion, connOmd);
-            var majorVersion = versionMajorMinor.Key;
-            var minorVersion = versionMajorMinor.Value;
+
+        internal void DisplayMaxVersion()
+        {
+            var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+
+            //var versionMajorMinor = GetVersion(selectedVersion, connOmd);
+            var majorVersion = selectedVersion.Item2;
+            var minorVersion = selectedVersion.Item3;
 
             labelVersion.Text = majorVersion + "." + minorVersion;
         }
 
-        internal void DisplayCurrentVersion(SqlConnection connOmd)
+        /// <summary>
+        /// Retrieves the currently activated version from the repository. This is set after the 'activation' process in 'Manage Metadata' has been completed successfully.
+        /// </summary>
+        /// <param name="connOmd"></param>
+        internal void DisplayCurrentVersionFromRepository(SqlConnection connOmd)
         {
             var sqlStatementForCurrentVersion = new StringBuilder();
-            sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME] FROM [MD_MODEL_METADATA]");
+            sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME], [ACTIVATION_DATETIME] FROM [MD_MODEL_METADATA]");
 
             try
             {
@@ -338,6 +297,9 @@ namespace TEAM
                     {
                         var versionName = (string) versionNameRow["VERSION_NAME"];
                         labelActiveVersion.Text = versionName;
+
+                        var versionDate = (DateTime)versionNameRow["ACTIVATION_DATETIME"];
+                        labelActiveVersionDateTime.Text = versionDate.ToString(CultureInfo.InvariantCulture);
                     }
                 }
 
@@ -362,10 +324,9 @@ namespace TEAM
                 {
                     foreach (DataRow versionNameRow in versionList.Rows)
                     {
-                        var versionName = (string) versionNameRow["REPOSITORY_VERSION"];
+                        labelRepositoryVersion.Text = (string)versionNameRow["REPOSITORY_VERSION"];
                         var versionDate = (DateTime) versionNameRow["REPOSITORY_UPDATE_DATETIME"];
-                        labelRepositoryVersion.Text = versionName;
-                        labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
+                        labelRepositoryCreationDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
                     }
                 }
             }
@@ -460,13 +421,13 @@ namespace TEAM
             var localEnvironment = e.Value;
             var localTextForLabel = "The working environment is: " + localEnvironment.environmentKey;
 
-            if (labelWorkingEnvironment.InvokeRequired)
+            if (labelWorkingEnvironmentType.InvokeRequired)
             {
-                labelWorkingEnvironment.BeginInvoke((MethodInvoker)delegate { labelWorkingEnvironment.Text = localTextForLabel; });
+                labelWorkingEnvironmentType.BeginInvoke((MethodInvoker)delegate { labelWorkingEnvironmentType.Text = localTextForLabel; });
             }
             else
             {
-               labelWorkingEnvironment.Text = localTextForLabel;
+               labelWorkingEnvironmentType.Text = localTextForLabel;
             }
 
 

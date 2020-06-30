@@ -20,6 +20,7 @@ namespace TEAM
             CreateConfigurationPath();
             CreateOutputPath();
             CreateBackupPath();
+            CreateCorePath();
         }
 
         internal static void CreateConfigurationPath()
@@ -43,6 +44,20 @@ namespace TEAM
                 FileHandling.InitialisePath(FormBase.GlobalParameters.OutputPath);
                 FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
                     $"The TEAM directory {FormBase.GlobalParameters.OutputPath} is available."));
+            }
+            catch
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+            }
+        }
+        internal static void CreateCorePath()
+        {
+            try
+            {
+                FileHandling.InitialisePath(FormBase.GlobalParameters.CorePath);
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The TEAM directory {FormBase.GlobalParameters.CorePath} is available."));
             }
             catch
             {
@@ -268,6 +283,8 @@ namespace TEAM
                 FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
                 FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
                 FormBase.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
+
+
 
             }
             catch (Exception)

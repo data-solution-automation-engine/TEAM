@@ -165,8 +165,6 @@ namespace TEAM
             commandText.AppendLine("DELETE FROM [MD_HUB];");
             commandText.AppendLine("DELETE FROM [MD_LINK];");
 
-            commandText.AppendLine("TRUNCATE TABLE [MD_VERSION];");
-
             using (var connection = new SqlConnection(TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
             {
                 var command = new SqlCommand(commandText.ToString(), connection);

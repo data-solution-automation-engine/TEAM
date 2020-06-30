@@ -261,12 +261,22 @@ namespace TEAM
                 // Query the Hub information
                 DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.TeamConfigurationSettings.SatTablePrefixValue + "_%'");
 
-                // Derive the Hub surrogate key name, as this can be compared against the Link
-                string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                string hubSurrogateKeyName = hubTableName.Replace(FormBase.TeamConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.TeamConfigurationSettings.DwhKeyIdentifier;
-                
-                // Add to the dictionary that contains the keys in order.
-                hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
+                try
+                {
+                    // Derive the Hub surrogate key name, as this can be compared against the Link
+                    string hubTableName =
+                        selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    string hubSurrogateKeyName =
+                        hubTableName.Replace(FormBase.TeamConfigurationSettings.HubTablePrefixValue + '_', "") + "_" +
+                        FormBase.TeamConfigurationSettings.DwhKeyIdentifier;
+
+                    // Add to the dictionary that contains the keys in order.
+                    hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
+                }
+                catch
+                {
+                    //
+                }
             }
 
             // Derive the Hub surrogate key name, as this can be compared against the Link
