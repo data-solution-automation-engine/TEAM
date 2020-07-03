@@ -10,7 +10,7 @@ namespace TEAM
     /// <summary>
     ///   The configuration information used to drive variables and make the various configuration settings available in the application
     /// </summary>
-    internal class EnvironmentConfiguration
+    internal class LocalTeamEnvironmentConfiguration
     {
         /// <summary>
         /// Create the paths in the TEAM application (configuration, output and backup).
@@ -51,6 +51,7 @@ namespace TEAM
                     "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
             }
         }
+
         internal static void CreateCorePath()
         {
             try
@@ -180,55 +181,7 @@ namespace TEAM
             }
         }
 
-
         /// <summary>
-        ///    Create a file backup for the configuration file at the provided location
-        /// </summary>
-        internal static void CreateFileBackup(string fileName, string filePath = "")
-        {
-            var localFileName = Path.GetFileName(fileName);
-
-            // Manage that the backup path can be defaulted or derived.
-            if (filePath == "")
-            {
-                filePath = FormBase.GlobalParameters.BackupPath;
-            }
-            else
-            {
-                filePath = Path.GetDirectoryName(fileName);
-            }
-
-            try
-            {
-                if (File.Exists(fileName))
-                {
-                    var targetFilePathName = filePath + string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_", localFileName);
-
-                    if (fileName != null)
-                    {
-                        File.Copy(fileName, targetFilePathName);
-                    }
-                    else
-                    {
-                        FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file cannot be backed up because it cannot be identified."));
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(
-                        "TEAM couldn't locate a configuration file! Can you check the paths and existence of directories?",
-                        "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error has occured while creating a file backup. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
-       /// <summary>
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
         /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
         /// </summary
@@ -294,66 +247,66 @@ namespace TEAM
         }
 
 
+        ///// <summary>
+        ///// Load a TEAM environment file into memory.
+        ///// </summary>
+        ///// <param name="fileName"></param>
+        //public static void LoadEnvironmentFile(string fileName)
+        //{
+        //    // Create a new file if it doesn't exist.
+        //    if (!File.Exists(fileName))
+        //    {
+        //        File.Create(fileName).Close();
+
+        //        // There was no key in the file for this environment, so it's new.
+        //        // Create two initial environments, development and production.
+        //        var list = new List<TeamWorkingEnvironment>();
+
+        //        var developmentEnvironment = new TeamWorkingEnvironment
+        //        {
+        //            environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Development" }, "%$@"),
+        //            environmentKey = "Development",
+        //            environmentName = "Development environment",
+        //            environmentNotes = "Environment created as initial / starter environment."
+        //        };
+
+        //        list.Add(developmentEnvironment);
+
+        //        var productionEnvironment = new TeamWorkingEnvironment
+        //        {
+        //            environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Production" }, "%$@"),
+        //            environmentKey = "Production",
+        //            environmentName = "Production environment",
+        //            environmentNotes = "Environment created as initial / starter environment."
+        //        };
+
+        //        list.Add(productionEnvironment);
+
+        //        string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
+        //        File.WriteAllText(fileName, output);
+
+        //        // Commit to memory also.
+        //        var localDictionary = new Dictionary<string, TeamWorkingEnvironment>();
+
+        //        localDictionary.Add(developmentEnvironment.environmentInternalId, developmentEnvironment);
+        //        localDictionary.Add(productionEnvironment.environmentInternalId, productionEnvironment);
+
+        //        FormBase.TeamConfigurationSettings.EnvironmentDictionary = localDictionary;
+        //    }
+        //    else
+        //    {
+        //        FormBase.TeamConfigurationSettings.EnvironmentDictionary.Clear();
+        //        TeamWorkingEnvironment[] environmentJson = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(fileName));
+
+        //        foreach (var environment in environmentJson)
+        //        {
+        //            FormBase.TeamConfigurationSettings.EnvironmentDictionary.Add(environment.environmentInternalId, environment);
+        //        }
+        //    }
+        //}
+
         /// <summary>
-        /// Load a TEAM environment file into memory.
-        /// </summary>
-        /// <param name="fileName"></param>
-        public static void LoadEnvironmentFile(string fileName)
-        {
-            // Create a new file if it doesn't exist.
-            if (!File.Exists(fileName))
-            {
-                File.Create(fileName).Close();
-
-                // There was no key in the file for this environment, so it's new.
-                // Create two initial environments, development and production.
-                var list = new List<TeamWorkingEnvironment>();
-
-                var developmentEnvironment = new TeamWorkingEnvironment
-                {
-                    environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Development" }, "%$@"),
-                    environmentKey = "Development",
-                    environmentName = "Development environment",
-                    environmentNotes = "Environment created as initial / starter environment."
-                };
-
-                list.Add(developmentEnvironment);
-
-                var productionEnvironment = new TeamWorkingEnvironment
-                {
-                    environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Production" }, "%$@"),
-                    environmentKey = "Production",
-                    environmentName = "Production environment",
-                    environmentNotes = "Environment created as initial / starter environment."
-                };
-
-                list.Add(productionEnvironment);
-
-                string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
-                File.WriteAllText(fileName, output);
-
-                // Commit to memory also.
-                var localDictionary = new Dictionary<string, TeamWorkingEnvironment>();
-
-                localDictionary.Add(developmentEnvironment.environmentInternalId, developmentEnvironment);
-                localDictionary.Add(productionEnvironment.environmentInternalId, productionEnvironment);
-
-                FormBase.TeamConfigurationSettings.EnvironmentDictionary = localDictionary;
-            }
-            else
-            {
-                FormBase.TeamConfigurationSettings.EnvironmentDictionary.Clear();
-                TeamWorkingEnvironment[] environmentJson = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(fileName));
-
-                foreach (var environment in environmentJson)
-                {
-                    FormBase.TeamConfigurationSettings.EnvironmentDictionary.Add(environment.environmentInternalId, environment);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Retrieve the configuration information from memory and save this to disk
+        /// Retrieve the configuration information from memory and save this to disk.
         /// </summary>
         internal static void SaveConfigurationFile()
         {
@@ -416,12 +369,10 @@ namespace TEAM
             }
         }
 
-
-
-
         /// <summary>
-        ///    Retrieve the validation information from disk and save this to memory
+        /// Retrieve the validation information from disk and save this to memory.
         /// </summary>
+        /// <param name="filename"></param>
         internal static void LoadValidationFile(string filename)
         {
             try
@@ -459,10 +410,9 @@ namespace TEAM
                 // Do nothing
             }
         }
-
-
+        
         /// <summary>
-        ///    Retrieve the validation information from memory and save this to disk
+        /// Retrieve the validation information from memory and save this to disk.
         /// </summary>
         internal static void SaveValidationFile()
         {

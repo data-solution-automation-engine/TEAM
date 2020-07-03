@@ -86,11 +86,11 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    EnvironmentConfiguration.CreateDummyValidationFile(validationFile);
+                    LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                EnvironmentConfiguration.LoadValidationFile(validationFile);
+                LocalTeamEnvironmentConfiguration.LoadValidationFile(validationFile);
 
                 richTextBoxInformation.Text += "\r\nThe validation file " + validationFile + " has been loaded.";
             }

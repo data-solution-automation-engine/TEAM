@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace TEAM
@@ -21,13 +17,16 @@ namespace TEAM
             InitializeComponent();
         }
 
-        // TEAM configuration settings
+        // TEAM configuration settings.
         public static TeamConfiguration TeamConfigurationSettings { get; set; } = new TeamConfiguration();
 
-        // Table Mapping Metadata
+        // TEAM working environment collection.
+        public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set;  } = new TeamWorkingEnvironmentCollection();
+
+        // Table Mapping Metadata.
         public static TeamTableMapping TableMapping { get; set; } = new TeamTableMapping();
 
-        // TEAM Version List
+        // TEAM Version List.
         public static TeamVersionList EnvironmentVersion { get; set; } = new TeamVersionList();
 
         /// <summary>
@@ -56,6 +55,7 @@ namespace TEAM
         internal static class GlobalParameters
         {
             internal static EventLog TeamEventLog { get; set; } = new EventLog();
+
             // TEAM core path parameters
             public static string RootPath { get; } = Application.StartupPath + @"\";
             public static string ConfigurationPath { get; set; } = RootPath + @"Configuration\";

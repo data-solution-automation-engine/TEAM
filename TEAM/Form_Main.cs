@@ -33,7 +33,7 @@ namespace TEAM
 
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
-            EnvironmentConfiguration.InitialiseEnvironmentPaths();
+            LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
 
             #region Load the root path configuration settings (user defined paths and working environment)
 
@@ -42,7 +42,7 @@ namespace TEAM
             string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
             try
             {
-                EnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
+                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
                     $"The core configuration file {rootPathFileName} has been loaded."));
             }
@@ -56,7 +56,7 @@ namespace TEAM
             string environmentFile = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
             try
             {
-                EnvironmentConfiguration.LoadEnvironmentFile(environmentFile);
+                TeamEnvironmentCollection.LoadTeamEnvironmentCollection(environmentFile);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
                     $"The environment file {environmentFile} has been loaded."));
             }
@@ -102,7 +102,7 @@ namespace TEAM
             {
                 if (!File.Exists(configurationFileName))
                 {
-                    EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
+                    LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
                 }
                 else
                 {
@@ -123,7 +123,7 @@ namespace TEAM
 
             try
             {
-                EnvironmentConfiguration.CreateDummyValidationFile(validationFileName);
+                LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(validationFileName);
 
             }
             catch
@@ -431,7 +431,7 @@ namespace TEAM
             }
 
 
-            EnvironmentConfiguration.InitialiseEnvironmentPaths();
+            LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
 
 
         }

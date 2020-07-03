@@ -507,7 +507,7 @@ namespace TEAM
                 }
 
                 // Save the updated file to disk.
-                EnvironmentConfiguration.CreateFileBackup(_connectionFileName);
+                TeamUtility.CreateFileBackup(_connectionFileName);
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                 File.WriteAllText(_connectionFileName, output);
 

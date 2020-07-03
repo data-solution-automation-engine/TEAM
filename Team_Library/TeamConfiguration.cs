@@ -25,7 +25,7 @@ namespace TEAM
         /// <summary>
         /// Dictionary to contain the available environments within TEAM.
         /// </summary>
-        public Dictionary<string, TeamWorkingEnvironment> EnvironmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
+        //public Dictionary<string, TeamWorkingEnvironment> EnvironmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
         public TeamConnectionProfile MetadataConnection { get; set; }
         #endregion
 

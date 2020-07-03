@@ -27,7 +27,7 @@ namespace TEAM
             
             // Adding tab pages to the Environment tabs.
             IntPtr localHandle = tabControlEnvironments.Handle;
-            foreach (var environment in TeamConfigurationSettings.EnvironmentDictionary)
+            foreach (var environment in TeamEnvironmentCollection.EnvironmentDictionary)
             {
                 // Adding tabs on the Tab Control
                 var lastIndex = tabControlEnvironments.TabCount - 1;
@@ -108,7 +108,7 @@ namespace TEAM
             // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
             if (!File.Exists(chosenFile))
             {
-                EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(chosenFile);
+                LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(chosenFile);
             }
 
             // Open the configuration file
@@ -355,13 +355,13 @@ namespace TEAM
             // Check if the paths and files are available, just to be sure.
             FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
             FileHandling.InitialisePath(GlobalParameters.OutputPath);
-            EnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
-            EnvironmentConfiguration.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+            LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
+            LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             
             // Create a file backup for the configuration file
             try
             {
-                EnvironmentConfiguration.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment  + GlobalParameters.FileExtension);
+                TeamUtility.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment  + GlobalParameters.FileExtension);
                 richTextBoxInformation.Text = "A backup of the current configuration was made at " + DateTime.Now + " in " + textBoxConfigurationPath.Text + ".\r\n";
             }
             catch (Exception)
@@ -376,7 +376,7 @@ namespace TEAM
 
 
             // Save the information 
-            EnvironmentConfiguration.SaveConfigurationFile();
+            LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
             parentFormMain.RevalidateFlag = true;
         }
 
@@ -685,7 +685,7 @@ namespace TEAM
         {
             comboBoxEnvironments.Items.Clear();
 
-            foreach (var environment in TeamConfigurationSettings.EnvironmentDictionary)
+            foreach (var environment in TeamEnvironmentCollection.EnvironmentDictionary)
             {
                 comboBoxEnvironments.Items.Add(new KeyValuePair<TeamWorkingEnvironment, string>(environment.Value, environment.Value.environmentKey));
                 comboBoxEnvironments.DisplayMember = "Value";
@@ -834,7 +834,7 @@ namespace TEAM
                 var selectedItem = localComboBoxSelection.Key;
 
                 // Get the full environment from the in-memory dictionary.
-                var localEnvironment = TeamConfigurationSettings.EnvironmentDictionary[selectedItem.environmentInternalId];
+                var localEnvironment = TeamEnvironmentCollection.EnvironmentDictionary[selectedItem.environmentInternalId];
 
                 // Set the working environment in memory.
                 GlobalParameters.WorkingEnvironment = localEnvironment.environmentKey;

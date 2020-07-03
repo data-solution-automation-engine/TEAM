@@ -247,7 +247,7 @@
     <Compile Include="CustomTimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ClassEnvironmentConfiguration.cs" />
+    <Compile Include="ClassLocalTeamEnvironmentConfiguration.cs" />
     <Compile Include="Form_Base.cs">
       <SubType>Form</SubType>
     </Compile>

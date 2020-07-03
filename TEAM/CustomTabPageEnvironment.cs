@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
@@ -241,7 +240,7 @@ namespace TEAM
                         $"The environment {_localEnvironment.environmentKey} was removed from {_environmentFileName}.\r\n");
 
                     // Remove the value from the global parameter dictionary.
-                    FormBase.TeamConfigurationSettings.EnvironmentDictionary.Remove(_localEnvironment.environmentInternalId);
+                    FormBase.TeamEnvironmentCollection.EnvironmentDictionary.Remove(_localEnvironment.environmentInternalId);
                 }
 
                 // Save the updated file to disk.
@@ -268,13 +267,13 @@ namespace TEAM
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.TeamConfigurationSettings.EnvironmentDictionary.ContainsKey(_localEnvironment.environmentInternalId))
+                if (FormBase.TeamEnvironmentCollection.EnvironmentDictionary.ContainsKey(_localEnvironment.environmentInternalId))
                 {
-                    FormBase.TeamConfigurationSettings.EnvironmentDictionary[_localEnvironment.environmentInternalId] = _localEnvironment;
+                    FormBase.TeamEnvironmentCollection.EnvironmentDictionary[_localEnvironment.environmentInternalId] = _localEnvironment;
                 }
                 else
                 {
-                    FormBase.TeamConfigurationSettings.EnvironmentDictionary.Add(_localEnvironment.environmentInternalId, _localEnvironment);
+                    FormBase.TeamEnvironmentCollection.EnvironmentDictionary.Add(_localEnvironment.environmentInternalId, _localEnvironment);
                 }
 
                 // Update the environment on disk
@@ -317,7 +316,7 @@ namespace TEAM
                 }
 
                 // Save the updated file to disk.
-                EnvironmentConfiguration.CreateFileBackup(_environmentFileName);
+                TeamUtility.CreateFileBackup(_environmentFileName);
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                 File.WriteAllText(_environmentFileName, output);
 
