@@ -392,9 +392,8 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.WorkingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
-            //using (var outfile = new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
             using (var outfile =
-                new StreamWriter(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+                new StreamWriter(GlobalParameters.CorePath+ GlobalParameters.PathFileName + GlobalParameters.FileExtension))
             {
                 outfile.Write(rootPathConfigurationFile.ToString());
                 outfile.Close();
@@ -787,7 +786,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(GlobalParameters.RootPath + GlobalParameters.PathFileName + GlobalParameters.FileExtension);
+                Process.Start(GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension);
 
             }
             catch (Exception ex)

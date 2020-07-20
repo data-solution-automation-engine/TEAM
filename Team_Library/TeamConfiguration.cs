@@ -22,6 +22,15 @@ namespace TEAM
         /// </summary>
         public Dictionary<string, TeamConnectionProfile> ConnectionDictionary { get; set; }
 
+        public static TeamConnectionProfile GetTeamConnectionByInternalId(string connectionInternalId, Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        {
+            var returnConnectionProfile = new TeamConnectionProfile();
+
+            connectionDictionary.TryGetValue(connectionInternalId, out returnConnectionProfile);
+
+            return returnConnectionProfile;
+        }
+
         /// <summary>
         /// Dictionary to contain the available environments within TEAM.
         /// </summary>

@@ -19,9 +19,7 @@ namespace TEAM
         // In-memory object representing the connection. Is always updated first and then refreshed to the form.
         private TeamWorkingEnvironment _localEnvironment;
 
-        private string _environmentFileName = FormBase.GlobalParameters.RootPath +
-                                              FormBase.GlobalParameters.JsonEnvironmentFileName + 
-                                              FormBase.GlobalParameters.JsonExtension;
+        private string _environmentFileName = FormBase.GlobalParameters.CorePath + FormBase.GlobalParameters.JsonEnvironmentFileName + FormBase.GlobalParameters.JsonExtension;
 
         // Objects on main Tab Page
         private TextBox _textBoxEnvironmentName;

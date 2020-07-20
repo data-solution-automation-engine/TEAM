@@ -42,6 +42,37 @@ namespace TEAM
             TableMappingJsonList = new List<TableMappingJson>();
         }
 
+        public List<TeamConnectionProfile> GetConnectionList(Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        {
+            // Create the group nodes (systems)
+            var connectionList = new List<TeamConnectionProfile>();
+
+            var sourceConnectionlist = TableMappingDataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.SourceConnection.ToString())).ToList();
+            var targetConnectionlist = TableMappingDataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.TargetConnection.ToString())).ToList();
+
+            foreach (string connection in sourceConnectionlist)
+            {
+                var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
+
+                if (!connectionList.Contains(connectionProfile))
+                {
+                    connectionList.Add(connectionProfile);
+                }
+            }
+
+            foreach (string connection in targetConnectionlist)
+            {
+                var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
+
+                if (!connectionList.Contains(connectionProfile))
+                {
+                    connectionList.Add(connectionProfile);
+                }
+            }
+
+            return connectionList;
+        }
+
         /// <summary>
         /// Set the sort order for a data table according to the requirements for Table Mapping datatable.
         /// </summary>

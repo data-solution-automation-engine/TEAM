@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Microsoft.SqlServer.Management.Assessment.Configuration.Customization;
-using Microsoft.SqlServer.Management.Sdk.Differencing.SPI;
 using Newtonsoft.Json;
 
 namespace TEAM
@@ -36,7 +33,8 @@ namespace TEAM
     public class TeamVersionList
     {
         public List<TeamVersion> VersionList { get; set; } = new List<TeamVersion>();
-        public List<Tuple<string, string>> ShortEnvironmentVersionList = new List<Tuple<string, string>>();
+        public List<Tuple<string, string, string>> FileEnvironmentVersionList = new List<Tuple<string, string, string>>();
+        public List<Tuple<string, string, string>> SelectedFileEnvironmentVersionList = new List<Tuple<string, string, string>>();
 
         public void LoadVersionList(string fileName)
         {
@@ -168,7 +166,7 @@ namespace TEAM
         {
             if (clearList)
             {
-                VersionList.Clear();
+                FileEnvironmentVersionList.Clear();
             }
 
             string[] files = Directory.GetFiles(directoryName);
@@ -181,9 +179,26 @@ namespace TEAM
                     var versionNumber = Path.GetFileName(file).Substring(Path.GetFileName(file).LastIndexOf('_') + 1)
                         .Replace("v", "").Replace(".json", "");
 
-                    ShortEnvironmentVersionList.Add(new Tuple<string, string>(environmentName, versionNumber));
+                    FileEnvironmentVersionList.Add(new Tuple<string, string, string>(environmentName, versionNumber, Path.GetFileName(file)));
                 }
             }
+        }
+
+        public void GetVersionsForSelectedEnvironments(string environmentName, bool clearList = false) 
+        {
+            if (clearList)
+            {
+                SelectedFileEnvironmentVersionList.Clear();
+            }
+            List< Tuple<string, string, string> > versionsForSelectedEnvironment = new List<Tuple<string, string, string>>();
+            var result = FileEnvironmentVersionList.Where(item => item.Item1 == environmentName );
+
+            foreach (var resultRow in result)
+            {
+                versionsForSelectedEnvironment.Add(new Tuple<string, string, string>(resultRow.Item1,resultRow.Item2, resultRow.Item3));
+            }
+
+            SelectedFileEnvironmentVersionList = versionsForSelectedEnvironment;
         }
     }
 }
