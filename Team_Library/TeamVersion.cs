@@ -46,6 +46,12 @@ namespace TEAM
             }
         }
 
+        public void CreateNewVersionListFile(string fileName, string workingEnvironment)
+        {
+            AddNewVersionToList(workingEnvironment, 0, 0);
+            SaveVersionList(fileName);
+        }
+
         /// <summary>
         /// Create a new version and add this to the VersionList.
         /// </summary>
@@ -54,10 +60,18 @@ namespace TEAM
         /// <param name="minorVersion"></param>
         public void AddNewVersionToList(string workingEnvironment, int majorVersion, int minorVersion)
         {
-            var highestVersion = GetMaxVersionForEnvironment(workingEnvironment);
+            int newVersionId = 0;
+            if (majorVersion == 0 && minorVersion == 0)
+            {
+                // Don't update the version information, just use the empty / zero values.
+            }
+            else
+            {
+                var highestVersion = GetMaxVersionForEnvironment(workingEnvironment);
 
-            int newVersionId = highestVersion.Item1;
-            newVersionId++;
+                newVersionId = highestVersion.Item1;
+                newVersionId++;
+            }
 
             var newVersion = new TeamVersion
             {
@@ -77,6 +91,10 @@ namespace TEAM
         /// <returns></returns>
         public Tuple<int, int, int> GetMaxVersionForEnvironment(string workingEnvironment)
         {
+            /// Tuple setup:
+            /// item1 = version id
+            /// item2 = major release number
+            /// item3 = minor release number
             var returnValue = new Tuple<int, int, int>(0, 0, 0);
 
             if (VersionList.Count > 0)
@@ -89,8 +107,7 @@ namespace TEAM
 
                     if (highestVersion != null)
                     {
-                        returnValue = new Tuple<int, int, int>(highestVersion.VersionId,
-                            highestVersion.MajorReleaseNumber, highestVersion.MinorReleaseNumber);
+                        returnValue = new Tuple<int, int, int>(highestVersion.VersionId, highestVersion.MajorReleaseNumber, highestVersion.MinorReleaseNumber);
                     }
 
                 }

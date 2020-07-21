@@ -50,7 +50,15 @@ namespace TEAM
             // Retrieve the version from the repository database
             //var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
             //var selectedVersion = GetMaxVersionId(connOmd);
+
+            string versionFileName = GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension;
+            if (!File.Exists(versionFileName))
+            {
+                EnvironmentVersion.CreateNewVersionListFile(versionFileName, GlobalParameters.WorkingEnvironment);
+            }
+
             var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+            
             
             // Set the version in memory
             GlobalParameters.CurrentVersionId = selectedVersion.Item1;
