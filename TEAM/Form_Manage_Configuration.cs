@@ -58,7 +58,15 @@ namespace TEAM
             // Connection tabs for the specific environment.
             AddConnectionTabPages();
 
-            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            if (TeamConfigurationSettings.MetadataConnection is null)
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No metadata connection is set."));
+            }
+            else
+            {
+                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            }
+
 
 
 
@@ -859,11 +867,12 @@ namespace TEAM
                 }
 
                 var connectionFileName =
-                    FormBase.GlobalParameters.ConfigurationPath +
-                    FormBase.GlobalParameters.JsonConnectionFileName + '_' +
-                    FormBase.GlobalParameters.WorkingEnvironment +
-                    FormBase.GlobalParameters.JsonExtension;
-                TeamConnectionFile.LoadConnectionFile(connectionFileName, TeamConfigurationSettings.ConnectionDictionary);
+                    GlobalParameters.ConfigurationPath +
+                    GlobalParameters.JsonConnectionFileName + '_' +
+                    GlobalParameters.WorkingEnvironment +
+                    GlobalParameters.JsonExtension;
+
+                TeamConfigurationSettings.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
@@ -879,7 +888,17 @@ namespace TEAM
 
                 //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(TeamConfigurationSettings.MetadataConnection, TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
 
-                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                if (TeamConfigurationSettings.MetadataConnection is null)
+                {
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"No metadata connection is set."));
+                }
+                else
+                {
+
+                    comboBoxMetadataConnection.SelectedIndex =
+                        comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection
+                            .databaseConnectionKey);
+                }
 
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));

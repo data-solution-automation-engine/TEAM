@@ -38,10 +38,17 @@ namespace TEAM
             comboBoxIntegrationConnection.ValueMember = "Key";
             comboBoxIntegrationConnection.DisplayMember = "Value";
 
-            comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
-            comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
-            comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
-            comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            if (TeamConfigurationSettings.MetadataConnection is null)
+            {
+                // Do nothing
+            }
+            else
+            {
+                comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            }
         }
 
         private void buttonDeploy_Click(object sender, EventArgs e)
@@ -139,51 +146,6 @@ namespace TEAM
         /// <param name="e"></param>
         private void buttonTruncate_Click(object sender, EventArgs e)
         {
-            // Retrieving the required parameters
-
-            // Truncating the entire repository
-            StringBuilder commandText = new StringBuilder();
-
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_ATTRIBUTE_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_LINK_ATTRIBUTE_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_STAGING_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_PERSISTENT_STAGING_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_LINK_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_SATELLITE_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_DRIVING_KEY_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_HUB_LINK_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_SATELLITE];");
-            commandText.AppendLine("DELETE FROM [MD_BUSINESS_KEY_COMPONENT_PART];");
-            commandText.AppendLine("DELETE FROM [MD_BUSINESS_KEY_COMPONENT];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE_HUB_XREF];");
-            commandText.AppendLine("DELETE FROM [MD_ATTRIBUTE];");
-            commandText.AppendLine("DELETE FROM [MD_SOURCE];");
-            commandText.AppendLine("DELETE FROM [MD_STAGING];");
-            commandText.AppendLine("DELETE FROM [MD_PERSISTENT_STAGING];");
-            commandText.AppendLine("DELETE FROM [MD_HUB];");
-            commandText.AppendLine("DELETE FROM [MD_LINK];");
-
-            using (var connection = new SqlConnection(TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)))
-            {
-                var command = new SqlCommand(commandText.ToString(), connection);
-
-                try
-                {
-                    connection.Open();
-                    command.ExecuteNonQuery();
-                    MessageBox.Show("The metadata tables have been truncated.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        "An issue occurred when truncating the metadata tables. The error message is: " + ex,
-                        "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-
             if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
             {
                 JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
@@ -801,6 +763,11 @@ namespace TEAM
                 // Create the sample data
                 _alertMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
 
+                if (checkBoxDIRECT.Checked)
+                {
+                    _alertMetadata.SetTextLogging("Experimental - creating samples with DIRECT conventions.\r\n");
+                }
+
                 try
                 {
                     if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
@@ -842,10 +809,7 @@ namespace TEAM
                         }
 
                     }
-                    else
-                    {
-                        ErrorHandlingParameters.ErrorLog.AppendLine("There was an issue detecting the repository type (SQL Server or JSON). It appears neither was selected. \r\n\r\n)");
-                    }
+
 
 
 

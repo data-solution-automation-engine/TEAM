@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageRepository));
-            this.buttonTruncate = new System.Windows.Forms.Button();
             this.buttonDeploy = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -73,18 +72,6 @@
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // buttonTruncate
-            // 
-            this.buttonTruncate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonTruncate.Location = new System.Drawing.Point(154, 19);
-            this.buttonTruncate.Name = "buttonTruncate";
-            this.buttonTruncate.Size = new System.Drawing.Size(139, 42);
-            this.buttonTruncate.TabIndex = 3;
-            this.buttonTruncate.Text = "Truncate Mapping Metadata";
-            this.toolTipRepository.SetToolTip(this.buttonTruncate, "Truncate all information in the metadata repository.");
-            this.buttonTruncate.UseVisualStyleBackColor = true;
-            this.buttonTruncate.Click += new System.EventHandler(this.buttonTruncate_Click);
             // 
             // buttonDeploy
             // 
@@ -212,7 +199,6 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.buttonTruncate);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.buttonGenerateSampleMapping);
             this.groupBox1.Location = new System.Drawing.Point(12, 148);
@@ -511,8 +497,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button buttonTruncate;
         private System.Windows.Forms.Button buttonDeploy;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;

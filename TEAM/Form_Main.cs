@@ -102,7 +102,8 @@ namespace TEAM
             {
                 if (!File.Exists(configurationFileName))
                 {
-                    LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
+                    LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
                 }
                 else
                 {
@@ -131,14 +132,15 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
             }
             #endregion
-
+         
             // Load the connections file for the respective environment.
             var connectionFileName =
                 GlobalParameters.ConfigurationPath +
                 GlobalParameters.JsonConnectionFileName + '_' +
                 GlobalParameters.WorkingEnvironment +
                 GlobalParameters.JsonExtension;
-            TeamConnectionFile.LoadConnectionFile(connectionFileName, TeamConfigurationSettings.ConnectionDictionary);
+
+            TeamConfigurationSettings.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
             #region Load configuration file
             // Load the available configuration file into memory.
@@ -207,7 +209,14 @@ namespace TEAM
 
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
 
-            var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false)};
+            // There is no metadata object available (set)
+            if (TeamConfigurationSettings.MetadataConnection is null)
+            {
+                DisableMenu();
+                return;
+            }
+
+            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try
@@ -234,7 +243,7 @@ namespace TEAM
 
             try
             {
-                
+
                 DisplayMaxVersion();
                 DisplayCurrentVersionFromRepository(connOmd);
                 DisplayRepositoryVersion(connOmd);
@@ -254,6 +263,9 @@ namespace TEAM
                 connOmd.Close();
                 connOmd.Dispose();
             }
+
+
+
         }
 
         public void DisableMenu()

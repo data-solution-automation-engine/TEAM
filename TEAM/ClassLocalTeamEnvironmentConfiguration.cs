@@ -94,7 +94,7 @@ namespace TEAM
 
                 initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
 
-                initialConfigurationFile.AppendLine("MetadataConnectionId|Metadata");
+                initialConfigurationFile.AppendLine("MetadataConnectionId|MetadataConnectionInternalId");
 
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
