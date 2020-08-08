@@ -26,6 +26,7 @@ namespace TEAM
 
         // Objects on main Tab Page
         private TextBox _textBoxServer;
+        private TextBox _textBoxPortNumber;
         private TextBox _textBoxDatabase;
         private TextBox _textBoxSchema;
         private RadioButton _radioButtonIntegratedSecurity;
@@ -75,7 +76,7 @@ namespace TEAM
             _textBoxConnectionString = new TextBox();
             localPanel.Controls.Add(_textBoxConnectionString);
             _textBoxConnectionString.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxConnectionString.Location = new Point(6, 187);
+            _textBoxConnectionString.Location = new Point(6, 212);
             _textBoxConnectionString.Size = new Size(850, 21);
             _textBoxConnectionString.BorderStyle = BorderStyle.None;
             _textBoxConnectionString.BackColor = Color.White;
@@ -88,7 +89,7 @@ namespace TEAM
             localPanel.Controls.Add(groupBoxDatabase);
             groupBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             groupBoxDatabase.Location = new Point(6, 6);
-            groupBoxDatabase.Size = new Size(502, 99);
+            groupBoxDatabase.Size = new Size(502, 124);
             groupBoxDatabase.Name = $"groupBoxDatabaseName";
             groupBoxDatabase.Text = $"Database";
             groupBoxDatabase.TabStop = false;
@@ -113,11 +114,21 @@ namespace TEAM
             labelServer.Text = $"Database server name";
             labelServer.TabStop = false;
 
+            // Add Port Label
+            var labelPortNumber = new Label();
+            groupBoxDatabase.Controls.Add(labelPortNumber);
+            labelPortNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            labelPortNumber.Location = new Point(6, 69);
+            labelPortNumber.Size = new Size(160, 13);
+            labelPortNumber.Name = $"labelPortNumber";
+            labelPortNumber.Text = $"Database server port number";
+            labelPortNumber.TabStop = false;
+
             // Add Schema Label
             var labelSchema = new Label();
             groupBoxDatabase.Controls.Add(labelSchema);
             labelSchema.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelSchema.Location = new Point(6, 70);
+            labelSchema.Location = new Point(6, 94);
             labelSchema.Size = new Size(160, 13);
             labelSchema.Name = $"labelSchema";
             labelSchema.Text = $"Schema";
@@ -143,24 +154,36 @@ namespace TEAM
             _textBoxServer.Name = $"textBoxServerName";
             _textBoxServer.Text = _localConnection.databaseServer.serverName;
             _textBoxServer.TextChanged += new EventHandler(UpdateConnectionString);
-            _textBoxDatabase.TabIndex = 2;
+            _textBoxServer.TabIndex = 2;
+
+            // Add Port Number TextBox
+            _textBoxPortNumber = new TextBox();
+            groupBoxDatabase.Controls.Add(_textBoxPortNumber);
+            _textBoxPortNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxPortNumber.Location = new Point(172, 69);
+            _textBoxPortNumber.Size = new Size(317, 20);
+            _textBoxPortNumber.Name = $"textBoxPortNumber";
+            _textBoxPortNumber.Text = _localConnection.databaseServer.portNumber;
+            _textBoxPortNumber.TextChanged += new EventHandler(UpdateConnectionString);
+            _textBoxPortNumber.TabIndex = 3;
+            toolTipConnections.SetToolTip(this._textBoxPortNumber, "Optional port number that can be used to connect to the database server.");
 
             // Add Schema TextBox
             _textBoxSchema = new TextBox();
             groupBoxDatabase.Controls.Add(_textBoxSchema);
             _textBoxSchema.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxSchema.Location = new Point(172, 67);
+            _textBoxSchema.Location = new Point(172, 94);
             _textBoxSchema.Size = new Size(317, 20);
             _textBoxSchema.Name = $"textBoxSchemaName";
             _textBoxSchema.Text = _localConnection.databaseServer.schemaName;
             _textBoxSchema.TextChanged += new EventHandler(UpdateConnectionString);
-            _textBoxSchema.TabIndex = 3;
+            _textBoxSchema.TabIndex = 4;
 
             // Add GroupBox for Authentication content
             var groupBoxAuthentication = new GroupBox();
             localPanel.Controls.Add(groupBoxAuthentication);
             groupBoxAuthentication.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            groupBoxAuthentication.Location = new Point(6, 111);
+            groupBoxAuthentication.Location = new Point(6, 136);
             groupBoxAuthentication.Size = new Size(140, 70);
             groupBoxAuthentication.Name = $"groupBoxAuthentication";
             groupBoxAuthentication.Text = $"Authentication";
@@ -176,7 +199,7 @@ namespace TEAM
             _radioButtonIntegratedSecurity.Text = $"Integrated (SSPI)"; 
             _radioButtonIntegratedSecurity.Checked = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
             _radioButtonIntegratedSecurity.CheckedChanged += new EventHandler(RadioButtonIntegratedSecurityCheckedChanged);
-            _radioButtonIntegratedSecurity.TabIndex = 4;
+            _radioButtonIntegratedSecurity.TabIndex = 5;
 
             // Add RadioButton for Named User
             _radioButtonNamedUserSecurity = new RadioButton();
@@ -188,13 +211,13 @@ namespace TEAM
             _radioButtonNamedUserSecurity.Text = $"Named User details";
             _radioButtonNamedUserSecurity.Checked = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
             _radioButtonNamedUserSecurity.CheckedChanged += new EventHandler(RadioButtonNamedUserCheckedChanged);
-            _radioButtonNamedUserSecurity.TabIndex = 5;
+            _radioButtonNamedUserSecurity.TabIndex = 6;
 
             // Add GroupBox for Named User content
             _groupBoxNamedUser = new GroupBox();
             localPanel.Controls.Add(_groupBoxNamedUser);
             _groupBoxNamedUser.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _groupBoxNamedUser.Location = new Point(152, 111);
+            _groupBoxNamedUser.Location = new Point(152, 136);
             _groupBoxNamedUser.Size = new Size(356, 70);
             _groupBoxNamedUser.Name = $"groupBoxNamedUser";
             _groupBoxNamedUser.Text = $"Named User details";
@@ -229,7 +252,7 @@ namespace TEAM
             _textboxUserName.Name = $"textboxUserName";
             _textboxUserName.Text = _localConnection.databaseServer.namedUserName;
             _textboxUserName.TextChanged += UpdateConnectionString;
-            _textboxUserName.TabIndex = 6;
+            _textboxUserName.TabIndex = 7;
 
             // Add Password TextBox
             _textBoxPassword = new MaskedTextBox();
@@ -241,7 +264,7 @@ namespace TEAM
             _textBoxPassword.Name = $"textboxUserName";
             _textBoxPassword.Text = _localConnection.databaseServer.namedUserPassword;
             _textBoxPassword.TextChanged += new EventHandler(UpdateConnectionStringWithPassword);
-            _textBoxPassword.TabIndex = 7;
+            _textBoxPassword.TabIndex = 8;
 
             // Add GroupBox for Connection content
             var groupBoxConnection = new GroupBox();
@@ -568,6 +591,13 @@ namespace TEAM
             if (localTextBox.Name == _textBoxServer.Name)
             {
                 _localConnection.databaseServer.serverName = localTextBox.Text;
+            }
+
+            if (localTextBox.Name == _textBoxPortNumber.Name)
+            {
+                //Int32.TryParse(localTextBox.Text, out var portNumber);
+
+                _localConnection.databaseServer.portNumber = localTextBox.Text;
             }
 
             if (localTextBox.Name == _textBoxSchema.Name)

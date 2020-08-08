@@ -167,6 +167,7 @@ namespace TEAM
                 textBoxETLUpdateProcessID.Text = configList["ETLUpdateProcessID"];
                 textBoxStagingAreaPrefix.Text = configList["StagingAreaPrefix"];
                 textBoxPSAPrefix.Text = configList["PersistentStagingAreaPrefix"];
+                textBoxPresentationLayerLabels.Text = configList["PresentationLayerLabels"];
                 textBoxSourceRowId.Text = configList["RowID"];
                 textBoxRecordChecksum.Text = configList["RecordChecksum"];
                 textBoxCurrentRecordAttributeName.Text = configList["CurrentRecordAttribute"];
@@ -429,6 +430,7 @@ namespace TEAM
 
             TeamConfigurationSettings.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
             TeamConfigurationSettings.PsaTablePrefixValue = textBoxPSAPrefix.Text;
+            TeamConfigurationSettings.PresentationLayerLabels = textBoxPresentationLayerLabels.Text;
             TeamConfigurationSettings.HubTablePrefixValue = textBoxHubTablePrefix.Text;
             TeamConfigurationSettings.SatTablePrefixValue = textBoxSatPrefix.Text;
             TeamConfigurationSettings.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;

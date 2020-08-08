@@ -46,6 +46,7 @@ namespace TEAM
         public string SatTablePrefixValue { get; set; }
         public string LinkTablePrefixValue { get; set; }
         public string LsatTablePrefixValue { get; set; }
+        public string PresentationLayerLabels { get; set; }
         #endregion
 
         public string DwhKeyIdentifier { get; set; }
@@ -136,6 +137,7 @@ namespace TEAM
 
                 StgTablePrefixValue = configList["StagingAreaPrefix"];
                 PsaTablePrefixValue = configList["PersistentStagingAreaPrefix"];
+                PresentationLayerLabels = configList["PresentationLayerLabels"];
                 HubTablePrefixValue = configList["HubTablePrefix"];
                 SatTablePrefixValue = configList["SatTablePrefix"];
                 LinkTablePrefixValue = configList["LinkTablePrefix"];
