@@ -98,7 +98,8 @@ namespace TEAM
             TableTypes localType;
 
             string[] PresentationLayerLabelArray = configuration.PresentationLayerLabels.Replace(" ", "").Split(',');
-            
+            string[] TransformationLabelArray = configuration.TransformationLabels.Replace(" ", "").Split(',');
+
             // Remove schema, if one is set
             //tableName = GetNonQualifiedTableName(tableName);
 
@@ -126,13 +127,15 @@ namespace TEAM
                 case "Prefix" when tableName.StartsWith(configuration.PsaTablePrefixValue):
                     localType = TableTypes.PersistentStagingArea;
                     break;
-                case "Prefix" when tableName.StartsWith("BDV_"):
-                    localType = TableTypes.Derived;
-                    break;
-                //case "Prefix" when tableName.StartsWith("DIM") && tableName.StartsWith("FACT"):
+                // Presentation Layer
                 case "Prefix" when PresentationLayerLabelArray.Any(s => tableName.StartsWith(s)):
                     localType = TableTypes.Presentation;
                     break;
+                // Derived or transformation
+                case "Prefix" when TransformationLabelArray.Any(s => tableName.StartsWith(s)):
+                    localType = TableTypes.Derived;
+                    break;
+                // Source
                 case "Prefix":
                     localType = TableTypes.Source;
                     break;
@@ -159,12 +162,13 @@ namespace TEAM
                 case "Suffix" when tableName.EndsWith(configuration.PsaTablePrefixValue):
                     localType = TableTypes.PersistentStagingArea;
                     break;
-                case "Suffix" when tableName.EndsWith("BDV_"):
-                    localType = TableTypes.Derived;
-                    break;
-                //case "Suffix" when tableName.EndsWith("DIM_") && tableName.EndsWith("FACT_"):
+                // Presentation Layer
                 case "Suffix" when PresentationLayerLabelArray.Any(s => tableName.EndsWith(s)):
                     localType = TableTypes.Presentation;
+                    break;
+                // Transformation / derived
+                case "Suffix" when TransformationLabelArray.Any(s => tableName.EndsWith(s)):
+                    localType = TableTypes.Derived;
                     break;
                 case "Suffix":
                     localType = TableTypes.Source;

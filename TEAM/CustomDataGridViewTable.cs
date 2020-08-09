@@ -173,6 +173,7 @@ namespace TEAM
             var counter = 0;
 
             string[] PresentationLayerLabelArray = FormBase.TeamConfigurationSettings.PresentationLayerLabels.Replace(" ", "").Split(',');
+            string[] TransformationLabelArray = FormBase.TeamConfigurationSettings.TransformationLabels.Replace(" ", "").Split(',');
 
             foreach (DataGridViewRow row in Rows)
             {
@@ -248,6 +249,18 @@ namespace TEAM
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aquamarine;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                    }
+                    // Derived objects / transformations
+                    else if (
+
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && TransformationLabelArray.Any(s => targetTable.ToString().StartsWith(s)))
+                        ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && TransformationLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
+                    )
+                    {
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.LightGreen;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }

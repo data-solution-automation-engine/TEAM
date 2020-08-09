@@ -3,9 +3,22 @@ using System.IO;
 
 namespace TEAM
 {
+    /// <summary>
+    /// Allowed repository types for the metadata repository.
+    /// </summary>
     public enum MetadataRepositoryStorageType
     {
         Json
+    }
+
+    /// <summary>
+    /// Possible fields to read/write to a TEAM configuration file.
+    /// </summary>
+    public enum TeamConfigurationAttributes
+    {
+        TransformationLabels,
+        PresentationLayerLabels
+        // ALL OF THE ATTRIBUTES NEED TO BE ADDED - TO DO
     }
 
     /// <summary>
@@ -47,6 +60,7 @@ namespace TEAM
         public string LinkTablePrefixValue { get; set; }
         public string LsatTablePrefixValue { get; set; }
         public string PresentationLayerLabels { get; set; }
+        public string TransformationLabels { get; set; }
         #endregion
 
         public string DwhKeyIdentifier { get; set; }
@@ -130,14 +144,36 @@ namespace TEAM
                 }
                 else
                 {
-                    ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The key/value pair {lookUpValue} was not found in the configuration file"));
+                    ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The key/value pair {lookUpValue} was not found in the configuration file."));
                 }
 
                 MetadataRepositoryType = MetadataRepositoryStorageType.Json;
 
                 StgTablePrefixValue = configList["StagingAreaPrefix"];
                 PsaTablePrefixValue = configList["PersistentStagingAreaPrefix"];
-                PresentationLayerLabels = configList["PresentationLayerLabels"];
+
+                // Presentation Layer labels
+                lookUpValue = TeamConfigurationAttributes.PresentationLayerLabels.ToString();
+                if (configList.ContainsKey(lookUpValue))
+                {
+                    PresentationLayerLabels = configList[lookUpValue];
+                }
+                else
+                {
+                    ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The key/value pair {lookUpValue} was not found in the configuration file."));
+                }
+
+                // Transformation or derived object labels
+                lookUpValue = TeamConfigurationAttributes.TransformationLabels.ToString();
+                if (configList.ContainsKey(lookUpValue))
+                {
+                    TransformationLabels = configList[lookUpValue];
+                }
+                else
+                {
+                    ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The key/value pair {lookUpValue} was not found in the configuration file."));
+                }
+
                 HubTablePrefixValue = configList["HubTablePrefix"];
                 SatTablePrefixValue = configList["SatTablePrefix"];
                 LinkTablePrefixValue = configList["LinkTablePrefix"];

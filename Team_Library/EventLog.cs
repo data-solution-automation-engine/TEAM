@@ -10,11 +10,24 @@ namespace TEAM
     /// </summary>
     public class EventLog : List<Event>
     {
-        //public List<Event> EventList;
-
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public EventLog()
         {
             //EventList = null;
+        }
+
+        /// <summary>
+        /// Merge another event log into the class.
+        /// </summary>
+        /// <param name="otherEventLog"></param>
+        public void MergeEventLog(EventLog otherEventLog)
+        {
+            foreach (Event mergeEvent in otherEventLog)
+            {
+                this.Add(mergeEvent);
+            }
         }
 
         /// <summary>

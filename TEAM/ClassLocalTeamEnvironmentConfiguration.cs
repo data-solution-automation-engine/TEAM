@@ -99,6 +99,7 @@ namespace TEAM
                 initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
                 initialConfigurationFile.AppendLine("PresentationLayerLabels|DIM, FACT");
+                initialConfigurationFile.AppendLine("TransformationLabels|BDV");
                 initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
                 initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
                 initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
@@ -322,6 +323,7 @@ namespace TEAM
                 configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.TeamConfigurationSettings.StgTablePrefixValue +"");
                 configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.TeamConfigurationSettings.PsaTablePrefixValue + "");
                 configurationFile.AppendLine("PresentationLayerLabels|" + FormBase.TeamConfigurationSettings.PresentationLayerLabels + "");
+                configurationFile.AppendLine("TransformationLabels|" + FormBase.TeamConfigurationSettings.TransformationLabels + "");
                 configurationFile.AppendLine("HubTablePrefix|" + FormBase.TeamConfigurationSettings.HubTablePrefixValue + "");
                 configurationFile.AppendLine("SatTablePrefix|" + FormBase.TeamConfigurationSettings.SatTablePrefixValue + "");
                 configurationFile.AppendLine("LinkTablePrefix|" + FormBase.TeamConfigurationSettings.LinkTablePrefixValue +"");

@@ -147,7 +147,11 @@ namespace TEAM
             var configurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
             try
             {
+                // Load the configuration file.
                 TeamConfigurationSettings.LoadTeamConfigurationFile(configurationFile);
+
+                // Retrieve the events into the main event log.
+                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfigurationSettings.ConfigurationSettingsEventLog);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
             }
             catch

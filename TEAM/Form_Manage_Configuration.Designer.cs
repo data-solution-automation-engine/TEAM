@@ -51,15 +51,15 @@
             this.label45 = new System.Windows.Forms.Label();
             this.OutputPathLabel = new System.Windows.Forms.Label();
             this.tabPagePrefixesSuffixex = new System.Windows.Forms.TabPage();
-            this.label48 = new System.Windows.Forms.Label();
+            this.labelPresentationLayerLabels = new System.Windows.Forms.Label();
+            this.textBoxPresentationLayerLabels = new System.Windows.Forms.TextBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
             this.radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
-            this.label34 = new System.Windows.Forms.Label();
+            this.labelPSAlabel = new System.Windows.Forms.Label();
             this.textBoxPSAPrefix = new System.Windows.Forms.TextBox();
             this.textBoxStagingAreaPrefix = new System.Windows.Forms.TextBox();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
+            this.labelStagingAreaLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.keySuffixRadiobutton = new System.Windows.Forms.RadioButton();
             this.keyPrefixRadiobutton = new System.Windows.Forms.RadioButton();
@@ -126,9 +126,11 @@
             this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
-            this.labelPresentationLayerLabels = new System.Windows.Forms.Label();
-            this.textBoxPresentationLayerLabels = new System.Windows.Forms.TextBox();
             this.toolTipConfigurationSettings = new System.Windows.Forms.ToolTip(this.components);
+            this.labelTranformationObjectLabel = new System.Windows.Forms.Label();
+            this.textBoxTransformationLabels = new System.Windows.Forms.TextBox();
+            this.groupBoxPrefixSuffix = new System.Windows.Forms.GroupBox();
+            this.groupBoxDataObjectIdentification = new System.Windows.Forms.GroupBox();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
@@ -145,6 +147,8 @@
             this.tabControlEnvironments.SuspendLayout();
             this.tabPageEnvironmentMain.SuspendLayout();
             this.tabControlDefaultDetails.SuspendLayout();
+            this.groupBoxPrefixSuffix.SuspendLayout();
+            this.groupBoxDataObjectIdentification.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
@@ -329,17 +333,9 @@
             // 
             // tabPagePrefixesSuffixex
             // 
-            this.tabPagePrefixesSuffixex.Controls.Add(this.labelPresentationLayerLabels);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.textBoxPresentationLayerLabels);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.label48);
+            this.tabPagePrefixesSuffixex.Controls.Add(this.groupBoxDataObjectIdentification);
+            this.tabPagePrefixesSuffixex.Controls.Add(this.groupBoxPrefixSuffix);
             this.tabPagePrefixesSuffixex.Controls.Add(this.groupBox8);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.label34);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.textBoxPSAPrefix);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.textBoxStagingAreaPrefix);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.label33);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.label19);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.groupBox1);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.grpTableName);
             this.tabPagePrefixesSuffixex.Location = new System.Drawing.Point(4, 22);
             this.tabPagePrefixesSuffixex.Name = "tabPagePrefixesSuffixex";
             this.tabPagePrefixesSuffixex.Padding = new System.Windows.Forms.Padding(3);
@@ -348,14 +344,23 @@
             this.tabPagePrefixesSuffixex.Text = "Prefixes & Suffixes";
             this.tabPagePrefixesSuffixex.UseVisualStyleBackColor = true;
             // 
-            // label48
+            // labelPresentationLayerLabels
             // 
-            this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(3, 221);
-            this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(178, 13);
-            this.label48.TabIndex = 75;
-            this.label48.Text = "Determination of natural key for PSA";
+            this.labelPresentationLayerLabels.AutoSize = true;
+            this.labelPresentationLayerLabels.Location = new System.Drawing.Point(6, 100);
+            this.labelPresentationLayerLabels.Name = "labelPresentationLayerLabels";
+            this.labelPresentationLayerLabels.Size = new System.Drawing.Size(125, 13);
+            this.labelPresentationLayerLabels.TabIndex = 77;
+            this.labelPresentationLayerLabels.Text = "Presentation Layer labels";
+            // 
+            // textBoxPresentationLayerLabels
+            // 
+            this.textBoxPresentationLayerLabels.Location = new System.Drawing.Point(233, 97);
+            this.textBoxPresentationLayerLabels.Name = "textBoxPresentationLayerLabels";
+            this.textBoxPresentationLayerLabels.Size = new System.Drawing.Size(312, 20);
+            this.textBoxPresentationLayerLabels.TabIndex = 76;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxPresentationLayerLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Pres" +
+        "entation Layer). For example \'DIM\'_ or \'FACT_\'.");
             // 
             // groupBox8
             // 
@@ -363,10 +368,11 @@
             this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyIndex);
             this.groupBox8.Location = new System.Drawing.Point(6, 246);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(175, 70);
+            this.groupBox8.Size = new System.Drawing.Size(299, 70);
             this.groupBox8.TabIndex = 74;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "PSA natural key location";
+            this.toolTipConfigurationSettings.SetToolTip(this.groupBox8, "Determination of natural key for PSA.");
             // 
             // radioButtonPSABusinessKeyPK
             // 
@@ -388,52 +394,43 @@
             this.radioButtonPSABusinessKeyIndex.Text = "Unique Index";
             this.radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
             // 
-            // label34
+            // labelPSAlabel
             // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(5, 37);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(172, 13);
-            this.label34.TabIndex = 71;
-            this.label34.Text = "Persistent Staging Area (PSA) label";
+            this.labelPSAlabel.AutoSize = true;
+            this.labelPSAlabel.Location = new System.Drawing.Point(5, 48);
+            this.labelPSAlabel.Name = "labelPSAlabel";
+            this.labelPSAlabel.Size = new System.Drawing.Size(172, 13);
+            this.labelPSAlabel.TabIndex = 71;
+            this.labelPSAlabel.Text = "Persistent Staging Area (PSA) label";
             // 
             // textBoxPSAPrefix
             // 
-            this.textBoxPSAPrefix.Location = new System.Drawing.Point(233, 34);
+            this.textBoxPSAPrefix.Location = new System.Drawing.Point(233, 45);
             this.textBoxPSAPrefix.Name = "textBoxPSAPrefix";
             this.textBoxPSAPrefix.Size = new System.Drawing.Size(312, 20);
             this.textBoxPSAPrefix.TabIndex = 23;
             // 
             // textBoxStagingAreaPrefix
             // 
-            this.textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 8);
+            this.textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 19);
             this.textBoxStagingAreaPrefix.Name = "textBoxStagingAreaPrefix";
             this.textBoxStagingAreaPrefix.Size = new System.Drawing.Size(312, 20);
             this.textBoxStagingAreaPrefix.TabIndex = 22;
             // 
-            // label33
+            // labelStagingAreaLabel
             // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(5, 11);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(142, 13);
-            this.label33.TabIndex = 69;
-            this.label33.Text = "Staging / Landing Area label";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 109);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(165, 13);
-            this.label19.TabIndex = 67;
-            this.label19.Text = "Define the location of the prefixes";
+            this.labelStagingAreaLabel.AutoSize = true;
+            this.labelStagingAreaLabel.Location = new System.Drawing.Point(5, 22);
+            this.labelStagingAreaLabel.Name = "labelStagingAreaLabel";
+            this.labelStagingAreaLabel.Size = new System.Drawing.Size(142, 13);
+            this.labelStagingAreaLabel.TabIndex = 69;
+            this.labelStagingAreaLabel.Text = "Staging / Landing Area label";
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.keySuffixRadiobutton);
             this.groupBox1.Controls.Add(this.keyPrefixRadiobutton);
-            this.groupBox1.Location = new System.Drawing.Point(152, 134);
+            this.groupBox1.Location = new System.Drawing.Point(152, 19);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(140, 70);
             this.groupBox1.TabIndex = 66;
@@ -464,7 +461,7 @@
             // 
             this.grpTableName.Controls.Add(this.tableSuffixRadiobutton);
             this.grpTableName.Controls.Add(this.tablePrefixRadiobutton);
-            this.grpTableName.Location = new System.Drawing.Point(6, 134);
+            this.grpTableName.Location = new System.Drawing.Point(6, 19);
             this.grpTableName.Name = "grpTableName";
             this.grpTableName.Size = new System.Drawing.Size(140, 70);
             this.grpTableName.TabIndex = 65;
@@ -1085,23 +1082,51 @@
             this.tabControlDefaultDetails.Size = new System.Drawing.Size(1128, 647);
             this.tabControlDefaultDetails.TabIndex = 0;
             // 
-            // labelPresentationLayerLabels
+            // labelTranformationObjectLabel
             // 
-            this.labelPresentationLayerLabels.AutoSize = true;
-            this.labelPresentationLayerLabels.Location = new System.Drawing.Point(6, 63);
-            this.labelPresentationLayerLabels.Name = "labelPresentationLayerLabels";
-            this.labelPresentationLayerLabels.Size = new System.Drawing.Size(125, 13);
-            this.labelPresentationLayerLabels.TabIndex = 77;
-            this.labelPresentationLayerLabels.Text = "Presentation Layer labels";
+            this.labelTranformationObjectLabel.AutoSize = true;
+            this.labelTranformationObjectLabel.Location = new System.Drawing.Point(6, 74);
+            this.labelTranformationObjectLabel.Name = "labelTranformationObjectLabel";
+            this.labelTranformationObjectLabel.Size = new System.Drawing.Size(191, 13);
+            this.labelTranformationObjectLabel.TabIndex = 79;
+            this.labelTranformationObjectLabel.Text = "Transformation object labels (e.g. BDV)";
             // 
-            // textBoxPresentationLayerLabels
+            // textBoxTransformationLabels
             // 
-            this.textBoxPresentationLayerLabels.Location = new System.Drawing.Point(234, 60);
-            this.textBoxPresentationLayerLabels.Name = "textBoxPresentationLayerLabels";
-            this.textBoxPresentationLayerLabels.Size = new System.Drawing.Size(311, 20);
-            this.textBoxPresentationLayerLabels.TabIndex = 76;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxPresentationLayerLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Pres" +
+            this.textBoxTransformationLabels.Location = new System.Drawing.Point(233, 71);
+            this.textBoxTransformationLabels.Name = "textBoxTransformationLabels";
+            this.textBoxTransformationLabels.Size = new System.Drawing.Size(312, 20);
+            this.textBoxTransformationLabels.TabIndex = 78;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxTransformationLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Pres" +
         "entation Layer). For example \'DIM\'_ or \'FACT_\'.");
+            // 
+            // groupBoxPrefixSuffix
+            // 
+            this.groupBoxPrefixSuffix.Controls.Add(this.grpTableName);
+            this.groupBoxPrefixSuffix.Controls.Add(this.groupBox1);
+            this.groupBoxPrefixSuffix.Location = new System.Drawing.Point(6, 143);
+            this.groupBoxPrefixSuffix.Name = "groupBoxPrefixSuffix";
+            this.groupBoxPrefixSuffix.Size = new System.Drawing.Size(299, 97);
+            this.groupBoxPrefixSuffix.TabIndex = 80;
+            this.groupBoxPrefixSuffix.TabStop = false;
+            this.groupBoxPrefixSuffix.Text = "Define the location of the suffixes/prefixes";
+            // 
+            // groupBoxDataObjectIdentification
+            // 
+            this.groupBoxDataObjectIdentification.Controls.Add(this.labelPresentationLayerLabels);
+            this.groupBoxDataObjectIdentification.Controls.Add(this.labelStagingAreaLabel);
+            this.groupBoxDataObjectIdentification.Controls.Add(this.labelTranformationObjectLabel);
+            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxStagingAreaPrefix);
+            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxTransformationLabels);
+            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxPSAPrefix);
+            this.groupBoxDataObjectIdentification.Controls.Add(this.labelPSAlabel);
+            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxPresentationLayerLabels);
+            this.groupBoxDataObjectIdentification.Location = new System.Drawing.Point(6, 6);
+            this.groupBoxDataObjectIdentification.Name = "groupBoxDataObjectIdentification";
+            this.groupBoxDataObjectIdentification.Size = new System.Drawing.Size(557, 131);
+            this.groupBoxDataObjectIdentification.TabIndex = 81;
+            this.groupBoxDataObjectIdentification.TabStop = false;
+            this.groupBoxDataObjectIdentification.Text = "Identification of the data objects";
             // 
             // FormManageConfiguration
             // 
@@ -1127,7 +1152,6 @@
             this.tabPagePaths.ResumeLayout(false);
             this.tabPagePaths.PerformLayout();
             this.tabPagePrefixesSuffixex.ResumeLayout(false);
-            this.tabPagePrefixesSuffixex.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -1145,6 +1169,9 @@
             this.tabControlEnvironments.ResumeLayout(false);
             this.tabPageEnvironmentMain.ResumeLayout(false);
             this.tabControlDefaultDetails.ResumeLayout(false);
+            this.groupBoxPrefixSuffix.ResumeLayout(false);
+            this.groupBoxDataObjectIdentification.ResumeLayout(false);
+            this.groupBoxDataObjectIdentification.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1171,15 +1198,13 @@
         private System.Windows.Forms.Label label45;
         private System.Windows.Forms.Label OutputPathLabel;
         private System.Windows.Forms.TabPage tabPagePrefixesSuffixex;
-        private System.Windows.Forms.Label label48;
         internal System.Windows.Forms.GroupBox groupBox8;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyPK;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyIndex;
-        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label labelPSAlabel;
         internal System.Windows.Forms.TextBox textBoxPSAPrefix;
         internal System.Windows.Forms.TextBox textBoxStagingAreaPrefix;
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label labelStagingAreaLabel;
         private System.Windows.Forms.GroupBox groupBox1;
         internal System.Windows.Forms.RadioButton keySuffixRadiobutton;
         internal System.Windows.Forms.RadioButton keyPrefixRadiobutton;
@@ -1249,6 +1274,10 @@
         private System.Windows.Forms.Label labelPresentationLayerLabels;
         internal System.Windows.Forms.TextBox textBoxPresentationLayerLabels;
         private System.Windows.Forms.ToolTip toolTipConfigurationSettings;
+        private System.Windows.Forms.Label labelTranformationObjectLabel;
+        internal System.Windows.Forms.TextBox textBoxTransformationLabels;
+        private System.Windows.Forms.GroupBox groupBoxDataObjectIdentification;
+        private System.Windows.Forms.GroupBox groupBoxPrefixSuffix;
     }
 }
 
