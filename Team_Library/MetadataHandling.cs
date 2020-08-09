@@ -97,6 +97,8 @@ namespace TEAM
         {
             TableTypes localType;
 
+            string[] PresentationLayerLabelArray = configuration.PresentationLayerLabels.Replace(" ", "").Split(',');
+            
             // Remove schema, if one is set
             //tableName = GetNonQualifiedTableName(tableName);
 
@@ -127,12 +129,14 @@ namespace TEAM
                 case "Prefix" when tableName.StartsWith("BDV_"):
                     localType = TableTypes.Derived;
                     break;
-                case "Prefix" when tableName.StartsWith("DIM_") && tableName.StartsWith("FACT_"):
+                //case "Prefix" when tableName.StartsWith("DIM") && tableName.StartsWith("FACT"):
+                case "Prefix" when PresentationLayerLabelArray.Any(s => tableName.StartsWith(s)):
                     localType = TableTypes.Presentation;
                     break;
                 case "Prefix":
                     localType = TableTypes.Source;
                     break;
+                // Suffix
                 // I.e. CUSTOMER_HUB
                 case "Suffix" when tableName.EndsWith(configuration.SatTablePrefixValue):
                     localType = TableTypes.Context;
@@ -158,7 +162,8 @@ namespace TEAM
                 case "Suffix" when tableName.EndsWith("BDV_"):
                     localType = TableTypes.Derived;
                     break;
-                case "Suffix" when tableName.EndsWith("DIM_") && tableName.EndsWith("FACT_"):
+                //case "Suffix" when tableName.EndsWith("DIM_") && tableName.EndsWith("FACT_"):
+                case "Suffix" when PresentationLayerLabelArray.Any(s => tableName.EndsWith(s)):
                     localType = TableTypes.Presentation;
                     break;
                 case "Suffix":
@@ -202,7 +207,11 @@ namespace TEAM
                 loadVector = "Raw Data Warehouse to Interpreted";
             }
             // If the source is a DWH table, but target is not a DWH table then it's a Presentation Layer ETL. - 'Data Warehouse to Presentation Layer'.
-            else if (new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext }.Contains(evaluatedSource) && !new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext }.Contains(evaluatedTarget))
+            else if 
+            (new[] { TableTypes.CoreBusinessConcept, TableTypes.Context, TableTypes.NaturalBusinessRelationship, TableTypes.NaturalBusinessRelationshipContext }.Contains(evaluatedSource) 
+                     && 
+                     new[] { TableTypes.Presentation }.Contains(evaluatedTarget)
+            )
             {
                 loadVector = "Data Warehouse to Presentation Layer";
             }
@@ -212,7 +221,7 @@ namespace TEAM
             }
             else // Return error
             {
-                loadVector = "The load direction could not be derived from the object types '" + evaluatedSource+"' and '"+evaluatedTarget+"'";
+                loadVector = "'" + evaluatedSource+"' to '"+evaluatedTarget+"'";
             }
 
             return loadVector;

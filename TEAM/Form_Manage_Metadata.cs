@@ -7048,7 +7048,10 @@ namespace TEAM
                         if (!localTableMappingConnectionDictionary.TryGetValue(validationObject, out var connectionValue))
                         {
                             // the key isn't in the dictionary.
-                            MessageBox.Show("The connection string for " + validationObject + " could not be derived.");
+                            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
+                                $"The connection string for {validationObject} could not be derived. This occured during the validation of the attribute metadata. Possibly there is no existing Source Data Object to Target Data Object mapping in the grid."));
+
+                            //MessageBox.Show("The connection string for " + validationObject + " could not be derived.");
                             return;
                         }
 

@@ -1,5 +1,7 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace TEAM
@@ -170,6 +172,8 @@ namespace TEAM
         {
             var counter = 0;
 
+            string[] PresentationLayerLabelArray = FormBase.TeamConfigurationSettings.PresentationLayerLabels.Replace(" ", "").Split(',');
+
             foreach (DataGridViewRow row in Rows)
             {
                 var targetTable = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value;
@@ -195,7 +199,7 @@ namespace TEAM
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Gold;
                     }
-                    // Sat
+                    // Context
                     else if (
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue)) ||
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue))
@@ -205,6 +209,7 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
+                    // Natural Business Relationship
                     else if (
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue)) ||
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue))
@@ -214,6 +219,7 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
+                    // PSA
                     else if (
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue)) ||
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue))
@@ -223,6 +229,7 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
+                    // Staging
                     else if (
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue)) ||
                         (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue))
@@ -232,24 +239,23 @@ namespace TEAM
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
+                    // Presentation Layer
                     else if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith("DIM_")) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith("_DIM"))
+                        
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && PresentationLayerLabelArray.Any(s => targetTable.ToString().StartsWith(s)) )
+                        ||
+                       ( FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && PresentationLayerLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
                     )
                     {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aqua;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aquamarine;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
                         row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
-                    else if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith("FACT_")) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith("_FACT"))
-                    )
+                    else
                     {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.MediumAquamarine;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                        // Catch
                     }
+
 
                     //Syntax highlighting for code
                     if (businessKeySyntax.ToString().Contains("CONCATENATE") || businessKeySyntax.ToString().Contains("COMPOSITE"))
