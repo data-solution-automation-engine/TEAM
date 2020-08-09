@@ -581,7 +581,7 @@ namespace TEAM
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right) | System.Windows.Forms.AnchorStyles.Bottom));
             this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
             this.groupBox4.Location = new System.Drawing.Point(1147, 52);
             this.groupBox4.Name = "groupBox4";
