@@ -7198,7 +7198,7 @@ namespace TEAM
 
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow)
+                if (!row.IsNewRow && (bool)row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value==true)
                 {
                     string objectValidated;
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
@@ -7209,8 +7209,12 @@ namespace TEAM
 
                         if (!localConnectionDictionary.TryGetValue(connectionObject, out var connectionValue))
                         {
+                            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
+                                $"The connection string for {validationObject} could not be derived. This occured during the validation of the Data Object metadata (does the object exist in the database?). Possibly there is no connection assigned to the Data Object in the grid."));
+
                             // the key isn't in the dictionary.
-                            MessageBox.Show("The connection string for " + connectionObject + " could not be derived.");
+                            //MessageBox.Show("The connection string for " + connectionObject + " could not be derived.");
+                            
                             return;
                         }
 
@@ -7432,7 +7436,7 @@ namespace TEAM
             var resultList = new Dictionary<Tuple<string, string>, bool>();
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
-                if (!row.IsNewRow)
+                if (!row.IsNewRow && (bool)row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value == true)
                 {
                     Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
                     Tuple<string, string> validationObject = new Tuple<string, string>(row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString(), row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString());
