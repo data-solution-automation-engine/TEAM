@@ -42,10 +42,10 @@ namespace TEAM
             TableMappingJsonList = new List<TableMappingJson>();
         }
 
-        public List<TeamConnectionProfile> GetConnectionList(Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        public List<TeamConnection> GetConnectionList(Dictionary<string, TeamConnection> connectionDictionary)
         {
             // Create the group nodes (systems)
-            var connectionList = new List<TeamConnectionProfile>();
+            var connectionList = new List<TeamConnection>();
 
             var sourceConnectionlist = TableMappingDataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.SourceConnection.ToString())).ToList();
             var targetConnectionlist = TableMappingDataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.TargetConnection.ToString())).ToList();

@@ -91,7 +91,7 @@ namespace TEAM
                 tabControlConnections.SelectedIndex = 0;
 
                 // Adding items in the drop down list
-                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
                 comboBoxMetadataConnection.ValueMember = "Key";
                 comboBoxMetadataConnection.DisplayMember = "Value";
             }
@@ -420,7 +420,7 @@ namespace TEAM
             if (comboBoxMetadataConnection.SelectedItem!=null)
             {
                 // Get the object in the Combobox into a Key Value Pair (object / id)
-                var localConnectionKeyValuePair = (KeyValuePair<TeamConnectionProfile, string>)(comboBoxMetadataConnection.SelectedItem);
+                var localConnectionKeyValuePair = (KeyValuePair<TeamConnection, string>)(comboBoxMetadataConnection.SelectedItem);
 
                 // Lookup the object in the dictionary using the key (id)
                 TeamConfigurationSettings.MetadataConnection = TeamConfigurationSettings.ConnectionDictionary[localConnectionKeyValuePair.Key.ConnectionInternalId];
@@ -604,7 +604,7 @@ namespace TEAM
             if (tabControlConnections.GetTabRect(lastIndex).Contains(e.Location))
             {
                 //tabControlConnections.TabPages.Insert(lastIndex, "New Tab");
-                TeamConnectionProfile connectionProfile = new TeamConnectionProfile();
+                TeamConnection connectionProfile = new TeamConnection();
                 connectionProfile.ConnectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
                 connectionProfile.ConnectionName = "New connection";
                 connectionProfile.ConnectionKey = "New";
@@ -676,7 +676,7 @@ namespace TEAM
             var localKey = e.Value.ConnectionKey;
             tabControlConnections.TabPages.RemoveByKey(localKey);
 
-            comboBoxMetadataConnection.Items.Remove(new KeyValuePair<TeamConnectionProfile, string>(e.Value, e.Value.ConnectionKey));
+            comboBoxMetadataConnection.Items.Remove(new KeyValuePair<TeamConnection, string>(e.Value, e.Value.ConnectionKey));
         }
 
         /// <summary>
@@ -712,7 +712,7 @@ namespace TEAM
 
             foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
-                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
                 comboBoxMetadataConnection.ValueMember = "Key";
                 comboBoxMetadataConnection.DisplayMember = "Value";
 

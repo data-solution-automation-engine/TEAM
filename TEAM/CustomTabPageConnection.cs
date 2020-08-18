@@ -17,7 +17,7 @@ namespace TEAM
         internal bool StartUpIndicator = true;
 
         // In-memory object representing the connection. Is always updated first and then refreshed to the form.
-        private TeamConnectionProfile _localConnection;
+        private TeamConnection _localConnection;
 
         private string _connectionFileName = FormBase.GlobalParameters.ConfigurationPath +
                                              FormBase.GlobalParameters.JsonConnectionFileName + '_' +
@@ -46,7 +46,7 @@ namespace TEAM
         /// </summary>
         public CustomTabPageConnection(object input)
         {
-            _localConnection = (TeamConnectionProfile) input;
+            _localConnection = (TeamConnection) input;
 
             var connectionKey = _localConnection.ConnectionKey;
             var connectionName = _localConnection.ConnectionName;
@@ -458,9 +458,9 @@ namespace TEAM
                 }
 
                 // Check if the value already exists in the file
-                var jsonKeyLookup = new TeamConnectionProfile();
+                var jsonKeyLookup = new TeamConnection();
 
-                TeamConnectionProfile[] jsonArray = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(
+                TeamConnection[] jsonArray = JsonConvert.DeserializeObject<TeamConnection[]>(
                     File.ReadAllText(_connectionFileName));
 
                 // If the Json file already contains values (non-empty) then perform a key lookup.
@@ -532,9 +532,9 @@ namespace TEAM
                 }
 
                 // Check if the value already exists in the file
-                var jsonKeyLookup = new TeamConnectionProfile();
+                var jsonKeyLookup = new TeamConnection();
 
-                TeamConnectionProfile[] jsonArray = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(File.ReadAllText(_connectionFileName));
+                TeamConnection[] jsonArray = JsonConvert.DeserializeObject<TeamConnection[]>(File.ReadAllText(_connectionFileName));
 
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
@@ -546,7 +546,7 @@ namespace TEAM
                 if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.ConnectionKey == "")
                 {
                     //  There was no key in the file for this connection, so it's new.
-                    var list = new List<TeamConnectionProfile>();
+                    var list = new List<TeamConnection>();
                     if (jsonArray != null)
                     {
                         list = jsonArray.ToList();

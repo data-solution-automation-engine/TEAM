@@ -482,9 +482,9 @@ namespace TEAM
     // Delegate to pass through a TEAM connection.
     public class MyConnectionProfileEventArgs : EventArgs
     {
-        public TeamConnectionProfile Value { get; set; }
+        public TeamConnection Value { get; set; }
 
-        public MyConnectionProfileEventArgs(TeamConnectionProfile value)
+        public MyConnectionProfileEventArgs(TeamConnection value)
         {
             Value = value;
         }

@@ -33,11 +33,11 @@ namespace TEAM
         /// <summary>
         /// Dictionary to contain the connection internal ID and the corresponding object.
         /// </summary>
-        public Dictionary<string, TeamConnectionProfile> ConnectionDictionary { get; set; }
+        public Dictionary<string, TeamConnection> ConnectionDictionary { get; set; }
 
-        public static TeamConnectionProfile GetTeamConnectionByInternalId(string connectionInternalId, Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        public static TeamConnection GetTeamConnectionByInternalId(string connectionInternalId, Dictionary<string, TeamConnection> connectionDictionary)
         {
-            var returnConnectionProfile = new TeamConnectionProfile();
+            var returnConnectionProfile = new TeamConnection();
 
             connectionDictionary.TryGetValue(connectionInternalId, out returnConnectionProfile);
 
@@ -48,7 +48,7 @@ namespace TEAM
         /// Dictionary to contain the available environments within TEAM.
         /// </summary>
         //public Dictionary<string, TeamWorkingEnvironment> EnvironmentDictionary { get; set; } = new Dictionary<string, TeamWorkingEnvironment>();
-        public TeamConnectionProfile MetadataConnection { get; set; }
+        public TeamConnection MetadataConnection { get; set; }
         #endregion
 
         #region Configuration values
@@ -94,8 +94,8 @@ namespace TEAM
 
         public TeamConfiguration()
         {
-            ConnectionDictionary = new Dictionary<string, TeamConnectionProfile>();
-            MetadataConnection = new TeamConnectionProfile();
+            ConnectionDictionary = new Dictionary<string, TeamConnection>();
+            MetadataConnection = new TeamConnection();
             ConfigurationSettingsEventLog = new EventLog();
         }
 

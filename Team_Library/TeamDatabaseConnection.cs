@@ -68,7 +68,7 @@ namespace TEAM
         File
     }
 
-    public class TeamConnectionProfile
+    public class TeamConnection
     {
         public string ConnectionInternalId { get; set; }
         public string ConnectionName { get; set; }
@@ -153,7 +153,7 @@ namespace TEAM
         /// </summary>
         /// <param name="localConnectionDictionary"></param>
         /// <returns></returns>
-        public static List<LocalTeamConnection> GetConnections(Dictionary<string, TeamConnectionProfile> localConnectionDictionary)
+        public static List<LocalTeamConnection> GetConnections(Dictionary<string, TeamConnection> localConnectionDictionary)
         {
             var possibleConnections = new List<LocalTeamConnection>();
             foreach (var connection in localConnectionDictionary)
@@ -169,7 +169,7 @@ namespace TEAM
         /// List of unique connection keys derived from the TEAM connections dictionary.
         /// </summary>
         /// <returns></returns>
-        public static List<string> TeamConnectionKeyList(Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        public static List<string> TeamConnectionKeyList(Dictionary<string, TeamConnection> connectionDictionary)
         {
             List<string> returnList = new List<string>();
 
@@ -191,9 +191,9 @@ namespace TEAM
         /// <summary>
         /// Load in to memory (deserialise) a TEAM connection file.
         /// </summary>
-        public static Dictionary<string, TeamConnectionProfile> LoadConnectionFile(string connectionFileName)
+        public static Dictionary<string, TeamConnection> LoadConnectionFile(string connectionFileName)
         {
-            var localConnectionDictionary = new Dictionary<string, TeamConnectionProfile>();
+            var localConnectionDictionary = new Dictionary<string, TeamConnection>();
 
             // Load the connections
             try
@@ -207,7 +207,7 @@ namespace TEAM
                     localConnectionDictionary = CreateDummyConnectionDictionary();
 
                     // There was no key in the file for this connection, so it's new.
-                    var list = new List<TeamConnectionProfile>();
+                    var list = new List<TeamConnection>();
 
                     foreach (var connection in localConnectionDictionary)
                     {
@@ -223,7 +223,7 @@ namespace TEAM
                 {
                     // Clear the in-memory dictionary and load the file.
                     localConnectionDictionary.Clear();
-                    TeamConnectionProfile[] connectionJson = JsonConvert.DeserializeObject<TeamConnectionProfile[]>(File.ReadAllText(connectionFileName));
+                    TeamConnection[] connectionJson = JsonConvert.DeserializeObject<TeamConnection[]>(File.ReadAllText(connectionFileName));
 
                     foreach (var connection in connectionJson)
                     {
@@ -244,12 +244,12 @@ namespace TEAM
         /// <summary>
         /// Create the sample / start dictionary of connections and commit to memory (global parameter connection dictionary).
         /// </summary>
-        internal static Dictionary<string, TeamConnectionProfile> CreateDummyConnectionDictionary()
+        internal static Dictionary<string, TeamConnection> CreateDummyConnectionDictionary()
         {
-            var localDictionary = new Dictionary<string, TeamConnectionProfile>();
+            var localDictionary = new Dictionary<string, TeamConnection>();
 
             // Metadata
-            var newTeamConnectionProfileMetadata = new TeamConnectionProfile
+            var newTeamConnectionProfileMetadata = new TeamConnection
             {
                 ConnectionInternalId = "MetadataConnectionInternalId",
                 ConnectionKey = "Metadata",
@@ -270,7 +270,7 @@ namespace TEAM
             newTeamConnectionProfileMetadata.databaseServer = newTeamDatabaseConnectionMetadata;
 
             // Source
-            var newTeamConnectionProfileSource = new TeamConnectionProfile
+            var newTeamConnectionProfileSource = new TeamConnection
             {
                 //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Source" }, "%$@"),
                 ConnectionInternalId =  "SourceConnectionInternalId",
@@ -292,7 +292,7 @@ namespace TEAM
             newTeamConnectionProfileSource.databaseServer = newTeamDatabaseConnectionSource;
 
             // Staging
-            var newTeamConnectionProfileStaging = new TeamConnectionProfile
+            var newTeamConnectionProfileStaging = new TeamConnection
             {
                 //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Staging" }, "%$@"),
                 ConnectionInternalId =  "StagingConnectionInternalId",
@@ -314,7 +314,7 @@ namespace TEAM
             newTeamConnectionProfileStaging.databaseServer = newTeamDatabaseConnectionStaging;
 
             // PSA
-            var newTeamConnectionProfilePsa = new TeamConnectionProfile
+            var newTeamConnectionProfilePsa = new TeamConnection
             {
                 //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "PersistentStagingArea" }, "%$@"),
                 ConnectionInternalId =  "PsaConnectionInternalId",
@@ -336,7 +336,7 @@ namespace TEAM
             newTeamConnectionProfilePsa.databaseServer = newTeamDatabaseConnectionPsa;
 
             // Integration
-            var newTeamConnectionProfileIntegration = new TeamConnectionProfile
+            var newTeamConnectionProfileIntegration = new TeamConnection
             {
                 //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Integration" }, "%$@"),
                 ConnectionInternalId =  "IntegrationConnectionInternalId",
@@ -358,7 +358,7 @@ namespace TEAM
             newTeamConnectionProfileIntegration.databaseServer = newTeamDatabaseConnectionIntegration;
 
             // Presentation
-            var newTeamConnectionProfilePresentation = new TeamConnectionProfile
+            var newTeamConnectionProfilePresentation = new TeamConnection
             {
                 //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Presentation" }, "%$@"),
                 ConnectionInternalId = "PresentationConnectionInternalId",
@@ -395,7 +395,7 @@ namespace TEAM
 
     public class LocalConnectionDictionary
     {
-        public Dictionary<string, TeamConnectionProfile> ConnectionDictionary { get; set; }
+        public Dictionary<string, TeamConnection> ConnectionDictionary { get; set; }
 
         public string connectionKey;
         public string connectionString;
@@ -412,7 +412,7 @@ namespace TEAM
         /// </summary>
         /// <param name="connectionDictionary"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetLocalConnectionDictionary(Dictionary<string, TeamConnectionProfile> connectionDictionary)
+        public static Dictionary<string, string> GetLocalConnectionDictionary(Dictionary<string, TeamConnection> connectionDictionary)
         {
             Dictionary<string, string> returnDictionary = new Dictionary<string, string>();
 

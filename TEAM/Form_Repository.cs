@@ -23,10 +23,10 @@ namespace TEAM
             foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
                 // Adding items in the drop down list
-                comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
-                comboBoxStagingConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
-                comboBoxPsaConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
-                comboBoxIntegrationConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxStagingConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxPsaConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxIntegrationConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
             }
 
             comboBoxSourceConnection.ValueMember = "Key";
@@ -324,16 +324,16 @@ namespace TEAM
             Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
             // Retrieve the connection strings from the ComboBox objects.
-            var localSourceConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
-            var localPsaConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
-            var localStagingConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
-            var localIntegrationConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
-            var localPresentationConnectionObject = new KeyValuePair<TeamConnectionProfile, string>();
+            var localSourceConnectionObject = new KeyValuePair<TeamConnection, string>();
+            var localPsaConnectionObject = new KeyValuePair<TeamConnection, string>();
+            var localStagingConnectionObject = new KeyValuePair<TeamConnection, string>();
+            var localIntegrationConnectionObject = new KeyValuePair<TeamConnection, string>();
+            var localPresentationConnectionObject = new KeyValuePair<TeamConnection, string>();
 
 
             comboBoxSourceConnection.Invoke((MethodInvoker)delegate
             {
-                localSourceConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxSourceConnection.SelectedItem;
+                localSourceConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxSourceConnection.SelectedItem;
             });
 
             var localSourceConnectionString = localSourceConnectionObject.Key.CreateConnectionString(false);
@@ -342,7 +342,7 @@ namespace TEAM
 
             comboBoxStagingConnection.Invoke((MethodInvoker)delegate
             {
-                localStagingConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxStagingConnection.SelectedItem;
+                localStagingConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxStagingConnection.SelectedItem;
             });
 
             var localStagingConnectionString = localStagingConnectionObject.Key.CreateConnectionString(false);
@@ -351,7 +351,7 @@ namespace TEAM
 
             comboBoxPsaConnection.Invoke((MethodInvoker)delegate
             {
-                localPsaConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxPsaConnection.SelectedItem;
+                localPsaConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxPsaConnection.SelectedItem;
             });
             var localPsaConnectionString = localPsaConnectionObject.Key.CreateConnectionString(false);
             var localPsaDatabaseName = localPsaConnectionObject.Key.databaseServer.databaseName;
@@ -359,7 +359,7 @@ namespace TEAM
 
             comboBoxIntegrationConnection.Invoke((MethodInvoker)delegate
             {
-                localIntegrationConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxIntegrationConnection.SelectedItem;
+                localIntegrationConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxIntegrationConnection.SelectedItem;
             });
             var localIntegrationConnectionString = localIntegrationConnectionObject.Key.CreateConnectionString(false);
             var localIntegrationDatabaseName = localIntegrationConnectionObject.Key.databaseServer.databaseName;

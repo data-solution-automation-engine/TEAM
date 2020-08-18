@@ -115,7 +115,7 @@ namespace TEAM
             // Load the checkboxes for the reverse-engineering tab
             foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
-                checkedListBoxReverseEngineeringAreas.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
+                checkedListBoxReverseEngineeringAreas.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
             }
             #endregion
         }
@@ -3714,7 +3714,7 @@ namespace TEAM
                     {
                         if (connection.Key != "Metadata")
                         {
-                            var localConnectionObject = (TeamConnectionProfile) connection.Value;
+                            var localConnectionObject = (TeamConnection) connection.Value;
                             var localSqlConnection = new SqlConnection {ConnectionString = localConnectionObject.CreateConnectionString(false)};
 
                             // Build up the filter criteria to only select information for tables that are associated with the connection
@@ -6611,7 +6611,7 @@ namespace TEAM
 
             foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
-                var localConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)item;
+                var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
 
                 var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateConnectionString(false) };
                 var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.databaseServer.databaseName);
