@@ -424,7 +424,7 @@ namespace TEAM
             bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
 
             if (_radioButtonIntegratedSecurity.Checked)
             {
@@ -648,7 +648,7 @@ namespace TEAM
             bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
             bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
         }
 
 
@@ -667,7 +667,7 @@ namespace TEAM
             bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
             bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
         }
 
         /// <summary>
@@ -693,7 +693,7 @@ namespace TEAM
             bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
         }
 
         /// <summary>
@@ -715,7 +715,7 @@ namespace TEAM
             bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
         }
     }
 }

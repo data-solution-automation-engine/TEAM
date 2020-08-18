@@ -74,12 +74,14 @@ namespace TEAM
         public string ConnectionName { get; set; }
         public string ConnectionKey { get; set; }
 
+        public string ConnectionType { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string ConnectionNotes { get; set; }
 
         public TeamDatabaseConnection databaseServer { get; set; }
 
-        public string CreateConnectionString(bool mask)
+        public string CreateSqlServerConnectionString(bool mask)
         {
             // Initialise the return variable
             var outputConnectionString = "";
@@ -418,7 +420,7 @@ namespace TEAM
 
             foreach (var connection in connectionDictionary)
             {
-                returnDictionary.Add(connection.Value.ConnectionInternalId, connection.Value.CreateConnectionString(false));
+                returnDictionary.Add(connection.Value.ConnectionInternalId, connection.Value.CreateSqlServerConnectionString(false));
             }
 
             return returnDictionary;

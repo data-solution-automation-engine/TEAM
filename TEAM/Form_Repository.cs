@@ -162,7 +162,7 @@ namespace TEAM
             ErrorHandlingParameters.ErrorCatcher = 0;
             ErrorHandlingParameters.ErrorLog = new StringBuilder();
             
-            var localMetadataConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false);
+            var localMetadataConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false);
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -336,7 +336,7 @@ namespace TEAM
                 localSourceConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxSourceConnection.SelectedItem;
             });
 
-            var localSourceConnectionString = localSourceConnectionObject.Key.CreateConnectionString(false);
+            var localSourceConnectionString = localSourceConnectionObject.Key.CreateSqlServerConnectionString(false);
             var localSourceDatabaseName = localSourceConnectionObject.Key.databaseServer.databaseName;
 
 
@@ -345,7 +345,7 @@ namespace TEAM
                 localStagingConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxStagingConnection.SelectedItem;
             });
 
-            var localStagingConnectionString = localStagingConnectionObject.Key.CreateConnectionString(false);
+            var localStagingConnectionString = localStagingConnectionObject.Key.CreateSqlServerConnectionString(false);
             var localStagingDatabaseName = localStagingConnectionObject.Key.databaseServer.databaseName;
 
 
@@ -353,7 +353,7 @@ namespace TEAM
             {
                 localPsaConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxPsaConnection.SelectedItem;
             });
-            var localPsaConnectionString = localPsaConnectionObject.Key.CreateConnectionString(false);
+            var localPsaConnectionString = localPsaConnectionObject.Key.CreateSqlServerConnectionString(false);
             var localPsaDatabaseName = localPsaConnectionObject.Key.databaseServer.databaseName;
 
 
@@ -361,7 +361,7 @@ namespace TEAM
             {
                 localIntegrationConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxIntegrationConnection.SelectedItem;
             });
-            var localIntegrationConnectionString = localIntegrationConnectionObject.Key.CreateConnectionString(false);
+            var localIntegrationConnectionString = localIntegrationConnectionObject.Key.CreateSqlServerConnectionString(false);
             var localIntegrationDatabaseName = localIntegrationConnectionObject.Key.databaseServer.databaseName;
 
 
@@ -855,13 +855,13 @@ namespace TEAM
             {
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
-                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
             }
             else
             {
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
-                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
             }
 
             // Execute the SQL statements

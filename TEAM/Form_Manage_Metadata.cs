@@ -2411,7 +2411,7 @@ namespace TEAM
             if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0))
             {
                 // Commence the activation
-                var conn = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+                var conn = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
 
                 richTextBoxInformation.Clear();
 
@@ -2423,7 +2423,7 @@ namespace TEAM
                 richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n";
 
                 // Move data from the grids into temp tables
-                CreateTemporaryWorkerTable(TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                CreateTemporaryWorkerTable(TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
 
                 if (radioButtonPhysicalMode.Checked == false)
                 {
@@ -2563,13 +2563,13 @@ namespace TEAM
             var errorLog = new StringBuilder();
             var errorCounter = new int();
 
-            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connStg= new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connPsa = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connInt = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            var connPres = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
+            var connStg= new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
+            var connPsa = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
+            var connInt = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
+            var connPres = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
 
-            var metaDataConnection = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false);
+            var metaDataConnection = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false);
 
             //// Get everything as local variables to reduce multi-threading issues
             //var integrationDatabase = '['+ TeamConfigurationSettings.IntegrationDatabaseName + ']';
@@ -3715,7 +3715,7 @@ namespace TEAM
                         if (connection.Key != "Metadata")
                         {
                             var localConnectionObject = (TeamConnection) connection.Value;
-                            var localSqlConnection = new SqlConnection {ConnectionString = localConnectionObject.CreateConnectionString(false)};
+                            var localSqlConnection = new SqlConnection {ConnectionString = localConnectionObject.CreateSqlServerConnectionString(false)};
 
                             // Build up the filter criteria to only select information for tables that are associated with the connection
                             var tableFilterObjects = "";
@@ -4463,7 +4463,7 @@ namespace TEAM
                 {
                     var fullyQualifiedName = MetadataHandling.GetSchema(tableName).FirstOrDefault();
 
-                    var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                    var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
                     string businessKey = string.Join(",", businessKeyList);
 
                     var updateStatement = new StringBuilder();
@@ -5773,7 +5773,7 @@ namespace TEAM
                 }
 
                 // Remove the temporary tables that have been used
-                droptemporaryWorkerTable(TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false));
+                droptemporaryWorkerTable(TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
 
                 // Report completion
                 totalProcess.Stop();
@@ -6051,7 +6051,7 @@ namespace TEAM
         {
             DateTime mostRecentActivationDateTime = DateTime.MinValue; 
 
-            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
 
             var sqlStatementForActivationMetadata = new StringBuilder();
             sqlStatementForActivationMetadata.AppendLine("SELECT [VERSION_NAME], MAX([ACTIVATION_DATETIME]) AS [ACTIVATION_DATETIME]");
@@ -6105,7 +6105,7 @@ namespace TEAM
 
                 if (dataGridViewTableMetadata != null) // There needs to be metadata available
                 {
-                    var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+                    var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
 
                     //Write the DGML file
                     var dgmlExtract = new StringBuilder();
@@ -6613,7 +6613,7 @@ namespace TEAM
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
 
-                var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateConnectionString(false) };
+                var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false) };
                 var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.databaseServer.databaseName);
 
                 if (reverseEngineerResults != null)
@@ -7386,7 +7386,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7641,7 +7641,7 @@ namespace TEAM
             int fileCounter = 0;
 
             EventLog eventLog = new EventLog();
-            SqlConnection conn = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            SqlConnection conn = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
 
 
             foreach (LoadPatternDefinition pattern in LoadPatternDefinitionList)

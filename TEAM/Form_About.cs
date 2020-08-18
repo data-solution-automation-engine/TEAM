@@ -25,7 +25,7 @@ namespace TEAM
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var conn = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
+            var conn = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
             
             try
             {

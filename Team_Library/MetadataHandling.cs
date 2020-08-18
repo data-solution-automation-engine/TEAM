@@ -319,7 +319,7 @@ namespace TEAM
             // The metadata connection can be used.
             var conn = new SqlConnection
             {
-                ConnectionString = configuration.MetadataConnection.CreateConnectionString(false)
+                ConnectionString = configuration.MetadataConnection.CreateSqlServerConnectionString(false)
             };
 
             try
