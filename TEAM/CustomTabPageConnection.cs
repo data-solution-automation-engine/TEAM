@@ -38,6 +38,8 @@ namespace TEAM
         private TextBox _textBoxConnectionName;
         public TextBox _textBoxConnectionKey;
         private RichTextBox _richTextBoxConnectionNotes;
+        private RadioButton _radioButtonDatabase;
+        private RadioButton _radioButtonFile;
 
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page
@@ -54,6 +56,7 @@ namespace TEAM
             #region Main Tab Page controls
 
             ToolTip toolTipConnections = new ToolTip();
+            toolTipConnections.AutoPopDelay = 3000;
 
             // Base properties of the custom tab page
             Name = $"{connectionKey}";
@@ -266,12 +269,15 @@ namespace TEAM
             _textBoxPassword.TextChanged += new EventHandler(UpdateConnectionStringWithPassword);
             _textBoxPassword.TabIndex = 8;
 
+
+
+
             // Add GroupBox for Connection content
             var groupBoxConnection = new GroupBox();
             localPanel.Controls.Add(groupBoxConnection);
             groupBoxConnection.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             groupBoxConnection.Location = new Point(516, 6);
-            groupBoxConnection.Size = new Size(502, 175);
+            groupBoxConnection.Size = new Size(502, 200);
             groupBoxConnection.Name = $"groupBoxConnection";
             groupBoxConnection.Text = $"Connection";
             groupBoxConnection.TabStop = false;
@@ -297,43 +303,43 @@ namespace TEAM
             labelConnectionName.Text = $"Connection name";
             labelConnectionName.TabStop = false;
 
+            // Add Connection Type Label
+            var labelConnectionType = new Label();
+            groupBoxConnection.Controls.Add(labelConnectionType);
+            //labelConnectionNotes.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            labelConnectionType.Location = new Point(6, 69);
+            labelConnectionType.Size = new Size(160, 13);
+            labelConnectionType.Name = $"labelConnectionType";
+            labelConnectionType.Text = $"Connection type";
+            labelConnectionType.TabStop = false;
+
             // Add Connection Notes Label
             var labelConnectionNotes = new Label();
             groupBoxConnection.Controls.Add(labelConnectionNotes);
             //labelConnectionNotes.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            labelConnectionNotes.Location = new Point(6, 70);
+            labelConnectionNotes.Location = new Point(6, 119);
             labelConnectionNotes.Size = new Size(160, 13);
             labelConnectionNotes.Name = $"labelConnectionNotes";
             labelConnectionNotes.Text = $"Connection notes";
             labelConnectionNotes.TabStop = false;
 
-            // Add Connection Notes Panel
-            var panelConnectionNotes = new Panel();
-            groupBoxConnection.Controls.Add(panelConnectionNotes);
-            //panelConnectionNotes.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            panelConnectionNotes.Location = new Point(172, 67);
-            panelConnectionNotes.Size = new Size(317, 96);
-            panelConnectionNotes.Name = $"panelConnectionNotes";
-            panelConnectionNotes.BorderStyle = BorderStyle.FixedSingle;
-            panelConnectionNotes.TabIndex = 52;
 
 
             // Add Connection Key TextBox
             _textBoxConnectionKey = new TextBox();
             groupBoxConnection.Controls.Add(_textBoxConnectionKey);
-            //_textBoxConnectionKey.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxConnectionKey.Location = new Point(172, 16);
             _textBoxConnectionKey.Size = new Size(317, 20);
             _textBoxConnectionKey.Name = $"textBoxServerName";
             _textBoxConnectionKey.Text = _localConnection.databaseConnectionKey;
             _textBoxConnectionKey.TextChanged += (UpdateConnectionKey);
             _textBoxConnectionKey.TabIndex = 50;
+            toolTipConnections.SetToolTip(this._textBoxConnectionKey, "The Connection Key is a short and easily recognisable reference for the connection that can be used within TEAM.");
 
 
             // Add Connection Name TextBox
             _textBoxConnectionName = new TextBox();
             groupBoxConnection.Controls.Add(_textBoxConnectionName);
-            //_textBoxConnectioName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxConnectionName.Location = new Point(172, 41);
             _textBoxConnectionName.Size = new Size(317, 20);
             _textBoxConnectionName.Name = $"textBoxConnectionName";
@@ -341,11 +347,38 @@ namespace TEAM
             _textBoxConnectionName.TextChanged += (UpdateConnectionName);
             _textBoxConnectionName.TabIndex = 51;
 
+            // Add Connection Type Radiobutton for Database
+            _radioButtonDatabase = new RadioButton();
+            groupBoxConnection.Controls.Add(_radioButtonDatabase);
+            _radioButtonDatabase.Location = new Point(172, 66);
+            //_textBoxConnectionName.Size = new Size(317, 20);
+            _radioButtonDatabase.Name = $"radioButtonDatabase";
+            _radioButtonDatabase.Text = "Database";
+            //_radioButtonDatabase.TextChanged += (UpdateConnectionName);
+            _radioButtonDatabase.TabIndex = 52;
 
+            // Add Connection Type Radiobutton for File
+            _radioButtonFile = new RadioButton();
+            groupBoxConnection.Controls.Add(_radioButtonFile);
+            _radioButtonFile.Location = new Point(172, 88);
+            //_textBoxConnectionName.Size = new Size(317, 20);
+            _radioButtonFile.Name = $"radioButtonFile";
+            _radioButtonFile.Text = "File";
+            //_radioButtonDatabase.TextChanged += (UpdateConnectionName);
+            _radioButtonFile.TabIndex = 53;
+
+            // Add Connection Notes Panel
+            var panelConnectionNotes = new Panel();
+            groupBoxConnection.Controls.Add(panelConnectionNotes);
+            panelConnectionNotes.Location = new Point(172, 119);
+            panelConnectionNotes.Size = new Size(317, 71);
+            panelConnectionNotes.Name = $"panelConnectionNotes";
+            panelConnectionNotes.BorderStyle = BorderStyle.FixedSingle;
+            //panelConnectionNotes.TabIndex = 52;
 
             // Add Connection Notes RichTextBox
             _richTextBoxConnectionNotes = new RichTextBox();
-            _richTextBoxConnectionNotes.TabIndex = 52;
+            _richTextBoxConnectionNotes.TabIndex = 54;
             panelConnectionNotes.Controls.Add(_richTextBoxConnectionNotes);
             _richTextBoxConnectionNotes.Name = $"richTextBoxConnectionNotes";
             _richTextBoxConnectionNotes.BorderStyle = BorderStyle.None;
@@ -353,6 +386,8 @@ namespace TEAM
             _richTextBoxConnectionNotes.Text = _localConnection.databaseConnectionNotes;
             _richTextBoxConnectionNotes.TextChanged += (UpdateConnectionNotes);
             toolTipConnections.SetToolTip(this._richTextBoxConnectionNotes, "Free format notes to provide additional information about the connection.");
+
+
 
 
             // Add Save Button
