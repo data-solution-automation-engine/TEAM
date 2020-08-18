@@ -48,8 +48,8 @@ namespace TEAM
         {
             _localConnection = (TeamConnectionProfile) input;
 
-            var connectionKey = _localConnection.databaseConnectionKey;
-            var connectionName = _localConnection.databaseConnectionName;
+            var connectionKey = _localConnection.ConnectionKey;
+            var connectionName = _localConnection.ConnectionName;
 
             //var inputNiceName = Regex.Replace(connectionName, "(\\B[A-Z])", " $1");
 
@@ -331,7 +331,7 @@ namespace TEAM
             _textBoxConnectionKey.Location = new Point(172, 16);
             _textBoxConnectionKey.Size = new Size(317, 20);
             _textBoxConnectionKey.Name = $"textBoxServerName";
-            _textBoxConnectionKey.Text = _localConnection.databaseConnectionKey;
+            _textBoxConnectionKey.Text = _localConnection.ConnectionKey;
             _textBoxConnectionKey.TextChanged += (UpdateConnectionKey);
             _textBoxConnectionKey.TabIndex = 50;
             toolTipConnections.SetToolTip(this._textBoxConnectionKey, "The Connection Key is a short and easily recognisable reference for the connection that can be used within TEAM.");
@@ -343,7 +343,7 @@ namespace TEAM
             _textBoxConnectionName.Location = new Point(172, 41);
             _textBoxConnectionName.Size = new Size(317, 20);
             _textBoxConnectionName.Name = $"textBoxConnectionName";
-            _textBoxConnectionName.Text = _localConnection.databaseConnectionName;
+            _textBoxConnectionName.Text = _localConnection.ConnectionName;
             _textBoxConnectionName.TextChanged += (UpdateConnectionName);
             _textBoxConnectionName.TabIndex = 51;
 
@@ -353,7 +353,7 @@ namespace TEAM
             _radioButtonDatabase.Location = new Point(172, 66);
             //_textBoxConnectionName.Size = new Size(317, 20);
             _radioButtonDatabase.Name = $"radioButtonDatabase";
-            _radioButtonDatabase.Text = "Database";
+            _radioButtonDatabase.Text = ConnectionTypes.Database.ToString();
             //_radioButtonDatabase.TextChanged += (UpdateConnectionName);
             _radioButtonDatabase.TabIndex = 52;
 
@@ -363,7 +363,7 @@ namespace TEAM
             _radioButtonFile.Location = new Point(172, 88);
             //_textBoxConnectionName.Size = new Size(317, 20);
             _radioButtonFile.Name = $"radioButtonFile";
-            _radioButtonFile.Text = "File";
+            _radioButtonFile.Text = ConnectionTypes.File.ToString();
             //_radioButtonDatabase.TextChanged += (UpdateConnectionName);
             _radioButtonFile.TabIndex = 53;
 
@@ -383,7 +383,7 @@ namespace TEAM
             _richTextBoxConnectionNotes.Name = $"richTextBoxConnectionNotes";
             _richTextBoxConnectionNotes.BorderStyle = BorderStyle.None;
             _richTextBoxConnectionNotes.Dock = DockStyle.Fill;
-            _richTextBoxConnectionNotes.Text = _localConnection.databaseConnectionNotes;
+            _richTextBoxConnectionNotes.Text = _localConnection.ConnectionNotes;
             _richTextBoxConnectionNotes.TextChanged += (UpdateConnectionNotes);
             toolTipConnections.SetToolTip(this._richTextBoxConnectionNotes, "Free format notes to provide additional information about the connection.");
 
@@ -449,7 +449,7 @@ namespace TEAM
         public event EventHandler<MyConnectionProfileEventArgs> OnDeleteConnection = delegate { };
         public void DeleteConnection(object sender, EventArgs e)
         {
-            if (_localConnection.databaseConnectionKey != "New")
+            if (_localConnection.ConnectionKey != "New")
             {
                 // Remove the entry from the configuration file
                 if (!File.Exists(_connectionFileName))
@@ -467,12 +467,12 @@ namespace TEAM
                 if (jsonArray != null)
                 {
                     jsonKeyLookup = jsonArray.FirstOrDefault(obj =>
-                        obj.connectionInternalId == _localConnection.connectionInternalId);
+                        obj.ConnectionInternalId == _localConnection.ConnectionInternalId);
                 }
 
                 // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file.
                 // No action needed in this case.
-                if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.databaseConnectionKey == "")
+                if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.ConnectionKey == "")
                 {
                     // Do nothing.
                 }
@@ -481,15 +481,15 @@ namespace TEAM
                     // Remove the Json segment.
                     var list = jsonArray.ToList();
                     var itemToRemove =
-                        list.Single(r => r.connectionInternalId == _localConnection.connectionInternalId);
+                        list.Single(r => r.ConnectionInternalId == _localConnection.ConnectionInternalId);
                     list.Remove(itemToRemove);
                     jsonArray = list.ToArray();
 
                     UpdateRichTextBoxInformation(
-                        $"The connection {_localConnection.databaseConnectionKey} was removed from {_connectionFileName}.\r\n");
+                        $"The connection {_localConnection.ConnectionKey} was removed from {_connectionFileName}.\r\n");
 
                     // Remove the connection from the global dictionary
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Remove(_localConnection.connectionInternalId);
+                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Remove(_localConnection.ConnectionInternalId);
                 }
 
                 // Save the updated file to disk.
@@ -509,19 +509,19 @@ namespace TEAM
 
         public void SaveConnection(object sender, EventArgs e)
         {
-            if (_localConnection.databaseConnectionKey != "New")
+            if (_localConnection.ConnectionKey != "New")
             {
                 // Save the connection to global memory (the shared variables across the application).
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.TeamConfigurationSettings.ConnectionDictionary.ContainsKey(_localConnection.connectionInternalId))
+                if (FormBase.TeamConfigurationSettings.ConnectionDictionary.ContainsKey(_localConnection.ConnectionInternalId))
                 {
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary[_localConnection.connectionInternalId] = _localConnection;
+                    FormBase.TeamConfigurationSettings.ConnectionDictionary[_localConnection.ConnectionInternalId] = _localConnection;
                 }
                 else
                 {
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Add(_localConnection.connectionInternalId, _localConnection);
+                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Add(_localConnection.ConnectionInternalId, _localConnection);
                 }
 
                 // Update the connection on disk
@@ -539,11 +539,11 @@ namespace TEAM
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
                 {
-                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.connectionInternalId == _localConnection.connectionInternalId);
+                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.ConnectionInternalId == _localConnection.ConnectionInternalId);
                 }
 
                 // If nothing yet exists int he file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
-                if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.databaseConnectionKey == "")
+                if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.ConnectionKey == "")
                 {
                     //  There was no key in the file for this connection, so it's new.
                     var list = new List<TeamConnectionProfile>();
@@ -557,10 +557,10 @@ namespace TEAM
                 else
                 {
                     // Update the values in an existing JSON segment
-                    jsonKeyLookup.connectionInternalId = _localConnection.connectionInternalId;
-                    jsonKeyLookup.databaseConnectionName = _localConnection.databaseConnectionName;
-                    jsonKeyLookup.databaseConnectionKey = _localConnection.databaseConnectionKey;
-                    jsonKeyLookup.databaseConnectionNotes = _localConnection.databaseConnectionNotes;
+                    jsonKeyLookup.ConnectionInternalId = _localConnection.ConnectionInternalId;
+                    jsonKeyLookup.ConnectionName = _localConnection.ConnectionName;
+                    jsonKeyLookup.ConnectionKey = _localConnection.ConnectionKey;
+                    jsonKeyLookup.ConnectionNotes = _localConnection.ConnectionNotes;
                     jsonKeyLookup.databaseServer = _localConnection.databaseServer;
                 }
 
@@ -569,7 +569,7 @@ namespace TEAM
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                 File.WriteAllText(_connectionFileName, output);
 
-                UpdateRichTextBoxInformation($"The connection {_localConnection.databaseConnectionKey} was saved to {_connectionFileName}. A backup was made in the Backups directory also.\r\n");
+                UpdateRichTextBoxInformation($"The connection {_localConnection.ConnectionKey} was saved to {_connectionFileName}. A backup was made in the Backups directory also.\r\n");
 
                 // The name of the tab page is passed back to the original control (the tab control).
                 OnSaveConnection(this, new MyStringEventArgs(this.Name));
@@ -590,7 +590,7 @@ namespace TEAM
             this.Name = localNameObject.Text;
 
             // Update the in-memory representation of the connection
-            _localConnection.databaseConnectionName = localNameObject.Text;
+            _localConnection.ConnectionName = localNameObject.Text;
         }
 
         public void UpdateConnectionKey(object sender, EventArgs e)
@@ -598,7 +598,7 @@ namespace TEAM
             var localNameObject = (TextBox)sender;
 
             // Update the in-memory representation of the connection
-            _localConnection.databaseConnectionKey = localNameObject.Text;
+            _localConnection.ConnectionKey = localNameObject.Text;
         }
 
         public void UpdateConnectionNotes(object sender, EventArgs e)
@@ -606,7 +606,7 @@ namespace TEAM
             var localNameObject = (RichTextBox)sender;
 
             // Update the in-memory representation of the connection
-            _localConnection.databaseConnectionNotes = localNameObject.Text;
+            _localConnection.ConnectionNotes = localNameObject.Text;
         }
 
         /// <summary>

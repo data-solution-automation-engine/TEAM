@@ -23,10 +23,10 @@ namespace TEAM
             foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
                 // Adding items in the drop down list
-                comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
-                comboBoxStagingConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
-                comboBoxPsaConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
-                comboBoxIntegrationConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxStagingConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxPsaConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxIntegrationConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
             }
 
             comboBoxSourceConnection.ValueMember = "Key";
@@ -44,10 +44,10 @@ namespace TEAM
             }
             else
             {
-                comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
-                comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
-                comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
-                comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
+                comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
+                comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
+                comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
             }
         }
 

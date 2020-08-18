@@ -318,7 +318,7 @@ namespace TEAM
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                configurationFile.AppendLine("MetadataConnectionId|" + FormBase.TeamConfigurationSettings.MetadataConnection.connectionInternalId + "");
+                configurationFile.AppendLine("MetadataConnectionId|" + FormBase.TeamConfigurationSettings.MetadataConnection.ConnectionInternalId + "");
 
                 configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.TeamConfigurationSettings.StgTablePrefixValue +"");
                 configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.TeamConfigurationSettings.PsaTablePrefixValue + "");

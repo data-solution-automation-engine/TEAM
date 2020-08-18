@@ -64,7 +64,7 @@ namespace TEAM
             }
             else
             {
-                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
             }
 
 
@@ -91,7 +91,7 @@ namespace TEAM
                 tabControlConnections.SelectedIndex = 0;
 
                 // Adding items in the drop down list
-                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
                 comboBoxMetadataConnection.ValueMember = "Key";
                 comboBoxMetadataConnection.DisplayMember = "Value";
             }
@@ -146,9 +146,9 @@ namespace TEAM
                     //comboBoxMetadataConnection.SelectedItem = TeamConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
                    
                     var metadataKey = TeamConfigurationSettings.ConnectionDictionary[configList["MetadataConnectionId"]];
-                    comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(metadataKey.databaseConnectionKey);
+                    comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(metadataKey.ConnectionKey);
 
-                    //comboBoxMetadataConnection.SelectedItem = metadataKey.databaseConnectionKey;
+                    //comboBoxMetadataConnection.SelectedItem = metadataKey.ConnectionKey;
                 }
 
 
@@ -423,7 +423,7 @@ namespace TEAM
                 var localConnectionKeyValuePair = (KeyValuePair<TeamConnectionProfile, string>)(comboBoxMetadataConnection.SelectedItem);
 
                 // Lookup the object in the dictionary using the key (id)
-                TeamConfigurationSettings.MetadataConnection = TeamConfigurationSettings.ConnectionDictionary[localConnectionKeyValuePair.Key.connectionInternalId];
+                TeamConfigurationSettings.MetadataConnection = TeamConfigurationSettings.ConnectionDictionary[localConnectionKeyValuePair.Key.ConnectionInternalId];
             }
 
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
@@ -605,9 +605,9 @@ namespace TEAM
             {
                 //tabControlConnections.TabPages.Insert(lastIndex, "New Tab");
                 TeamConnectionProfile connectionProfile = new TeamConnectionProfile();
-                connectionProfile.connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
-                connectionProfile.databaseConnectionName = "New connection";
-                connectionProfile.databaseConnectionKey = "New";
+                connectionProfile.ConnectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
+                connectionProfile.ConnectionName = "New connection";
+                connectionProfile.ConnectionKey = "New";
 
                 TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
                 connectionDatabase.schemaName = "<Schema Name>";
@@ -673,10 +673,10 @@ namespace TEAM
         private void DeleteConnection(Object o, MyConnectionProfileEventArgs e)
         {
             // Remove the tab page from the tab control
-            var localKey = e.Value.databaseConnectionKey;
+            var localKey = e.Value.ConnectionKey;
             tabControlConnections.TabPages.RemoveByKey(localKey);
 
-            comboBoxMetadataConnection.Items.Remove(new KeyValuePair<TeamConnectionProfile, string>(e.Value, e.Value.databaseConnectionKey));
+            comboBoxMetadataConnection.Items.Remove(new KeyValuePair<TeamConnectionProfile, string>(e.Value, e.Value.ConnectionKey));
         }
 
         /// <summary>
@@ -712,13 +712,13 @@ namespace TEAM
 
             foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
-                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                comboBoxMetadataConnection.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
                 comboBoxMetadataConnection.ValueMember = "Key";
                 comboBoxMetadataConnection.DisplayMember = "Value";
 
             }
 
-            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+            comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
         }
 
         /// <summary>
@@ -890,7 +890,7 @@ namespace TEAM
                     richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
                 }
 
-                //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(TeamConfigurationSettings.MetadataConnection, TeamConfigurationSettings.MetadataConnection.databaseConnectionKey);
+                //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(TeamConfigurationSettings.MetadataConnection, TeamConfigurationSettings.MetadataConnection.ConnectionKey);
 
                 if (TeamConfigurationSettings.MetadataConnection is null)
                 {
@@ -900,8 +900,7 @@ namespace TEAM
                 {
 
                     comboBoxMetadataConnection.SelectedIndex =
-                        comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection
-                            .databaseConnectionKey);
+                        comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
                 }
 
                 // Report back to the event log.

@@ -115,7 +115,7 @@ namespace TEAM
             // Load the checkboxes for the reverse-engineering tab
             foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
-                checkedListBoxReverseEngineeringAreas.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.databaseConnectionKey));
+                checkedListBoxReverseEngineeringAreas.Items.Add(new KeyValuePair<TeamConnectionProfile, string>(connection.Value, connection.Value.ConnectionKey));
             }
             #endregion
         }
@@ -3724,7 +3724,7 @@ namespace TEAM
                                 if (row.IsNewRow == false)
                                 {
                                     if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
-                                        connection.Value.connectionInternalId)
+                                        connection.Value.ConnectionInternalId)
                                     {
                                         var localTable = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
                                         localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
@@ -3734,7 +3734,7 @@ namespace TEAM
                                     }
 
                                     if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
-                                        connection.Value.connectionInternalId)
+                                        connection.Value.ConnectionInternalId)
                                     {
                                         var localTable = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
                                         localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
