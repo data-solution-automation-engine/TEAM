@@ -11,8 +11,7 @@ namespace TEAM
     public enum ServerAuthenticationTypes
     {
         NamedUser,
-        SSPI,
-        Undefined
+        SSPI
     }
 
     /// <summary>
@@ -36,22 +35,27 @@ namespace TEAM
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string ConnectionNotes { get; set; }
 
-        public TeamDatabaseConnection databaseServer { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TeamDatabaseConnection DatabaseServer { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TeamFileConnection FileConnection { get; set; }
+
 
         public string CreateSqlServerConnectionString(bool mask)
         {
             // Initialise the return variable
             var outputConnectionString = "";
 
-            if (databaseServer != null)
+            if (DatabaseServer != null)
             {
-                var localDatabaseConnection = databaseServer;
+                var localDatabaseConnection = DatabaseServer;
 
-                var localServerName = localDatabaseConnection.serverName ?? "<>";
-                var localPortNumber = localDatabaseConnection.portNumber ?? "<>";
-                var localDatabaseName = localDatabaseConnection.databaseName ?? "<>";
-                var localNamedUserName = localDatabaseConnection.namedUserName ?? "<>";
-                var localNamedUserPassword = localDatabaseConnection.namedUserPassword ?? "<>";
+                var localServerName = localDatabaseConnection.ServerName ?? "<>";
+                var localPortNumber = localDatabaseConnection.PortNumber ?? "<>";
+                var localDatabaseName = localDatabaseConnection.DatabaseName ?? "<>";
+                var localNamedUserName = localDatabaseConnection.NamedUserName ?? "<>";
+                var localNamedUserPassword = localDatabaseConnection.NamedUserPassword ?? "<>";
 
                 var connectionString = new StringBuilder();
 
@@ -64,11 +68,11 @@ namespace TEAM
 
                 connectionString.Append(";Initial Catalog=" + localDatabaseName);
 
-                if (databaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
+                if (DatabaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
                 {
                     connectionString.Append(";Integrated Security=SSPI");
                 }
-                else if (databaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
+                else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
                 {
                     connectionString.Append(";user id=" + localNamedUserName);
                     connectionString.Append(";password=" + localNamedUserPassword);
@@ -96,23 +100,29 @@ namespace TEAM
         }
     }
 
+    public class TeamFileConnection
+    {
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+    }
+
     /// <summary>
     /// Specification of a database connection within TEAM.
     /// </summary>
     public class TeamDatabaseConnection
     {
-        public string databaseName { get; set; }
-        public string schemaName { get; set; }
-        public string serverName { get; set; }
-        public string portNumber { get; set; }
+        public string DatabaseName { get; set; }
+        public string SchemaName { get; set; }
+        public string ServerName { get; set; }
+        public string PortNumber { get; set; }
         public ServerAuthenticationTypes authenticationType { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string namedUserName { get; set; }
+        public string NamedUserName { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string namedUserPassword { get; set; }
+        public string NamedUserPassword { get; set; }
         public bool IntegratedSecuritySelectionEvaluation()
         {
-            bool returnValue = true;
+            bool returnValue;
             if (authenticationType == ServerAuthenticationTypes.SSPI)
             {
                 returnValue = true;
@@ -126,7 +136,7 @@ namespace TEAM
         }
         public bool NamedUserSecuritySelectionEvaluation()
         {
-            bool returnValue = true;
+            bool returnValue;
             if (authenticationType == ServerAuthenticationTypes.NamedUser)
             {
                 returnValue = true;
@@ -264,14 +274,14 @@ namespace TEAM
             var newTeamDatabaseConnectionMetadata = new TeamDatabaseConnection
             {
                 authenticationType = ServerAuthenticationTypes.SSPI,
-                databaseName = "900_Metadata",
-                schemaName = "dbo",
-                namedUserName = "sa",
-                namedUserPassword = "",
-                serverName = "localhost"
+                DatabaseName = "900_Metadata",
+                SchemaName = "dbo",
+                NamedUserName = "sa",
+                NamedUserPassword = "",
+                ServerName = "localhost"
             };
 
-            newTeamConnectionProfileMetadata.databaseServer = newTeamDatabaseConnectionMetadata;
+            newTeamConnectionProfileMetadata.DatabaseServer = newTeamDatabaseConnectionMetadata;
 
             // Source
             var newTeamConnectionProfileSource = new TeamConnection
@@ -287,14 +297,14 @@ namespace TEAM
             var newTeamDatabaseConnectionSource = new TeamDatabaseConnection
             {
                 authenticationType = ServerAuthenticationTypes.SSPI,
-                databaseName = "000_Source",
-                schemaName = "dbo",
-                namedUserName = "sa",
-                namedUserPassword = "",
-                serverName = "localhost"
+                DatabaseName = "000_Source",
+                SchemaName = "dbo",
+                NamedUserName = "sa",
+                NamedUserPassword = "",
+                ServerName = "localhost"
             };
 
-            newTeamConnectionProfileSource.databaseServer = newTeamDatabaseConnectionSource;
+            newTeamConnectionProfileSource.DatabaseServer = newTeamDatabaseConnectionSource;
 
             // Staging
             var newTeamConnectionProfileStaging = new TeamConnection
@@ -310,14 +320,14 @@ namespace TEAM
             var newTeamDatabaseConnectionStaging = new TeamDatabaseConnection
             {
                 authenticationType = ServerAuthenticationTypes.SSPI,
-                databaseName = "100_Staging_Area",
-                schemaName = "dbo",
-                namedUserName = "sa",
-                namedUserPassword = "",
-                serverName = "localhost"
+                DatabaseName = "100_Staging_Area",
+                SchemaName = "dbo",
+                NamedUserName = "sa",
+                NamedUserPassword = "",
+                ServerName = "localhost"
             };
 
-            newTeamConnectionProfileStaging.databaseServer = newTeamDatabaseConnectionStaging;
+            newTeamConnectionProfileStaging.DatabaseServer = newTeamDatabaseConnectionStaging;
 
             // PSA
             var newTeamConnectionProfilePsa = new TeamConnection
@@ -333,14 +343,14 @@ namespace TEAM
             var newTeamDatabaseConnectionPsa = new TeamDatabaseConnection
             {
                 authenticationType = ServerAuthenticationTypes.SSPI,
-                databaseName = "150_Persistent_Staging_Area",
-                schemaName = "dbo",
-                namedUserName = "sa",
-                namedUserPassword = "",
-                serverName = "localhost"
+                DatabaseName = "150_Persistent_Staging_Area",
+                SchemaName = "dbo",
+                NamedUserName = "sa",
+                NamedUserPassword = "",
+                ServerName = "localhost"
             };
 
-            newTeamConnectionProfilePsa.databaseServer = newTeamDatabaseConnectionPsa;
+            newTeamConnectionProfilePsa.DatabaseServer = newTeamDatabaseConnectionPsa;
 
             // Integration
             var newTeamConnectionProfileIntegration = new TeamConnection
@@ -356,14 +366,14 @@ namespace TEAM
             var newTeamDatabaseConnectionIntegration = new TeamDatabaseConnection
             {
                 authenticationType = ServerAuthenticationTypes.SSPI,
-                databaseName = "200_Integration_Layer",
-                schemaName = "dbo",
-                namedUserName = "sa",
-                namedUserPassword = "",
-                serverName = "localhost"
+                DatabaseName = "200_Integration_Layer",
+                SchemaName = "dbo",
+                NamedUserName = "sa",
+                NamedUserPassword = "",
+                ServerName = "localhost"
             };
 
-            newTeamConnectionProfileIntegration.databaseServer = newTeamDatabaseConnectionIntegration;
+            newTeamConnectionProfileIntegration.DatabaseServer = newTeamDatabaseConnectionIntegration;
 
             // Presentation
             var newTeamConnectionProfilePresentation = new TeamConnection
@@ -379,14 +389,14 @@ namespace TEAM
             var newTeamDatabaseConnectionPresentation = new TeamDatabaseConnection
             {
                 authenticationType = ServerAuthenticationTypes.SSPI,
-                databaseName = "300_Presentation_Layer",
-                schemaName = "dbo",
-                namedUserName = "sa",
-                namedUserPassword = "",
-                serverName = "localhost"
+                DatabaseName = "300_Presentation_Layer",
+                SchemaName = "dbo",
+                NamedUserName = "sa",
+                NamedUserPassword = "",
+                ServerName = "localhost"
             };
 
-            newTeamConnectionProfilePresentation.databaseServer = newTeamDatabaseConnectionPresentation;
+            newTeamConnectionProfilePresentation.DatabaseServer = newTeamDatabaseConnectionPresentation;
 
             // Compile the dictionary
             localDictionary.Add(newTeamConnectionProfileMetadata.ConnectionInternalId, newTeamConnectionProfileMetadata);
@@ -404,10 +414,10 @@ namespace TEAM
 
     public class LocalConnectionDictionary
     {
-        public Dictionary<string, TeamConnection> ConnectionDictionary { get; set; }
+        //public Dictionary<string, TeamConnection> ConnectionDictionary { get; set; }
 
-        public string connectionKey;
-        public string connectionString;
+        //public string connectionKey;
+        //public string connectionString;
 
         //public LocalConnectionDictionary(Dictionary<string, TeamConnectionProfile> localConnectionDictionary)
         //{

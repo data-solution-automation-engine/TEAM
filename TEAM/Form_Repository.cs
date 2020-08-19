@@ -337,7 +337,7 @@ namespace TEAM
             });
 
             var localSourceConnectionString = localSourceConnectionObject.Key.CreateSqlServerConnectionString(false);
-            var localSourceDatabaseName = localSourceConnectionObject.Key.databaseServer.databaseName;
+            var localSourceDatabaseName = localSourceConnectionObject.Key.DatabaseServer.DatabaseName;
 
 
             comboBoxStagingConnection.Invoke((MethodInvoker)delegate
@@ -346,7 +346,7 @@ namespace TEAM
             });
 
             var localStagingConnectionString = localStagingConnectionObject.Key.CreateSqlServerConnectionString(false);
-            var localStagingDatabaseName = localStagingConnectionObject.Key.databaseServer.databaseName;
+            var localStagingDatabaseName = localStagingConnectionObject.Key.DatabaseServer.DatabaseName;
 
 
             comboBoxPsaConnection.Invoke((MethodInvoker)delegate
@@ -354,7 +354,7 @@ namespace TEAM
                 localPsaConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxPsaConnection.SelectedItem;
             });
             var localPsaConnectionString = localPsaConnectionObject.Key.CreateSqlServerConnectionString(false);
-            var localPsaDatabaseName = localPsaConnectionObject.Key.databaseServer.databaseName;
+            var localPsaDatabaseName = localPsaConnectionObject.Key.DatabaseServer.DatabaseName;
 
 
             comboBoxIntegrationConnection.Invoke((MethodInvoker)delegate
@@ -362,7 +362,7 @@ namespace TEAM
                 localIntegrationConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxIntegrationConnection.SelectedItem;
             });
             var localIntegrationConnectionString = localIntegrationConnectionObject.Key.CreateSqlServerConnectionString(false);
-            var localIntegrationDatabaseName = localIntegrationConnectionObject.Key.databaseServer.databaseName;
+            var localIntegrationDatabaseName = localIntegrationConnectionObject.Key.DatabaseServer.DatabaseName;
 
 
             //comboBoxPresentationConnection.Invoke((MethodInvoker)delegate

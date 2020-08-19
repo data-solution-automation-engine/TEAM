@@ -3730,7 +3730,7 @@ namespace TEAM
                                         localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
                                         tableFilterObjects =
                                             tableFilterObjects + "OBJECT_ID(N'[" +
-                                            connection.Value.databaseServer.databaseName + "]." + localTable + "') ,";
+                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
                                     }
 
                                     if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
@@ -3740,7 +3740,7 @@ namespace TEAM
                                         localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
                                         tableFilterObjects =
                                             tableFilterObjects + "OBJECT_ID(N'[" +
-                                            connection.Value.databaseServer.databaseName + "]." + localTable + "') ,";
+                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
                                     }
                                 }
                             }
@@ -3760,7 +3760,7 @@ namespace TEAM
                             physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
                             physicalModelStatement.AppendLine("FROM");
                             physicalModelStatement.AppendLine("(");
-                            physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.databaseServer.databaseName, tableFilterObjects)
+                            physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.DatabaseServer.DatabaseName, tableFilterObjects)
                                 .ToString());
                             physicalModelStatement.AppendLine(") sub");
 
@@ -6614,7 +6614,7 @@ namespace TEAM
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
 
                 var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false) };
-                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.databaseServer.databaseName);
+                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName);
 
                 if (reverseEngineerResults != null)
                 {

@@ -611,14 +611,19 @@ namespace TEAM
                 connectionProfile.ConnectionType = ConnectionTypes.Database;
 
                 TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
-                connectionDatabase.schemaName = "<Schema Name>";
-                connectionDatabase.serverName = "<Server Name>";
-                connectionDatabase.databaseName = "<Database Name>";
-                connectionDatabase.namedUserName = "<User Name>";
-                connectionDatabase.namedUserPassword = "<Password>";
+                connectionDatabase.SchemaName = "<Schema Name>";
+                connectionDatabase.ServerName = "<Server Name>";
+                connectionDatabase.DatabaseName = "<Database Name>";
+                connectionDatabase.NamedUserName = "<User Name>";
+                connectionDatabase.NamedUserPassword = "<Password>";
                 connectionDatabase.authenticationType = ServerAuthenticationTypes.NamedUser;
 
-                connectionProfile.databaseServer = connectionDatabase;
+                TeamFileConnection connectionFile = new TeamFileConnection();
+                connectionFile.FilePath = @"<File Path>";
+                connectionFile.FileName = @"<File Name>";
+
+                connectionProfile.DatabaseServer = connectionDatabase;
+                connectionProfile.FileConnection = connectionFile;
 
 
                 //localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;

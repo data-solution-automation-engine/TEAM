@@ -25,21 +25,31 @@ namespace TEAM
                                              FormBase.GlobalParameters.JsonExtension;
 
         // Objects on main Tab Page.
+        private readonly GroupBox _groupBoxDatabase;
         private TextBox _textBoxServer;
         private TextBox _textBoxPortNumber;
         private TextBox _textBoxDatabase;
         private TextBox _textBoxSchema;
         private RadioButton _radioButtonIntegratedSecurity;
         private RadioButton _radioButtonNamedUserSecurity;
+
+        private readonly GroupBox _groupBoxAuthentication;
         private readonly GroupBox _groupBoxNamedUser;
         private TextBox _textboxUserName;
         private MaskedTextBox _textBoxPassword;
         private readonly TextBox _textBoxConnectionString;
+
         private TextBox _textBoxConnectionName;
         public TextBox _textBoxConnectionKey;
         private RichTextBox _richTextBoxConnectionNotes;
         private RadioButton _radioButtonDatabase;
         private RadioButton _radioButtonFile;
+
+        private readonly GroupBox _groupBoxFileConnection;
+        private readonly Label _labelFilePath;
+        private readonly Label _labelFileName;
+        private TextBox _textBoxFilePath;
+        private TextBox _textBoxFileName;
 
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page.
@@ -47,6 +57,16 @@ namespace TEAM
         public CustomTabPageConnection(object input)
         {
             _localConnection = (TeamConnection) input;
+
+            // Workaround to handle older config files that do not have this object yet.
+            if (_localConnection.FileConnection == null)
+            {
+                TeamFileConnection connectionFile = new TeamFileConnection();
+                connectionFile.FilePath = @"<File Path>";
+                connectionFile.FileName = @"<File Name>";
+                _localConnection.FileConnection = connectionFile;
+
+            }
 
             //var inputNiceName = Regex.Replace(connectionName, "(\\B[A-Z])", " $1");
 
@@ -72,6 +92,7 @@ namespace TEAM
             localPanel.AutoSize = true;
             localPanel.TabStop = false;
 
+            #region Database connection controls
             // Add ConnectionString TextBox
             _textBoxConnectionString = new TextBox();
             localPanel.Controls.Add(_textBoxConnectionString);
@@ -85,18 +106,18 @@ namespace TEAM
             _textBoxConnectionString.TabStop = false;
 
             // Add GroupBox for Database content
-            var groupBoxDatabase = new GroupBox();
-            localPanel.Controls.Add(groupBoxDatabase);
-            groupBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            groupBoxDatabase.Location = new Point(6, 6);
-            groupBoxDatabase.Size = new Size(502, 124);
-            groupBoxDatabase.Name = $"groupBoxDatabaseName";
-            groupBoxDatabase.Text = $"Database";
-            groupBoxDatabase.TabStop = false;
+            _groupBoxDatabase = new GroupBox();
+            localPanel.Controls.Add(_groupBoxDatabase);
+            _groupBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _groupBoxDatabase.Location = new Point(6, 6);
+            _groupBoxDatabase.Size = new Size(502, 124);
+            _groupBoxDatabase.Name = $"groupBoxDatabaseName";
+            _groupBoxDatabase.Text = $"Database";
+            _groupBoxDatabase.TabStop = false;
             
             // Add Database Label
             var labelDatabase = new Label();
-            groupBoxDatabase.Controls.Add(labelDatabase);
+            _groupBoxDatabase.Controls.Add(labelDatabase);
             labelDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             labelDatabase.Location = new Point(6, 19);
             labelDatabase.Size = new Size(160, 13);
@@ -106,7 +127,7 @@ namespace TEAM
 
             // Add Server Label
             var labelServer = new Label();
-            groupBoxDatabase.Controls.Add(labelServer);
+            _groupBoxDatabase.Controls.Add(labelServer);
             labelServer.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             labelServer.Location = new Point(6, 44);
             labelServer.Size = new Size(160, 13);
@@ -116,7 +137,7 @@ namespace TEAM
 
             // Add Port Label
             var labelPortNumber = new Label();
-            groupBoxDatabase.Controls.Add(labelPortNumber);
+            _groupBoxDatabase.Controls.Add(labelPortNumber);
             labelPortNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             labelPortNumber.Location = new Point(6, 69);
             labelPortNumber.Size = new Size(160, 13);
@@ -126,7 +147,7 @@ namespace TEAM
 
             // Add Schema Label
             var labelSchema = new Label();
-            groupBoxDatabase.Controls.Add(labelSchema);
+            _groupBoxDatabase.Controls.Add(labelSchema);
             labelSchema.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             labelSchema.Location = new Point(6, 94);
             labelSchema.Size = new Size(160, 13);
@@ -136,81 +157,81 @@ namespace TEAM
 
             // Add Database TextBox
             _textBoxDatabase = new TextBox();
-            groupBoxDatabase.Controls.Add(_textBoxDatabase);
+            _groupBoxDatabase.Controls.Add(_textBoxDatabase);
             _textBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxDatabase.Location = new Point(172, 16);
             _textBoxDatabase.Size = new Size(317, 20);
             _textBoxDatabase.Name = $"textBoxDatabaseName";
-            _textBoxDatabase.Text = _localConnection.databaseServer.databaseName;
+            _textBoxDatabase.Text = _localConnection.DatabaseServer.DatabaseName;
             _textBoxDatabase.TextChanged += new EventHandler(UpdateConnectionString);
             _textBoxDatabase.TabIndex = 1;
 
             // Add Server TextBox
             _textBoxServer = new TextBox();
-            groupBoxDatabase.Controls.Add(_textBoxServer);
+            _groupBoxDatabase.Controls.Add(_textBoxServer);
             _textBoxServer.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxServer.Location = new Point(172, 41);
             _textBoxServer.Size = new Size(317, 20);
             _textBoxServer.Name = $"textBoxServerName";
-            _textBoxServer.Text = _localConnection.databaseServer.serverName;
+            _textBoxServer.Text = _localConnection.DatabaseServer.ServerName;
             _textBoxServer.TextChanged += new EventHandler(UpdateConnectionString);
             _textBoxServer.TabIndex = 2;
 
             // Add Port Number TextBox
             _textBoxPortNumber = new TextBox();
-            groupBoxDatabase.Controls.Add(_textBoxPortNumber);
+            _groupBoxDatabase.Controls.Add(_textBoxPortNumber);
             _textBoxPortNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxPortNumber.Location = new Point(172, 69);
             _textBoxPortNumber.Size = new Size(317, 20);
             _textBoxPortNumber.Name = $"textBoxPortNumber";
-            _textBoxPortNumber.Text = _localConnection.databaseServer.portNumber;
+            _textBoxPortNumber.Text = _localConnection.DatabaseServer.PortNumber;
             _textBoxPortNumber.TextChanged += new EventHandler(UpdateConnectionString);
             _textBoxPortNumber.TabIndex = 3;
             toolTipConnections.SetToolTip(this._textBoxPortNumber, "Optional port number that can be used to connect to the database server.");
 
             // Add Schema TextBox
             _textBoxSchema = new TextBox();
-            groupBoxDatabase.Controls.Add(_textBoxSchema);
+            _groupBoxDatabase.Controls.Add(_textBoxSchema);
             _textBoxSchema.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxSchema.Location = new Point(172, 94);
             _textBoxSchema.Size = new Size(317, 20);
             _textBoxSchema.Name = $"textBoxSchemaName";
-            _textBoxSchema.Text = _localConnection.databaseServer.schemaName;
+            _textBoxSchema.Text = _localConnection.DatabaseServer.SchemaName;
             _textBoxSchema.TextChanged += new EventHandler(UpdateConnectionString);
             _textBoxSchema.TabIndex = 4;
 
             // Add GroupBox for Authentication content
-            var groupBoxAuthentication = new GroupBox();
-            localPanel.Controls.Add(groupBoxAuthentication);
-            groupBoxAuthentication.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            groupBoxAuthentication.Location = new Point(6, 136);
-            groupBoxAuthentication.Size = new Size(140, 70);
-            groupBoxAuthentication.Name = $"groupBoxAuthentication";
-            groupBoxAuthentication.Text = $"Authentication";
-            groupBoxAuthentication.TabStop = false;
+            _groupBoxAuthentication = new GroupBox();
+            localPanel.Controls.Add(_groupBoxAuthentication);
+            _groupBoxAuthentication.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _groupBoxAuthentication.Location = new Point(6, 136);
+            _groupBoxAuthentication.Size = new Size(140, 70);
+            _groupBoxAuthentication.Name = $"groupBoxAuthentication";
+            _groupBoxAuthentication.Text = $"Authentication";
+            _groupBoxAuthentication.TabStop = false;
 
             // Add RadioButton for Integrated Security
             _radioButtonIntegratedSecurity = new RadioButton();
-            groupBoxAuthentication.Controls.Add(_radioButtonIntegratedSecurity);
+            _groupBoxAuthentication.Controls.Add(_radioButtonIntegratedSecurity);
             _radioButtonIntegratedSecurity.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _radioButtonIntegratedSecurity.Location = new Point(6, 19);
             _radioButtonIntegratedSecurity.Size = new Size(106, 17);
             _radioButtonIntegratedSecurity.Name = $"radioButtonIntegratedSecurity";
             _radioButtonIntegratedSecurity.Text = $@"Integrated (SSPI)"; 
-            _radioButtonIntegratedSecurity.Checked = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
-            _radioButtonIntegratedSecurity.CheckedChanged += new EventHandler(RadioButtonIntegratedSecurityCheckedChanged);
+            _radioButtonIntegratedSecurity.Checked = _localConnection.DatabaseServer.IntegratedSecuritySelectionEvaluation();
+            _radioButtonIntegratedSecurity.CheckedChanged += (RadioButtonIntegratedSecurityCheckedChanged);
             _radioButtonIntegratedSecurity.TabIndex = 5;
 
             // Add RadioButton for Named User
             _radioButtonNamedUserSecurity = new RadioButton();
-            groupBoxAuthentication.Controls.Add(_radioButtonNamedUserSecurity);
+            _groupBoxAuthentication.Controls.Add(_radioButtonNamedUserSecurity);
             _radioButtonNamedUserSecurity.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _radioButtonNamedUserSecurity.Location = new Point(6, 42);
             _radioButtonNamedUserSecurity.Size = new Size(84, 17);
             _radioButtonNamedUserSecurity.Name = $"radioButtonNamedUserSecurity";
             _radioButtonNamedUserSecurity.Text = $@"Named User details";
-            _radioButtonNamedUserSecurity.Checked = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
-            _radioButtonNamedUserSecurity.CheckedChanged += new EventHandler(RadioButtonNamedUserCheckedChanged);
+            _radioButtonNamedUserSecurity.Checked = _localConnection.DatabaseServer.NamedUserSecuritySelectionEvaluation();
+            _radioButtonNamedUserSecurity.CheckedChanged += (RadioButtonNamedUserCheckedChanged);
             _radioButtonNamedUserSecurity.TabIndex = 6;
 
             // Add GroupBox for Named User content
@@ -250,7 +271,7 @@ namespace TEAM
             _textboxUserName.Location = new Point(67, 16);
             _textboxUserName.Size = new Size(276, 20);
             _textboxUserName.Name = $"textboxUserName";
-            _textboxUserName.Text = _localConnection.databaseServer.namedUserName;
+            _textboxUserName.Text = _localConnection.DatabaseServer.NamedUserName;
             _textboxUserName.TextChanged += UpdateConnectionString;
             _textboxUserName.TabIndex = 7;
 
@@ -262,13 +283,65 @@ namespace TEAM
             _textBoxPassword.Size = new Size(276, 20);
             _textBoxPassword.PasswordChar = '*';
             _textBoxPassword.Name = $"textboxUserName";
-            _textBoxPassword.Text = _localConnection.databaseServer.namedUserPassword;
+            _textBoxPassword.Text = _localConnection.DatabaseServer.NamedUserPassword;
             _textBoxPassword.TextChanged += new EventHandler(UpdateConnectionStringWithPassword);
             _textBoxPassword.TabIndex = 8;
+            #endregion
 
 
+            // Add GroupBox for File Connection content
+            _groupBoxFileConnection = new GroupBox();
+            localPanel.Controls.Add(_groupBoxFileConnection);
+            _groupBoxFileConnection.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _groupBoxFileConnection.Location = new Point(6, 6);
+            _groupBoxFileConnection.Size = new Size(502, 124);
+            _groupBoxFileConnection.Name = $"groupBoxFileConnection";
+            _groupBoxFileConnection.Text = $"File";
+            _groupBoxFileConnection.TabStop = false;
 
+            // Add File Path Label
+            _labelFilePath = new Label();
+            _groupBoxFileConnection.Controls.Add(_labelFilePath);
+            _labelFilePath.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _labelFilePath.Location = new Point(6, 19);
+            _labelFilePath.Size = new Size(100, 13);
+            _labelFilePath.Name = $"labelFilePath";
+            _labelFilePath.Text = $"File path";
+            _labelFilePath.TabStop = false;
 
+            // Add File Name Label
+            _labelFileName = new Label();
+            _groupBoxFileConnection.Controls.Add(_labelFileName);
+            _labelFileName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _labelFileName.Location = new Point(6, 44);
+            _labelFileName.Size = new Size(100, 13);
+            _labelFileName.Name = $"labelFileName";
+            _labelFileName.Text = $"File name";
+            _labelFileName.TabStop = false;
+
+            // Add File Path TextBox
+            _textBoxFilePath = new TextBox();
+            _groupBoxFileConnection.Controls.Add(_textBoxFilePath);
+            _textBoxFilePath.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxFilePath.Location = new Point(122, 16);
+            _textBoxFilePath.Size = new Size(367, 20);
+            _textBoxFilePath.Name = $"textBoxFilePath";
+            _textBoxFilePath.Text = _localConnection.FileConnection.FilePath;
+            _textBoxFilePath.TextChanged += (UpdateConnectionFilePath);
+            _textBoxFilePath.TabIndex = 1;
+
+            // Add File Name TextBox
+            _textBoxFileName = new TextBox();
+            _groupBoxFileConnection.Controls.Add(_textBoxFileName);
+            _textBoxFileName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxFileName.Location = new Point(122, 41);
+            _textBoxFileName.Size = new Size(367, 20);
+            _textBoxFileName.Name = $"textBoxFileName";
+            _textBoxFileName.Text = _localConnection.FileConnection.FileName;
+            _textBoxFileName.TextChanged += (UpdateConnectionFileName);
+            _textBoxFileName.TabIndex = 2;
+
+            #region Connection generic controls
             // Add GroupBox for Connection content
             var groupBoxConnection = new GroupBox();
             localPanel.Controls.Add(groupBoxConnection);
@@ -318,8 +391,6 @@ namespace TEAM
             labelConnectionNotes.Text = $"Connection notes";
             labelConnectionNotes.TabStop = false;
 
-
-
             // Add Connection Key TextBox
             _textBoxConnectionKey = new TextBox();
             groupBoxConnection.Controls.Add(_textBoxConnectionKey);
@@ -349,7 +420,7 @@ namespace TEAM
             //_textBoxConnectionName.Size = new Size(317, 20);
             _radioButtonDatabase.Name = $"radioButtonDatabase";
             _radioButtonDatabase.Text = ConnectionTypes.Database.ToString();
-            //_radioButtonDatabase.TextChanged += (UpdateConnectionName);
+            _radioButtonDatabase.CheckedChanged += (UpdateConnectionTypeControls);
             _radioButtonDatabase.TabIndex = 52;
 
             // Add Connection Type Radiobutton for File
@@ -359,7 +430,7 @@ namespace TEAM
             //_textBoxConnectionName.Size = new Size(317, 20);
             _radioButtonFile.Name = $"radioButtonFile";
             _radioButtonFile.Text = ConnectionTypes.File.ToString();
-            //_radioButtonDatabase.TextChanged += (UpdateConnectionName);
+            _radioButtonFile.CheckedChanged += (UpdateConnectionTypeControls);
             _radioButtonFile.TabIndex = 53;
 
             SetConnectionTypesRadioButton();
@@ -382,7 +453,7 @@ namespace TEAM
             _richTextBoxConnectionNotes.Text = _localConnection.ConnectionNotes;
             _richTextBoxConnectionNotes.TextChanged += (UpdateConnectionNotes);
             toolTipConnections.SetToolTip(this._richTextBoxConnectionNotes, "Free format notes to provide additional information about the connection.");
-
+            #endregion
 
 
 
@@ -408,6 +479,10 @@ namespace TEAM
             deleteButton.Click += (DeleteConnection);
             deleteButton.TabIndex = 70;
 
+
+
+
+
             #endregion
 
             #region Constructor Methods
@@ -416,8 +491,8 @@ namespace TEAM
             this.StartUpIndicator = false;
 
             // Retrieve the values from memory
-            bool localSSPI = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
+            bool localSSPI = _localConnection.DatabaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.DatabaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
@@ -538,7 +613,7 @@ namespace TEAM
                     jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.ConnectionInternalId == _localConnection.ConnectionInternalId);
                 }
 
-                // If nothing yet exists int he file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
+                // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
                 if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.ConnectionKey == "")
                 {
                     //  There was no key in the file for this connection, so it's new.
@@ -558,15 +633,24 @@ namespace TEAM
                     jsonKeyLookup.ConnectionKey = _localConnection.ConnectionKey;
                     jsonKeyLookup.ConnectionType = GetSelectedConnectionTypesRadioButtonFromForm();
                     jsonKeyLookup.ConnectionNotes = _localConnection.ConnectionNotes;
-                    jsonKeyLookup.databaseServer = _localConnection.databaseServer;
+                    jsonKeyLookup.DatabaseServer = _localConnection.DatabaseServer;
+                    jsonKeyLookup.FileConnection = _localConnection.FileConnection;
                 }
 
-                // Save the updated file to disk.
-                TeamUtility.CreateFileBackup(_connectionFileName);
-                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                File.WriteAllText(_connectionFileName, output);
+                try
+                {
+                    // Save the updated file to disk.
+                    TeamUtility.CreateFileBackup(_connectionFileName);
+                    string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                    File.WriteAllText(_connectionFileName, output);
 
-                UpdateRichTextBoxInformation($"The connection {_localConnection.ConnectionKey} was saved to {_connectionFileName}. A backup was made in the Backups directory also.\r\n");
+                    UpdateRichTextBoxInformation(
+                        $"The connection {_localConnection.ConnectionKey} was saved to {_connectionFileName}. A backup was made in the Backups directory also.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    // Debugging
+                }
 
                 // The name of the tab page is passed back to the original control (the tab control).
                 OnSaveConnection(this, new MyStringEventArgs(this.Name));
@@ -623,12 +707,43 @@ namespace TEAM
             _localConnection.ConnectionKey = localNameObject.Text;
         }
 
+        /// <summary>
+        /// Add/update (set) the notes to the in-memory object.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void UpdateConnectionNotes(object sender, EventArgs e)
         {
             var localNameObject = (RichTextBox)sender;
 
             // Update the in-memory representation of the connection
             _localConnection.ConnectionNotes = localNameObject.Text;
+        }
+
+        /// <summary>
+        /// Add/update (set) the file path to the in-memory object.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateConnectionFilePath(object sender, EventArgs e)
+        {
+            var localNameObject = (TextBox)sender;
+
+            // Update the in-memory representation of the connection
+            _localConnection.FileConnection.FilePath = localNameObject.Text;
+        }
+
+        /// <summary>
+        /// Add/update (set) the file path to the in-memory object.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateConnectionFileName(object sender, EventArgs e)
+        {
+            var localNameObject = (TextBox)sender;
+
+            // Update the in-memory representation of the connection
+            _localConnection.FileConnection.FileName = localNameObject.Text;
         }
 
         /// <summary>
@@ -642,33 +757,33 @@ namespace TEAM
 
             if (localTextBox.Name == _textBoxDatabase.Name)
             {
-                _localConnection.databaseServer.databaseName = localTextBox.Text;
+                _localConnection.DatabaseServer.DatabaseName = localTextBox.Text;
             } 
 
             if (localTextBox.Name == _textBoxServer.Name)
             {
-                _localConnection.databaseServer.serverName = localTextBox.Text;
+                _localConnection.DatabaseServer.ServerName = localTextBox.Text;
             }
 
             if (localTextBox.Name == _textBoxPortNumber.Name)
             {
                 //Int32.TryParse(localTextBox.Text, out var portNumber);
 
-                _localConnection.databaseServer.portNumber = localTextBox.Text;
+                _localConnection.DatabaseServer.PortNumber = localTextBox.Text;
             }
 
             if (localTextBox.Name == _textBoxSchema.Name)
             {
-                _localConnection.databaseServer.schemaName = localTextBox.Text;
+                _localConnection.DatabaseServer.SchemaName = localTextBox.Text;
             }
 
             if (localTextBox.Name == _textboxUserName.Name)
             {
-                _localConnection.databaseServer.namedUserName = localTextBox.Text;
+                _localConnection.DatabaseServer.NamedUserName = localTextBox.Text;
             }
 
-            bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
+            bool localSspi = _localConnection.DatabaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.DatabaseServer.NamedUserSecuritySelectionEvaluation();
 
             _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
         }
@@ -684,10 +799,10 @@ namespace TEAM
         {
             var localTextBox = (MaskedTextBox)sender;
 
-            _localConnection.databaseServer.namedUserPassword = localTextBox.Text;
+            _localConnection.DatabaseServer.NamedUserPassword = localTextBox.Text;
 
-            bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
+            bool localSspi = _localConnection.DatabaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.DatabaseServer.NamedUserSecuritySelectionEvaluation();
 
             _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
         }
@@ -703,16 +818,16 @@ namespace TEAM
         {
             _groupBoxNamedUser.Visible = false;
 
-            _localConnection.databaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
+            _localConnection.DatabaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
 
             if (_radioButtonIntegratedSecurity.Checked)
             {
-                _localConnection.databaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
+                _localConnection.DatabaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
             }
 
             // Retrieve the values from memory
-            bool localSspi = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
+            bool localSspi = _localConnection.DatabaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.DatabaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
@@ -729,15 +844,73 @@ namespace TEAM
             if (_radioButtonNamedUserSecurity.Checked)
             {
                 _groupBoxNamedUser.Visible = true;
-                _localConnection.databaseServer.authenticationType = ServerAuthenticationTypes.NamedUser;
+                _localConnection.DatabaseServer.authenticationType = ServerAuthenticationTypes.NamedUser;
             }
 
             // Retrieve the values from memory
-            bool localSSPI = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
-            bool localNamed = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
+            bool localSSPI = _localConnection.DatabaseServer.IntegratedSecuritySelectionEvaluation();
+            bool localNamed = _localConnection.DatabaseServer.NamedUserSecuritySelectionEvaluation();
 
             // Display the connection string results
             _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
         }
+
+
+        public void UpdateConnectionTypeControls(object sender, EventArgs e)
+        {
+
+
+            // Show or hide form controls
+            if (sender != null)
+            {
+                if (((RadioButton) sender).Name == _radioButtonFile.Name && _radioButtonFile.Checked)
+                {
+                    // Commit the setting to memory
+                    _localConnection.ConnectionType = ConnectionTypes.File;
+
+                    // Database connection controls
+                    _groupBoxNamedUser.Enabled = false;
+                    _groupBoxNamedUser.Visible = false;
+
+                    _groupBoxDatabase.Enabled = false;
+                    _groupBoxDatabase.Visible = false;
+
+                    _groupBoxAuthentication.Enabled = false;
+                    _groupBoxAuthentication.Visible = false;
+
+                    _textBoxConnectionString.Enabled = false;
+                    _textBoxConnectionString.Visible = false;
+
+                    // File connection controls
+                    _groupBoxFileConnection.Enabled = true;
+                    _groupBoxFileConnection.Visible = true;
+
+                }
+
+                if (((RadioButton) sender).Name == _radioButtonDatabase.Name && _radioButtonDatabase.Checked)
+                {
+                    // Commit the setting to memory
+                    _localConnection.ConnectionType = ConnectionTypes.Database;
+
+                    // Database connection controls
+                    _groupBoxNamedUser.Enabled = true;
+                    _groupBoxNamedUser.Visible = true;
+
+                    _groupBoxDatabase.Enabled = true;
+                    _groupBoxDatabase.Visible = true;
+
+                    _groupBoxAuthentication.Enabled = true;
+                    _groupBoxAuthentication.Visible = true;
+
+                    _textBoxConnectionString.Enabled = true;
+                    _textBoxConnectionString.Visible = true;
+
+                    // File connection controls
+                    _groupBoxFileConnection.Enabled = false;
+                    _groupBoxFileConnection.Visible = false;
+                }
+            }
+        }
+
     }
 }
