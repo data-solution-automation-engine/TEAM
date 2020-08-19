@@ -6,50 +6,6 @@ using Newtonsoft.Json;
 namespace TEAM
 {
     /// <summary>
-    /// Specification of a database connection within TEAM.
-    /// </summary>
-    public class TeamDatabaseConnection
-    {
-        public string databaseName { get; set; }
-        public string schemaName { get; set; }
-        public string serverName { get; set; }
-        public string portNumber { get; set; }
-        public ServerAuthenticationTypes authenticationType { get; set; }
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string namedUserName { get; set; }
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string namedUserPassword { get; set; }
-        public bool IntegratedSecuritySelectionEvaluation()
-        {
-            bool returnValue = true;
-            if (authenticationType == ServerAuthenticationTypes.SSPI)
-            {
-                returnValue = true;
-            }
-            else
-            {
-                returnValue = false;
-            }
-
-            return returnValue;
-        }
-        public bool NamedUserSecuritySelectionEvaluation()
-        {
-            bool returnValue = true;
-            if (authenticationType == ServerAuthenticationTypes.NamedUser)
-            {
-                returnValue = true;
-            }
-            else
-            {
-                returnValue = false;
-            }
-
-            return returnValue;
-        }
-    }
-
-    /// <summary>
     /// Possible ways to authenticate (SQL Server).
     /// </summary>
     public enum ServerAuthenticationTypes
@@ -74,7 +30,8 @@ namespace TEAM
         public string ConnectionName { get; set; }
         public string ConnectionKey { get; set; }
 
-        public string ConnectionType { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public ConnectionTypes ConnectionType { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string ConnectionNotes { get; set; }
@@ -136,6 +93,50 @@ namespace TEAM
             }
 
             return outputConnectionString;
+        }
+    }
+
+    /// <summary>
+    /// Specification of a database connection within TEAM.
+    /// </summary>
+    public class TeamDatabaseConnection
+    {
+        public string databaseName { get; set; }
+        public string schemaName { get; set; }
+        public string serverName { get; set; }
+        public string portNumber { get; set; }
+        public ServerAuthenticationTypes authenticationType { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string namedUserName { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string namedUserPassword { get; set; }
+        public bool IntegratedSecuritySelectionEvaluation()
+        {
+            bool returnValue = true;
+            if (authenticationType == ServerAuthenticationTypes.SSPI)
+            {
+                returnValue = true;
+            }
+            else
+            {
+                returnValue = false;
+            }
+
+            return returnValue;
+        }
+        public bool NamedUserSecuritySelectionEvaluation()
+        {
+            bool returnValue = true;
+            if (authenticationType == ServerAuthenticationTypes.NamedUser)
+            {
+                returnValue = true;
+            }
+            else
+            {
+                returnValue = false;
+            }
+
+            return returnValue;
         }
     }
 
@@ -256,7 +257,8 @@ namespace TEAM
                 ConnectionInternalId = "MetadataConnectionInternalId",
                 ConnectionKey = "Metadata",
                 ConnectionName = "Metadata Repository",
-                ConnectionNotes = ""
+                ConnectionType = ConnectionTypes.Database,
+                ConnectionNotes = "Default metadata repository connection."
             };
 
             var newTeamDatabaseConnectionMetadata = new TeamDatabaseConnection
@@ -278,7 +280,8 @@ namespace TEAM
                 ConnectionInternalId =  "SourceConnectionInternalId",
                 ConnectionKey = "Source",
                 ConnectionName = "Source System",
-                ConnectionNotes = ""
+                ConnectionType = ConnectionTypes.Database,
+                ConnectionNotes = "Sample source system connection."
             };
 
             var newTeamDatabaseConnectionSource = new TeamDatabaseConnection
@@ -300,6 +303,7 @@ namespace TEAM
                 ConnectionInternalId =  "StagingConnectionInternalId",
                 ConnectionKey = "Staging",
                 ConnectionName = "Staging / Landing Area",
+                ConnectionType = ConnectionTypes.Database,
                 ConnectionNotes = ""
             };
 
@@ -322,6 +326,7 @@ namespace TEAM
                 ConnectionInternalId =  "PsaConnectionInternalId",
                 ConnectionKey = "PSA",
                 ConnectionName = "Persistent Staging Area",
+                ConnectionType = ConnectionTypes.Database,
                 ConnectionNotes = ""
             };
 
@@ -344,6 +349,7 @@ namespace TEAM
                 ConnectionInternalId =  "IntegrationConnectionInternalId",
                 ConnectionKey = "Integration",
                 ConnectionName = "Integration Layer",
+                ConnectionType = ConnectionTypes.Database,
                 ConnectionNotes = ""
             };
 
@@ -366,6 +372,7 @@ namespace TEAM
                 ConnectionInternalId = "PresentationConnectionInternalId",
                 ConnectionKey = "Presentation",
                 ConnectionName = "Presentation Layer",
+                ConnectionType = ConnectionTypes.Database,
                 ConnectionNotes = ""
             };
 

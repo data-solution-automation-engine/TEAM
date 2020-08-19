@@ -608,6 +608,7 @@ namespace TEAM
                 connectionProfile.ConnectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
                 connectionProfile.ConnectionName = "New connection";
                 connectionProfile.ConnectionKey = "New";
+                connectionProfile.ConnectionType = ConnectionTypes.Database;
 
                 TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
                 connectionDatabase.schemaName = "<Schema Name>";
@@ -638,6 +639,7 @@ namespace TEAM
 
                 if (newTabExists == false)
                 {
+                    // Create a new tab page using the connection profile (a TeamConnection class object) as input.
                     CustomTabPageConnection localCustomTabPage = new CustomTabPageConnection(connectionProfile);
                     localCustomTabPage.OnDeleteConnection += DeleteConnection;
                     localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
@@ -645,7 +647,7 @@ namespace TEAM
                     tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                     tabControlConnections.SelectedIndex = lastIndex;
 
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new environment was created."));
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new connection was created."));
                 }
                 else
                 {

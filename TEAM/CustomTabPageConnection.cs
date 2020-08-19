@@ -24,7 +24,7 @@ namespace TEAM
                                              FormBase.GlobalParameters.WorkingEnvironment +
                                              FormBase.GlobalParameters.JsonExtension;
 
-        // Objects on main Tab Page
+        // Objects on main Tab Page.
         private TextBox _textBoxServer;
         private TextBox _textBoxPortNumber;
         private TextBox _textBoxDatabase;
@@ -42,14 +42,11 @@ namespace TEAM
         private RadioButton _radioButtonFile;
 
         /// <summary>
-        /// Constructor to instantiate a new Custom Tab Page
+        /// Constructor to instantiate a new Custom Tab Page.
         /// </summary>
         public CustomTabPageConnection(object input)
         {
             _localConnection = (TeamConnection) input;
-
-            var connectionKey = _localConnection.ConnectionKey;
-            var connectionName = _localConnection.ConnectionName;
 
             //var inputNiceName = Regex.Replace(connectionName, "(\\B[A-Z])", " $1");
 
@@ -59,8 +56,8 @@ namespace TEAM
             toolTipConnections.AutoPopDelay = 3000;
 
             // Base properties of the custom tab page
-            Name = $"{connectionKey}";
-            Text = connectionName;
+            Name = $"{_localConnection.ConnectionKey}";
+            Text = _localConnection.ConnectionName;
             BackColor = Color.Transparent;
             BorderStyle = BorderStyle.None;
             UseVisualStyleBackColor = true;
@@ -199,7 +196,7 @@ namespace TEAM
             _radioButtonIntegratedSecurity.Location = new Point(6, 19);
             _radioButtonIntegratedSecurity.Size = new Size(106, 17);
             _radioButtonIntegratedSecurity.Name = $"radioButtonIntegratedSecurity";
-            _radioButtonIntegratedSecurity.Text = $"Integrated (SSPI)"; 
+            _radioButtonIntegratedSecurity.Text = $@"Integrated (SSPI)"; 
             _radioButtonIntegratedSecurity.Checked = _localConnection.databaseServer.IntegratedSecuritySelectionEvaluation();
             _radioButtonIntegratedSecurity.CheckedChanged += new EventHandler(RadioButtonIntegratedSecurityCheckedChanged);
             _radioButtonIntegratedSecurity.TabIndex = 5;
@@ -211,7 +208,7 @@ namespace TEAM
             _radioButtonNamedUserSecurity.Location = new Point(6, 42);
             _radioButtonNamedUserSecurity.Size = new Size(84, 17);
             _radioButtonNamedUserSecurity.Name = $"radioButtonNamedUserSecurity";
-            _radioButtonNamedUserSecurity.Text = $"Named User details";
+            _radioButtonNamedUserSecurity.Text = $@"Named User details";
             _radioButtonNamedUserSecurity.Checked = _localConnection.databaseServer.NamedUserSecuritySelectionEvaluation();
             _radioButtonNamedUserSecurity.CheckedChanged += new EventHandler(RadioButtonNamedUserCheckedChanged);
             _radioButtonNamedUserSecurity.TabIndex = 6;
@@ -306,7 +303,6 @@ namespace TEAM
             // Add Connection Type Label
             var labelConnectionType = new Label();
             groupBoxConnection.Controls.Add(labelConnectionType);
-            //labelConnectionNotes.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             labelConnectionType.Location = new Point(6, 69);
             labelConnectionType.Size = new Size(160, 13);
             labelConnectionType.Name = $"labelConnectionType";
@@ -316,7 +312,6 @@ namespace TEAM
             // Add Connection Notes Label
             var labelConnectionNotes = new Label();
             groupBoxConnection.Controls.Add(labelConnectionNotes);
-            //labelConnectionNotes.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             labelConnectionNotes.Location = new Point(6, 119);
             labelConnectionNotes.Size = new Size(160, 13);
             labelConnectionNotes.Name = $"labelConnectionNotes";
@@ -367,6 +362,8 @@ namespace TEAM
             //_radioButtonDatabase.TextChanged += (UpdateConnectionName);
             _radioButtonFile.TabIndex = 53;
 
+            SetConnectionTypesRadioButton();
+
             // Add Connection Notes Panel
             var panelConnectionNotes = new Panel();
             groupBoxConnection.Controls.Add(panelConnectionNotes);
@@ -374,7 +371,6 @@ namespace TEAM
             panelConnectionNotes.Size = new Size(317, 71);
             panelConnectionNotes.Name = $"panelConnectionNotes";
             panelConnectionNotes.BorderStyle = BorderStyle.FixedSingle;
-            //panelConnectionNotes.TabIndex = 52;
 
             // Add Connection Notes RichTextBox
             _richTextBoxConnectionNotes = new RichTextBox();
@@ -531,7 +527,7 @@ namespace TEAM
                     File.Create(_connectionFileName).Close();
                 }
 
-                // Check if the value already exists in the file
+                // Check if the value already exists in the file.
                 var jsonKeyLookup = new TeamConnection();
 
                 TeamConnection[] jsonArray = JsonConvert.DeserializeObject<TeamConnection[]>(File.ReadAllText(_connectionFileName));
@@ -560,6 +556,7 @@ namespace TEAM
                     jsonKeyLookup.ConnectionInternalId = _localConnection.ConnectionInternalId;
                     jsonKeyLookup.ConnectionName = _localConnection.ConnectionName;
                     jsonKeyLookup.ConnectionKey = _localConnection.ConnectionKey;
+                    jsonKeyLookup.ConnectionType = GetSelectedConnectionTypesRadioButtonFromForm();
                     jsonKeyLookup.ConnectionNotes = _localConnection.ConnectionNotes;
                     jsonKeyLookup.databaseServer = _localConnection.databaseServer;
                 }
@@ -580,6 +577,31 @@ namespace TEAM
             }
         }
 
+        // Retrieve a single value on which RadioButton has been checked.
+        public void SetConnectionTypesRadioButton()
+        {
+            if (_localConnection.ConnectionType == ConnectionTypes.Database)
+            {
+                _radioButtonDatabase.Checked = true;
+            }
+            else
+            {
+                _radioButtonFile.Checked = true;
+            }
+        }
+
+        // Retrieve a single value on which RadioButton has been checked.
+        public ConnectionTypes GetSelectedConnectionTypesRadioButtonFromForm()
+        {
+            var localConnectionType = ConnectionTypes.Database;
+
+            if (_radioButtonFile.Checked)
+            {
+                localConnectionType = ConnectionTypes.File;
+            }
+
+            return localConnectionType;
+        }
 
         public void UpdateConnectionName(object sender, EventArgs e)
         {
