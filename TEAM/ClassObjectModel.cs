@@ -9,7 +9,7 @@ namespace TEAM
     /// The parent object containing the list of source-to-target mappings. This is the highest level and contains the list of mappings (as individual objects
     /// but also the parameters inherited from TEAM and VEDW.
     /// </summary>
-    class VEDW_DataObjectMappingList : DataObjectMappingList
+    class VDW_DataObjectMappingList : DataObjectMappingList
     {
         // Generic interface definitions
         //public List<DataObjectMapping> dataObjectMapping { get; set; }

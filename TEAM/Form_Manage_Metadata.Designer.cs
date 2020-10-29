@@ -51,12 +51,6 @@ namespace TEAM
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridViewTableMetadata = new TEAM.CustomDataGridViewTable();
-            this.dataGridViewComboBoxColumn33 = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.dataGridViewTextBoxColumn98 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewComboBoxColumn34 = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.dataGridViewTextBoxColumn99 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn100 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn101 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStripTableMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteThisRowFromTheGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +66,12 @@ namespace TEAM
             this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteThisRowFromTheGridToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.dataGridViewComboBoxColumn33 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dataGridViewTextBoxColumn98 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewComboBoxColumn34 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.dataGridViewTextBoxColumn99 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn100 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn101 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewComboBoxColumn31 = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.dataGridViewTextBoxColumn94 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewComboBoxColumn32 = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -294,7 +294,7 @@ namespace TEAM
             // buttonValidation
             // 
             this.buttonValidation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonValidation.Location = new System.Drawing.Point(1304, 643);
+            this.buttonValidation.Location = new System.Drawing.Point(1497, 643);
             this.buttonValidation.Name = "buttonValidation";
             this.buttonValidation.Size = new System.Drawing.Size(120, 40);
             this.buttonValidation.TabIndex = 24;
@@ -306,7 +306,7 @@ namespace TEAM
             // 
             this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(1303, 437);
+            this.labelResult.Location = new System.Drawing.Point(1496, 437);
             this.labelResult.Name = "labelResult";
             this.labelResult.Size = new System.Drawing.Size(38, 13);
             this.labelResult.TabIndex = 23;
@@ -315,7 +315,7 @@ namespace TEAM
             // buttonStart
             // 
             this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStart.Location = new System.Drawing.Point(1304, 394);
+            this.buttonStart.Location = new System.Drawing.Point(1497, 394);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(120, 40);
             this.buttonStart.TabIndex = 22;
@@ -329,7 +329,7 @@ namespace TEAM
             // buttonSaveMetadataChanges
             // 
             this.buttonSaveMetadataChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSaveMetadataChanges.Location = new System.Drawing.Point(1304, 149);
+            this.buttonSaveMetadataChanges.Location = new System.Drawing.Point(1497, 149);
             this.buttonSaveMetadataChanges.Name = "buttonSaveMetadataChanges";
             this.buttonSaveMetadataChanges.Size = new System.Drawing.Size(120, 40);
             this.buttonSaveMetadataChanges.TabIndex = 1;
@@ -375,7 +375,7 @@ namespace TEAM
             this.groupBoxMetadataCounts.Controls.Add(this.labelLnkCount);
             this.groupBoxMetadataCounts.Controls.Add(this.labelSatCount);
             this.groupBoxMetadataCounts.Controls.Add(this.labelHubCount);
-            this.groupBoxMetadataCounts.Location = new System.Drawing.Point(1304, 764);
+            this.groupBoxMetadataCounts.Location = new System.Drawing.Point(1497, 764);
             this.groupBoxMetadataCounts.Name = "groupBoxMetadataCounts";
             this.groupBoxMetadataCounts.Size = new System.Drawing.Size(192, 86);
             this.groupBoxMetadataCounts.TabIndex = 16;
@@ -429,7 +429,7 @@ namespace TEAM
             this.tabControl1.Location = new System.Drawing.Point(16, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1281, 731);
+            this.tabControl1.Size = new System.Drawing.Size(1474, 731);
             this.tabControl1.TabIndex = 15;
             // 
             // tabPage1
@@ -438,7 +438,7 @@ namespace TEAM
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1273, 705);
+            this.tabPage1.Size = new System.Drawing.Size(1466, 705);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Table Mappings";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -454,7 +454,7 @@ namespace TEAM
             this.dataGridViewTableMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewTableMetadata.MinimumSize = new System.Drawing.Size(964, 511);
             this.dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
-            this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1268, 699);
+            this.dataGridViewTableMetadata.Size = new System.Drawing.Size(1461, 699);
             this.dataGridViewTableMetadata.TabIndex = 1;
             this.dataGridViewTableMetadata.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DataGridViewTableMetadata_CellFormatting);
             this.dataGridViewTableMetadata.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridViewTableMetadata_CellValidating);
@@ -462,48 +462,6 @@ namespace TEAM
             this.dataGridViewTableMetadata.Sorted += new System.EventHandler(this.textBoxFilterCriterion_OnDelayedTextChanged);
             this.dataGridViewTableMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewTableMetadataKeyDown);
             this.dataGridViewTableMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewTableMetadata_MouseDown);
-            // 
-            // dataGridViewComboBoxColumn33
-            // 
-            this.dataGridViewComboBoxColumn33.DataPropertyName = "SourceConnection";
-            this.dataGridViewComboBoxColumn33.DisplayMember = "ConnectionKey";
-            this.dataGridViewComboBoxColumn33.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
-            this.dataGridViewComboBoxColumn33.HeaderText = "Source Connection";
-            this.dataGridViewComboBoxColumn33.Name = "dataGridViewComboBoxColumn33";
-            this.dataGridViewComboBoxColumn33.ValueMember = "ConnectionKey";
-            // 
-            // dataGridViewTextBoxColumn98
-            // 
-            this.dataGridViewTextBoxColumn98.DataPropertyName = "TargetTable";
-            this.dataGridViewTextBoxColumn98.HeaderText = "Target Data Object";
-            this.dataGridViewTextBoxColumn98.Name = "dataGridViewTextBoxColumn98";
-            // 
-            // dataGridViewComboBoxColumn34
-            // 
-            this.dataGridViewComboBoxColumn34.DataPropertyName = "TargetConnection";
-            this.dataGridViewComboBoxColumn34.DisplayMember = "ConnectionKey";
-            this.dataGridViewComboBoxColumn34.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
-            this.dataGridViewComboBoxColumn34.HeaderText = "Target Connection";
-            this.dataGridViewComboBoxColumn34.Name = "dataGridViewComboBoxColumn34";
-            this.dataGridViewComboBoxColumn34.ValueMember = "ConnectionKey";
-            // 
-            // dataGridViewTextBoxColumn99
-            // 
-            this.dataGridViewTextBoxColumn99.DataPropertyName = "BusinessKeyDefinition";
-            this.dataGridViewTextBoxColumn99.HeaderText = "Business Key Definition";
-            this.dataGridViewTextBoxColumn99.Name = "dataGridViewTextBoxColumn99";
-            // 
-            // dataGridViewTextBoxColumn100
-            // 
-            this.dataGridViewTextBoxColumn100.DataPropertyName = "DrivingKeyDefinition";
-            this.dataGridViewTextBoxColumn100.HeaderText = "Driving Key Definition";
-            this.dataGridViewTextBoxColumn100.Name = "dataGridViewTextBoxColumn100";
-            // 
-            // dataGridViewTextBoxColumn101
-            // 
-            this.dataGridViewTextBoxColumn101.DataPropertyName = "FilterCriterion";
-            this.dataGridViewTextBoxColumn101.HeaderText = "Filter Criterion";
-            this.dataGridViewTextBoxColumn101.Name = "dataGridViewTextBoxColumn101";
             // 
             // contextMenuStripTableMapping
             // 
@@ -533,7 +491,7 @@ namespace TEAM
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1273, 705);
+            this.tabPage2.Size = new System.Drawing.Size(1466, 705);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Attribute Mappings";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -575,13 +533,14 @@ namespace TEAM
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1273, 705);
+            this.tabPage3.Size = new System.Drawing.Size(1466, 705);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Physical Model";
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right) | System.Windows.Forms.AnchorStyles.Bottom));
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
             this.groupBox4.Location = new System.Drawing.Point(1147, 52);
             this.groupBox4.Name = "groupBox4";
@@ -646,6 +605,44 @@ namespace TEAM
             this.deleteThisRowFromTheGridToolStripMenuItem2.Size = new System.Drawing.Size(225, 22);
             this.deleteThisRowFromTheGridToolStripMenuItem2.Text = "Delete this row from the grid";
             this.deleteThisRowFromTheGridToolStripMenuItem2.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem2_Click);
+            // 
+            // dataGridViewComboBoxColumn33
+            // 
+            this.dataGridViewComboBoxColumn33.DataPropertyName = "SourceConnection";
+            this.dataGridViewComboBoxColumn33.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
+            this.dataGridViewComboBoxColumn33.HeaderText = "Source Connection";
+            this.dataGridViewComboBoxColumn33.Name = "dataGridViewComboBoxColumn33";
+            // 
+            // dataGridViewTextBoxColumn98
+            // 
+            this.dataGridViewTextBoxColumn98.DataPropertyName = "TargetTable";
+            this.dataGridViewTextBoxColumn98.HeaderText = "Target Data Object";
+            this.dataGridViewTextBoxColumn98.Name = "dataGridViewTextBoxColumn98";
+            // 
+            // dataGridViewComboBoxColumn34
+            // 
+            this.dataGridViewComboBoxColumn34.DataPropertyName = "TargetConnection";
+            this.dataGridViewComboBoxColumn34.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
+            this.dataGridViewComboBoxColumn34.HeaderText = "Target Connection";
+            this.dataGridViewComboBoxColumn34.Name = "dataGridViewComboBoxColumn34";
+            // 
+            // dataGridViewTextBoxColumn99
+            // 
+            this.dataGridViewTextBoxColumn99.DataPropertyName = "BusinessKeyDefinition";
+            this.dataGridViewTextBoxColumn99.HeaderText = "Business Key Definition";
+            this.dataGridViewTextBoxColumn99.Name = "dataGridViewTextBoxColumn99";
+            // 
+            // dataGridViewTextBoxColumn100
+            // 
+            this.dataGridViewTextBoxColumn100.DataPropertyName = "DrivingKeyDefinition";
+            this.dataGridViewTextBoxColumn100.HeaderText = "Driving Key Definition";
+            this.dataGridViewTextBoxColumn100.Name = "dataGridViewTextBoxColumn100";
+            // 
+            // dataGridViewTextBoxColumn101
+            // 
+            this.dataGridViewTextBoxColumn101.DataPropertyName = "FilterCriterion";
+            this.dataGridViewTextBoxColumn101.HeaderText = "Filter Criterion";
+            this.dataGridViewTextBoxColumn101.Name = "dataGridViewTextBoxColumn101";
             // 
             // dataGridViewComboBoxColumn31
             // 
@@ -1521,7 +1518,7 @@ namespace TEAM
             this.outputGroupBoxVersioning.Controls.Add(this.radioButtonMinorRelease);
             this.outputGroupBoxVersioning.Controls.Add(this.radiobuttonMajorRelease);
             this.outputGroupBoxVersioning.Controls.Add(this.radiobuttonNoVersionChange);
-            this.outputGroupBoxVersioning.Location = new System.Drawing.Point(1304, 49);
+            this.outputGroupBoxVersioning.Location = new System.Drawing.Point(1497, 49);
             this.outputGroupBoxVersioning.Name = "outputGroupBoxVersioning";
             this.outputGroupBoxVersioning.Size = new System.Drawing.Size(191, 94);
             this.outputGroupBoxVersioning.TabIndex = 2;
@@ -1566,7 +1563,7 @@ namespace TEAM
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonPhysicalMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.radioButtonVirtualMode);
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
-            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1304, 249);
+            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1497, 249);
             this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
             this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(191, 139);
             this.MetadataGenerationGroupBox.TabIndex = 3;
@@ -1634,9 +1631,9 @@ namespace TEAM
             // 
             // labelInformation
             // 
-            this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelInformation.AutoSize = true;
-            this.labelInformation.Location = new System.Drawing.Point(520, 764);
+            this.labelInformation.Location = new System.Drawing.Point(520, 763);
             this.labelInformation.Name = "labelInformation";
             this.labelInformation.Size = new System.Drawing.Size(59, 13);
             this.labelInformation.TabIndex = 5;
@@ -1648,9 +1645,9 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(520, 780);
+            this.richTextBoxInformation.Location = new System.Drawing.Point(523, 780);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.Size = new System.Drawing.Size(726, 69);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(960, 69);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
             // 
@@ -1662,7 +1659,7 @@ namespace TEAM
             this.validationToolStripMenuItem});
             this.menuStripMetadata.Location = new System.Drawing.Point(0, 0);
             this.menuStripMetadata.Name = "menuStripMetadata";
-            this.menuStripMetadata.Size = new System.Drawing.Size(1507, 24);
+            this.menuStripMetadata.Size = new System.Drawing.Size(1700, 24);
             this.menuStripMetadata.TabIndex = 3;
             this.menuStripMetadata.Text = "menuStrip1";
             // 
@@ -1842,7 +1839,7 @@ namespace TEAM
             this.groupBoxJsonOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxBackupFiles);
             this.groupBoxJsonOptions.Controls.Add(this.checkBoxMergeFiles);
-            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1304, 689);
+            this.groupBoxJsonOptions.Location = new System.Drawing.Point(1497, 689);
             this.groupBoxJsonOptions.Name = "groupBoxJsonOptions";
             this.groupBoxJsonOptions.Size = new System.Drawing.Size(191, 66);
             this.groupBoxJsonOptions.TabIndex = 26;
@@ -1852,7 +1849,7 @@ namespace TEAM
             // buttonGenerateJsonInterface
             // 
             this.buttonGenerateJsonInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonGenerateJsonInterface.Location = new System.Drawing.Point(1304, 597);
+            this.buttonGenerateJsonInterface.Location = new System.Drawing.Point(1497, 597);
             this.buttonGenerateJsonInterface.Name = "buttonGenerateJsonInterface";
             this.buttonGenerateJsonInterface.Size = new System.Drawing.Size(120, 40);
             this.buttonGenerateJsonInterface.TabIndex = 28;
@@ -1864,7 +1861,7 @@ namespace TEAM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1507, 861);
+            this.ClientSize = new System.Drawing.Size(1700, 861);
             this.Controls.Add(this.buttonGenerateJsonInterface);
             this.Controls.Add(this.checkBoxResizeDataGrid);
             this.Controls.Add(this.groupBoxJsonOptions);

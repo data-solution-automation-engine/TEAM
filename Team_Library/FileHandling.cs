@@ -24,13 +24,15 @@ namespace TEAM
                 if (!Directory.Exists(inputPath))
                 {
                     Directory.CreateDirectory(inputPath);
-                    localEvent = Event.CreateNewEvent(EventTypes.Information, $"Created a new directory for {inputPath}.\r\n");
+                    localEvent = Event.CreateNewEvent(EventTypes.Information,
+                        $"Created a new directory for {inputPath}.\r\n");
 
                 }
             }
             catch (Exception ex)
             {
-                localEvent = Event.CreateNewEvent(EventTypes.Error, $"Error creation directory at {inputPath} the message is {ex}.\r\n");
+                localEvent = Event.CreateNewEvent(EventTypes.Error,
+                    $"Error creation directory at {inputPath} the message is {ex}.\r\n");
             }
 
             return localEvent;
@@ -56,12 +58,14 @@ namespace TEAM
                         outfile.Close();
                     }
 
-                    localEvent = Event.CreateNewEvent(EventTypes.Information, $"The new file {fileName} has been created.\r\n");
+                    localEvent = Event.CreateNewEvent(EventTypes.Information,
+                        $"The new file {fileName} has been created.\r\n");
                 }
             }
             catch (Exception ex)
             {
-                localEvent = Event.CreateNewEvent(EventTypes.Error, $"Error creating a new configuration file at {fileName}. The message is {ex}.\r\n");
+                localEvent = Event.CreateNewEvent(EventTypes.Error,
+                    $"Error creating a new configuration file at {fileName}. The message is {ex}.\r\n");
             }
 
             return localEvent;

@@ -14,7 +14,7 @@ namespace TEAM
 
            var bla =Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText;
 
-            MessageBox.Show("Error " + anError.Context);
+            MessageBox.Show("Error in Custom Data Grid View. The error is: " + anError.Context);
 
             if (anError.Context == DataGridViewDataErrorContexts.Commit)
             {

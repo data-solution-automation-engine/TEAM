@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
@@ -150,6 +151,7 @@ namespace TEAM
         }
     }
 
+    [Serializable]
     public class LocalTeamConnection
     {
         public string ConnectionKey { get; }
