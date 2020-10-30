@@ -25,7 +25,7 @@ namespace TEAM
     }
 
     /// <summary>
-    /// The metadata containing dataObject to dataObject (source-to-target) mappings.
+    /// The metadata collection object containing all dataObject to dataObject (source-to-target) mappings.
     /// </summary>
     public class TeamTableMapping
     {

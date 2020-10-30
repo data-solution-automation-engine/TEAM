@@ -7862,20 +7862,58 @@ namespace TEAM
                         if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
                         {
                             DataRow[] columnRows = columnMetadataDataTable.Select(
-                                "[TARGET_NAME] = '" + targetDataObjectName + "' AND [SOURCE_NAME] = '" +
-                                (string) row["SOURCE_NAME"] + "'");
+                                "[TARGET_NAME] = '" + targetDataObjectName +
+                                           "' AND [SOURCE_NAME] = '" + (string) row["SOURCE_NAME"] + "'");
 
                             foreach (DataRow column in columnRows)
                             {
-                                DataItemMapping columnMapping = new DataItemMapping();
-                                DataItem sourceColumn = new DataItem();
-                                DataItem targetColumn = new DataItem();
+                                DataItemMapping dataItemMapping = new DataItemMapping();
+                                DataItem sourceDataItem = new DataItem();
+                                DataItem targetDataItem = new DataItem();
 
-                                sourceColumn.name = (string) column["SOURCE_ATTRIBUTE_NAME"];
-                                targetColumn.name = (string) column["TARGET_ATTRIBUTE_NAME"];
+                                sourceDataItem.name = (string) column["SOURCE_ATTRIBUTE_NAME"];
+                                targetDataItem.name = (string) column["TARGET_ATTRIBUTE_NAME"];
 
-                                columnMapping.sourceDataItem = sourceColumn;
-                                columnMapping.targetDataItem = targetColumn;
+                                #region Data types
+                                // Retrieve the physical model
+                                // Add data type details, if requested.
+                                DataTable physicalModelDataTable = new DataTable();
+                                var metadataQuery = @"SELECT
+                                                           [DATABASE_NAME]
+                                                          ,[SCHEMA_NAME]
+                                                          ,[TABLE_NAME]
+                                                          ,[COLUMN_NAME]
+                                                          ,[DATA_TYPE]
+                                                          ,[CHARACTER_MAXIMUM_LENGTH]
+                                                          ,[NUMERIC_PRECISION]
+                                                          ,[ORDINAL_POSITION]
+                                                          ,[PRIMARY_KEY_INDICATOR]
+                                                      FROM [interface].[INTERFACE_PHYSICAL_MODEL]";
+
+                                physicalModelDataTable = Utility.GetDataTable(ref conn, metadataQuery);
+
+                                if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
+                                {
+                                    DataRow[] physicalModelRow = physicalModelDataTable.Select("[TABLE_NAME] = '" + sourceDataObjectName + "' AND [COLUMN_NAME] = '" + (string)column["SOURCE_ATTRIBUTE_NAME"] + "'");
+
+                                    var dataType = physicalModelRow[0].ItemArray[4].ToString();
+                                    sourceDataItem.dataType = dataType;
+
+                                    if (dataType == "varchar")
+                                    {
+                                        sourceDataItem.characterLength = (int)physicalModelRow[0].ItemArray[5];
+                                    } 
+                                    else if (dataType == "numeric")
+                                    {
+                                        sourceDataItem.numericPrecision = (int)physicalModelRow[0].ItemArray[6];
+                                        //sourceDataItem.numericScale = (int)physicalModelRow[0].ItemArray[5];
+                                    }
+
+                                }
+                                #endregion
+
+                                dataItemMapping.sourceDataItem = sourceDataItem;
+                                dataItemMapping.targetDataItem = targetDataItem;
 
                                 // Adding Multi-Active Key classification
                                 if (column.Table.Columns.Contains("MULTI_ACTIVE_KEY_INDICATOR"))
@@ -7892,7 +7930,7 @@ namespace TEAM
                                         dataItemClassificationList.Add(dataItemClassification);
 
                                         // Add the classification to the target Data Item
-                                        columnMapping.targetDataItem.dataItemClassification =
+                                        dataItemMapping.targetDataItem.dataItemClassification =
                                             dataItemClassificationList;
                                     }
                                 }
@@ -7907,10 +7945,10 @@ namespace TEAM
                                     dataItemClassificationList.Add(dataItemClassification);
 
                                     // Add the classification to the target Data Item
-                                    columnMapping.sourceDataItem.dataItemClassification = dataItemClassificationList;
+                                    dataItemMapping.sourceDataItem.dataItemClassification = dataItemClassificationList;
                                 }
 
-                                dataItemMappingList.Add(columnMapping);
+                                dataItemMappingList.Add(dataItemMapping);
                             }
                         }
 
@@ -7991,14 +8029,20 @@ namespace TEAM
                         targetDataObject.name = (string) row["TARGET_NAME"];
 
                         // Source and target connection information
-                        var sourceDataConnection = new DataConnection();
-                        var targetDataConnection = new DataConnection();
-                        
-                        sourceDataConnection.dataConnectionString = sourceConnection.ConnectionKey;
-                        targetDataConnection.dataConnectionString = targetConnection.ConnectionKey;
+                        if (JsonExportSettings.GenerateSourceDataObjectConnection == "True")
+                        {
+                            var sourceDataConnection = new DataConnection();
+                            sourceDataConnection.dataConnectionString = sourceConnection.ConnectionKey;
 
-                        sourceDataObject.dataObjectConnection = sourceDataConnection;
-                        targetDataObject.dataObjectConnection = targetDataConnection;
+                            sourceDataObject.dataObjectConnection = sourceDataConnection;
+                        }
+
+                        if (JsonExportSettings.GenerateTargetDataObjectConnection == "True")
+                        {
+                            var targetDataConnection = new DataConnection();
+                            targetDataConnection.dataConnectionString = targetConnection.ConnectionKey;
+                            targetDataObject.dataObjectConnection = targetDataConnection;
+                        }
 
                         sourceToTargetMapping.sourceDataObject = sourceDataObject;
                         sourceToTargetMapping.targetDataObject = targetDataObject;
