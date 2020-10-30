@@ -100,7 +100,7 @@ namespace TEAM
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
                 LocalTeamEnvironmentConfiguration.LoadValidationFile(validationFile);
 
-                richTextBoxInformation.Text += "\r\nThe validation file " + validationFile + " has been loaded.";
+                richTextBoxInformation.Text += "\r\nThe configuration file " + validationFile + " has been loaded.";
             }
             catch (Exception)
             {
@@ -122,7 +122,7 @@ namespace TEAM
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
                 LocalTeamEnvironmentConfiguration.LoadJsonConfigurationFile(jsonConfigurationFile);
 
-                richTextBoxInformation.Text += "\r\nThe validation file " + jsonConfigurationFile + " has been loaded.";
+                richTextBoxInformation.Text += "\r\nThe configuration file " + jsonConfigurationFile + " has been loaded.";
             }
             catch (Exception)
             {
@@ -661,15 +661,20 @@ namespace TEAM
         private void CloseValidationForm(object sender, FormClosedEventArgs e)
         {
             _myValidationForm = null;
-        }  
+        }
+
+        private void CloseJsonForm(object sender, FormClosedEventArgs e)
+        {
+            _myJsonForm = null;
+        }
 
         // Threads starting for other (sub) forms
-        private FormJsonConfiguration _myValidationForm;
+        private FormManageValidation _myValidationForm;
         public void ThreadProcValidation()
         {
             if (_myValidationForm == null)
             {
-                _myValidationForm = new FormJsonConfiguration(this);
+                _myValidationForm = new FormManageValidation(this);
                 _myValidationForm.Show();
 
                 Application.Run();
@@ -683,7 +688,7 @@ namespace TEAM
                     _myValidationForm.Invoke((MethodInvoker)delegate { _myValidationForm.Close(); });
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormJsonConfiguration(this);
+                    _myValidationForm = new FormManageValidation(this);
                     _myValidationForm.Show();
                     Application.Run();
                 }
@@ -692,13 +697,50 @@ namespace TEAM
                     // No invoke required - same thread
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormJsonConfiguration(this);
+                    _myValidationForm = new FormManageValidation(this);
                     _myValidationForm.Show();
                     Application.Run();
                 }
-
             }
         }
+
+        // Threads starting for other (sub) forms
+        private FormJsonConfiguration _myJsonForm;
+        public void ThreadProcJson()
+        {
+            if (_myJsonForm == null)
+            {
+                _myJsonForm = new FormJsonConfiguration(this);
+                _myJsonForm.Show();
+
+                Application.Run();
+            }
+
+            else
+            {
+                if (_myJsonForm.InvokeRequired)
+                {
+                    // Thread Error
+                    _myJsonForm.Invoke((MethodInvoker)delegate { _myJsonForm.Close(); });
+                    _myJsonForm.FormClosed += CloseJsonForm;
+
+                    _myJsonForm = new FormJsonConfiguration(this);
+                    _myJsonForm.Show();
+                    Application.Run();
+                }
+                else
+                {
+                    // No invoke required - same thread
+                    _myJsonForm.FormClosed += CloseJsonForm;
+
+                    _myJsonForm = new FormJsonConfiguration(this);
+                    _myJsonForm.Show();
+                    Application.Run();
+                }
+            }
+        }
+
+
 
         private void trackBarVersioning_ValueChanged(object sender, EventArgs e)
         {
@@ -8454,6 +8496,13 @@ namespace TEAM
             {
                 MessageBox.Show("A problem occured when attempting to save the file to disk. The detail error message is: " + ex.Message);
             }
+        }
+
+        private void manageJsonExportRulesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcJson);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
     }
 }

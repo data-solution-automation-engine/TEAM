@@ -242,6 +242,8 @@ namespace TEAM
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
             this.buttonGenerateJsonInterface = new System.Windows.Forms.Button();
+            this.jsonExportConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageJsonExportRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -1656,7 +1658,8 @@ namespace TEAM
             this.menuStripMetadata.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.metadataToolStripMenuItem,
             this.businessKeyMetadataToolStripMenuItem,
-            this.validationToolStripMenuItem});
+            this.validationToolStripMenuItem,
+            this.jsonExportConfigurationToolStripMenuItem});
             this.menuStripMetadata.Location = new System.Drawing.Point(0, 0);
             this.menuStripMetadata.Name = "menuStripMetadata";
             this.menuStripMetadata.Size = new System.Drawing.Size(1700, 24);
@@ -1856,6 +1859,22 @@ namespace TEAM
             this.buttonGenerateJsonInterface.Text = "Generate Json Interface Files Only";
             this.buttonGenerateJsonInterface.UseVisualStyleBackColor = true;
             this.buttonGenerateJsonInterface.Click += new System.EventHandler(this.ButtonClickExportToJson);
+            // 
+            // jsonExportConfigurationToolStripMenuItem
+            // 
+            this.jsonExportConfigurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.manageJsonExportRulesToolStripMenuItem});
+            this.jsonExportConfigurationToolStripMenuItem.Name = "jsonExportConfigurationToolStripMenuItem";
+            this.jsonExportConfigurationToolStripMenuItem.Size = new System.Drawing.Size(156, 20);
+            this.jsonExportConfigurationToolStripMenuItem.Text = "Json Export Configuration";
+            // 
+            // manageJsonExportRulesToolStripMenuItem
+            // 
+            this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
+            this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
+            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage Json export rules";
+            this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
             // 
             // FormManageMetadata
             // 
@@ -2130,5 +2149,7 @@ namespace TEAM
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn99;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn100;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn101;
+        private System.Windows.Forms.ToolStripMenuItem jsonExportConfigurationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem manageJsonExportRulesToolStripMenuItem;
     }
 }

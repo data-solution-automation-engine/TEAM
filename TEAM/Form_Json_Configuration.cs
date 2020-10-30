@@ -196,7 +196,7 @@ namespace TEAM
                 JsonExportSettings.GenerateTargetDataObjectConnection = stringTargetConnection;
 
                 // Write to disk
-                LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
+                LocalTeamEnvironmentConfiguration.SaveJsonConfigurationFile();
 
                 richTextBoxInformation.Text = "The values have been successfully saved.";
             }
