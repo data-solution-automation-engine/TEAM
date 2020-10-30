@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 
 namespace TEAM
 {
@@ -184,6 +183,42 @@ namespace TEAM
         }
 
         /// <summary>
+        /// Method to create a new validation file with default values at the default location
+        /// Checks if the file already exists. If it does, nothing will happen.
+        /// </summary>
+        internal static void CreateDummyJsonExtractConfigurationFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                var validationFile = new StringBuilder();
+
+                validationFile.AppendLine("/* TEAM Json Export File Settings */");
+
+                validationFile.AppendLine("GenerateSourceDataItemTypes|True");
+                validationFile.AppendLine("GenerateTargetDataItemTypes|True");
+                validationFile.AppendLine("GenerateSourceDataObjectConnection|True");
+                validationFile.AppendLine("GenerateTargetDataObjectConnection|True");
+
+                validationFile.AppendLine("/* End of file */");
+
+                using (var outfile = new StreamWriter(fileName))
+                {
+                    outfile.Write(validationFile.ToString());
+                    outfile.Close();
+                }
+
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"A new Json extract configuration file was created for {fileName}."));
+
+            }
+            else
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The existing Json extract configuration file {fileName} was detected."));
+            }
+        }
+
+        /// <summary>
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
         /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
         /// </summary
@@ -248,65 +283,6 @@ namespace TEAM
             }
         }
 
-
-        ///// <summary>
-        ///// Load a TEAM environment file into memory.
-        ///// </summary>
-        ///// <param name="fileName"></param>
-        //public static void LoadEnvironmentFile(string fileName)
-        //{
-        //    // Create a new file if it doesn't exist.
-        //    if (!File.Exists(fileName))
-        //    {
-        //        File.Create(fileName).Close();
-
-        //        // There was no key in the file for this environment, so it's new.
-        //        // Create two initial environments, development and production.
-        //        var list = new List<TeamWorkingEnvironment>();
-
-        //        var developmentEnvironment = new TeamWorkingEnvironment
-        //        {
-        //            environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Development" }, "%$@"),
-        //            environmentKey = "Development",
-        //            environmentName = "Development environment",
-        //            environmentNotes = "Environment created as initial / starter environment."
-        //        };
-
-        //        list.Add(developmentEnvironment);
-
-        //        var productionEnvironment = new TeamWorkingEnvironment
-        //        {
-        //            environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Production" }, "%$@"),
-        //            environmentKey = "Production",
-        //            environmentName = "Production environment",
-        //            environmentNotes = "Environment created as initial / starter environment."
-        //        };
-
-        //        list.Add(productionEnvironment);
-
-        //        string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
-        //        File.WriteAllText(fileName, output);
-
-        //        // Commit to memory also.
-        //        var localDictionary = new Dictionary<string, TeamWorkingEnvironment>();
-
-        //        localDictionary.Add(developmentEnvironment.environmentInternalId, developmentEnvironment);
-        //        localDictionary.Add(productionEnvironment.environmentInternalId, productionEnvironment);
-
-        //        FormBase.TeamConfigurationSettings.EnvironmentDictionary = localDictionary;
-        //    }
-        //    else
-        //    {
-        //        FormBase.TeamConfigurationSettings.EnvironmentDictionary.Clear();
-        //        TeamWorkingEnvironment[] environmentJson = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(fileName));
-
-        //        foreach (var environment in environmentJson)
-        //        {
-        //            FormBase.TeamConfigurationSettings.EnvironmentDictionary.Add(environment.environmentInternalId, environment);
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// Retrieve the configuration information from memory and save this to disk.
         /// </summary>
@@ -369,6 +345,76 @@ namespace TEAM
             catch (Exception ex)
             {
                 MessageBox.Show("An error occured saving the Configuration File. The error message is " + ex,
+                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Retrieve the validation information from disk and save this to memory.
+        /// </summary>
+        /// <param name="filename"></param>
+        internal static void LoadJsonConfigurationFile(string filename)
+        {
+            try
+            {
+                var configList = new Dictionary<string, string>();
+                var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
+                var sr = new StreamReader(fs);
+
+                string textline;
+                while ((textline = sr.ReadLine()) != null)
+                {
+                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
+                    {
+                        var line = textline.Split('|');
+                        configList.Add(line[0], line[1]);
+                    }
+                }
+
+                sr.Close();
+                fs.Close();
+
+                FormBase.JsonExportSettings.GenerateSourceDataItemTypes = configList["GenerateSourceDataItemTypes"];
+                FormBase.JsonExportSettings.GenerateTargetDataItemTypes = configList["GenerateTargetDataItemTypes"];
+                FormBase.JsonExportSettings.GenerateSourceDataObjectConnection = configList["GenerateSourceDataObjectConnection"];
+                FormBase.JsonExportSettings.GenerateTargetDataObjectConnection = configList["GenerateTargetDataObjectConnection"];
+
+            }
+            catch (Exception)
+            {
+                // Do nothing
+            }
+        }
+
+        internal static void SaveJsonConfigurationFile()
+        {
+            try
+            {
+                // Creating the file
+                var validationFile = new StringBuilder();
+                validationFile.AppendLine("/* TEAM Json Export Configuration Settings */");
+                validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
+                validationFile.AppendLine("GenerateSourceDataItemTypes|" + FormBase.JsonExportSettings.GenerateSourceDataItemTypes + "");
+                validationFile.AppendLine("GenerateTargetDataItemTypes|" + FormBase.JsonExportSettings.GenerateTargetDataItemTypes + "");
+                validationFile.AppendLine("GenerateSourceDataObjectConnection|" + FormBase.JsonExportSettings.GenerateSourceDataObjectConnection + "");
+                validationFile.AppendLine("GenerateTargetDataObjectConnection|" + FormBase.JsonExportSettings.GenerateTargetDataObjectConnection + "");
+
+                // Closing off
+                validationFile.AppendLine("/* End of file */");
+
+                using (var outfile =
+                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
+                                     FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' +
+                                     FormBase.GlobalParameters.WorkingEnvironment +
+                                     FormBase.GlobalParameters.FileExtension))
+                {
+                    outfile.Write(validationFile.ToString());
+                    outfile.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occured saving the Json configuration file. The error message is " + ex,
                     "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

@@ -131,8 +131,25 @@ namespace TEAM
             {
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
             }
+
+            // Create a default json configuration file if the file does not exist as expected.
+            var jsonConfigurationFileName =
+                GlobalParameters.ConfigurationPath +
+                GlobalParameters.JsonExportConfigurationFileName + '_' +
+                GlobalParameters.WorkingEnvironment +
+                GlobalParameters.FileExtension;
+
+            try
+            {
+                LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(jsonConfigurationFileName);
+
+            }
+            catch
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {jsonConfigurationFileName}."));
+            }
             #endregion
-         
+
             // Load the connections file for the respective environment.
             var connectionFileName =
                 GlobalParameters.ConfigurationPath +

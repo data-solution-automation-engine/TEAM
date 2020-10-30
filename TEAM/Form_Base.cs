@@ -29,6 +29,16 @@ namespace TEAM
         // TEAM Version List.
         public static TeamVersionList EnvironmentVersion { get; set; } = new TeamVersionList();
 
+
+        internal static class JsonExportSettings
+        {
+            // Existence checks (in physical model or virtual representation of it)
+            public static string GenerateSourceDataItemTypes { get; set; }
+            public static string GenerateTargetDataItemTypes { get; set; }
+            public static string GenerateSourceDataObjectConnection { get; set; }
+            public static string GenerateTargetDataObjectConnection { get; set; }
+        }
+
         /// <summary>
         /// Gets or sets the values for the validation of the metadata.
         /// </summary>
@@ -70,6 +80,7 @@ namespace TEAM
             public static string ConfigFileName { get; set; } = "TEAM_configuration";
             public static string PathFileName { get; set; } = "TEAM_Path_configuration";
             public static string ValidationFileName { get; set; } = "TEAM_validation";
+            public static string JsonExportConfigurationFileName { get; set; } = "TEAM_jsonconfiguration";
             public static string VersionFileName { get; } = "TEAM_versions";
             public static string FileExtension { get; set; } = ".txt";
             internal static string WorkingEnvironment { get; set; } = "Development";

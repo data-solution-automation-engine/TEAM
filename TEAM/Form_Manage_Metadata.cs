@@ -107,6 +107,28 @@ namespace TEAM
                 // ignored
             }
 
+
+            // Make sure the json configuration information is available in this form
+            try
+            {
+                var jsonConfigurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+
+                // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
+                if (!File.Exists(jsonConfigurationFile))
+                {
+                    LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(jsonConfigurationFile);
+                }
+
+                // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
+                LocalTeamEnvironmentConfiguration.LoadJsonConfigurationFile(jsonConfigurationFile);
+
+                richTextBoxInformation.Text += "\r\nThe validation file " + jsonConfigurationFile + " has been loaded.";
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             #region CheckedListBox for reverse engineering
             checkedListBoxReverseEngineeringAreas.CheckOnClick = true;
             checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
@@ -642,12 +664,12 @@ namespace TEAM
         }  
 
         // Threads starting for other (sub) forms
-        private FormManageValidation _myValidationForm;
+        private FormJsonConfiguration _myValidationForm;
         public void ThreadProcValidation()
         {
             if (_myValidationForm == null)
             {
-                _myValidationForm = new FormManageValidation(this);
+                _myValidationForm = new FormJsonConfiguration(this);
                 _myValidationForm.Show();
 
                 Application.Run();
@@ -661,7 +683,7 @@ namespace TEAM
                     _myValidationForm.Invoke((MethodInvoker)delegate { _myValidationForm.Close(); });
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormManageValidation(this);
+                    _myValidationForm = new FormJsonConfiguration(this);
                     _myValidationForm.Show();
                     Application.Run();
                 }
@@ -670,7 +692,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormManageValidation(this);
+                    _myValidationForm = new FormJsonConfiguration(this);
                     _myValidationForm.Show();
                     Application.Run();
                 }

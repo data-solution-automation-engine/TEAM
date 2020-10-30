@@ -367,7 +367,8 @@ namespace TEAM
             FileHandling.InitialisePath(GlobalParameters.OutputPath);
             LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
             LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-            
+            LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+
             // Create a file backup for the configuration file
             try
             {
