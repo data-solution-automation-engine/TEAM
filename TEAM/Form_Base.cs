@@ -23,16 +23,23 @@ namespace TEAM
         // TEAM working environment collection.
         public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set;  } = new TeamWorkingEnvironmentCollection();
 
-        // Table Mapping Metadata.
+        #region Metadata objects in memory
+        // In-memory representation of the Table Mapping Metadata.
         public static TeamTableMapping TableMapping { get; set; } = new TeamTableMapping();
+
+        // In-memory representation of the Physical Model Metadata.
+        public static TeamPhysicalModel PhysicalModel { get; set; } = new TeamPhysicalModel();
+        #endregion
 
         // TEAM Version List.
         public static TeamVersionList EnvironmentVersion { get; set; } = new TeamVersionList();
 
 
+        /// <summary>
+        /// Configuration settings related to the export of Json files.
+        /// </summary>
         internal static class JsonExportSettings
         {
-            // Existence checks (in physical model or virtual representation of it)
             public static string GenerateSourceDataItemTypes { get; set; }
             public static string GenerateTargetDataItemTypes { get; set; }
             public static string GenerateSourceDataObjectConnection { get; set; }
@@ -44,7 +51,7 @@ namespace TEAM
         /// </summary>
         internal static class ValidationSettings
         {
-            // Existence checks (in physical model or virtual representation of it)
+            // Configuration settings related to validation checks (in physical model or virtual representation of it)
             public static string SourceObjectExistence { get; set; }
             public static string TargetObjectExistence { get; set; }
             public static string SourceBusinessKeyExistence { get; set; }

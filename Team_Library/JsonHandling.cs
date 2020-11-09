@@ -41,8 +41,9 @@ namespace TEAM
         public string tableName { get; set; }
         public string columnName { get; set; }
         public string dataType { get; set; }
-        public string characterMaximumLength { get; set; }
+        public string characterLength { get; set; }
         public string numericPrecision { get; set; }
+        public string numericScale{ get; set; }
         public string ordinalPosition { get; set; }
         public string primaryKeyIndicator { get; set; }
         public string multiActiveIndicator { get; set; }

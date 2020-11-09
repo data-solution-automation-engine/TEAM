@@ -46,8 +46,9 @@ namespace TEAM
                     new JProperty("tableName", "Sample Table"),
                     new JProperty("columnName", "Sample Column"),
                     new JProperty("dataType", "nvarchar"),
-                    new JProperty("characterMaximumLength", "100"),
+                    new JProperty("characterLength", "100"),
                     new JProperty("numericPrecision", "0"),
+                    new JProperty("numericScale", "0"),
                     new JProperty("ordinalPosition", "1"),
                     new JProperty("primaryKeyIndicator", "N"),
                     new JProperty("multiActiveIndicator", "N")

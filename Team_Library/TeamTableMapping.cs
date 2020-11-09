@@ -29,17 +29,17 @@ namespace TEAM
     /// </summary>
     public class TeamTableMapping
     {
-        public EventLog MappingDataTableEventLog { get; set; }
+        public EventLog EventLog { get; set; }
 
-        public List<TableMappingJson> TableMappingJsonList { get; set; }
+        public List<TableMappingJson> JsonList { get; set; }
 
-        public DataTable TableMappingDataTable { get; set; }
+        public DataTable DataTable { get; set; }
 
         public TeamTableMapping()
         {
-            MappingDataTableEventLog = new EventLog();
-            TableMappingDataTable = new DataTable();
-            TableMappingJsonList = new List<TableMappingJson>();
+            EventLog = new EventLog();
+            DataTable = new DataTable();
+            JsonList = new List<TableMappingJson>();
         }
 
         public List<TeamConnection> GetConnectionList(Dictionary<string, TeamConnection> connectionDictionary)
@@ -47,10 +47,10 @@ namespace TEAM
             // Create the group nodes (systems)
             var connectionList = new List<TeamConnection>();
 
-            var sourceConnectionlist = TableMappingDataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.SourceConnection.ToString())).ToList();
-            var targetConnectionlist = TableMappingDataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.TargetConnection.ToString())).ToList();
+            var sourceConnectionList = DataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.SourceConnection.ToString())).ToList();
+            var targetConnectionList = DataTable.AsEnumerable().Select(r => r.Field<string>(TableMappingMetadataColumns.TargetConnection.ToString())).ToList();
 
-            foreach (string connection in sourceConnectionlist)
+            foreach (string connection in sourceConnectionList)
             {
                 var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
 
@@ -60,7 +60,7 @@ namespace TEAM
                 }
             }
 
-            foreach (string connection in targetConnectionlist)
+            foreach (string connection in targetConnectionList)
             {
                 var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
 
@@ -74,65 +74,65 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Set the sort order for a data table according to the requirements for Table Mapping datatable.
+        /// Set the sort order for the data table.
         /// </summary>
-        public void SetTableDataTableSorting()
+        public void SetDataTableSorting()
         {
-            TableMappingDataTable.DefaultView.Sort = $"[{TableMappingMetadataColumns.SourceTable}] ASC, [{TableMappingMetadataColumns.TargetTable}] ASC, [{TableMappingMetadataColumns.BusinessKeyDefinition}] ASC";
+            DataTable.DefaultView.Sort = $"[{TableMappingMetadataColumns.SourceTable}] ASC, [{TableMappingMetadataColumns.TargetTable}] ASC, [{TableMappingMetadataColumns.BusinessKeyDefinition}] ASC";
         }
 
         /// <summary>
-        /// Set the column names for a data table according to the requirements for a Table Mapping datatable.
+        /// Set the column names for the data table.
         /// </summary>
-        public void SetTableDataTableColumns()
+        public void SetDataTableColumns()
         {
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.Enabled].ColumnName = TableMappingMetadataColumns.Enabled.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.HashKey].ColumnName = TableMappingMetadataColumns.HashKey.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.VersionId].ColumnName = TableMappingMetadataColumns.VersionId.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.SourceTable].ColumnName = TableMappingMetadataColumns.SourceTable.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.SourceConnection].ColumnName = TableMappingMetadataColumns.SourceConnection.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.TargetTable].ColumnName = TableMappingMetadataColumns.TargetTable.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.TargetConnection].ColumnName = TableMappingMetadataColumns.TargetConnection.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.BusinessKeyDefinition].ColumnName = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ColumnName = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
-            TableMappingDataTable.Columns[(int)TableMappingMetadataColumns.FilterCriterion].ColumnName = TableMappingMetadataColumns.FilterCriterion.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.Enabled].ColumnName = TableMappingMetadataColumns.Enabled.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.HashKey].ColumnName = TableMappingMetadataColumns.HashKey.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.VersionId].ColumnName = TableMappingMetadataColumns.VersionId.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.SourceTable].ColumnName = TableMappingMetadataColumns.SourceTable.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.SourceConnection].ColumnName = TableMappingMetadataColumns.SourceConnection.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.TargetTable].ColumnName = TableMappingMetadataColumns.TargetTable.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.TargetConnection].ColumnName = TableMappingMetadataColumns.TargetConnection.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.BusinessKeyDefinition].ColumnName = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ColumnName = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.FilterCriterion].ColumnName = TableMappingMetadataColumns.FilterCriterion.ToString();
         }
 
         /// <summary>
         /// Creates a TeamMappingDataTable object (Json List and DataTable) from a Table Mapping Json file.
         /// </summary>
         /// <returns></returns>
-        public void GetTableMapping(string fileName)
+        public void GetMetadata(string fileName)
         {
-            MappingDataTableEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving Table Mapping metadata from {fileName}."));
-
-            DataTable dataTable = new DataTable();
+            EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving Table Mapping metadata from {fileName}."));
 
             // Check if the file exists
             if (!File.Exists(fileName))
             {
-                MappingDataTableEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "No Json Table Mapping file was found."));
+                EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "No Json Table Mapping file was found."));
             }
             else
             {
-                MappingDataTableEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reading file {fileName}"));
+                EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reading file {fileName}"));
+
                 // Load the file, convert it to a DataTable and bind it to the source
                 List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(fileName));
 
                 // Commit to the object
-                TableMappingJsonList = jsonArray;
-                dataTable = Utility.ConvertToDataTable(jsonArray);
+                JsonList = jsonArray;
+                var dataTable = Utility.ConvertToDataTable(jsonArray);
 
                 //Make sure the changes are seen as committed, so that changes can be detected later on.
                 dataTable.AcceptChanges();
 
-                TableMappingDataTable = dataTable;
+                // Commit it to the object itself
+                DataTable = dataTable;
 
                 // Set the column names.
-                SetTableDataTableColumns();
+                SetDataTableColumns();
 
                 // Set the sort order.
-                SetTableDataTableSorting();
+                SetDataTableSorting();
             }
         }
 
@@ -143,7 +143,7 @@ namespace TEAM
         /// <returns></returns>
         public List<Tuple<string, string>> BusinessConceptRelationshipList(TeamConfiguration configurationSetting)
         {
-            DataView sourceContainerView = new DataView((DataTable)TableMappingDataTable);
+            DataView sourceContainerView = new DataView((DataTable)DataTable);
             DataTable distinctValues = sourceContainerView.ToTable(true, TableMappingMetadataColumns.SourceTable.ToString());
             var businessConceptRelationshipList = new List<Tuple<string, string>>();
 
@@ -151,7 +151,7 @@ namespace TEAM
             {
                 string sourceContainer = (string)sourceContainerRow[TableMappingMetadataColumns.SourceTable.ToString()];
 
-                foreach (DataRow row in TableMappingDataTable.Rows)
+                foreach (DataRow row in DataTable.Rows)
                 {
                     string sourceObject = (string)row[TableMappingMetadataColumns.SourceTable.ToString()];
 
@@ -168,7 +168,7 @@ namespace TEAM
                         if (targetObjectType == MetadataHandling.TableTypes.CoreBusinessConcept)
                         {
                             // Retrieve the related objects to a CBC.
-                            var cbcResults = from localRow in TableMappingDataTable.AsEnumerable()
+                            var cbcResults = from localRow in DataTable.AsEnumerable()
                                              where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) ==
                                                    sourceObject && // Is in the same source cluster
                                                    localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString())
@@ -195,7 +195,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Using the TableMapping, create a list of Subject Areas and their contents.
+        /// Using the Table Mapping, create a list of Subject Areas and their contents.
         /// </summary>
         /// <param name="configurationSetting"></param>
         /// <returns></returns>
@@ -203,7 +203,7 @@ namespace TEAM
         {
             var subjectAreaList = new List<Tuple<string, string, string>>();
 
-            foreach (DataRow row in TableMappingDataTable.Rows)
+            foreach (DataRow row in DataTable.Rows)
             {
                 string sourceObject = (string)row[TableMappingMetadataColumns.SourceTable.ToString()];
                 string targetObject = (string)row[TableMappingMetadataColumns.TargetTable.ToString()];
@@ -216,7 +216,7 @@ namespace TEAM
                     string subjectArea = targetObject.Replace(configurationSetting.HubTablePrefixValue + "_", "");
 
                     // Retrieve the related objects (Context Tables in this case)
-                    var results = from localRow in TableMappingDataTable.AsEnumerable()
+                    var results = from localRow in DataTable.AsEnumerable()
                                   where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
@@ -244,7 +244,7 @@ namespace TEAM
                     string subjectArea = targetObject.Replace(configurationSetting.LinkTablePrefixValue + "_", "");
 
                     // Retrieve the related objects (relationship context tables in this case)
-                    var results = from localRow in TableMappingDataTable.AsEnumerable()
+                    var results = from localRow in DataTable.AsEnumerable()
                                   where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself

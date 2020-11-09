@@ -694,25 +694,7 @@ namespace TEAM
             t.Start();
         }
 
-        private void viewEventLogToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorkerEventLog.IsBusy != true)
-            {
-                // create a new instance of the alert form
-                _alertEventLog = new Form_Alert();
-                _alertEventLog.ShowLogButton(false);
-                _alertEventLog.ShowCancelButton(false);
-                _alertEventLog.ShowProgressBar(false);
-                _alertEventLog.ShowProgressLabel(false);
-                
-                // event handler for the Cancel button in AlertForm
-                _alertEventLog.Canceled += buttonCancelEventLogForm_Click;
-                _alertEventLog.Show();
-                // Start the asynchronous operation.
 
-                backgroundWorkerEventLog.RunWorkerAsync();
-            }
-        }
 
         private void buttonCancelEventLogForm_Click(object sender, EventArgs e)
         {
@@ -784,6 +766,32 @@ namespace TEAM
             {
                 // Do nothing
             }
+        }
+
+        private void displayEventLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorkerEventLog.IsBusy != true)
+            {
+                // create a new instance of the alert form
+                _alertEventLog = new Form_Alert();
+                _alertEventLog.ShowLogButton(false);
+                _alertEventLog.ShowCancelButton(false);
+                _alertEventLog.ShowProgressBar(false);
+                _alertEventLog.ShowProgressLabel(false);
+
+                // event handler for the Cancel button in AlertForm
+                _alertEventLog.Canceled += buttonCancelEventLogForm_Click;
+                _alertEventLog.Show();
+                // Start the asynchronous operation.
+
+                backgroundWorkerEventLog.RunWorkerAsync();
+            }
+        }
+
+        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Process.Start(ExtensionMethod.GetDefaultBrowserPath(),
+                "http://roelantvos.com/blog/team/");
         }
     }
 }

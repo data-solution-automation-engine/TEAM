@@ -255,11 +255,11 @@ namespace TEAM
         }
 
         /// <summary>
-        ///  Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair (schema/table).
+        ///  Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair (key schema/ value table).
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetSchema(string tableName)
+        public static Dictionary<string, string> GetTableAndSchema(string tableName)
         {
             Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
             string schemaName = "";
@@ -295,7 +295,7 @@ namespace TEAM
         /// <returns></returns>
         public static string GetFullyQualifiedTableName(string tableName)
         {
-            var fullyQualifiedSourceName = GetSchema(tableName).FirstOrDefault();
+            var fullyQualifiedSourceName = GetTableAndSchema(tableName).FirstOrDefault();
 
             var returnTableName = fullyQualifiedSourceName.Key + '.' + fullyQualifiedSourceName.Value;
 
@@ -314,7 +314,7 @@ namespace TEAM
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var fullyQualifiedName = MetadataHandling.GetSchema(fullyQualifiedTableName).FirstOrDefault();
+            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName).FirstOrDefault();
 
             // The metadata connection can be used.
             var conn = new SqlConnection
@@ -390,7 +390,7 @@ namespace TEAM
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var fullyQualifiedName = MetadataHandling.GetSchema(fullyQualifiedTableName).FirstOrDefault();
+            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName).FirstOrDefault();
 
             // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
             var conn = new SqlConnection
@@ -530,7 +530,8 @@ namespace TEAM
             returnValue.AppendLine("    END");
             returnValue.AppendLine("   ,0) AS VARCHAR(100)) AS[CHARACTER_MAXIMUM_LENGTH],");
             returnValue.AppendLine("  CAST(COALESCE(A.[precision],0) AS VARCHAR(100)) AS[NUMERIC_PRECISION], ");
-            returnValue.AppendLine("  CAST(A.[column_id] AS VARCHAR(100)) AS[ORDINAL_POSITION],");
+            returnValue.AppendLine("  CAST(COALESCE(A.[scale],0) AS VARCHAR(100)) AS[NUMERIC_SCALE], ");
+            returnValue.AppendLine("  CAST(A.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION],");
             returnValue.AppendLine("  CASE");
             returnValue.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL");
             returnValue.AppendLine("    THEN 'N' ");

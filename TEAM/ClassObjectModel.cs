@@ -9,7 +9,7 @@ namespace TEAM
     /// The parent object containing the list of source-to-target mappings. This is the highest level and contains the list of mappings (as individual objects
     /// but also the parameters inherited from TEAM and VEDW.
     /// </summary>
-    class VDW_DataObjectMappingList : DataObjectMappingList
+    class VDW_DataObjectMappingList : DataObjectMappings
     {
         // Generic interface definitions
         //public List<DataObjectMapping> dataObjectMapping { get; set; }
@@ -71,13 +71,17 @@ namespace TEAM
 
                 DataItemMapping keyComponent = new DataItemMapping();
 
+                List<dynamic> sourceColumns = new List<dynamic>();
+
                 DataItem sourceColumn = new DataItem();
                 DataItem targetColumn = new DataItem();
 
                 sourceColumn.name = keyPart;
                 sourceColumn.isHardCodedValue = businessKeyEval;
 
-                keyComponent.sourceDataItem = sourceColumn;
+                sourceColumns.Add(sourceColumn);
+
+                keyComponent.sourceDataItems = sourceColumns;
 
                 var indexExists = targetBusinessKeyComponentList.ElementAtOrDefault(counter) != null;
                 if (indexExists)
@@ -141,13 +145,13 @@ namespace TEAM
         internal static string EvaluateBusinessKey(DataItemMapping businessKey)
         {
             var businessKeyEval = "";
-            if (businessKey.sourceDataItem.name.Contains("'"))
+            if (businessKey.sourceDataItems[0].name.Contains("'"))
             {
-                businessKeyEval = businessKey.sourceDataItem.name;
+                businessKeyEval = businessKey.sourceDataItems[0].name;
             }
             else
             {
-                businessKeyEval = "[" + businessKey.sourceDataItem.name + "]";
+                businessKeyEval = "[" + businessKey.sourceDataItems[0].name + "]";
             }
 
             return businessKeyEval;

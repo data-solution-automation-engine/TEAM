@@ -21,7 +21,7 @@ namespace TEAM
             conn.Open();
 
             var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject);
-            var schemaName = MetadataHandling.GetSchema(validationObject);
+            var schemaName = MetadataHandling.GetTableAndSchema(validationObject);
 
             // Execute the check
             var cmd = new SqlCommand(
@@ -53,7 +53,7 @@ namespace TEAM
 
                 var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject).Replace("[", "")
                     .Replace("]", "");
-                var schemaName = MetadataHandling.GetSchema(validationObject);
+                var schemaName = MetadataHandling.GetTableAndSchema(validationObject);
 
                 var conn = new SqlConnection {ConnectionString = connectionString};
                 conn.Open();
@@ -84,11 +84,11 @@ namespace TEAM
         {
             string returnExistenceEvaluation = "False";
 
-            var objectDetails = MetadataHandling.GetSchema(validationObject).FirstOrDefault();
+            var objectDetails = MetadataHandling.GetTableAndSchema(validationObject).FirstOrDefault();
 
             //DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
 
-            DataRow[] foundRows = inputDataTable.Select("TABLE_NAME = '"+ objectDetails.Value+ "' AND SCHEMA_NAME='"+ objectDetails.Key+"'");
+            DataRow[] foundRows = inputDataTable.Select("" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value+ "' AND " + PhysicalModelMappingMetadataColumns.SchemaName + " = '" + objectDetails.Key+"'");
 
             //bool existenceCheck = inputDataTable.AsEnumerable().Any(row => columns.Any(col => row[col].ToString() == objectName));
 
@@ -120,9 +120,9 @@ namespace TEAM
                 //{
                 //    returnExistenceEvaluation = "True";
                 //}
-                var objectDetails = MetadataHandling.GetSchema(validationObject).FirstOrDefault();
+                var objectDetails = MetadataHandling.GetTableAndSchema(validationObject).FirstOrDefault();
 
-                DataRow[] foundRows = inputDataTable.Select("TABLE_NAME = '" + objectDetails.Value + "' AND SCHEMA_NAME='" + objectDetails.Key + "' AND COLUMN_NAME = '"+validationAttribute+"'");
+                DataRow[] foundRows = inputDataTable.Select("" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.SchemaName + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.ColumnName + " = '" + validationAttribute+"'");
 
                 if (foundRows.Length > 0)
                 {
@@ -264,11 +264,8 @@ namespace TEAM
                 try
                 {
                     // Derive the Hub surrogate key name, as this can be compared against the Link
-                    string hubTableName =
-                        selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    string hubSurrogateKeyName =
-                        hubTableName.Replace(FormBase.TeamConfigurationSettings.HubTablePrefixValue + '_', "") + "_" +
-                        FormBase.TeamConfigurationSettings.DwhKeyIdentifier;
+                    string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    string hubSurrogateKeyName = hubTableName.Replace(FormBase.TeamConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.TeamConfigurationSettings.DwhKeyIdentifier;
 
                     // Add to the dictionary that contains the keys in order.
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -325,22 +322,23 @@ namespace TEAM
 
                 try
                 {
+                    // Select only the business keys in a link table. 
+                    // Excluding all non-business key attributes
                     workingTable = physicalModelDataTable
-                        .Select(
-                            "TABLE_NAME LIKE '" + FormBase.TeamConfigurationSettings.LinkTablePrefixValue +
-                            "_%' AND TABLE_NAME = '" + validationObject.Item2 + "' AND ORDINAL_POSITION > 4",
-                            "ORDINAL_POSITION ASC").CopyToDataTable();
+                        .Select("" + PhysicalModelMappingMetadataColumns.TableName.ToString() + " LIKE '" + FormBase.TeamConfigurationSettings.LinkTablePrefixValue +
+                                "_%' AND " + PhysicalModelMappingMetadataColumns.TableName.ToString() + " = '" + validationObject.Item2 + "' AND "+PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()+" > 4",
+                            " " + PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString() + " ASC").CopyToDataTable();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    //
+                    FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occured during validation of the metadata. The errors is {ex}."));
                 }
 
                 if (workingTable.Rows.Count > 0)
                 {
                     foreach (DataRow row in workingTable.Rows)
                     {
-                        var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
+                        var linkHubSurrogateKeyName = row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()].ToString();
 
                         if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfigurationSettings.DwhKeyIdentifier)
                         ) // Exclude degenerate attributes from the order
@@ -411,7 +409,7 @@ namespace TEAM
 
             // Get the table the component belongs to if available
             var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject.Item1);
-            var schemaName = MetadataHandling.GetSchema(validationObject.Item1);
+            var schemaName = MetadataHandling.GetTableAndSchema(validationObject.Item1);
 
             // Now iterate over each table, as identified by the business key.
             var conn = new SqlConnection { ConnectionString = connectionString };
@@ -512,11 +510,11 @@ namespace TEAM
                     }
                     else
                     {
-                        var objectDetails = MetadataHandling.GetSchema(validationObject.Item1).FirstOrDefault();
+                        var objectDetails = MetadataHandling.GetTableAndSchema(validationObject.Item1).FirstOrDefault();
 
                         bool returnExistenceEvaluation = false;
 
-                        DataRow[] foundAuthors = inputDataTable.Select("TABLE_NAME = '" + objectDetails.Value + "' AND SCHEMA_NAME = '"+objectDetails.Key+"' AND COLUMN_NAME = '"+ businessKeyPart.Trim() + "'");
+                        DataRow[] foundAuthors = inputDataTable.Select($"" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value + "' AND "+ PhysicalModelMappingMetadataColumns.SchemaName + " = '"+objectDetails.Key+ "' AND " + PhysicalModelMappingMetadataColumns.ColumnName + " = '" + businessKeyPart.Trim() + "'");
                         if (foundAuthors.Length != 0)
                         {
                             returnExistenceEvaluation = true;

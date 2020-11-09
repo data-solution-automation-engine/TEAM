@@ -235,6 +235,8 @@ namespace TEAM
             this.exportPhysicalModelFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageValidationRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jsonExportConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageJsonExportRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipMetadata = new System.Windows.Forms.ToolTip(this.components);
             this.checkBoxMergeFiles = new System.Windows.Forms.CheckBox();
             this.checkBoxBackupFiles = new System.Windows.Forms.CheckBox();
@@ -242,8 +244,6 @@ namespace TEAM
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
             this.buttonGenerateJsonInterface = new System.Windows.Forms.Button();
-            this.jsonExportConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.manageJsonExportRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -507,7 +507,7 @@ namespace TEAM
             this.dataGridViewAttributeMetadata.ContextMenuStrip = this.contextMenuStripAttributeMapping;
             this.dataGridViewAttributeMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewAttributeMetadata.Name = "dataGridViewAttributeMetadata";
-            this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(1268, 699);
+            this.dataGridViewAttributeMetadata.Size = new System.Drawing.Size(1461, 699);
             this.dataGridViewAttributeMetadata.TabIndex = 1;
             this.dataGridViewAttributeMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewAttributeMetadataKeyDown);
             this.dataGridViewAttributeMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewAttributeMetadata_MouseDown);
@@ -544,9 +544,9 @@ namespace TEAM
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
-            this.groupBox4.Location = new System.Drawing.Point(1147, 52);
+            this.groupBox4.Location = new System.Drawing.Point(1343, 49);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(120, 647);
+            this.groupBox4.Size = new System.Drawing.Size(120, 653);
             this.groupBox4.TabIndex = 27;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Target area";
@@ -564,7 +564,7 @@ namespace TEAM
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(1147, 6);
+            this.button2.Location = new System.Drawing.Point(1343, 3);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 40);
             this.button2.TabIndex = 20;
@@ -581,7 +581,7 @@ namespace TEAM
             this.dataGridViewPhysicalModelMetadata.ContextMenuStrip = this.contextMenuStripModel;
             this.dataGridViewPhysicalModelMetadata.Location = new System.Drawing.Point(2, 3);
             this.dataGridViewPhysicalModelMetadata.Name = "dataGridViewPhysicalModelMetadata";
-            this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1139, 699);
+            this.dataGridViewPhysicalModelMetadata.Size = new System.Drawing.Size(1335, 699);
             this.dataGridViewPhysicalModelMetadata.TabIndex = 2;
             this.dataGridViewPhysicalModelMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DataGridViewPhysicalModelMetadataKeyDown);
             this.dataGridViewPhysicalModelMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridViewModelMetadata_MouseDown);
@@ -1786,6 +1786,22 @@ namespace TEAM
             this.manageValidationRulesToolStripMenuItem.Text = "Manage validation rules";
             this.manageValidationRulesToolStripMenuItem.Click += new System.EventHandler(this.manageValidationRulesToolStripMenuItem_Click);
             // 
+            // jsonExportConfigurationToolStripMenuItem
+            // 
+            this.jsonExportConfigurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.manageJsonExportRulesToolStripMenuItem});
+            this.jsonExportConfigurationToolStripMenuItem.Name = "jsonExportConfigurationToolStripMenuItem";
+            this.jsonExportConfigurationToolStripMenuItem.Size = new System.Drawing.Size(156, 20);
+            this.jsonExportConfigurationToolStripMenuItem.Text = "Json Export Configuration";
+            // 
+            // manageJsonExportRulesToolStripMenuItem
+            // 
+            this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
+            this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
+            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage Json export rules";
+            this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
+            // 
             // checkBoxMergeFiles
             // 
             this.checkBoxMergeFiles.AutoSize = true;
@@ -1859,22 +1875,6 @@ namespace TEAM
             this.buttonGenerateJsonInterface.Text = "Generate Json Interface Files Only";
             this.buttonGenerateJsonInterface.UseVisualStyleBackColor = true;
             this.buttonGenerateJsonInterface.Click += new System.EventHandler(this.ButtonClickExportToJson);
-            // 
-            // jsonExportConfigurationToolStripMenuItem
-            // 
-            this.jsonExportConfigurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.manageJsonExportRulesToolStripMenuItem});
-            this.jsonExportConfigurationToolStripMenuItem.Name = "jsonExportConfigurationToolStripMenuItem";
-            this.jsonExportConfigurationToolStripMenuItem.Size = new System.Drawing.Size(156, 20);
-            this.jsonExportConfigurationToolStripMenuItem.Text = "Json Export Configuration";
-            // 
-            // manageJsonExportRulesToolStripMenuItem
-            // 
-            this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
-            this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
-            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage Json export rules";
-            this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
             // 
             // FormManageMetadata
             // 

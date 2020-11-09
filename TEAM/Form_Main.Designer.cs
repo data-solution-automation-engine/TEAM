@@ -58,11 +58,13 @@
             this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patternDefinitionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2.SuspendLayout();
             this.groupBoxVersionSelection.SuspendLayout();
             this.menuStripMainMenu.SuspendLayout();
@@ -322,8 +324,7 @@
             // 
             this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generalSettingsToolStripMenuItem,
-            this.patternDefinitionsToolStripMenuItem,
-            this.viewEventLogToolStripMenuItem});
+            this.patternDefinitionsToolStripMenuItem});
             this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
             this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
             this.configurationToolStripMenuItem.Text = "&Configuration";
@@ -346,29 +347,54 @@
             this.patternDefinitionsToolStripMenuItem.Text = "Pattern Definitions";
             this.patternDefinitionsToolStripMenuItem.Click += new System.EventHandler(this.patternDefinitionsToolStripMenuItem_Click);
             // 
-            // viewEventLogToolStripMenuItem
-            // 
-            this.viewEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.HelpIconSmall;
-            this.viewEventLogToolStripMenuItem.Name = "viewEventLogToolStripMenuItem";
-            this.viewEventLogToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.viewEventLogToolStripMenuItem.Text = "View Event Log";
-            this.viewEventLogToolStripMenuItem.Click += new System.EventHandler(this.viewEventLogToolStripMenuItem_Click);
-            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.helpToolStripMenuItem1,
+            this.displayEventLogToolStripMenuItem,
+            this.toolStripSeparator1,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.helpToolStripMenuItem.Text = "&About";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "&Help";
+            // 
+            // helpToolStripMenuItem1
+            // 
+            this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
+            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.helpToolStripMenuItem1.Text = "Help";
+            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
+            // 
+            // displayEventLogToolStripMenuItem
+            // 
+            this.displayEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.log_file;
+            this.displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
+            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.displayEventLogToolStripMenuItem.Text = "Display Event Log";
+            this.displayEventLogToolStripMenuItem.Click += new System.EventHandler(this.displayEventLogToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // aboutToolStripMenuItem
             // 
+            this.aboutToolStripMenuItem.Image = global::TEAM.Properties.Resources.RavosLogo;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // backgroundWorkerEventLog
+            // 
+            this.backgroundWorkerEventLog.WorkerReportsProgress = true;
+            this.backgroundWorkerEventLog.WorkerSupportsCancellation = true;
+            this.backgroundWorkerEventLog.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerEventLog_DoWork);
+            this.backgroundWorkerEventLog.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerEventLog_ProgressChanged);
+            this.backgroundWorkerEventLog.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerEventLog_RunWorkerCompleted);
             // 
             // pictureBox1
             // 
@@ -380,14 +406,6 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
-            // 
-            // backgroundWorkerEventLog
-            // 
-            this.backgroundWorkerEventLog.WorkerReportsProgress = true;
-            this.backgroundWorkerEventLog.WorkerSupportsCancellation = true;
-            this.backgroundWorkerEventLog.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerEventLog_DoWork);
-            this.backgroundWorkerEventLog.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerEventLog_ProgressChanged);
-            this.backgroundWorkerEventLog.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerEventLog_RunWorkerCompleted);
             // 
             // FormMain
             // 
@@ -449,12 +467,14 @@
         private System.Windows.Forms.ToolStripMenuItem repositoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem patternDefinitionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem viewEventLogToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker backgroundWorkerEventLog;
         private System.Windows.Forms.Label labelActiveVersionDateTime;
         private System.Windows.Forms.Label labelActivatedMetadataVersionDateTime;
         private System.Windows.Forms.Label labelWorkingEnvironment;
         private System.Windows.Forms.Label labelMetadataSave;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem displayEventLogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 

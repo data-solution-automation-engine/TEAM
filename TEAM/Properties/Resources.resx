@@ -130,17 +130,17 @@
   <data name="SaveFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SaveFile.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ETLIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ETLIcon.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="OpenDirectoryIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OpenDirectoryIcon.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="fit-16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fit-16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="ExitApplication" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExitApplication.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DocumentationIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DocumentationIcon.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fit-16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fit-16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="HelpIconSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HelpIconSmall.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -151,14 +151,17 @@
   <data name="RavosLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Ravos-logo-small_transparant.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="plus-16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\plus-16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="transparent-green-checkmark-hi" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\transparent-green-checkmark-hi.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="LinkIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LinkIcon.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="DocumentationIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DocumentationIcon.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ETLIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ETLIcon.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="database_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\database_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -166,7 +169,7 @@
   <data name="OpenFileIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OpenFileIcon.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="plus-16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\plus-16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="log-file" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\log-file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
