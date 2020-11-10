@@ -507,25 +507,7 @@ namespace TEAM
             if (checkBoxResizeDataGrid.Checked == false)
                 return;
 
-            ////Set the autosize based on all cells for each column
-            //for (var i = 0; i < dataGridViewAttributeMetadata.Columns.Count - 1; i++)
-            //{
-            //    dataGridViewAttributeMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            //}
-            //if (dataGridViewAttributeMetadata.Columns.Count > 0)
-            //{
-            //    dataGridViewAttributeMetadata.Columns[dataGridViewAttributeMetadata.Columns.Count - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            //}
-
-            //// Disable the auto size again (to enable manual resizing)
-            //for (var i = 0; i < dataGridViewAttributeMetadata.Columns.Count - 1; i++)
-            //{
-            //    int columnWidth = dataGridViewAttributeMetadata.Columns[i].Width;
-            //    dataGridViewAttributeMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            //    dataGridViewAttributeMetadata.Columns[i].Width = columnWidth;
-            //}
-
-            dataGridViewAttributeMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+             dataGridViewAttributeMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             //dataGridViewLoadPatternCollection.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewAttributeMetadata.Columns[dataGridViewAttributeMetadata.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
@@ -542,23 +524,6 @@ namespace TEAM
         {
             if (checkBoxResizeDataGrid.Checked == false)
                 return;
-
-            ////Physical model metadata grid - set the autosize based on all cells for each column
-            //for (var i = 0; i < dataGridViewPhysicalModelMetadata.Columns.Count - 1; i++)
-            //{
-            //    dataGridViewPhysicalModelMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            //}
-            //if (dataGridViewPhysicalModelMetadata.Columns.Count > 0)
-            //{
-            //    dataGridViewPhysicalModelMetadata.Columns[dataGridViewPhysicalModelMetadata.Columns.Count - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            //}
-            //// Disable the auto size again (to enable manual resizing)
-            //for (var i = 0; i < dataGridViewPhysicalModelMetadata.Columns.Count - 1; i++)
-            //{
-            //    int columnWidth = dataGridViewPhysicalModelMetadata.Columns[i].Width;
-            //    dataGridViewPhysicalModelMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            //    dataGridViewPhysicalModelMetadata.Columns[i].Width = columnWidth;
-            //}
 
             dataGridViewPhysicalModelMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             //dataGridViewLoadPatternCollection.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -1320,8 +1285,7 @@ namespace TEAM
 
                             if (jsonHash.tableMappingHash == "")
                             {
-                                richTextBoxInformation.Text +=
-                                    "The correct segment in the Json file was not found.\r\n";
+                                richTextBoxInformation.Text += "The correct segment in the Json file was not found.\r\n";
                             }
                             else
                             {
@@ -1677,60 +1641,59 @@ namespace TEAM
                             string primaryKeyIndicator = "";
                             string multiActiveIndicator = "";
 
-
                             if (row[(int)PhysicalModelMappingMetadataColumns.DatabaseName] != DBNull.Value)
                             {
                                 databaseName = (string)row[(int)PhysicalModelMappingMetadataColumns.DatabaseName];
                             }
 
-                            if (row[1] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.SchemaName] != DBNull.Value)
                             {
-                                schemaName = (string)row[3];
+                                schemaName = (string)row[(int)PhysicalModelMappingMetadataColumns.SchemaName];
                             }
 
-                            if (row[2] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.TableName] != DBNull.Value)
                             {
-                                tableName = (string)row[4];
+                                tableName = (string)row[(int)PhysicalModelMappingMetadataColumns.TableName];
                             }
 
-                            if (row[3] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.ColumnName] != DBNull.Value)
                             {
-                                columnName = (string)row[5];
+                                columnName = (string)row[(int)PhysicalModelMappingMetadataColumns.ColumnName];
                             }
 
-                            if (row[4] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.DataType] != DBNull.Value)
                             {
-                                dataType = (string)row[6];
+                                dataType = (string)row[(int)PhysicalModelMappingMetadataColumns.DataType];
                             }
 
-                            if (row[5] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.CharacterLength] != DBNull.Value)
                             {
-                                maxLength = (string)row[7];
+                                maxLength = (string)row[(int)PhysicalModelMappingMetadataColumns.CharacterLength];
                             }
 
-                            if (row[6] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.NumericPrecision] != DBNull.Value)
                             {
-                                numericPrecision = (string)row[8];
+                                numericPrecision = (string)row[(int)PhysicalModelMappingMetadataColumns.NumericPrecision];
                             }
 
-                            if (row[7] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.NumericScale] != DBNull.Value)
                             {
-                                numericScale= (string)row[9];
+                                numericScale= (string)row[(int)PhysicalModelMappingMetadataColumns.NumericScale];
                             }
 
-                            if (row[8] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.OrdinalPosition] != DBNull.Value)
                             {
-                                ordinalPosition = (string)row[10];
+                                ordinalPosition = (string)row[(int)PhysicalModelMappingMetadataColumns.OrdinalPosition];
                             }
 
-                            if (row[9] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator] != DBNull.Value)
                             {
-                                primaryKeyIndicator = (string)row[11];
+                                primaryKeyIndicator = (string)row[(int)PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator];
                             }
 
-                            if (row[10] != DBNull.Value)
+                            if (row[(int)PhysicalModelMappingMetadataColumns.MultiActiveIndicator] != DBNull.Value)
                             {
-                                multiActiveIndicator = (string)row[12];
+                                multiActiveIndicator = (string)row[(int)PhysicalModelMappingMetadataColumns.MultiActiveIndicator];
                             }
                             try
                                 {
