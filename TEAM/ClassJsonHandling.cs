@@ -13,8 +13,6 @@ namespace TEAM
         /// <param name="fileType"></param>
         internal static void CreateDummyJsonFile(string fileType)
         {
-            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.CurrentVersionId + ".json";
-
             JArray outputFileArray = new JArray();
             JObject dummyJsonFile = new JObject();
 
@@ -34,7 +32,7 @@ namespace TEAM
                     new JProperty("filterCriteria", "")
                 ); 
                 
-                outputFileName = FileConfiguration.tableMappingJsonFileName();
+                outputFileName = JsonFileConfiguration.TableMappingJsonFileName();
 
             } else if (fileType == FormBase.GlobalParameters.JsonModelMetadataFileName) // Physical Model
             {
@@ -54,7 +52,7 @@ namespace TEAM
                     new JProperty("multiActiveIndicator", "N")
                 );
 
-                outputFileName = FileConfiguration.physicalModelJsonFileName();
+                outputFileName = JsonFileConfiguration.PhysicalModelJsonFileName();
 
             } else if (fileType == FormBase.GlobalParameters.JsonAttributeMappingFileName) // Attribute Mapping
             {
@@ -68,7 +66,7 @@ namespace TEAM
                     new JProperty("notes", "")
                 );
 
-                outputFileName = FileConfiguration.attributeMappingJsonFileName();
+                outputFileName = JsonFileConfiguration.AttributeMappingJsonFileName();
             }
             else
             {
@@ -85,9 +83,13 @@ namespace TEAM
         /// <summary>
         /// Local class to manage file names and changes thereof.
         /// </summary>
-        internal static class FileConfiguration
+        internal static class JsonFileConfiguration
         {
-            public static string tableMappingJsonFileName()
+            /// <summary>
+            /// Builds and returns the fully qualified name of the table mapping Json file, including the version.
+            /// </summary>
+            /// <returns></returns>
+            public static string TableMappingJsonFileName()
             {
                 string localJsonFileName = FormBase.GlobalParameters.ConfigurationPath +
                                            FormBase.GlobalParameters.WorkingEnvironment + "_" +
@@ -97,7 +99,11 @@ namespace TEAM
                 return localJsonFileName;
             }
 
-            public static string attributeMappingJsonFileName()
+            /// <summary>
+            /// Builds and returns the fully qualified name of the attribute mapping Json file, including the version.
+            /// </summary>
+            /// <returns></returns>
+            public static string AttributeMappingJsonFileName()
             {
                 string localJsonFileName = FormBase.GlobalParameters.ConfigurationPath +
                                            FormBase.GlobalParameters.WorkingEnvironment + "_" +
@@ -107,7 +113,11 @@ namespace TEAM
                 return localJsonFileName;
             }
 
-            public static string physicalModelJsonFileName()
+            /// <summary>
+            /// Builds and returns the fully qualified name of the physical model Json file, including the version.
+            /// </summary>
+            /// <returns></returns>
+            public static string PhysicalModelJsonFileName()
             {
                 string localJsonFileName = FormBase.GlobalParameters.ConfigurationPath +
                                                        FormBase.GlobalParameters.WorkingEnvironment + "_" +

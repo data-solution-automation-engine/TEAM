@@ -29,6 +29,9 @@ namespace TEAM
 
         // In-memory representation of the Physical Model Metadata.
         public static TeamPhysicalModel PhysicalModel { get; set; } = new TeamPhysicalModel();
+
+        // In-memory representation of the Attribute Mapping Metadata.
+        public static  TeamAttributeMapping AttributeMapping { get; set; } = new TeamAttributeMapping();
         #endregion
 
         // TEAM Version List.
