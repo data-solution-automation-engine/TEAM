@@ -97,8 +97,8 @@ namespace TEAM
         {
             TableTypes localType;
 
-            string[] PresentationLayerLabelArray = configuration.PresentationLayerLabels.Replace(" ", "").Split(',');
-            string[] TransformationLabelArray = configuration.TransformationLabels.Replace(" ", "").Split(',');
+            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(configuration.PresentationLayerLabels);
+            var transformationLabelArray = Utility.SplitLabelIntoArray(configuration.TransformationLabels);
 
             // Remove schema, if one is set
             //tableName = GetNonQualifiedTableName(tableName);
@@ -128,11 +128,11 @@ namespace TEAM
                     localType = TableTypes.PersistentStagingArea;
                     break;
                 // Presentation Layer
-                case "Prefix" when PresentationLayerLabelArray.Any(s => tableName.StartsWith(s)):
+                case "Prefix" when presentationLayerLabelArray.Any(s => tableName.StartsWith(s)):
                     localType = TableTypes.Presentation;
                     break;
                 // Derived or transformation
-                case "Prefix" when TransformationLabelArray.Any(s => tableName.StartsWith(s)):
+                case "Prefix" when transformationLabelArray.Any(s => tableName.StartsWith(s)):
                     localType = TableTypes.Derived;
                     break;
                 // Source
@@ -163,11 +163,11 @@ namespace TEAM
                     localType = TableTypes.PersistentStagingArea;
                     break;
                 // Presentation Layer
-                case "Suffix" when PresentationLayerLabelArray.Any(s => tableName.EndsWith(s)):
+                case "Suffix" when presentationLayerLabelArray.Any(s => tableName.EndsWith(s)):
                     localType = TableTypes.Presentation;
                     break;
                 // Transformation / derived
-                case "Suffix" when TransformationLabelArray.Any(s => tableName.EndsWith(s)):
+                case "Suffix" when transformationLabelArray.Any(s => tableName.EndsWith(s)):
                     localType = TableTypes.Derived;
                     break;
                 case "Suffix":
@@ -180,6 +180,8 @@ namespace TEAM
             // Return the table type
             return localType;
         }
+
+
 
         /// <summary>
         /// This method returns the ETL loading 'direction' based on the source and target mapping.

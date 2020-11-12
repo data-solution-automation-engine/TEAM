@@ -126,42 +126,6 @@ namespace TEAM
             Columns.Add(filterCriterion);
         }
 
-      //  protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, System.Windows.Forms.Keys keyData)
-      //  {
-
-            //MessageBox.Show("Key Press Detected");
-
-         //   if ((keyData == (Keys.Control | Keys.C)))
-         //   {
-                //Copy data
-
-          //  }
-
-
-            //try
-            //{
-            //    if (e.Modifiers == Keys.Control)
-            //    {
-            //        switch (e.KeyCode)
-            //        {
-            //            case Keys.V:
-            //                PasteClipboardTableMetadata();
-            //                break;
-            //            //case Keys.C:
-            //            //    Clipboard.SetText(e.ToString());
-            //            //    break;
-            //        }
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    MessageBox.Show("Pasting into the data grid has failed", "Copy/Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //}
-
-          //  return base.ProcessCmdKey(ref msg, keyData);
-       // }
-
-
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -172,9 +136,8 @@ namespace TEAM
         {
             var counter = 0;
 
-            string[] PresentationLayerLabelArray = FormBase.TeamConfigurationSettings.PresentationLayerLabels.Replace(" ", "").Split(',');
-            string[] TransformationLabelArray = FormBase.TeamConfigurationSettings.TransformationLabels.Replace(" ", "").Split(',');
-
+            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.PresentationLayerLabels);
+            var transformationLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.TransformationLabels);
             foreach (DataGridViewRow row in Rows)
             {
                 var targetTable = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value;
@@ -243,9 +206,9 @@ namespace TEAM
                     // Presentation Layer
                     else if (
                         
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && PresentationLayerLabelArray.Any(s => targetTable.ToString().StartsWith(s)) )
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetTable.ToString().StartsWith(s)) )
                         ||
-                       ( FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && PresentationLayerLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
+                       ( FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aquamarine;
@@ -255,9 +218,9 @@ namespace TEAM
                     // Derived objects / transformations
                     else if (
 
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && TransformationLabelArray.Any(s => targetTable.ToString().StartsWith(s)))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetTable.ToString().StartsWith(s)))
                         ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && TransformationLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
                     )
                     {
                         this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.LightGreen;

@@ -12,16 +12,6 @@ namespace TEAM
     }
 
     /// <summary>
-    /// Possible fields to read/write to a TEAM configuration file.
-    /// </summary>
-    public enum TeamConfigurationAttributes
-    {
-        TransformationLabels,
-        PresentationLayerLabels
-        // ALL OF THE ATTRIBUTES NEED TO BE ADDED - TO DO
-    }
-
-    /// <summary>
     /// These settings are driven by the TEAM application.
     /// They have to be updated through TEAM, i.e. via the Team Configuration / Settings file in the designated directory.
     /// </summary>
@@ -90,7 +80,7 @@ namespace TEAM
         public string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }
         public string EnableAlternativeRecordSourceAttribute { get; set; }
         public string EnableAlternativeLoadDateTimeAttribute { get; set; }
-        public MetadataRepositoryStorageType MetadataRepositoryType { get; set; }
+        public MetadataRepositoryStorageType MetadataRepositoryType { get; } = MetadataRepositoryStorageType.Json;
 
         public TeamConfiguration()
         {
@@ -116,19 +106,161 @@ namespace TEAM
                     ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No lines detected in file {fileName}. Is it empty?"));
                 }
 
-                string lookUpValue;
-                string value;
+                string[] configurationArray = new[]
+                {
+                    "StagingAreaPrefix", 
+                    "PersistentStagingAreaPrefix", 
+                    "PresentationLayerLabels",
+                    "TransformationLabels",
+                    "HubTablePrefix",
+                    "SatTablePrefix",
+                    "LinkTablePrefix",
+                    "LinkSatTablePrefix",
+                    "TableNamingLocation",
+                    "KeyNamingLocation",
+                    "KeyIdentifier",
+                    "PSAKeyLocation",
+                    "SchemaName",
+                    "RowID",
+                    "EventDateTimeStamp",
+                    "LoadDateTimeStamp",
+                    "ExpiryDateTimeStamp",
+                    "ChangeDataIndicator",
+                    "RecordSourceAttribute",
+                    "ETLProcessID",
+                    "ETLUpdateProcessID",
+                    "LogicalDeleteAttribute",
+                    "RecordChecksum",
+                    "CurrentRecordAttribute",
+                    "AlternativeRecordSource",
+                    "AlternativeHubLDTS",
+                    "AlternativeRecordSourceFunction",
+                    "AlternativeHubLDTSFunction",
+                    "AlternativeSatelliteLDTSFunction",
+                    "AlternativeSatelliteLDTS"
+                };
 
+                foreach (string configuration in configurationArray)
+                {
+                    if (configList.ContainsKey(configuration))
+                    {
+                        switch (configuration)
+                        {
+                            case "StagingAreaPrefix":
+                                StgTablePrefixValue = configList[configuration];
+                                break;
+                            case "PersistentStagingAreaPrefix":
+                                PsaTablePrefixValue = configList[configuration];
+                                break;
+                            case "PresentationLayerLabels":
+                                PresentationLayerLabels = configList[configuration];
+                                break;
+                            case "TransformationLabels":
+                                TransformationLabels = configList[configuration];
+                                break;
+                            case "HubTablePrefix":
+                                HubTablePrefixValue = configList[configuration];
+                                break;
+                            case "SatTablePrefix":
+                                SatTablePrefixValue = configList[configuration];
+                                break;
+                            case "LinkTablePrefix":
+                                LinkTablePrefixValue = configList[configuration];
+                                break;
+                            case "TableNamingLocation":
+                                TableNamingLocation = configList[configuration];
+                                break;
+                            case "LinkSatTablePrefix":
+                                LsatTablePrefixValue = configList[configuration];
+                                break;
+                            case "KeyNamingLocation":
+                                KeyNamingLocation = configList[configuration];
+                                break;
+                            case "KeyIdentifier":
+                                DwhKeyIdentifier = configList[configuration];
+                                break;
+                            case "PSAKeyLocation":
+                                PsaKeyLocation = configList[configuration];
+                                break;
+                            case "SchemaName":
+                                SchemaName = configList[configuration];
+                                break;
+                            case "RowID":
+                                RowIdAttribute = configList[configuration];
+                                break;
+                            case "EventDateTimeStamp":
+                                EventDateTimeAttribute = configList[configuration];
+                                break;
+                            case "LoadDateTimeStamp":
+                                LoadDateTimeAttribute = configList[configuration];
+                                break;
+                            case "ExpiryDateTimeStamp":
+                                ExpiryDateTimeAttribute = configList[configuration];
+                                break;
+                            case "ChangeDataIndicator":
+                                ChangeDataCaptureAttribute = configList[configuration];
+                                break;
+                            case "RecordSourceAttribute":
+                                RecordSourceAttribute = configList[configuration];
+                                break;
+                            case "ETLProcessID":
+                                EtlProcessAttribute = configList[configuration];
+                                break;
+                            case "ETLUpdateProcessID":
+                                EtlProcessUpdateAttribute = configList[configuration];
+                                break;
+                            case "LogicalDeleteAttribute":
+                                LogicalDeleteAttribute = configList[configuration];
+                                break;
+                            case "RecordChecksum":
+                                RecordChecksumAttribute = configList[configuration];
+                                break;
+                            case "CurrentRecordAttribute":
+                                CurrentRowAttribute = configList[configuration];
+                                break;
+                            case "AlternativeRecordSource":
+                                AlternativeRecordSourceAttribute = configList[configuration];
+                                break;
+                            case "AlternativeHubLDTS":
+                                AlternativeLoadDateTimeAttribute = configList[configuration];
+                                break;
+                            case "AlternativeRecordSourceFunction":
+                                EnableAlternativeRecordSourceAttribute = configList[configuration];
+                                break;
+                            case "AlternativeHubLDTSFunction":
+                                EnableAlternativeLoadDateTimeAttribute = configList[configuration];
+                                break;
+                            case "AlternativeSatelliteLDTSFunction":
+                                EnableAlternativeSatelliteLoadDateTimeAttribute = configList[configuration];
+                                break;
+                            case "AlternativeSatelliteLDTS":
+                                AlternativeSatelliteLoadDateTimeAttribute = configList[configuration];
+                                break;
+                            default:
+                                ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Incorrect configuration '{configuration}' encountered."));
+                                break;
+                        }
 
-                lookUpValue = "MetadataConnectionId";
-                if (configList.TryGetValue(lookUpValue, out value))
+                        ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The entry '{configuration}' was loaded from the configuration file with value '{configList[configuration]}'."));
+
+                    }
+                    else
+                    {
+                        ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"* The entry '{configuration}' was not found in the configuration file. Please make sure an entry exists ({configuration}|<value>)."));
+                        break;
+                    }
+                }
+
+                ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"TEAM configuration updated in memory" + $"."));
+
+                var lookUpValue = "MetadataConnectionId";
+                if (configList.TryGetValue(lookUpValue, out var value))
                 {
                     if (value != null)
                     {
                         if (ConnectionDictionary.Count == 0)
                         {
-                            ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
-                                $"The connection dictionary is empty, so the value for the metadata connection cannot be set. Is the path to the connections file correct?"));
+                            ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection dictionary is empty, so the value for the metadata connection cannot be set. Is the path to the connections file correct?"));
                             MetadataConnection = null;
                         }
                         else
@@ -142,77 +274,15 @@ namespace TEAM
                         MetadataConnection = null;
                     }
                 }
-                else
+                else 
                 {
                     ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The key/value pair {lookUpValue} was not found in the configuration file."));
                 }
-
-                MetadataRepositoryType = MetadataRepositoryStorageType.Json;
-
-                StgTablePrefixValue = configList["StagingAreaPrefix"];
-                PsaTablePrefixValue = configList["PersistentStagingAreaPrefix"];
-
-                // Presentation Layer labels
-                lookUpValue = TeamConfigurationAttributes.PresentationLayerLabels.ToString();
-                if (configList.ContainsKey(lookUpValue))
-                {
-                    PresentationLayerLabels = configList[lookUpValue];
-                }
-                else
-                {
-                    ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The key/value pair {lookUpValue} was not found in the configuration file."));
-                }
-
-                // Transformation or derived object labels
-                lookUpValue = TeamConfigurationAttributes.TransformationLabels.ToString();
-                if (configList.ContainsKey(lookUpValue))
-                {
-                    TransformationLabels = configList[lookUpValue];
-                }
-                else
-                {
-                    ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The key/value pair {lookUpValue} was not found in the configuration file."));
-                }
-
-                HubTablePrefixValue = configList["HubTablePrefix"];
-                SatTablePrefixValue = configList["SatTablePrefix"];
-                LinkTablePrefixValue = configList["LinkTablePrefix"];
-                LsatTablePrefixValue = configList["LinkSatTablePrefix"];
-
-                TableNamingLocation = configList["TableNamingLocation"];
-                KeyNamingLocation = configList["KeyNamingLocation"];
-
-                DwhKeyIdentifier = configList["KeyIdentifier"];
-                PsaKeyLocation = configList["PSAKeyLocation"];
-                SchemaName = configList["SchemaName"];
-
-                RowIdAttribute = configList["RowID"];
-                EventDateTimeAttribute = configList["EventDateTimeStamp"];
-                LoadDateTimeAttribute = configList["LoadDateTimeStamp"];
-                ExpiryDateTimeAttribute = configList["ExpiryDateTimeStamp"];
-                ChangeDataCaptureAttribute = configList["ChangeDataIndicator"];
-                RecordSourceAttribute = configList["RecordSourceAttribute"];
-
-                EtlProcessAttribute = configList["ETLProcessID"];
-                EtlProcessUpdateAttribute = configList["ETLUpdateProcessID"];
-                LogicalDeleteAttribute = configList["LogicalDeleteAttribute"];
-
-                RecordChecksumAttribute = configList["RecordChecksum"];
-                CurrentRowAttribute = configList["CurrentRecordAttribute"];
-                AlternativeRecordSourceAttribute = configList["AlternativeRecordSource"];
-                AlternativeLoadDateTimeAttribute = configList["AlternativeHubLDTS"];
-                EnableAlternativeRecordSourceAttribute = configList["AlternativeRecordSourceFunction"];
-                EnableAlternativeLoadDateTimeAttribute = configList["AlternativeHubLDTSFunction"];
-
-                EnableAlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTSFunction"];
-                AlternativeSatelliteLoadDateTimeAttribute = configList["AlternativeSatelliteLDTS"];
             }
-            else
+            else // No file found, report error.
             {
                 ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"No valid TEAM configuration file was found. Please select a valid TEAM configuration file (settings tab => TEAM configuration file)"));
             }
-
-            ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"TEAM configuration updated in memory" + $"."));
         }
     }
 }
