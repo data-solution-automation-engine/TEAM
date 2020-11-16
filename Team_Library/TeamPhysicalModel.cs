@@ -5,6 +5,25 @@ using Newtonsoft.Json;
 
 namespace TEAM
 {
+
+    public class PhysicalModelMetadataJson
+    {
+        //JSON representation of the physical model metadata
+        public string versionAttributeHash { get; set; }
+        public int versionId { get; set; }
+        public string databaseName { get; set; }
+        public string schemaName { get; set; }
+        public string tableName { get; set; }
+        public string columnName { get; set; }
+        public string dataType { get; set; }
+        public string characterLength { get; set; }
+        public string numericPrecision { get; set; }
+        public string numericScale { get; set; }
+        public string ordinalPosition { get; set; }
+        public string primaryKeyIndicator { get; set; }
+        public string multiActiveIndicator { get; set; }
+    }
+
     /// <summary>
     /// Enumerator to hold the column index for the columns (headers) in the Physical Model Metadata data grid view.
     /// </summary>

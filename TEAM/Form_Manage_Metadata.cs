@@ -7050,7 +7050,7 @@ namespace TEAM
                             return;
                         }
 
-                        objectValidated = ClassMetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
+                        objectValidated = MetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
                     }
                     else if (evaluationMode == "virtual")
                     {
@@ -7058,7 +7058,7 @@ namespace TEAM
                         // Exclude a lookup to the source
                         if (MetadataHandling.GetTableType(validationObject, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         {
-                            objectValidated = ClassMetadataValidation.ValidateAttributeExistenceVirtual(validationObject, validationAttribute, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
+                            objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObject, validationAttribute, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
                     else
@@ -7215,7 +7215,7 @@ namespace TEAM
 
                         try
                         {
-                            objectValidated = ClassMetadataValidation.ValidateObjectExistencePhysical(validationObject, connectionValue);
+                            objectValidated = MetadataValidation.ValidateObjectExistencePhysical(validationObject, connectionValue);
                         }
                         catch
                         {
@@ -7228,7 +7228,7 @@ namespace TEAM
                         // Exclude a lookup to the source
                         if (MetadataHandling.GetTableType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         {
-                            objectValidated = ClassMetadataValidation.ValidateObjectExistenceVirtual(validationObject,
+                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObject,
                                 (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
@@ -7311,7 +7311,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLinkKeyOrder
+                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder
                 (
                     sourceObject, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource, evaluationMode
                     );
@@ -7378,7 +7378,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = ClassMetadataValidation.ValidateLogicalGroup(sourceObject, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(sourceObject, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7441,7 +7441,7 @@ namespace TEAM
 
                         try
                         {
-                            objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistencePhysical(validationObject, connectionValue);
+                            objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistencePhysical(validationObject, connectionValue);
                         }
                         catch
                         {
@@ -7453,7 +7453,7 @@ namespace TEAM
                         // Exclude a lookup to the source
                         if (MetadataHandling.GetTableType(validationObject.Item1,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         { 
-                            objectValidated = ClassMetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
+                            objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
                     else
@@ -7964,22 +7964,27 @@ namespace TEAM
                             // Source and target connection information
                             if (JsonExportSettings.GenerateSourceDataObjectConnection == "True")
                             {
-                                var sourceDataConnection = new DataConnection();
-                                sourceDataConnection.dataConnectionString = sourceConnection.ConnectionKey;
-
-                                sourceDataObject.dataObjectConnection = sourceDataConnection;
+                                sourceDataObject = JsonOutputHandling.AddDataObjectExtensions(sourceDataObject, sourceConnection);
                             }
 
                             if (JsonExportSettings.GenerateTargetDataObjectConnection == "True")
                             {
-                                var targetDataConnection = new DataConnection();
-                                targetDataConnection.dataConnectionString = targetConnection.ConnectionKey;
-                                targetDataObject.dataObjectConnection = targetDataConnection;
+                                // Add any extensions necessary for the data object.
+                                targetDataObject = JsonOutputHandling.AddDataObjectExtensions(targetDataObject, targetConnection);
                             }
+
+                            
+
 
                             sourceDataObjects.Add(sourceDataObject);
                             sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
                             sourceToTargetMapping.targetDataObject = targetDataObject;
+
+
+
+
+
+                            // Enabled flag
                             sourceToTargetMapping.enabled = true;
 
                             // Create a related data object to capture the lookup information.

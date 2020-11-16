@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace TEAM
 {
 
-    internal class LoadPatternDefinition
+    public class LoadPatternDefinition
     {
         public int LoadPatternKey { get; set; }
         public string LoadPatternType { get; set; }

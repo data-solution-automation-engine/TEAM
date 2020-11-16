@@ -43,10 +43,17 @@ namespace TEAM
         /// </summary>
         internal static class JsonExportSettings
         {
+            // Data Item
             public static string GenerateSourceDataItemTypes { get; set; }
             public static string GenerateTargetDataItemTypes { get; set; }
+
+            // Data Object Connection
             public static string GenerateSourceDataObjectConnection { get; set; }
             public static string GenerateTargetDataObjectConnection { get; set; }
+            public static string GenerateDatabaseAsExtension { get; set; }
+            public static string GenerateSchemaAsExtension { get; set; }
+
+
         }
 
         /// <summary>

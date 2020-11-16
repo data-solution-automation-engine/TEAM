@@ -141,6 +141,8 @@ namespace TEAM
                 validationFile.AppendLine("GenerateTargetDataItemTypes|True");
                 validationFile.AppendLine("GenerateSourceDataObjectConnection|True");
                 validationFile.AppendLine("GenerateTargetDataObjectConnection|True");
+                validationFile.AppendLine("GenerateDatabaseAsExtension|True");
+                validationFile.AppendLine("GenerateSchemaAsExtension|True");
 
                 validationFile.AppendLine("/* End of file */");
 
@@ -319,8 +321,11 @@ namespace TEAM
 
                 FormBase.JsonExportSettings.GenerateSourceDataItemTypes = configList["GenerateSourceDataItemTypes"];
                 FormBase.JsonExportSettings.GenerateTargetDataItemTypes = configList["GenerateTargetDataItemTypes"];
+
                 FormBase.JsonExportSettings.GenerateSourceDataObjectConnection = configList["GenerateSourceDataObjectConnection"];
                 FormBase.JsonExportSettings.GenerateTargetDataObjectConnection = configList["GenerateTargetDataObjectConnection"];
+                FormBase.JsonExportSettings.GenerateDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
+                FormBase.JsonExportSettings.GenerateSchemaAsExtension = configList["GenerateSchemaAsExtension"];
 
             }
             catch (Exception)
@@ -339,8 +344,11 @@ namespace TEAM
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
                 validationFile.AppendLine("GenerateSourceDataItemTypes|" + FormBase.JsonExportSettings.GenerateSourceDataItemTypes + "");
                 validationFile.AppendLine("GenerateTargetDataItemTypes|" + FormBase.JsonExportSettings.GenerateTargetDataItemTypes + "");
+
                 validationFile.AppendLine("GenerateSourceDataObjectConnection|" + FormBase.JsonExportSettings.GenerateSourceDataObjectConnection + "");
                 validationFile.AppendLine("GenerateTargetDataObjectConnection|" + FormBase.JsonExportSettings.GenerateTargetDataObjectConnection + "");
+                validationFile.AppendLine("GenerateDatabaseAsExtension|" + FormBase.JsonExportSettings.GenerateDatabaseAsExtension + "");
+                validationFile.AppendLine("GenerateSchemaAsExtension|" + FormBase.JsonExportSettings.GenerateSchemaAsExtension + "");
 
                 // Closing off
                 validationFile.AppendLine("/* End of file */");

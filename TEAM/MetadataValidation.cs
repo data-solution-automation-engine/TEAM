@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TEAM
 {
-    internal class ClassMetadataValidation 
+    internal class MetadataValidation 
     {
 
         /// <summary>

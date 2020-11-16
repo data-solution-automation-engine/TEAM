@@ -7,6 +7,21 @@ using Newtonsoft.Json;
 
 namespace TEAM
 {
+    public class TableMappingJson
+    {
+        //JSON representation of the table mapping metadata
+        public bool enabledIndicator { get; set; }
+        public string tableMappingHash { get; set; }
+        public int versionId { get; set; }
+        public string sourceTable { get; set; }
+        public string sourceConnectionKey { get; set; }
+        public string targetTable { get; set; }
+        public string targetConnectionKey { get; set; }
+        public string businessKeyDefinition { get; set; }
+        public string drivingKeyDefinition { get; set; }
+        public string filterCriteria { get; set; }
+    }
+
     /// <summary>
     /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
     /// </summary>
