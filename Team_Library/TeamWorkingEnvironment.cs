@@ -47,7 +47,7 @@ namespace TEAM
 
                 var developmentEnvironment = new TeamWorkingEnvironment
                 {
-                    environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Development" }, "%$@"),
+                    environmentInternalId = Utility.CreateMd5(new[] { "Development" }, "%$@"),
                     environmentKey = "Development",
                     environmentName = "Development environment",
                     environmentNotes = "Environment created as initial / starter environment."
@@ -57,7 +57,7 @@ namespace TEAM
 
                 var productionEnvironment = new TeamWorkingEnvironment
                 {
-                    environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Production" }, "%$@"),
+                    environmentInternalId = Utility.CreateMd5(new[] { "Production" }, "%$@"),
                     environmentKey = "Production",
                     environmentName = "Production environment",
                     environmentNotes = "Environment created as initial / starter environment."

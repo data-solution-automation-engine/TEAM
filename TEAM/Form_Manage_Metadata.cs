@@ -334,7 +334,7 @@ namespace TEAM
             {
                 foreach (string issue in userFeedbackList)
                 {
-                    richTextBoxInformation.AppendText($"The connection {issue} found in the metadata file does not seem to exist in TEAM. The value has been defaulted, but not saved yet.\r\n");
+                    richTextBoxInformation.AppendText($"The connection '{issue}' found in the metadata file does not seem to exist in TEAM. The value has been defaulted in the grid, but not saved yet.\r\n");
                 }
             }
             

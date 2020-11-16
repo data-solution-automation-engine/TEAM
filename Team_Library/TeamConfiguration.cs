@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace TEAM
 {
@@ -11,6 +12,7 @@ namespace TEAM
         Json
     }
 
+    
     /// <summary>
     /// These settings are driven by the TEAM application.
     /// They have to be updated through TEAM, i.e. via the Team Configuration / Settings file in the designated directory.
@@ -25,6 +27,12 @@ namespace TEAM
         /// </summary>
         public Dictionary<string, TeamConnection> ConnectionDictionary { get; set; }
 
+        /// <summary>
+        /// Retrieve the connection based on the internal id.
+        /// </summary>
+        /// <param name="connectionInternalId"></param>
+        /// <param name="connectionDictionary"></param>
+        /// <returns></returns>
         public static TeamConnection GetTeamConnectionByInternalId(string connectionInternalId, Dictionary<string, TeamConnection> connectionDictionary)
         {
             var returnConnectionProfile = new TeamConnection();
@@ -81,6 +89,7 @@ namespace TEAM
         public string EnableAlternativeRecordSourceAttribute { get; set; }
         public string EnableAlternativeLoadDateTimeAttribute { get; set; }
         public MetadataRepositoryStorageType MetadataRepositoryType { get; } = MetadataRepositoryStorageType.Json;
+
 
         public TeamConfiguration()
         {
@@ -282,6 +291,63 @@ namespace TEAM
             else // No file found, report error.
             {
                 ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"No valid TEAM configuration file was found. Please select a valid TEAM configuration file (settings tab => TEAM configuration file)"));
+            }
+        }
+
+        /// <summary>
+        /// Method to create a new configuration file with default values at the default location.
+        /// Checks if the file already exists. If it does, nothing will happen.
+        /// </summary>
+        public void CreateDummyEnvironmentConfigurationFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                // Create a completely new file
+                var initialConfigurationFile = new StringBuilder();
+
+                initialConfigurationFile.AppendLine("/* TEAM Configuration Settings */");
+
+                initialConfigurationFile.AppendLine("MetadataConnectionId|MetadataConnectionInternalId");
+
+                initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
+                initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
+                initialConfigurationFile.AppendLine("PresentationLayerLabels|DIM, FACT");
+                initialConfigurationFile.AppendLine("TransformationLabels|BDV");
+                initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
+                initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
+                initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
+                initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT");
+                initialConfigurationFile.AppendLine("KeyIdentifier|HSH");
+                initialConfigurationFile.AppendLine("SchemaName|dbo");
+                initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
+                initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");
+                initialConfigurationFile.AppendLine("LoadDateTimeStamp|LOAD_DATETIME");
+                initialConfigurationFile.AppendLine("ExpiryDateTimeStamp|LOAD_END_DATETIME");
+                initialConfigurationFile.AppendLine("ChangeDataIndicator|CDC_OPERATION");
+                initialConfigurationFile.AppendLine("RecordSourceAttribute|RECORD_SOURCE");
+                initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
+                initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
+                initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
+                initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
+                initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
+                initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
+                initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");
+                initialConfigurationFile.AppendLine("AlternativeRecordSource|N/A");
+                initialConfigurationFile.AppendLine("AlternativeHubLDTS|N/A");
+                initialConfigurationFile.AppendLine("AlternativeSatelliteLDTS|N/A");
+                initialConfigurationFile.AppendLine("AlternativeRecordSourceFunction|False");
+                initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
+                initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
+                initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
+                initialConfigurationFile.AppendLine("metadataRepositoryType|Json");
+
+                initialConfigurationFile.AppendLine("/* End of file */");
+
+                using (var outfile = new StreamWriter(fileName))
+                {
+                    outfile.Write(initialConfigurationFile.ToString());
+                    outfile.Close();
+                }
             }
         }
     }

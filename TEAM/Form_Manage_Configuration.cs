@@ -116,7 +116,7 @@ namespace TEAM
             // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
             if (!File.Exists(chosenFile))
             {
-                LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(chosenFile);
+                TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(chosenFile);
             }
 
             // Open the configuration file
@@ -365,7 +365,7 @@ namespace TEAM
             // Check if the paths and files are available, just to be sure.
             FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
             FileHandling.InitialisePath(GlobalParameters.OutputPath);
-            LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
+            TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
             LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
 

@@ -25,7 +25,7 @@ namespace TEAM
                 {
                     Directory.CreateDirectory(inputPath);
                     localEvent = Event.CreateNewEvent(EventTypes.Information,
-                        $"Created a new directory for {inputPath}.\r\n");
+                        $"Created a new directory for {inputPath}.");
 
                 }
             }

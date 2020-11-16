@@ -102,7 +102,7 @@ namespace TEAM
             {
                 if (!File.Exists(configurationFileName))
                 {
-                    LocalTeamEnvironmentConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
+                    TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
                 }
                 else
