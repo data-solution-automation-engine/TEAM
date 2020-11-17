@@ -507,7 +507,7 @@ namespace TEAM
             if (checkBoxResizeDataGrid.Checked == false)
                 return;
 
-             dataGridViewAttributeMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dataGridViewAttributeMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             //dataGridViewLoadPatternCollection.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewAttributeMetadata.Columns[dataGridViewAttributeMetadata.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
@@ -586,10 +586,10 @@ namespace TEAM
                 counter++;
             }
 
-            labelHubCount.Text = hubSet.Count + " Core Business Concepts";
-            labelSatCount.Text = satSet.Count + " Context Entities";
-            labelLnkCount.Text = lnkSet.Count + " Natural Business Relationships";
-            labelLsatCount.Text = lsatSet.Count + " Relationship Context Entities";
+            labelHubCount.Text = $@"{hubSet.Count} Core Business Concepts";
+            labelSatCount.Text = satSet.Count + @" Context Entities";
+            labelLnkCount.Text = lnkSet.Count + @" Natural Business Relationships";
+            labelLsatCount.Text = lsatSet.Count + @" Relationship Context Entities";
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -7656,33 +7656,23 @@ namespace TEAM
                     var targetDataObjectName = metadataRow.Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
                     var sourceConnectionInternalId = metadataRow.Cells[(int) TableMappingMetadataColumns.SourceConnection].Value.ToString();
                     var targetConnectionInternalId = metadataRow.Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString();
-                    //var filterCriterion = metadataRow.Cells[(int)TableMappingMetadataColumns.FilterCriterion].Value.ToString();
-                    //var businessKeyDefinition = metadataRow.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString();
-                    var drivingKeyDefinition = metadataRow.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition]
-                        .Value.ToString();
+                    var drivingKeyDefinition = metadataRow.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Value.ToString();
 
                     // Find out what the correct patterns is.
-                    var tableType = MetadataHandling.GetTableType(targetDataObjectName, drivingKeyDefinition,
-                        TeamConfigurationSettings);
-                    LoadPatternDefinition loadPatternDefinition =
-                        GlobalParameters.PatternDefinitionList.FirstOrDefault(item =>
-                            item.LoadPatternType == tableType.ToString());
+                    var tableType = MetadataHandling.GetTableType(targetDataObjectName, drivingKeyDefinition, TeamConfigurationSettings);
+                    LoadPatternDefinition loadPatternDefinition = GlobalParameters.PatternDefinitionList.FirstOrDefault(item => item.LoadPatternType == tableType.ToString());
 
                     // Exception handling, if null then break
                     if (loadPatternDefinition == null)
                     {
-                        var outputMessage =
-                            $"No Json interface file was created for the mapping from '{sourceDataObjectName}' to '{targetDataObjectName}'.";
+                        var outputMessage = $"No Json interface file was created for the mapping from '{sourceDataObjectName}' to '{targetDataObjectName}'.";
                         GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, outputMessage));
                         richTextBoxInformation.AppendText(outputMessage + "\r\n");
                         break;
                     }
 
-
-                    TeamConfigurationSettings.ConnectionDictionary.TryGetValue(sourceConnectionInternalId,
-                        out var sourceConnection);
-                    TeamConfigurationSettings.ConnectionDictionary.TryGetValue(targetConnectionInternalId,
-                        out var targetConnection);
+                    TeamConfigurationSettings.ConnectionDictionary.TryGetValue(sourceConnectionInternalId, out var sourceConnection);
+                    TeamConfigurationSettings.ConnectionDictionary.TryGetValue(targetConnectionInternalId, out var targetConnection);
 
                     // Retrieve the source-to-target mappings (base query).
                     DataTable metadataDataTable = new DataTable();
@@ -7741,8 +7731,89 @@ namespace TEAM
                     {
                         foreach (DataRow row in mappingRows)
                         {
-                            #region Business Key
+                            // Create the individual Data Object Mapping
+                            var sourceToTargetMapping = new DataObjectMapping();
 
+                            // Enabled flag
+                            sourceToTargetMapping.enabled = true;
+
+                            // Data Object Mapping name
+                            sourceToTargetMapping.mappingName = (string)row["TARGET_NAME"]; // Source-to-target mapping name
+
+                            #region Data Objects
+                            var sourceDataObjects = new List<dynamic>();
+                            var sourceDataObject = new DataWarehouseAutomation.DataObject();
+                            var targetDataObject = new DataWarehouseAutomation.DataObject();
+
+                            sourceDataObject.name = (string)row["SOURCE_NAME"];
+                            targetDataObject.name = (string)row["TARGET_NAME"];
+
+                            // Source and target connection information
+                            if (JsonExportSettings.GenerateSourceDataObjectConnection == "True")
+                            {
+                                sourceDataObject = JsonOutputHandling.AddDataObjectExtensions(sourceDataObject, sourceConnection);
+                            }
+
+                            if (JsonExportSettings.GenerateTargetDataObjectConnection == "True")
+                            {
+                                // Add any extensions necessary for the data object.
+                                targetDataObject = JsonOutputHandling.AddDataObjectExtensions(targetDataObject, targetConnection);
+                            }
+
+                            sourceDataObjects.Add(sourceDataObject);
+                            sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
+                            sourceToTargetMapping.targetDataObject = targetDataObject;
+                            #endregion
+
+                            #region Lookup Tables (relatedDataObjects)
+
+                            // Define a lookup table, in case there is a desire to do key lookups.
+                            var lookupTable = (string)row["TARGET_NAME"];
+
+                            if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
+                            {
+                                int prefixLocation = lookupTable.IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
+                                if (prefixLocation != -1)
+                                {
+                                    lookupTable = lookupTable
+                                        .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
+                                        .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
+                                }
+                            }
+                            else
+                            {
+                                int prefixLocation =
+                                    lookupTable.LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
+                                if (prefixLocation != -1)
+                                {
+                                    lookupTable = lookupTable
+                                        .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
+                                        .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
+                                }
+                            }
+
+                            // Create a related data object to capture the lookup information.
+                            // This needs to be put in a collection because the relatedDataObject is a List of Data Objects.
+                            List<DataWarehouseAutomation.DataObject> relatedDataObject = new List<DataWarehouseAutomation.DataObject>();
+                            var lookupTableDataObject = new DataWarehouseAutomation.DataObject();
+                            lookupTableDataObject.name = lookupTable;
+
+
+                            // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
+                            List<Classification> dataObjectClassificationList = new List<Classification>();
+                            var dataObjectClassification = new Classification();
+                            dataObjectClassification.classification = "Lookup";
+                            dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
+                            dataObjectClassificationList.Add(dataObjectClassification);
+
+                            lookupTableDataObject.dataObjectClassification = dataObjectClassificationList;
+
+                            relatedDataObject.Add(lookupTableDataObject);
+
+                            sourceToTargetMapping.relatedDataObjects = relatedDataObject;
+                            #endregion
+
+                            #region Business Keys
                             // Creating the Business Key definition, using the available components (see above).
                             List<BusinessKey> businessKeyList = new List<BusinessKey>();
                             BusinessKey businessKey =
@@ -7784,11 +7855,98 @@ namespace TEAM
                             }
 
                             businessKeyList.Add(businessKey);
+                            #endregion
+
+                            #region Additional Business Keys
+                            if (additionalBusinessKeyDataTable != null && additionalBusinessKeyDataTable.Rows.Count > 0)
+                            {
+                                DataRow[] additionalBusinessKeyRows =
+                                    additionalBusinessKeyDataTable.Select(
+                                        "[TARGET_NAME] = '" + targetDataObjectName + "'");
+
+                                foreach (DataRow additionalKeyRow in additionalBusinessKeyRows)
+                                {
+                                    var hubBusinessKey = new BusinessKey();
+
+                                    hubBusinessKey.businessKeyComponentMapping =
+                                        InterfaceHandling.BusinessKeyComponentMappingList(
+                                            (string)additionalKeyRow["SOURCE_BUSINESS_KEY_DEFINITION"],
+                                            (string)additionalKeyRow["TARGET_BUSINESS_KEY_DEFINITION"]);
+                                    hubBusinessKey.surrogateKey = (string)additionalKeyRow["TARGET_KEY_NAME"];
+
+                                    if ((string)additionalKeyRow["HUB_NAME"] == "N/A")
+                                    {
+                                        // Classification (degenerate field)
+                                        List<Classification> businesskeyClassificationList = new List<Classification>();
+                                        var businesskeyClassification = new Classification();
+                                        businesskeyClassification.classification = "DegenerateAttribute";
+                                        businesskeyClassification.notes =
+                                            "Non Core Business Concept attribute, though part of the Relationship Key.";
+                                        businesskeyClassificationList.Add(businesskeyClassification);
+
+                                        hubBusinessKey.businessKeyClassification = businesskeyClassificationList;
+                                    }
+
+
+                                    businessKeyList.Add(hubBusinessKey); // Adding the Link Business Key
+                                }
+                            }
+
+
+                            sourceToTargetMapping.businessKeys = businessKeyList; // Business Key
+
+
+                            // Set the data types, if required
+                            foreach (var localBusinessKey in sourceToTargetMapping.businessKeys)
+                            {
+                                foreach (var component in businessKey.businessKeyComponentMapping)
+                                {
+
+                                    if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
+                                    {
+                                        Dictionary<string, string> tableSchema =
+                                            MetadataHandling.GetTableAndSchema(sourceToTargetMapping
+                                                .sourceDataObjects[0].name);
+
+                                        DataRow[] physicalModelRow = physicalModelDataTable.Select(
+                                            "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
+                                            "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' AND " +
+                                            "[COLUMN_NAME] = '" + component.sourceDataItems[0].name.Replace("'", "") +
+                                            "'"
+                                        );
+                                        if (physicalModelRow.Length > 0)
+                                        {
+                                            PrepareDataTypes(component.sourceDataItems[0], physicalModelRow);
+                                        }
+
+                                    }
+
+                                    if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
+                                    {
+                                        var tableSchema =
+                                            MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject
+                                                .name);
+
+                                        DataRow[] physicalModelRow = physicalModelDataTable.Select(
+                                            "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
+                                            "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' AND " +
+                                            "[COLUMN_NAME] = '" + component.targetDataItem.name + "'"
+                                        );
+                                        if (physicalModelRow.Length > 0)
+                                        {
+                                            PrepareDataTypes(component.targetDataItem, physicalModelRow);
+                                        }
+
+                                    }
+
+                                }
+                            }
+
+
 
                             #endregion
 
                             #region Data Item Mapping (column to column)
-
                             // Create the column-to-column mapping.
                             List<DataItemMapping> dataItemMappingList = new List<DataItemMapping>();
                             if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
@@ -7850,17 +8008,14 @@ namespace TEAM
                                         if ((string) column["MULTI_ACTIVE_KEY_INDICATOR"] == "Y")
                                         {
                                             // Create the classifications at Data Item (target) level, to capture if this attribute is a Multi-Active attribute.
-                                            List<Classification> dataItemClassificationList =
-                                                new List<Classification>();
+                                            List<Classification> dataItemClassificationList = new List<Classification>();
                                             var dataItemClassification = new Classification();
                                             dataItemClassification.classification = "MultiActive";
-                                            dataItemClassification.notes =
-                                                "A multi-active attribute is part of the target table key.";
+                                            dataItemClassification.notes = "A multi-active attribute is part of the target table key.";
                                             dataItemClassificationList.Add(dataItemClassification);
 
                                             // Add the classification to the target Data Item
-                                            dataItemMapping.targetDataItem.dataItemClassification =
-                                                dataItemClassificationList;
+                                            dataItemMapping.targetDataItem.dataItemClassification = dataItemClassificationList;
                                         }
                                     }
 
@@ -7874,190 +8029,13 @@ namespace TEAM
                                         dataItemClassificationList.Add(dataItemClassification);
 
                                         // Add the classification to the target Data Item
-                                        dataItemMapping.sourceDataItems[0].dataItemClassification =
-                                            dataItemClassificationList;
+                                        dataItemMapping.sourceDataItems[0].dataItemClassification = dataItemClassificationList;
                                     }
 
                                     dataItemMappingList.Add(dataItemMapping);
                                 }
                             }
-
                             #endregion
-
-                            #region Additional Business Keys
-
-                            if (additionalBusinessKeyDataTable != null && additionalBusinessKeyDataTable.Rows.Count > 0)
-                            {
-                                DataRow[] additionalBusinessKeyRows =
-                                    additionalBusinessKeyDataTable.Select(
-                                        "[TARGET_NAME] = '" + targetDataObjectName + "'");
-
-                                foreach (DataRow additionalKeyRow in additionalBusinessKeyRows)
-                                {
-                                    var hubBusinessKey = new BusinessKey();
-
-                                    hubBusinessKey.businessKeyComponentMapping =
-                                        InterfaceHandling.BusinessKeyComponentMappingList(
-                                            (string) additionalKeyRow["SOURCE_BUSINESS_KEY_DEFINITION"],
-                                            (string) additionalKeyRow["TARGET_BUSINESS_KEY_DEFINITION"]);
-                                    hubBusinessKey.surrogateKey = (string) additionalKeyRow["TARGET_KEY_NAME"];
-
-                                    if ((string) additionalKeyRow["HUB_NAME"] == "N/A")
-                                    {
-                                        // Classification (degenerate field)
-                                        List<Classification> businesskeyClassificationList = new List<Classification>();
-                                        var businesskeyClassification = new Classification();
-                                        businesskeyClassification.classification = "DegenerateAttribute";
-                                        businesskeyClassification.notes =
-                                            "Non Core Business Concept attribute, though part of the Relationship Key.";
-                                        businesskeyClassificationList.Add(businesskeyClassification);
-
-                                        hubBusinessKey.businessKeyClassification = businesskeyClassificationList;
-                                    }
-
-
-                                    businessKeyList.Add(hubBusinessKey); // Adding the Link Business Key
-                                }
-                            }
-
-                            #endregion
-
-                            #region Lookup Table
-
-                            // Define a lookup table, in case there is a desire to do key lookups.
-                            var lookupTable = (string) row["TARGET_NAME"];
-
-                            if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
-                            {
-                                int prefixLocation = lookupTable.IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
-                                if (prefixLocation != -1)
-                                {
-                                    lookupTable = lookupTable
-                                        .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
-                                        .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
-                                }
-                            }
-                            else
-                            {
-                                int prefixLocation =
-                                    lookupTable.LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
-                                if (prefixLocation != -1)
-                                {
-                                    lookupTable = lookupTable
-                                        .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
-                                        .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
-                                }
-                            }
-
-                            #endregion
-
-                            // Add the created Business Key to the source-to-target mapping.
-                            var sourceToTargetMapping = new DataObjectMapping();
-
-                            var sourceDataObjects = new List<dynamic>();
-                            var sourceDataObject = new DataWarehouseAutomation.DataObject();
-                            var targetDataObject = new DataWarehouseAutomation.DataObject();
-
-                            sourceDataObject.name = (string) row["SOURCE_NAME"];
-                            targetDataObject.name = (string) row["TARGET_NAME"];
-
-                            // Source and target connection information
-                            if (JsonExportSettings.GenerateSourceDataObjectConnection == "True")
-                            {
-                                sourceDataObject = JsonOutputHandling.AddDataObjectExtensions(sourceDataObject, sourceConnection);
-                            }
-
-                            if (JsonExportSettings.GenerateTargetDataObjectConnection == "True")
-                            {
-                                // Add any extensions necessary for the data object.
-                                targetDataObject = JsonOutputHandling.AddDataObjectExtensions(targetDataObject, targetConnection);
-                            }
-
-                            
-
-
-                            sourceDataObjects.Add(sourceDataObject);
-                            sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
-                            sourceToTargetMapping.targetDataObject = targetDataObject;
-
-
-
-
-
-                            // Enabled flag
-                            sourceToTargetMapping.enabled = true;
-
-                            // Create a related data object to capture the lookup information.
-                            // This needs to be put in a collection because the relatedDataObject is a List of Data Objects.
-                            List<DataWarehouseAutomation.DataObject> relatedDataObject =
-                                new List<DataWarehouseAutomation.DataObject>();
-                            var lookupTableDataObject = new DataWarehouseAutomation.DataObject();
-                            lookupTableDataObject.name = lookupTable;
-
-                            // Create the classifications at Data Object level, to capture this is a Lookup relationship.
-                            List<Classification> dataObjectClassificationList = new List<Classification>();
-                            var dataObjectClassification = new Classification();
-                            dataObjectClassification.classification = "Lookup";
-                            dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
-                            dataObjectClassificationList.Add(dataObjectClassification);
-
-                            lookupTableDataObject.dataObjectClassification = dataObjectClassificationList;
-
-                            relatedDataObject.Add(lookupTableDataObject);
-
-                            sourceToTargetMapping.relatedDataObjects = relatedDataObject;
-
-
-                            //sourceToTargetMapping.lookupTable = lookupTable; // Lookup Table
-                            sourceToTargetMapping.mappingName =
-                                (string) row["TARGET_NAME"]; // Source-to-target mapping name
-                            sourceToTargetMapping.businessKeys = businessKeyList; // Business Key]
-
-                            // Set the data types, if required
-                            foreach (var localBusinessKey in sourceToTargetMapping.businessKeys)
-                            {
-                                foreach (var component in businessKey.businessKeyComponentMapping)
-                                {
-
-                                    if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
-                                    {
-                                        Dictionary<string, string> tableSchema =
-                                            MetadataHandling.GetTableAndSchema(sourceToTargetMapping
-                                                .sourceDataObjects[0].name);
-
-                                        DataRow[] physicalModelRow = physicalModelDataTable.Select(
-                                            "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
-                                            "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' AND " +
-                                            "[COLUMN_NAME] = '" + component.sourceDataItems[0].name.Replace("'", "") +
-                                            "'"
-                                        );
-                                        if (physicalModelRow.Length > 0)
-                                        {
-                                            PrepareDataTypes(component.sourceDataItems[0], physicalModelRow);
-                                        }
-
-                                    }
-
-                                    if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
-                                    {
-                                        var tableSchema =
-                                            MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject
-                                                .name);
-
-                                        DataRow[] physicalModelRow = physicalModelDataTable.Select(
-                                            "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
-                                            "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' AND " +
-                                            "[COLUMN_NAME] = '" + component.targetDataItem.name + "'"
-                                        );
-                                        if (physicalModelRow.Length > 0)
-                                        {
-                                            PrepareDataTypes(component.targetDataItem, physicalModelRow);
-                                        }
-
-                                    }
-
-                                }
-                            }
 
                             // Create the classifications at Data Object Mapping level.
                             List<Classification> dataObjectMappingClassificationList = new List<Classification>();
@@ -8162,8 +8140,7 @@ namespace TEAM
             // Spool the output to disk
             if (checkBoxSaveInterfaceToJson.Checked)
             {
-                richTextBoxInformation.AppendText(
-                    $"Associated scripts have been saved in {GlobalParameters.OutputPath}.\r\n");
+                richTextBoxInformation.AppendText($"Associated scripts have been saved in {GlobalParameters.OutputPath}.\r\n");
             }
 
             richTextBoxInformation.ScrollToCaret();
