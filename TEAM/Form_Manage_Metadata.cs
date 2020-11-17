@@ -7765,52 +7765,54 @@ namespace TEAM
                             sourceToTargetMapping.targetDataObject = targetDataObject;
                             #endregion
 
-                            #region Lookup Tables (relatedDataObjects)
+                            #region Related Data Objects (e.g. lookup tables, references)
 
                             // Define a lookup table, in case there is a desire to do key lookups.
-                            var lookupTable = (string)row["TARGET_NAME"];
+                            var lookupTable = "";
 
                             if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
                             {
-                                int prefixLocation = lookupTable.IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
+                                int prefixLocation = row["TARGET_NAME"].ToString().IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
                                 if (prefixLocation != -1)
                                 {
-                                    lookupTable = lookupTable
+                                    lookupTable = row["TARGET_NAME"].ToString()
                                         .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
                                         .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
                                 }
                             }
                             else
                             {
-                                int prefixLocation =
-                                    lookupTable.LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
+                                int prefixLocation = row["TARGET_NAME"].ToString().LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
                                 if (prefixLocation != -1)
                                 {
-                                    lookupTable = lookupTable
+                                    lookupTable = row["TARGET_NAME"].ToString()
                                         .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
                                         .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
                                 }
                             }
 
-                            // Create a related data object to capture the lookup information.
-                            // This needs to be put in a collection because the relatedDataObject is a List of Data Objects.
-                            List<DataWarehouseAutomation.DataObject> relatedDataObject = new List<DataWarehouseAutomation.DataObject>();
-                            var lookupTableDataObject = new DataWarehouseAutomation.DataObject();
-                            lookupTableDataObject.name = lookupTable;
+                            if (lookupTable != "")
+                            {
+                                // Create a related data object to capture the lookup information.
+                                // This needs to be put in a collection because the relatedDataObject is a List of Data Objects.
+                                List<DataWarehouseAutomation.DataObject> relatedDataObjects =
+                                    new List<DataWarehouseAutomation.DataObject>();
+                                var relatedDataObject = new DataWarehouseAutomation.DataObject();
+                                relatedDataObject.name = lookupTable;
 
 
-                            // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
-                            List<Classification> dataObjectClassificationList = new List<Classification>();
-                            var dataObjectClassification = new Classification();
-                            dataObjectClassification.classification = "Lookup";
-                            dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
-                            dataObjectClassificationList.Add(dataObjectClassification);
+                                // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
+                                List<Classification> dataObjectClassificationList = new List<Classification>();
+                                var dataObjectClassification = new Classification();
+                                dataObjectClassification.classification = "Lookup";
+                                dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
+                                dataObjectClassificationList.Add(dataObjectClassification);
+                                relatedDataObject.dataObjectClassification = dataObjectClassificationList;
 
-                            lookupTableDataObject.dataObjectClassification = dataObjectClassificationList;
+                                relatedDataObjects.Add(relatedDataObject);
+                                sourceToTargetMapping.relatedDataObjects = relatedDataObjects;
+                            }
 
-                            relatedDataObject.Add(lookupTableDataObject);
-
-                            sourceToTargetMapping.relatedDataObjects = relatedDataObject;
                             #endregion
 
                             #region Business Keys
