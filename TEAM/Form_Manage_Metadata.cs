@@ -7378,7 +7378,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(sourceObject, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false), GlobalParameters.CurrentVersionId, (DataTable)_bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(sourceObject, (DataTable)_bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7766,53 +7766,69 @@ namespace TEAM
                             #endregion
 
                             #region Related Data Objects (e.g. lookup tables, references)
+                            List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
+                            var test = TableMapping.GetDependentDataRows((string) row["SOURCE_NAME"],
+                                (string) row["TARGET_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"],
+                                TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
+
+                            foreach (var dependentRow in test)
+                            {
+                                var relatedDataObject = new DataWarehouseAutomation.DataObject();
+                                relatedDataObject.name = dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                                relatedDataObjects.Add(relatedDataObject);
+                            }
+
+                            // ONLY FOR STG patterns.
                             // Define a lookup table, in case there is a desire to do key lookups.
-                            var lookupTable = "";
-
                             if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
                             {
                                 int prefixLocation = row["TARGET_NAME"].ToString().IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
-                                if (prefixLocation != -1)
+                                if (prefixLocation != -1) // The prefix is found in the name of the data object (table).
                                 {
-                                    lookupTable = row["TARGET_NAME"].ToString()
+                                    var relatedDataObject = new DataWarehouseAutomation.DataObject();
+                                    relatedDataObject.name = row["TARGET_NAME"].ToString()
                                         .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
                                         .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
+
+                                    // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
+                                    List<Classification> dataObjectClassificationList = new List<Classification>();
+                                    var dataObjectClassification = new Classification();
+                                    dataObjectClassification.classification = "Lookup";
+                                    dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
+                                    dataObjectClassificationList.Add(dataObjectClassification);
+
+                                    relatedDataObject.dataObjectClassification = dataObjectClassificationList;
+                                    relatedDataObjects.Add(relatedDataObject);
                                 }
                             }
-                            else
+                            else 
                             {
                                 int prefixLocation = row["TARGET_NAME"].ToString().LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
-                                if (prefixLocation != -1)
+                                if (prefixLocation != -1) // The suffix is found in the name of the data object (table).
                                 {
-                                    lookupTable = row["TARGET_NAME"].ToString()
+                                    var relatedDataObject = new DataWarehouseAutomation.DataObject();
+                                    relatedDataObject.name =  row["TARGET_NAME"].ToString()
                                         .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
                                         .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
+
+                                    // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
+                                    List<Classification> dataObjectClassificationList = new List<Classification>();
+                                    var dataObjectClassification = new Classification();
+                                    dataObjectClassification.classification = "Lookup";
+                                    dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
+                                    dataObjectClassificationList.Add(dataObjectClassification);
+
+                                    relatedDataObject.dataObjectClassification = dataObjectClassificationList;
+                                    relatedDataObjects.Add(relatedDataObject);
                                 }
                             }
 
-                            if (lookupTable != "")
+                            // If the list contains entries, add it to the mapping.
+                            if (relatedDataObjects.Count>0)
                             {
-                                // Create a related data object to capture the lookup information.
-                                // This needs to be put in a collection because the relatedDataObject is a List of Data Objects.
-                                List<DataWarehouseAutomation.DataObject> relatedDataObjects =
-                                    new List<DataWarehouseAutomation.DataObject>();
-                                var relatedDataObject = new DataWarehouseAutomation.DataObject();
-                                relatedDataObject.name = lookupTable;
-
-
-                                // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
-                                List<Classification> dataObjectClassificationList = new List<Classification>();
-                                var dataObjectClassification = new Classification();
-                                dataObjectClassification.classification = "Lookup";
-                                dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
-                                dataObjectClassificationList.Add(dataObjectClassification);
-                                relatedDataObject.dataObjectClassification = dataObjectClassificationList;
-
-                                relatedDataObjects.Add(relatedDataObject);
                                 sourceToTargetMapping.relatedDataObjects = relatedDataObjects;
                             }
-
                             #endregion
 
                             #region Business Keys

@@ -108,18 +108,6 @@ namespace TEAM
 
             if (validationAttribute != "NULL")
             {
-
-                //DataColumn[] columns = inputDataTable.Columns.Cast<DataColumn>().ToArray();
-
-                //bool existenceCheckTables = inputDataTable.AsEnumerable()
-                //    .Any(row => columns.Any(col => row[col].ToString() == validationObject));
-                //bool existenceCheckAttributes = inputDataTable.AsEnumerable()
-                //    .Any(row => columns.Any(col => row[col].ToString() == validationAttribute));
-
-                //if (existenceCheckTables == true && existenceCheckAttributes == true)
-                //{
-                //    returnExistenceEvaluation = "True";
-                //}
                 var objectDetails = MetadataHandling.GetTableAndSchema(validationObject).FirstOrDefault();
 
                 DataRow[] foundRows = inputDataTable.Select("" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.SchemaName + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.ColumnName + " = '" + validationAttribute+"'");
@@ -138,21 +126,21 @@ namespace TEAM
             return returnExistenceEvaluation;
         }
 
-        internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, string connectionString, int versionId, DataTable inputDataTable)
+        internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, DataTable inputDataTable)
         {
             // First, the Business Key need to be checked. This is to determine how many dependents are expected.
             // For instance, if a Link has a three-part Business Key then three Hubs will be expected
             List<string> hubBusinessKeys = validationObject.Item3.Split(',').ToList();
             int businessKeyCount = hubBusinessKeys.Count;
 
-            // We need to manupulate the query to account for multiplicity in the model i.e. many Satellites linking to a single Hub.
+            // We need to manipulate the query to account for multiplicity in the model i.e. many Satellites linking to a single Hub.
             // The only interest is whether the Hub is there...
             string tableInclusionFilterCriterion;
             var tableClassification = "";
             if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfigurationSettings.HubTablePrefixValue;
-                tableClassification = "SAT";
+                tableClassification = FormBase.TeamConfigurationSettings.SatTablePrefixValue;
             }
             else if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
             {
@@ -169,21 +157,13 @@ namespace TEAM
                 tableInclusionFilterCriterion = "";
             }
 
-
-            var conn = new SqlConnection { ConnectionString = connectionString };
-            conn.Open();
-
-
             // Unfortunately, there is a separate process for Links and Sats
             // Iterate through the various keys (mainly for the purpose of evaluating Links)
             int numberOfDependents = 0;
-            if (tableClassification == "SAT" || tableClassification == "LNK")
+            if (tableClassification == FormBase.TeamConfigurationSettings.SatTablePrefixValue || tableClassification == "LNK")
             {
                 foreach (string businessKeyComponent in hubBusinessKeys)
                 {
-                    // Query the dependent information
-                    var sqlStatementForDependent = new StringBuilder();
-
                     foreach (DataRow row in inputDataTable.Rows)
                     {
                         if (
@@ -194,6 +174,7 @@ namespace TEAM
                              row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion) 
                            )
                         {
+                            var bla = row;
                             numberOfDependents++;
                         }
                     }
@@ -217,13 +198,10 @@ namespace TEAM
                 }
             }
 
-            conn.Close();
-
-
             // Run the comparison
             // Test for equality.
             bool equal;
-            if ((tableClassification == "SAT" || tableClassification == "LNK") && businessKeyCount == numberOfDependents) // For Sats and Links we can count the keys and rows
+            if ((tableClassification == FormBase.TeamConfigurationSettings.SatTablePrefixValue || tableClassification == "LNK") && businessKeyCount == numberOfDependents) // For Sats and Links we can count the keys and rows
             {
                 equal = true;
             }

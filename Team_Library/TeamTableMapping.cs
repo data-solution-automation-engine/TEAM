@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Transactions;
 using Newtonsoft.Json;
 
 namespace TEAM
@@ -55,6 +56,68 @@ namespace TEAM
             EventLog = new EventLog();
             DataTable = new DataTable();
             JsonList = new List<TableMappingJson>();
+        }
+
+        public enum BusinessKeyEvaluationMode
+        {
+            Full,
+            Partial
+        }
+
+        public List<DataRow> GetDependentDataRows(string SourceDataObjectName, string TargetDataObjectName, string BusinessKey, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
+        {
+            // Prepare the return information
+            List<DataRow> localDataRows = new List<DataRow>();
+
+            // First, the Business Key need to be checked. This is to determine how many dependents are expected.
+            // For instance, if a Link has a three-part Business Key then three Hubs will be expected
+            List<string> businessKeyComponents = BusinessKey.Split(',').ToList();
+
+
+
+            
+            // E.g. for Links and stuff
+            if (businessKeyEvaluationMode == BusinessKeyEvaluationMode.Partial)
+            {
+                foreach (string businessKeyComponent in businessKeyComponents)
+                {
+                    foreach (DataRow row in DataTable.Rows)
+                    {
+                        if (
+                             (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                             (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == SourceDataObjectName &&
+                             (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
+                             (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObjectName 
+                            // && // Exclude itself
+                            // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                           )
+                        {
+                            localDataRows.Add(row);
+                        }
+                    }
+                }
+            }
+            else // In the case of an LSAT, only join on the Link using the full business key
+            {
+                // Query the dependent information
+                foreach (DataRow row in DataTable.Rows)
+                {
+                    if (
+                         (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                         (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == SourceDataObjectName &&
+                         (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == BusinessKey &&
+                         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObjectName 
+                         //&& // Exclude itself
+                        // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                       )
+                    {
+                        localDataRows.Add(row);
+                    }
+                }
+            }
+
+            // return the result
+            return localDataRows;
         }
 
         public List<TeamConnection> GetConnectionList(Dictionary<string, TeamConnection> connectionDictionary)
