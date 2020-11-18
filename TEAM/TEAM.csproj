@@ -227,6 +227,12 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form_PIT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_PIT.Designer.cs">
+      <DependentUpon>Form_PIT.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoadPatternHandling.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="TeamObjectModel.cs" />
@@ -339,6 +345,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Metadata.resx">
       <DependentUpon>Form_Manage_Metadata.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_PIT.resx">
+      <DependentUpon>Form_PIT.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Repository.resx">
       <DependentUpon>Form_Repository.cs</DependentUpon>
