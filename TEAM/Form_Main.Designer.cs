@@ -180,7 +180,7 @@
             // labelActiveVersionDateTime
             // 
             this.labelActiveVersionDateTime.AutoSize = true;
-            this.labelActiveVersionDateTime.Location = new System.Drawing.Point(162, 57);
+            this.labelActiveVersionDateTime.Location = new System.Drawing.Point(162, 59);
             this.labelActiveVersionDateTime.Name = "labelActiveVersionDateTime";
             this.labelActiveVersionDateTime.Size = new System.Drawing.Size(27, 13);
             this.labelActiveVersionDateTime.TabIndex = 23;
@@ -189,7 +189,7 @@
             // labelActivatedMetadataVersionDateTime
             // 
             this.labelActivatedMetadataVersionDateTime.AutoSize = true;
-            this.labelActivatedMetadataVersionDateTime.Location = new System.Drawing.Point(6, 57);
+            this.labelActivatedMetadataVersionDateTime.Location = new System.Drawing.Point(6, 59);
             this.labelActivatedMetadataVersionDateTime.Name = "labelActivatedMetadataVersionDateTime";
             this.labelActivatedMetadataVersionDateTime.Size = new System.Drawing.Size(105, 13);
             this.labelActivatedMetadataVersionDateTime.TabIndex = 22;
@@ -362,7 +362,7 @@
             // 
             this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
             this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.helpToolStripMenuItem1.Text = "Help";
             this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
             // 
@@ -370,20 +370,20 @@
             // 
             this.displayEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.log_file;
             this.displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
-            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.displayEventLogToolStripMenuItem.Text = "Display Event Log";
             this.displayEventLogToolStripMenuItem.Click += new System.EventHandler(this.displayEventLogToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(164, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Image = global::TEAM.Properties.Resources.RavosLogo;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);

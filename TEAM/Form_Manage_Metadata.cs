@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -1092,7 +1092,7 @@ namespace TEAM
 
                         jsonTableMappingFull.Add(newJsonSegment);
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         // TBD
                     }
@@ -3975,7 +3975,7 @@ namespace TEAM
                 var listAtt = Utility.GetDataTable(ref connOmd, prepareAttStatement.ToString());
 
                 // Check if there are any attributes found, otherwise insert into the repository
-                if (listAtt.Rows.Count == 0)
+                if (listAtt == null || listAtt.Rows.Count == 0)
                 {
                     _alert.SetTextLogging("--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
                 }
@@ -7638,7 +7638,7 @@ namespace TEAM
                 _generatedJsonInterface.Show();
             }
 
-            int fileCounter = 0;
+            int mappingCounter = 0;
 
             EventLog eventLog = new EventLog();
             SqlConnection conn = new SqlConnection
@@ -8126,15 +8126,14 @@ namespace TEAM
                                 TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json",
                                     json);
                             eventLog.Add(fileSaveEventLog);
-                            fileCounter++;
+                            mappingCounter++;
                         }
                     }
                     catch (Exception ex)
                     {
                         richTextBoxInformation.AppendText(
-                            "An error was encountered while generating the JSON metadata. The error message is: " + ex);
+                            "An error was encountered while generating the Json metadata. The error message is: " + ex);
                     }
-
                     #endregion
                 }
             }
@@ -8153,7 +8152,7 @@ namespace TEAM
 
             // Report back to the user
             richTextBoxInformation.AppendText($"\r\n{errorCounter} errors have been found.\r\n");
-            richTextBoxInformation.AppendText($"\r\n{fileCounter} json schemas (files) have been prepared.\r\n");
+            richTextBoxInformation.AppendText($"\r\n{mappingCounter} mapping(s) have been prepared.\r\n");
 
             // Spool the output to disk
             if (checkBoxSaveInterfaceToJson.Checked)

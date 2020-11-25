@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading;
 using System.Drawing;
 using System.Data;
@@ -452,21 +452,18 @@ namespace TEAM
         private void UpdateEnvironment(object sender, MyWorkingEnvironmentEventArgs e)
         {
             var localEnvironment = e.Value;
-            var localTextForLabel = "The working environment is: " + localEnvironment.environmentKey;
+            var localTextForLabel = localEnvironment.environmentKey;
 
-            if (labelWorkingEnvironmentType.InvokeRequired)
+            if (labelWorkingEnvironment.InvokeRequired)
             {
-                labelWorkingEnvironmentType.BeginInvoke((MethodInvoker)delegate { labelWorkingEnvironmentType.Text = localTextForLabel; });
+                labelWorkingEnvironment.BeginInvoke((MethodInvoker)delegate { labelWorkingEnvironment.Text = localTextForLabel; });
             }
             else
             {
-               labelWorkingEnvironmentType.Text = localTextForLabel;
+               labelWorkingEnvironment.Text = localTextForLabel;
             }
 
-
             LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
-
-
         }
 
         private void ClosePatternForm(object sender, FormClosedEventArgs e)
