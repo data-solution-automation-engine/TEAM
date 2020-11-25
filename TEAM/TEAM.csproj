@@ -106,7 +106,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Form_PIT.cs">
@@ -265,9 +264,12 @@
     <Content Include="Files\sample_TEAM_Model_Metadata_v0.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Libraries\DataWarehouseAutomation.dll">
+    <None Include="Libraries\DataWarehouseAutomation.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
+    <None Include="Libraries\Microsoft.Data.SqlClient.dll" />
+    <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x64.dll" />
+    <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x86.dll" />
     <Content Include="LoadPatterns\loadPatternDefinition.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -424,9 +426,6 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.WindowsRuntime.UI.Xaml">
-      <Version>4.7.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
