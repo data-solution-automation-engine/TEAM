@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEAM", "TEAM\TEAM.csproj", 
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TEAM_Installation_Setup", "TEAM_Installation_Setup\TEAM_Installation_Setup.vdproj", "{1852EE88-A5AB-4241-AF6E-085ADE61C74A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEAM_Library", "Team_Library\TEAM_Library.csproj", "{CE615A6F-D85D-47C6-B829-0679BEE1C593}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{73971441-2782-43CF-862C-1F636528858A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1852EE88-A5AB-4241-AF6E-085ADE61C74A}.Debug|Any CPU.ActiveCfg = Debug
 		{1852EE88-A5AB-4241-AF6E-085ADE61C74A}.Release|Any CPU.ActiveCfg = Release
+		{CE615A6F-D85D-47C6-B829-0679BEE1C593}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE615A6F-D85D-47C6-B829-0679BEE1C593}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE615A6F-D85D-47C6-B829-0679BEE1C593}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE615A6F-D85D-47C6-B829-0679BEE1C593}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

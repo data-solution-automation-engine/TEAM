@@ -117,19 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="toolTipRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>448, 19</value>
-  </metadata>
   <metadata name="backgroundWorkerRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="checkBoxRetainManualMapping.ToolTip" xml:space="preserve">
-    <value>Checking this option will not delete the MD_TABLE_MAPPING and MD_ATTRIBUTE_MAPPING tables, if a SQL Server repository is used.
-
-These two tables are the core mapping tables that contain the essential generation metadata.</value>
-  </data>
   <metadata name="backgroundWorkerSampleData.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>232, 17</value>
+  </metadata>
+  <metadata name="toolTipRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>448, 19</value>
   </metadata>
   <data name="checkBoxDIRECT.ToolTip" xml:space="preserve">
     <value>This generates the sample code with the standard DIRECT ETL control framework attributes. This is not required for virtualisation, but can be used to integrate the sample code into ETL software (i.e. SSIS using Biml).</value>
@@ -139,25 +134,16 @@ These two tables are the core mapping tables that contain the essential generati
   </data>
   <data name="button2.ToolTip" xml:space="preserve">
     <value>This will make a backup of any existing configuration settings (see Configuration Settings menu option) and update the current settings according to the type of sample environment used (i.e. normal or DIRECT integrated).
-</value>
-  </data>
-  <data name="label5.Text" xml:space="preserve">
-    <value>When generating the sample schema using the configuration settings option enabled, this is already completed.
+
+When generating the sample schema using the configuration settings option enabled, this is already completed.
 
 However, if you would like to separately changes standard configuration settings (default or using DIRECT integration)
-this button can be used.</value>
+this button can be used.
+</value>
   </data>
-  <data name="label3.Text" xml:space="preserve">
-    <value>Generates the sample mapping metadata.
-
-WARNING - the databases must already exist.
-Any existing information will be removed.
-
-While not required, it is recommended to use an empty or dedicated database. 
-
-Sample mapping metadata will initially be created in the SQL Server repository tables.
-This can subsequently be saved as JSON for ongoing version control.</value>
-  </data>
+  <metadata name="backgroundWorkerMetadata.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>596, 19</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

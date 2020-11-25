@@ -17,6 +17,8 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>C:\Files\TEAM_deployment\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -31,8 +33,8 @@
     <ProductName>TEAM</ProductName>
     <PublisherName>Roelant Vos</PublisherName>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.5.5.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.6.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -93,58 +95,51 @@
   <ItemGroup>
     <Reference Include="DataWarehouseAutomation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Data_Warehouse_Automation_Metadata_Interface\ClassLibrary\DataWarehouseAutomation\DataWarehouseAutomation\bin\Debug\netstandard2.0\DataWarehouseAutomation.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=13.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=13.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=13.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\130\SDK\Assemblies\Microsoft.SqlServer.Smo.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>Libraries\DataWarehouseAutomation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
+    <Reference Include="System.Net" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClassLoadPatternHandling.cs" />
-    <Compile Include="ClassUtility.cs" />
-    <Compile Include="ClassExtensionMethods.cs" />
-    <Compile Include="ClassMetadataHandling.cs" />
-    <Compile Include="ClassObjectModel.cs" />
+    <Compile Include="Form_PIT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_PIT.Designer.cs">
+      <DependentUpon>Form_PIT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoadPatternHandling.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="TeamObjectModel.cs" />
+    <Compile Include="CustomTabPageEnvironment.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomTabPageConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ClassJsonHandling.cs" />
-    <Compile Include="ClassEnvironmentConfiguration.cs" />
+    <Compile Include="JsonHandling.cs" />
     <Compile Include="CustomDataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomTimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FormBase.cs">
+    <Compile Include="LocalTeamEnvironmentConfiguration.cs" />
+    <Compile Include="Form_Base.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormBase.Designer.cs">
-      <DependentUpon>FormBase.cs</DependentUpon>
+    <Compile Include="Form_Base.Designer.cs">
+      <DependentUpon>Form_Base.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_About.cs">
       <SubType>Form</SubType>
@@ -152,11 +147,11 @@
     <Compile Include="Form_About.Designer.cs">
       <DependentUpon>Form_About.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormAlert.cs">
+    <Compile Include="Form_Alert.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormAlert.Designer.cs">
-      <DependentUpon>FormAlert.cs</DependentUpon>
+    <Compile Include="Form_Alert.Designer.cs">
+      <DependentUpon>Form_Alert.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_Manage_Pattern_Definitions.cs">
       <SubType>Form</SubType>
@@ -188,13 +183,20 @@
     <Compile Include="Form_Repository.Designer.cs">
       <DependentUpon>Form_Repository.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_Json_Configuration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Json_Configuration.Designer.cs">
+      <DependentUpon>Form_Json_Configuration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Validation.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form_Validation.Designer.cs">
       <DependentUpon>Form_Validation.cs</DependentUpon>
     </Compile>
-    <Compile Include="ClassMetadataValidation.cs" />
+    <Compile Include="MetadataValidation.cs" />
+    <Compile Include="JsonOutputHandling.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CustomDataGridViewTable.cs">
@@ -208,11 +210,11 @@
     <EmbeddedResource Include="Form_About.resx">
       <DependentUpon>Form_About.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormAlert.resx">
-      <DependentUpon>FormAlert.cs</DependentUpon>
+    <EmbeddedResource Include="Form_Alert.resx">
+      <DependentUpon>Form_Alert.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormBase.resx">
-      <DependentUpon>FormBase.cs</DependentUpon>
+    <EmbeddedResource Include="Form_Base.resx">
+      <DependentUpon>Form_Base.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Pattern_Definitions.resx">
       <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
@@ -226,8 +228,14 @@
     <EmbeddedResource Include="Form_Manage_Metadata.resx">
       <DependentUpon>Form_Manage_Metadata.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_PIT.resx">
+      <DependentUpon>Form_PIT.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_Repository.resx">
       <DependentUpon>Form_Repository.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Json_Configuration.resx">
+      <DependentUpon>Form_Json_Configuration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Validation.resx">
       <DependentUpon>Form_Validation.cs</DependentUpon>
@@ -257,13 +265,15 @@
     <Content Include="Files\sample_TEAM_Model_Metadata_v0.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\sample_TEAM_Table_Mapping_v0.json">
+    <Content Include="Libraries\DataWarehouseAutomation.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="LoadPatterns\loadPatternDefinition.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="packages.config" />
+    <Content Include="Files\sample_TEAM_Table_Mapping_v0.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
@@ -287,6 +297,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\log-file.png" />
     <Content Include="Resources\Ravos-logo-small.ico" />
     <Content Include="Scripts\generateRepository.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -344,16 +355,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <PublishFile Include="Microsoft.SqlServer.ConnectionInfo">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
     <PublishFile Include="Microsoft.SqlServer.Diagnostics.STrace">
       <Visible>False</Visible>
       <Group>
@@ -364,57 +365,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
-    <PublishFile Include="Microsoft.SqlServer.Dmf.Common">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="Microsoft.SqlServer.Management.Sdk.Sfc">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="Microsoft.SqlServer.ServiceBrokerEnum">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="Microsoft.SqlServer.Smo">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
     <PublishFile Include="Microsoft.SqlServer.SqlClrProvider">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="Microsoft.SqlServer.SqlEnum">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -455,7 +406,29 @@
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Team_Library\TEAM_Library.csproj">
+      <Project>{ce615a6f-d85d-47c6-b829-0679bee1c593}</Project>
+      <Name>TEAM_Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient">
+      <Version>2.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Identity.Client">
+      <Version>4.23.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts">
+      <Version>10.0.19041.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.WindowsRuntime.UI.Xaml">
+      <Version>4.7.0</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

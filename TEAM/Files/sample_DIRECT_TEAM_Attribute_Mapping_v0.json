@@ -6,7 +6,7 @@
     "sourceAttribute": "End_Date",
     "targetTable": "LSAT_MEMBERSHIP",
     "targetAttribute": "MEMBERSHIP_END_DATE",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "70190A906AD7548ACA5F253101B444A2",
@@ -15,7 +15,7 @@
     "sourceAttribute": "Start_Date",
     "targetTable": "LSAT_MEMBERSHIP",
     "targetAttribute": "MEMBERSHIP_START_DATE",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "788083C994B9A275FAC40202E9F1396A",
@@ -24,7 +24,7 @@
     "sourceAttribute": "Status",
     "targetTable": "LNK_MEMBERSHIP",
     "targetAttribute": "SALES_CHANNEL",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "D4DE0411079B67E575F3F6B5DDD437F9",
@@ -33,7 +33,7 @@
     "sourceAttribute": "Status",
     "targetTable": "LSAT_MEMBERSHIP",
     "targetAttribute": "MEMBERSHIP_STATUS",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "AD6E8ACD0C2D184B1289446468511B13",
@@ -42,7 +42,7 @@
     "sourceAttribute": "Contact_Number",
     "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
     "targetAttribute": "CONTACT_NUMBER",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "1D3E2F244DF2C67C2697E5C82F57A5D7",
@@ -51,7 +51,7 @@
     "sourceAttribute": "Country",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "COUNTRY",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "4A8D0150AC76C3665B470B013313716D",
@@ -60,7 +60,7 @@
     "sourceAttribute": "DOB",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "DATE_OF_BIRTH",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "EBDCF59B8AEA377A513C80CDE70C89CC",
@@ -69,7 +69,7 @@
     "sourceAttribute": "Gender",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "GENDER",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "55CC58B616C07E090297C55515B2EE02",
@@ -78,7 +78,7 @@
     "sourceAttribute": "Given",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "GIVEN_NAME",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "12920214D4D369B5A36C62860A3A4C5A",
@@ -87,7 +87,7 @@
     "sourceAttribute": "Postcode",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "POSTCODE",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "6BF5994FA17C4DF0C361FC8565FAF4C8",
@@ -96,7 +96,7 @@
     "sourceAttribute": "Referee_Offer_Made",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "REFERRAL_OFFER_MADE_INDICATOR",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "4F52BB39C1AF15735ADD3DB281A6098B",
@@ -105,7 +105,7 @@
     "sourceAttribute": "State",
     "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
     "targetAttribute": "STATE",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "0F60428B5AC60E7381E5C5D772F81D3B",
@@ -114,7 +114,7 @@
     "sourceAttribute": "Suburb",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "SUBURB",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "2044F017707A6593B8AB3AEEFD5D66DB",
@@ -123,7 +123,7 @@
     "sourceAttribute": "Surname",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "SURNAME",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "37C733AACB061A0C9288CA0112E51ACD",
@@ -132,7 +132,7 @@
     "sourceAttribute": "Date_effective",
     "targetTable": "SAT_MEMBERSHIP_PLAN_VALUATION",
     "targetAttribute": "PLAN_VALUATION_DATE",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "C0A4209BA0F99256C7D6B51D676D3944",
@@ -141,7 +141,7 @@
     "sourceAttribute": "Value_Amount",
     "targetTable": "SAT_MEMBERSHIP_PLAN_VALUATION",
     "targetAttribute": "PLAN_VALUATION_AMOUNT",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "85B97D237D574C1C2FEED9691F8C6C9B",
@@ -150,7 +150,7 @@
     "sourceAttribute": "Offer_Long_Description",
     "targetTable": "SAT_INCENTIVE_OFFER",
     "targetAttribute": "OFFER_DESCRIPTION",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "0A7615C0F1071453220B70E46F6894DA",
@@ -159,7 +159,7 @@
     "sourceAttribute": "Date_effective",
     "targetTable": "LSAT_CUSTOMER_COSTING",
     "targetAttribute": "COSTING_EFFECTIVE_DATE",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "B01A7C67BD51A941053E1F9A78F7F25C",
@@ -168,7 +168,7 @@
     "sourceAttribute": "Monthly_Cost",
     "targetTable": "LSAT_CUSTOMER_COSTING",
     "targetAttribute": "PERSONAL_MONTHLY_COST",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "B2590957679A11FB524AA57A26D92CB7",
@@ -177,7 +177,7 @@
     "sourceAttribute": "Plan_Desc",
     "targetTable": "SAT_MEMBERSHIP_PLAN_DETAIL",
     "targetAttribute": "PLAN_DESCRIPTION",
-    "transformationRule": ""
+    "notes": ""
   },
   {
     "attributeMappingHash": "A40DA326905A30736D30F7F1BE8CF02C",
@@ -186,6 +186,6 @@
     "sourceAttribute": "Demographic_Segment_Description",
     "targetTable": "SAT_SEGMENT",
     "targetAttribute": "SEGMENT_DESCRIPTION",
-    "transformationRule": ""
+    "notes": ""
   }
 ]

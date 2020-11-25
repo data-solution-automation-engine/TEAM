@@ -1,15 +1,134 @@
-﻿using System.Drawing;
-using System.Text.RegularExpressions;
+﻿using System;
+using System.Data;
+using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace TEAM
 {
-    class CustomDataGridViewTable : DataGridView 
+    internal class CustomDataGridViewTable : DataGridView 
     {
+        private void DataGridView_DataError(object sender, DataGridViewDataErrorEventArgs anError)
+        {
+           // var test = (DataGridView) sender;
+
+           var bla =Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText;
+
+            MessageBox.Show("Error in Custom Data Grid View. The error is: " + anError.Context);
+
+            if (anError.Context == DataGridViewDataErrorContexts.Commit)
+            {
+                MessageBox.Show("Commit error");
+            }
+            if (anError.Context == DataGridViewDataErrorContexts.CurrentCellChange)
+            {
+                MessageBox.Show("Cell change");
+            }
+            if (anError.Context == DataGridViewDataErrorContexts.Parsing)
+            {
+                MessageBox.Show("parsing error");
+            }
+            if (anError.Context == DataGridViewDataErrorContexts.LeaveControl)
+            {
+                MessageBox.Show("leave control error");
+            }
+
+            if ((anError.Exception) is ConstraintException)
+            {
+                DataGridView view = (DataGridView)sender;
+                view.Rows[anError.RowIndex].ErrorText = "an error";
+                view.Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText = "an error";
+
+                anError.ThrowException = false;
+            }
+        }
+
+        public CustomDataGridViewTable()
+        {
+            AutoGenerateColumns = false;
+            ColumnHeadersVisible = true;
+            EditMode = DataGridViewEditMode.EditOnEnter;
+
+            DataError += (DataGridView_DataError);
+
+            DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
+            enabledIndicator.Name = TableMappingMetadataColumns.Enabled.ToString();
+            enabledIndicator.HeaderText = TableMappingMetadataColumns.Enabled.ToString();
+            enabledIndicator.DataPropertyName = TableMappingMetadataColumns.Enabled.ToString();
+            Columns.Add(enabledIndicator);
+
+            DataGridViewTextBoxColumn hashKey = new DataGridViewTextBoxColumn();
+            hashKey.Name = TableMappingMetadataColumns.HashKey.ToString();
+            hashKey.HeaderText = TableMappingMetadataColumns.HashKey.ToString();
+            hashKey.DataPropertyName = TableMappingMetadataColumns.HashKey.ToString();
+            hashKey.Visible = false;
+            Columns.Add(hashKey);
+
+            DataGridViewTextBoxColumn versionId = new DataGridViewTextBoxColumn();
+            versionId.Name = TableMappingMetadataColumns.VersionId.ToString();
+            versionId.HeaderText = TableMappingMetadataColumns.VersionId.ToString();
+            versionId.DataPropertyName = TableMappingMetadataColumns.VersionId.ToString();
+            versionId.Visible = false;
+            Columns.Add(versionId);
+
+            DataGridViewTextBoxColumn sourceTable = new DataGridViewTextBoxColumn();
+            sourceTable.Name = TableMappingMetadataColumns.SourceTable.ToString();
+            sourceTable.HeaderText = "Source Data Object";
+            sourceTable.DataPropertyName = TableMappingMetadataColumns.SourceTable.ToString();
+            Columns.Add(sourceTable);
+
+            DataGridViewComboBoxColumn sourceConnection = new DataGridViewComboBoxColumn();
+            sourceConnection.Name = TableMappingMetadataColumns.SourceConnection.ToString();
+            sourceConnection.HeaderText = "Source Connection";
+            sourceConnection.DataPropertyName = TableMappingMetadataColumns.SourceConnection.ToString();
+            sourceConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
+            sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfigurationSettings.ConnectionDictionary);
+            sourceConnection.DisplayMember = "ConnectionKey";
+            sourceConnection.ValueMember = "ConnectionId";
+            sourceConnection.ValueType = typeof(string);
+            Columns.Add(sourceConnection);
+
+        
+
+            DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
+            targetTable.Name = TableMappingMetadataColumns.TargetTable.ToString();
+            targetTable.HeaderText = "Target Data Object";
+            targetTable.DataPropertyName = TableMappingMetadataColumns.TargetTable.ToString();
+            Columns.Add(targetTable);
+
+            DataGridViewComboBoxColumn targetConnection = new DataGridViewComboBoxColumn();
+            targetConnection.Name = TableMappingMetadataColumns.TargetConnection.ToString();
+            targetConnection.HeaderText = "Target Connection";
+            targetConnection.DataPropertyName = TableMappingMetadataColumns.TargetConnection.ToString();
+            targetConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
+            targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfigurationSettings.ConnectionDictionary);
+            targetConnection.DisplayMember = "ConnectionKey";
+            targetConnection.ValueMember = "ConnectionId";
+            targetConnection.ValueType = typeof(string);
+            Columns.Add(targetConnection);
+
+            DataGridViewTextBoxColumn businessKeyDefinition = new DataGridViewTextBoxColumn();
+            businessKeyDefinition.Name = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
+            businessKeyDefinition.HeaderText = "Business Key Definition";
+            businessKeyDefinition.DataPropertyName = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
+            Columns.Add(businessKeyDefinition);
+
+            DataGridViewTextBoxColumn drivingKeyDefinition = new DataGridViewTextBoxColumn();
+            drivingKeyDefinition.Name = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
+            drivingKeyDefinition.HeaderText = "Driving Key Definition";
+            drivingKeyDefinition.DataPropertyName = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
+            Columns.Add(drivingKeyDefinition);
+
+            DataGridViewTextBoxColumn filterCriterion = new DataGridViewTextBoxColumn();
+            filterCriterion.Name = TableMappingMetadataColumns.FilterCriterion.ToString();
+            filterCriterion.HeaderText = "Filter Criterion";
+            filterCriterion.DataPropertyName = TableMappingMetadataColumns.FilterCriterion.ToString();
+            Columns.Add(filterCriterion);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-
             ColourGridView();
         }
 
@@ -17,99 +136,108 @@ namespace TEAM
         {
             var counter = 0;
 
-            var hubIdentifier = "";
-            var satIdentifier = "";
-            var lnkIdentifier = "";
-            var lsatIdentifier = "";
-            var stgIdentifier = "";
-            var psaIdentifier = "";
-            var dimIdentifier = "";
-            var factIdentifier = "";
-
-            if (FormBase.ConfigurationSettings.TableNamingLocation == "Prefix")
-            {
-                hubIdentifier = FormBase.ConfigurationSettings.HubTablePrefixValue + "_";
-                satIdentifier = FormBase.ConfigurationSettings.SatTablePrefixValue + "_";
-                lnkIdentifier = FormBase.ConfigurationSettings.LinkTablePrefixValue + "_";
-                lsatIdentifier = FormBase.ConfigurationSettings.LsatTablePrefixValue + "_";
-                stgIdentifier = FormBase.ConfigurationSettings.StgTablePrefixValue + "_";
-                psaIdentifier = FormBase.ConfigurationSettings.PsaTablePrefixValue + "_";
-                dimIdentifier = "DIM_";
-                factIdentifier = "FACT_";
-            }
-            else
-            {
-                hubIdentifier = '_' + FormBase.ConfigurationSettings.HubTablePrefixValue;
-                satIdentifier = '_' + FormBase.ConfigurationSettings.SatTablePrefixValue;
-                lnkIdentifier = '_' + FormBase.ConfigurationSettings.LinkTablePrefixValue;
-                lsatIdentifier = '_' + FormBase.ConfigurationSettings.LsatTablePrefixValue;
-                stgIdentifier = '_' + FormBase.ConfigurationSettings.StgTablePrefixValue;
-                psaIdentifier = '_' + FormBase.ConfigurationSettings.PsaTablePrefixValue;
-                dimIdentifier = "_DIM";
-                factIdentifier = "_FACT";
-            }
-
+            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.PresentationLayerLabels);
+            var transformationLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.TransformationLabels);
             foreach (DataGridViewRow row in Rows)
             {
-               // var genericTable = row.Cells[0].Value;
-                var targetTable = row.Cells[3].Value;
-                var businessKeySyntax = row.Cells[4].Value;
+                var targetTable = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value;
+                var businessKeySyntax = row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value;
 
                 if (targetTable != null && businessKeySyntax != null && row.IsNewRow == false)
                 {
-                   // Backcolour for Integration Layer tables
-                    if (Regex.Matches(targetTable.ToString(), hubIdentifier).Count>0)
+                    // Hub
+                    if (
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.HubTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.HubTablePrefixValue) )
+                        )
                     {
-                        this[3, counter].Style.BackColor = Color.CornflowerBlue;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = System.Drawing.Color.LightGray;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.CornflowerBlue;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(targetTable.ToString(), lsatIdentifier).Count > 0)
+                    // Link-Sat
+                    else if (
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue))
+                        )
                     {
-                        this[3, counter].Style.BackColor = Color.Gold;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Gold;
                     }
-                    else if (Regex.Matches(targetTable.ToString(), satIdentifier).Count > 0)
+                    // Context
+                    else if (
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue))
+                    )
                     {
-                        this[3, counter].Style.BackColor = Color.Yellow;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = Color.LightGray;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Yellow;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(targetTable.ToString(), lnkIdentifier).Count > 0)
+                    // Natural Business Relationship
+                    else if (
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue))
+                    )
                     {
-                        this[3, counter].Style.BackColor = Color.OrangeRed;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = Color.LightGray;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.OrangeRed;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(targetTable.ToString(), psaIdentifier).Count > 0)
+                    // PSA
+                    else if (
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue))
+                    )
                     {
-                        this[3, counter].Style.BackColor = Color.AntiqueWhite;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = Color.LightGray;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.AntiqueWhite;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(targetTable.ToString(), stgIdentifier).Count > 0)
+                    // Staging
+                    else if (
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue)) ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue))
+                    )
                     {
-                        this[3, counter].Style.BackColor = Color.WhiteSmoke;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = Color.LightGray;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.WhiteSmoke;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(targetTable.ToString(), dimIdentifier).Count > 0)
+                    // Presentation Layer
+                    else if (
+                        
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetTable.ToString().StartsWith(s)) )
+                        ||
+                       ( FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
+                    )
                     {
-                        this[3, counter].Style.BackColor = Color.Aqua;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = Color.LightGray;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aquamarine;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
-                    else if (Regex.Matches(targetTable.ToString(), factIdentifier).Count > 0)
+                    // Derived objects / transformations
+                    else if (
+
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetTable.ToString().StartsWith(s)))
+                        ||
+                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
+                    )
                     {
-                        this[3, counter].Style.BackColor = Color.MediumAquamarine;
-                        row.Cells[5].ReadOnly = true;
-                        row.Cells[5].Style.BackColor = Color.LightGray;
+                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.LightGreen;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                     }
+                    else
+                    {
+                        // Catch
+                    }
+
 
                     //Syntax highlighting for code
                     if (businessKeySyntax.ToString().Contains("CONCATENATE") || businessKeySyntax.ToString().Contains("COMPOSITE"))
                     {      
-                        this[4, counter].Style.ForeColor = Color.DarkBlue;
-                        this[4, counter].Style.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold);
+                        this[(int)TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.ForeColor = Color.DarkBlue;
+                        this[(int)TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold);
                     }
                 }
 

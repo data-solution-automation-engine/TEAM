@@ -1,104 +1,210 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading;
 using System.Drawing;
 using System.Data;
 using System.Globalization;
+using System.IO;
 
 namespace TEAM
 {
     public partial class FormMain : FormBase
     {
         internal bool RevalidateFlag = true;
+
+        Form_Alert _alertEventLog;
+
         public FormMain()
         {
             InitializeComponent();
 
-            // Instantiate the logging
-            EventLog eventLog = new EventLog();
-
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.0";
+            const string versionNumberForTeamApplication = "v1.6.1";
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
 
-            //richTextBoxInformation.AppendText("Starting from "+GlobalParameters.RootPath+"\r\n\r\n");
-            //richTextBoxInformation.AppendText("Script path is " + GlobalParameters.ScriptPath + "\r\n\r\n");
+            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
+            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
 
             richTextBoxInformation.AppendText("Initialising the application.\r\n\r\n");
 
-            // Make sure the application and custom location directories exist
+            // Root paths (mandatory TEAM directories)
+            // Make sure the application and custom location directories exist as per the start-up default.
+            LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+
+            #region Load the root path configuration settings (user defined paths and working environment)
+
+            // Load the root file, to be able to locate the (customisable) configuration file.
+            // This file contains the configuration directory, the output directory and the working environment.
+            string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
             try
             {
-                EnvironmentConfiguration.InitialiseRootPath();
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The TEAM directories are available and initialised.\r\n"));
+                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The core configuration file {rootPathFileName} has been loaded."));
             }
             catch
             {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative priviliges in the installation directory to create these additional directories?"));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
             }
 
-            // Set the root path, to be able to locate the customisable configuration file
+            // Environments file
+            string environmentFile = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
             try
             {
-                EnvironmentConfiguration.LoadRootPathFile();
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The core configuration file has been loaded.\r\n"));
-            }
-            catch 
-            {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The core configuration file could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
-            }
-
-            // Make sure the configuration file is in memory
-            try
-            {
-                EnvironmentConfiguration.InitialiseConfigurationPath();
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration paths are available.\r\n"));
+                TeamEnvironmentCollection.LoadTeamEnvironmentCollection(environmentFile);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                    $"The environment file {environmentFile} has been loaded."));
             }
             catch
             {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered creating or detecting the configuration paths."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                    $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
             }
 
-            // Load the available configuration file
+            #endregion
+
+            #region Check if user configured paths exists (now that they have been loaded from the root file), and create dummy Configuration and Validation files if necessary
+            // Configuration Path
             try
             {
-                EnvironmentConfiguration.LoadConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The user configuration settings (file) have been loaded.\r\n"));
+                FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined configuration path {GlobalParameters.ConfigurationPath} is available."));
             }
             catch
             {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the user configuration file."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
             }
 
-            // Load the pattern definition file
+            // Output Path
             try
             {
-                ConfigurationSettings.patternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "... The pattern definition file was loaded successfully.\r\n"));
+                FileHandling.InitialisePath(GlobalParameters.OutputPath);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined output path {GlobalParameters.OutputPath} is available."));
             }
-            catch 
+            catch
             {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+            }
+
+            // Create a dummy configuration file if it does not exist.
+            var configurationFileName =
+                GlobalParameters.ConfigurationPath +
+                GlobalParameters.ConfigFileName + '_' +
+                GlobalParameters.WorkingEnvironment +
+                GlobalParameters.FileExtension;
+
+            try
+            {
+                if (!File.Exists(configurationFileName))
+                {
+                    TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
+                }
+                else
+                {
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {configurationFileName} was detected."));
+                }
+            }
+            catch
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {configurationFileName}."));
+            }
+
+            // Create a default validation file if the file does not exist as expected.
+            var validationFileName =
+                GlobalParameters.ConfigurationPath +
+                GlobalParameters.ValidationFileName + '_' +
+                GlobalParameters.WorkingEnvironment +
+                GlobalParameters.FileExtension;
+
+            try
+            {
+                LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(validationFileName);
+
+            }
+            catch
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
+            }
+
+            // Create a default json configuration file if the file does not exist as expected.
+            var jsonConfigurationFileName =
+                GlobalParameters.ConfigurationPath +
+                GlobalParameters.JsonExportConfigurationFileName + '_' +
+                GlobalParameters.WorkingEnvironment +
+                GlobalParameters.FileExtension;
+
+            try
+            {
+                LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(jsonConfigurationFileName);
+
+            }
+            catch
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {jsonConfigurationFileName}."));
+            }
+            #endregion
+
+            // Load the connections file for the respective environment.
+            var connectionFileName =
+                GlobalParameters.ConfigurationPath +
+                GlobalParameters.JsonConnectionFileName + '_' +
+                GlobalParameters.WorkingEnvironment +
+                GlobalParameters.JsonExtension;
+
+            TeamConfigurationSettings.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
+
+            #region Load configuration file
+            // Load the available configuration file into memory.
+            var configurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+            try
+            {
+                // Load the configuration file.
+                TeamConfigurationSettings.LoadTeamConfigurationFile(configurationFile);
+
+                // Retrieve the events into the main event log.
+                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfigurationSettings.ConfigurationSettingsEventLog);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
+            }
+            catch
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
+            }
+            #endregion
+
+            //FormBase.EnvironmentVersion.GetEnvironmentVersionsFromFile(Path.GetDirectoryName(configurationFile));
+
+            EnvironmentVersion.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
+
+
+            // Load the pattern definition file.
+            try
+            {
+                GlobalParameters.PatternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, "The pattern definition file was loaded successfully."));
+            }
+            catch
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
             }
 
 
             // Report the events (including errors) back to the user
             int errorCounter = 0;
-            foreach (Event individualEvent in eventLog)
+            foreach (Event individualEvent in GlobalParameters.TeamEventLog)
             {
-                if (individualEvent.eventCode == (int)EventTypes.Error)
+                if (individualEvent.eventCode == (int) EventTypes.Error)
                 {
                     errorCounter++;
                 }
-
-                richTextBoxInformation.AppendText(individualEvent.eventDescription);
             }
 
-            richTextBoxInformation.AppendText($"\r\n{errorCounter} error(s) have been found at startup.\r\n\r\n");
-
+            richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup.\r\n\r\n");
 
             TestConnections();
 
@@ -106,7 +212,7 @@ namespace TEAM
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
             richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
 
-            labelWorkingEnvironment.Text = "The working environment is: " + GlobalParameters.WorkingEnvironment;
+            labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
         }
 
         public sealed override string Text
@@ -121,10 +227,17 @@ namespace TEAM
                 return;
             RevalidateFlag = false;
             //MessageBox.Show("Validating Connections");
+
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
-            var connOmd = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringOmd };
-            var connStg = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringStg };
-            var connPsa = new SqlConnection { ConnectionString = ConfigurationSettings.ConnectionStringHstg };
+
+            // There is no metadata object available (set)
+            if (TeamConfigurationSettings.MetadataConnection is null)
+            {
+                DisableMenu();
+                return;
+            }
+
+            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try
@@ -133,72 +246,36 @@ namespace TEAM
                 }
                 catch
                 {
-                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-                    DisableMenu();
-                    return;
-                }
-            else
-            { 
-                richTextBoxInformation.AppendText("Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
-                DisableMenu();
-                return;
-            }
-            
-
-            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Staging_Area>;user id=sa; password=<>")
-                try
-                {
-                    connStg.Open();
-                    connStg.Close();
-                    connStg.Dispose();
-                }
-                catch
-                {
-                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Staging Area Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    richTextBoxInformation.AppendText(
+                        "There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
                     DisableMenu();
                     return;
                 }
             else
             {
-                richTextBoxInformation.AppendText("Staging Area connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+                richTextBoxInformation.AppendText(
+                    "Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
                 DisableMenu();
                 return;
             }
-            if (connStg.ConnectionString != "Server=<>;Initial Catalog=<Persistent_Staging_Area>;user id=sa; password=<>")
-                try
-                {
-                    connPsa.Open();
-                    connPsa.Close();
-                    connPsa.Dispose();
-                }
-                catch
-                {
-                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Persistent Staging Area (PSA) Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-                    DisableMenu();
-                    return;
-                }
-            else
-            { 
-                richTextBoxInformation.AppendText("Persistent Staging Area (PSA) connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
-                DisableMenu();
-                return;
-            }
+
             EnableMenu();
             richTextBoxInformation.AppendText("Database connections have been successfully validated.\r\n");
 
             try
             {
-                DisplayMaxVersion(connOmd);
-                DisplayCurrentVersion(connOmd);
+
+                DisplayMaxVersion();
+                DisplayCurrentVersionFromRepository(connOmd);
                 DisplayRepositoryVersion(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
 
-                labelMetadataRepository.Text = "Repository type in configuration is set to: " +
-                                               ConfigurationSettings.MetadataRepositoryType;
+                labelMetadataSave.Text = TeamConfigurationSettings.MetadataRepositoryType.ToString();
             }
             catch
             {
-                richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables  \r\n");
+                richTextBoxInformation.AppendText(
+                    "There was an issue while reading Metadata Database. The Database is missing tables.\r\n");
                 openMetadataFormToolStripMenuItem.Enabled = false;
                 RevalidateFlag = true;
             }
@@ -207,6 +284,8 @@ namespace TEAM
                 connOmd.Close();
                 connOmd.Dispose();
             }
+
+
 
         }
 
@@ -219,25 +298,31 @@ namespace TEAM
             metadataToolStripMenuItem.Enabled = true;
         }
 
-        internal void DisplayMaxVersion(SqlConnection connOmd)
-        {
-            var selectedVersion = GetMaxVersionId(connOmd);
 
-            var versionMajorMinor = GetVersion(selectedVersion, connOmd);
-            var majorVersion = versionMajorMinor.Key;
-            var minorVersion = versionMajorMinor.Value;
+
+        internal void DisplayMaxVersion()
+        {
+            var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+
+            //var versionMajorMinor = GetVersion(selectedVersion, connOmd);
+            var majorVersion = selectedVersion.Item2;
+            var minorVersion = selectedVersion.Item3;
 
             labelVersion.Text = majorVersion + "." + minorVersion;
         }
 
-        internal void DisplayCurrentVersion(SqlConnection connOmd)
+        /// <summary>
+        /// Retrieves the currently activated version from the repository. This is set after the 'activation' process in 'Manage Metadata' has been completed successfully.
+        /// </summary>
+        /// <param name="connOmd"></param>
+        internal void DisplayCurrentVersionFromRepository(SqlConnection connOmd)
         {
             var sqlStatementForCurrentVersion = new StringBuilder();
-            sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME] FROM [MD_MODEL_METADATA]");
+            sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME], [ACTIVATION_DATETIME] FROM [MD_MODEL_METADATA]");
 
             try
             {
-                var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+                var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
 
                 if (versionList != null && versionList.Rows.Count > 0)
                 {
@@ -245,6 +330,9 @@ namespace TEAM
                     {
                         var versionName = (string) versionNameRow["VERSION_NAME"];
                         labelActiveVersion.Text = versionName;
+
+                        var versionDate = (DateTime)versionNameRow["ACTIVATION_DATETIME"];
+                        labelActiveVersionDateTime.Text = versionDate.ToString(CultureInfo.InvariantCulture);
                     }
                 }
 
@@ -261,7 +349,7 @@ namespace TEAM
             var sqlStatementForCurrentVersion = new StringBuilder();
             sqlStatementForCurrentVersion.AppendLine("SELECT [REPOSITORY_VERSION],[REPOSITORY_UPDATE_DATETIME] FROM [MD_REPOSITORY_VERSION]");
 
-            var versionList = GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
+            var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
 
             try
             {
@@ -269,10 +357,9 @@ namespace TEAM
                 {
                     foreach (DataRow versionNameRow in versionList.Rows)
                     {
-                        var versionName = (string) versionNameRow["REPOSITORY_VERSION"];
+                        labelRepositoryVersion.Text = (string)versionNameRow["REPOSITORY_VERSION"];
                         var versionDate = (DateTime) versionNameRow["REPOSITORY_UPDATE_DATETIME"];
-                        labelRepositoryVersion.Text = versionName;
-                        labelRepositoryDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
+                        labelRepositoryCreationDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
                     }
                 }
             }
@@ -357,6 +444,28 @@ namespace TEAM
             _myConfigurationForm = null;
         }
 
+        /// <summary>
+        /// Local function to update the main form details.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateEnvironment(object sender, MyWorkingEnvironmentEventArgs e)
+        {
+            var localEnvironment = e.Value;
+            var localTextForLabel = localEnvironment.environmentKey;
+
+            if (labelWorkingEnvironment.InvokeRequired)
+            {
+                labelWorkingEnvironment.BeginInvoke((MethodInvoker)delegate { labelWorkingEnvironment.Text = localTextForLabel; });
+            }
+            else
+            {
+               labelWorkingEnvironment.Text = localTextForLabel;
+            }
+
+            LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+        }
+
         private void ClosePatternForm(object sender, FormClosedEventArgs e)
         {
             _myPatternForm = null;
@@ -402,6 +511,7 @@ namespace TEAM
             if (_myConfigurationForm == null)
             {
                 _myConfigurationForm = new FormManageConfiguration(this);
+                _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
                 Application.Run(_myConfigurationForm);
             }
             else
@@ -411,6 +521,7 @@ namespace TEAM
                     // Thread Error
                     _myConfigurationForm.Invoke((MethodInvoker)delegate { _myConfigurationForm.Close(); });
                     _myConfigurationForm.FormClosed += CloseConfigurationForm;
+                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
 
                     _myConfigurationForm = new FormManageConfiguration(this);
                     Application.Run(_myConfigurationForm);
@@ -418,7 +529,8 @@ namespace TEAM
                 else
                 {
                     // No invoke required - same thread
-                    _myConfigurationForm.FormClosed += CloseConfigurationForm;
+                    _myConfigurationForm.FormClosed += CloseConfigurationForm; 
+                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
                     _myConfigurationForm = new FormManageConfiguration(this);
 
                     Application.Run(_myConfigurationForm);
@@ -577,6 +689,106 @@ namespace TEAM
             var t = new Thread(ThreadProcPattern);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
+        }
+
+
+
+        private void buttonCancelEventLogForm_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorkerEventLog.WorkerSupportsCancellation)
+            {
+                // Cancel the asynchronous operation.
+                backgroundWorkerEventLog.CancelAsync();
+                // Close the AlertForm
+                _alertEventLog.Close();
+            }
+        }
+
+        private void backgroundWorkerEventLog_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            var localEventLog = GlobalParameters.TeamEventLog;
+
+            // Handle multi-threading
+            if (worker != null && worker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                backgroundWorkerEventLog.ReportProgress(0);
+
+                _alertEventLog.SetTextLogging("Event Log.\r\n\r\n");
+
+                try
+                {
+                    //var enumDisplayStatus = (EnumDisplayStatus)value;
+                    //string stringValue = enumDisplayStatus.ToString();
+
+                    foreach (var individualEvent in localEventLog)
+                    {
+                        _alertEventLog.SetTextLogging(
+                            $"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex,
+                        "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+
+                backgroundWorkerEventLog.ReportProgress(100);
+            }
+        }
+
+        private void backgroundWorkerEventLog_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            _alertEventLog.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertEventLog.ProgressValue = e.ProgressPercentage;
+        }
+
+        private void backgroundWorkerEventLog_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                // Do nothing
+            }
+            else if (e.Error != null)
+            {
+                // Do nothing
+            }
+            else
+            {
+                // Do nothing
+            }
+        }
+
+        private void displayEventLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorkerEventLog.IsBusy != true)
+            {
+                // create a new instance of the alert form
+                _alertEventLog = new Form_Alert();
+                _alertEventLog.ShowLogButton(false);
+                _alertEventLog.ShowCancelButton(false);
+                _alertEventLog.ShowProgressBar(false);
+                _alertEventLog.ShowProgressLabel(false);
+
+                // event handler for the Cancel button in AlertForm
+                _alertEventLog.Canceled += buttonCancelEventLogForm_Click;
+                _alertEventLog.Show();
+                // Start the asynchronous operation.
+
+                backgroundWorkerEventLog.RunWorkerAsync();
+            }
+        }
+
+        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Process.Start(ExtensionMethod.GetDefaultBrowserPath(),
+                "http://roelantvos.com/blog/team/");
         }
     }
 }
