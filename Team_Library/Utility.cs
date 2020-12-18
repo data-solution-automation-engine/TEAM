@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
+using System.Data;
 
 namespace TEAM
 {
@@ -109,7 +109,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Populate a datatable by loading from a database table.
+        /// Populate a datatable by loading from a Sql Server database table.
         /// </summary>
         /// <param name="sqlConnection"></param>
         /// <param name="sqlQuery"></param>
