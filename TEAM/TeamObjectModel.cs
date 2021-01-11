@@ -64,7 +64,6 @@ namespace TEAM
             foreach (string keyPart in sourceBusinessKeyComponentList)
             {
                 // Is set to true if there are quotes in the key part.
-                bool businessKeyHardCodedEval = keyPart.StartsWith("'") && keyPart.EndsWith("'");
 
                 DataItemMapping keyComponent = new DataItemMapping();
 
@@ -74,7 +73,7 @@ namespace TEAM
                 DataItem targetColumn = new DataItem();
 
                 sourceColumn.name = keyPart;
-                sourceColumn.isHardCodedValue = businessKeyHardCodedEval;
+                sourceColumn.isHardCodedValue = keyPart.StartsWith("'") && keyPart.EndsWith("'");
 
                 sourceColumns.Add(sourceColumn);
 

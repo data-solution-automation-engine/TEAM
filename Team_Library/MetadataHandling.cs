@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using Microsoft.Data.SqlClient;
 
@@ -101,7 +102,7 @@ namespace TEAM
             var transformationLabelArray = Utility.SplitLabelIntoArray(configuration.TransformationLabels);
 
             // Remove schema, if one is set
-            //tableName = GetNonQualifiedTableName(tableName);
+            tableName = GetNonQualifiedTableName(tableName);
 
             switch (configuration.TableNamingLocation)
             {
@@ -379,7 +380,90 @@ namespace TEAM
 
             return businessKeyList;
         }
-        
+
+        /// <summary>
+        /// Returns a list of Business Key attributes as they are defined in the target Hub table (physical setup).
+        /// </summary>
+        /// <param name="schemaName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="versionId"></param>
+        /// <param name="queryMode"></param>
+        /// <returns></returns>
+        public static List<string> GetRegularTableBusinessKeyListPhysical(string fullyQualifiedTableName, string connectionstring, TeamConfiguration configuration)
+        {
+            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
+            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName).FirstOrDefault();
+
+           // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
+            var conn = new SqlConnection
+            {
+                ConnectionString = connectionstring
+            };
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception)
+            {
+                configuration.ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The connection to the database for object {fullyQualifiedTableName} could not be established via {conn.ConnectionString}."));
+            }
+
+            var sqlStatementForBusinessKeys = new StringBuilder();
+
+            var keyText = configuration.DwhKeyIdentifier;
+            var localkeyLength = keyText.Length;
+            var localkeySubstring = localkeyLength + 1;
+
+            // Make sure brackets are removed
+            var schemaName = fullyQualifiedName.Key?.Replace("[", "").Replace("]", "");
+            var tableName = fullyQualifiedName.Value?.Replace("[", "").Replace("]", "");
+
+            // Make sure the live database is hit when the checkbox is ticked
+            sqlStatementForBusinessKeys.AppendLine("SELECT");
+            sqlStatementForBusinessKeys.AppendLine("  SCHEMA_NAME(TAB.SCHEMA_ID) AS[SCHEMA_NAME],");
+            sqlStatementForBusinessKeys.AppendLine("  PK.[NAME] AS PK_NAME,");
+            sqlStatementForBusinessKeys.AppendLine("  IC.INDEX_COLUMN_ID AS COLUMN_ID,");
+            sqlStatementForBusinessKeys.AppendLine("  COL.[NAME] AS COLUMN_NAME,");
+            sqlStatementForBusinessKeys.AppendLine("  TAB.[NAME] AS TABLE_NAME");
+            sqlStatementForBusinessKeys.AppendLine("FROM SYS.TABLES TAB");
+            sqlStatementForBusinessKeys.AppendLine("INNER JOIN SYS.INDEXES PK");
+            sqlStatementForBusinessKeys.AppendLine("  ON TAB.OBJECT_ID = PK.OBJECT_ID");
+            sqlStatementForBusinessKeys.AppendLine(" AND PK.IS_PRIMARY_KEY = 1");
+            sqlStatementForBusinessKeys.AppendLine("INNER JOIN SYS.INDEX_COLUMNS IC");
+            sqlStatementForBusinessKeys.AppendLine("  ON IC.OBJECT_ID = PK.OBJECT_ID");
+            sqlStatementForBusinessKeys.AppendLine(" AND IC.INDEX_ID = PK.INDEX_ID");
+            sqlStatementForBusinessKeys.AppendLine("INNER JOIN SYS.COLUMNS COL");
+            sqlStatementForBusinessKeys.AppendLine("  ON PK.OBJECT_ID = COL.OBJECT_ID");
+            sqlStatementForBusinessKeys.AppendLine(" AND COL.COLUMN_ID = IC.COLUMN_ID");
+            sqlStatementForBusinessKeys.AppendLine("WHERE");
+            sqlStatementForBusinessKeys.AppendLine("      SCHEMA_NAME(TAB.SCHEMA_ID)= '" + schemaName + "'");
+            sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
+            sqlStatementForBusinessKeys.AppendLine("ORDER BY");
+            sqlStatementForBusinessKeys.AppendLine("  SCHEMA_NAME(TAB.SCHEMA_ID),");
+            sqlStatementForBusinessKeys.AppendLine("  PK.[NAME],");
+            sqlStatementForBusinessKeys.AppendLine("  IC.INDEX_COLUMN_ID");
+
+
+            var tableKeyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
+
+            if (tableKeyList == null)
+            {
+                //SetTextDebug("An error has occurred defining the Hub Business Key in the model for " + hubTableName + ". The Business Key was not found when querying the underlying metadata. This can be either that the attribute is missing in the metadata or in the table (depending if versioning is used). If the 'ignore versioning' option is checked, then the metadata will be retrieved directly from the data dictionary. Otherwise the metadata needs to be available in the repository (manage model metadata).");
+            }
+
+            var keyList = new List<string>();
+            foreach (DataRow row in tableKeyList.Rows)
+            {
+                if (!keyList.Contains((string)row["COLUMN_NAME"]))
+                {
+                    keyList.Add((string)row["COLUMN_NAME"]);
+                }
+            }
+
+            return keyList;
+        }
+
         /// <summary>
         /// Returns a list of Business Key attributes as they are defined in the target Hub table (physical setup).
         /// </summary>
@@ -510,6 +594,24 @@ namespace TEAM
             }
 
             return businessKeyList;
+        }
+
+        /// <summary>
+        /// Add an additional quote to support adding hard-coded values.
+        /// </summary>
+        /// <param name="attributeName"></param>
+        /// <returns></returns>
+        public static string QuoteStringValuesForAttributes(string attributeName)
+        {
+            if (attributeName != null)
+            {
+                if (attributeName.StartsWith("'") || attributeName.EndsWith("'"))
+                {
+                    attributeName = attributeName.Replace("'", "''");
+                }
+            }
+
+            return attributeName;
         }
     }
 
