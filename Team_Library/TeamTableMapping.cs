@@ -60,8 +60,8 @@ namespace TEAM
 
         public enum BusinessKeyEvaluationMode
         {
-            Full,
-            Partial
+            Full, // The full business key is evaluated.
+            Partial // The business is broken into components and evaluated separately.
         }
 
         public List<DataRow> GetDependentDataRows(string SourceDataObjectName, string TargetDataObjectName, string BusinessKey, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
@@ -72,9 +72,6 @@ namespace TEAM
             // First, the Business Key need to be checked. This is to determine how many dependents are expected.
             // For instance, if a Link has a three-part Business Key then three Hubs will be expected
             List<string> businessKeyComponents = BusinessKey.Split(',').ToList();
-
-
-
             
             // E.g. for Links and stuff
             if (businessKeyEvaluationMode == BusinessKeyEvaluationMode.Partial)

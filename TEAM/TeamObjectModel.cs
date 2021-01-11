@@ -60,14 +60,11 @@ namespace TEAM
 
             int counter = 0;
 
+            // Only the source can be a hard-coded value, as it is mapped to a target.
             foreach (string keyPart in sourceBusinessKeyComponentList)
             {
-                bool businessKeyEval = false;
-
-                if (keyPart.StartsWith("'") && keyPart.EndsWith("'"))
-                {
-                    businessKeyEval = true;
-                }
+                // Is set to true if there are quotes in the key part.
+                bool businessKeyHardCodedEval = keyPart.StartsWith("'") && keyPart.EndsWith("'");
 
                 DataItemMapping keyComponent = new DataItemMapping();
 
@@ -77,7 +74,7 @@ namespace TEAM
                 DataItem targetColumn = new DataItem();
 
                 sourceColumn.name = keyPart;
-                sourceColumn.isHardCodedValue = businessKeyEval;
+                sourceColumn.isHardCodedValue = businessKeyHardCodedEval;
 
                 sourceColumns.Add(sourceColumn);
 

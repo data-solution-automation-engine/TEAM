@@ -244,6 +244,9 @@ namespace TEAM
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.groupBoxJsonOptions = new System.Windows.Forms.GroupBox();
             this.buttonGenerateJsonInterface = new System.Windows.Forms.Button();
+            this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVersioning)).BeginInit();
@@ -326,7 +329,7 @@ namespace TEAM
         "tive tool (similar to the slides on the main screen). \r\n\r\nThis allows for testin" +
         "g and troubleshooting.");
             this.buttonStart.UseVisualStyleBackColor = true;
-            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            this.buttonStart.Click += new System.EventHandler(this.ButtonActivate_Click);
             // 
             // buttonSaveMetadataChanges
             // 
@@ -1659,7 +1662,8 @@ namespace TEAM
             this.metadataToolStripMenuItem,
             this.businessKeyMetadataToolStripMenuItem,
             this.validationToolStripMenuItem,
-            this.jsonExportConfigurationToolStripMenuItem});
+            this.jsonExportConfigurationToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStripMetadata.Location = new System.Drawing.Point(0, 0);
             this.menuStripMetadata.Name = "menuStripMetadata";
             this.menuStripMetadata.Size = new System.Drawing.Size(1700, 24);
@@ -1875,6 +1879,28 @@ namespace TEAM
             this.buttonGenerateJsonInterface.Text = "Generate Json Interface Files Only";
             this.buttonGenerateJsonInterface.UseVisualStyleBackColor = true;
             this.buttonGenerateJsonInterface.Click += new System.EventHandler(this.ButtonClickExportToJson);
+            // 
+            // backgroundWorkerEventLog
+            // 
+            this.backgroundWorkerEventLog.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerEventLog_DoWork);
+            this.backgroundWorkerEventLog.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerEventLog_ProgressChanged);
+            this.backgroundWorkerEventLog.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerEventLog_RunWorkerCompleted);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.displayEventLogToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // displayEventLogToolStripMenuItem
+            // 
+            this.displayEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.log_file;
+            this.displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
+            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.displayEventLogToolStripMenuItem.Text = "Display Event Log";
+            this.displayEventLogToolStripMenuItem.Click += new System.EventHandler(this.displayEventLogToolStripMenuItem_Click);
             // 
             // FormManageMetadata
             // 
@@ -2151,5 +2177,8 @@ namespace TEAM
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn101;
         private System.Windows.Forms.ToolStripMenuItem jsonExportConfigurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem manageJsonExportRulesToolStripMenuItem;
+        private BackgroundWorker backgroundWorkerEventLog;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem displayEventLogToolStripMenuItem;
     }
 }

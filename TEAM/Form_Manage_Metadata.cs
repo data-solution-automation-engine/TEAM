@@ -22,6 +22,7 @@ namespace TEAM
         Form_Alert _alertValidation;
         Form_Alert _generatedScripts;
         Form_Alert _generatedJsonInterface;
+        Form_Alert _alertEventLog;
 
         //Getting the DataTable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
@@ -85,7 +86,7 @@ namespace TEAM
             PopulateAttributeGridWithVersion();
             PopulatePhysicalModelGridWithVersion();
 
-            richTextBoxInformation.AppendText($"The metadata for version {majorVersion}/{minorVersion} has been loaded.");
+            richTextBoxInformation.AppendText($"The metadata for version {majorVersion}.{minorVersion} has been loaded.\r\n");
             
             ContentCounter();
 
@@ -103,7 +104,7 @@ namespace TEAM
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
                 LocalTeamEnvironmentConfiguration.LoadValidationFile(validationFile);
 
-                richTextBoxInformation.Text += "\r\nThe configuration file " + validationFile + " has been loaded.";
+                richTextBoxInformation.AppendText($"The configuration file {validationFile} has been loaded.\r\n");
             }
             catch (Exception)
             {
@@ -125,7 +126,7 @@ namespace TEAM
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
                 LocalTeamEnvironmentConfiguration.LoadJsonConfigurationFile(jsonConfigurationFile);
 
-                richTextBoxInformation.Text = $"\r\nThe configuration file {jsonConfigurationFile} has been loaded.";
+                richTextBoxInformation.AppendText($"The configuration file {jsonConfigurationFile} has been loaded.\r\n");
             }
             catch (Exception)
             {
@@ -702,7 +703,6 @@ namespace TEAM
 
             labelVersion.Text = versionMajorMinor.Item2 + "." + versionMajorMinor.Item3;
 
-            //richTextBoxInformation.Text = "The metadata for version " + majorVersion + "." + minorVersion + " has been loaded.";
             ContentCounter();
         }
 
@@ -2379,11 +2379,34 @@ namespace TEAM
         }
 
         # region Background worker
-        private void buttonStart_Click(object sender, EventArgs e)
+        private void ButtonActivate_Click(object sender, EventArgs e)
         {
+            richTextBoxInformation.Clear();
+            
+            // Local boolean to manage whether activation is OK to go ahead.
+            bool activationContinue = true;
+            
+            // Check if there are any outstanding saves / commits in the data grid
+            var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
+            var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+
+            if (
+                (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
+                (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) ||
+                (dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                )
+            {
+                string localMessage = "You have unsaved edits, please save your work before running the activation.";
+                MessageBox.Show(localMessage);
+                richTextBoxInformation.AppendText(localMessage);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
+                activationContinue = false;
+            }
+
             #region Validation
             // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
-            if (checkBoxValidation.Checked)
+            if (checkBoxValidation.Checked && activationContinue)
             {
                 if (radioButtonPhysicalMode.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
                 {
@@ -2395,6 +2418,8 @@ namespace TEAM
                     // create a new instance of the alert form
                     _alertValidation = new Form_Alert();
                     _alertValidation.SetFormName("Validating the metadata");
+                    _alertValidation.ShowLogButton(false);
+                    _alertValidation.ShowCancelButton(false);
                     // event handler for the Cancel button in AlertForm
                     _alertValidation.Canceled += buttonCancel_Click;
                     _alertValidation.Show();
@@ -2411,7 +2436,7 @@ namespace TEAM
             // After validation finishes, the activation thread / process should start.
             // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
             #region Activation
-            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0))
+            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0) && activationContinue)
             {
                 // Commence the activation
                 var conn = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
@@ -2423,7 +2448,7 @@ namespace TEAM
                 
                 var majorVersion = versionMajorMinor.Item2;
                 var minorVersion = versionMajorMinor.Item3;
-                richTextBoxInformation.Text += "Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n";
+                richTextBoxInformation.AppendText("Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n");
 
                 // Move data from the grids into temp tables
                 CreateTemporaryWorkerTable(TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
@@ -2443,13 +2468,17 @@ namespace TEAM
                         _alert = new Form_Alert();
                         // event handler for the Cancel button in AlertForm
                         _alert.Canceled += buttonCancel_Click;
+                        _alert.ShowLogButton(false);
+                        _alert.ShowCancelButton(false);
                         _alert.Show();
                         // Start the asynchronous operation.
+                        _bindingSourcePhysicalModelMetadata.SuspendBinding();
                         backgroundWorkerMetadata.RunWorkerAsync();
+                        _bindingSourcePhysicalModelMetadata.ResumeBinding();
                     }
                     else
                     {
-                        richTextBoxInformation.Text += "There is no model metadata available for this version, so the metadata can only be activated with the 'Ignore Version' enabled for this specific version.\r\n ";
+                        richTextBoxInformation.AppendText("There is no model metadata available for this version, so the metadata can only be activated with the 'Ignore Version' enabled for this specific version.\r\n");
                     }
                 }
                 else
@@ -2459,6 +2488,8 @@ namespace TEAM
                     _alert = new Form_Alert();
                     // event handler for the Cancel button in AlertForm
                     _alert.Canceled += buttonCancel_Click;
+                    _alert.ShowLogButton(false);
+                    _alert.ShowCancelButton(false);
                     _alert.Show();
                     // Start the asynchronous operation.
                     backgroundWorkerMetadata.RunWorkerAsync();
@@ -2466,7 +2497,7 @@ namespace TEAM
             }
             else
             {
-                richTextBoxInformation.Text = "Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and activate the metadata again.\r\n ";
+                richTextBoxInformation.AppendText("Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and activate the metadata again.\r\n");
             }
             #endregion
         }
@@ -2555,14 +2586,23 @@ namespace TEAM
         }
         # endregion
 
-        // This event handler is where the time-consuming work is done.
+        
+        
+        /// <summary>
+        /// The background worker where the heavy lift work is done for the activation process.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorkerMetadata_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
         {
             #region Generic
             // Set the stopwatch to be able to report back on process duration.
             Stopwatch totalProcess = new Stopwatch();
-            Stopwatch subProcess = new Stopwatch();
             totalProcess.Start();
+            Stopwatch subProcess = new Stopwatch();
+            
+            // Used to retrieve any error messages from the log related to this activation run.
+            DateTime activationStartDateTime = DateTime.Now;
 
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -2571,32 +2611,13 @@ namespace TEAM
 
             DataRow[] selectionRows;
 
-            var errorLog = new StringBuilder();
-            var errorCounter = new int();
-
             var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
-            var connStg= new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
-            var connPsa = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
-            var connInt = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
-            var connPres = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
-
             var metaDataConnection = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false);
-
-            //// Get everything as local variables to reduce multi-threading issues
-            //var integrationDatabase = '['+ TeamConfigurationSettings.IntegrationDatabaseName + ']';
-
-            //var linkedServer = TeamConfigurationSettings.PhysicalModelServerName;
-            //var metadataServer = TeamConfigurationSettings.MetadataConnection.databaseServer.databaseName;
-            //if (linkedServer != "" && linkedServer != metadataServer)
-            //{
-            //    linkedServer = '[' + linkedServer + "].";
-            //}
-            //else
-            //    linkedServer = "";
+            
 
             var effectiveDateTimeAttribute = TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute=="True" ? TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute : TeamConfigurationSettings.LoadDateTimeAttribute;
             var currentRecordAttribute = TeamConfigurationSettings.CurrentRowAttribute;
-            var eventDateTimeAtttribute = TeamConfigurationSettings.EventDateTimeAttribute;
+            var eventDateTimeAttribute = TeamConfigurationSettings.EventDateTimeAttribute;
             var recordSource = TeamConfigurationSettings.RecordSourceAttribute;
             var alternativeRecordSource = TeamConfigurationSettings.AlternativeRecordSourceAttribute;
             var sourceRowId = TeamConfigurationSettings.RowIdAttribute;
@@ -2667,20 +2688,17 @@ namespace TEAM
                 var localTableEnabledDictionary = GetEnabledForDataObject();
 
                 // Event reporting - informing the user that the activation process has started.
-                string eventMessage = "";
-                eventMessage = "Commencing metadata preparation / activation for version " + majorVersion + "." + minorVersion + ".";
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage)); _alert.SetTextLogging(eventMessage);
+                LogMetadataEvent($"Commencing metadata preparation / activation for version {majorVersion}.{minorVersion} at {activationStartDateTime}.", EventTypes.Information);
 
                 // Event reporting - alerting the user what kind of metadata is prepared.
-                eventMessage = queryMode == "physical" ? "Physical Mode has been selected as metadata source for activation. This means that the database will be used to query physical model (table and attribute) metadata. In other words, the physical model versioning is ignored." : "Virtual Mode has been selected. This means that the versioned physical model in the data grid will be used as table and attribute metadata.";
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, eventMessage));
-                _alert.SetTextLogging("\r\n\r\n"+eventMessage);
+                LogMetadataEvent($"The {queryMode} has been selected for activation.", EventTypes.Information);
+
                 #endregion
 
-                #region Delete Metadata - 2%
 
+                #region Delete Metadata - 2%
                 // 1. Deleting metadata
-                _alert.SetTextLogging("Commencing removal of existing metadata.\r\n");
+                LogMetadataEvent($"Commencing removal of existing metadata.", EventTypes.Information);
 
                 var deleteStatement = new StringBuilder();
                 deleteStatement.AppendLine(@"
@@ -2722,20 +2740,14 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        errorCounter++;
-                        _alert.SetTextLogging(
-                            "An issue has occured during removal of old metadata. Please check the Error Log for more details.\r\n");
-                        errorLog.AppendLine("\r\nAn issue has occured during removal of old metadata: \r\n\r\n" + ex);
-                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + deleteStatement);
+                        LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}.", EventTypes.Error);
                     }
                 }
-
                 # endregion
 
 
                 # region Prepare Version Information - 3%
-
-                // 2. Prepare Version
+                // Prepare Version
                 _alert.SetTextLogging("\r\n");
                 _alert.SetTextLogging("Commencing preparing the version metadata.\r\n");
 
@@ -2761,23 +2773,184 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        errorCounter++;
-                        _alert.SetTextLogging(
-                            "An issue has occured during preparation of the version information. Please check the Error Log for more details.\r\n");
-                        errorLog.AppendLine(
-                            "\r\nAn issue has occured during preparation of the version information: \r\n\r\n" + ex);
+                        LogMetadataEvent($"An issue has occurred during preparation of the version information: \r\n\r\n {ex}.", EventTypes.Error);
                     }
                 }
 
                 if (worker != null) worker.ReportProgress(3);
                 _alert.SetTextLogging("Preparation of the version details completed.\r\n");
-
-
                 #endregion
+                
+
+                #region Physical Model dump - 5%
+                // Creating a point-in-time snapshot of the physical model used for export to the interface schemas
+                subProcess.Reset();
+                subProcess.Start();
+
+                _alert.SetTextLogging("\r\n");
+                _alert.SetTextLogging("Creating a snapshot of the physical model.\r\n");
+
+                // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
+                var physicalModelDataTable = new DataTable();
+
+                if (radioButtonPhysicalMode.Checked) // Get the attributes from the physical model / catalog. No virtualisation needed.
+                {
+                    var physicalModelInstantiation = new AttributeSelection();
+
+                    foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
+                    {
+                        if (connection.Value.ConnectionKey != "Metadata")
+                        {
+                            var localConnectionObject = (TeamConnection)connection.Value;
+                            var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.CreateSqlServerConnectionString(false) };
+
+                            // Build up the filter criteria to only select information for tables that are associated with the connection
+                            var tableFilterObjects = "";
+                            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                            {
+                                if (row.IsNewRow == false)
+                                {
+                                    if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
+                                        connection.Value.ConnectionInternalId)
+                                    {
+                                        var localTable = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
+                                        localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
+                                        tableFilterObjects =
+                                            tableFilterObjects + "OBJECT_ID(N'[" +
+                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
+                                    }
+
+                                    if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
+                                        connection.Value.ConnectionInternalId)
+                                    {
+                                        var localTable = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
+                                        localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
+                                        tableFilterObjects =
+                                            tableFilterObjects + "OBJECT_ID(N'[" +
+                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
+                                    }
+                                }
+                            }
+                            tableFilterObjects = tableFilterObjects.TrimEnd(',');
+
+
+                            var physicalModelStatement = new StringBuilder();
+                            physicalModelStatement.AppendLine("SELECT ");
+                            physicalModelStatement.AppendLine(" [DATABASE_NAME] ");
+                            physicalModelStatement.AppendLine(",[SCHEMA_NAME]");
+                            physicalModelStatement.AppendLine(",[TABLE_NAME]");
+                            physicalModelStatement.AppendLine(",[COLUMN_NAME]");
+                            physicalModelStatement.AppendLine(",[DATA_TYPE]");
+                            physicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                            physicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
+                            physicalModelStatement.AppendLine(",[NUMERIC_SCALE]");
+                            physicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
+                            physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                            physicalModelStatement.AppendLine("FROM");
+                            physicalModelStatement.AppendLine("(");
+                            physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.DatabaseServer.DatabaseName, tableFilterObjects).ToString());
+                            physicalModelStatement.AppendLine(") sub");
+
+                            var localPhysicalModelDataTable = Utility.GetDataTable(ref localSqlConnection, physicalModelStatement.ToString());
+
+                            if (localPhysicalModelDataTable != null)
+                            {
+                                physicalModelDataTable.Merge(localPhysicalModelDataTable);
+                            }
+                        }
+                    }
+                }
+                else // Get the values from the data grid or worker table (virtual mode)
+                {
+                    StringBuilder allVirtualDatabaseAttributes = new StringBuilder();
+
+                    allVirtualDatabaseAttributes.AppendLine("SELECT ");
+                    allVirtualDatabaseAttributes.AppendLine("  [DATABASE_NAME] ");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[SCHEMA_NAME]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[TABLE_NAME]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[COLUMN_NAME]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[DATA_TYPE]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[NUMERIC_PRECISION]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[NUMERIC_SCALE]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[ORDINAL_POSITION]");
+                    allVirtualDatabaseAttributes.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
+                    allVirtualDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
+
+                    physicalModelDataTable = Utility.GetDataTable(ref connOmd, allVirtualDatabaseAttributes.ToString());
+                }
+
+                try
+                {
+                    if (physicalModelDataTable.Rows.Count == 0)
+                    {
+                        _alert.SetTextLogging("--> No model information was found in the metadata.\r\n");
+                    }
+                    else
+                    {
+                        // Create a large insert string to save per-row database connection.
+                        var createStatement = new StringBuilder();
+
+                        foreach (DataRow tableName in physicalModelDataTable.Rows)
+                        {
+                            var insertKeyStatement = new StringBuilder();
+
+                            insertKeyStatement.AppendLine("INSERT INTO [MD_PHYSICAL_MODEL]");
+                            insertKeyStatement.AppendLine("([DATABASE_NAME], " +
+                                                          "[SCHEMA_NAME], " +
+                                                          "[TABLE_NAME], " +
+                                                          "[COLUMN_NAME], " +
+                                                          "[DATA_TYPE], " +
+                                                          "[CHARACTER_MAXIMUM_LENGTH], " +
+                                                          "[NUMERIC_PRECISION], " +
+                                                          "[NUMERIC_SCALE], " +
+                                                          "[ORDINAL_POSITION], " +
+                                                          "[PRIMARY_KEY_INDICATOR])");
+                            insertKeyStatement.AppendLine("VALUES ('" +
+                                                          tableName["DATABASE_NAME"].ToString().Trim() +
+                                                          "','" + tableName["SCHEMA_NAME"].ToString().Trim() +
+                                                          "','" + tableName["TABLE_NAME"].ToString().Trim() +
+                                                          "','" + tableName["COLUMN_NAME"].ToString().Trim() +
+                                                          "','" + tableName["DATA_TYPE"].ToString().Trim() +
+                                                          "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString().Trim() +
+                                                          "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
+                                                          "','" + tableName["NUMERIC_SCALE"].ToString().Trim() +
+                                                          "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
+                                                          "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString().Trim() +
+                                                          "')");
+
+                            createStatement.AppendLine(insertKeyStatement.ToString());
+                        }
+
+                        using (var connection = new SqlConnection(metaDataConnection))
+                        {
+                            // Execute the statement
+                            var command = new SqlCommand(createStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMetadataEvent($"An issue has occurred during preparation of the physical model metadata: \r\n\r\n {ex}.", EventTypes.Error);
+                            }
+                        }
+                    }
+
+                    worker.ReportProgress(5);
+                    subProcess.Stop();
+                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                }
+                catch (Exception ex)
+                {
+                    LogMetadataEvent($"An issue has occurred during preparation of the physical model metadata: \r\n\r\n {ex}.", EventTypes.Error);
+                }
+                #endregion                
 
 
                 # region Prepare Source - 5%
-
                 // Prepare the generic sources
                 subProcess.Reset();
                 subProcess.Start();
@@ -2830,12 +3003,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the source metadata. Please check the Error Log for more details.\r\n");
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the source metadata: \r\n\r\n" + ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occurred during preparation of the source metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -2908,13 +3076,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the Staging Area. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Staging Area: \r\n\r\n" + ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occurred during preparation of the Staging Area metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -2985,14 +3147,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the relationship between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Source / Staging Area XREF: \r\n\r\n" +
-                                ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Source and the Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3067,11 +3222,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging("An issue has occured during preparation of the Persistent Staging Area. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Persistent Staging Area: \r\n\r\n" + ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occurred during preparation of the Persistent Staging Area metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3133,14 +3284,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the relationship between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Source / Persistent Staging Area XREF: \r\n\r\n" +
-                                ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occured during preparation of the relationship between the Source and the Persistent Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3230,13 +3374,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the Hubs. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Hubs: \r\n\r\n" + ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occured during preparation of the Hubs: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3306,13 +3444,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the Links. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine("\r\nAn issue has occured during preparation of the Links: \r\n\r\n" +
-                                                ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occured during preparation of the Links: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3388,13 +3520,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the Satellites. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Satellites: \r\n\r\n" + ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occured during preparation of the Satellites: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3481,14 +3607,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the Link Satellites. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Link Satellites: \r\n\r\n" + ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
-
+                            LogMetadataEvent($"An issue has occured during preparation of the Link-Satellites: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3585,14 +3704,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the relationship between the Source and the Satellite. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Source / Satellite XREF: \r\n\r\n" +
-                                ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Source and the Satellites: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3685,13 +3797,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the relationship between the Source and the Hubs. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Staging / Hub XREF: \r\n\r\n" + ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Source and the Hubs: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -3702,180 +3808,6 @@ namespace TEAM
                     "Preparation of the relationship between Source and Hubs completed, and has taken " +
                     subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
-                #endregion
-
-
-                #region Physical Model dump- 40%
-
-                // Creating a point-in-time snapshot of the physical model used for export to the interface schemas
-                subProcess.Reset();
-                subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Creating a snapshot of the physical model.\r\n");
-
-                // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
-                var physicalModelDataTable = new DataTable();
-
-                if (radioButtonPhysicalMode.Checked) // Get the attributes from the physical model / catalog. No virtualisation needed.
-                {
-                    var physicalModelInstantiation = new AttributeSelection();
-
-                    foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
-                    {
-                        if (connection.Value.ConnectionKey != "Metadata")
-                        {
-                            var localConnectionObject = (TeamConnection) connection.Value;
-                            var localSqlConnection = new SqlConnection {ConnectionString = localConnectionObject.CreateSqlServerConnectionString(false)};
-
-                            // Build up the filter criteria to only select information for tables that are associated with the connection
-                            var tableFilterObjects = "";
-                            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
-                            {
-                                if (row.IsNewRow == false)
-                                {
-                                    if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
-                                        connection.Value.ConnectionInternalId)
-                                    {
-                                        var localTable = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
-                                        localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
-                                        tableFilterObjects =
-                                            tableFilterObjects + "OBJECT_ID(N'[" +
-                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
-                                    }
-
-                                    if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
-                                        connection.Value.ConnectionInternalId)
-                                    {
-                                        var localTable = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
-                                        localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
-                                        tableFilterObjects =
-                                            tableFilterObjects + "OBJECT_ID(N'[" +
-                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
-                                    }
-                                }
-                            }
-                            tableFilterObjects = tableFilterObjects.TrimEnd(',');
-
-
-                            var physicalModelStatement = new StringBuilder();
-                            physicalModelStatement.AppendLine("SELECT ");
-                            physicalModelStatement.AppendLine(" [DATABASE_NAME] ");
-                            physicalModelStatement.AppendLine(",[SCHEMA_NAME]");
-                            physicalModelStatement.AppendLine(",[TABLE_NAME]");
-                            physicalModelStatement.AppendLine(",[COLUMN_NAME]");
-                            physicalModelStatement.AppendLine(",[DATA_TYPE]");
-                            physicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                            physicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
-                            physicalModelStatement.AppendLine(",[NUMERIC_SCALE]");
-                            physicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
-                            physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                            physicalModelStatement.AppendLine("FROM");
-                            physicalModelStatement.AppendLine("(");
-                            physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.DatabaseServer.DatabaseName, tableFilterObjects)
-                                .ToString());
-                            physicalModelStatement.AppendLine(") sub");
-
-                            var localPhysicalModelDataTable = Utility.GetDataTable(ref localSqlConnection, physicalModelStatement.ToString());
-
-                            if (localPhysicalModelDataTable != null)
-                            {
-                                physicalModelDataTable.Merge(localPhysicalModelDataTable);
-                            }
-                        }
-                    }
-                }
-                else // Get the values from the data grid or worker table (virtual mode)
-                {
-                    StringBuilder allVirtualDatabaseAttributes = new StringBuilder();
-
-                    allVirtualDatabaseAttributes.AppendLine("SELECT ");
-                    allVirtualDatabaseAttributes.AppendLine("  [DATABASE_NAME] ");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[SCHEMA_NAME]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[TABLE_NAME]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[COLUMN_NAME]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[DATA_TYPE]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[CHARACTER_MAXIMUM_LENGTH]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[NUMERIC_PRECISION]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[NUMERIC_SCALE]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[ORDINAL_POSITION]");
-                    allVirtualDatabaseAttributes.AppendLine(" ,[PRIMARY_KEY_INDICATOR]");
-                    allVirtualDatabaseAttributes.AppendLine("FROM [TMP_MD_VERSION_ATTRIBUTE] mapping");
-
-                    physicalModelDataTable = Utility.GetDataTable(ref connOmd, allVirtualDatabaseAttributes.ToString());
-                }
-
-                try
-                {
-                    if (physicalModelDataTable.Rows.Count == 0)
-                    {
-                        _alert.SetTextLogging("--> No model information was found in the metadata.\r\n");
-                    }
-                    else
-                    {
-                        // Create a large insert string to save per-row database connection.
-                        var createStatement = new StringBuilder();
-
-                        foreach (DataRow tableName in physicalModelDataTable.Rows)
-                        {
-                            var insertKeyStatement = new StringBuilder();
-
-                            insertKeyStatement.AppendLine("INSERT INTO [MD_PHYSICAL_MODEL]");
-                            insertKeyStatement.AppendLine("([DATABASE_NAME], " +
-                                                          "[SCHEMA_NAME], " +
-                                                          "[TABLE_NAME], " +
-                                                          "[COLUMN_NAME], " +
-                                                          "[DATA_TYPE], " +
-                                                          "[CHARACTER_MAXIMUM_LENGTH], " +
-                                                          "[NUMERIC_PRECISION], " +
-                                                          "[NUMERIC_SCALE], " +
-                                                          "[ORDINAL_POSITION], " +
-                                                          "[PRIMARY_KEY_INDICATOR])");
-                            insertKeyStatement.AppendLine("VALUES ('" +
-                                                          tableName["DATABASE_NAME"].ToString().Trim() +
-                                                          "','" + tableName["SCHEMA_NAME"].ToString().Trim() +
-                                                          "','" + tableName["TABLE_NAME"].ToString().Trim() +
-                                                          "','" + tableName["COLUMN_NAME"].ToString().Trim() +
-                                                          "','" + tableName["DATA_TYPE"].ToString().Trim() +
-                                                          "','" + tableName["CHARACTER_MAXIMUM_LENGTH"].ToString().Trim() +
-                                                          "','" + tableName["NUMERIC_PRECISION"].ToString().Trim() +
-                                                          "','" + tableName["NUMERIC_SCALE"].ToString().Trim() +
-                                                          "','" + tableName["ORDINAL_POSITION"].ToString().Trim() +
-                                                          "','" + tableName["PRIMARY_KEY_INDICATOR"].ToString().Trim() +
-                                                          "')");
-
-                            createStatement.AppendLine(insertKeyStatement.ToString());
-                        }
-
-                        using (var connection = new SqlConnection(metaDataConnection))
-                        {
-                            // Execute the statement
-                            var command = new SqlCommand(createStatement.ToString(), connection);
-
-                            try
-                            {
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the physical model extract metadata. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
-                            }
-                        }
-                    }
-
-                    worker.ReportProgress(40);
-                    subProcess.Stop();
-                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
-                }
-                catch (Exception ex)
-                {
-                    errorCounter++;
-                    _alert.SetTextLogging("An issue has occured during preparation of the physical model metadata. Please check the Error Log for more details.\r\n");
-                    errorLog.AppendLine("\r\nAn issue has occured during preparation of physical model metadata: \r\n\r\n" + ex);
-                }
                 #endregion
 
 
@@ -3918,11 +3850,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        errorCounter++;
-                        _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
-
-                        errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertNAStatement);
+                        LogMetadataEvent($"An issue has occurred during preparation of the attribute metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertNAStatement}", EventTypes.Error);
                     }
                 }
 
@@ -3964,7 +3892,7 @@ namespace TEAM
                 prepareAttStatement.AppendLine("    '" + recordChecksum + "',");
                 prepareAttStatement.AppendLine("    '" + changeDataCaptureIndicator + "',");
                 prepareAttStatement.AppendLine("    '" + hubAlternativeLdts + "',");
-                prepareAttStatement.AppendLine("    '" + eventDateTimeAtttribute + "',");
+                prepareAttStatement.AppendLine("    '" + eventDateTimeAttribute + "',");
                 prepareAttStatement.AppendLine("    '" + effectiveDateTimeAttribute + "',");
                 prepareAttStatement.AppendLine("    '" + etlProcessId + "',");
                 prepareAttStatement.AppendLine("    '" + loadDateTimeStamp + "',");
@@ -4003,10 +3931,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging("An issue has occured during preparation of the attribute metadata. Please check the Error Log for more details.\r\n");
-                                errorLog.AppendLine("\r\nAn issue has occured during preparation of attribute metadata: \r\n\r\n" + ex);
-                                errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An issue has occurred during preparation of the attribute metdata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -4021,7 +3946,6 @@ namespace TEAM
 
 
                 #region Business Key - 50%
-
                 //Understanding the Business Key (MD_BUSINESS_KEY_COMPONENT)
                 subProcess.Reset();
                 subProcess.Start();
@@ -4035,17 +3959,13 @@ namespace TEAM
                 prepareKeyStatement.AppendLine("  SOURCE_NAME,");
                 prepareKeyStatement.AppendLine("  TARGET_NAME,");
                 prepareKeyStatement.AppendLine("  BUSINESS_KEY_ATTRIBUTE,");
-                prepareKeyStatement.AppendLine(
-                    "  ROW_NUMBER() OVER(PARTITION BY SOURCE_NAME, TARGET_NAME, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_NAME, TARGET_NAME, COMPONENT_ORDER ASC) AS COMPONENT_ID,");
+                prepareKeyStatement.AppendLine("  ROW_NUMBER() OVER(PARTITION BY SOURCE_NAME, TARGET_NAME, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_NAME, TARGET_NAME, COMPONENT_ORDER ASC) AS COMPONENT_ID,");
                 prepareKeyStatement.AppendLine("  COMPONENT_ORDER,");
                 prepareKeyStatement.AppendLine("  REPLACE(COMPONENT_VALUE,'COMPOSITE(', '') AS COMPONENT_VALUE,");
                 prepareKeyStatement.AppendLine("    CASE");
-                prepareKeyStatement.AppendLine(
-                    "            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 11)= 'CONCATENATE' THEN 'CONCATENATE()'");
-                prepareKeyStatement.AppendLine(
-                    "            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 6)= 'PIVOT' THEN 'PIVOT()'");
-                prepareKeyStatement.AppendLine(
-                    "            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 9)= 'COMPOSITE' THEN 'COMPOSITE()'");
+                prepareKeyStatement.AppendLine("            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 11)= 'CONCATENATE' THEN 'CONCATENATE()'");
+                prepareKeyStatement.AppendLine("            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 6)= 'PIVOT' THEN 'PIVOT()'");
+                prepareKeyStatement.AppendLine("            WHEN SUBSTRING(BUSINESS_KEY_ATTRIBUTE,1, 9)= 'COMPOSITE' THEN 'COMPOSITE()'");
                 prepareKeyStatement.AppendLine("            ELSE 'NORMAL'");
                 prepareKeyStatement.AppendLine("    END AS COMPONENT_TYPE");
                 prepareKeyStatement.AppendLine("FROM");
@@ -4055,55 +3975,43 @@ namespace TEAM
                 prepareKeyStatement.AppendLine("        A.BUSINESS_KEY_ATTRIBUTE,");
                 prepareKeyStatement.AppendLine("        A.TARGET_TABLE,");
                 prepareKeyStatement.AppendLine("        CASE");
-                prepareKeyStatement.AppendLine(
-                    "            WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
+                prepareKeyStatement.AppendLine("            WHEN CHARINDEX('(', RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))) > 0");
                 prepareKeyStatement.AppendLine("            THEN RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)')))");
-                prepareKeyStatement.AppendLine(
-                    "            ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')");
+                prepareKeyStatement.AppendLine("            ELSE REPLACE(RTRIM(LTRIM(Split.a.value('.', 'VARCHAR(MAX)'))), ')', '')");
                 prepareKeyStatement.AppendLine("        END AS COMPONENT_VALUE,");
-                prepareKeyStatement.AppendLine(
-                    "        ROW_NUMBER() OVER(PARTITION BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER");
+                prepareKeyStatement.AppendLine("        ROW_NUMBER() OVER(PARTITION BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ORDER BY SOURCE_TABLE, TARGET_TABLE, BUSINESS_KEY_ATTRIBUTE ASC) AS COMPONENT_ORDER");
                 prepareKeyStatement.AppendLine("    FROM");
                 prepareKeyStatement.AppendLine("    (");
                 prepareKeyStatement.AppendLine("      SELECT");
                 prepareKeyStatement.AppendLine("          SOURCE_TABLE, ");
                 prepareKeyStatement.AppendLine("          TARGET_TABLE, ");
                 prepareKeyStatement.AppendLine("          BUSINESS_KEY_ATTRIBUTE,");
-                prepareKeyStatement.AppendLine(
-                    "          CASE SUBSTRING(BUSINESS_KEY_ATTRIBUTE, 0, CHARINDEX('(', BUSINESS_KEY_ATTRIBUTE))");
-                prepareKeyStatement.AppendLine(
-                    "             WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') ");
-                prepareKeyStatement.AppendLine(
-                    "             ELSE CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') ");
+                prepareKeyStatement.AppendLine("          CASE SUBSTRING(BUSINESS_KEY_ATTRIBUTE, 0, CHARINDEX('(', BUSINESS_KEY_ATTRIBUTE))");
+                prepareKeyStatement.AppendLine("             WHEN 'COMPOSITE' THEN CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ';', '</M><M>') + '</M>') ");
+                prepareKeyStatement.AppendLine("             ELSE CONVERT(XML, '<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>') ");
                 prepareKeyStatement.AppendLine("          END AS BUSINESS_KEY_ATTRIBUTE_XML");
                 prepareKeyStatement.AppendLine("        FROM");
                 prepareKeyStatement.AppendLine("        (");
-                prepareKeyStatement.AppendLine(
-                    "            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
+                prepareKeyStatement.AppendLine("            SELECT DISTINCT SOURCE_TABLE, TARGET_TABLE, LTRIM(RTRIM(BUSINESS_KEY_ATTRIBUTE)) AS BUSINESS_KEY_ATTRIBUTE");
                 prepareKeyStatement.AppendLine("            FROM TMP_MD_TABLE_MAPPING");
-                prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE_TYPE = '" +
-                                               MetadataHandling.TableTypes.CoreBusinessConcept + "'");
+                prepareKeyStatement.AppendLine("            WHERE TARGET_TABLE_TYPE = '" + MetadataHandling.TableTypes.CoreBusinessConcept + "'");
                 prepareKeyStatement.AppendLine("              AND [ENABLED_INDICATOR] = 'True'");
                 prepareKeyStatement.AppendLine("        ) TableName");
-                prepareKeyStatement.AppendLine(
-                    "    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
-                prepareKeyStatement.AppendLine(
-                    "    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''");
+                prepareKeyStatement.AppendLine("    ) AS A CROSS APPLY BUSINESS_KEY_ATTRIBUTE_XML.nodes('/M') AS Split(a)");
+                prepareKeyStatement.AppendLine("    WHERE BUSINESS_KEY_ATTRIBUTE <> 'N/A' AND A.BUSINESS_KEY_ATTRIBUTE != ''");
                 prepareKeyStatement.AppendLine(") pivotsub");
                 prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
                 prepareKeyStatement.AppendLine("       (");
                 prepareKeyStatement.AppendLine("              SELECT SOURCE_NAME, [SCHEMA_NAME]");
                 prepareKeyStatement.AppendLine("              FROM MD_SOURCE");
                 prepareKeyStatement.AppendLine("       ) stgsub");
-                prepareKeyStatement.AppendLine(
-                    "ON pivotsub.SOURCE_TABLE = stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME");
+                prepareKeyStatement.AppendLine("ON pivotsub.SOURCE_TABLE = stgsub.[SCHEMA_NAME]+'.'+stgsub.SOURCE_NAME");
                 prepareKeyStatement.AppendLine("LEFT OUTER JOIN");
                 prepareKeyStatement.AppendLine("       (");
                 prepareKeyStatement.AppendLine("              SELECT HUB_NAME AS TARGET_NAME, [SCHEMA_NAME]");
                 prepareKeyStatement.AppendLine("              FROM MD_HUB");
                 prepareKeyStatement.AppendLine("       ) hubsub");
-                prepareKeyStatement.AppendLine(
-                    "ON pivotsub.TARGET_TABLE = hubsub.[SCHEMA_NAME]+'.'+hubsub.TARGET_NAME");
+                prepareKeyStatement.AppendLine("ON pivotsub.TARGET_TABLE = hubsub.[SCHEMA_NAME]+'.'+hubsub.TARGET_NAME");
                 prepareKeyStatement.AppendLine("ORDER BY stgsub.SOURCE_NAME, hubsub.TARGET_NAME, COMPONENT_ORDER");
 
                 var listKeys = Utility.GetDataTable(ref connOmd, prepareKeyStatement.ToString());
@@ -4134,8 +4042,7 @@ namespace TEAM
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_BUSINESS_KEY_COMPONENT]");
-                            insertStatement.AppendLine(
-                                "(SOURCE_NAME, HUB_NAME, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
+                            insertStatement.AppendLine("(SOURCE_NAME, HUB_NAME, BUSINESS_KEY_DEFINITION, COMPONENT_ID, COMPONENT_ORDER, COMPONENT_VALUE, COMPONENT_TYPE)");
                             insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] + "','" +
                                                        tableName["TARGET_NAME"] + "','" + businessKeyDefinition +
                                                        "','" + tableName["COMPONENT_ID"] + "','" +
@@ -4151,15 +4058,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the Business Key metadata. Please check the Error Log for more details.\r\n");
-
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of Business Key metadata: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An issue has occurred during preparation of the business key metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -4167,14 +4066,11 @@ namespace TEAM
 
                 worker.ReportProgress(50);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Business Key definition completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
-
+                _alert.SetTextLogging("Preparation of the Business Key definition completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
                 #endregion
 
 
                 #region Business Key components - 60%
-
                 //Understanding the Business Key component parts
                 subProcess.Reset();
                 subProcess.Start();
@@ -4258,15 +4154,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the Business Key component metadata. Please check the Error Log for more details.\r\n");
-
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of Business Key component metadata: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An issue has occurred during preparation of the business key component metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -4426,15 +4314,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
-
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Hubs and Links: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -4498,13 +4378,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        errorCounter++;
-                        _alert.SetTextLogging(
-                            "An issue has occured during preparation of the Link Business Key. Please check the Error Log for more details.\r\n");
-
-                        errorLog.AppendLine(
-                            "\r\nAn issue has occured during preparation of the Link Business Key: \r\n\r\n" + ex);
-                        errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + updateStatement);
+                        LogMetadataEvent($"An issue has occurred during preparation of the Link Business Key: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{updateStatement}", EventTypes.Error);
                     }
                 }
 
@@ -4576,14 +4450,7 @@ namespace TEAM
                         }
                         catch (Exception ex)
                         {
-                            errorCounter++;
-                            _alert.SetTextLogging(
-                                "An issue has occured during preparation of the Hub / Link XREF metadata. Please check the Error Log for more details.\r\n");
-
-                            errorLog.AppendLine(
-                                "\r\nAn issue has occured during preparation of the Hub / Link XREF metadata: \r\n\r\n" +
-                                ex);
-                            errorLog.AppendLine("\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                            LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Hubs and Links: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                         }
                     }
                 }
@@ -4654,21 +4521,13 @@ namespace TEAM
                                 }
                                 catch (Exception ex)
                                 {
-                                    errorCounter++;
-                                    _alert.SetTextLogging(
-                                        "An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
-
-                                    errorLog.AppendLine(
-                                        "\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" +
-                                        ex);
-                                    errorLog.AppendLine(
-                                        "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                    LogMetadataEvent($"An issue has occurred during preparation of the Source to Staging Area attribute mapping: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                                 }
                             }
                         }
                         else
                         {
-                            errorLog.AppendLine($"\r\nThe enabled / disabled state for {row["TARGET_TABLE"].ToString()} could not be asserted.\r\n\r\n");
+                            LogMetadataEvent($"The enabled / disabled state for {row["TARGET_TABLE"].ToString()} could not be asserted.", EventTypes.Error);
                         }
                     }
                 }
@@ -4791,15 +4650,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the attribute mapping between the Source and the Staging Area. Please check the Error Log for more details.\r\n");
-
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Source to Staging attribute mapping: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An issue has occurred during preparation of the Source to Staging Area attribute mapping: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -4871,21 +4722,13 @@ namespace TEAM
                                 }
                                 catch (Exception ex)
                                 {
-                                    errorCounter++;
-                                    _alert.SetTextLogging(
-                                        "An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
-
-                                    errorLog.AppendLine(
-                                        "\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" +
-                                        ex);
-                                    errorLog.AppendLine(
-                                        "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                    LogMetadataEvent($"An issue has occurred during preparation of the Source to Persistent Staging Area attribute mapping: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                                 }
                             }
                         }
                         else
                         {
-                            errorLog.AppendLine($"\r\nThe enabled / disabled state for {row["TARGET_TABLE"].ToString()} could not be asserted.\r\n\r\n");
+                            LogMetadataEvent($"The enabled / disabled state for {row["TARGET_TABLE"].ToString()} could not be asserted.", EventTypes.Error);
                         }
                     }
                 }
@@ -4999,15 +4842,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the attribute mapping between the Source and the Persistent Staging Area. Please check the Error Log for more details.\r\n");
-
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Source to Persistent Staging attribute mapping: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An issue has occurred during preparation of the Source to Persistent Staging Area attribute mapping: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -5100,15 +4935,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " +
-                                                      row["SOURCE_NAME"] + " to " + row["SATELLITE_NAME"] +
-                                                      ". Please check the Error Log for more details.\r\n");
-                                errorCounter++;
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Source to Satellite attribute mapping: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An occurred during the preparation of Source to Satellite attribute mappings for {row["SOURCE_NAME"]} to {row["SATELLITE_NAME"]}. The error is: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
 
                                 if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
@@ -5243,15 +5070,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                _alert.SetTextLogging("-----> An issue has occurred mapping columns from table " +
-                                                      row["SOURCE_NAME"] + " to " + row["SATELLITE_NAME"] +
-                                                      ". Please check the Error Log for more details.\r\n");
-                                errorCounter++;
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Source to Satellite attribute mapping: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An occurred during the preparation of Source to Satellite attribute mappings for {row["SOURCE_NAME"]} to {row["SATELLITE_NAME"]}. The error is: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
 
                                 if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
@@ -5448,15 +5267,10 @@ namespace TEAM
                                 command.ExecuteNonQuery();
 
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
-                                _alert.SetTextLogging(
-                                    "-----> An issue has occurred mapping degenerate columns from table " +
-                                    tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] +
-                                    ". Please check the Error Log for more details.\r\n");
-                                errorCounter++;
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An occurred during the preparation of degenerate columns between {tableName["SOURCE_NAME"]} to {tableName["LINK_NAME"]}. The error is: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
+                                
                                 if (tableName["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
                                     _alert.SetTextLogging("Both attributes are NULL.");
@@ -5506,7 +5320,7 @@ namespace TEAM
                     prepareMultiKeyStatement.AppendLine("    [COLUMN_NAME] AS ATTRIBUTE_NAME");
                     prepareMultiKeyStatement.AppendLine("  FROM MD_PHYSICAL_MODEL");
                     prepareMultiKeyStatement.AppendLine("  WHERE ");
-                    prepareMultiKeyStatement.AppendLine("        COLUMN_NAME != '" + effectiveDateTimeAttribute + "' AND COLUMN_NAME != '" + currentRecordAttribute + "' AND COLUMN_NAME != '" + eventDateTimeAtttribute + "'");
+                    prepareMultiKeyStatement.AppendLine("        COLUMN_NAME != '" + effectiveDateTimeAttribute + "' AND COLUMN_NAME != '" + currentRecordAttribute + "' AND COLUMN_NAME != '" + eventDateTimeAttribute + "'");
                     prepareMultiKeyStatement.AppendLine("    AND COLUMN_NAME NOT LIKE '" + dwhKeyIdentifier + "'");
                     prepareMultiKeyStatement.AppendLine("    AND (TABLE_NAME LIKE '" + satTablePrefix + "' OR TABLE_NAME LIKE '" + lsatTablePrefix + "')");
                     prepareMultiKeyStatement.AppendLine("    AND PRIMARY_KEY_INDICATOR='Y'");
@@ -5575,15 +5389,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the Multi-Active key metadata. Please check the Error Log for more details.\r\n");
-
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Multi-Active key metadata: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An error occurred during the preparation of multi-active key metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -5694,15 +5500,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                errorCounter++;
-                                _alert.SetTextLogging(
-                                    "An issue has occured during preparation of the Driving Key metadata. Please check the Error Log for more details.\r\n");
-
-                                errorLog.AppendLine(
-                                    "\r\nAn issue has occured during preparation of the Driving Key metadata: \r\n\r\n" +
-                                    ex);
-                                errorLog.AppendLine(
-                                    "\r\nThe query that caused the issue is: \r\n\r\n" + insertStatement);
+                                LogMetadataEvent($"An error occurred during the preparation of driving-active key metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -5710,40 +5508,13 @@ namespace TEAM
 
                 worker.ReportProgress(98);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
 
                 #endregion
 
                 //
                 // Activation completed!
                 //
-
-                // Report the events (including errors) back to the user
-                // Clear out the existing error log, or create an empty new file
-                //using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
-                //{
-                //    outfile.Write(String.Empty);
-                //    outfile.Close();
-                //}
-
-                //int eventErrorCounter = 0;
-                //StringBuilder logOutput = new StringBuilder();
-                //foreach (Event individualEvent in eventLog)
-                //{
-                //    if (individualEvent.eventCode == (int)EventTypes.Error)
-                //    {
-                //        eventErrorCounter++;
-                //    }
-
-                //    logOutput.AppendLine((EventTypes)individualEvent.eventCode + ": " + individualEvent.eventDescription);
-                //}
-
-                //using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Event_Log.txt"))
-                //{
-                //    outfile.Write(logOutput.ToString());
-                //    outfile.Close();
-                //}
 
                 // Error handling
                 // Clear out the existing error log, or create an empty new file
@@ -5754,22 +5525,25 @@ namespace TEAM
                 }
 
                 // Write any errors
+
+                int errorCounter = 0;
+                foreach (var individualEvent in GlobalParameters.TeamEventLog)
+                {
+                    if (individualEvent.eventTime >= activationStartDateTime && individualEvent.eventCode == (int)EventTypes.Error)
+                    { 
+                        errorCounter++;
+                    }
+                }
+                
                 if (errorCounter > 0)
                 {
-                    _alert.SetTextLogging("\r\nWarning! There were " + errorCounter +
-                                          " error(s) found while processing the metadata.\r\n");
-                    _alert.SetTextLogging("Please check the Error Log for details \r\n");
+                    _alert.SetTextLogging("\r\nWarning! There were " + errorCounter + " error(s) found while processing the metadata.\r\n");
+                    _alert.SetTextLogging("Please check the TEAM Event Log for details \r\n");
                     _alert.SetTextLogging("\r\n");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                    {
-                        outfile.Write(errorLog.ToString());
-                        outfile.Close();
-                    }
                 }
                 else
                 {
-                    _alert.SetTextLogging("\r\nNo errors were detected.\r\n");
+                    LogMetadataEvent($"No errors were detected in the activation process.", EventTypes.Information);
                 }
 
                 // Remove the temporary tables that have been used
@@ -5779,9 +5553,33 @@ namespace TEAM
                 totalProcess.Stop();
                 _alert.SetTextLogging("\r\n\r\nThe full activation process has taken "+totalProcess.Elapsed.TotalSeconds+" seconds.");
                 worker.ReportProgress(100);
+
             }
         }
-        
+
+        private void ShowAlertForm()
+        {
+            if (backgroundWorkerEventLog.IsBusy != true)
+            {
+                // create a new instance of the alert form
+                _alertEventLog = new Form_Alert();
+                _alertEventLog.ShowLogButton(false);
+                _alertEventLog.ShowCancelButton(false);
+                _alertEventLog.ShowProgressBar(false);
+                _alertEventLog.ShowProgressLabel(false);
+                _alertEventLog.Show();
+
+                // Start the asynchronous operation.
+                backgroundWorkerEventLog.RunWorkerAsync();
+            }
+        }
+
+        private void LogMetadataEvent(string eventMessage, EventTypes eventType)
+        {
+            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(eventType, eventMessage));
+            _alert.SetTextLogging("\r\n"+eventMessage);
+        }
+
         private void DataGridViewTableMetadataKeyDown(object sender, KeyEventArgs e)
         {
             // Only works when not in edit mode.
@@ -6579,6 +6377,8 @@ namespace TEAM
                 // event handler for the Cancel button in AlertForm
                 _alertValidation.Canceled += buttonCancel_Click;
                 _alertValidation.Show();
+                _alertValidation.ShowLogButton(false);
+                _alertValidation.ShowCancelButton(false);
                 // Start the asynchronous operation.
                 backgroundWorkerValidationOnly.RunWorkerAsync();
             }
@@ -6588,7 +6388,7 @@ namespace TEAM
         {
             try
             {
-                System.Diagnostics.Process.Start(GlobalParameters.OutputPath);
+                Process.Start(GlobalParameters.OutputPath);
             }
             catch (Exception ex)
             {
@@ -7768,11 +7568,11 @@ namespace TEAM
                             #region Related Data Objects (e.g. lookup tables, references)
                             List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
-                            var test = TableMapping.GetDependentDataRows((string) row["SOURCE_NAME"],
+                            var dependentRows = TableMapping.GetDependentDataRows((string) row["SOURCE_NAME"],
                                 (string) row["TARGET_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"],
                                 TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
 
-                            foreach (var dependentRow in test)
+                            foreach (var dependentRow in dependentRows)
                             {
                                 var relatedDataObject = new DataWarehouseAutomation.DataObject();
                                 relatedDataObject.name = dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
@@ -7941,9 +7741,7 @@ namespace TEAM
 
                                     if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
                                     {
-                                        var tableSchema =
-                                            MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject
-                                                .name);
+                                        var tableSchema = MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject.name);
 
                                         DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                             "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
@@ -8629,6 +8427,75 @@ namespace TEAM
             var t = new Thread(ThreadProcJson);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
+        }
+
+        private void backgroundWorkerEventLog_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            var localEventLog = GlobalParameters.TeamEventLog;
+
+            // Handle multi-threading
+            if (worker != null && worker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                _alertEventLog.SetTextLogging("Event Log.\r\n\r\n");
+
+                try
+                {
+                    foreach (var individualEvent in localEventLog)
+                    {
+                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes)individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An issue occurred displaying the event log. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private void backgroundWorkerEventLog_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            _alertEventLog.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertEventLog.ProgressValue = e.ProgressPercentage;
+        }
+
+        private void backgroundWorkerEventLog_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                // Do nothing
+            }
+            else if (e.Error != null)
+            {
+                // Do nothing
+            }
+            else
+            {
+                // Do nothing
+            }
+        }
+
+        private void displayEventLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorkerEventLog.IsBusy != true)
+            {
+                // create a new instance of the alert form
+                _alertEventLog = new Form_Alert();
+                _alertEventLog.Text = "Event Log";
+                _alertEventLog.ShowLogButton(false);
+                _alertEventLog.ShowCancelButton(false);
+                _alertEventLog.ShowProgressBar(false);
+                _alertEventLog.ShowProgressLabel(false);
+                _alertEventLog.Show();
+
+                // Start the asynchronous operation.
+                backgroundWorkerEventLog.RunWorkerAsync();
+            }
         }
     }
 }
