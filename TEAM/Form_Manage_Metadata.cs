@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using TEAM_Library;
 
 namespace TEAM
 {
@@ -278,9 +279,10 @@ namespace TEAM
                 }
                 //Clipboard.Clear();
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
-                MessageBox.Show("There is an issue with the data format for this cell!");
+                richTextBoxInformation.AppendText("There is an issue formatting this cell.Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
         #endregion
@@ -2736,7 +2738,7 @@ namespace TEAM
                         commandVersion.ExecuteNonQuery();
 
                         if (worker != null) worker.ReportProgress(2);
-                        _alert.SetTextLogging("Removal of existing metadata completed.\r\n");
+                        LogMetadataEvent($"Removal of existing metadata completed.", EventTypes.Information);
                     }
                     catch (Exception ex)
                     {
@@ -2748,15 +2750,13 @@ namespace TEAM
 
                 # region Prepare Version Information - 3%
                 // Prepare Version
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the version metadata.\r\n");
+                LogMetadataEvent($"Commencing preparing the version metadata.", EventTypes.Information);
 
                 var versionName = string.Concat(majorVersion, '.', minorVersion);
 
                 using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    _alert.SetTextLogging("-->  Working on committing version " + versionName +
-                                          " to the metadata repository.\r\n");
+                    LogMetadataEvent("Working on committing version " + versionName + " to the metadata repository.", EventTypes.Information);
 
                     var insertVersionStatement = new StringBuilder();
                     insertVersionStatement.AppendLine("INSERT INTO [MD_MODEL_METADATA]");
@@ -2882,7 +2882,7 @@ namespace TEAM
                 {
                     if (physicalModelDataTable.Rows.Count == 0)
                     {
-                        _alert.SetTextLogging("--> No model information was found in the metadata.\r\n");
+                        LogMetadataEvent("No model information was found in the metadata.", EventTypes.Warning);
                     }
                     else
                     {
@@ -2939,7 +2939,7 @@ namespace TEAM
 
                     worker.ReportProgress(5);
                     subProcess.Stop();
-                    _alert.SetTextLogging("Preparation of the physical model extract completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                    LogMetadataEvent("Preparation of the physical model extract completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
                 }
                 catch (Exception ex)
                 {
@@ -3189,9 +3189,7 @@ namespace TEAM
                 //3. Prepare Persistent Staging Area
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Persistent Staging Area metadata.\r\n");
+                LogMetadataEvent("Commencing preparing the Persistent Staging Area metadata.", EventTypes.Information);
 
                 // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
                 if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
@@ -3226,7 +3224,7 @@ namespace TEAM
                     {
                         if (tableName != "Not applicable")
                         {
-                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            LogMetadataEvent("Processing " + tableName + ".", EventTypes.Information);
                         }
 
                         var fullyQualifiedName = MetadataHandling.GetTableAndSchema(tableName).FirstOrDefault();
@@ -3252,19 +3250,15 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(13);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Persistent Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the Persistent Staging Area metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Prepare Source to Persistent Staging Area XREF - 15%
-
-                // Prepare the Source to Persistent Staging Area XREF
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between Source and Persistent Staging Area.\r\n");
+                LogMetadataEvent("Commencing preparing the relationship between Source and Persistent Staging Area.", EventTypes.Information);
 
                 // Getting the mapping list from the data table
                 if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
@@ -3281,7 +3275,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + row[TableMappingMetadataColumns.SourceTable.ToString()] + " to " + row[TableMappingMetadataColumns.TargetTable.ToString()] + " relationship.\r\n");
+                        LogMetadataEvent("Processing the " + row[TableMappingMetadataColumns.SourceTable.ToString()] + " to " + row[TableMappingMetadataColumns.TargetTable.ToString()] + " relationship.", EventTypes.Information);
 
                         var filterCriterion = row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -3314,9 +3308,7 @@ namespace TEAM
 
                 worker?.ReportProgress(15);
                 subProcess.Stop();
-                _alert.SetTextLogging(
-                    "Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " +
-                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
@@ -3407,13 +3399,9 @@ namespace TEAM
 
 
                 #region Prepare Links - 20%
-
-                //4. Prepare links
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Link metadata.\r\n");
+                LogMetadataEvent("Commencing preparing the Link metadata.", EventTypes.Information);
 
                 // Getting the distinct list of tables to go into the MD_LINK table
                 selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
@@ -3440,7 +3428,7 @@ namespace TEAM
                     {
                         if (tableName != "Not applicable")
                         {
-                            _alert.SetTextLogging("--> " + tableName + "\r\n");
+                            LogMetadataEvent($"Processing {tableName}.", EventTypes.Information);
                         }
 
                         var fullyQualifiedName = MetadataHandling.GetTableAndSchema(tableName).FirstOrDefault();
@@ -3470,19 +3458,15 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(20);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Link metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the Link metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Prepare Satellites - 24%
-
-                // Prepare Satellites
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Satellite metadata.\r\n");
+                LogMetadataEvent("Commencing preparing the Satellite metadata.", EventTypes.Information);
 
                 var prepareSatStatement = new StringBuilder();
 
@@ -3520,7 +3504,7 @@ namespace TEAM
 
                         if (tableName != "Not applicable")
                         {
-                            _alert.SetTextLogging("--> " + fullyQualifiedName.Value + "\r\n");
+                            LogMetadataEvent("Processing" + fullyQualifiedName.Value + ".", EventTypes.Information);
                         }
 
                         var insertStatement = new StringBuilder();
@@ -3552,13 +3536,9 @@ namespace TEAM
 
 
                 #region Prepare Link Satellites - 28%
-
-                //Prepare Link Satellites
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Link Satellite metadata.\r\n");
+                LogMetadataEvent("Commencing preparing the Link Satellite metadata.", EventTypes.Information);
 
                 var prepareLsatStatement = new StringBuilder();
                 prepareLsatStatement.AppendLine("SELECT DISTINCT");
@@ -3607,7 +3587,7 @@ namespace TEAM
 
                         var fullyQualifiedName = MetadataHandling.GetTableAndSchema(tableName).FirstOrDefault();
 
-                        _alert.SetTextLogging("--> " + fullyQualifiedName.Value + "\r\n");
+                        LogMetadataEvent("Processing " + fullyQualifiedName.Value + ".", EventTypes.Information);
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SATELLITE]");
@@ -3632,21 +3612,16 @@ namespace TEAM
 
                 worker.ReportProgress(28);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Link Satellite metadata completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the Link Satellite metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Prepare Source / SAT Xref - 28%
-
-                //Prepare Source / Sat XREF
                 subProcess.Reset();
                 subProcess.Start();
 
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging(
-                    "Commencing preparing the relationship between (Link) Satellites and the Source tables.\r\n");
+                LogMetadataEvent("Commencing preparing the relationship between (Link) Satellites and the Source tables.", EventTypes.Information);
 
                 var prepareSatXrefStatement = new StringBuilder();
                 prepareSatXrefStatement.AppendLine("SELECT");
@@ -3690,8 +3665,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " +
-                                              tableName["SATELLITE_NAME"] + " relationship.\r\n");
+                        LogMetadataEvent("Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["SATELLITE_NAME"] + " relationship.", EventTypes.Information);
 
                         var insertStatement = new StringBuilder();
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
@@ -3728,20 +3702,15 @@ namespace TEAM
 
                 worker.ReportProgress(28);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Source / Satellite XREF metadata completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the Source / Satellite XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Source / Hub relationship - 30%
-
-                //Prepare Source / HUB xref
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between Source and Hubs.\r\n");
+                LogMetadataEvent("Commencing preparing the relationship between Source and Hubs.", EventTypes.Information);
 
                 var prepareStgHubXrefStatement = new StringBuilder();
                 prepareStgHubXrefStatement.AppendLine("SELECT");
@@ -3780,8 +3749,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " +
-                                              tableName["HUB_NAME"] + " relationship.\r\n");
+                        LogMetadataEvent("Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["HUB_NAME"] + " relationship.", EventTypes.Information);
 
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -3824,11 +3792,8 @@ namespace TEAM
 
 
                 #region Prepare attributes - 45%
-                //Prepare Attributes
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
 
                 var attCounter = 1;
 
@@ -3871,11 +3836,11 @@ namespace TEAM
                 */
                 if (radioButtonPhysicalMode.Checked) // Read from live database
                 {
-                    _alert.SetTextLogging("Commencing preparing the attributes directly from the database.\r\n");
+                    LogMetadataEvent("Commencing preparing the attributes directly from the database.", EventTypes.Information);
                 }
                 else // Virtual processing
                 {
-                    _alert.SetTextLogging("Commencing preparing the attributes from the metadata.\r\n");
+                    LogMetadataEvent("Commencing preparing the attributes from the metadata.", EventTypes.Information);
                 }
 
                 var prepareAttStatement = new StringBuilder();
@@ -3959,8 +3924,6 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            //_alert.SetTextLogging("--> Processing " + tableName["COLUMN_NAME"] + ".\r\n");
-
                             var insertStatement = new StringBuilder();
 
                             insertStatement.AppendLine("INSERT INTO [MD_ATTRIBUTE]");
@@ -3992,12 +3955,9 @@ namespace TEAM
 
 
                 #region Business Key - 50%
-                //Understanding the Business Key (MD_BUSINESS_KEY_COMPONENT)
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing the definition of the Business Key.\r\n");
+                LogMetadataEvent("Commencing the definition of the Business Key.", EventTypes.Information);
 
                 var prepareKeyStatement = new StringBuilder();
 
@@ -4064,8 +4024,7 @@ namespace TEAM
 
                 if (listKeys.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging(
-                        "-- >  No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    LogMetadataEvent("No attributes were found in the metadata, did you reverse-engineer the model?", EventTypes.Warning);
                 }
                 else
                 {
@@ -4077,10 +4036,9 @@ namespace TEAM
                             var keyComponent = tableName["COMPONENT_VALUE"]; //Handle quotes between SQL and C%
                             keyComponent = keyComponent.ToString().Replace("'", "''");
 
-                            _alert.SetTextLogging("--> Processing the Business Key " +
+                            LogMetadataEvent("Processing the Business Key " +
                                                   tableName["BUSINESS_KEY_ATTRIBUTE"] + " (for component " +
-                                                  keyComponent + ") from " + tableName["SOURCE_NAME"] + " to " +
-                                                  tableName["TARGET_NAME"] + "\r\n");
+                                                  keyComponent + ") from " + tableName["SOURCE_NAME"] + " to " + tableName["TARGET_NAME"] + ".", EventTypes.Information);
 
                             var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                             businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
@@ -4112,17 +4070,14 @@ namespace TEAM
 
                 worker.ReportProgress(50);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Business Key definition completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the Business Key definition completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
                 #endregion
 
 
                 #region Business Key components - 60%
-                //Understanding the Business Key component parts
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing the Business Key component analysis.\r\n");
+                LogMetadataEvent("Commencing the Business Key component analysis.", EventTypes.Information);
 
                 var prepareKeyComponentStatement = new StringBuilder();
                 var keyPartCounter = 1;
@@ -4161,8 +4116,7 @@ namespace TEAM
 
                 if (listKeyParts.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging(
-                        "--> No attributes were found in the metadata, did you reverse-engineer the model?\r\n");
+                    LogMetadataEvent("No attributes were found in the metadata, did you reverse-engineer the model?", EventTypes.Information);
                 }
                 else
                 {
@@ -4208,21 +4162,17 @@ namespace TEAM
 
                 worker.ReportProgress(60);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + keyPartCounter + " Business Key component attributes.\r\n");
-                _alert.SetTextLogging("Preparation of the Business Key components completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Processing " + keyPartCounter + " Business Key component attributes.", EventTypes.Information);
+                LogMetadataEvent("Preparation of the Business Key components completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
 
                 #endregion
 
 
                 #region Hub / Link relationship - 75%
-                //Prepare HUB / LNK xref
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between Hubs and Links.\r\n");
+                LogMetadataEvent("Commencing preparing the relationship between Hubs and Links.", EventTypes.Information);
 
                 var virtualisationSnippet = new StringBuilder();
                 if (radioButtonPhysicalMode.Checked)
@@ -4340,8 +4290,7 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the " + tableName["HUB_NAME"] + " to " +
-                                                  tableName["LINK_NAME"] + " relationship.\r\n");
+                            LogMetadataEvent("Processing the " + tableName["HUB_NAME"] + " to " + tableName["LINK_NAME"] + " relationship.", EventTypes.Information);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
@@ -4368,24 +4317,15 @@ namespace TEAM
 
                 worker.ReportProgress(75);
                 subProcess.Stop();
-                _alert.SetTextLogging(
-                    "Preparation of the relationship between Hubs and Links completed, and has taken " +
-                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
-
+                LogMetadataEvent("Preparation of the relationship between Hubs and Links completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
                 #endregion
 
 
                 #region Link Business Key - 78%
-
-                // Prepare links business key backfill
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Link Business key metadata.\r\n");
+                LogMetadataEvent("Commencing preparing the Link Business key metadata.", EventTypes.Information);
 
                 // Getting the distinct list of tables to go into the MD_LINK table
-                selectionRows =
-                    inputTableMetadata.Select(
-                        TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
+                selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
 
                 var distincLinksForBusinessKey = new List<string>();
 
@@ -4432,13 +4372,9 @@ namespace TEAM
 
 
                 #region Stg / Link relationship - 80%
-
-                //Prepare STG / LNK xref
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the relationship between Source and Link tables.\r\n");
+                LogMetadataEvent("Commencing preparing the relationship between Source and Link tables.", EventTypes.Information);
 
                 var preparestgLnkXrefStatement = new StringBuilder();
                 preparestgLnkXrefStatement.AppendLine("SELECT");
@@ -4447,13 +4383,9 @@ namespace TEAM
                 preparestgLnkXrefStatement.AppendLine("  lnk.FILTER_CRITERIA,");
                 preparestgLnkXrefStatement.AppendLine("  lnk.BUSINESS_KEY_ATTRIBUTE");
                 preparestgLnkXrefStatement.AppendLine("FROM [dbo].[TMP_MD_TABLE_MAPPING] lnk");
-                preparestgLnkXrefStatement.AppendLine(
-                    "JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
-                preparestgLnkXrefStatement.AppendLine(
-                    "JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.[SCHEMA_NAME]+'.'+stg_tbl.SOURCE_NAME");
-                preparestgLnkXrefStatement.AppendLine("WHERE lnk.TARGET_TABLE_TYPE = '" +
-                                                      MetadataHandling.TableTypes.NaturalBusinessRelationship +
-                                                      "'");
+                preparestgLnkXrefStatement.AppendLine("JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
+                preparestgLnkXrefStatement.AppendLine("JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.[SCHEMA_NAME]+'.'+stg_tbl.SOURCE_NAME");
+                preparestgLnkXrefStatement.AppendLine("WHERE lnk.TARGET_TABLE_TYPE = '" + MetadataHandling.TableTypes.NaturalBusinessRelationship + "'");
                 preparestgLnkXrefStatement.AppendLine("AND[ENABLED_INDICATOR] = 'True'");
 
                 var listStgLinkXref = Utility.GetDataTable(ref connOmd, preparestgLnkXrefStatement.ToString());
@@ -4462,9 +4394,7 @@ namespace TEAM
                 {
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
-                        _alert.SetTextLogging("--> Processing the " + tableName["SOURCE_NAME"] + " to " +
-                                              tableName["LINK_NAME"] + " relationship.\r\n");
-
+                        LogMetadataEvent("Processing the " + tableName["SOURCE_NAME"] + " to " + tableName["LINK_NAME"] + " relationship.", EventTypes.Information);
 
                         var filterCriterion = tableName["FILTER_CRITERIA"].ToString().Trim();
                         filterCriterion = filterCriterion.Replace("'", "''");
@@ -4572,28 +4502,23 @@ namespace TEAM
                 worker?.ReportProgress(87);
                 subProcess.Stop();
                 LogMetadataEvent($"Preparation of the manual column-to-column mappings from Source to Staging has been completed, and has taken {subProcess.Elapsed.TotalSeconds} seconds.", EventTypes.Information);
-
                 #endregion
 
                 #region Automatically mapped Source to Staging Area Attribute XREF 93%
-
                 //Prepare automatic attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
 
                 int automaticMappingCounter = 0;
 
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    _alert.SetTextLogging(
-                        "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the database.\r\n");
+                    LogMetadataEvent($"Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the database.", EventTypes.Information);
+
                 }
                 else
                 {
-                    _alert.SetTextLogging(
-                        "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the physical model metadata.\r\n");
+                    LogMetadataEvent($"Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the physical model metadata.", EventTypes.Information);
                 }
 
                 // Run the statement, the virtual vs. physical lookups are embedded in MD_PHYSICAL_MODEL
@@ -4636,14 +4561,14 @@ namespace TEAM
                 prepareMappingStagingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
                 prepareMappingStagingStatement.AppendLine("FROM XREF");
                 prepareMappingStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.STAGING_NAME = ADC_TARGET.TABLE_NAME");
-                prepareMappingStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                prepareMappingStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStagingStatement.AppendLine("WHERE NOT EXISTS (");
                 prepareMappingStagingStatement.AppendLine("  SELECT SOURCE_NAME, STAGING_NAME, ATTRIBUTE_NAME_TO");
                 prepareMappingStagingStatement.AppendLine("  FROM MD_SOURCE_STAGING_ATTRIBUTE_XREF manualmapping");
                 prepareMappingStagingStatement.AppendLine("WHERE");
                 prepareMappingStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME_FULL");
                 prepareMappingStagingStatement.AppendLine("  AND manualmapping.STAGING_NAME = XREF.STAGING_NAME_FULL");
-                prepareMappingStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_TO = ADC_TARGET.COLUMN_NAME");
+                prepareMappingStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_TO = ADC_TARGET.COLUMN_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStagingStatement.AppendLine(")");
                 prepareMappingStagingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
@@ -4652,7 +4577,7 @@ namespace TEAM
 
                 if (automaticAttributeMappings.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("--> No automatic column-to-column mappings were detected.\r\n");
+                    LogMetadataEvent($"No automatic column-to-column mappings between source and staging were detected..", EventTypes.Information);
                 }
                 else
                 {
@@ -4661,10 +4586,10 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                            LogMetadataEvent("Processing the mapping from " + (string) row["SOURCE_NAME"] +
                                                   " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
                                                   (string) row["STAGING_NAME"] + " - " +
-                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".", EventTypes.Information);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
@@ -4695,29 +4620,22 @@ namespace TEAM
 
                 worker.ReportProgress(90);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticMappingCounter +
-                                      " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging(
-                    "Preparation of the automatically mapped column-to-column metadata completed, and has taken " +
-                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent($"Processed {automaticMappingCounter} automatically added attribute mappings.", EventTypes.Information);
+                LogMetadataEvent($"Preparation of the automatically mapped column-to-column metadata completed, and has taken {subProcess.Elapsed.TotalSeconds} seconds.", EventTypes.Information);
                 #endregion
 
 
                 #region Manually mapped Source to Persistent Staging Area Attribute XREF - 81%
-
-                // Prepare the Source to Persistent Staging Area XREF
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Source to Persistent Staging column-to-column mapping metadata based on the manual mappings.\r\n");
+                LogMetadataEvent("Commencing preparing the Source to Persistent Staging column-to-column mapping metadata based on the manual mappings.", EventTypes.Information);
 
                 // Getting the distinct list of row from the data table
                 selectionRows = inputAttributeMetadata.Select(""+AttributeMappingMetadataColumns.TargetTable.ToString()+" LIKE '%" + psaPrefix + "%'");
 
                 if (selectionRows.Length == 0)
                 {
-                    _alert.SetTextLogging("No manual column-to-column mappings for Source to Persistent Staging were detected.\r\n");
+                    LogMetadataEvent("No manual column-to-column mappings for Source to Persistent Staging were detected.", EventTypes.Information);
                 }
                 else
                 {
@@ -4731,10 +4649,10 @@ namespace TEAM
 
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                _alert.SetTextLogging("--> Processing the mapping from " + row[AttributeMappingMetadataColumns.SourceTable.ToString()] + " - " +
+                                LogMetadataEvent("Processing the mapping from " + row[AttributeMappingMetadataColumns.SourceTable.ToString()] + " - " +
                                                       (string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()] + " to " + 
                                                       row[AttributeMappingMetadataColumns.TargetTable.ToString()] + " - " +
-                                                      (string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()] + ".\r\n");
+                                                      (string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()] + ".", EventTypes.Information);
 
                                 //var localTableName = MetadataHandling.GetNonQualifiedTableName(row[TableMetadataColumns.TargetTable.ToString()].ToString());
 
@@ -4764,34 +4682,29 @@ namespace TEAM
                         }
                         else
                         {
-                            LogMetadataEvent($"The enabled / disabled state for {row["TARGET_TABLE"].ToString()} could not be asserted.", EventTypes.Error);
+                            LogMetadataEvent($"The enabled / disabled state for {row["TARGET_TABLE"]} could not be asserted.", EventTypes.Error);
                         }
                     }
                 }
 
                 worker?.ReportProgress(87);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the manual column-to-column mappings for Source-to-Staging completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Automatically mapped Source to Persistent Staging Area Attribute XREF 93%
-
-                // Prepare automatic attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-
                 var prepareMappingPersistentStagingStatement = new StringBuilder();
 
                 automaticMappingCounter = 0;
 
-                _alert.SetTextLogging(
+                LogMetadataEvent(
                     radioButtonPhysicalMode.Checked
-                        ? "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the database.\r\n"
-                        : "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the physical model metadata.\r\n");
+                        ? "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the database."
+                        : "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the physical model metadata.", EventTypes.Information);
 
                 prepareMappingPersistentStagingStatement.AppendLine("WITH ALL_DATABASE_COLUMNS AS");
                 prepareMappingPersistentStagingStatement.AppendLine("(");
@@ -4827,14 +4740,14 @@ namespace TEAM
                 prepareMappingPersistentStagingStatement.AppendLine("  'automatically mapped' as VERIFICATION");
                 prepareMappingPersistentStagingStatement.AppendLine("FROM XREF");
                 prepareMappingPersistentStagingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.PERSISTENT_STAGING_NAME_SHORT = ADC_TARGET.TABLE_NAME");
-                prepareMappingPersistentStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                prepareMappingPersistentStagingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingPersistentStagingStatement.AppendLine("WHERE NOT EXISTS (");
-                prepareMappingPersistentStagingStatement.AppendLine("  SELECT SOURCE_NAME, PERSISTENT_STAGING_NAME, ATTRIBUTE_NAME_FROM");
+                prepareMappingPersistentStagingStatement.AppendLine("  SELECT SOURCE_NAME, PERSISTENT_STAGING_NAME, ATTRIBUTE_NAME_TO");
                 prepareMappingPersistentStagingStatement.AppendLine("  FROM MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF manualmapping");
                 prepareMappingPersistentStagingStatement.AppendLine("  WHERE");
                 prepareMappingPersistentStagingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
                 prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.PERSISTENT_STAGING_NAME = XREF.PERSISTENT_STAGING_NAME");
-                prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_TO = ADC_TARGET.COLUMN_NAME");
+                prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_TO = ADC_TARGET.COLUMN_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingPersistentStagingStatement.AppendLine("  AND manualmapping.MAPPING_TYPE = 'Manual mapping'");
                 prepareMappingPersistentStagingStatement.AppendLine(")");
                 prepareMappingPersistentStagingStatement.AppendLine("ORDER BY SOURCE_NAME");
@@ -4843,7 +4756,7 @@ namespace TEAM
 
                 if (automaticAttributeMappingsPsa.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("--> No automatic column-to-column mappings were detected.\r\n");
+                    LogMetadataEvent("--> No automatic column-to-column mappings were detected.", EventTypes.Information);
                 }
                 else
                 {
@@ -4852,10 +4765,10 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                            LogMetadataEvent("Processing the mapping from " + (string) row["SOURCE_NAME"] +
                                                   " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
                                                   (string) row["PERSISTENT_STAGING_NAME"] + " - " +
-                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".", EventTypes.Information);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
@@ -4886,25 +4799,18 @@ namespace TEAM
 
                 worker.ReportProgress(90);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticMappingCounter +
-                                      " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging(
-                    "Preparation of the automatically mapped column-to-column metadata completed, and has taken " +
-                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Processing " + automaticMappingCounter + " automatically added attribute mappings.", EventTypes.Information);
+                LogMetadataEvent("Preparation of the automatically mapped column-to-column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
 
                 #endregion
 
 
                 #region Manually mapped attributes for SAT and LSAT 90%
-
-                //Prepare Manual Attribute mapping for Satellites and Link Satellites
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging(
-                    "Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.\r\n");
+                LogMetadataEvent(
+                    "Commencing preparing the Satellite and Link-Satellite column-to-column mapping metadata based on the manual mappings.", EventTypes.Information);
 
                 int manualSatMappingCounter = 0;
 
@@ -4918,9 +4824,9 @@ namespace TEAM
                 prepareMappingStatementManual.AppendLine("  ,'manually_mapped' as VERIFICATION");
                 prepareMappingStatementManual.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                 prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_SATELLITE sat on sat.[SCHEMA_NAME]+'.'+sat.SATELLITE_NAME=mapping.TARGET_TABLE");
-                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
-                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStatementManual.AppendLine("LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
                 prepareMappingStatementManual.AppendLine("    ON mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
                 prepareMappingStatementManual.AppendLine("AND mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
@@ -4933,83 +4839,92 @@ namespace TEAM
 
                 var attributeMappingsSatellites = Utility.GetDataTable(ref connOmd, prepareMappingStatementManual.ToString());
 
-                if (attributeMappingsSatellites.Rows.Count == 0)
+                if (attributeMappingsSatellites is null)
                 {
-                    _alert.SetTextLogging("--> No manual column-to-column mappings were detected.\r\n");
+                    LogMetadataEvent("There was an issue retrieving automatic attribute metadata from the repository. The query is: \r\n\r\n" + prepareMappingStatementManual, EventTypes.Error);
                 }
-                else
+
+                try
                 {
-                    foreach (DataRow row in attributeMappingsSatellites.Rows)
+                    if (attributeMappingsSatellites is null || attributeMappingsSatellites.Rows.Count == 0)
                     {
-                        using (var connection = new SqlConnection(metaDataConnection))
+                        LogMetadataEvent("No information on Satellite attribute mappings was retrieved from the repository.", EventTypes.Error);
+                    }
+                    else
+                    {
+                        foreach (DataRow row in attributeMappingsSatellites.Rows)
                         {
-                            var insertStatement = new StringBuilder();
-                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
-                            insertStatement.AppendLine("( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR], [MAPPING_TYPE])");
-                            insertStatement.AppendLine("VALUES (" +
-                                                       "'" + row["SOURCE_NAME"] + "', " +
-                                                       "'" + row["SATELLITE_NAME"] + "', " +
-                                                       "'" + row["ATTRIBUTE_NAME_FROM"] + "', " +
-                                                       "'" + row["ATTRIBUTE_NAME_TO"] + "', " +
-                                                       "'" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "'," +
-                                                       "'Manual mapping'" +
-                                                       ")");
-
-                            try
+                            using (var connection = new SqlConnection(metaDataConnection))
                             {
+                                var insertStatement = new StringBuilder();
+                                insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+                                insertStatement.AppendLine(
+                                    "( [SOURCE_NAME],[SATELLITE_NAME],[ATTRIBUTE_NAME_FROM],[ATTRIBUTE_NAME_TO],[MULTI_ACTIVE_KEY_INDICATOR], [MAPPING_TYPE])");
+                                insertStatement.AppendLine("VALUES (" +
+                                                           "'" + row["SOURCE_NAME"] + "', " +
+                                                           "'" + row["SATELLITE_NAME"] + "', " +
+                                                           "'" + row["ATTRIBUTE_NAME_FROM"] + "', " +
+                                                           "'" + row["ATTRIBUTE_NAME_TO"] + "', " +
+                                                           "'" + row["MULTI_ACTIVE_KEY_INDICATOR"] + "'," +
+                                                           "'Manual mapping'" +
+                                                           ")");
 
-                                var command = new SqlCommand(insertStatement.ToString(), connection);
-                                connection.Open();
-                                command.ExecuteNonQuery();
-                                _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
-                                                      " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
-                                                      (string) row["SATELLITE_NAME"] + " - " +
-                                                      (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
-
-                                manualSatMappingCounter++;
-
-                            }
-                            catch (Exception ex)
-                            {
-                                LogMetadataEvent($"An occurred during the preparation of Source to Satellite attribute mappings for {row["SOURCE_NAME"]} to {row["SATELLITE_NAME"]}. The error is: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
-
-                                if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
+                                try
                                 {
-                                    _alert.SetTextLogging("Both attributes are NULL.");
+
+                                    var command = new SqlCommand(insertStatement.ToString(), connection);
+                                    connection.Open();
+                                    command.ExecuteNonQuery();
+                                    LogMetadataEvent("Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                                                     " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
+                                                     (string) row["SATELLITE_NAME"] + " - " +
+                                                     (string) row["ATTRIBUTE_NAME_TO"] + ".", EventTypes.Information);
+
+                                    manualSatMappingCounter++;
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogMetadataEvent(
+                                        $"An occurred during the preparation of Source to Satellite attribute mappings for {row["SOURCE_NAME"]} to {row["SATELLITE_NAME"]}. The error is: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}",
+                                        EventTypes.Error);
+
+                                    if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
+                                    {
+                                        LogMetadataEvent("Both attributes are NULL.", EventTypes.Error);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    LogMetadataEvent($"An exception was encountered: {ex}.", EventTypes.Error);
+                }
 
                 worker.ReportProgress(90);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + manualSatMappingCounter + " manual attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent($"Processing {manualSatMappingCounter}  manual attribute mappings.", EventTypes.Information);
+                LogMetadataEvent("Preparation of the manual column-to-column mapping for Satellites and Link-Satellites completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Automatically mapped attributes for SAT and LSAT 93%
-
-                //Prepare automatic attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
 
                 var prepareMappingStatement = new StringBuilder();
 
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    _alert.SetTextLogging(
-                        "Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the database.\r\n");
+                    LogMetadataEvent("Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the database.", EventTypes.Information);
                 }
                 else
                 {
-                    _alert.SetTextLogging(
-                        "Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the physical model metadata.\r\n");
+                    LogMetadataEvent("Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the physical model metadata.", EventTypes.Information);
                 }
 
                 // Run the statement, the virtual vs. physical lookups are embedded in allDatabaseAttributes
@@ -5038,10 +4953,8 @@ namespace TEAM
                 prepareMappingStatement.AppendLine("    tgt.[SCHEMA_NAME] AS TARGET_SCHEMA_NAME,");
                 prepareMappingStatement.AppendLine("    tgt.SATELLITE_NAME AS TARGET_NAME");
                 prepareMappingStatement.AppendLine("  FROM MD_SOURCE_SATELLITE_XREF xref");
-                prepareMappingStatement.AppendLine(
-                    "LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
-                prepareMappingStatement.AppendLine(
-                    "LEFT OUTER JOIN dbo.MD_SATELLITE tgt ON xref.SATELLITE_NAME = tgt.SATELLITE_NAME");
+                prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE src ON xref.SOURCE_NAME = src.SOURCE_NAME");
+                prepareMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_SATELLITE tgt ON xref.SATELLITE_NAME = tgt.SATELLITE_NAME");
                 prepareMappingStatement.AppendLine(")");
                 prepareMappingStatement.AppendLine("SELECT");
                 prepareMappingStatement.AppendLine("  XREF.SOURCE_NAME, ");
@@ -5053,35 +4966,42 @@ namespace TEAM
                 prepareMappingStatement.AppendLine("FROM XREF");
                 prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
                 prepareMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
-                prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE stg_attr ON ADC_SOURCE.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
-                prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE DATABASE_DEFAULT");
+                prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE stg_attr ON ADC_SOURCE.COLUMN_NAME = stg_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
+                prepareMappingStatement.AppendLine("JOIN dbo.MD_ATTRIBUTE tgt_attr ON ADC_TARGET.COLUMN_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStatement.AppendLine("WHERE UPPER(stg_attr.ATTRIBUTE_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME)");
                 prepareMappingStatement.AppendLine("AND NOT EXISTS (");
-                prepareMappingStatement.AppendLine("  SELECT SOURCE_NAME, SATELLITE_NAME, ATTRIBUTE_NAME_FROM");
+                prepareMappingStatement.AppendLine("  SELECT SOURCE_NAME, SATELLITE_NAME, ATTRIBUTE_NAME_TO");
                 prepareMappingStatement.AppendLine("  FROM MD_SOURCE_SATELLITE_ATTRIBUTE_XREF manualmapping");
                 prepareMappingStatement.AppendLine("  WHERE");
                 prepareMappingStatement.AppendLine("      manualmapping.SOURCE_NAME = XREF.SOURCE_NAME");
                 prepareMappingStatement.AppendLine("  AND manualmapping.SATELLITE_NAME = XREF.TARGET_NAME");
-                prepareMappingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_FROM = ADC_SOURCE.COLUMN_NAME");
+                prepareMappingStatement.AppendLine("  AND manualmapping.ATTRIBUTE_NAME_TO = ADC_TARGET.COLUMN_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStatement.AppendLine(")");
                 prepareMappingStatement.AppendLine("ORDER BY SOURCE_NAME");
 
                 var automaticAttributeMappingsSatellites = Utility.GetDataTable(ref connOmd, prepareMappingStatement.ToString());
+                int attCounterSatellite = 0;
 
-                if (automaticAttributeMappingsSatellites.Rows.Count == 0)
+                if (automaticAttributeMappingsSatellites is null)
                 {
-                    _alert.SetTextLogging("--> No automatic column-to-column mappings were detected.\r\n");
+                    LogMetadataEvent("There was an issue retrieving automatic attribute metadata from the repository. The query is: \r\n\r\n" + prepareMappingStatement, EventTypes.Error);
+                }
+
+                if (automaticAttributeMappingsSatellites is null || automaticAttributeMappingsSatellites.Rows.Count == 0)
+                {
+                    LogMetadataEvent("No automatic column-to-column mappings were able to be retrieved from the repository.", EventTypes.Warning);
                 }
                 else
                 {
+                    
                     foreach (DataRow row in automaticAttributeMappingsSatellites.Rows)
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the mapping from " + (string) row["SOURCE_NAME"] +
+                            LogMetadataEvent("Processing the mapping from " + (string) row["SOURCE_NAME"] +
                                                   " - " + (string) row["ATTRIBUTE_NAME_FROM"] + " to " +
                                                   (string) row["SATELLITE_NAME"] + " - " +
-                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".\r\n");
+                                                  (string) row["ATTRIBUTE_NAME_TO"] + ".", EventTypes.Information);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
@@ -5110,33 +5030,29 @@ namespace TEAM
 
                                 if (row["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
-                                    _alert.SetTextLogging("Both attributes are NULL.");
+                                    LogMetadataEvent("Both attributes are NULL.", EventTypes.Error);
                                 }
                             }
                         }
+
+                        attCounterSatellite++;
                     }
                 }
 
                 worker.ReportProgress(90);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticAttributeMappingsSatellites.Rows.Count +
-                                      " automatically added attribute mappings.\r\n");
-                _alert.SetTextLogging(
+                LogMetadataEvent("Processing " + attCounterSatellite + " automatically added attribute mappings.", EventTypes.Information);
+                LogMetadataEvent(
                     "Preparation of the automatically mapped column-to-column metadata completed, and has taken " +
-                    subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                    subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Manually mapped degenerate attributes for Links 95%
-
-                //12. Prepare Manual Attribute mapping for Link degenerate fields
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging(
-                    "Commencing preparing the column-to-column mapping metadata based on the manual mappings for degenerate attributes.\r\n");
+                LogMetadataEvent("Commencing preparing the column-to-column mapping metadata based on the manual mappings for degenerate attributes.", EventTypes.Information);
 
                 var prepareMappingStatementLink = new StringBuilder();
 
@@ -5148,9 +5064,9 @@ namespace TEAM
                 prepareMappingStatementLink.AppendLine(" ,'Manual mapping' as MAPPING_TYPE");
                 prepareMappingStatementLink.AppendLine("FROM dbo.TMP_MD_ATTRIBUTE_MAPPING mapping");
                 prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_LINK lnk on lnk.[SCHEMA_NAME]+'.'+lnk.LINK_NAME=mapping.TARGET_TABLE");
-                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE target_attr on mapping.TARGET_COLUMN = target_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_SOURCE stg on stg.[SCHEMA_NAME]+'.'+stg.SOURCE_NAME = mapping.SOURCE_TABLE");
-                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME");
+                prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr on mapping.SOURCE_COLUMN = stg_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
                 prepareMappingStatementLink.AppendLine("LEFT OUTER JOIN dbo.TMP_MD_TABLE_MAPPING table_mapping");
                 prepareMappingStatementLink.AppendLine("  ON mapping.TARGET_TABLE = table_mapping.TARGET_TABLE");
                 prepareMappingStatementLink.AppendLine(" AND mapping.SOURCE_TABLE = table_mapping.SOURCE_TABLE");
@@ -5163,27 +5079,22 @@ namespace TEAM
 
                 if (degenerateMappings.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("--> No manually mapped degenerate columns were detected.\r\n");
+                    LogMetadataEvent("--> No manually mapped degenerate columns were detected.", EventTypes.Information);
                 }
 
                 worker.ReportProgress(95);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + degenerateMappings.Rows.Count +
-                                      " manual degenerate attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Processing " + degenerateMappings.Rows.Count +
+                                      " manual degenerate attribute mappings.", EventTypes.Information);
+                LogMetadataEvent("Preparation of the degenerate column metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Automatically mapped degenerate attributes for Links 95%
-
-                //13. Prepare the automatic degenerate attribute mapping
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-
 
                 int automaticDegenerateMappingCounter = 0;
                 var prepareDegenerateMappingStatement = new StringBuilder();
@@ -5226,28 +5137,30 @@ namespace TEAM
                 prepareDegenerateMappingStatement.AppendLine("FROM XREF");
                 prepareDegenerateMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_SOURCE ON XREF.SOURCE_SCHEMA_NAME = ADC_SOURCE.[SCHEMA_NAME] AND XREF.SOURCE_NAME = ADC_SOURCE.TABLE_NAME");
                 prepareDegenerateMappingStatement.AppendLine("JOIN ALL_DATABASE_COLUMNS ADC_TARGET ON XREF.TARGET_SCHEMA_NAME = ADC_TARGET.[SCHEMA_NAME] AND XREF.TARGET_NAME = ADC_TARGET.TABLE_NAME");
-                prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON UPPER(ADC_SOURCE.COLUMN_NAME) = UPPER(stg_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
-                prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE DATABASE_DEFAULT");
-                prepareDegenerateMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_NAME = tgt_attr.ATTRIBUTE_NAME");
+                prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE stg_attr ON UPPER(ADC_SOURCE.COLUMN_NAME) = UPPER(stg_attr.ATTRIBUTE_NAME) COLLATE Latin1_General_CS_AS");
+                prepareDegenerateMappingStatement.AppendLine("LEFT OUTER JOIN dbo.MD_ATTRIBUTE tgt_attr ON UPPER(ADC_TARGET.COLUMN_NAME) = UPPER(tgt_attr.ATTRIBUTE_NAME) COLLATE Latin1_General_CS_AS");
+                prepareDegenerateMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
 
 
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    _alert.SetTextLogging(
-                        "Commencing preparing the (automatic) column-to-column mapping metadata for degenerate attributes, based on what's available in the database.\r\n");
+                    LogMetadataEvent("Commencing preparing the (automatic) column-to-column mapping metadata for degenerate attributes, based on what's available in the database.", EventTypes.Information);
                 }
                 else
                 {
-                    _alert.SetTextLogging(
-                        "Commencing preparing the degenerate column metadata using the physical model metadata.\r\n");
+                    LogMetadataEvent("Commencing preparing the degenerate column metadata using the physical model metadata.", EventTypes.Information);
                 }
 
-                var automaticDegenerateMappings =
-                    Utility.GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
+                var automaticDegenerateMappings = Utility.GetDataTable(ref connOmd, prepareDegenerateMappingStatement.ToString());
 
-                if (automaticDegenerateMappings.Rows.Count == 0)
+                if (automaticDegenerateMappings is null)
                 {
-                    _alert.SetTextLogging("--> No automatic degenerate columns were detected.\r\n");
+                    LogMetadataEvent("There was an issue retrieving automatic attribute metadata from the repository. The query is: \r\n\r\n"+prepareDegenerateMappingStatement, EventTypes.Error);
+                }
+
+                if (automaticDegenerateMappings is null || automaticDegenerateMappings.Rows.Count == 0)
+                {
+                    LogMetadataEvent("No automatic degenerate columns were detected.", EventTypes.Information);
                 }
                 else
                 {
@@ -5309,7 +5222,7 @@ namespace TEAM
                                 
                                 if (tableName["ATTRIBUTE_NAME_FROM"].ToString() == "")
                                 {
-                                    _alert.SetTextLogging("Both attributes are NULL.");
+                                    LogMetadataEvent("Both attributes are NULL.", EventTypes.Information);
                                 }
                             }
                         }
@@ -5318,28 +5231,22 @@ namespace TEAM
 
                 worker.ReportProgress(95);
                 subProcess.Stop();
-                _alert.SetTextLogging("--> Processing " + automaticDegenerateMappingCounter +
-                                      " automatically added degenerate attribute mappings.\r\n");
-                _alert.SetTextLogging("Preparation of the degenerate column metadata completed, and has taken " +
-                                      subProcess.Elapsed.TotalSeconds.ToString() + " seconds.\r\n");
+                LogMetadataEvent("Processing " + automaticDegenerateMappingCounter +
+                                      " automatically added degenerate attribute mappings.", EventTypes.Information);
+                LogMetadataEvent("Preparation of the degenerate column metadata completed, and has taken " +
+                                      subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information); 
 
                 #endregion
 
 
                 #region Multi-Active Key - 97%
-
-                //Handle the Multi-Active Key
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-
-
                 var prepareMultiKeyStatement = new StringBuilder();
 
                 if (radioButtonPhysicalMode.Checked)
                 {
-                    _alert.SetTextLogging("Commencing Multi-Active Key handling using database.\r\n");
+                    LogMetadataEvent("Commencing Multi-Active Key handling using database.", EventTypes.Information);
 
                     prepareMultiKeyStatement.AppendLine("SELECT");
                     prepareMultiKeyStatement.AppendLine("   xref.SOURCE_NAME");
@@ -5369,7 +5276,7 @@ namespace TEAM
                 }
                 else
                 {
-                    _alert.SetTextLogging("Commencing Multi-Active Key handling using model metadata.\r\n");
+                    LogMetadataEvent("Commencing Multi-Active Key handling using model metadata.", EventTypes.Information);
 
                     prepareMultiKeyStatement.AppendLine("SELECT ");
                     prepareMultiKeyStatement.AppendLine("   xref.SOURCE_NAME");
@@ -5393,7 +5300,7 @@ namespace TEAM
 
                 if (listMultiKeys == null || listMultiKeys.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("--> No Multi-Active Keys were detected.\r\n");
+                    LogMetadataEvent("No Multi-Active Keys were detected.", EventTypes.Information);
                 }
                 else
                 {
@@ -5401,9 +5308,9 @@ namespace TEAM
                     {
                         using (var connection = new SqlConnection(metaDataConnection))
                         {
-                            _alert.SetTextLogging("--> Processing the Multi-Active Key attribute " +
+                            LogMetadataEvent("Processing the Multi-Active Key attribute " +
                                                   tableName["ATTRIBUTE_NAME_TO"] + " for " +
-                                                  tableName["SATELLITE_NAME"] + ".\r\n");
+                                                  tableName["SATELLITE_NAME"] + ".", EventTypes.Information);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("UPDATE [MD_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
@@ -5433,19 +5340,15 @@ namespace TEAM
 
                 worker.ReportProgress(97);
                 subProcess.Stop();
-                _alert.SetTextLogging($"Preparation of the Multi-Active Keys completed, and has taken {subProcess.Elapsed.TotalSeconds} seconds.\r\n");
+                LogMetadataEvent($"Preparation of the Multi-Active Keys completed, and has taken {subProcess.Elapsed.TotalSeconds} seconds.", EventTypes.Information);
 
                 #endregion
 
 
                 #region Driving Key preparation
-
-                //Prepare driving keys
                 subProcess.Reset();
                 subProcess.Start();
-
-                _alert.SetTextLogging("\r\n");
-                _alert.SetTextLogging("Commencing preparing the Driving Key metadata.\r\n");
+                LogMetadataEvent("Commencing preparing the Driving Key metadata.", EventTypes.Information);
 
 
                 var prepareDrivingKeyStatement = new StringBuilder();
@@ -5509,7 +5412,7 @@ namespace TEAM
 
                 if (listDrivingKeys.Rows.Count == 0)
                 {
-                    _alert.SetTextLogging("--> No Driving Key based Link-Satellites were detected.\r\n");
+                    LogMetadataEvent("No Driving Key based Link-Satellites were detected.", EventTypes.Information);
                 }
                 else
                 {
@@ -5544,7 +5447,7 @@ namespace TEAM
 
                 worker.ReportProgress(98);
                 subProcess.Stop();
-                _alert.SetTextLogging("Preparation of the Driving Key column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.\r\n");
+                LogMetadataEvent("Preparation of the Driving Key column metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
 
                 #endregion
 
@@ -5573,9 +5476,8 @@ namespace TEAM
                 
                 if (errorCounter > 0)
                 {
-                    _alert.SetTextLogging("\r\nWarning! There were " + errorCounter + " error(s) found while processing the metadata.\r\n");
-                    _alert.SetTextLogging("Please check the TEAM Event Log for details \r\n");
-                    _alert.SetTextLogging("\r\n");
+                    LogMetadataEvent("There were " + errorCounter + " error(s) found while processing the metadata.", EventTypes.Warning);
+                    LogMetadataEvent("Please check the TEAM Event Log for details.", EventTypes.Information);
                 }
                 else
                 {
@@ -5587,26 +5489,9 @@ namespace TEAM
 
                 // Report completion
                 totalProcess.Stop();
-                _alert.SetTextLogging("\r\n\r\nThe full activation process has taken "+totalProcess.Elapsed.TotalSeconds+" seconds.");
+                LogMetadataEvent("The full activation process has taken "+totalProcess.Elapsed.TotalSeconds+ " seconds.", EventTypes.Information);
                 worker.ReportProgress(100);
 
-            }
-        }
-
-        private void ShowAlertForm()
-        {
-            if (backgroundWorkerEventLog.IsBusy != true)
-            {
-                // create a new instance of the alert form
-                _alertEventLog = new Form_Alert();
-                _alertEventLog.ShowLogButton(false);
-                _alertEventLog.ShowCancelButton(false);
-                _alertEventLog.ShowProgressBar(false);
-                _alertEventLog.ShowProgressLabel(false);
-                _alertEventLog.Show();
-
-                // Start the asynchronous operation.
-                backgroundWorkerEventLog.RunWorkerAsync();
             }
         }
 
@@ -5728,9 +5613,10 @@ namespace TEAM
                 }
                 //Clipboard.Clear();
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
-                MessageBox.Show("There is an issue with the data format for this cell!");
+                richTextBoxInformation.AppendText("An error has been encountered formatting this cell. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -5792,9 +5678,10 @@ namespace TEAM
                 }
                 //Clipboard.Clear();
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
-                MessageBox.Show("There is an issue with the data format for this cell!");
+                richTextBoxInformation.AppendText("An error has been encountered formatting this cell. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -6382,13 +6269,15 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.ToString());
+                        richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("A problem occurred when attempting to save the file to disk. The detail error message is: " + ex.Message);
+                richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -6769,7 +6658,6 @@ namespace TEAM
             }
             else
             {
-               
                 _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
                 MetadataParameters.ValidationIssues = 0;
                 if (ValidationSettings.SourceObjectExistence == "True")
@@ -6815,10 +6703,15 @@ namespace TEAM
                     ValidateLinkKeyOrder();
                 }
 
+                if (worker != null) worker.ReportProgress(80);
+
+                ValidateHardcodedFields();
+                
+
                 if (worker != null) worker.ReportProgress(100);
 
                 // Informing the user.
-                _alertValidation.SetTextLogging("\r\nIn total " + MetadataParameters.ValidationIssues + " validation issues have been found.");
+                _alertValidation.SetTextLogging("\r\n\r\nIn total " + MetadataParameters.ValidationIssues + " validation issues have been found.");
             }
         }
 
@@ -6882,7 +6775,6 @@ namespace TEAM
                             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
                                 $"The connection string for {validationObject} could not be derived. This occurred during the validation of the attribute metadata. Possibly there is no existing Source Data Object to Target Data Object mapping in the grid."));
 
-                            //MessageBox.Show("The connection string for " + validationObject + " could not be derived.");
                             return;
                         }
 
@@ -7042,10 +6934,7 @@ namespace TEAM
                         {
                             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
                                 $"The connection string for {validationObject} could not be derived. This occurred during the validation of the Data Object metadata (does the object exist in the database?). Possibly there is no connection assigned to the Data Object in the grid."));
-
-                            // the key isn't in the dictionary.
-                            //MessageBox.Show("The connection string for " + connectionObject + " could not be derived.");
-                            
+                           
                             return;
                         }
 
@@ -7098,6 +6987,30 @@ namespace TEAM
             }
 
         }
+
+        /// <summary>
+        /// Hard-coded fields in Staging Layer data objects are not supported. Instead, an attribute mapping should be created.
+        /// </summary>
+        internal void ValidateHardcodedFields()
+        {
+            _alertValidation.SetTextLogging($"--> Commencing the validation to see if any hard-coded fields are not correctly set.\r\n");
+
+            int issueCounter = 0;
+            var localDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
+            foreach (DataRow row in localDataTable.Rows)
+            {
+                if (MetadataHandling.GetTableType((string)row[TableMappingMetadataColumns.TargetTable.ToString()],"", TeamConfigurationSettings).In(MetadataHandling.TableTypes.StagingArea, MetadataHandling.TableTypes.PersistentStagingArea))
+                {
+                    if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
+                    {
+                        issueCounter++;
+                        _alertValidation.SetTextLogging($"     Data Object {(string)row[TableMappingMetadataColumns.TargetTable.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
+                    }
+                }
+            }
+
+            MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + issueCounter;
+        }
  
         /// <summary>
         /// This method will check if the order of the keys in the Link is consistent with the physical table structures.
@@ -7110,8 +7023,7 @@ namespace TEAM
             // Informing the user.
             _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
 
-            var localConnectionDictionary =
-                LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfigurationSettings.ConnectionDictionary);
+            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfigurationSettings.ConnectionDictionary);
 
 
             // Creating a list of unique Link business key combinations from the data grid / data table
@@ -8171,12 +8083,13 @@ namespace TEAM
                     }
 
                     GridAutoLayoutAttributeMetadata();
-                    richTextBoxInformation.Text = "The metadata has been loaded from file.\r\n";
+                    richTextBoxInformation.AppendText("The metadata has been loaded from file.\r\n");
                     ContentCounter();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    richTextBoxInformation.AppendText("An error has been encountered. Please check the Event Log for more details.\r\n");
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex}."));
                 }
             }
         }
@@ -8231,13 +8144,15 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.ToString());
+                        richTextBoxInformation.AppendText("An error has been encountered. Please check the Event Log for more details.\r\n");
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex}."));
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("A problem occurred when attempting to save the file to disk. The detail error message is: " + ex.Message);
+                richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -8326,7 +8241,8 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An error has been encountered! The reported error is: " + ex);
+                    richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
                 }
             }
         }
@@ -8412,7 +8328,8 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An error has been encountered! The reported error is: " + ex);
+                    richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
                 }
             }
         }
@@ -8472,13 +8389,15 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.ToString());
+                        richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("A problem occurred when attempting to save the file to disk. The detail error message is: " + ex.Message);
+                richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 

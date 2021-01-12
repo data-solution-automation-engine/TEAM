@@ -87,8 +87,9 @@ namespace TEAM
             return surrogateKey;
         }
 
+        
         /// <summary>
-        /// This method returns the type of table (classification) based on the name and active conventions.
+        /// This method returns the type of table (classification) as an enumerator based on the name and active conventions.
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="additionalInformation"></param>
