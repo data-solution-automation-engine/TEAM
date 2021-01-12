@@ -3010,30 +3010,37 @@ namespace TEAM
                 #endregion
 
 
-                #region Prepare Staging Area - 7%
-                //Prepare the Staging Area
+                #region Prepare Staging Layer - 7%
                 subProcess.Reset();
                 subProcess.Start();
-                LogMetadataEvent($"Commencing the preparation of the Staging Area metadata.", EventTypes.Information);
+                LogMetadataEvent($"Commencing the preparation of the Staging Layer metadata.", EventTypes.Information);
 
-                // Getting the distinct list of tables to go into the MD_STAGING table.
+                // Getting the distinct list of tables to go into the table.
                 // Creating a dummy row, for referential integrity in the metadata model.
                 var distinctListStg = new List<string>
                 {
-                    // Create a dummy row
                     "Not applicable"
                 };
-                
+
+                var distinctListPsa = new List<string>
+                {
+                    "Not applicable"
+                };
+
+
                 // Also capture the source/staging XREF relationships while we're evaluating STG table types.
-                // source/target/businesskey/filter
-                List<Tuple<string,string,string,string>> sourceTargetXref = new List<Tuple<string, string, string, string>>();
+                // source/target/businesskey/filter/type (e.g. stg or psa)
+                List<Tuple<string,string,string,string, MetadataHandling.TableTypes>> sourceTargetXref = new List<Tuple<string, string, string, string, MetadataHandling.TableTypes>>();
 
                 // Iterate over enabled row to see if there are any Staging Area sources and targets.
                 foreach (DataRow row in inputTableMetadata.Rows)
                 {
                     if ((bool)row[TableMappingMetadataColumns.Enabled.ToString()])
                     {
-                        // Need to check the non qualified name for the Staging pattern.
+                        
+                        /* SOURCES */
+                        
+                        // Need to check the non qualified name for the table type.
                         var localSourceTableFull = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
                         var localSourceTable = MetadataHandling.GetNonQualifiedTableName(localSourceTableFull);
                         
@@ -3050,16 +3057,31 @@ namespace TEAM
                             }
                         }
 
+                        // The table either has a PSA prefix defined and starts with it, or an suffix and ends with it.
+                        if (
+                            (TeamConfigurationSettings.TableNamingLocation == "Prefix" && localSourceTable.StartsWith(TeamConfigurationSettings.PsaTablePrefixValue))
+                            ||
+                            (TeamConfigurationSettings.TableNamingLocation == "Suffix" && localSourceTable.EndsWith(TeamConfigurationSettings.PsaTablePrefixValue))
+                        )
+                        {
+                            if (!distinctListPsa.Contains(localSourceTableFull))
+                            {
+                                distinctListPsa.Add(localSourceTableFull);
+                            }
+                        }
+
+                        
+                        
+                        /* TARGETS */
+
                         var localTargetTableFull = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                         var localTargetTable = MetadataHandling.GetNonQualifiedTableName(localTargetTableFull);
 
                         // The table either has a Staging prefix defined and starts with it, or an suffix and ends with it.
                         if (
-                            (TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                             localTargetTable.StartsWith(TeamConfigurationSettings.StgTablePrefixValue))
+                            (TeamConfigurationSettings.TableNamingLocation == "Prefix" && localTargetTable.StartsWith(TeamConfigurationSettings.StgTablePrefixValue))
                             ||
-                            (TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                             localTargetTable.EndsWith(TeamConfigurationSettings.StgTablePrefixValue))
+                            (TeamConfigurationSettings.TableNamingLocation == "Suffix" && localTargetTable.EndsWith(TeamConfigurationSettings.StgTablePrefixValue))
                         )
                         {
                             if (!distinctListStg.Contains(localTargetTableFull))
@@ -3067,8 +3089,24 @@ namespace TEAM
                                 distinctListStg.Add(localTargetTableFull);
                             }
 
-                            // source/target/businesskey/filter
-                            sourceTargetXref.Add(new Tuple<string, string, string, string>(localSourceTableFull, localTargetTableFull, row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString(), row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString()));
+                            // source/target/businesskey/filter/table type
+                            sourceTargetXref.Add(new Tuple<string, string, string, string, MetadataHandling.TableTypes>(localSourceTableFull, localTargetTableFull, row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString(), row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString(), MetadataHandling.TableTypes.StagingArea));
+                        }
+
+                        // The table either has a PSA prefix defined and starts with it, or an suffix and ends with it.
+                        if (
+                            (TeamConfigurationSettings.TableNamingLocation == "Prefix" && localTargetTable.StartsWith(TeamConfigurationSettings.PsaTablePrefixValue))
+                            ||
+                            (TeamConfigurationSettings.TableNamingLocation == "Suffix" && localTargetTable.EndsWith(TeamConfigurationSettings.PsaTablePrefixValue))
+                        )
+                        {
+                            if (!distinctListPsa.Contains(localTargetTableFull))
+                            {
+                                distinctListPsa.Add(localTargetTableFull);
+                            }
+
+                            // source/target/businesskey/filter/table type
+                            sourceTargetXref.Add(new Tuple<string, string, string, string, MetadataHandling.TableTypes>(localSourceTableFull, localTargetTableFull, row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString(), row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString(), MetadataHandling.TableTypes.PersistentStagingArea));
                         }
                     }
                 }
@@ -3076,8 +3114,6 @@ namespace TEAM
                 // Process each of the unique Staging Area records.
                 foreach (var tableName in distinctListStg)
                 {
-                    //var stgKeyList = new List<string>();
-                    
                     using (var connection = new SqlConnection(metaDataConnection))
                     {
                         if (tableName != "Not applicable")
@@ -3086,26 +3122,6 @@ namespace TEAM
                         }
 
                         var fullyQualifiedName = MetadataHandling.GetTableAndSchema(tableName).FirstOrDefault();
-                        
-                        /*
-                        // Retrieve the  key
-                        if (queryMode == "physical")
-                        {
-                            if (!localTableMappingConnectionDictionary.TryGetValue(tableName, out var connectionValue))
-                            {
-                                // The key isn't in the dictionary, report this as an error.
-                                LogMetadataEvent($"The connection string for {tableName} could not be found.", EventTypes.Error);
-                            }
-
-                            stgKeyList = MetadataHandling.GetRegularTableBusinessKeyListPhysical(tableName, connectionValue, TeamConfigurationSettings);
-                        }
-                        else
-                        {
-                            stgKeyList = MetadataHandling.GetHubTargetBusinessKeyListVirtual(tableName, versionId, TeamConfigurationSettings);
-                        }
-
-                        string stgKeyString = string.Join(",", stgKeyList);
-                        */
                         
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_STAGING]");
@@ -3139,40 +3155,46 @@ namespace TEAM
                 LogMetadataEvent($"Commencing preparing the relationship between Source and Staging Area.", EventTypes.Information);
 
                 // Process the unique Staging Area records
-                foreach (var row in sourceTargetXref)
+
+                using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    using (var connection = new SqlConnection(metaDataConnection))
+                    foreach (var row in sourceTargetXref)
                     {
-                        LogMetadataEvent($"Processing the {row.Item1} to {row.Item2} relationship.", EventTypes.Information);
-                        
-                        var businessKeyDefinition = row.Item3.Trim();
-                        businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
-
-                        var filterCriterion = row.Item4.Trim();
-                        filterCriterion = filterCriterion.Replace("'", "''");
-
-                        var insertStatement = new StringBuilder();
-                        insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_XREF]");
-                        insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [CHANGE_DATA_CAPTURE_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
-                        insertStatement.AppendLine("VALUES (" +
-                                                   "'" + row.Item1 + "', " +
-                                                   "'" + row.Item2 + "', " +
-                                                   "NULL, " +
-                                                   "NULL, " +
-                                                   "'" + businessKeyDefinition + "', " +
-                                                   "'" + filterCriterion + "'" +
-                                                   ")");
-
-                        var command = new SqlCommand(insertStatement.ToString(), connection);
-
-                        try
+                        if (row.Item5 == MetadataHandling.TableTypes.StagingArea)
                         {
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Source and the Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
+                            LogMetadataEvent($"Processing the {row.Item1} to {row.Item2} relationship.", EventTypes.Information);
+
+                            var businessKeyDefinition = row.Item3.Trim();
+                            businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+
+                            var filterCriterion = row.Item4.Trim();
+                            filterCriterion = filterCriterion.Replace("'", "''");
+
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_XREF]");
+                            insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [CHANGE_DATA_CAPTURE_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
+                            insertStatement.AppendLine("VALUES (" +
+                                                       "'" + row.Item1 + "', " +
+                                                       "'" + row.Item2 + "', " +
+                                                       "NULL, " +
+                                                       "NULL, " +
+                                                       "'" + businessKeyDefinition + "', " +
+                                                       "'" + filterCriterion + "'" +
+                                                       ")");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMetadataEvent(
+                                    $"An issue has occurred during preparation of the relationship between the Source and the Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}",
+                                    EventTypes.Error);
+                            }
                         }
                     }
                 }
@@ -3191,32 +3213,6 @@ namespace TEAM
                 subProcess.Start();
                 LogMetadataEvent("Commencing preparing the Persistent Staging Area metadata.", EventTypes.Information);
 
-                // Getting the distinct list of tables to go into the MD_PERSISTENT_STAGING table
-                if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
-                {
-                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '" + TeamConfigurationSettings.PsaTablePrefixValue + "%'");
-                }
-                else
-                {
-                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + TeamConfigurationSettings.PsaTablePrefixValue + "'");
-                }
-
-                var distinctListPsa = new List<string>
-                {
-                    // Create a dummy row
-                    "Not applicable"
-                };
-
-                // Create a distinct list of sources from the data grid
-                foreach (DataRow row in selectionRows)
-                {
-                    var target_table = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().Trim();
-                    if (!distinctListPsa.Contains(target_table))
-                    {
-                        distinctListPsa.Add(target_table);
-                    }
-                }
-
                 // Process the unique Persistent Staging Area records
                 foreach (var tableName in distinctListPsa)
                 {
@@ -3224,7 +3220,7 @@ namespace TEAM
                     {
                         if (tableName != "Not applicable")
                         {
-                            LogMetadataEvent("Processing " + tableName + ".", EventTypes.Information);
+                            LogMetadataEvent("Adding " + tableName + ".", EventTypes.Information);
                         }
 
                         var fullyQualifiedName = MetadataHandling.GetTableAndSchema(tableName).FirstOrDefault();
@@ -3260,52 +3256,49 @@ namespace TEAM
                 subProcess.Start();
                 LogMetadataEvent("Commencing preparing the relationship between Source and Persistent Staging Area.", EventTypes.Information);
 
-                // Getting the mapping list from the data table
-                if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
-                {
-                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '" + TeamConfigurationSettings.PsaTablePrefixValue + "%'");
-                }
-                else
-                {
-                    selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + TeamConfigurationSettings.PsaTablePrefixValue + "'");
-                }
 
-                // Process the unique Staging Area records
-                foreach (var row in selectionRows)
+                using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    using (var connection = new SqlConnection(metaDataConnection))
+                    foreach (var row in sourceTargetXref)
                     {
-                        LogMetadataEvent("Processing the " + row[TableMappingMetadataColumns.SourceTable.ToString()] + " to " + row[TableMappingMetadataColumns.TargetTable.ToString()] + " relationship.", EventTypes.Information);
-
-                        var filterCriterion = row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString().Trim();
-                        filterCriterion = filterCriterion.Replace("'", "''");
-
-                        var businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Trim();
-                        businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
-
-                        var insertStatement = new StringBuilder();
-                        insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_XREF]");
-                        insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
-                        insertStatement.AppendLine("VALUES ('" + row[TableMappingMetadataColumns.SourceTable.ToString()] + "','" +
-                                                   row[TableMappingMetadataColumns.TargetTable.ToString()] + 
-                                                   "', NULL, '" +
-                                                   businessKeyDefinition + "', '" + 
-                                                   filterCriterion + "')");
-
-                        var command = new SqlCommand(insertStatement.ToString(), connection);
-
-                        try
+                        if (row.Item5 == MetadataHandling.TableTypes.PersistentStagingArea)
                         {
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Source and the Persistent Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
+                            LogMetadataEvent($"Processing the {row.Item1} to {row.Item2} relationship.", EventTypes.Information);
+
+                            var businessKeyDefinition = row.Item3.Trim();
+                            businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
+
+                            var filterCriterion = row.Item4.Trim();
+                            filterCriterion = filterCriterion.Replace("'", "''");
+
+                            var insertStatement = new StringBuilder();
+                            insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_XREF]");
+                            insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [CHANGE_DATETIME_DEFINITION], [KEY_DEFINITION], [FILTER_CRITERIA])");
+                            insertStatement.AppendLine("VALUES (" +
+                                                       "'" + row.Item1 + "', " +
+                                                       "'" + row.Item2 + "', " +
+                                                       "NULL, " +
+                                                       "'" + businessKeyDefinition + "', " +
+                                                       "'" + filterCriterion + "'" +
+                                                       ")");
+
+                            var command = new SqlCommand(insertStatement.ToString(), connection);
+
+                            try
+                            {
+                                connection.Open();
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMetadataEvent(
+                                    $"An issue has occurred during preparation of the relationship between the Source and the Persistent Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}",
+                                    EventTypes.Error);
+                            }
                         }
                     }
                 }
-
+                
                 worker?.ReportProgress(15);
                 subProcess.Stop();
                 LogMetadataEvent("Preparation of the Source / Persistent Staging Area XREF metadata completed, and has taken " + subProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
@@ -4848,7 +4841,7 @@ namespace TEAM
                 {
                     if (attributeMappingsSatellites is null || attributeMappingsSatellites.Rows.Count == 0)
                     {
-                        LogMetadataEvent("No information on Satellite attribute mappings was retrieved from the repository.", EventTypes.Error);
+                        LogMetadataEvent("No information on Satellite attribute mappings was retrieved from the repository.", EventTypes.Warning);
                     }
                     else
                     {
@@ -6706,7 +6699,7 @@ namespace TEAM
                 if (worker != null) worker.ReportProgress(80);
 
                 ValidateHardcodedFields();
-                
+                ValidateAttributeDataObjectsForTableMappings();
 
                 if (worker != null) worker.ReportProgress(100);
 
@@ -6993,13 +6986,14 @@ namespace TEAM
         /// </summary>
         internal void ValidateHardcodedFields()
         {
-            _alertValidation.SetTextLogging($"--> Commencing the validation to see if any hard-coded fields are not correctly set.\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to see if any hard-coded fields are not correctly set in enabled mappings.\r\n");
 
             int issueCounter = 0;
             var localDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
-                if (MetadataHandling.GetTableType((string)row[TableMappingMetadataColumns.TargetTable.ToString()],"", TeamConfigurationSettings).In(MetadataHandling.TableTypes.StagingArea, MetadataHandling.TableTypes.PersistentStagingArea))
+                // If enabled and is a Staging Layer object
+                if ((bool)row[TableMappingMetadataColumns.Enabled.ToString()] && MetadataHandling.GetTableType((string)row[TableMappingMetadataColumns.TargetTable.ToString()],"", TeamConfigurationSettings).In(MetadataHandling.TableTypes.StagingArea, MetadataHandling.TableTypes.PersistentStagingArea))
                 {
                     if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
                     {
@@ -7009,9 +7003,69 @@ namespace TEAM
                 }
             }
 
+            if (issueCounter == 0)
+            {
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the definition of hard-coded Business Key components.\r\n\r\n");
+            }
+            
             MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + issueCounter;
         }
- 
+
+        internal void ValidateAttributeDataObjectsForTableMappings()
+        {
+            _alertValidation.SetTextLogging(
+                $"--> Commencing the validation to see if all data item (attribute) mappings exist as data object (table) mapping also (if enabled in the grid).\r\n");
+            int issueCounter = 0;
+
+            var localDataTableTableMappings = (DataTable) _bindingSourceTableMetadata.DataSource;
+            var localDataTableAttributeMappings = (DataTable) _bindingSourceAttributeMetadata.DataSource;
+
+            // Create a list of all sources and targets
+            List<string> sourceList = new List<string>();
+            List<string> targetList = new List<string>();
+
+            foreach (DataRow row in localDataTableTableMappings.Rows)
+            {
+                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
+                {
+                    if (!sourceList.Contains((string) row[TableMappingMetadataColumns.SourceTable.ToString()]))
+                    {
+                        sourceList.Add((string) row[TableMappingMetadataColumns.SourceTable.ToString()]);
+                    }
+
+                    if (!targetList.Contains((string) row[TableMappingMetadataColumns.TargetTable.ToString()]))
+                    {
+                        targetList.Add((string) row[TableMappingMetadataColumns.TargetTable.ToString()]);
+                    }
+                }
+            }
+
+            foreach (DataRow row in localDataTableAttributeMappings.Rows)
+            {
+                var localSource = (string)row[AttributeMappingMetadataColumns.SourceTable.ToString()];
+                var localTarget = (string)row[AttributeMappingMetadataColumns.TargetTable.ToString()];
+
+                if (!sourceList.Contains(localSource))
+                {
+                    _alertValidation.SetTextLogging($"     Data Object {(string)row[AttributeMappingMetadataColumns.SourceTable.ToString()]} in the attribute mappings does not seem to exist in the table mappings. Please check if this name is mapped at table level in the grid also.\r\n");
+                    issueCounter++;
+                }
+
+                if (!targetList.Contains(localTarget))
+                {
+                    _alertValidation.SetTextLogging($"     Data Object {(string)row[AttributeMappingMetadataColumns.TargetTable.ToString()]} in the attribute mappings does not seem to exist in the table mappings. Please check if this name is mapped at table level in the grid also.\r\n");
+                    issueCounter++;
+                }
+            }
+
+            if (issueCounter == 0)
+            {
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the definition of hard-coded Business Key components.\r\n\r\n");
+            }
+
+            MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + issueCounter;
+        }
+
         /// <summary>
         /// This method will check if the order of the keys in the Link is consistent with the physical table structures.
         /// </summary>
