@@ -39,7 +39,6 @@
             this.labelMetadataRepository = new System.Windows.Forms.Label();
             this.backgroundWorkerSampleData = new System.ComponentModel.BackgroundWorker();
             this.toolTipRepository = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBoxDIRECT = new System.Windows.Forms.CheckBox();
             this.checkBoxConfigurationSettings = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.buttonGenerateSampleMapping = new System.Windows.Forms.Button();
@@ -147,17 +146,6 @@
             this.backgroundWorkerSampleData.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerSampleData_ProgressChanged);
             this.backgroundWorkerSampleData.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerSampleData_RunWorkerCompleted);
             // 
-            // checkBoxDIRECT
-            // 
-            this.checkBoxDIRECT.AutoSize = true;
-            this.checkBoxDIRECT.Location = new System.Drawing.Point(9, 42);
-            this.checkBoxDIRECT.Name = "checkBoxDIRECT";
-            this.checkBoxDIRECT.Size = new System.Drawing.Size(247, 17);
-            this.checkBoxDIRECT.TabIndex = 11;
-            this.checkBoxDIRECT.Text = "Experimental - generate for DIRECT integration";
-            this.toolTipRepository.SetToolTip(this.checkBoxDIRECT, resources.GetString("checkBoxDIRECT.ToolTip"));
-            this.checkBoxDIRECT.UseVisualStyleBackColor = true;
-            // 
             // checkBoxConfigurationSettings
             // 
             this.checkBoxConfigurationSettings.AutoSize = true;
@@ -174,7 +162,7 @@
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(9, 65);
+            this.button2.Location = new System.Drawing.Point(6, 42);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(139, 42);
             this.button2.TabIndex = 12;
@@ -448,7 +436,6 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.checkBoxDIRECT);
             this.groupBox4.Controls.Add(this.button2);
             this.groupBox4.Controls.Add(this.checkBoxConfigurationSettings);
             this.groupBox4.Location = new System.Drawing.Point(12, 526);
@@ -508,7 +495,6 @@
         private System.Windows.Forms.ToolTip toolTipRepository;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        internal System.Windows.Forms.CheckBox checkBoxDIRECT;
         internal System.Windows.Forms.CheckBox checkBoxCreateSamplePresLayer;
         internal System.Windows.Forms.CheckBox checkBoxCreateSamplePSA;
         private System.Windows.Forms.Label label6;

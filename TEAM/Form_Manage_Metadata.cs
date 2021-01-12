@@ -3300,9 +3300,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                LogMetadataEvent(
-                                    $"An issue has occurred during preparation of the relationship between the Source and the Persistent Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}",
-                                    EventTypes.Error);
+                                LogMetadataEvent($"An issue has occurred during preparation of the relationship between the Source and the Persistent Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }

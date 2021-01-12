@@ -380,44 +380,37 @@ namespace TEAM
             #endregion
 
             #region Staging
+
             if (checkBoxCreateSampleStaging.Checked)
             {
-                if (checkBoxDIRECT.Checked)
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchemaDIRECT.sql", commandDictionary, localStagingConnectionString);
-                }
-                else
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql", commandDictionary, localStagingConnectionString);
-                }
+
+                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql",
+                    commandDictionary, localStagingConnectionString);
+
             }
+
             #endregion
 
             #region Persistent Staging
+
             if (checkBoxCreateSamplePSA.Checked)
             {
-                if (checkBoxDIRECT.Checked)
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchemaDIRECT.sql", commandDictionary, localPsaConnectionString);
-                }
-                else
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql", commandDictionary, localPsaConnectionString);
-                }
+
+                PopulateSqlCommandDictionaryFromFile(
+                    GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql", commandDictionary,
+                    localPsaConnectionString);
+
             }
+
             #endregion
 
             #region Integration Layer
             if (checkBoxCreateSampleDV.Checked)
             {
-                if (checkBoxDIRECT.Checked)
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleIntegrationSchemaDIRECT.sql", commandDictionary, localIntegrationConnectionString);
-                }
-                else
-                {
+
+                
                     PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary, localIntegrationConnectionString);
-                }
+                
             }
             #endregion
 
@@ -527,57 +520,29 @@ namespace TEAM
                 string alternativeSatelliteLoadDateTimeFunction;
 
 
-                // Update the values using the DIRECT information
-                if (checkBoxDIRECT.Checked)
-                {
-                    persistentStagingAreaPrefix = "HSTG";
-                    keyIdentifier = "SK";
+                persistentStagingAreaPrefix = "PSA";
+                keyIdentifier = "SK";
 
-                    sourceRowId = "OMD_SOURCE_ROW_ID";
-                    eventDateTime = "OMD_EVENT_DATETIME";
-                    loadDateTime = "OMD_INSERT_DATETIME";
-                    expiryDateTime = "OMD_EXPIRY_DATETIME";
-                    changeDataIndicator = "OMD_CDC_OPERATION";
-                    recordSource = "OMD_RECORD_SOURCE";
-                    etlProcessId = "OMD_INSERT_MODULE_INSTANCE_ID";
-                    etlUpdateProcessId = "OMD_UPDATE_MODULE_INSTANCE_ID";
-                    logicalDeleteAttribute = "OMD_DELETED_RECORD_INDICATOR";
-                    tableNamingLocation = "Prefix";
-                    keyNamingLocation = "Suffix";
-                    recordChecksum = "OMD_HASH_FULL_RECORD";
-                    currentRecordIndicator = "OMD_CURRENT_RECORD_INDICATOR";
-                    alternativeRecordSource = "OMD_RECORD_SOURCE_ID";
-                    alternativeHubLoadDateTime = "OMD_FIRST_SEEN_DATETIME";
-                    alternativeSatelliteLoadDateTime = "OMD_EFFECTIVE_DATETIME";
-                    alternativeRecordSourceFunction = "True";
-                    alternativeHubLoadDateTimeFunction = "True";
-                    alternativeSatelliteLoadDateTimeFunction = "True";
-                }
-                else  // Use the standard (profiler) sample
-                {
-                    persistentStagingAreaPrefix = "PSA";
-                    keyIdentifier = "HSH";
-
-                    sourceRowId = "SOURCE_ROW_ID";
-                    eventDateTime = "EVENT_DATETIME";
-                    loadDateTime = "LOAD_DATETIME";
-                    expiryDateTime = "LOAD_END_DATETIME";
-                    changeDataIndicator = "CDC_OPERATION";
-                    recordSource = "RECORD_SOURCE";
-                    etlProcessId = "ETL_INSERT_RUN_ID";
-                    etlUpdateProcessId = "ETL_UPDATE_RUN_ID";
-                    logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
-                    tableNamingLocation = "Prefix";
-                    keyNamingLocation = "Suffix";
-                    recordChecksum = "HASH_FULL_RECORD";
-                    currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
-                    alternativeRecordSource = "N/A";
-                    alternativeHubLoadDateTime = "N/A";
-                    alternativeSatelliteLoadDateTime = "N/A";
-                    alternativeRecordSourceFunction = "False";
-                    alternativeHubLoadDateTimeFunction = "False";
-                    alternativeSatelliteLoadDateTimeFunction = "False";
-                }
+                sourceRowId = "SOURCE_ROW_ID";
+                eventDateTime = "EVENT_DATETIME";
+                loadDateTime = "LOAD_DATETIME";
+                expiryDateTime = "LOAD_END_DATETIME";
+                changeDataIndicator = "CDC_OPERATION";
+                recordSource = "RECORD_SOURCE";
+                etlProcessId = "MODULE_INSTANCE_ID";
+                etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
+                logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
+                tableNamingLocation = "Prefix";
+                keyNamingLocation = "Suffix";
+                recordChecksum = "HASH_FULL_RECORD";
+                currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
+                alternativeRecordSource = "N/A";
+                alternativeHubLoadDateTime = "N/A";
+                alternativeSatelliteLoadDateTime = "N/A";
+                alternativeRecordSourceFunction = "False";
+                alternativeHubLoadDateTimeFunction = "False";
+                alternativeSatelliteLoadDateTimeFunction = "False";
+                
 
                 //TeamConfigurationSettings.MetadataRepositoryType = metadataRepositoryType;
 
@@ -763,11 +728,6 @@ namespace TEAM
                 // Create the sample data
                 _alertMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
 
-                if (checkBoxDIRECT.Checked)
-                {
-                    _alertMetadata.SetTextLogging("Experimental - creating samples with DIRECT conventions.\r\n");
-                }
-
                 try
                 {
                     if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
@@ -779,26 +739,14 @@ namespace TEAM
                         {
                             var fileName = Path.GetFileName(filePath);
 
-                            if (checkBoxDIRECT.Checked)
-                            {
-                                if (fileName.StartsWith("sample_DIRECT_"))
-                                {
-                                    fileName = fileName.Replace("sample_DIRECT_", GlobalParameters.WorkingEnvironment+"_");
-                                    fileDictionary.Add(filePath, fileName);
-                                }
-                            }
-                            else if (!checkBoxDIRECT.Checked)
-                            {
+
                                 if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
                                 {
                                     fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment+"_");
                                     fileDictionary.Add(filePath, fileName);
                                 }
-                            }
-                            else
-                            {
-                                ErrorHandlingParameters.ErrorLog.AppendLine("There was an issue detecting the type of sample mapping data to be created. Either both DIRECT and regular were checked (or none).\r\n\r\n)");
-                            }
+                            
+
                         }
 
                         // And then process them
@@ -851,18 +799,11 @@ namespace TEAM
             // Create a dictionary for all SQL files to execute
             Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
-            if (checkBoxDIRECT.Checked)
-            {
-                PopulateSqlCommandDictionaryFromFile(
-                    GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
-                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
-            }
-            else
-            {
+
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
                     commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
-            }
+            
 
             // Execute the SQL statements
             int counter = 0;
