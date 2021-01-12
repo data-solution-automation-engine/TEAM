@@ -2804,31 +2804,25 @@ namespace TEAM
 
                             // Build up the filter criteria to only select information for tables that are associated with the connection
                             var tableFilterObjects = "";
-                            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+                            foreach (DataRow row in inputTableMetadata.Rows)
                             {
-                                if (row.IsNewRow == false)
-                                {
-                                    if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString() ==
-                                        connection.Value.ConnectionInternalId)
-                                    {
-                                        var localTable = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
-                                        localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
-                                        tableFilterObjects =
-                                            tableFilterObjects + "OBJECT_ID(N'[" +
-                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
-                                    }
 
-                                    if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString() ==
-                                        connection.Value.ConnectionInternalId)
-                                    {
-                                        var localTable = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
-                                        localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
-                                        tableFilterObjects =
-                                            tableFilterObjects + "OBJECT_ID(N'[" +
-                                            connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
-                                    }
+                                if (row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString() == connection.Value.ConnectionInternalId)
+                                {
+                                    var localTable = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                                    localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
+                                    tableFilterObjects = tableFilterObjects + "OBJECT_ID(N'[" + connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
                                 }
+
+                                if (row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString() == connection.Value.ConnectionInternalId)
+                                {
+                                    var localTable = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                                    localTable = MetadataHandling.GetFullyQualifiedTableName(localTable);
+                                    tableFilterObjects = tableFilterObjects + "OBJECT_ID(N'[" + connection.Value.DatabaseServer.DatabaseName + "]." + localTable + "') ,";
+                                }
+
                             }
+
                             tableFilterObjects = tableFilterObjects.TrimEnd(',');
 
 
@@ -3158,6 +3152,15 @@ namespace TEAM
 
                 using (var connection = new SqlConnection(metaDataConnection))
                 {
+                    try
+                    {
+                        connection.Open();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogMetadataEvent($"An issue has occurred connecting to the database: \r\n\r\n {ex}.", EventTypes.Error);
+                    }
+
                     foreach (var row in sourceTargetXref)
                     {
                         if (row.Item5 == MetadataHandling.TableTypes.StagingArea)
@@ -3186,14 +3189,12 @@ namespace TEAM
 
                             try
                             {
-                                connection.Open();
                                 command.ExecuteNonQuery();
                             }
                             catch (Exception ex)
                             {
                                 LogMetadataEvent(
-                                    $"An issue has occurred during preparation of the relationship between the Source and the Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}",
-                                    EventTypes.Error);
+                                    $"An issue has occurred during preparation of the relationship between the Source and the Staging Area: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -3259,6 +3260,15 @@ namespace TEAM
 
                 using (var connection = new SqlConnection(metaDataConnection))
                 {
+                    try
+                    {
+                        connection.Open();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogMetadataEvent($"An issue has occurred connecting to the database: \r\n\r\n {ex}.", EventTypes.Error);
+                    }
+                    
                     foreach (var row in sourceTargetXref)
                     {
                         if (row.Item5 == MetadataHandling.TableTypes.PersistentStagingArea)
@@ -3286,7 +3296,6 @@ namespace TEAM
 
                             try
                             {
-                                connection.Open();
                                 command.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -6755,7 +6764,7 @@ namespace TEAM
             {
                 if (!row.IsNewRow)
                 {
-                    string objectValidated;
+                    string objectValidated = "";
                     var validationObject = row.Cells[areaColumnIndex].Value.ToString();
                     var validationAttribute = row.Cells[areaAttributeColumnIndex].Value.ToString();
 
@@ -6765,13 +6774,19 @@ namespace TEAM
                         if (!localTableMappingConnectionDictionary.TryGetValue(validationObject, out var connectionValue))
                         {
                             // the key isn't in the dictionary.
-                            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
-                                $"The connection string for {validationObject} could not be derived. This occurred during the validation of the attribute metadata. Possibly there is no existing Source Data Object to Target Data Object mapping in the grid."));
+                            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection string for {validationObject} could not be derived. This occurred during the validation of the attribute metadata. Possibly there is no existing Source Data Object to Target Data Object mapping in the grid."));
 
                             return;
                         }
 
-                        objectValidated = MetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
+                        try
+                        {
+                            objectValidated = MetadataValidation.ValidateAttributeExistencePhysical(validationObject, validationAttribute, connectionValue);
+                        }
+                        catch (Exception ex)
+                        {
+                            _alertValidation.SetTextLogging($"An issue was encountered running the validation check. The message is:\r\n\r\n{ex}.\r\n");
+                        }
                     }
                     else if (evaluationMode == "virtual")
                     {
@@ -6825,28 +6840,30 @@ namespace TEAM
             // Create the dictionary of the connection keys and their connection strings.
             var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfigurationSettings.ConnectionDictionary);
 
-            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+
+            foreach (DataRow row in localDataTable.Rows)
             {
-                if (row.IsNewRow == false)
+
+                var sourceDataObject = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                var sourceDataObjectConnectionId =
+                    row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+
+                var targetDataObject = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                var targetDataObjectConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+
+                if (localConnectionDictionary.TryGetValue(sourceDataObjectConnectionId, out var sourceConnectionValue))
                 {
-                    var sourceDataObject = row.Cells[TableMappingMetadataColumns.SourceTable.ToString()].Value.ToString();
-                    var sourceDataObjectConnectionId = row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value.ToString();
-
-                    var targetDataObject = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
-                    var targetDataObjectConnectionId = row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value.ToString();
-
-                    if (localConnectionDictionary.TryGetValue(sourceDataObjectConnectionId, out var sourceConnectionValue))
-                    {
-                        returnDictionary[sourceDataObject] = sourceConnectionValue;
-                        //returnDictionary.Add(sourceDataObject, sourceConnectionValue);
-                    }
-
-                    if (localConnectionDictionary.TryGetValue(targetDataObjectConnectionId, out var targetConnectionValue))
-                    {
-                        returnDictionary[targetDataObject] = targetConnectionValue;
-                        //returnDictionary.Add(targetDataObject, targetConnectionValue);
-                    }
+                    returnDictionary[sourceDataObject] = sourceConnectionValue;
+                    //returnDictionary.Add(sourceDataObject, sourceConnectionValue);
                 }
+
+                if (localConnectionDictionary.TryGetValue(targetDataObjectConnectionId, out var targetConnectionValue))
+                {
+                    returnDictionary[targetDataObject] = targetConnectionValue;
+                    //returnDictionary.Add(targetDataObject, targetConnectionValue);
+                }
+
             }
 
             return returnDictionary;
@@ -6946,8 +6963,7 @@ namespace TEAM
                         // Exclude a lookup to the source
                         if (MetadataHandling.GetTableType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         {
-                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObject,
-                                (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObject, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
                     else
