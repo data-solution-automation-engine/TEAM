@@ -18,14 +18,14 @@ namespace TEAM
 {
     public partial class FormManageMetadata : FormBase
     {
-        // Initialise various instances of the status/alert form
+        // Initialise various instances of the status/alert form.
         Form_Alert _alert;
         Form_Alert _alertValidation;
         Form_Alert _generatedScripts;
         Form_Alert _generatedJsonInterface;
         Form_Alert _alertEventLog;
 
-        //Getting the DataTable to bind to something
+        // Getting the DataTable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
         private BindingSource _bindingSourceAttributeMetadata = new BindingSource();
         private BindingSource _bindingSourcePhysicalModelMetadata = new BindingSource();
@@ -39,6 +39,7 @@ namespace TEAM
         {
             InitializeComponent();
 
+            // Default setting and initialisation of counters etc.
             radiobuttonNoVersionChange.Checked = true;
             MetadataParameters.ValidationIssues = 0;
             MetadataParameters.ValidationRunning = false;
@@ -50,48 +51,54 @@ namespace TEAM
 
             radiobuttonNoVersionChange.Checked = true;
 
-            // Retrieve the version from the repository database
-            //var connOmd = new SqlConnection {ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateConnectionString(false) };
-            //var selectedVersion = GetMaxVersionId(connOmd);
-
-            string versionFileName = GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension;
-            if (!File.Exists(versionFileName))
+            // Check if the version file exists and create a new file containing the list of versions.
+            if (!File.Exists(GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension))
             {
-                EnvironmentVersion.CreateNewVersionListFile(versionFileName, GlobalParameters.WorkingEnvironment);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Creating a new version list file {GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension}."));
+                EnvironmentVersion.CreateNewVersionListFile(GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension, GlobalParameters.WorkingEnvironment);
             }
 
             var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
-            
-            
-            // Set the version in memory
-            GlobalParameters.CurrentVersionId = selectedVersion.Item1;
-            GlobalParameters.HighestVersionId = selectedVersion.Item1; // On startup, the highest version is the same as the current version
-            JsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + selectedVersion.Item1 + ".json";
 
-            trackBarVersioning.Maximum = selectedVersion.Item1;
-            trackBarVersioning.TickFrequency = EnvironmentVersion.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
+            if (selectedVersion != null)
+            {
+                // Set the version in memory
+                GlobalParameters.CurrentVersionId = selectedVersion.Item1;
+                GlobalParameters.HighestVersionId = selectedVersion.Item1; // On startup, the highest version is the same as the current version
+                JsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + selectedVersion.Item1 + ".json";
 
-            //Make sure the version is displayed
-            var versionMajorMinor = EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, selectedVersion.Item1);
-            var majorVersion = versionMajorMinor.Item2;
-            var minorVersion = versionMajorMinor.Item3;
+                trackBarVersioning.Maximum = selectedVersion.Item1;
+                trackBarVersioning.TickFrequency = EnvironmentVersion.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
 
-            trackBarVersioning.Value = selectedVersion.Item1;
-            labelVersion.Text = majorVersion + "." + minorVersion;
+                //Make sure the version is displayed
+                var versionMajorMinor = EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, selectedVersion.Item1);
+                var majorVersion = versionMajorMinor.Item2;
+                var minorVersion = versionMajorMinor.Item3;
 
-            //  Load the grids from the repository
-            richTextBoxInformation.Clear();
+                trackBarVersioning.Value = selectedVersion.Item1;
+                labelVersion.Text = majorVersion + "." + minorVersion;
 
-            // Load the data grids
-            PopulateTableMappingGridWithVersion();
-            PopulateAttributeGridWithVersion();
-            PopulatePhysicalModelGridWithVersion();
+                //  Load the grids from the repository
+                richTextBoxInformation.Clear();
 
-            richTextBoxInformation.AppendText($"The metadata for version {majorVersion}.{minorVersion} has been loaded.\r\n");
-            
+                // Load the data grids
+                PopulateTableMappingGridWithVersion();
+                PopulateAttributeGridWithVersion();
+                PopulatePhysicalModelGridWithVersion();
+
+                // Inform the user
+                string userFeedback = $"The metadata for version {majorVersion}.{minorVersion} has been loaded.";
+                richTextBoxInformation.AppendText($"{userFeedback}\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
+            }
+            else
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No version information was loaded, and therefore the metadata could not be loaded either."));
+            }
+
             ContentCounter();
 
-            // Make sure the validation information is available in this form
+            // Make sure the validation information is available for this form.
             try
             {
                 var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
@@ -107,13 +114,13 @@ namespace TEAM
 
                 richTextBoxInformation.AppendText($"The configuration file {validationFile} has been loaded.\r\n");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"A validation file could not be loaded, so default (all) validation will be used. The exception message is {ex}."));
             }
 
 
-            // Make sure the json configuration information is available in this form
+            // Make sure the json configuration information is available for this form.
             try
             {
                 var jsonConfigurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
@@ -129,9 +136,9 @@ namespace TEAM
 
                 richTextBoxInformation.AppendText($"The configuration file {jsonConfigurationFile} has been loaded.\r\n");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The Json export configuration file could not be loaded, so default (all) validation will be used. The exception message is {ex}."));
             }
 
             #region CheckedListBox for reverse engineering
@@ -3022,8 +3029,9 @@ namespace TEAM
                 };
 
 
+                
                 // Also capture the source/staging XREF relationships while we're evaluating STG table types.
-                // source/target/businesskey/filter/type (e.g. stg or psa)
+                // source/target/business key/filter/type (e.g. stg or psa)
                 List<Tuple<string,string,string,string, MetadataHandling.TableTypes>> sourceTargetXref = new List<Tuple<string, string, string, string, MetadataHandling.TableTypes>>();
 
                 // Iterate over enabled row to see if there are any Staging Area sources and targets.
@@ -3099,7 +3107,7 @@ namespace TEAM
                                 distinctListPsa.Add(localTargetTableFull);
                             }
 
-                            // source/target/businesskey/filter/table type
+                            // source/target/business key/filter/table type
                             sourceTargetXref.Add(new Tuple<string, string, string, string, MetadataHandling.TableTypes>(localSourceTableFull, localTargetTableFull, row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString(), row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString(), MetadataHandling.TableTypes.PersistentStagingArea));
                         }
                     }
