@@ -524,17 +524,15 @@ namespace TEAM
 
             var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
 
-            if (keyList == null)
+            List<string> businessKeyList = new List<string>();
+            if (keyList != null)
             {
-                //SetTextDebug("An error has occurred defining the Hub Business Key in the model for " + hubTableName + ". The Business Key was not found when querying the underlying metadata. This can be either that the attribute is missing in the metadata or in the table (depending if versioning is used). If the 'ignore versioning' option is checked, then the metadata will be retrieved directly from the data dictionary. Otherwise the metadata needs to be available in the repository (manage model metadata).");
-            }
-
-            var businessKeyList = new List<string>();
-            foreach (DataRow row in keyList.Rows)
-            {
-                if (!businessKeyList.Contains((string) row["COLUMN_NAME"]))
+                foreach (DataRow row in keyList.Rows)
                 {
-                    businessKeyList.Add((string) row["COLUMN_NAME"]);
+                    if (!businessKeyList.Contains((string) row["COLUMN_NAME"]))
+                    {
+                        businessKeyList.Add((string) row["COLUMN_NAME"]);
+                    }
                 }
             }
 
