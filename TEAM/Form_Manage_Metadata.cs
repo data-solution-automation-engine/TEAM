@@ -3171,36 +3171,37 @@ namespace TEAM
 
                             // Retrieve the business key
                             var businessKey = new List<string>();
+                            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(dataObjectTuple.Item1).FirstOrDefault();
 
                             if (dataObjectTuple.Item1 != "Not applicable")
                             {
-                                if (queryMode == "physical")
+                                if (dataObjectTuple.Item2 == MetadataHandling.TableTypes.CoreBusinessConcept)
                                 {
-                                    if (!localTableMappingConnectionDictionary.TryGetValue(dataObjectTuple.Item1,
-                                        out var connectionValue))
+                                    if (queryMode == "physical")
                                     {
-                                        // The key isn't in the dictionary, report this as an error.
-                                        LogMetadataEvent(
-                                            $"The connection string for {dataObjectTuple.Item1} could not be found.",
-                                            EventTypes.Error);
-                                    }
+                                        if (!localTableMappingConnectionDictionary.TryGetValue(dataObjectTuple.Item1,
+                                            out var connectionValue))
+                                        {
+                                            // The key isn't in the dictionary, report this as an error.
+                                            LogMetadataEvent(
+                                                $"The connection string for {dataObjectTuple.Item1} could not be found.",
+                                                EventTypes.Error);
+                                        }
 
-                                    businessKey =
-                                        MetadataHandling.GetHubTargetBusinessKeyListPhysical(dataObjectTuple.Item1,
-                                            connectionValue, TeamConfigurationSettings);
-                                }
-                                else
-                                {
-                                    businessKey =
-                                        MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1,
-                                            versionId, TeamConfigurationSettings);
-                                }
+                                        businessKey = MetadataHandling.GetHubTargetBusinessKeyListPhysical(
+                                            dataObjectTuple.Item1, connectionValue, TeamConfigurationSettings);
+                                    }
+                                    else
+                                    {
+                                        businessKey =
+                                            MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1,
+                                                versionId, TeamConfigurationSettings);
+                                    }
+                                } 
                             }
 
                             string businessKeyString = string.Join(",", businessKey);
                             string surrogateKey = MetadataHandling.GetSurrogateKey(dataObjectTuple.Item1, TeamConfigurationSettings);
-
-                            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(dataObjectTuple.Item1).FirstOrDefault();
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine($"INSERT INTO [{localTableTypeEvaluation}]");
@@ -4099,24 +4100,30 @@ namespace TEAM
 
                 prepareHubLnkXrefStatement.AppendLine("SELECT");
                 prepareHubLnkXrefStatement.AppendLine("  hub_tbl.HUB_NAME,");
+                prepareHubLnkXrefStatement.AppendLine("  hub_tbl.[SCHEMA_NAME] AS HUB_SCHEMA,");
                 prepareHubLnkXrefStatement.AppendLine("  lnk_tbl.LINK_NAME,");
+                prepareHubLnkXrefStatement.AppendLine("  lnk_tbl.[SCHEMA_NAME] AS LINK_SCHEMA,");
                 prepareHubLnkXrefStatement.AppendLine("  lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,");
                 prepareHubLnkXrefStatement.AppendLine("  lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK");
                 prepareHubLnkXrefStatement.AppendLine("FROM");
                 prepareHubLnkXrefStatement.AppendLine("-- This base query adds the Link and its Hubs and their order by pivoting on the full business key");
                 prepareHubLnkXrefStatement.AppendLine("(");
                 prepareHubLnkXrefStatement.AppendLine("  SELECT");
-                prepareHubLnkXrefStatement.AppendLine("    TARGET_TABLE,");
                 prepareHubLnkXrefStatement.AppendLine("    SOURCE_TABLE,");
+                prepareHubLnkXrefStatement.AppendLine("    SOURCE_TABLE_SCHEMA,");
+                prepareHubLnkXrefStatement.AppendLine("    TARGET_TABLE,");
+                prepareHubLnkXrefStatement.AppendLine("    TARGET_TABLE_SCHEMA,");
                 prepareHubLnkXrefStatement.AppendLine("    BUSINESS_KEY_ATTRIBUTE,");
                 prepareHubLnkXrefStatement.AppendLine("    LTRIM(Split.a.value('.', 'VARCHAR(4000)')) AS BUSINESS_KEY_PART,");
                 prepareHubLnkXrefStatement.AppendLine("    ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS HUB_KEY_ORDER");
                 prepareHubLnkXrefStatement.AppendLine("  FROM");
                 prepareHubLnkXrefStatement.AppendLine("  (");
                 prepareHubLnkXrefStatement.AppendLine("    SELECT");
-                prepareHubLnkXrefStatement.AppendLine("      TARGET_TABLE,");
                 prepareHubLnkXrefStatement.AppendLine("      SOURCE_TABLE,");
-                prepareHubLnkXrefStatement.AppendLine("      ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE ORDER BY TARGET_TABLE) AS LINK_ORDER,");
+                prepareHubLnkXrefStatement.AppendLine("      SOURCE_TABLE_SCHEMA,");
+                prepareHubLnkXrefStatement.AppendLine("      TARGET_TABLE,");
+                prepareHubLnkXrefStatement.AppendLine("      TARGET_TABLE_SCHEMA,");
+                prepareHubLnkXrefStatement.AppendLine("      ROW_NUMBER() OVER(PARTITION BY TARGET_TABLE, TARGET_TABLE_SCHEMA ORDER BY TARGET_TABLE, TARGET_TABLE_SCHEMA) AS LINK_ORDER,");
                 prepareHubLnkXrefStatement.AppendLine("      BUSINESS_KEY_ATTRIBUTE, CAST('<M>' + REPLACE(BUSINESS_KEY_ATTRIBUTE, ',', '</M><M>') + '</M>' AS XML) AS BUSINESS_KEY_SOURCE_XML");
                 prepareHubLnkXrefStatement.AppendLine("    FROM  TMP_MD_TABLE_MAPPING");
                 prepareHubLnkXrefStatement.AppendLine("    WHERE [TARGET_TABLE_TYPE] = '" + MetadataHandling.TableTypes.NaturalBusinessRelationship + "'");
@@ -4129,19 +4136,19 @@ namespace TEAM
                 prepareHubLnkXrefStatement.AppendLine(" (");
                 prepareHubLnkXrefStatement.AppendLine(virtualisationSnippet.ToString());
                 prepareHubLnkXrefStatement.AppendLine(" ) lnk_target_model");
-                prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_SCHEMA+'.'+lnk_target_model.LINK_NAME COLLATE DATABASE_DEFAULT");
+                prepareHubLnkXrefStatement.AppendLine(" ON lnk_hubkey_order.TARGET_TABLE = lnk_target_model.LINK_NAME AND lnk_hubKey_order.TARGET_TABLE_SCHEMA = lnk_target_model.LINK_SCHEMA COLLATE DATABASE_DEFAULT");
                 prepareHubLnkXrefStatement.AppendLine(" AND lnk_hubkey_order.HUB_KEY_ORDER = lnk_target_model.LINK_ORDER");
                 prepareHubLnkXrefStatement.AppendLine(" --Adding the Hub mapping data to get the business keys");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN TMP_MD_TABLE_MAPPING hub");
-                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[SOURCE_TABLE] = hub.SOURCE_TABLE");
+                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.[SOURCE_TABLE] = hub.SOURCE_TABLE AND lnk_hubkey_order.SOURCE_TABLE_SCHEMA = hub.[SOURCE_TABLE_SCHEMA]");
                 prepareHubLnkXrefStatement.AppendLine("     AND lnk_hubkey_order.[BUSINESS_KEY_PART] = hub.BUSINESS_KEY_ATTRIBUTE-- This condition is required to remove the redundant rows caused by the Link key pivoting");
                 prepareHubLnkXrefStatement.AppendLine("     AND hub.[TARGET_TABLE_TYPE] = '" + MetadataHandling.TableTypes.CoreBusinessConcept + "'");
                 prepareHubLnkXrefStatement.AppendLine("     AND hub.[ENABLED_INDICATOR] = 'True'");
                 prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
-                prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.[SCHEMA_NAME]+'.'+hub_tbl.HUB_NAME");
+                prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.HUB_NAME AND hub.TARGET_TABLE_SCHEMA = hub_tbl.[SCHEMA_NAME]");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_LINK lnk_tbl");
-                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
+                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.LINK_NAME AND lnk_hubkey_order.TARGET_TABLE_SCHEMA = lnk_tbl.[SCHEMA_NAME]");
 
                 var listHlXref = Utility.GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
@@ -4155,11 +4162,8 @@ namespace TEAM
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine("INSERT INTO [MD_HUB_LINK_XREF]");
-                            insertStatement.AppendLine(
-                                "([HUB_NAME], [LINK_NAME], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
-                            insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + "','" +
-                                                       tableName["LINK_NAME"] + "','" + tableName["HUB_ORDER"] + "','" +
-                                                       tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
+                            insertStatement.AppendLine("([HUB_NAME], [LINK_NAME], [HUB_ORDER], [HUB_TARGET_KEY_NAME_IN_LINK])");
+                            insertStatement.AppendLine("VALUES ('" + tableName["HUB_NAME"] + "','" + tableName["LINK_NAME"] + "','" + tableName["HUB_ORDER"] + "','" + tableName["HUB_TARGET_KEY_NAME_IN_LINK"] + "')");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -4186,50 +4190,47 @@ namespace TEAM
                 _alert.SetTextLogging("\r\n");
                 LogMetadataEvent("Commencing preparing the Link Business key metadata.", EventTypes.Information);
 
-                // Getting the distinct list of tables to go into the MD_LINK table
-                selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled.ToString() + " = 'true' AND " + TableMappingMetadataColumns.TargetTable.ToString() + " LIKE '%" + lnkTablePrefix + "%'");
-
-                var distincLinksForBusinessKey = new List<string>();
-
-                // Create a distinct list of sources from the data grid
-                foreach (DataRow row in selectionRows)
-                {
-                    string target_table = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().Trim();
-                    if (!distincLinksForBusinessKey.Contains(target_table))
-                    {
-                        distincLinksForBusinessKey.Add(target_table);
-                    }
-                }
-
                 // Insert the rest of the rows
-                foreach (var tableName in distincLinksForBusinessKey)
+                using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    var fullyQualifiedName = MetadataHandling.GetTableAndSchema(tableName).FirstOrDefault();
-
-                    var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
-                    string businessKey = string.Join(",", businessKeyList);
-
-                    var updateStatement = new StringBuilder();
-
-                    updateStatement.AppendLine("UPDATE [MD_LINK]");
-                    updateStatement.AppendLine("SET [BUSINESS_KEY] = '" + businessKey + "'");
-                    updateStatement.AppendLine("WHERE [SCHEMA_NAME] =  '" + fullyQualifiedName.Key + "'");
-                    updateStatement.AppendLine("AND [LINK_NAME] =  '" + fullyQualifiedName.Value + "'");
-
-                    var connection = new SqlConnection(metaDataConnection);
-                    var command = new SqlCommand(updateStatement.ToString(), connection);
-
                     try
                     {
                         connection.Open();
-                        command.ExecuteNonQuery();
                     }
                     catch (Exception ex)
                     {
-                        LogMetadataEvent($"An issue has occurred during preparation of the Link Business Key: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{updateStatement}", EventTypes.Error);
+                        LogMetadataEvent($"An issue has occurred connecting to the database: \r\n\r\n {ex}.", EventTypes.Error);
+                    }
+
+                    foreach (var dataObjectTuple in dataObjectList)
+                    {
+                        if (dataObjectTuple.Item2 == MetadataHandling.TableTypes.NaturalBusinessRelationship)
+                        {
+                            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(dataObjectTuple.Item1).FirstOrDefault();
+
+                            var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
+                            string businessKey = string.Join(",", businessKeyList);
+
+                            var updateStatement = new StringBuilder();
+
+                            updateStatement.AppendLine("UPDATE [MD_LINK]");
+                            updateStatement.AppendLine("SET [BUSINESS_KEY] = '" + businessKey + "'");
+                            updateStatement.AppendLine("WHERE [SCHEMA_NAME] =  '" + fullyQualifiedName.Key + "'");
+                            updateStatement.AppendLine("AND [LINK_NAME] =  '" + fullyQualifiedName.Value + "'");
+
+                            var command = new SqlCommand(updateStatement.ToString(), connection);
+                            
+                            try
+                            {
+                                command.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMetadataEvent($"An issue has occurred during preparation of the Link Business Key: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{updateStatement}", EventTypes.Error);
+                            }
+                        }
                     }
                 }
-
                 #endregion
 
 
@@ -4242,12 +4243,14 @@ namespace TEAM
                 var preparestgLnkXrefStatement = new StringBuilder();
                 preparestgLnkXrefStatement.AppendLine("SELECT");
                 preparestgLnkXrefStatement.AppendLine("  lnk_tbl.LINK_NAME,");
+                preparestgLnkXrefStatement.AppendLine("  lnk_tbl.[SCHEMA_NAME] AS LINK_SCHEMA,");
                 preparestgLnkXrefStatement.AppendLine("  stg_tbl.SOURCE_NAME,");
+                preparestgLnkXrefStatement.AppendLine("  stg_tbl.[SCHEMA_NAME] AS SOURCE_SCHEMA,");
                 preparestgLnkXrefStatement.AppendLine("  lnk.FILTER_CRITERIA,");
                 preparestgLnkXrefStatement.AppendLine("  lnk.BUSINESS_KEY_ATTRIBUTE");
                 preparestgLnkXrefStatement.AppendLine("FROM [dbo].[TMP_MD_TABLE_MAPPING] lnk");
-                preparestgLnkXrefStatement.AppendLine("JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.[SCHEMA_NAME]+'.'+lnk_tbl.LINK_NAME");
-                preparestgLnkXrefStatement.AppendLine("JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.[SCHEMA_NAME]+'.'+stg_tbl.SOURCE_NAME");
+                preparestgLnkXrefStatement.AppendLine("JOIN [dbo].[MD_LINK] lnk_tbl ON lnk.TARGET_TABLE = lnk_tbl.LINK_NAME AND lnk.TARGET_TABLE_SCHEMA = lnk_tbl.[SCHEMA_NAME]");
+                preparestgLnkXrefStatement.AppendLine("JOIN [dbo].[MD_SOURCE] stg_tbl ON lnk.SOURCE_TABLE = stg_tbl.SOURCE_NAME AND lnk.SOURCE_TABLE_SCHEMA = stg_tbl.[SCHEMA_NAME]");
                 preparestgLnkXrefStatement.AppendLine("WHERE lnk.TARGET_TABLE_TYPE = '" + MetadataHandling.TableTypes.NaturalBusinessRelationship + "'");
                 preparestgLnkXrefStatement.AppendLine("AND[ENABLED_INDICATOR] = 'True'");
 
@@ -4271,13 +4274,13 @@ namespace TEAM
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_LINK_XREF]");
-                        insertStatement.AppendLine(
-                            "([SOURCE_NAME], [LINK_NAME], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION], [LOAD_VECTOR])");
-                        insertStatement.AppendLine("VALUES ('" + tableName["SOURCE_NAME"] +
-                                                   "','" + tableName["LINK_NAME"] +
-                                                   "','" + filterCriterion +
-                                                   "','" + businessKeyDefinition +
-                                                   "','" + loadVector +
+                        insertStatement.AppendLine("([SOURCE_NAME], [LINK_NAME], [FILTER_CRITERIA], [BUSINESS_KEY_DEFINITION], [LOAD_VECTOR])");
+                        insertStatement.AppendLine("VALUES (" +
+                                                   "'" + tableName["SOURCE_NAME"] + "'," +
+                                                   "'" + tableName["LINK_NAME"] + "'," +
+                                                   "'" + filterCriterion + "'," +
+                                                   "'" + businessKeyDefinition + "'," +
+                                                   "'" + loadVector +
                                                    "')");
 
                         var command = new SqlCommand(insertStatement.ToString(), connection);
@@ -6144,6 +6147,7 @@ namespace TEAM
 
                     dgmlExtract.AppendLine("  </Links>");
                     // End of edges and containers
+
 
 
                     //Add categories

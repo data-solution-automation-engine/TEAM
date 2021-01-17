@@ -571,8 +571,8 @@ namespace TEAM
             sqlStatementForBusinessKeys.AppendLine("  xref.[HUB_NAME]");
             sqlStatementForBusinessKeys.AppendLine(" ,xref.[LINK_NAME]");
             sqlStatementForBusinessKeys.AppendLine(" ,hub.[BUSINESS_KEY]");
-            sqlStatementForBusinessKeys.AppendLine("FROM[dbo].[MD_HUB_LINK_XREF] xref");
-            sqlStatementForBusinessKeys.AppendLine("JOIN[dbo].[MD_HUB] hub ON xref.HUB_NAME = hub.HUB_NAME");
+            sqlStatementForBusinessKeys.AppendLine("FROM [MD_HUB_LINK_XREF] xref");
+            sqlStatementForBusinessKeys.AppendLine("JOIN [MD_HUB] hub ON xref.HUB_NAME = hub.HUB_NAME");
             sqlStatementForBusinessKeys.AppendLine("WHERE [LINK_NAME] = '"+tableName+"'");
             sqlStatementForBusinessKeys.AppendLine("ORDER BY [HUB_ORDER]");
 
