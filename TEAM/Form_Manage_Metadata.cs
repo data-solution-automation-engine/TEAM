@@ -2698,7 +2698,7 @@ namespace TEAM
                         }
                     }
 
-                    GenerateFromPattern(rowList);
+                    GenerateJsonFromPattern(rowList);
                 }
                 #endregion
             }
@@ -6777,7 +6777,7 @@ namespace TEAM
             DataGridViewRow generationMetadataRow = dataGridViewTableMetadata.Rows[selectedRow];
             generationMetadataList.Add(generationMetadataRow);
             // Generate the result
-            GenerateFromPattern(generationMetadataList);
+            GenerateJsonFromPattern(generationMetadataList);
         }
 
         /// <summary>
@@ -7651,14 +7651,14 @@ namespace TEAM
                 }
             }
 
-            GenerateFromPattern(rowList);
+            GenerateJsonFromPattern(rowList);
         }
 
         /// <summary>
         /// Creates a Json schema based on the Data Warehouse Automation interface definition.
         /// </summary>
         /// <param name="generationMetadataList"></param>
-        private void GenerateFromPattern(List<DataGridViewRow> generationMetadataList)
+        private void GenerateJsonFromPattern(List<DataGridViewRow> generationMetadataList)
         {
             // Set up the form in case the show Json output checkbox has been selected
             if (checkBoxShowJsonOutput.Checked)
@@ -7895,8 +7895,7 @@ namespace TEAM
                                                 new List<Classification>();
                                             var dataItemClassification = new Classification();
                                             dataItemClassification.classification = "DrivingKey";
-                                            dataItemClassification.notes =
-                                                "The attribute that triggers (drives) the closing of a relationship.";
+                                            dataItemClassification.notes = "The attribute that triggers (drives) the closing of a relationship.";
                                             dataItemClassificationList.Add(dataItemClassification);
 
                                             localDataItemMapping.sourceDataItems[0].dataItemClassification = dataItemClassificationList;
@@ -7947,8 +7946,7 @@ namespace TEAM
 
                                     if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
                                     {
-                                        // WIP
-                                        Dictionary<string, string> tableSchema = MetadataHandling.GetTableAndSchema(sourceToTargetMapping.sourceDataObjects[0].name, null);
+                                        Dictionary<string, string> tableSchema = MetadataHandling.GetTableAndSchema(sourceToTargetMapping.sourceDataObjects[0].name, sourceConnection);
 
                                         DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                             "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
@@ -7967,9 +7965,8 @@ namespace TEAM
                                     {
                                         if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
                                         {
-                                            // WIP
                                             var tableSchema =
-                                                MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject.name, null);
+                                                MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject.name, targetConnection);
 
                                             DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                                 "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
@@ -8029,8 +8026,7 @@ namespace TEAM
 
                                     if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
                                     {
-                                        // WIP
-                                        var tableSchema = MetadataHandling.GetTableAndSchema(sourceDataObjectName, null);
+                                        var tableSchema = MetadataHandling.GetTableAndSchema(sourceDataObjectName, sourceConnection);
 
                                         try
                                         {
@@ -8054,8 +8050,7 @@ namespace TEAM
 
                                     if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
                                     {
-                                        // WIP
-                                        var tableSchema = MetadataHandling.GetTableAndSchema(targetDataObjectName, null);
+                                        var tableSchema = MetadataHandling.GetTableAndSchema(targetDataObjectName, targetConnection);
 
                                         DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                             "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
