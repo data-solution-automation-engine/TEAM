@@ -4187,10 +4187,10 @@ namespace TEAM
                 var prepareHubLnkXrefStatement = new StringBuilder();
 
                 prepareHubLnkXrefStatement.AppendLine("SELECT");
-                prepareHubLnkXrefStatement.AppendLine("  hub_tbl.HUB_NAME,");
-                prepareHubLnkXrefStatement.AppendLine("  hub_tbl.[SCHEMA_NAME] AS HUB_SCHEMA,");
-                prepareHubLnkXrefStatement.AppendLine("  lnk_tbl.LINK_NAME,");
-                prepareHubLnkXrefStatement.AppendLine("  lnk_tbl.[SCHEMA_NAME] AS LINK_SCHEMA,");
+                prepareHubLnkXrefStatement.AppendLine("  hub_tbl.HUB_NAME AS HUB_NAME,");
+                prepareHubLnkXrefStatement.AppendLine("  --hub_tbl.[SCHEMA_NAME] AS HUB_SCHEMA,");
+                prepareHubLnkXrefStatement.AppendLine("  lnk_tbl.LINK_NAME AS LINK_NAME,");
+                prepareHubLnkXrefStatement.AppendLine("  --lnk_tbl.[SCHEMA_NAME] AS LINK_SCHEMA,");
                 prepareHubLnkXrefStatement.AppendLine("  lnk_hubkey_order.HUB_KEY_ORDER AS HUB_ORDER,");
                 prepareHubLnkXrefStatement.AppendLine("  lnk_target_model.HUB_TARGET_KEY_NAME_IN_LINK");
                 prepareHubLnkXrefStatement.AppendLine("FROM");
@@ -4234,9 +4234,9 @@ namespace TEAM
                 prepareHubLnkXrefStatement.AppendLine("     AND hub.[ENABLED_INDICATOR] = 'True'");
                 prepareHubLnkXrefStatement.AppendLine(" --Lastly adding the IDs for the Hubs and Links");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_HUB hub_tbl");
-                prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.HUB_NAME AND hub.TARGET_TABLE_SCHEMA = hub_tbl.[SCHEMA_NAME]");
+                prepareHubLnkXrefStatement.AppendLine("     ON hub.TARGET_TABLE = hub_tbl.HUB_NAME_SHORT AND hub.TARGET_TABLE_SCHEMA = hub_tbl.[SCHEMA_NAME]");
                 prepareHubLnkXrefStatement.AppendLine(" JOIN dbo.MD_LINK lnk_tbl");
-                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.LINK_NAME AND lnk_hubkey_order.TARGET_TABLE_SCHEMA = lnk_tbl.[SCHEMA_NAME]");
+                prepareHubLnkXrefStatement.AppendLine("     ON lnk_hubkey_order.TARGET_TABLE = lnk_tbl.LINK_NAME_SHORT AND lnk_hubkey_order.TARGET_TABLE_SCHEMA = lnk_tbl.[SCHEMA_NAME]");
 
                 var listHlXref = Utility.GetDataTable(ref connOmd, prepareHubLnkXrefStatement.ToString());
 
@@ -4304,7 +4304,7 @@ namespace TEAM
                             updateStatement.AppendLine("UPDATE [MD_LINK]");
                             updateStatement.AppendLine("SET [BUSINESS_KEY] = '" + businessKey + "'");
                             updateStatement.AppendLine("WHERE [SCHEMA_NAME] =  '" + fullyQualifiedName.Key + "'");
-                            updateStatement.AppendLine("AND [LINK_NAME] =  '" + fullyQualifiedName.Value + "'");
+                            updateStatement.AppendLine("AND [LINK_NAME_SHORT] =  '" + fullyQualifiedName.Value + "'");
 
                             var command = new SqlCommand(updateStatement.ToString(), connection);
                             
@@ -7964,8 +7964,7 @@ namespace TEAM
                                     {
                                         if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
                                         {
-                                            var tableSchema =
-                                                MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject.name, targetConnection);
+                                            var tableSchema = MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject.name, targetConnection);
 
                                             DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                                 "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +

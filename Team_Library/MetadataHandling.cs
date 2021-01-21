@@ -554,8 +554,7 @@ namespace TEAM
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var conn = new SqlConnection();
-            conn = new SqlConnection { ConnectionString = connectionString };
+            var conn = new SqlConnection { ConnectionString = connectionString };
 
             try
             {
@@ -576,7 +575,7 @@ namespace TEAM
             sqlStatementForBusinessKeys.AppendLine(" ,hub.[BUSINESS_KEY]");
             sqlStatementForBusinessKeys.AppendLine("FROM [MD_HUB_LINK_XREF] xref");
             sqlStatementForBusinessKeys.AppendLine("JOIN [MD_HUB] hub ON xref.HUB_NAME = hub.HUB_NAME");
-            sqlStatementForBusinessKeys.AppendLine("WHERE [LINK_NAME] = '"+tableName+"'");
+            sqlStatementForBusinessKeys.AppendLine($"WHERE [LINK_NAME] = '{schemaName}.{tableName}'");
             sqlStatementForBusinessKeys.AppendLine("ORDER BY [HUB_ORDER]");
 
             var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
