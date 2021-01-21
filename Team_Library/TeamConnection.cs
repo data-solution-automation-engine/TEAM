@@ -43,6 +43,11 @@ namespace TEAM
         public TeamFileConnection FileConnection { get; set; }
 
 
+        /// <summary>
+        /// Generate a SQL Server connection string from available information.
+        /// </summary>
+        /// <param name="mask"></param>
+        /// <returns></returns>
         public string CreateSqlServerConnectionString(bool mask)
         {
             // Initialise the return variable

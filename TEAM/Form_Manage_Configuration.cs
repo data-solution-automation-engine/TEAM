@@ -403,11 +403,17 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.WorkingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
-            using (var outfile =
-                new StreamWriter(GlobalParameters.CorePath+ GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+            try
             {
-                outfile.Write(rootPathConfigurationFile.ToString());
-                outfile.Close();
+                using (var outfile = new StreamWriter(GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+                {
+                    outfile.Write(rootPathConfigurationFile.ToString());
+                    outfile.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {GlobalParameters.CorePath +GlobalParameters.PathFileName + GlobalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
             }
         }
 

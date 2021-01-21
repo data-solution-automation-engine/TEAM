@@ -249,12 +249,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Content Include="Core\TEAM_Path_configuration.txt" />
     <Content Include="Files\sample_TEAM_Attribute_Mapping_v0.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\sample_TEAM_Model_Metadata_v0.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Core\TEAM_environments.json" />
     <None Include="Libraries\DataWarehouseAutomation.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -407,6 +409,7 @@
       <Version>12.0.3</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

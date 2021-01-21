@@ -11,28 +11,29 @@ namespace TEAM
     {
 
         /// <summary>
-        ///    This method ensures that a table object exists in the physical model against the catalog
+        /// This method ensures that a table object exists in the physical model against the catalog.
         /// </summary>
-        internal static string ValidateObjectExistencePhysical (string validationObject, string connectionString)
-        {
-            string returnExistenceEvaluation = "False";
-
-            var conn = new SqlConnection {ConnectionString = connectionString};
+        /// <param name="fullyQualifiedValidationObject"></param>
+        /// <param name="teamConnection"></param>
+        /// <returns></returns>
+        internal static string ValidateObjectExistencePhysical (KeyValuePair<string, string> fullyQualifiedValidationObject, TeamConnection teamConnection)
+        { 
+            var conn = new SqlConnection {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
             conn.Open();
 
-            var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject);
-            var schemaName = MetadataHandling.GetTableAndSchema(validationObject);
+            var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
+            var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
 
             // Execute the check
             var cmd = new SqlCommand(
                 "SELECT CASE WHEN EXISTS ((SELECT * " +
                 "FROM sys.objects a " +
                 "JOIN sys.schemas b on a.schema_id = b.schema_id " +
-                "WHERE a.[name] = '" + objectName + "' and b.[name]= '"+ schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key + "')) THEN 1 ELSE 0 END", conn);
+                "WHERE a.[name] = '" + localTable + "' and b.[name]= '"+ localSchema + "')) THEN 1 ELSE 0 END", conn);
 
             
             var exists = (int) cmd.ExecuteScalar() == 1;
-            returnExistenceEvaluation = exists.ToString();
+            string returnExistenceEvaluation = exists.ToString();
 
             conn.Close();
 
@@ -41,29 +42,33 @@ namespace TEAM
         }
 
         /// <summary>
-        ///    This method ensures that an attribute object exists in the physical model against the catalog
+        /// This method ensures that an attribute object exists in the physical model against the catalog.
         /// </summary>
-        internal static string ValidateAttributeExistencePhysical(string validationObject, string validationAttribute, string connectionString)
+        /// <param name="validationObject"></param>
+        /// <param name="validationAttribute"></param>
+        /// <param name="teamConnection"></param>
+        /// <returns></returns>
+        internal static string ValidateAttributeExistencePhysical(string validationObject, string validationAttribute, TeamConnection teamConnection)
         {
-            string returnExistenceEvaluation = "False";
-
+            var returnExistenceEvaluation = "False";
+            
             // Temporary fix to allow 'transformations', in this case hard-coded NULL values to be loaded.
             if (validationAttribute != "NULL")
             {
+                var fullyQualifiedValidationObject = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
+                var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
+                var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
 
-                var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject).Replace("[", "")
-                    .Replace("]", "");
-                var schemaName = MetadataHandling.GetTableAndSchema(validationObject);
-
-                var conn = new SqlConnection {ConnectionString = connectionString};
+                var conn = new SqlConnection {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
                 conn.Open();
 
                 // Execute the check
                 var cmd = new SqlCommand(
-                    "SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE [TABLE_NAME] = '" +
-                    objectName + "' AND [TABLE_SCHEMA] = '" +
-                    schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key.Replace("[", "").Replace("]", "") +
-                    "' AND [COLUMN_NAME] = '" + validationAttribute + "')) THEN 1 ELSE 0 END", conn);
+                    "SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS " +
+                    "WHERE " +
+                    "[TABLE_NAME] = '" + localTable + "' AND " +
+                    "[TABLE_SCHEMA] = '" + localSchema + "' AND " +
+                    "[COLUMN_NAME] = '" + validationAttribute + "')) THEN 1 ELSE 0 END", conn);
 
                 var exists = (int) cmd.ExecuteScalar() == 1;
                 returnExistenceEvaluation = exists.ToString();
@@ -72,6 +77,7 @@ namespace TEAM
             }
             else
             {
+                // Set True if NULL
                 returnExistenceEvaluation = "True";
             }
 
@@ -80,11 +86,11 @@ namespace TEAM
         }
 
         // Check if an object / table exists in the metadata
-        internal static string ValidateObjectExistenceVirtual (string validationObject, DataTable inputDataTable)
+        internal static string ValidateObjectExistenceVirtual (string validationObject, TeamConnection teamConnection, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
 
-            var objectDetails = MetadataHandling.GetTableAndSchema(validationObject).FirstOrDefault();
+            var objectDetails = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
 
             inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].ColumnName = PhysicalModelMappingMetadataColumns.HashKey.ToString();
             inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.VersionId].ColumnName = PhysicalModelMappingMetadataColumns.VersionId.ToString();
@@ -114,13 +120,13 @@ namespace TEAM
         }
 
         // Check if an attribute exists in the metadata
-        internal static string ValidateAttributeExistenceVirtual(string validationObject, string validationAttribute, DataTable inputDataTable)
+        internal static string ValidateAttributeExistenceVirtual(string validationObject, string validationAttribute, TeamConnection teamConnection, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
 
             if (validationAttribute != "NULL")
             {
-                var objectDetails = MetadataHandling.GetTableAndSchema(validationObject).FirstOrDefault();
+                var objectDetails = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
 
                 DataRow[] foundRows = inputDataTable.Select("" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.SchemaName + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.ColumnName + " = '" + validationAttribute+"'");
 
@@ -390,19 +396,20 @@ namespace TEAM
         /// <param name="validationObject"></param>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        internal static Dictionary<Tuple<string,string>, bool> ValidateSourceBusinessKeyExistencePhysical(Tuple<string, string> validationObject, string connectionString)
+        internal static Dictionary<Tuple<string,string>, bool> ValidateSourceBusinessKeyExistencePhysical(string validationObject, string businessKeyDefinition, TeamConnection teamConnection)
         {
             // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to validate if the attribute exists in that table.
-            List<string> businessKeys = validationObject.Item2.Split(',').ToList();
+            List<string> businessKeys = businessKeyDefinition.Split(',').ToList();
 
 
             // Get the table the component belongs to if available
-            var objectName = MetadataHandling.GetNonQualifiedTableName(validationObject.Item1);
-            var schemaName = MetadataHandling.GetTableAndSchema(validationObject.Item1);
+            var fullyQualifiedValidationObject = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
+            var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
+            var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
 
             // Now iterate over each table, as identified by the business key.
-            var conn = new SqlConnection { ConnectionString = connectionString };
+            var conn = new SqlConnection { ConnectionString = teamConnection.CreateSqlServerConnectionString(false) };
             conn.Open();
 
             Dictionary<Tuple<string, string>, bool> result = new Dictionary<Tuple<string, string>, bool>();
@@ -445,12 +452,12 @@ namespace TEAM
                                                  "SELECT * FROM sys.columns a "+
                                                  "JOIN sys.objects b ON a.object_id = b.object_id " +
                                                  "JOIN sys.schemas c on b.schema_id = c.schema_id " +
-                                                 "WHERE OBJECT_NAME(a.[object_id]) = '" + objectName + "' AND c.[name] = '" + schemaName.FirstOrDefault(x => x.Value.Contains(objectName)).Key.Replace("[", "").Replace("]", "") + "' AND a.[name] = '" + businessKeyPart.Trim() + "'" +
+                                                 "WHERE OBJECT_NAME(a.[object_id]) = '" + localTable + "' AND c.[name] = '" + localSchema + "' AND a.[name] = '" + businessKeyPart.Trim() + "'" +
                                                  ")" +
                                                  ") THEN 1 ELSE 0 END", conn);
                         
                         var exists = (int)cmd.ExecuteScalar() == 1;
-                        result.Add(Tuple.Create(validationObject.Item1, businessKeyPart.Trim()), exists);
+                        result.Add(Tuple.Create(validationObject, businessKeyPart.Trim()), exists);
                     }
                 }
             }
@@ -459,11 +466,11 @@ namespace TEAM
             return result;
         }
 
-        internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(Tuple<string, string> validationObject, DataTable inputDataTable)
+        internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(string validationObject, string businessKeyDefinition, TeamConnection teamConnection, DataTable inputDataTable)
         {
             // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to validate if the attribute exists in that table.
-            List<string> businessKeys = validationObject.Item2.Split(',').ToList();
+            List<string> businessKeys = businessKeyDefinition.Split(',').ToList();
 
             Dictionary<Tuple<string, string>, bool> result = new Dictionary<Tuple<string, string>, bool>();
 
@@ -500,7 +507,7 @@ namespace TEAM
                     }
                     else
                     {
-                        var objectDetails = MetadataHandling.GetTableAndSchema(validationObject.Item1).FirstOrDefault();
+                        var objectDetails = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
 
                         bool returnExistenceEvaluation = false;
 
@@ -510,7 +517,7 @@ namespace TEAM
                             returnExistenceEvaluation = true;
                         }
 
-                        result.Add(Tuple.Create(validationObject.Item1, businessKeyPart.Trim()), returnExistenceEvaluation);
+                        result.Add(Tuple.Create(validationObject, businessKeyPart.Trim()), returnExistenceEvaluation);
                     }
                 }
             }

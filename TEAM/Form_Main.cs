@@ -34,7 +34,14 @@ namespace TEAM
 
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
-            LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+            try
+            {
+                LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+            }
+            catch (Exception ex)
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{ex}"));
+            }
 
             #region Load the root path configuration settings (user defined paths and working environment)
 

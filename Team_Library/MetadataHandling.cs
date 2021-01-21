@@ -259,11 +259,12 @@ namespace TEAM
         }
 
         /// <summary>
-        ///  Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair (key schema/ value table).
+        /// Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair (key schema/ value table).
+        /// If no schema is defined, the connection information will be used to determine the schema. If all else fails 'dbo' will set as default.
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetTableAndSchema(string tableName)
+        public static Dictionary<string, string> GetTableAndSchema(string tableName, TeamConnection teamConnection)
         {
             Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
             string schemaName = "";
@@ -281,7 +282,16 @@ namespace TEAM
             }
             else // Return the default (e.g. [dbo])
             {
-                schemaName = "dbo";
+                if (teamConnection is null)
+                {
+                    schemaName = "dbo";
+                }
+                else
+                {
+                    schemaName = teamConnection.DatabaseServer.SchemaName ?? "dbo";
+                }
+                
+
                 returnTableName = tableName;
 
                 fullyQualifiedTableName.Add(schemaName, returnTableName);
@@ -292,19 +302,6 @@ namespace TEAM
             return fullyQualifiedTableName;
         }
 
-        /// <summary>
-        /// Retrieve the fully qualified table name (including schema) for a given input table name as a single string, even if the table does not provide a schema.
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
-        public static string GetFullyQualifiedTableName(string tableName)
-        {
-            var fullyQualifiedSourceName = GetTableAndSchema(tableName).FirstOrDefault();
-
-            var returnTableName = fullyQualifiedSourceName.Key + '.' + fullyQualifiedSourceName.Value;
-
-            return returnTableName;
-        }
 
         /// <summary>
         /// Returns a list of Business Key attributes as they are defined in the target Hub table (virtual setup)
@@ -314,11 +311,11 @@ namespace TEAM
         /// <param name="versionId"></param>
         /// <param name="queryMode"></param>
         /// <returns></returns>
-        public static List<string> GetHubTargetBusinessKeyListVirtual(string fullyQualifiedTableName, int versionId, TeamConfiguration configuration)
+        public static List<string> GetHubTargetBusinessKeyListVirtual(string fullyQualifiedTableName, TeamConnection teamConnection, int versionId, TeamConfiguration configuration)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName).FirstOrDefault();
+            var fullyQualifiedName = GetTableAndSchema(fullyQualifiedTableName, teamConnection).FirstOrDefault();
 
             // The metadata connection can be used.
             var conn = new SqlConnection
@@ -390,10 +387,10 @@ namespace TEAM
         /// <param name="versionId"></param>
         /// <param name="queryMode"></param>
         /// <returns></returns>
-        public static List<string> GetRegularTableBusinessKeyListPhysical(string fullyQualifiedTableName, string connectionstring, TeamConfiguration configuration)
+        public static List<string> GetRegularTableBusinessKeyListPhysical(string fullyQualifiedTableName, TeamConnection teamConnection, string connectionstring, TeamConfiguration configuration)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
-            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName).FirstOrDefault();
+            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName, teamConnection).FirstOrDefault();
 
            // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
             var conn = new SqlConnection
@@ -473,16 +470,16 @@ namespace TEAM
         /// <param name="versionId"></param>
         /// <param name="queryMode"></param>
         /// <returns></returns>
-        public static List<string> GetHubTargetBusinessKeyListPhysical(string fullyQualifiedTableName, string connectionstring, TeamConfiguration configuration)
+        public static List<string> GetHubTargetBusinessKeyListPhysical(string fullyQualifiedTableName, TeamConnection teamConnection, TeamConfiguration configuration)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName).FirstOrDefault();
+            var fullyQualifiedName = GetTableAndSchema(fullyQualifiedTableName, teamConnection).FirstOrDefault();
 
             // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
             var conn = new SqlConnection
             {
-                ConnectionString = connectionstring
+                ConnectionString = teamConnection.CreateSqlServerConnectionString(false)
             };
 
             try
