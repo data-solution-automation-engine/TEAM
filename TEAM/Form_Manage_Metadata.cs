@@ -3100,7 +3100,7 @@ namespace TEAM
                 foreach (DataRow row in selectionRows)
                 {
                     string sourceTable = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString().Trim();
-                    string sourceInternalConnectionId = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                    string sourceInternalConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                     var sourceTableConnection = GetTeamConnectionByConnectionId(sourceInternalConnectionId);
 
                     var localTuple = new Tuple<string, TeamConnection>(sourceTable, sourceTableConnection);
