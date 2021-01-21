@@ -3275,14 +3275,13 @@ namespace TEAM
                                     else
                                     {
                                         businessKey =
-                                            MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1, dataObjectTuple.Item3,
-                                                versionId, TeamConfigurationSettings);
+                                            MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1, dataObjectTuple.Item3, versionId, TeamConfigurationSettings);
                                     }
                                 } 
                             }
 
                             string businessKeyString = string.Join(",", businessKey);
-                            string surrogateKey = MetadataHandling.GetSurrogateKey(dataObjectTuple.Item1, TeamConfigurationSettings);
+                            string surrogateKey = MetadataHandling.GetSurrogateKey(dataObjectTuple.Item1, dataObjectTuple.Item3, TeamConfigurationSettings);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine($"INSERT INTO [{localTableTypeEvaluation}]");

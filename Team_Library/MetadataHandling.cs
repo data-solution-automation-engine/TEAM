@@ -33,42 +33,48 @@ namespace TEAM
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns>surrogateKey</returns>
-        public static string GetSurrogateKey(string tableName, TeamConfiguration configuration)
+        public static string GetSurrogateKey(string tableName, TeamConnection teamConnection, TeamConfiguration configuration)
         {
+            // Get the fully qualified name
+            KeyValuePair<string,string> fullyQualifiedName = GetTableAndSchema(tableName, teamConnection).FirstOrDefault();
+            
             // Initialise the return value
             string surrogateKey = "";
+            string newTableName = fullyQualifiedName.Value;
+
+
 
             string keyLocation = configuration.DwhKeyIdentifier;
 
-            string[] prefixSuffixAray = {
+            string[] prefixSuffixArray = {
                 configuration.HubTablePrefixValue,
                 configuration.SatTablePrefixValue,
                 configuration.LinkTablePrefixValue,
                 configuration.LsatTablePrefixValue
             };
 
-            if (tableName != "Not applicable")
+            if (newTableName != "Not applicable")
             {
                 // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
                 if (configuration.TableNamingLocation == "Prefix")
                 {
-                    foreach (string prefixValue in prefixSuffixAray)
+                    foreach (string prefixValue in prefixSuffixArray)
                     {
                         string prefixValueWithUnderscore = prefixValue + '_';
-                        if (tableName.StartsWith(prefixValueWithUnderscore))
+                        if (newTableName.StartsWith(prefixValueWithUnderscore))
                         {
-                            tableName = tableName.Replace(prefixValueWithUnderscore, "");
+                            newTableName = newTableName.Replace(prefixValueWithUnderscore, "");
                         }
                     }
                 }
                 else
                 {
-                    foreach (string suffixValue in prefixSuffixAray)
+                    foreach (string suffixValue in prefixSuffixArray)
                     {
                         string suffixValueWithUnderscore = '_'+suffixValue;
-                        if (tableName.EndsWith(suffixValueWithUnderscore))
+                        if (newTableName.EndsWith(suffixValueWithUnderscore))
                         {
-                            tableName = tableName.Replace(suffixValueWithUnderscore, "");
+                            newTableName = newTableName.Replace(suffixValueWithUnderscore, "");
                         }
                     }
                 }
@@ -77,11 +83,11 @@ namespace TEAM
                 // Define the surrogate key using the table name and key prefix/suffix settings.
                 if (configuration.KeyNamingLocation == "Prefix")
                 {
-                    surrogateKey = keyLocation + '_' + tableName;
+                    surrogateKey = keyLocation + '_' + newTableName;
                 }
                 else
                 {
-                    surrogateKey = tableName + '_' + keyLocation;
+                    surrogateKey = newTableName + '_' + keyLocation;
                 }
             }
             return surrogateKey;
