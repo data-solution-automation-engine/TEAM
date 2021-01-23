@@ -290,9 +290,6 @@ namespace TEAM
                 connOmd.Close();
                 connOmd.Dispose();
             }
-
-
-
         }
 
         public void DisableMenu()

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 
 namespace TEAM
@@ -479,6 +480,16 @@ namespace TEAM
             deleteButton.Click += (DeleteConnection);
             deleteButton.TabIndex = 70;
 
+            // Add test Button
+            Button testButton = new Button();
+            localPanel.Controls.Add(testButton);
+            testButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
+            testButton.Location = new Point(258, 555);
+            testButton.Size = new Size(120, 40);
+            testButton.Name = $"testButton";
+            testButton.Text = $"Test Connection";
+            testButton.Click += (TestConnection);
+            testButton.TabIndex = 80;
 
 
 
@@ -659,6 +670,28 @@ namespace TEAM
             {
                 UpdateRichTextBoxInformation("Please update the connection information before saving. The 'new' profile is not meant to be saved.\r\n");
             }
+        }
+
+
+        public void TestConnection(object sender, EventArgs e)
+        {
+            UpdateRichTextBoxInformation("Validating database connection.\r\n");
+
+            var connectionString = _localConnection.CreateSqlServerConnectionString(false);
+
+            using (var connectionVersion = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connectionVersion.Open();
+                    //UpdateRichTextBoxInformation("The database connection can be established.\r\n");
+                }
+                catch (Exception)
+                {
+                    UpdateRichTextBoxInformation("The database connection could not be established.\r\n");
+                }
+            }
+
         }
 
         // Retrieve a single value on which RadioButton has been checked.
