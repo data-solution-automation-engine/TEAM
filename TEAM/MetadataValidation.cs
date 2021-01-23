@@ -55,7 +55,7 @@ namespace TEAM
             // Temporary fix to allow 'transformations', in this case hard-coded NULL values to be loaded.
             if (validationAttribute != "NULL")
             {
-                var fullyQualifiedValidationObject = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
+                var fullyQualifiedValidationObject = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
                 var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
                 var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
 
@@ -90,7 +90,7 @@ namespace TEAM
         {
             string returnExistenceEvaluation = "False";
 
-            var objectDetails = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
+            var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
 
             inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].ColumnName = PhysicalModelMappingMetadataColumns.HashKey.ToString();
             inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.VersionId].ColumnName = PhysicalModelMappingMetadataColumns.VersionId.ToString();
@@ -126,7 +126,7 @@ namespace TEAM
 
             if (validationAttribute != "NULL")
             {
-                var objectDetails = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
+                var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
 
                 DataRow[] foundRows = inputDataTable.Select("" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.SchemaName + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.ColumnName + " = '" + validationAttribute+"'");
 
@@ -404,7 +404,7 @@ namespace TEAM
 
 
             // Get the table the component belongs to if available
-            var fullyQualifiedValidationObject = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
+            var fullyQualifiedValidationObject = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
             var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
             var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
 
@@ -507,7 +507,7 @@ namespace TEAM
                     }
                     else
                     {
-                        var objectDetails = MetadataHandling.GetTableAndSchema(validationObject, teamConnection).FirstOrDefault();
+                        var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
 
                         bool returnExistenceEvaluation = false;
 

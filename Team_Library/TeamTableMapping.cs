@@ -236,7 +236,7 @@ namespace TEAM
                         var targetObject = (string)row[TableMappingMetadataColumns.TargetTable.ToString()];
 
                         //var sourceObjectType = MetadataHandling.GetTableType(sourceObject, "", TeamConfigurationSettings);
-                        var targetObjectType = MetadataHandling.GetTableType(targetObject, "", configurationSetting);
+                        var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
                         var targetObjectBusinessKey =
                             (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
 
@@ -250,7 +250,7 @@ namespace TEAM
                                                        .Contains(targetObjectBusinessKey) && // Contains a part of the business key
                                                    localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) !=
                                                    targetObject && // Is not itself
-                                                   MetadataHandling.GetTableType(
+                                                   MetadataHandling.GetDataObjectType(
                                                        localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
                                                        configurationSetting) ==
                                                    MetadataHandling.TableTypes.NaturalBusinessRelationship // Is a NBR.
@@ -283,7 +283,7 @@ namespace TEAM
                 string sourceObject = (string)row[TableMappingMetadataColumns.SourceTable.ToString()];
                 string targetObject = (string)row[TableMappingMetadataColumns.TargetTable.ToString()];
 
-                var targetObjectType = MetadataHandling.GetTableType(targetObject, "", configurationSetting);
+                var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
                 var targetObjectBusinessKey = (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
 
                 if (targetObjectType == MetadataHandling.TableTypes.CoreBusinessConcept)
@@ -295,9 +295,9 @@ namespace TEAM
                                   where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
-                                        MetadataHandling.GetTableType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
                                             configurationSetting) != MetadataHandling.TableTypes.NaturalBusinessRelationship &&
-                                        MetadataHandling.GetTableType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
                                             configurationSetting) != MetadataHandling.TableTypes.NaturalBusinessRelationshipContext
                                   select localRow;
 
@@ -323,7 +323,7 @@ namespace TEAM
                                   where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
-                                        MetadataHandling.GetTableType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
                                             configurationSetting) != MetadataHandling.TableTypes.CoreBusinessConcept // Is a relationship context table.
                                   select localRow;
 

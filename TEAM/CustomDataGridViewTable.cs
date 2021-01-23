@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -11,8 +11,7 @@ namespace TEAM
         private void DataGridView_DataError(object sender, DataGridViewDataErrorEventArgs anError)
         {
            // var test = (DataGridView) sender;
-
-           var bla =Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText;
+           // var bla =Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText;
 
             MessageBox.Show("Error in Custom Data Grid View. The error is: " + anError.Context);
 
@@ -43,6 +42,9 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// The definition of the Data Grid View for table mappings (DataObject mappings).
+        /// </summary>
         public CustomDataGridViewTable()
         {
             AutoGenerateColumns = false;
@@ -87,8 +89,6 @@ namespace TEAM
             sourceConnection.ValueMember = "ConnectionId";
             sourceConnection.ValueType = typeof(string);
             Columns.Add(sourceConnection);
-
-        
 
             DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
             targetTable.Name = TableMappingMetadataColumns.TargetTable.ToString();
@@ -138,110 +138,170 @@ namespace TEAM
 
             var presentationLayerLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.PresentationLayerLabels);
             var transformationLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.TransformationLabels);
+
             foreach (DataGridViewRow row in Rows)
             {
-                var targetTable = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value;
-                var businessKeySyntax = row.Cells[(int)TableMappingMetadataColumns.BusinessKeyDefinition].Value;
-
-                if (targetTable != null && businessKeySyntax != null && row.IsNewRow == false)
+                if (!row.IsNewRow)
                 {
-                    // Hub
-                    if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.HubTablePrefixValue)) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.HubTablePrefixValue) )
+                    // Target info
+                    string targetDataObjectName =
+                        row.Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
+                    var targetConnectionId =
+                        row.Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString();
+                    TeamConnection targetConnection = FormBase.GetTeamConnectionByConnectionId(targetConnectionId);
+                    KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling
+                        .GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+
+                    // Only the name (e.g. without the schema) should be evaluated.
+                    string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
+
+
+                    var businessKeySyntax = row.Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value;
+
+                    if (targetDataObjectNonQualifiedName != null && businessKeySyntax != null && row.IsNewRow == false)
+                    {
+                        // Hub
+                        if (
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                                 .HubTablePrefixValue)) ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                                 .HubTablePrefixValue))
                         )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.CornflowerBlue;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                    }
-                    // Link-Sat
-                    else if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue)) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue))
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor =
+                                Color.CornflowerBlue;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                                Color.LightGray;
+                        }
+                        // Link-Sat
+                        else if (
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                                 .LsatTablePrefixValue)) ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                                 .LsatTablePrefixValue))
                         )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Gold;
-                    }
-                    // Context
-                    else if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue)) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue))
-                    )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Yellow;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                    }
-                    // Natural Business Relationship
-                    else if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue)) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue))
-                    )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.OrangeRed;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                    }
-                    // PSA
-                    else if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue)) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.PsaTablePrefixValue))
-                    )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.AntiqueWhite;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                    }
-                    // Staging
-                    else if (
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && targetTable.ToString().StartsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue)) ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && targetTable.ToString().EndsWith(FormBase.TeamConfigurationSettings.StgTablePrefixValue))
-                    )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.WhiteSmoke;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                    }
-                    // Presentation Layer
-                    else if (
-                        
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetTable.ToString().StartsWith(s)) )
-                        ||
-                       ( FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
-                    )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aquamarine;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                    }
-                    // Derived objects / transformations
-                    else if (
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Gold;
+                        }
+                        // Context
+                        else if (
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                                 .SatTablePrefixValue)) ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                                 .SatTablePrefixValue))
+                        )
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Yellow;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                                Color.LightGray;
+                        }
+                        // Natural Business Relationship
+                        else if (
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                                 .LinkTablePrefixValue)) ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                                 .LinkTablePrefixValue))
+                        )
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor =
+                                Color.OrangeRed;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                                Color.LightGray;
+                        }
+                        // PSA
+                        else if (
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                                 .PsaTablePrefixValue)) ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                                 .PsaTablePrefixValue))
+                        )
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor =
+                                Color.AntiqueWhite;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                                Color.LightGray;
+                        }
+                        // Staging
+                        else if (
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                                 .StgTablePrefixValue)) ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                                 .StgTablePrefixValue))
+                        )
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor =
+                                Color.WhiteSmoke;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                                Color.LightGray;
+                        }
+                        // Presentation Layer
+                        else if (
 
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetTable.ToString().StartsWith(s)))
-                        ||
-                        (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetTable.ToString().EndsWith(s)))
-                    )
-                    {
-                        this[(int)TableMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.LightGreen;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                        row.Cells[(int)TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                    }
-                    else
-                    {
-                        // Catch
-                    }
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s)))
+                            ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s)))
+                        )
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor =
+                                Color.Aquamarine;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                                Color.LightGray;
+                        }
+                        // Derived objects / transformations
+                        else if (
+
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                             transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s)))
+                            ||
+                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                             transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s)))
+                        )
+                        {
+                            this[(int) TableMappingMetadataColumns.TargetTable, counter].Style.BackColor =
+                                Color.LightGreen;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                                Color.LightGray;
+                        }
+                        else
+                        {
+                            // Catch
+                        }
 
 
-                    //Syntax highlighting for code
-                    if (businessKeySyntax.ToString().Contains("CONCATENATE") || businessKeySyntax.ToString().Contains("COMPOSITE"))
-                    {      
-                        this[(int)TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.ForeColor = Color.DarkBlue;
-                        this[(int)TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold);
+                        //Syntax highlighting for code
+                        if (businessKeySyntax.ToString().Contains("CONCATENATE") ||
+                            businessKeySyntax.ToString().Contains("COMPOSITE"))
+                        {
+                            this[(int) TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.ForeColor =
+                                Color.DarkBlue;
+                            this[(int) TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.Font =
+                                new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold);
+                        }
                     }
+
+                    counter++;
                 }
-
-                counter++;
             }
         }
     }

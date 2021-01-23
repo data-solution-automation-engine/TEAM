@@ -20,6 +20,11 @@ namespace TEAM
         // TEAM configuration settings.
         public static TeamConfiguration TeamConfigurationSettings { get; set; } = new TeamConfiguration();
 
+        /// <summary>
+        /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
         public static TeamConnection GetTeamConnectionByConnectionId(string connectionId)
         {
             if (!TeamConfigurationSettings.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))

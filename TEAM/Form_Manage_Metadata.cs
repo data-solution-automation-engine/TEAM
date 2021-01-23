@@ -168,37 +168,46 @@ namespace TEAM
 
             if (selectedRow.IsNewRow == false)
             {
-                var sourceMapping = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
-                var targetMapping = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
+                // Source info
+                var sourceDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
+                var sourceConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString();
+                TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                string sourceDataObjectFullyQualifiedName = $"{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}";
+
+                // Target info
+                var targetDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
+                var targetConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int)TableMappingMetadataColumns.TargetConnection].Value.ToString();
+                TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+                string targetDataObjectFullyQualifiedName = $"{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}";
+
 
                 var loadVector = "";
                 MetadataHandling.TableTypes tableType = MetadataHandling.TableTypes.Unknown;
                 DataGridViewCell cell = null;
 
-                if (e.Value != null && sourceMapping != null && targetMapping != null)
+                if (e.Value != null && sourceDataObjectName != null && targetDataObjectName != null)
                 {
-                    loadVector = MetadataHandling.GetLoadVector(sourceMapping, targetMapping, TeamConfigurationSettings);
+                    loadVector = MetadataHandling.GetDataObjectMappingLoadVector(sourceDataObjectFullyQualifiedName, targetDataObjectFullyQualifiedName, TeamConfigurationSettings);
                 }
 
                 // Assert table type for Source column, retrieve the specific cell value for the hover-over.
-                if (e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceTable].Index &&
-                    e.Value != null)
+                if (e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceTable].Index && e.Value != null)
                 {
                     cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    tableType = MetadataHandling.GetTableType(e.Value.ToString(), "", TeamConfigurationSettings);
+                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), "", TeamConfigurationSettings);
                 }
                 // Assert table type for the Target column, , retrieve the specific cell value for the hover-over.
-                else if ((e.ColumnIndex ==
-                          dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.TargetTable].Index &&
-                          e.Value != null))
+                else if ((e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.TargetTable].Index && e.Value != null))
                 {
                     cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    tableType = MetadataHandling.GetTableType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex]
-                            .Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString(), TeamConfigurationSettings);
+                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString(), TeamConfigurationSettings);
                 }
                 else
                 {
                     // Do nothing
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The load vector and table types between {sourceDataObjectFullyQualifiedName} and {targetDataObjectFullyQualifiedName} could not be asserted."));
                 }
 
                 if (cell != null)
@@ -2134,11 +2143,11 @@ namespace TEAM
                 // Get the internal Ids for the source and target objects.
                 var connectionInternalIdTuple = GetDataObjectMappingFromDataItemMapping(inputTableMapping, sourceTable, targetTable);
                 
-                var fullyQualifiedSourceName = MetadataHandling.GetTableAndSchema(sourceTable, connectionInternalIdTuple.Item3).FirstOrDefault();
-                var sourceType = MetadataHandling.GetTableType(sourceTable, "", TeamConfigurationSettings);
+                var fullyQualifiedSourceName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceTable, connectionInternalIdTuple.Item3).FirstOrDefault();
+                var sourceType = MetadataHandling.GetDataObjectType(sourceTable, "", TeamConfigurationSettings);
 
-                var fullyQualifiedTargetName = MetadataHandling.GetTableAndSchema(targetTable, connectionInternalIdTuple.Item5).FirstOrDefault();
-                var targetType = MetadataHandling.GetTableType(targetTable, "", TeamConfigurationSettings);
+                var fullyQualifiedTargetName = MetadataHandling.GetFullyQualifiedDataObjectName(targetTable, connectionInternalIdTuple.Item5).FirstOrDefault();
+                var targetType = MetadataHandling.GetDataObjectType(targetTable, "", TeamConfigurationSettings);
 
                 createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] (" +
                                            "[VERSION_ID], " +
@@ -2239,13 +2248,13 @@ namespace TEAM
 
                 string localInternalSourceConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(localInternalSourceConnectionId);
-                var fullyQualifiedSourceName = MetadataHandling.GetTableAndSchema(sourceTable, sourceConnection).FirstOrDefault();
-                var sourceType = MetadataHandling.GetTableType(sourceTable,"", TeamConfigurationSettings);
+                var fullyQualifiedSourceName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceTable, sourceConnection).FirstOrDefault();
+                var sourceType = MetadataHandling.GetDataObjectType(sourceTable,"", TeamConfigurationSettings);
 
                 string localInternalTargetConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                 var targetConnection = GetTeamConnectionByConnectionId(localInternalTargetConnectionId);
-                var fullyQualifiedTargetName = MetadataHandling.GetTableAndSchema(targetTable, targetConnection).FirstOrDefault();
-                var targetType = MetadataHandling.GetTableType(targetTable, "", TeamConfigurationSettings);
+                var fullyQualifiedTargetName = MetadataHandling.GetFullyQualifiedDataObjectName(targetTable, targetConnection).FirstOrDefault();
+                var targetType = MetadataHandling.GetDataObjectType(targetTable, "", TeamConfigurationSettings);
 
                 createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] (" +
                                            "[VERSION_ID], " +
@@ -2947,7 +2956,7 @@ namespace TEAM
                                     var localTable = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
                                    
                                     // Schema and Table Name
-                                    var localFullyQualifiedTableName = MetadataHandling.GetTableAndSchema(localTable, sourceConnection).FirstOrDefault();
+                                    var localFullyQualifiedTableName = MetadataHandling.GetFullyQualifiedDataObjectName(localTable, sourceConnection).FirstOrDefault();
                                     
                                     tableFilterObjects = tableFilterObjects + "OBJECT_ID(N'[" + connection.Value.DatabaseServer.DatabaseName + "]." + localFullyQualifiedTableName.Key + "."+localFullyQualifiedTableName.Value+"') ,";
                                 }
@@ -2958,7 +2967,7 @@ namespace TEAM
                                     var localInternalConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
 
                                     // Schema and Table Name
-                                    var localFullyQualifiedTableName = MetadataHandling.GetTableAndSchema(localTable, targetConnection).FirstOrDefault();
+                                    var localFullyQualifiedTableName = MetadataHandling.GetFullyQualifiedDataObjectName(localTable, targetConnection).FirstOrDefault();
                                     tableFilterObjects = tableFilterObjects + "OBJECT_ID(N'[" + connection.Value.DatabaseServer.DatabaseName + "]." + localFullyQualifiedTableName.Key + "." + localFullyQualifiedTableName.Value + "') ,";
                                 }
 
@@ -3124,7 +3133,7 @@ namespace TEAM
                             LogMetadataEvent($"Adding {localTableName}.", EventTypes.Information);
                         }
 
-                        var fullyQualifiedName = MetadataHandling.GetTableAndSchema(localTableName, localTeamConnection).FirstOrDefault();
+                        var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(localTableName, localTeamConnection).FirstOrDefault();
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE]");
@@ -3182,7 +3191,7 @@ namespace TEAM
                         string localTableSourceName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(); // The full table as visible in the data grid view.
                         string localTableSourceConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                         TeamConnection localTableConnectionSource = GetTeamConnectionByConnectionId(localTableSourceConnectionId);
-                        var localFullyQualifiedKeyValuePairSource = MetadataHandling.GetTableAndSchema(localTableSourceName, localTableConnectionSource).FirstOrDefault();
+                        var localFullyQualifiedKeyValuePairSource = MetadataHandling.GetFullyQualifiedDataObjectName(localTableSourceName, localTableConnectionSource).FirstOrDefault();
                         string localTableSourceFullyQualifiedNameSource = localFullyQualifiedKeyValuePairSource.Key + '.' +
                                                                           localFullyQualifiedKeyValuePairSource.Value;
 
@@ -3193,7 +3202,7 @@ namespace TEAM
                         string localTableTargetName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                         string localTableTargetConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                         TeamConnection localTableConnectionTarget = GetTeamConnectionByConnectionId(localTableTargetConnectionId);
-                        var localFullyQualifiedKeyValuePairTarget = MetadataHandling.GetTableAndSchema(localTableTargetName, localTableConnectionTarget).FirstOrDefault();
+                        var localFullyQualifiedKeyValuePairTarget = MetadataHandling.GetFullyQualifiedDataObjectName(localTableTargetName, localTableConnectionTarget).FirstOrDefault();
                         string localTableSourceFullyQualifiedNameTarget = localFullyQualifiedKeyValuePairTarget.Key + '.' +
                                                                           localFullyQualifiedKeyValuePairTarget.Value;
 
@@ -3262,7 +3271,7 @@ namespace TEAM
 
                             // Retrieve the business key
                             var businessKey = new List<string>();
-                            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(dataObjectTuple.Item1, dataObjectTuple.Item3).FirstOrDefault();
+                            var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectTuple.Item1, dataObjectTuple.Item3).FirstOrDefault();
 
                             if (dataObjectTuple.Item1 != "Not applicable")
                             {
@@ -3364,7 +3373,7 @@ namespace TEAM
 
                             var filterCriterion = row.Item4.Trim(); filterCriterion = filterCriterion.Replace("'", "''");
 
-                            var loadVector = MetadataHandling.GetLoadVector(row.Item1, row.Item2, TeamConfigurationSettings);
+                            var loadVector = MetadataHandling.GetDataObjectMappingLoadVector(row.Item1, row.Item2, TeamConfigurationSettings);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine($"INSERT INTO [{localTableTypeEvaluation}]");
@@ -3615,7 +3624,7 @@ namespace TEAM
                         var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                        var loadVector = MetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(),
+                        var loadVector = MetadataHandling.GetDataObjectMappingLoadVector(tableName["SOURCE_NAME"].ToString(),
                             tableName["SATELLITE_NAME"].ToString(), TeamConfigurationSettings);
 
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_XREF]");
@@ -3701,7 +3710,7 @@ namespace TEAM
                         var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                        var loadVector = MetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(),
+                        var loadVector = MetadataHandling.GetDataObjectMappingLoadVector(tableName["SOURCE_NAME"].ToString(),
                             tableName["HUB_NAME"].ToString(), TeamConfigurationSettings);
 
                         var insertStatement = new StringBuilder();
@@ -4294,7 +4303,7 @@ namespace TEAM
                     {
                         if (dataObjectTuple.Item2 == MetadataHandling.TableTypes.NaturalBusinessRelationship)
                         {
-                            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(dataObjectTuple.Item1, dataObjectTuple.Item3).FirstOrDefault();
+                            var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectTuple.Item1, dataObjectTuple.Item3).FirstOrDefault();
 
                             var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, versionId, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
                             string businessKey = string.Join(",", businessKeyList);
@@ -4356,7 +4365,7 @@ namespace TEAM
                         var businessKeyDefinition = tableName["BUSINESS_KEY_ATTRIBUTE"].ToString().Trim();
                         businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
 
-                        var loadVector = MetadataHandling.GetLoadVector(tableName["SOURCE_NAME"].ToString(),
+                        var loadVector = MetadataHandling.GetDataObjectMappingLoadVector(tableName["SOURCE_NAME"].ToString(),
                             tableName["LINK_NAME"].ToString(), TeamConfigurationSettings);
 
 
@@ -6677,7 +6686,7 @@ namespace TEAM
 
             foreach (var filter in filterList)
             {
-                var fullyQualifiedName = MetadataHandling.GetTableAndSchema(filter.Item1, filter.Item2).FirstOrDefault();
+                var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
 
                 // Always add the 'regular' mapping.
                 sqlStatementForAttributeVersion.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '"+ fullyQualifiedName.Value+ "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '"+fullyQualifiedName.Key+"')");
@@ -6907,8 +6916,8 @@ namespace TEAM
                     TeamConnection targetConnection = GetTeamConnectionByConnectionId(localTargetConnectionInternalId);
 
                     // The values in the data grid, fully qualified. This means the default schema is added if necessary.
-                    var sourceDataObject = MetadataHandling.GetTableAndSchema(row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(), sourceConnection).FirstOrDefault();
-                    var targetDataObject = MetadataHandling.GetTableAndSchema(row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), targetConnection).FirstOrDefault();
+                    var sourceDataObject = MetadataHandling.GetFullyQualifiedDataObjectName(row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(), sourceConnection).FirstOrDefault();
+                    var targetDataObject = MetadataHandling.GetFullyQualifiedDataObjectName(row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), targetConnection).FirstOrDefault();
 
                     // The values as defined in the associated connections
                     var sourceSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localSourceConnectionInternalId, TeamConfigurationSettings.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "").Replace("]", ""); ;
@@ -6967,7 +6976,7 @@ namespace TEAM
                     TeamConnection targetConnection = dataObjectRow.Item5;
                     var validationAttributeTarget = row[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
-                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         // Check the source
                         try
@@ -7002,7 +7011,7 @@ namespace TEAM
                         }
                         
                     }
-                    else if (evaluationMode == "virtual" && MetadataHandling.GetTableType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    else if (evaluationMode == "virtual" && MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         objectValidated = "";
 
@@ -7133,16 +7142,16 @@ namespace TEAM
                     var validationObjectSource = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
                     var validationObjectSourceConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = GetTeamConnectionByConnectionId(validationObjectSourceConnectionId);
-                    KeyValuePair<string,string> fullyQualifiedValidationObjectSource = MetadataHandling.GetTableAndSchema(validationObjectSource, sourceConnection).FirstOrDefault();
+                    KeyValuePair<string,string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
 
                     // Targets
                     var validationObjectTarget = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                     var validationObjectTargetConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(validationObjectTargetConnectionId);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetTableAndSchema(validationObjectTarget, targetConnection).FirstOrDefault();
+                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
 
                     // No need to evaluate the operational system (real sources))
-                    if (MetadataHandling.GetTableType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) 
+                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) 
                     {
                         string objectValidated;
                         if (evaluationMode == "physical")
@@ -7221,7 +7230,7 @@ namespace TEAM
             foreach (DataRow row in localDataTable.Rows)
             {
                 // If enabled and is a Staging Layer object
-                if ((bool)row[TableMappingMetadataColumns.Enabled.ToString()] && MetadataHandling.GetTableType((string)row[TableMappingMetadataColumns.TargetTable.ToString()],"", TeamConfigurationSettings).In(MetadataHandling.TableTypes.StagingArea, MetadataHandling.TableTypes.PersistentStagingArea))
+                if ((bool)row[TableMappingMetadataColumns.Enabled.ToString()] && MetadataHandling.GetDataObjectType((string)row[TableMappingMetadataColumns.TargetTable.ToString()],"", TeamConfigurationSettings).In(MetadataHandling.TableTypes.StagingArea, MetadataHandling.TableTypes.PersistentStagingArea))
                 {
                     if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
                     {
@@ -7470,7 +7479,7 @@ namespace TEAM
                     string businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
                         
                     
-                    if (evaluationMode == "physical" && MetadataHandling.GetTableType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (evaluationMode == "physical" && MetadataHandling.GetDataObjectType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         try
                         {
@@ -7484,14 +7493,14 @@ namespace TEAM
                     else if (evaluationMode == "virtual")
                     {
                         // Exclude a lookup to the source
-                        if (MetadataHandling.GetTableType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
+                        if (MetadataHandling.GetDataObjectType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())
                         { 
                             objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, businessKeyDefinition, validationConnection, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource);
                         }
                     }
                     else
                     {
-                        if (MetadataHandling.GetTableType(validationObject,"", TeamConfigurationSettings).ToString() !=
+                        if (MetadataHandling.GetDataObjectType(validationObject,"", TeamConfigurationSettings).ToString() !=
                             MetadataHandling.TableTypes.Source.ToString())
                         {
                             _alertValidation.SetTextLogging("     The validation approach (physical/virtual) could not be asserted.\r\n");
@@ -7692,7 +7701,7 @@ namespace TEAM
                     var drivingKeyDefinition = metadataRow.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Value.ToString();
 
                     // Find out what the correct patterns is.
-                    var tableType = MetadataHandling.GetTableType(targetDataObjectName, drivingKeyDefinition, TeamConfigurationSettings);
+                    var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition, TeamConfigurationSettings);
                     LoadPatternDefinition loadPatternDefinition = GlobalParameters.PatternDefinitionList.FirstOrDefault(item => item.LoadPatternType == tableType.ToString());
 
                     // Exception handling, if null then break
@@ -7724,8 +7733,8 @@ namespace TEAM
                     var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
 
-                    var fullyQualifiedNameSource = MetadataHandling.GetTableAndSchema(sourceDataObjectName, sourceConnection).FirstOrDefault();
-                    var fullyQualifiedNameTarget = MetadataHandling.GetTableAndSchema(targetDataObjectName, targetConnection).FirstOrDefault();
+                    var fullyQualifiedNameSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                    var fullyQualifiedNameTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
  
                     mappingRows = metadataDataTable.Select("[TARGET_NAME] = '" + fullyQualifiedNameTarget.Value + "' AND [TARGET_SCHEMA_NAME]='" + fullyQualifiedNameTarget.Key + "' ");
 
@@ -7945,7 +7954,7 @@ namespace TEAM
 
                                     if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
                                     {
-                                        Dictionary<string, string> tableSchema = MetadataHandling.GetTableAndSchema(sourceToTargetMapping.sourceDataObjects[0].name, sourceConnection);
+                                        Dictionary<string, string> tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(sourceToTargetMapping.sourceDataObjects[0].name, sourceConnection);
 
                                         DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                             "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
@@ -7964,7 +7973,7 @@ namespace TEAM
                                     {
                                         if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
                                         {
-                                            var tableSchema = MetadataHandling.GetTableAndSchema(sourceToTargetMapping.targetDataObject.name, targetConnection);
+                                            var tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(sourceToTargetMapping.targetDataObject.name, targetConnection);
 
                                             DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                                 "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
@@ -8024,7 +8033,7 @@ namespace TEAM
 
                                     if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
                                     {
-                                        var tableSchema = MetadataHandling.GetTableAndSchema(sourceDataObjectName, sourceConnection);
+                                        var tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection);
 
                                         try
                                         {
@@ -8048,7 +8057,7 @@ namespace TEAM
 
                                     if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
                                     {
-                                        var tableSchema = MetadataHandling.GetTableAndSchema(targetDataObjectName, targetConnection);
+                                        var tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection);
 
                                         DataRow[] physicalModelRow = physicalModelDataTable.Select(
                                             "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +

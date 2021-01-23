@@ -354,7 +354,8 @@ namespace TEAM
                 }
                 catch
                 {
-                    MessageBox.Show($"An issue was encountered creating the new configuration file. This is usually due to insufficient privileges. Please consider starting the application as Administrator or make sure the directories exist. The file that was attempted to be created was '{fileName}'.")
+                    MessageBox.Show(
+                        $"An issue was encountered creating the new configuration file. This is usually due to insufficient privileges. Please consider starting the application as Administrator or make sure the directories exist. The file that was attempted to be created was '{fileName}'.");
                 }
             }
         }

@@ -36,7 +36,7 @@ namespace TEAM
         public static string GetSurrogateKey(string tableName, TeamConnection teamConnection, TeamConfiguration configuration)
         {
             // Get the fully qualified name
-            KeyValuePair<string,string> fullyQualifiedName = GetTableAndSchema(tableName, teamConnection).FirstOrDefault();
+            KeyValuePair<string,string> fullyQualifiedName = GetFullyQualifiedDataObjectName(tableName, teamConnection).FirstOrDefault();
             
             // Initialise the return value
             string surrogateKey = "";
@@ -92,16 +92,16 @@ namespace TEAM
             }
             return surrogateKey;
         }
-
         
         /// <summary>
         /// This method returns the type of table (classification) as an enumerator based on the name and active conventions.
+        /// Requires fully qualified name, or at least does not check for schemas.
         /// </summary>
-        /// <param name="tableName"></param>
+        /// <param name="dataObjectName"></param>
         /// <param name="additionalInformation"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static TableTypes GetTableType(string tableName, string additionalInformation, TeamConfiguration configuration)
+        public static TableTypes GetDataObjectType(string dataObjectName, string additionalInformation, TeamConfiguration configuration)
         {
             TableTypes localType;
 
@@ -109,38 +109,38 @@ namespace TEAM
             var transformationLabelArray = Utility.SplitLabelIntoArray(configuration.TransformationLabels);
 
             // Remove schema, if one is set
-            tableName = GetNonQualifiedTableName(tableName);
+            dataObjectName = GetNonQualifiedTableName(dataObjectName);
 
             switch (configuration.TableNamingLocation)
             {
                 // I.e. HUB_CUSTOMER
-                case "Prefix" when tableName.StartsWith(configuration.SatTablePrefixValue):
+                case "Prefix" when dataObjectName.StartsWith(configuration.SatTablePrefixValue):
                     localType = TableTypes.Context;
                     break;
-                case "Prefix" when tableName.StartsWith(configuration.HubTablePrefixValue):
+                case "Prefix" when dataObjectName.StartsWith(configuration.HubTablePrefixValue):
                     localType = TableTypes.CoreBusinessConcept;
                     break;
-                case "Prefix" when tableName.StartsWith(configuration.LinkTablePrefixValue):
+                case "Prefix" when dataObjectName.StartsWith(configuration.LinkTablePrefixValue):
                     localType = TableTypes.NaturalBusinessRelationship;
                     break;
-                case "Prefix" when (tableName.StartsWith(configuration.LsatTablePrefixValue) && additionalInformation==""):
+                case "Prefix" when (dataObjectName.StartsWith(configuration.LsatTablePrefixValue) && additionalInformation==""):
                     localType = TableTypes.NaturalBusinessRelationshipContext;
                     break;
-                case "Prefix" when (tableName.StartsWith(configuration.LsatTablePrefixValue) && additionalInformation != ""):
+                case "Prefix" when (dataObjectName.StartsWith(configuration.LsatTablePrefixValue) && additionalInformation != ""):
                     localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey;
                     break;
-                case "Prefix" when tableName.StartsWith(configuration.StgTablePrefixValue):
+                case "Prefix" when dataObjectName.StartsWith(configuration.StgTablePrefixValue):
                     localType = TableTypes.StagingArea;
                     break;
-                case "Prefix" when tableName.StartsWith(configuration.PsaTablePrefixValue):
+                case "Prefix" when dataObjectName.StartsWith(configuration.PsaTablePrefixValue):
                     localType = TableTypes.PersistentStagingArea;
                     break;
                 // Presentation Layer
-                case "Prefix" when presentationLayerLabelArray.Any(s => tableName.StartsWith(s)):
+                case "Prefix" when presentationLayerLabelArray.Any(s => dataObjectName.StartsWith(s)):
                     localType = TableTypes.Presentation;
                     break;
                 // Derived or transformation
-                case "Prefix" when transformationLabelArray.Any(s => tableName.StartsWith(s)):
+                case "Prefix" when transformationLabelArray.Any(s => dataObjectName.StartsWith(s)):
                     localType = TableTypes.Derived;
                     break;
                 // Source
@@ -149,33 +149,33 @@ namespace TEAM
                     break;
                 // Suffix
                 // I.e. CUSTOMER_HUB
-                case "Suffix" when tableName.EndsWith(configuration.SatTablePrefixValue):
+                case "Suffix" when dataObjectName.EndsWith(configuration.SatTablePrefixValue):
                     localType = TableTypes.Context;
                     break;
-                case "Suffix" when tableName.EndsWith(configuration.HubTablePrefixValue):
+                case "Suffix" when dataObjectName.EndsWith(configuration.HubTablePrefixValue):
                     localType = TableTypes.CoreBusinessConcept;
                     break;
-                case "Suffix" when tableName.EndsWith(configuration.LinkTablePrefixValue):
+                case "Suffix" when dataObjectName.EndsWith(configuration.LinkTablePrefixValue):
                     localType = TableTypes.NaturalBusinessRelationship;
                     break;
-                case "Suffix" when (tableName.EndsWith(configuration.LsatTablePrefixValue) && additionalInformation == ""):
+                case "Suffix" when (dataObjectName.EndsWith(configuration.LsatTablePrefixValue) && additionalInformation == ""):
                     localType = TableTypes.NaturalBusinessRelationshipContext;
                     break;
-                case "Suffix" when (tableName.EndsWith(configuration.LsatTablePrefixValue) && additionalInformation != ""):
+                case "Suffix" when (dataObjectName.EndsWith(configuration.LsatTablePrefixValue) && additionalInformation != ""):
                     localType = TableTypes.NaturalBusinessRelationshipContextDrivingKey;
                     break;
-                case "Suffix" when tableName.EndsWith(configuration.StgTablePrefixValue):
+                case "Suffix" when dataObjectName.EndsWith(configuration.StgTablePrefixValue):
                     localType = TableTypes.StagingArea;
                     break;
-                case "Suffix" when tableName.EndsWith(configuration.PsaTablePrefixValue):
+                case "Suffix" when dataObjectName.EndsWith(configuration.PsaTablePrefixValue):
                     localType = TableTypes.PersistentStagingArea;
                     break;
                 // Presentation Layer
-                case "Suffix" when presentationLayerLabelArray.Any(s => tableName.EndsWith(s)):
+                case "Suffix" when presentationLayerLabelArray.Any(s => dataObjectName.EndsWith(s)):
                     localType = TableTypes.Presentation;
                     break;
                 // Transformation / derived
-                case "Suffix" when transformationLabelArray.Any(s => tableName.EndsWith(s)):
+                case "Suffix" when transformationLabelArray.Any(s => dataObjectName.EndsWith(s)):
                     localType = TableTypes.Derived;
                     break;
                 case "Suffix":
@@ -189,20 +189,19 @@ namespace TEAM
             return localType;
         }
 
-
-
         /// <summary>
         /// This method returns the ETL loading 'direction' based on the source and target mapping.
         /// </summary>
-        /// <param name="sourceMapping"></param>
-        /// <param name="targetMapping"></param>
+        /// <param name="sourceDataObjectName"></param>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static string GetLoadVector(string sourceMapping, string targetMapping, TeamConfiguration configuration)
+        public static string GetDataObjectMappingLoadVector(string sourceDataObjectName, string targetDataObjectName, TeamConfiguration teamConfiguration)
         {
             // This is used to evaluate the correct connection for the generated ETL processes.
 
-            TableTypes evaluatedSource = GetTableType(sourceMapping, "", configuration);
-            TableTypes evaluatedTarget = GetTableType(targetMapping, "", configuration);
+            TableTypes evaluatedSource = GetDataObjectType(sourceDataObjectName, "", teamConfiguration);
+            TableTypes evaluatedTarget = GetDataObjectType(targetDataObjectName, "", teamConfiguration);
 
             string loadVector = "";
 
@@ -269,8 +268,9 @@ namespace TEAM
         /// If no schema is defined, the connection information will be used to determine the schema. If all else fails 'dbo' will set as default.
         /// </summary>
         /// <param name="tableName"></param>
+        /// <param name="teamConnection"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetTableAndSchema(string tableName, TeamConnection teamConnection)
+        public static Dictionary<string, string> GetFullyQualifiedDataObjectName(string tableName, TeamConnection teamConnection)
         {
             Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
             string schemaName = "";
@@ -296,14 +296,11 @@ namespace TEAM
                 {
                     schemaName = teamConnection.DatabaseServer.SchemaName ?? "dbo";
                 }
-                
 
                 returnTableName = tableName;
 
                 fullyQualifiedTableName.Add(schemaName, returnTableName);
             }
-
-            //fullyQualifiedTableName.Add(schemaName, returnTableName);
 
             return fullyQualifiedTableName;
         }
@@ -321,7 +318,7 @@ namespace TEAM
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var fullyQualifiedName = GetTableAndSchema(fullyQualifiedTableName, teamConnection).FirstOrDefault();
+            var fullyQualifiedName = GetFullyQualifiedDataObjectName(fullyQualifiedTableName, teamConnection).FirstOrDefault();
 
             // The metadata connection can be used.
             var conn = new SqlConnection
@@ -396,7 +393,7 @@ namespace TEAM
         public static List<string> GetRegularTableBusinessKeyListPhysical(string fullyQualifiedTableName, TeamConnection teamConnection, string connectionstring, TeamConfiguration configuration)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
-            var fullyQualifiedName = MetadataHandling.GetTableAndSchema(fullyQualifiedTableName, teamConnection).FirstOrDefault();
+            var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(fullyQualifiedTableName, teamConnection).FirstOrDefault();
 
            // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
             var conn = new SqlConnection
@@ -480,7 +477,7 @@ namespace TEAM
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
-            var fullyQualifiedName = GetTableAndSchema(fullyQualifiedTableName, teamConnection).FirstOrDefault();
+            var fullyQualifiedName = GetFullyQualifiedDataObjectName(fullyQualifiedTableName, teamConnection).FirstOrDefault();
 
             // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
             var conn = new SqlConnection
