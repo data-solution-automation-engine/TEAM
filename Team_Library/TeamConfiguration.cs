@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace TEAM
 {
@@ -343,10 +344,17 @@ namespace TEAM
 
                 initialConfigurationFile.AppendLine("/* End of file */");
 
-                using (var outfile = new StreamWriter(fileName))
+                try
                 {
-                    outfile.Write(initialConfigurationFile.ToString());
-                    outfile.Close();
+                    using (var outfile = new StreamWriter(fileName))
+                    {
+                        outfile.Write(initialConfigurationFile.ToString());
+                        outfile.Close();
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show($"An issue was encountered creating the new configuration file. This is usually due to insufficient privileges. Please consider starting the application as Administrator or make sure the directories exist. The file that was attempted to be created was '{fileName}'.")
                 }
             }
         }

@@ -9,7 +9,6 @@ using System.Drawing;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using Microsoft.IdentityModel.Tokens;
 
 namespace TEAM
 {
@@ -188,7 +187,6 @@ namespace TEAM
             //FormBase.EnvironmentVersion.GetEnvironmentVersionsFromFile(Path.GetDirectoryName(configurationFile));
 
             EnvironmentVersion.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
-
 
             // Load the pattern definition file.
             try
