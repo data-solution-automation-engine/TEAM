@@ -206,8 +206,8 @@ namespace TEAM
                 }
                 else
                 {
-                    // Do nothing
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The load vector and table types between {sourceDataObjectFullyQualifiedName} and {targetDataObjectFullyQualifiedName} could not be asserted."));
+                    // Do nothing, this hits like a billion times
+                    // GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The load vector and table types between {sourceDataObjectFullyQualifiedName} and {targetDataObjectFullyQualifiedName} could not be asserted."));
                 }
 
                 if (cell != null)
@@ -2429,20 +2429,25 @@ namespace TEAM
         /// <returns></returns>
         private static Tuple<bool, string, TeamConnection, string, TeamConnection> GetDataObjectMappingFromDataItemMapping(DataTable tableMappingDataTable, string sourceTable, string targetTable)
         {
+            // Default return value
+            Tuple<bool, string, TeamConnection, string, TeamConnection> returnTuple = new Tuple<bool, string, TeamConnection, string, TeamConnection>
+            (
+                false,
+                sourceTable,
+                null,
+                targetTable,
+                null
+            );
             
             // Find the corresponding row in the Data Object Mapping grid
             DataRow[] DataObjectMappings = tableMappingDataTable.Select("[" + TableMappingMetadataColumns.SourceTable + "] = '" + sourceTable + "' AND" +
                                                                         "[" + TableMappingMetadataColumns.TargetTable + "] = '" + targetTable + "'");
 
-            string connectionInternalIdSource = "";
-            string connectionInternalIdTarget = "";
-
-
             if (DataObjectMappings is null || DataObjectMappings.Length == 0)
             {
                 // There is no matching row found in the Data Object Mapping grid. Validation should pick this up!
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"While processing the Data Item mappings, no matching Data Object mapping was found."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, no matching Data Object mapping was found."));
+                
             }
             else if (DataObjectMappings.Length > 1)
             {
@@ -2452,23 +2457,25 @@ namespace TEAM
             }
             else
             {
-                connectionInternalIdSource = DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                connectionInternalIdTarget = DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-            }
-            
-            TeamConnection sourceConnection = GetTeamConnectionByConnectionId(connectionInternalIdSource);
-            TeamConnection targetConnection = GetTeamConnectionByConnectionId(connectionInternalIdTarget);
-
-
-            Tuple<bool, string, TeamConnection, string, TeamConnection> returnTuple = new Tuple<bool, string, TeamConnection, string, TeamConnection> 
+                var connectionInternalIdSource = DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                var connectionInternalIdTarget = DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                TeamConnection sourceConnection = GetTeamConnectionByConnectionId(connectionInternalIdSource);
+                TeamConnection targetConnection = GetTeamConnectionByConnectionId(connectionInternalIdTarget);
+                
+                // Set the right values
+                returnTuple = new Tuple<bool, string, TeamConnection, string, TeamConnection>
                 (
-                (bool)DataObjectMappings[0][TableMappingMetadataColumns.Enabled.ToString()],
-                sourceTable,
-                sourceConnection,
-                targetTable,
-                targetConnection
+                    (bool)DataObjectMappings[0][TableMappingMetadataColumns.Enabled.ToString()],
+                    sourceTable,
+                    sourceConnection,
+                    targetTable,
+                    targetConnection
                 );
-            
+
+            }
+
+
+
             return returnTuple;
         }
 
