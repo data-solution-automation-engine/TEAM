@@ -592,6 +592,8 @@
             this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
             this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(276, 20);
             this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLogicalDeleteAttributeName, "The (optional) name of a logical delete attribute can be provided here. \r\n\r\nThis " +
+        "is a flag to label a record as deleted in the originating / feeding sytem.");
             // 
             // textBoxETLUpdateProcessID
             // 
@@ -600,6 +602,8 @@
             this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
             this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(276, 20);
             this.textBoxETLUpdateProcessID.TabIndex = 16;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLUpdateProcessID, "A pointer to the data logistics framework, in case in-place updates are made on r" +
+        "ows.");
             // 
             // textBoxCurrentRecordAttributeName
             // 
@@ -608,6 +612,7 @@
             this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
             this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(276, 20);
             this.textBoxCurrentRecordAttributeName.TabIndex = 20;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxCurrentRecordAttributeName, "An optional attribute name for the \'current row\', if used.");
             // 
             // textBoxRecordChecksum
             // 
@@ -616,6 +621,8 @@
             this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
             this.textBoxRecordChecksum.Size = new System.Drawing.Size(276, 20);
             this.textBoxRecordChecksum.TabIndex = 19;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordChecksum, "This is the name of the attribute that holds the full row checksum across all att" +
+        "ribute values.");
             // 
             // textBoxSourceRowId
             // 
@@ -624,6 +631,7 @@
             this.textBoxSourceRowId.Name = "textBoxSourceRowId";
             this.textBoxSourceRowId.Size = new System.Drawing.Size(276, 20);
             this.textBoxSourceRowId.TabIndex = 18;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSourceRowId, resources.GetString("textBoxSourceRowId.ToolTip"));
             // 
             // textBoxEventDateTime
             // 
@@ -632,6 +640,7 @@
             this.textBoxEventDateTime.Name = "textBoxEventDateTime";
             this.textBoxEventDateTime.Size = new System.Drawing.Size(276, 20);
             this.textBoxEventDateTime.TabIndex = 17;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxEventDateTime, resources.GetString("textBoxEventDateTime.ToolTip"));
             // 
             // textBoxETLProcessID
             // 
@@ -640,6 +649,9 @@
             this.textBoxETLProcessID.Name = "textBoxETLProcessID";
             this.textBoxETLProcessID.Size = new System.Drawing.Size(276, 20);
             this.textBoxETLProcessID.TabIndex = 15;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLProcessID, "This is the audit trail Id / pointer to the data logistics framework (e.g. DIRECT" +
+        " or other), so that each row can be uniquely related to the processes that inser" +
+        "ted or otherwise modified it.");
             // 
             // textBoxChangeDataCaptureIndicator
             // 
@@ -656,6 +668,7 @@
             this.textBoxDWHKeyIdentifier.Name = "textBoxDWHKeyIdentifier";
             this.textBoxDWHKeyIdentifier.Size = new System.Drawing.Size(276, 20);
             this.textBoxDWHKeyIdentifier.TabIndex = 13;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxDWHKeyIdentifier, resources.GetString("textBoxDWHKeyIdentifier.ToolTip"));
             // 
             // label43
             // 
@@ -820,6 +833,9 @@
             this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
             this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(276, 20);
             this.textBoxExpiryDateTimeName.TabIndex = 5;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxExpiryDateTimeName, "This attribute label captures the name of the expiry date/time attribute, if used" +
+        ". \r\n\r\nIn most deployments a technical expiry/end date is superfluous but if used" +
+        " it can be set here.");
             // 
             // textBoxRecordSource
             // 
@@ -828,6 +844,7 @@
             this.textBoxRecordSource.Name = "textBoxRecordSource";
             this.textBoxRecordSource.Size = new System.Drawing.Size(276, 20);
             this.textBoxRecordSource.TabIndex = 6;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordSource, resources.GetString("textBoxRecordSource.ToolTip"));
             // 
             // textBoxLDST
             // 
@@ -836,6 +853,7 @@
             this.textBoxLDST.Name = "textBoxLDST";
             this.textBoxLDST.Size = new System.Drawing.Size(276, 20);
             this.textBoxLDST.TabIndex = 4;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLDST, resources.GetString("textBoxLDST.ToolTip"));
             // 
             // textBoxHubTablePrefix
             // 
@@ -844,6 +862,7 @@
             this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
             this.textBoxHubTablePrefix.Size = new System.Drawing.Size(276, 20);
             this.textBoxHubTablePrefix.TabIndex = 0;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubTablePrefix, resources.GetString("textBoxHubTablePrefix.ToolTip"));
             // 
             // textBoxSatPrefix
             // 
@@ -852,6 +871,7 @@
             this.textBoxSatPrefix.Name = "textBoxSatPrefix";
             this.textBoxSatPrefix.Size = new System.Drawing.Size(276, 20);
             this.textBoxSatPrefix.TabIndex = 1;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatPrefix, resources.GetString("textBoxSatPrefix.ToolTip"));
             // 
             // textBoxLinkTablePrefix
             // 
@@ -860,6 +880,7 @@
             this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
             this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(276, 20);
             this.textBoxLinkTablePrefix.TabIndex = 2;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkTablePrefix, resources.GetString("textBoxLinkTablePrefix.ToolTip"));
             // 
             // textBoxLinkSatPrefix
             // 
@@ -868,6 +889,7 @@
             this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
             this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(276, 20);
             this.textBoxLinkSatPrefix.TabIndex = 3;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkSatPrefix, resources.GetString("textBoxLinkSatPrefix.ToolTip"));
             // 
             // label39
             // 
@@ -1032,6 +1054,7 @@
             this.tabPageConnectionMain.Size = new System.Drawing.Size(1106, 582);
             this.tabPageConnectionMain.TabIndex = 0;
             this.tabPageConnectionMain.Text = "Overview of data connections";
+            this.toolTipConfigurationSettings.SetToolTip(this.tabPageConnectionMain, resources.GetString("tabPageConnectionMain.ToolTip"));
             this.tabPageConnectionMain.UseVisualStyleBackColor = true;
             // 
             // richTextBoxMetadataConnection
