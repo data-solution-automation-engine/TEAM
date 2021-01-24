@@ -12,7 +12,7 @@ namespace TEAM
     /// </summary>
     class JsonOutputHandling
     {
-        public static DataObject AddDataObjectExtensions(DataObject dataObject, TeamConnection teamConnection)
+        public static DataObject AddDataObjectExtensionsForDatabase(DataObject dataObject, TeamConnection teamConnection)
         {
             // Add dataObjectConnection, including connection string (to Data Object)
             var localDataConnection = new DataConnection();

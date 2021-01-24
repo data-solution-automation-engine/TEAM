@@ -153,7 +153,7 @@ namespace TEAM
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{TableMappingMetadataColumns.SourceTable}] ASC, [{TableMappingMetadataColumns.TargetTable}] ASC, [{TableMappingMetadataColumns.BusinessKeyDefinition}] ASC";
+            DataTable.DefaultView.Sort = $"[{TableMappingMetadataColumns.TargetTable}] ASC, [{TableMappingMetadataColumns.SourceTable}] ASC, [{TableMappingMetadataColumns.BusinessKeyDefinition}] ASC";
         }
 
         /// <summary>

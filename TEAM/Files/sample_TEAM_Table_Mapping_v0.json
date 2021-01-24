@@ -490,5 +490,41 @@
     "businessKeyDefinition": "Demographic_Segment_Code",
     "drivingKeyDefinition": "",
     "filterCriteria": ""
+  },
+  {
+    "enabledIndicator": true,
+    "tableMappingHash": "C330B791DBC0F977DF5E0B24DA344909",
+    "versionId": 0,
+    "sourceTable": "HUB_CUSTOMER",
+    "sourceConnectionKey": "IntegrationConnectionInternalId",
+    "targetTable": "DIM_CUSTOMER",
+    "targetConnectionKey": "PresentationConnectionInternalId",
+    "businessKeyDefinition": "CUSTOMER_SK",
+    "drivingKeyDefinition": "",
+    "filterCriteria": ""
+  },
+  {
+    "enabledIndicator": true,
+    "tableMappingHash": "5E9EA22FD23B1BD2C3AD9DE85A618462",
+    "versionId": 0,
+    "sourceTable": "SAT_CUSTOMER",
+    "sourceConnectionKey": "IntegrationConnectionInternalId",
+    "targetTable": "DIM_CUSTOMER",
+    "targetConnectionKey": "PresentationConnectionInternalId",
+    "businessKeyDefinition": "CUSTOMER_SK",
+    "drivingKeyDefinition": "",
+    "filterCriteria": ""
+  },
+  {
+    "enabledIndicator": true,
+    "tableMappingHash": "EF7BD027DDC046E88331AC404FB37DF7",
+    "versionId": 0,
+    "sourceTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "sourceConnectionKey": "IntegrationConnectionInternalId",
+    "targetTable": "DIM_CUSTOMER",
+    "targetConnectionKey": "PresentationConnectionInternalId",
+    "businessKeyDefinition": "CUSTOMER_SK",
+    "drivingKeyDefinition": "",
+    "filterCriteria": ""
   }
 ]

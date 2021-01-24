@@ -26,6 +26,11 @@ namespace TEAM
     {
         public string selectedDataObject { get; set; }
         public DateTime generationDateTime { get; } = DateTime.Now;
+
+        public GenerationSpecificMetadata(string dataObjectName)
+        {
+            selectedDataObject = dataObjectName;
+        }
     }
 
     /// <summary>
@@ -44,7 +49,17 @@ namespace TEAM
 
         public string etlProcessAttribute { get; set; } 
         public string sourceRowIdAttribute { get; set; }
-        
+
+        public MetadataConfiguration(TeamConfiguration teamConfiguration)
+        {
+            recordSourceAttribute = teamConfiguration.RecordSourceAttribute;
+            changeDataCaptureAttribute = teamConfiguration.ChangeDataCaptureAttribute;
+            etlProcessAttribute = teamConfiguration.EtlProcessAttribute;
+            eventDateTimeAttribute = teamConfiguration.EventDateTimeAttribute;
+            loadDateTimeAttribute = teamConfiguration.LoadDateTimeAttribute;
+            recordChecksumAttribute = teamConfiguration.RecordChecksumAttribute;
+            sourceRowIdAttribute = teamConfiguration.RowIdAttribute;
+        }
     }
 
     class InterfaceHandling
