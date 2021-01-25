@@ -187,5 +187,50 @@
     "targetTable": "SAT_SEGMENT",
     "targetAttribute": "SEGMENT_DESCRIPTION",
     "notes": ""
+  },
+  {
+    "attributeMappingHash": "02C5AC688E93E83DC750F03FEA0BB26A",
+    "versionId": 0,
+    "sourceTable": "SAT_CUSTOMER",
+    "sourceAttribute": "DATE_OF_BIRTH",
+    "targetTable": "DIM_CUSTOMER",
+    "targetAttribute": "DATE_OF_BIRTH",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "759ED4E15F53BE2E52361FF879795432",
+    "versionId": 0,
+    "sourceTable": "SAT_CUSTOMER",
+    "sourceAttribute": "GIVEN_NAME",
+    "targetTable": "DIM_CUSTOMER",
+    "targetAttribute": "GIVEN_NAME",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "90376798C09249044F5E77EB5729E676",
+    "versionId": 0,
+    "sourceTable": "SAT_CUSTOMER",
+    "sourceAttribute": "SUBURB",
+    "targetTable": "DIM_CUSTOMER",
+    "targetAttribute": "SUBURB",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "AA0DB92AADB9F6B70BB36B475B9BD4DC",
+    "versionId": 0,
+    "sourceTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "sourceAttribute": "CONTACT_NUMBER",
+    "targetTable": "DIM_CUSTOMER",
+    "targetAttribute": "CONTACT_NUMBER",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "AC9EA28B74B6D9E58FA00EA908A8CB74",
+    "versionId": 0,
+    "sourceTable": "HUB_CUSTOMER",
+    "sourceAttribute": "CUSTOMER_ID",
+    "targetTable": "DIM_CUSTOMER",
+    "targetAttribute": "CUSTOMER_ID",
+    "notes": ""
   }
 ]

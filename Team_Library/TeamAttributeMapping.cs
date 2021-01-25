@@ -52,7 +52,7 @@ namespace TEAM
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{AttributeMappingMetadataColumns.SourceTable}] ASC, [{AttributeMappingMetadataColumns.SourceColumn}] ASC, [{AttributeMappingMetadataColumns.TargetTable}] ASC, [{AttributeMappingMetadataColumns.SourceTable}] ASC";
+            DataTable.DefaultView.Sort = $"[{AttributeMappingMetadataColumns.TargetTable}] ASC, [{AttributeMappingMetadataColumns.TargetColumn}] ASC, [{AttributeMappingMetadataColumns.TargetTable}] ASC, [{AttributeMappingMetadataColumns.SourceTable}] ASC";
         }
 
         /// <summary>

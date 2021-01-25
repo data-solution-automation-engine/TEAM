@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using Windows.Devices.AllJoyn;
 using TEAM_Library;
 
 namespace TEAM
@@ -7728,6 +7727,7 @@ namespace TEAM
             if (checkBoxSaveInterfaceToJson.Checked)
             {
                 TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", dataObjectMappings);
+                richTextBoxInformation.AppendText($"The file {GlobalParameters.OutputPath}{targetDataObjectName}.json has been created.");
             }
         }
 

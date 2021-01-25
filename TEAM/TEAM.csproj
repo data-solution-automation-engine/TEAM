@@ -309,6 +309,9 @@
     <Content Include="Scripts\generateSampleSourceSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\generateSamplePresentationSchema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\generateSampleStagingSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

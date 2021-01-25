@@ -684,7 +684,7 @@ namespace TEAM
                 try
                 {
                     connectionVersion.Open();
-                    //UpdateRichTextBoxInformation("The database connection can be established.\r\n");
+                    UpdateRichTextBoxInformation("The database connection could be successfully established.\r\n");
                 }
                 catch (Exception)
                 {
