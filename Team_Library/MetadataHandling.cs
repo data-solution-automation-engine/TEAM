@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using Microsoft.Data.SqlClient;
 
@@ -95,7 +94,7 @@ namespace TEAM
         
         /// <summary>
         /// This method returns the type of table (classification) as an enumerator based on the name and active conventions.
-        /// Requires fully qualified name, or at least does not check for schemas.
+        /// Requires fully qualified name, or at least ignores schemas in the name.
         /// </summary>
         /// <param name="dataObjectName"></param>
         /// <param name="additionalInformation"></param>

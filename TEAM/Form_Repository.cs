@@ -148,9 +148,9 @@ namespace TEAM
         {
             if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
             {
-                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
-                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
-                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
+                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
             }
         }
 

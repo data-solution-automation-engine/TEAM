@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace TEAM
 {
-    internal class JsonHandling
+    internal class TeamJsonHandling
     {
         /// <summary>
         ///    Method to create a new dummy Json file in the designated working directory.

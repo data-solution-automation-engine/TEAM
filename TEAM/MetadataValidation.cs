@@ -85,7 +85,13 @@ namespace TEAM
             return returnExistenceEvaluation;
         }
 
-        // Check if an object / table exists in the metadata
+        /// <summary>
+        /// Check if an object / table exists in the metadata.
+        /// </summary>
+        /// <param name="validationObject"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="inputDataTable"></param>
+        /// <returns></returns>
         internal static string ValidateObjectExistenceVirtual (string validationObject, TeamConnection teamConnection, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
@@ -119,7 +125,14 @@ namespace TEAM
             return returnExistenceEvaluation;
         }
 
-        // Check if an attribute exists in the metadata
+        /// <summary>
+        /// Check if an attribute exists in the metadata.
+        /// </summary>
+        /// <param name="validationObject"></param>
+        /// <param name="validationAttribute"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="inputDataTable"></param>
+        /// <returns></returns>
         internal static string ValidateAttributeExistenceVirtual(string validationObject, string validationAttribute, TeamConnection teamConnection, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
@@ -144,6 +157,12 @@ namespace TEAM
             return returnExistenceEvaluation;
         }
 
+        /// <summary>
+        /// Validate the relationship between Data Object Mappings, i.e. dependencies between objects which should exist because they are related.
+        /// </summary>
+        /// <param name="validationObject"></param>
+        /// <param name="inputDataTable"></param>
+        /// <returns></returns>
         internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, DataTable inputDataTable)
         {
             // First, the Business Key need to be checked. This is to determine how many dependents are expected.
@@ -238,6 +257,14 @@ namespace TEAM
             return result;
         }
 
+        /// <summary>
+        /// Check the ordinal position of Link Keys against their business key definitions.
+        /// </summary>
+        /// <param name="validationObject"></param>
+        /// <param name="inputDataTable"></param>
+        /// <param name="physicalModelDataTable"></param>
+        /// <param name="evaluationMode"></param>
+        /// <returns></returns>
         internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string, string> validationObject, DataTable inputDataTable, DataTable physicalModelDataTable, string evaluationMode)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
@@ -391,7 +418,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Validate the Business Key definition against the physical model, taking the source object and business key definition as input parameters, together with a connectionstring to validate against.
+        /// Validate the Business Key definition against the physical model, taking the source object and business key definition as input parameters, together with a connection string to validate against.
         /// </summary>
         /// <param name="validationObject"></param>
         /// <param name="connectionString"></param>
@@ -466,6 +493,14 @@ namespace TEAM
             return result;
         }
 
+        /// <summary>
+        /// Validate the Business Key definition against the snapshot of the physical model (the physical model data grid), taking the source object and business key definition as input parameters, together with a connection string to validate against.
+        /// </summary>
+        /// <param name="validationObject"></param>
+        /// <param name="businessKeyDefinition"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="inputDataTable"></param>
+        /// <returns></returns>
         internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(string validationObject, string businessKeyDefinition, TeamConnection teamConnection, DataTable inputDataTable)
         {
             // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
@@ -525,8 +560,6 @@ namespace TEAM
             // Return the result of the test;
             return result;
         }
-
-
     }
 
 

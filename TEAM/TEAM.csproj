@@ -114,8 +114,8 @@
     <Compile Include="Form_PIT.Designer.cs">
       <DependentUpon>Form_PIT.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoadPatternHandling.cs" />
-    <Compile Include="Utility.cs" />
+    <Compile Include="TeamLoadPatternHandling.cs" />
+    <Compile Include="TeamUtility.cs" />
     <Compile Include="TeamObjectModel.cs" />
     <Compile Include="CustomTabPageEnvironment.cs">
       <SubType>Component</SubType>
@@ -126,7 +126,7 @@
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="JsonHandling.cs" />
+    <Compile Include="TeamJsonHandling.cs" />
     <Compile Include="CustomDataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
