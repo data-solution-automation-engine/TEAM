@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using Microsoft.Data.SqlClient;
 
 namespace TEAM
 {
@@ -286,8 +287,7 @@ namespace TEAM
                 }
                 else
                 {
-                    richTextBoxInformation.Text =
-                        "There is no value given for the Output Path. Please enter a valid path name.";
+                    richTextBoxInformation.Text = @"There is no value given for the Output Path. Please enter a valid path name.";
                 }
             }
             catch (Exception ex)
@@ -403,11 +403,17 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.WorkingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
-            using (var outfile =
-                new StreamWriter(GlobalParameters.CorePath+ GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+            try
             {
-                outfile.Write(rootPathConfigurationFile.ToString());
-                outfile.Close();
+                using (var outfile = new StreamWriter(GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+                {
+                    outfile.Write(rootPathConfigurationFile.ToString());
+                    outfile.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {GlobalParameters.CorePath +GlobalParameters.PathFileName + GlobalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
             }
         }
 
@@ -811,8 +817,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text =
-                    "An error has occured while attempting to open the root path file. The error message is: " + ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the root path file. The error message is: " + ex;
             }
         }
 
@@ -831,10 +836,12 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text =
-                    "An error has occured while attempting to open the active configuration file. The error message is: " + ex;
+                richTextBoxInformation.Text = $"An error has occurred while attempting to open the active configuration file. The error message is: {ex}.";
             }
         }
+
+
+
 
         /// <summary>
         /// Manage the event when the environment selection changes.

@@ -23,7 +23,7 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.1";
+            const string versionNumberForTeamApplication = "v1.6.2";
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
 
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
@@ -33,7 +33,14 @@ namespace TEAM
 
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
-            LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+            try
+            {
+                LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+            }
+            catch (Exception ex)
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{ex}"));
+            }
 
             #region Load the root path configuration settings (user defined paths and working environment)
 
@@ -181,7 +188,6 @@ namespace TEAM
 
             EnvironmentVersion.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
 
-
             // Load the pattern definition file.
             try
             {
@@ -284,9 +290,6 @@ namespace TEAM
                 connOmd.Close();
                 connOmd.Dispose();
             }
-
-
-
         }
 
         public void DisableMenu()
@@ -691,19 +694,6 @@ namespace TEAM
             t.Start();
         }
 
-
-
-        private void buttonCancelEventLogForm_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorkerEventLog.WorkerSupportsCancellation)
-            {
-                // Cancel the asynchronous operation.
-                backgroundWorkerEventLog.CancelAsync();
-                // Close the AlertForm
-                _alertEventLog.Close();
-            }
-        }
-
         private void backgroundWorkerEventLog_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -718,26 +708,19 @@ namespace TEAM
             else
             {
                 backgroundWorkerEventLog.ReportProgress(0);
-
                 _alertEventLog.SetTextLogging("Event Log.\r\n\r\n");
 
                 try
                 {
-                    //var enumDisplayStatus = (EnumDisplayStatus)value;
-                    //string stringValue = enumDisplayStatus.ToString();
-
                     foreach (var individualEvent in localEventLog)
                     {
-                        _alertEventLog.SetTextLogging(
-                            $"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
+                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex,
-                        "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("An issue occurred displaying the event log. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
 
                 backgroundWorkerEventLog.ReportProgress(100);
             }
@@ -771,16 +754,14 @@ namespace TEAM
             {
                 // create a new instance of the alert form
                 _alertEventLog = new Form_Alert();
+                _alertEventLog.Text = "Event Log";
                 _alertEventLog.ShowLogButton(false);
                 _alertEventLog.ShowCancelButton(false);
                 _alertEventLog.ShowProgressBar(false);
                 _alertEventLog.ShowProgressLabel(false);
-
-                // event handler for the Cancel button in AlertForm
-                _alertEventLog.Canceled += buttonCancelEventLogForm_Click;
                 _alertEventLog.Show();
+                
                 // Start the asynchronous operation.
-
                 backgroundWorkerEventLog.RunWorkerAsync();
             }
         }

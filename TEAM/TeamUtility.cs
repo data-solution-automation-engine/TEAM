@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using Microsoft.Data.SqlClient;
 using System.IO;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -159,33 +158,9 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error has occured while creating a file backup. The error message is " + ex,
+                MessageBox.Show("An error has occurred while creating a file backup. The error message is " + ex,
                     "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-    }
-
-    internal static class DatabaseHandling
-    {
-        public static List<string> GetItemList(string inputQuery, SqlConnection conn)
-        {
-            List<string> returnList = new List<string>();
-
-            try
-            {
-                var tables = Utility.GetDataTable(ref conn, inputQuery);
-
-                foreach (DataRow row in tables.Rows)
-                {
-                    returnList.Add(row["TARGET_NAME"].ToString());
-                }
-            }
-            catch (Exception)
-            {
-                // IGNORE FOR NOW
-            }
-
-            return returnList;
         }
     }
 }

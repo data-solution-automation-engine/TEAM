@@ -27,6 +27,7 @@ namespace TEAM
                 comboBoxStagingConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
                 comboBoxPsaConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
                 comboBoxIntegrationConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
+                comboBoxPresentationConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
             }
 
             comboBoxSourceConnection.ValueMember = "Key";
@@ -37,6 +38,8 @@ namespace TEAM
             comboBoxPsaConnection.DisplayMember = "Value";
             comboBoxIntegrationConnection.ValueMember = "Key";
             comboBoxIntegrationConnection.DisplayMember = "Value";
+            comboBoxPresentationConnection.ValueMember = "Key";
+            comboBoxPresentationConnection.DisplayMember = "Value";
 
             if (TeamConfigurationSettings.MetadataConnection is null)
             {
@@ -48,6 +51,7 @@ namespace TEAM
                 comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
                 comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
                 comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
+                comboBoxPresentationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
             }
         }
 
@@ -100,7 +104,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    _alertRepository.SetTextLogging("An issue has occured " + ex);
+                    _alertRepository.SetTextLogging("An issue has occurred " + ex);
                     _alertRepository.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
                     ErrorHandlingParameters.ErrorCatcher++;
                     ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
@@ -131,7 +135,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    targetForm.SetTextLogging("An issue has occured " + ex);
+                    targetForm.SetTextLogging("An issue has occurred " + ex);
                     targetForm.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
                     ErrorHandlingParameters.ErrorCatcher++;
                     ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
@@ -148,9 +152,9 @@ namespace TEAM
         {
             if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
             {
-                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
-                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
-                JsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
+                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
             }
         }
 
@@ -195,7 +199,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    _alertRepository.SetTextLogging("An issue has occured executing the repository creation logic. The reported error was: " + ex);
+                    _alertRepository.SetTextLogging("An issue has occurred executing the repository creation logic. The reported error was: " + ex);
                 }
 
                 // Error handling
@@ -289,7 +293,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 // Error handling
@@ -365,12 +369,12 @@ namespace TEAM
             var localIntegrationDatabaseName = localIntegrationConnectionObject.Key.DatabaseServer.DatabaseName;
 
 
-            //comboBoxPresentationConnection.Invoke((MethodInvoker)delegate
-            //{
-            //    localPresentationConnectionObject = (KeyValuePair<TeamConnectionProfile, string>)comboBoxPresentationConnection.SelectedItem;
-            //});
-            //var localPresentationConnectionString = localPresentationConnectionObject.Key.CreateConnectionString(false);
-            //var localPresentationDatabaseName = localPresentationConnectionObject.Key.databaseServer.databaseName;
+            comboBoxPresentationConnection.Invoke((MethodInvoker)delegate
+            {
+                localPresentationConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxPresentationConnection.SelectedItem;
+            });
+            var localPresentationConnectionString = localPresentationConnectionObject.Key.CreateSqlServerConnectionString(false);
+            var localPresentationDatabaseName = localPresentationConnectionObject.Key.DatabaseServer.DatabaseName;
 
             #region Source
             if (checkBoxCreateSampleSource.Checked)
@@ -380,44 +384,45 @@ namespace TEAM
             #endregion
 
             #region Staging
+
             if (checkBoxCreateSampleStaging.Checked)
             {
-                if (checkBoxDIRECT.Checked)
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchemaDIRECT.sql", commandDictionary, localStagingConnectionString);
-                }
-                else
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql", commandDictionary, localStagingConnectionString);
-                }
+
+                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql",
+                    commandDictionary, localStagingConnectionString);
+
             }
+
             #endregion
 
             #region Persistent Staging
+
             if (checkBoxCreateSamplePSA.Checked)
             {
-                if (checkBoxDIRECT.Checked)
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchemaDIRECT.sql", commandDictionary, localPsaConnectionString);
-                }
-                else
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql", commandDictionary, localPsaConnectionString);
-                }
+
+                PopulateSqlCommandDictionaryFromFile(
+                    GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql", commandDictionary,
+                    localPsaConnectionString);
+
             }
+
             #endregion
 
             #region Integration Layer
-            if (checkBoxCreateSampleDV.Checked)
+            if (checkBoxCreateSampleIntegration.Checked)
             {
-                if (checkBoxDIRECT.Checked)
-                {
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleIntegrationSchemaDIRECT.sql", commandDictionary, localIntegrationConnectionString);
-                }
-                else
-                {
+
+                
                     PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary, localIntegrationConnectionString);
-                }
+                
+            }
+            #endregion
+
+            #region Presentation Layer
+            if (checkBoxCreateSamplePresentation.Checked)
+            {
+                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePresentationSchema.sql", commandDictionary, localPresentationConnectionString);
+
             }
             #endregion
 
@@ -444,10 +449,10 @@ namespace TEAM
                     sqlCommand = sqlCommand.Replace("N'200_Integration_Layer',", "N'" + localIntegrationDatabaseName + "',");
                 }
 
-                //if (sqlCommand.Contains("N'300_Presentation_Layer',"))
-                //{
-                //    sqlCommand = sqlCommand.Replace("N'300_Presentation_Layer',", "N'" + localPresentationDatabaseName + "',");
-                //}
+                if (sqlCommand.Contains("N'300_Presentation_Layer',"))
+                {
+                    sqlCommand = sqlCommand.Replace("N'300_Presentation_Layer',", "N'" + localPresentationDatabaseName + "',");
+                }
 
                 // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
                 var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
@@ -527,57 +532,29 @@ namespace TEAM
                 string alternativeSatelliteLoadDateTimeFunction;
 
 
-                // Update the values using the DIRECT information
-                if (checkBoxDIRECT.Checked)
-                {
-                    persistentStagingAreaPrefix = "HSTG";
-                    keyIdentifier = "SK";
+                persistentStagingAreaPrefix = "PSA";
+                keyIdentifier = "SK";
 
-                    sourceRowId = "OMD_SOURCE_ROW_ID";
-                    eventDateTime = "OMD_EVENT_DATETIME";
-                    loadDateTime = "OMD_INSERT_DATETIME";
-                    expiryDateTime = "OMD_EXPIRY_DATETIME";
-                    changeDataIndicator = "OMD_CDC_OPERATION";
-                    recordSource = "OMD_RECORD_SOURCE";
-                    etlProcessId = "OMD_INSERT_MODULE_INSTANCE_ID";
-                    etlUpdateProcessId = "OMD_UPDATE_MODULE_INSTANCE_ID";
-                    logicalDeleteAttribute = "OMD_DELETED_RECORD_INDICATOR";
-                    tableNamingLocation = "Prefix";
-                    keyNamingLocation = "Suffix";
-                    recordChecksum = "OMD_HASH_FULL_RECORD";
-                    currentRecordIndicator = "OMD_CURRENT_RECORD_INDICATOR";
-                    alternativeRecordSource = "OMD_RECORD_SOURCE_ID";
-                    alternativeHubLoadDateTime = "OMD_FIRST_SEEN_DATETIME";
-                    alternativeSatelliteLoadDateTime = "OMD_EFFECTIVE_DATETIME";
-                    alternativeRecordSourceFunction = "True";
-                    alternativeHubLoadDateTimeFunction = "True";
-                    alternativeSatelliteLoadDateTimeFunction = "True";
-                }
-                else  // Use the standard (profiler) sample
-                {
-                    persistentStagingAreaPrefix = "PSA";
-                    keyIdentifier = "HSH";
-
-                    sourceRowId = "SOURCE_ROW_ID";
-                    eventDateTime = "EVENT_DATETIME";
-                    loadDateTime = "LOAD_DATETIME";
-                    expiryDateTime = "LOAD_END_DATETIME";
-                    changeDataIndicator = "CDC_OPERATION";
-                    recordSource = "RECORD_SOURCE";
-                    etlProcessId = "ETL_INSERT_RUN_ID";
-                    etlUpdateProcessId = "ETL_UPDATE_RUN_ID";
-                    logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
-                    tableNamingLocation = "Prefix";
-                    keyNamingLocation = "Suffix";
-                    recordChecksum = "HASH_FULL_RECORD";
-                    currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
-                    alternativeRecordSource = "N/A";
-                    alternativeHubLoadDateTime = "N/A";
-                    alternativeSatelliteLoadDateTime = "N/A";
-                    alternativeRecordSourceFunction = "False";
-                    alternativeHubLoadDateTimeFunction = "False";
-                    alternativeSatelliteLoadDateTimeFunction = "False";
-                }
+                sourceRowId = "SOURCE_ROW_ID";
+                eventDateTime = "EVENT_DATETIME";
+                loadDateTime = "LOAD_DATETIME";
+                expiryDateTime = "LOAD_END_DATETIME";
+                changeDataIndicator = "CDC_OPERATION";
+                recordSource = "RECORD_SOURCE";
+                etlProcessId = "MODULE_INSTANCE_ID";
+                etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
+                logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
+                tableNamingLocation = "Prefix";
+                keyNamingLocation = "Suffix";
+                recordChecksum = "HASH_FULL_RECORD";
+                currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
+                alternativeRecordSource = "N/A";
+                alternativeHubLoadDateTime = "N/A";
+                alternativeSatelliteLoadDateTime = "N/A";
+                alternativeRecordSourceFunction = "False";
+                alternativeHubLoadDateTimeFunction = "False";
+                alternativeSatelliteLoadDateTimeFunction = "False";
+                
 
                 //TeamConfigurationSettings.MetadataRepositoryType = metadataRepositoryType;
 
@@ -763,11 +740,6 @@ namespace TEAM
                 // Create the sample data
                 _alertMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
 
-                if (checkBoxDIRECT.Checked)
-                {
-                    _alertMetadata.SetTextLogging("Experimental - creating samples with DIRECT conventions.\r\n");
-                }
-
                 try
                 {
                     if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
@@ -779,26 +751,14 @@ namespace TEAM
                         {
                             var fileName = Path.GetFileName(filePath);
 
-                            if (checkBoxDIRECT.Checked)
-                            {
-                                if (fileName.StartsWith("sample_DIRECT_"))
-                                {
-                                    fileName = fileName.Replace("sample_DIRECT_", GlobalParameters.WorkingEnvironment+"_");
-                                    fileDictionary.Add(filePath, fileName);
-                                }
-                            }
-                            else if (!checkBoxDIRECT.Checked)
-                            {
+
                                 if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
                                 {
                                     fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment+"_");
                                     fileDictionary.Add(filePath, fileName);
                                 }
-                            }
-                            else
-                            {
-                                ErrorHandlingParameters.ErrorLog.AppendLine("There was an issue detecting the type of sample mapping data to be created. Either both DIRECT and regular were checked (or none).\r\n\r\n)");
-                            }
+                            
+
                         }
 
                         // And then process them
@@ -851,18 +811,11 @@ namespace TEAM
             // Create a dictionary for all SQL files to execute
             Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
 
-            if (checkBoxDIRECT.Checked)
-            {
-                PopulateSqlCommandDictionaryFromFile(
-                    GlobalParameters.ScriptPath + @"generateSampleMappingMetadataDIRECT.sql",
-                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
-            }
-            else
-            {
+
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
                     commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
-            }
+            
 
             // Execute the SQL statements
             int counter = 0;

@@ -1,0 +1,5 @@
+/* TEAM File Path Settings */
+ConfigurationPath|D:\TEAM\Configuration\
+OutputPath|D:\TEAM\Output\
+WorkingEnvironment|Development
+/* End of file */

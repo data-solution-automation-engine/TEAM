@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
+using System.Data;
+using System.Reflection;
 
 namespace TEAM
 {
@@ -58,7 +59,7 @@ namespace TEAM
                 return sb.ToString();
             }
         }
-
+        
         /// <summary>
         /// Generate a random number value.
         /// </summary>
@@ -109,7 +110,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Populate a datatable by loading from a database table.
+        /// Populate a datatable by loading from a Sql Server database table.
         /// </summary>
         /// <param name="sqlConnection"></param>
         /// <param name="sqlQuery"></param>
@@ -166,6 +167,8 @@ namespace TEAM
             }
             return table;
         }
+
+
 
         /// <summary>
         /// Returns the default type (e.g. null value, empty or default) for a given input object.

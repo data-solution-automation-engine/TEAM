@@ -126,9 +126,6 @@
   <metadata name="toolTipRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>448, 19</value>
   </metadata>
-  <data name="checkBoxDIRECT.ToolTip" xml:space="preserve">
-    <value>This generates the sample code with the standard DIRECT ETL control framework attributes. This is not required for virtualisation, but can be used to integrate the sample code into ETL software (i.e. SSIS using Biml).</value>
-  </data>
   <data name="checkBoxConfigurationSettings.ToolTip" xml:space="preserve">
     <value>This will make a backup of any existing configuration settings (see Configuration Settings menu option) and update the current settings according to the type of sample environment used (i.e. normal or DIRECT integrated).</value>
   </data>

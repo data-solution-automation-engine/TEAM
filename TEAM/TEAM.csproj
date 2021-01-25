@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TEAM</RootNamespace>
     <AssemblyName>TEAM</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -114,8 +114,8 @@
     <Compile Include="Form_PIT.Designer.cs">
       <DependentUpon>Form_PIT.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoadPatternHandling.cs" />
-    <Compile Include="Utility.cs" />
+    <Compile Include="TeamLoadPatternHandling.cs" />
+    <Compile Include="TeamUtility.cs" />
     <Compile Include="TeamObjectModel.cs" />
     <Compile Include="CustomTabPageEnvironment.cs">
       <SubType>Component</SubType>
@@ -126,7 +126,7 @@
     <Compile Include="CustomDataGridViewAttribute.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="JsonHandling.cs" />
+    <Compile Include="TeamJsonHandling.cs" />
     <Compile Include="CustomDataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -249,21 +249,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Content Include="Files\sample_DIRECT_TEAM_Attribute_Mapping_v0.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\sample_DIRECT_TEAM_Model_Metadata_v0.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\sample_DIRECT_TEAM_Table_Mapping_v0.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Core\TEAM_Path_configuration.txt" />
     <Content Include="Files\sample_TEAM_Attribute_Mapping_v0.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\sample_TEAM_Model_Metadata_v0.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Core\TEAM_environments.json" />
     <None Include="Libraries\DataWarehouseAutomation.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -307,28 +300,19 @@
     <Content Include="Scripts\generateSampleIntegrationSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\generateSampleIntegrationSchemaDIRECT.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\generateSampleMappingMetadata.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\generateSampleMappingMetadataDIRECT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\generateSamplePersistentStagingSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\generateSamplePersistentStagingSchemaDIRECT.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\generateSampleSourceSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\generateSampleStagingSchema.sql">
+    <Content Include="Scripts\generateSamplePresentationSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\generateSampleStagingSchemaDIRECT.sql">
+    <Content Include="Scripts\generateSampleStagingSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\Settings.settings">
@@ -428,6 +412,7 @@
       <Version>12.0.3</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

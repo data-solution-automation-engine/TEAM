@@ -4,9 +4,7 @@ using System.IO;
 using Newtonsoft.Json;
 
 namespace TEAM
-{
-
-    public class LoadPatternDefinition
+{ public class LoadPatternDefinition
     {
         public int LoadPatternKey { get; set; }
         public string LoadPatternType { get; set; }
@@ -97,7 +95,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                returnMessage = ("An error has occured while creating saving the file. The error message is " + ex);
+                returnMessage = ("An error has occurred while creating saving the file. The error message is " + ex);
             }
 
             return returnMessage;

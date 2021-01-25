@@ -20,8 +20,24 @@ namespace TEAM
         // TEAM configuration settings.
         public static TeamConfiguration TeamConfigurationSettings { get; set; } = new TeamConfiguration();
 
+        /// <summary>
+        /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public static TeamConnection GetTeamConnectionByConnectionId(string connectionId)
+        {
+            if (!TeamConfigurationSettings.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
+            {
+                // The key isn't in the dictionary.
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
+            }
+
+            return teamConnection;
+        }
+
         // TEAM working environment collection.
-        public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set;  } = new TeamWorkingEnvironmentCollection();
+    public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set;  } = new TeamWorkingEnvironmentCollection();
 
         #region Metadata objects in memory
         // In-memory representation of the Table Mapping Metadata.
@@ -36,8 +52,7 @@ namespace TEAM
 
         // TEAM Version List.
         public static TeamVersionList EnvironmentVersion { get; set; } = new TeamVersionList();
-
-
+        
         /// <summary>
         /// Configuration settings related to the export of Json files.
         /// </summary>

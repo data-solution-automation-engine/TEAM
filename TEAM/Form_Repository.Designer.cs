@@ -39,7 +39,6 @@
             this.labelMetadataRepository = new System.Windows.Forms.Label();
             this.backgroundWorkerSampleData = new System.ComponentModel.BackgroundWorker();
             this.toolTipRepository = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBoxDIRECT = new System.Windows.Forms.CheckBox();
             this.checkBoxConfigurationSettings = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.buttonGenerateSampleMapping = new System.Windows.Forms.Button();
@@ -56,10 +55,10 @@
             this.linkLabel3 = new System.Windows.Forms.LinkLabel();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-            this.checkBoxCreateSamplePresLayer = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateSamplePresentation = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateSamplePSA = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.checkBoxCreateSampleDV = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateSampleIntegration = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateSampleStaging = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateSampleSource = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -147,17 +146,6 @@
             this.backgroundWorkerSampleData.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerSampleData_ProgressChanged);
             this.backgroundWorkerSampleData.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerSampleData_RunWorkerCompleted);
             // 
-            // checkBoxDIRECT
-            // 
-            this.checkBoxDIRECT.AutoSize = true;
-            this.checkBoxDIRECT.Location = new System.Drawing.Point(9, 42);
-            this.checkBoxDIRECT.Name = "checkBoxDIRECT";
-            this.checkBoxDIRECT.Size = new System.Drawing.Size(247, 17);
-            this.checkBoxDIRECT.TabIndex = 11;
-            this.checkBoxDIRECT.Text = "Experimental - generate for DIRECT integration";
-            this.toolTipRepository.SetToolTip(this.checkBoxDIRECT, resources.GetString("checkBoxDIRECT.ToolTip"));
-            this.checkBoxDIRECT.UseVisualStyleBackColor = true;
-            // 
             // checkBoxConfigurationSettings
             // 
             this.checkBoxConfigurationSettings.AutoSize = true;
@@ -174,7 +162,7 @@
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(9, 65);
+            this.button2.Location = new System.Drawing.Point(6, 42);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(139, 42);
             this.button2.TabIndex = 12;
@@ -231,10 +219,10 @@
             this.groupBox2.Controls.Add(this.linkLabel3);
             this.groupBox2.Controls.Add(this.linkLabel2);
             this.groupBox2.Controls.Add(this.linkLabel1);
-            this.groupBox2.Controls.Add(this.checkBoxCreateSamplePresLayer);
+            this.groupBox2.Controls.Add(this.checkBoxCreateSamplePresentation);
             this.groupBox2.Controls.Add(this.checkBoxCreateSamplePSA);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.checkBoxCreateSampleDV);
+            this.groupBox2.Controls.Add(this.checkBoxCreateSampleIntegration);
             this.groupBox2.Controls.Add(this.checkBoxCreateSampleStaging);
             this.groupBox2.Controls.Add(this.checkBoxCreateSampleSource);
             this.groupBox2.Controls.Add(this.label3);
@@ -248,7 +236,6 @@
             // comboBoxPresentationConnection
             // 
             this.comboBoxPresentationConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxPresentationConnection.Enabled = false;
             this.comboBoxPresentationConnection.FormattingEnabled = true;
             this.comboBoxPresentationConnection.Location = new System.Drawing.Point(490, 109);
             this.comboBoxPresentationConnection.Name = "comboBoxPresentationConnection";
@@ -346,16 +333,17 @@
             this.linkLabel1.Text = "Source data model";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
-            // checkBoxCreateSamplePresLayer
+            // checkBoxCreateSamplePresentation
             // 
-            this.checkBoxCreateSamplePresLayer.AutoSize = true;
-            this.checkBoxCreateSamplePresLayer.Enabled = false;
-            this.checkBoxCreateSamplePresLayer.Location = new System.Drawing.Point(234, 111);
-            this.checkBoxCreateSamplePresLayer.Name = "checkBoxCreateSamplePresLayer";
-            this.checkBoxCreateSamplePresLayer.Size = new System.Drawing.Size(225, 17);
-            this.checkBoxCreateSamplePresLayer.TabIndex = 9;
-            this.checkBoxCreateSamplePresLayer.Text = "Create Sample Presentation Layer content\r\n";
-            this.checkBoxCreateSamplePresLayer.UseVisualStyleBackColor = true;
+            this.checkBoxCreateSamplePresentation.AutoSize = true;
+            this.checkBoxCreateSamplePresentation.Checked = true;
+            this.checkBoxCreateSamplePresentation.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSamplePresentation.Location = new System.Drawing.Point(234, 111);
+            this.checkBoxCreateSamplePresentation.Name = "checkBoxCreateSamplePresentation";
+            this.checkBoxCreateSamplePresentation.Size = new System.Drawing.Size(225, 17);
+            this.checkBoxCreateSamplePresentation.TabIndex = 9;
+            this.checkBoxCreateSamplePresentation.Text = "Create Sample Presentation Layer content\r\n";
+            this.checkBoxCreateSamplePresentation.UseVisualStyleBackColor = true;
             // 
             // checkBoxCreateSamplePSA
             // 
@@ -377,17 +365,17 @@
             this.label6.Size = new System.Drawing.Size(0, 13);
             this.label6.TabIndex = 77;
             // 
-            // checkBoxCreateSampleDV
+            // checkBoxCreateSampleIntegration
             // 
-            this.checkBoxCreateSampleDV.AutoSize = true;
-            this.checkBoxCreateSampleDV.Checked = true;
-            this.checkBoxCreateSampleDV.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateSampleDV.Location = new System.Drawing.Point(234, 88);
-            this.checkBoxCreateSampleDV.Name = "checkBoxCreateSampleDV";
-            this.checkBoxCreateSampleDV.Size = new System.Drawing.Size(216, 17);
-            this.checkBoxCreateSampleDV.TabIndex = 8;
-            this.checkBoxCreateSampleDV.Text = "Create Sample Integration Layer content";
-            this.checkBoxCreateSampleDV.UseVisualStyleBackColor = true;
+            this.checkBoxCreateSampleIntegration.AutoSize = true;
+            this.checkBoxCreateSampleIntegration.Checked = true;
+            this.checkBoxCreateSampleIntegration.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateSampleIntegration.Location = new System.Drawing.Point(234, 88);
+            this.checkBoxCreateSampleIntegration.Name = "checkBoxCreateSampleIntegration";
+            this.checkBoxCreateSampleIntegration.Size = new System.Drawing.Size(216, 17);
+            this.checkBoxCreateSampleIntegration.TabIndex = 8;
+            this.checkBoxCreateSampleIntegration.Text = "Create Sample Integration Layer content";
+            this.checkBoxCreateSampleIntegration.UseVisualStyleBackColor = true;
             // 
             // checkBoxCreateSampleStaging
             // 
@@ -448,7 +436,6 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.checkBoxDIRECT);
             this.groupBox4.Controls.Add(this.button2);
             this.groupBox4.Controls.Add(this.checkBoxConfigurationSettings);
             this.groupBox4.Location = new System.Drawing.Point(12, 526);
@@ -508,11 +495,10 @@
         private System.Windows.Forms.ToolTip toolTipRepository;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        internal System.Windows.Forms.CheckBox checkBoxDIRECT;
-        internal System.Windows.Forms.CheckBox checkBoxCreateSamplePresLayer;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSamplePresentation;
         internal System.Windows.Forms.CheckBox checkBoxCreateSamplePSA;
         private System.Windows.Forms.Label label6;
-        internal System.Windows.Forms.CheckBox checkBoxCreateSampleDV;
+        internal System.Windows.Forms.CheckBox checkBoxCreateSampleIntegration;
         internal System.Windows.Forms.CheckBox checkBoxCreateSampleStaging;
         internal System.Windows.Forms.CheckBox checkBoxCreateSampleSource;
         private System.Windows.Forms.Label label3;

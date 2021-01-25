@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace TEAM
 {
+    // The definition of a TEAM version.
     public class TeamVersion
     {
         public string EnvironmentInternalId { get; set; }
@@ -30,6 +31,7 @@ namespace TEAM
         }
     }
     
+    //  A list of TEAM versions, containing the collection of versions (models) related to the same project/context/initiative.
     public class TeamVersionList
     {
         public List<TeamVersion> VersionList { get; set; } = new List<TeamVersion>();
@@ -40,8 +42,7 @@ namespace TEAM
         {
             if (File.Exists(fileName))
             {
-                List<TeamVersion> VersionList =
-                    JsonConvert.DeserializeObject<List<TeamVersion>>(File.ReadAllText(fileName));
+                List<TeamVersion> VersionList = JsonConvert.DeserializeObject<List<TeamVersion>>(File.ReadAllText(fileName));
                 this.VersionList = VersionList;
             }
         }
