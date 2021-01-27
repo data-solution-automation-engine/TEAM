@@ -137,13 +137,9 @@ namespace TEAM
             public static List<LoadPatternDefinition> PatternDefinitionList { get; set; }
 
             // Environment mode
-            public static EnvironmentModes EnvironmentMode { get; set; } = EnvironmentModes.PhysicalMode;
+            public static EnvironmentModes EnvironmentMode { get; set; }
         }
 
-        public enum EnvironmentModes
-        {
-            PhysicalMode,
-            VirtualMode
-        }
+
     }
 }

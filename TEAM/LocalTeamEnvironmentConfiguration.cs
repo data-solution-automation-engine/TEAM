@@ -225,7 +225,7 @@ namespace TEAM
             }
             catch (Exception)
             {
-                // richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+                // richTextBoxInformation.AppendText("\r\n\r\nAn error occurred while interpreting the configuration file. The original error is: '" + ex.Message + "'");
             }
         }
 
@@ -272,7 +272,8 @@ namespace TEAM
                 configurationFile.AppendLine("AlternativeHubLDTSFunction|" +FormBase.TeamConfigurationSettings.EnableAlternativeLoadDateTimeAttribute +"");
                 configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +FormBase.TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute +"");
                 configurationFile.AppendLine("PSAKeyLocation|" + FormBase.TeamConfigurationSettings.PsaKeyLocation + "");
-                configurationFile.AppendLine("metadataRepositoryType|" +FormBase.TeamConfigurationSettings.MetadataRepositoryType +"");
+                configurationFile.AppendLine("MetadataRepositoryType|" +FormBase.TeamConfigurationSettings.MetadataRepositoryType +"");
+                configurationFile.AppendLine("EnvironmentMode|" + FormBase.TeamConfigurationSettings.EnvironmentMode + "");
 
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
@@ -290,7 +291,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occured saving the Configuration File. The error message is " + ex,
+                MessageBox.Show("An error occurred saving the Configuration File. The error message is " + ex,
                     "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -366,7 +367,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occured saving the Json configuration file. The error message is " + ex,
+                MessageBox.Show("An error occurred saving the Json configuration file. The error message is " + ex,
                     "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -448,7 +449,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occured saving the Validation File. The error message is " + ex,
+                MessageBox.Show("An error occurred saving the Validation File. The error message is " + ex,
                     "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

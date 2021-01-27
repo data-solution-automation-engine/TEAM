@@ -84,23 +84,6 @@ namespace TEAM
             }
         }
 
-        /// <summary>
-        /// Truncate the existing metdata (MD) schema.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonTruncate_Click(object sender, EventArgs e)
-        {
-            if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
-            {
-                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
-                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
-                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
-            }
-        }
-
-
-
         internal static class ErrorHandlingParameters
         {
             public static int ErrorCatcher { get; set; }
@@ -341,7 +324,6 @@ namespace TEAM
                 TeamUtility.CreateFileBackup(GlobalParameters.ConfigurationPath +GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
 
                 // Shared values (same for all samples)
-                //var metadataRepositoryType = "SqlServer";
                 var stagingAreaPrefix = "STG";
                 var hubTablePrefix = "HUB";
                 var satTablePrefix = "SAT";
@@ -394,9 +376,9 @@ namespace TEAM
                 alternativeRecordSourceFunction = "False";
                 alternativeHubLoadDateTimeFunction = "False";
                 alternativeSatelliteLoadDateTimeFunction = "False";
-                
 
-                //TeamConfigurationSettings.MetadataRepositoryType = metadataRepositoryType;
+
+                TeamConfigurationSettings.EnvironmentMode = EnvironmentModes.PhysicalMode;
 
                 TeamConfigurationSettings.StgTablePrefixValue = stagingAreaPrefix;
                 TeamConfigurationSettings.PsaTablePrefixValue = persistentStagingAreaPrefix;
@@ -572,7 +554,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 // Error handling

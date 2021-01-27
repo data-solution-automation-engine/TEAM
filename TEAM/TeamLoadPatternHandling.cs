@@ -39,7 +39,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                returnMessage = ("An error has occured while creating a file backup. The error message is " + ex);
+                returnMessage = ("An error has occurred while creating a file backup. The error message is " + ex);
             }
 
             return returnMessage;

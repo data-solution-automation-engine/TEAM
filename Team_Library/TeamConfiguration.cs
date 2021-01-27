@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -13,7 +14,13 @@ namespace TEAM_Library
         Json
     }
 
-    
+    public enum EnvironmentModes
+    {
+        PhysicalMode,
+        VirtualMode
+    }
+
+
     /// <summary>
     /// These settings are driven by the TEAM application.
     /// They have to be updated through TEAM, i.e. via the Team Configuration / Settings file in the designated directory.
@@ -36,9 +43,7 @@ namespace TEAM_Library
         /// <returns></returns>
         public static TeamConnection GetTeamConnectionByInternalId(string connectionInternalId, Dictionary<string, TeamConnection> connectionDictionary)
         {
-            var returnConnectionProfile = new TeamConnection();
-
-            connectionDictionary.TryGetValue(connectionInternalId, out returnConnectionProfile);
+            connectionDictionary.TryGetValue(connectionInternalId, out var returnConnectionProfile);
 
             return returnConnectionProfile;
         }
@@ -90,6 +95,7 @@ namespace TEAM_Library
         public string EnableAlternativeRecordSourceAttribute { get; set; }
         public string EnableAlternativeLoadDateTimeAttribute { get; set; }
         public MetadataRepositoryStorageType MetadataRepositoryType { get; } = MetadataRepositoryStorageType.Json;
+        public EnvironmentModes EnvironmentMode { get; set; } 
 
 
         public TeamConfiguration()
@@ -147,7 +153,8 @@ namespace TEAM_Library
                     "AlternativeRecordSourceFunction",
                     "AlternativeHubLDTSFunction",
                     "AlternativeSatelliteLDTSFunction",
-                    "AlternativeSatelliteLDTS"
+                    "AlternativeSatelliteLDTS",
+                    "EnvironmentMode"
                 };
 
                 foreach (string configuration in configurationArray)
@@ -156,6 +163,9 @@ namespace TEAM_Library
                     {
                         switch (configuration)
                         {
+                            case "EnvironmentMode":
+                                Enum.TryParse(configList[configuration], out EnvironmentModes EnvironmentMode);
+                                break;
                             case "StagingAreaPrefix":
                                 StgTablePrefixValue = configList[configuration];
                                 break;
@@ -340,7 +350,8 @@ namespace TEAM_Library
                 initialConfigurationFile.AppendLine("AlternativeHubLDTSFunction|False");
                 initialConfigurationFile.AppendLine("AlternativeSatelliteLDTSFunction|False");
                 initialConfigurationFile.AppendLine("PSAKeyLocation|PrimaryKey"); //Can be PrimaryKey or UniqueIndex
-                initialConfigurationFile.AppendLine("metadataRepositoryType|Json");
+                initialConfigurationFile.AppendLine("MetadataRepositoryType|Json");
+                initialConfigurationFile.AppendLine("EnvironmentMode|PhysicalMode");
 
                 initialConfigurationFile.AppendLine("/* End of file */");
 
@@ -354,8 +365,7 @@ namespace TEAM_Library
                 }
                 catch
                 {
-                    MessageBox.Show(
-                        $"An issue was encountered creating the new configuration file. This is usually due to insufficient privileges. Please consider starting the application as Administrator or make sure the directories exist. The file that was attempted to be created was '{fileName}'.");
+                    MessageBox.Show($"An issue was encountered creating the new configuration file. This is usually due to insufficient privileges. Please consider starting the application as Administrator or make sure the directories exist. The file that was attempted to be created was '{fileName}'.");
                 }
             }
         }

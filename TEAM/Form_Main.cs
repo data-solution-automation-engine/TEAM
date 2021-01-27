@@ -211,7 +211,7 @@ namespace TEAM
                 }
             }
 
-            richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup.\r\n\r\n");
+            richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
 
             TestConnections();
 
@@ -398,7 +398,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occured while attempting to open the output directory. The error message is: "+ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the output directory. The error message is: "+ex;
             }
         }
 

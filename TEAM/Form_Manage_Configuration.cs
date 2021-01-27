@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using Microsoft.Data.SqlClient;
 using TEAM_Library;
 
 namespace TEAM
@@ -54,7 +53,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
+                richTextBoxInformation.AppendText("Errors occurred trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
             }
 
             // Connection tabs for the specific environment.
@@ -68,9 +67,6 @@ namespace TEAM
             {
                 comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
             }
-
-
-
 
             _formLoading = false;
         }
@@ -141,16 +137,23 @@ namespace TEAM
                 sr.Close();
                 fs.Close();
 
-
                 // Databases
                 if (configList["MetadataConnectionId"] != null)
                 {
-                    //comboBoxMetadataConnection.SelectedItem = TeamConfigurationSettings.connectionDictionary[configList["MetadataConnectionId"]];
-                   
                     var metadataKey = TeamConfigurationSettings.ConnectionDictionary[configList["MetadataConnectionId"]];
                     comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(metadataKey.ConnectionKey);
+                }
 
-                    //comboBoxMetadataConnection.SelectedItem = metadataKey.ConnectionKey;
+
+
+                Enum.TryParse(configList["EnvironmentMode"], out EnvironmentModes environmentMode);
+                if (environmentMode == EnvironmentModes.PhysicalMode)
+                {
+                    radioButtonPhysicalMode.Checked = true;
+                }
+                if (environmentMode == EnvironmentModes.VirtualMode)
+                {
+                    radioButtonVirtualMode.Checked = true;
                 }
 
 
@@ -268,7 +271,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.AppendText("\r\n\r\nAn error occured while loading the configuration file. The original error is: '" + ex.Message + "'");
+                richTextBoxInformation.AppendText("\r\n\r\nAn error occurred while loading the configuration file. The original error is: '" + ex.Message + "'");
             }
         }
 
@@ -293,7 +296,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occured while attempting to open the output directory. The error message is: "+ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the output directory. The error message is: "+ex;
             }
         }
 
@@ -425,6 +428,16 @@ namespace TEAM
         private void UpdateConfigurationInMemory()
         {
 
+            if (radioButtonPhysicalMode.Checked)
+            {
+                TeamConfigurationSettings.EnvironmentMode = EnvironmentModes.PhysicalMode;
+            }
+
+            if (radioButtonPhysicalMode.Checked)
+            {
+                TeamConfigurationSettings.EnvironmentMode = EnvironmentModes.VirtualMode;
+            }
+            
             if (comboBoxMetadataConnection.SelectedItem!=null)
             {
                 // Get the object in the Combobox into a Key Value Pair (object / id)
@@ -555,7 +568,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
             }
         }
 
@@ -903,7 +916,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    richTextBoxInformation.AppendText("Errors occured trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
+                    richTextBoxInformation.AppendText("Errors occurred trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
                 }
 
                 //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(TeamConfigurationSettings.MetadataConnection, TeamConfigurationSettings.MetadataConnection.ConnectionKey);
@@ -936,31 +949,30 @@ namespace TEAM
 
         private void UpdateEnvironmentMode(object sender, EventArgs e)
         {
-            var localSender = (RadioButton) sender;
-
-
-            if (localSender == radioButtonPhysicalMode && radioButtonPhysicalMode.Checked)
+            if (!_formLoading)
             {
-                if (radioButtonPhysicalMode.Checked)
+                var localSender = (RadioButton) sender;
+
+                if (localSender == radioButtonPhysicalMode && radioButtonPhysicalMode.Checked)
                 {
-                    GlobalParameters.EnvironmentMode = EnvironmentModes.PhysicalMode;
-                    richTextBoxInformation.AppendText(
-                        $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
+                    if (radioButtonPhysicalMode.Checked)
+                    {
+                        GlobalParameters.EnvironmentMode = EnvironmentModes.PhysicalMode;
+                        richTextBoxInformation.AppendText(
+                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
+                    }
+                }
+
+                if (sender == radioButtonVirtualMode && radioButtonVirtualMode.Checked)
+                {
+                    if (radioButtonVirtualMode.Checked)
+                    {
+                        GlobalParameters.EnvironmentMode = EnvironmentModes.VirtualMode;
+                        richTextBoxInformation.AppendText(
+                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
+                    }
                 }
             }
-
-            if (sender == radioButtonVirtualMode && radioButtonVirtualMode.Checked)
-            {
-                if (radioButtonVirtualMode.Checked)
-                {
-                    GlobalParameters.EnvironmentMode = EnvironmentModes.VirtualMode;
-                    richTextBoxInformation.AppendText(
-                        $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
-                }
-            }
-
-
-
         }
     }
 }

@@ -224,7 +224,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
             }
         }
 
@@ -236,7 +236,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occured while attempting to open the configuration directory. The error message is: " + ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
             }
         }
 
