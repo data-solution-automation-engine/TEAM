@@ -2555,7 +2555,7 @@ namespace TEAM
             // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
             if (checkBoxValidation.Checked && activationContinue)
             {
-                if (radioButtonPhysicalMode.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && _bindingSourcePhysicalModelMetadata.Count == 0)
                 {
                     richTextBoxInformation.Text += "There is no model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
                 }
@@ -2600,7 +2600,7 @@ namespace TEAM
                 // Move data from the grids into temp tables
                 CreateTemporaryWorkerTable(TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
 
-                if (radioButtonPhysicalMode.Checked == false)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                 {
                     var versionExistenceCheck = new StringBuilder();
 
@@ -2826,9 +2826,6 @@ namespace TEAM
                 var majorVersion = versionMajorMinor.Item2;
                 var minorVersion = versionMajorMinor.Item3;
 
-                // Determine the query type (physical or virtual).
-                var queryMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
-
                 // Get the full dictionary of objects and connections.
                 //var localTableMappingConnectionDictionary = GetTableMappingConnections();
 
@@ -2839,7 +2836,7 @@ namespace TEAM
                 LogMetadataEvent($"Commencing metadata preparation / activation for version {majorVersion}.{minorVersion} at {activationStartDateTime}.", EventTypes.Information);
 
                 // Event reporting - alerting the user what kind of metadata is prepared.
-                LogMetadataEvent($"The {queryMode} has been selected for activation.", EventTypes.Information);
+                LogMetadataEvent($"The {GlobalParameters.EnvironmentMode} has been selected for activation.", EventTypes.Information);
 
                 #endregion
 
@@ -2992,7 +2989,7 @@ namespace TEAM
                 // First, define the master attribute list for reuse many times later on (assuming ignore version is active and hence the virtual mode is enabled).
                 var physicalModelDataTable = new DataTable();
 
-                if (radioButtonPhysicalMode.Checked) // Get the attributes from the physical model / catalog. No virtualisation needed.
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode) // Get the attributes from the physical model / catalog. No virtualisation needed.
                 {
                     var physicalModelInstantiation = new AttributeSelection();
 
@@ -3339,7 +3336,7 @@ namespace TEAM
                             {
                                 if (dataObjectTuple.Item2 == MetadataHandling.TableTypes.CoreBusinessConcept)
                                 {
-                                    if (queryMode == "physical")
+                                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                                     {
                                         businessKey = MetadataHandling.GetHubTargetBusinessKeyListPhysical(dataObjectTuple.Item1, dataObjectTuple.Item3,TeamConfigurationSettings);
                                     }
@@ -3848,7 +3845,7 @@ namespace TEAM
                     RV: there is an issue below where not all SQL version (i.e. SQL Server) are supporting cross database SQL.
                     i.e. Azure. long term fix is to create individual queries to database without cross-db sql and add to single data table in the application
                 */
-                if (radioButtonPhysicalMode.Checked) // Read from live database
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode) // Read from live database
                 {
                     LogMetadataEvent("Commencing preparing the attributes directly from the database.", EventTypes.Information);
                 }
@@ -4196,7 +4193,7 @@ namespace TEAM
                 LogMetadataEvent("Commencing preparing the relationship between Hubs and Links.", EventTypes.Information);
 
                 var virtualisationSnippet = new StringBuilder();
-                if (radioButtonPhysicalMode.Checked)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                 {
                     //virtualisationSnippet.AppendLine("SELECT ");
                     //virtualisationSnippet.AppendLine("  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + TeamConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
@@ -4538,7 +4535,7 @@ namespace TEAM
                 
                 int automaticMappingCounter = 0;
 
-                if (radioButtonPhysicalMode.Checked)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                 {
                     LogMetadataEvent($"Commencing preparing the (automatic) column-to-column mapping metadata for Source to Staging, based on what's available in the database.", EventTypes.Information);
 
@@ -4730,8 +4727,7 @@ namespace TEAM
 
                 automaticMappingCounter = 0;
 
-                LogMetadataEvent(
-                    radioButtonPhysicalMode.Checked
+                LogMetadataEvent(GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode
                         ? "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the database."
                         : "Commencing preparing the (automatic) column-to-column mapping metadata for Source to Persistent Staging, based on what's available in the physical model metadata.", EventTypes.Information);
 
@@ -4948,7 +4944,7 @@ namespace TEAM
 
                 var prepareMappingStatement = new StringBuilder();
 
-                if (radioButtonPhysicalMode.Checked)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                 {
                     LogMetadataEvent("Commencing preparing the (automatic) column-to-column mapping metadata for Satellites and Link-Satellites, based on what's available in the database.", EventTypes.Information);
                 }
@@ -5172,7 +5168,7 @@ namespace TEAM
                 prepareDegenerateMappingStatement.AppendLine("WHERE stg_attr.ATTRIBUTE_NAME = tgt_attr.ATTRIBUTE_NAME COLLATE Latin1_General_CS_AS");
 
 
-                if (radioButtonPhysicalMode.Checked)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                 {
                     LogMetadataEvent("Commencing preparing the (automatic) column-to-column mapping metadata for degenerate attributes, based on what's available in the database.", EventTypes.Information);
                 }
@@ -5275,7 +5271,7 @@ namespace TEAM
                 _alert.SetTextLogging("\r\n");
                 var prepareMultiKeyStatement = new StringBuilder();
 
-                if (radioButtonPhysicalMode.Checked)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                 {
                     LogMetadataEvent("Commencing Multi-Active Key handling using database.", EventTypes.Information);
 
@@ -6520,7 +6516,7 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
 
-            if (radioButtonPhysicalMode.Checked == false && _bindingSourcePhysicalModelMetadata.Count == 0)
+            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && _bindingSourcePhysicalModelMetadata.Count == 0)
             {
                 richTextBoxInformation.Text += "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
             }
@@ -7022,8 +7018,6 @@ namespace TEAM
         /// <param name="area"></param>
         private void ValidateAttributeExistence()
         {
-            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
-
             // Informing the user.
             _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the attributes in the metadata exists in the model.\r\n");
 
@@ -7051,7 +7045,7 @@ namespace TEAM
                     TeamConnection targetConnection = dataObjectRow.Item5;
                     var validationAttributeTarget = row[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
-                    if (evaluationMode == "physical" && MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode && MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         // Check the source
                         try
@@ -7086,7 +7080,7 @@ namespace TEAM
                         }
                         
                     }
-                    else if (evaluationMode == "virtual" && MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         objectValidated = "";
 
@@ -7200,10 +7194,8 @@ namespace TEAM
         /// </summary>
         private void ValidateObjectExistence()
         {
-            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
-
             // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the defined Data Objects exists in the model in {evaluationMode} mode.\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the defined Data Objects exists in the model in {GlobalParameters.EnvironmentMode} mode.\r\n");
 
             var resultList = new Dictionary<string, string>();
 
@@ -7229,7 +7221,7 @@ namespace TEAM
                     if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) 
                     {
                         string objectValidated;
-                        if (evaluationMode == "physical")
+                        if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                         {
                             try
                             {
@@ -7252,7 +7244,7 @@ namespace TEAM
                                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue occurred connecting to the database: \r\n\r\n {ex}."));
                             }
                         }
-                        else if (evaluationMode == "virtual")
+                        else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                         {
                  
                             objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectSource, sourceConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
@@ -7288,7 +7280,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model using {evaluationMode} mode.\r\n\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model using {GlobalParameters.EnvironmentMode} mode.\r\n\r\n");
             }
 
         }
@@ -7383,8 +7375,6 @@ namespace TEAM
         /// </summary>
         internal void ValidateLinkKeyOrder()
         {
-            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
-
             #region Retrieving the Links
             // Informing the user.
             _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
@@ -7425,10 +7415,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder
-                (
-                    sourceObject, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource, evaluationMode
-                    );
+                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject, (DataTable)_bindingSourceTableMetadata.DataSource, (DataTable)_bindingSourcePhysicalModelMetadata.DataSource, GlobalParameters.EnvironmentMode);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7466,8 +7453,6 @@ namespace TEAM
         /// </summary>
         internal void ValidateLogicalGroup()
         {
-            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
-
             #region Retrieving the Integration Layer tables
             // Informing the user.
             _alertValidation.SetTextLogging("--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
@@ -7533,7 +7518,6 @@ namespace TEAM
         /// </summary>
         private void ValidateBusinessKeyObject()
         {
-            string evaluationMode = radioButtonPhysicalMode.Checked ? "physical" : "virtual";
             var resultList = new Dictionary<Tuple<string, string>, bool>();
             
             // Informing the user.
@@ -7554,7 +7538,7 @@ namespace TEAM
                     string businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
                         
                     
-                    if (evaluationMode == "physical" && MetadataHandling.GetDataObjectType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode && MetadataHandling.GetDataObjectType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         try
                         {
@@ -7565,7 +7549,7 @@ namespace TEAM
                             _alertValidation.SetTextLogging("     An issue occurred connecting to the database while looking up physical model references.\r\n");
                         }
                     }
-                    else if (evaluationMode == "virtual")
+                    else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                     {
                         // Exclude a lookup to the source
                         if (MetadataHandling.GetDataObjectType(validationObject,"", TeamConfigurationSettings).ToString() != MetadataHandling.TableTypes.Source.ToString())

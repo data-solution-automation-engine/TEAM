@@ -4,6 +4,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using static TEAM.FormBase;
 
 namespace TEAM
 {
@@ -265,7 +266,7 @@ namespace TEAM
         /// <param name="physicalModelDataTable"></param>
         /// <param name="evaluationMode"></param>
         /// <returns></returns>
-        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string, string> validationObject, DataTable inputDataTable, DataTable physicalModelDataTable, string evaluationMode)
+        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string, string> validationObject, DataTable inputDataTable, DataTable physicalModelDataTable, EnvironmentModes evaluationMode)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to query the individual Hub information
@@ -302,9 +303,8 @@ namespace TEAM
             // Derive the Hub surrogate key name, as this can be compared against the Link
             var linkKeyOrder = new Dictionary<int, string>();
 
-            if (evaluationMode == "physical")
+            if (evaluationMode == EnvironmentModes.PhysicalMode)
             {
-
                 var connTarget = new SqlConnection { ConnectionString = validationObject.Item4 };
                 var connDatabase = connTarget.Database;
 

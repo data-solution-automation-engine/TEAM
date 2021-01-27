@@ -257,18 +257,28 @@ New connections can be created by clicking on the empty tab.</value>
 
 A unique connection for the metadata repository needs to be assigned from the available connections. All connections can be assigned to metadata mappings.</value>
   </data>
-  <data name="tabPageEnvironmentMain.ToolTip" xml:space="preserve">
-    <value>The 'environments' acts as logical separations of work in TEAM. They are akin to tenants where you can setup different environments each with their own connections and content.
+  <data name="groupBoxEnvironmentBehaviour.ToolTip" xml:space="preserve">
+    <value>This radio button direct how technical metadata is collected when processing the mappings in TEAM.
 
-An environment is the top-level separation in TEAM, and is used to define either a project or layer depending on preferences.
+Virtual Mode will not make any database calls (e.g. to the catalog, data dictionary) and use the physical model information that is available in the Data Grids in TEAM.
 
-Internally, an environment is identified with an environment key. At any time an environment is active, and the current one can be viewed or changed / selected here.</value>
+Physical Mode on the other hand will not use any stored information in the Data Grid (Physical Model tab) on the Manage Metadata screen and directly query the database
+using the defined connections to fetch physical model details.
+
+Examples are ordinal positions, data types etc.</value>
   </data>
   <data name="richTextBoxEnvironmentsInformation.Text" xml:space="preserve">
     <value>The overview and management of working environments. 
 
 Environments are the main tenant in TEAM and capture all further configuration settings. 
 All subsequent tabs are applicable for the selected working environment.</value>
+  </data>
+  <data name="tabPageEnvironmentMain.ToolTip" xml:space="preserve">
+    <value>The 'environments' acts as logical separations of work in TEAM. They are akin to tenants where you can setup different environments each with their own connections and content.
+
+An environment is the top-level separation in TEAM, and is used to define either a project or layer depending on preferences.
+
+Internally, an environment is identified with an environment key. At any time an environment is active, and the current one can be viewed or changed / selected here.</value>
   </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>55</value>

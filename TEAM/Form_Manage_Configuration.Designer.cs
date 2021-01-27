@@ -125,6 +125,9 @@
             this.tabPageEnvironments = new System.Windows.Forms.TabPage();
             this.tabControlEnvironments = new System.Windows.Forms.TabControl();
             this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
+            this.groupBoxEnvironmentBehaviour = new System.Windows.Forms.GroupBox();
+            this.radioButtonPhysicalMode = new System.Windows.Forms.RadioButton();
+            this.radioButtonVirtualMode = new System.Windows.Forms.RadioButton();
             this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
             this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
@@ -148,6 +151,7 @@
             this.tabPageEnvironments.SuspendLayout();
             this.tabControlEnvironments.SuspendLayout();
             this.tabPageEnvironmentMain.SuspendLayout();
+            this.groupBoxEnvironmentBehaviour.SuspendLayout();
             this.tabControlDefaultDetails.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -1124,6 +1128,7 @@
             // 
             // tabPageEnvironmentMain
             // 
+            this.tabPageEnvironmentMain.Controls.Add(this.groupBoxEnvironmentBehaviour);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
             this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
@@ -1135,6 +1140,40 @@
             this.tabPageEnvironmentMain.Text = "Overview of working environments";
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
             this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxEnvironmentBehaviour
+            // 
+            this.groupBoxEnvironmentBehaviour.Controls.Add(this.radioButtonPhysicalMode);
+            this.groupBoxEnvironmentBehaviour.Controls.Add(this.radioButtonVirtualMode);
+            this.groupBoxEnvironmentBehaviour.Location = new System.Drawing.Point(417, 82);
+            this.groupBoxEnvironmentBehaviour.Name = "groupBoxEnvironmentBehaviour";
+            this.groupBoxEnvironmentBehaviour.Size = new System.Drawing.Size(143, 70);
+            this.groupBoxEnvironmentBehaviour.TabIndex = 76;
+            this.groupBoxEnvironmentBehaviour.TabStop = false;
+            this.groupBoxEnvironmentBehaviour.Text = "Environment Mode";
+            this.toolTipConfigurationSettings.SetToolTip(this.groupBoxEnvironmentBehaviour, resources.GetString("groupBoxEnvironmentBehaviour.ToolTip"));
+            // 
+            // radioButtonPhysicalMode
+            // 
+            this.radioButtonPhysicalMode.AutoSize = true;
+            this.radioButtonPhysicalMode.Checked = true;
+            this.radioButtonPhysicalMode.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonPhysicalMode.Name = "radioButtonPhysicalMode";
+            this.radioButtonPhysicalMode.Size = new System.Drawing.Size(94, 17);
+            this.radioButtonPhysicalMode.TabIndex = 6;
+            this.radioButtonPhysicalMode.TabStop = true;
+            this.radioButtonPhysicalMode.Text = "Physical Mode";
+            this.radioButtonPhysicalMode.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonVirtualMode
+            // 
+            this.radioButtonVirtualMode.AutoSize = true;
+            this.radioButtonVirtualMode.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonVirtualMode.Name = "radioButtonVirtualMode";
+            this.radioButtonVirtualMode.Size = new System.Drawing.Size(84, 17);
+            this.radioButtonVirtualMode.TabIndex = 5;
+            this.radioButtonVirtualMode.Text = "Virtual Mode";
+            this.radioButtonVirtualMode.UseVisualStyleBackColor = true;
             // 
             // richTextBox4
             // 
@@ -1154,7 +1193,7 @@
             this.comboBoxEnvironments.FormattingEnabled = true;
             this.comboBoxEnvironments.Location = new System.Drawing.Point(98, 88);
             this.comboBoxEnvironments.Name = "comboBoxEnvironments";
-            this.comboBoxEnvironments.Size = new System.Drawing.Size(292, 21);
+            this.comboBoxEnvironments.Size = new System.Drawing.Size(302, 21);
             this.comboBoxEnvironments.TabIndex = 1;
             this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
             // 
@@ -1243,6 +1282,8 @@
             this.tabPageEnvironments.ResumeLayout(false);
             this.tabControlEnvironments.ResumeLayout(false);
             this.tabPageEnvironmentMain.ResumeLayout(false);
+            this.groupBoxEnvironmentBehaviour.ResumeLayout(false);
+            this.groupBoxEnvironmentBehaviour.PerformLayout();
             this.tabControlDefaultDetails.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1350,6 +1391,9 @@
         internal System.Windows.Forms.TextBox textBoxTransformationLabels;
         private System.Windows.Forms.GroupBox groupBoxDataObjectIdentification;
         private System.Windows.Forms.GroupBox groupBoxPrefixSuffix;
+        private System.Windows.Forms.GroupBox groupBoxEnvironmentBehaviour;
+        private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
+        private System.Windows.Forms.RadioButton radioButtonVirtualMode;
     }
 }
 
