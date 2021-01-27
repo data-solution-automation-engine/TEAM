@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using TEAM_Library;
+using EventLog = TEAM_Library.EventLog;
 
 namespace TEAM
 {

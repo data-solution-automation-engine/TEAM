@@ -1164,6 +1164,7 @@
             this.radioButtonPhysicalMode.TabStop = true;
             this.radioButtonPhysicalMode.Text = "Physical Mode";
             this.radioButtonPhysicalMode.UseVisualStyleBackColor = true;
+            this.radioButtonPhysicalMode.CheckedChanged += new System.EventHandler(this.radioButtonPhysicalMode_CheckedChanged);
             // 
             // radioButtonVirtualMode
             // 
@@ -1174,6 +1175,7 @@
             this.radioButtonVirtualMode.TabIndex = 5;
             this.radioButtonVirtualMode.Text = "Virtual Mode";
             this.radioButtonVirtualMode.UseVisualStyleBackColor = true;
+            this.radioButtonVirtualMode.CheckedChanged += new System.EventHandler(this.radioButtonVirtualMode_CheckedChanged);
             // 
             // richTextBox4
             // 

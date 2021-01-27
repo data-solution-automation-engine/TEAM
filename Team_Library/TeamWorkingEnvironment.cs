@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace TEAM
+namespace TEAM_Library
 {
     /// <summary>
     /// An unique working environment (tenant) containing all TEAM settings.

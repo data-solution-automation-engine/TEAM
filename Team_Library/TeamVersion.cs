@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace TEAM
+namespace TEAM_Library
 {
     // The definition of a TEAM version.
     public class TeamVersion

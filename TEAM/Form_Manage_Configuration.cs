@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using Microsoft.Data.SqlClient;
+using TEAM_Library;
 
 namespace TEAM
 {
@@ -921,6 +922,45 @@ namespace TEAM
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
             }
+        }
+
+        private void radioButtonPhysicalMode_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateEnvironmentMode(sender, e);
+        }
+
+        private void radioButtonVirtualMode_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateEnvironmentMode(sender, e);
+        }
+
+        private void UpdateEnvironmentMode(object sender, EventArgs e)
+        {
+            var localSender = (RadioButton) sender;
+
+
+            if (localSender == radioButtonPhysicalMode && radioButtonPhysicalMode.Checked)
+            {
+                if (radioButtonPhysicalMode.Checked)
+                {
+                    GlobalParameters.EnvironmentMode = EnvironmentModes.PhysicalMode;
+                    richTextBoxInformation.AppendText(
+                        $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
+                }
+            }
+
+            if (sender == radioButtonVirtualMode && radioButtonVirtualMode.Checked)
+            {
+                if (radioButtonVirtualMode.Checked)
+                {
+                    GlobalParameters.EnvironmentMode = EnvironmentModes.VirtualMode;
+                    richTextBoxInformation.AppendText(
+                        $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
+                }
+            }
+
+
+
         }
     }
 }

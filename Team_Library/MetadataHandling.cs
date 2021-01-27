@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
 
-namespace TEAM
+namespace TEAM_Library
 {
     public class MetadataHandling
     {

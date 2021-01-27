@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Transactions;
 using Newtonsoft.Json;
 
-namespace TEAM
+namespace TEAM_Library
 {
     public class TableMappingJson
     {

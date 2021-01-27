@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace TEAM
+namespace TEAM_Library
 {
     /// <summary>
     /// Allowed repository types for the metadata repository.
