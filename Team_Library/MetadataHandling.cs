@@ -644,6 +644,7 @@ namespace TEAM
             returnValue.AppendLine(" LEFT OUTER JOIN (");
             returnValue.AppendLine("     SELECT");
             returnValue.AppendLine("       sc.name AS TABLE_NAME,");
+            returnValue.AppendLine("       D.name AS [SCHEMA_NAME]");
             returnValue.AppendLine("       C.name AS COLUMN_NAME");
             returnValue.AppendLine("     FROM [" + databaseName + "].sys.index_columns A");
             returnValue.AppendLine("     JOIN [" + databaseName + "].sys.indexes B");
@@ -651,9 +652,11 @@ namespace TEAM
             returnValue.AppendLine("     JOIN [" + databaseName + "].sys.columns C");
             returnValue.AppendLine("     ON A.column_id= C.column_id AND A.OBJECT_ID= C.OBJECT_ID");
             returnValue.AppendLine("     JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            returnValue.AppendLine("     JOIN [" + databaseName + "].sys.schemas D ON sc.SCHEMA_ID = D.schema_id");
             returnValue.AppendLine("     WHERE is_primary_key = 1");
             returnValue.AppendLine(" ) keysub");
             returnValue.AppendLine("    ON OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) = keysub.[TABLE_NAME]");
+            returnValue.AppendLine("   AND OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "'))= keysub.[SCHEMA_NAME]");
             returnValue.AppendLine("   AND A.[name] = keysub.COLUMN_NAME");
             returnValue.AppendLine("    WHERE A.[OBJECT_ID] IN (" + filterObjects + ")");
 

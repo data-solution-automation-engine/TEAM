@@ -2891,24 +2891,6 @@ namespace TEAM
                 #endregion
 
                 #region Deploy repository / workspace
-                using (var connectionVersion = new SqlConnection(metaDataConnection))
-                {
-                    var commandVersion = new SqlCommand(deleteStatement.ToString(), connectionVersion);
-
-                    try
-                    {
-                        connectionVersion.Open();
-                        commandVersion.ExecuteNonQuery();
-
-                        if (worker != null) worker.ReportProgress(2);
-                        LogMetadataEvent($"Deploying repository / temporary workspace against metadata connection.", EventTypes.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}.", EventTypes.Error);
-                    }
-                }
-
                 LogMetadataEvent($"Deploying repository / temporary workspace against metadata connection.", EventTypes.Information);
                 try
                 {
