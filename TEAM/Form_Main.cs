@@ -23,7 +23,7 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.2";
+            const string versionNumberForTeamApplication = "v1.6.3";
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
 
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
@@ -680,12 +680,7 @@ namespace TEAM
             Application.Exit();
         }
 
-        private void createRebuildRepositoryToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcRepository);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
+
 
         private void patternDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -770,6 +765,13 @@ namespace TEAM
         {
             Process.Start(ExtensionMethod.GetDefaultBrowserPath(),
                 "http://roelantvos.com/blog/team/");
+        }
+
+        private void deployMetadataExamplesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcRepository);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
     }
 }

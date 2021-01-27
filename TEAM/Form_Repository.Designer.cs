@@ -30,13 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageRepository));
-            this.buttonDeploy = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.backgroundWorkerRepository = new System.ComponentModel.BackgroundWorker();
-            this.labelResult = new System.Windows.Forms.Label();
-            this.labelMetadataRepository = new System.Windows.Forms.Label();
             this.backgroundWorkerSampleData = new System.ComponentModel.BackgroundWorker();
             this.toolTipRepository = new System.Windows.Forms.ToolTip(this.components);
             this.checkBoxConfigurationSettings = new System.Windows.Forms.CheckBox();
@@ -51,10 +46,10 @@
             this.comboBoxStagingConnection = new System.Windows.Forms.ComboBox();
             this.comboBoxSourceConnection = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.linkLabel4 = new System.Windows.Forms.LinkLabel();
-            this.linkLabel3 = new System.Windows.Forms.LinkLabel();
-            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.linkLabelIntegration = new System.Windows.Forms.LinkLabel();
+            this.linkLabelPSA = new System.Windows.Forms.LinkLabel();
+            this.linkLabelStaging = new System.Windows.Forms.LinkLabel();
+            this.linkLabelSource = new System.Windows.Forms.LinkLabel();
             this.checkBoxCreateSamplePresentation = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateSamplePSA = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -62,37 +57,12 @@
             this.checkBoxCreateSampleStaging = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateSampleSource = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.linkLabelRepositoryModel = new System.Windows.Forms.LinkLabel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.backgroundWorkerMetadata = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // buttonDeploy
-            // 
-            this.buttonDeploy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDeploy.Location = new System.Drawing.Point(9, 19);
-            this.buttonDeploy.Name = "buttonDeploy";
-            this.buttonDeploy.Size = new System.Drawing.Size(139, 42);
-            this.buttonDeploy.TabIndex = 1;
-            this.buttonDeploy.Text = "Deploy Metadata Repository";
-            this.buttonDeploy.UseVisualStyleBackColor = true;
-            this.buttonDeploy.Click += new System.EventHandler(this.buttonDeploy_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 64);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(403, 52);
-            this.label1.TabIndex = 22;
-            this.label1.Text = "Create a new repository in the selected database.\r\nWARNING - will remove all exis" +
-    "ting tables first.\r\n\r\nThe repository will be deployed in the designated metadata" +
-    " connection environment.";
             // 
             // label2
             // 
@@ -110,41 +80,11 @@
             this.label4.Size = new System.Drawing.Size(0, 13);
             this.label4.TabIndex = 25;
             // 
-            // backgroundWorkerRepository
-            // 
-            this.backgroundWorkerRepository.WorkerReportsProgress = true;
-            this.backgroundWorkerRepository.WorkerSupportsCancellation = true;
-            this.backgroundWorkerRepository.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerRepository_DoWork);
-            this.backgroundWorkerRepository.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerRepository_ProgressChanged);
-            this.backgroundWorkerRepository.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerRepository_RunWorkerCompleted);
-            // 
-            // labelResult
-            // 
-            this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(834, 689);
-            this.labelResult.Name = "labelResult";
-            this.labelResult.Size = new System.Drawing.Size(38, 13);
-            this.labelResult.TabIndex = 30;
-            this.labelResult.Text = "Ready";
-            // 
-            // labelMetadataRepository
-            // 
-            this.labelMetadataRepository.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelMetadataRepository.AutoSize = true;
-            this.labelMetadataRepository.Location = new System.Drawing.Point(9, 689);
-            this.labelMetadataRepository.Name = "labelMetadataRepository";
-            this.labelMetadataRepository.Size = new System.Drawing.Size(197, 13);
-            this.labelMetadataRepository.TabIndex = 62;
-            this.labelMetadataRepository.Text = "Repository type in configuration is set to ";
-            // 
             // backgroundWorkerSampleData
             // 
             this.backgroundWorkerSampleData.WorkerReportsProgress = true;
             this.backgroundWorkerSampleData.WorkerSupportsCancellation = true;
             this.backgroundWorkerSampleData.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerSampleData_DoWork);
-            this.backgroundWorkerSampleData.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerSampleData_ProgressChanged);
-            this.backgroundWorkerSampleData.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerSampleData_RunWorkerCompleted);
             // 
             // checkBoxConfigurationSettings
             // 
@@ -189,7 +129,7 @@
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.buttonGenerateSampleMapping);
-            this.groupBox1.Location = new System.Drawing.Point(12, 148);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(860, 180);
             this.groupBox1.TabIndex = 72;
@@ -215,10 +155,10 @@
             this.groupBox2.Controls.Add(this.comboBoxStagingConnection);
             this.groupBox2.Controls.Add(this.comboBoxSourceConnection);
             this.groupBox2.Controls.Add(this.button3);
-            this.groupBox2.Controls.Add(this.linkLabel4);
-            this.groupBox2.Controls.Add(this.linkLabel3);
-            this.groupBox2.Controls.Add(this.linkLabel2);
-            this.groupBox2.Controls.Add(this.linkLabel1);
+            this.groupBox2.Controls.Add(this.linkLabelIntegration);
+            this.groupBox2.Controls.Add(this.linkLabelPSA);
+            this.groupBox2.Controls.Add(this.linkLabelStaging);
+            this.groupBox2.Controls.Add(this.linkLabelSource);
             this.groupBox2.Controls.Add(this.checkBoxCreateSamplePresentation);
             this.groupBox2.Controls.Add(this.checkBoxCreateSamplePSA);
             this.groupBox2.Controls.Add(this.label6);
@@ -226,7 +166,7 @@
             this.groupBox2.Controls.Add(this.checkBoxCreateSampleStaging);
             this.groupBox2.Controls.Add(this.checkBoxCreateSampleSource);
             this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Location = new System.Drawing.Point(12, 334);
+            this.groupBox2.Location = new System.Drawing.Point(12, 198);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(860, 186);
             this.groupBox2.TabIndex = 9999;
@@ -289,49 +229,49 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.buttonGenerateDatabaseSamples);
             // 
-            // linkLabel4
+            // linkLabelIntegration
             // 
-            this.linkLabel4.AutoSize = true;
-            this.linkLabel4.Location = new System.Drawing.Point(713, 89);
-            this.linkLabel4.Name = "linkLabel4";
-            this.linkLabel4.Size = new System.Drawing.Size(141, 13);
-            this.linkLabel4.TabIndex = 85;
-            this.linkLabel4.TabStop = true;
-            this.linkLabel4.Text = "Integration Layer data model";
-            this.linkLabel4.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel4_LinkClicked);
+            this.linkLabelIntegration.AutoSize = true;
+            this.linkLabelIntegration.Location = new System.Drawing.Point(713, 89);
+            this.linkLabelIntegration.Name = "linkLabelIntegration";
+            this.linkLabelIntegration.Size = new System.Drawing.Size(141, 13);
+            this.linkLabelIntegration.TabIndex = 85;
+            this.linkLabelIntegration.TabStop = true;
+            this.linkLabelIntegration.Text = "Integration Layer data model";
+            this.linkLabelIntegration.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelIntegration_LinkClicked);
             // 
-            // linkLabel3
+            // linkLabelPSA
             // 
-            this.linkLabel3.AutoSize = true;
-            this.linkLabel3.Location = new System.Drawing.Point(771, 66);
-            this.linkLabel3.Name = "linkLabel3";
-            this.linkLabel3.Size = new System.Drawing.Size(83, 13);
-            this.linkLabel3.TabIndex = 84;
-            this.linkLabel3.TabStop = true;
-            this.linkLabel3.Text = "PSA data model";
-            this.linkLabel3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel3_LinkClicked);
+            this.linkLabelPSA.AutoSize = true;
+            this.linkLabelPSA.Location = new System.Drawing.Point(771, 66);
+            this.linkLabelPSA.Name = "linkLabelPSA";
+            this.linkLabelPSA.Size = new System.Drawing.Size(83, 13);
+            this.linkLabelPSA.TabIndex = 84;
+            this.linkLabelPSA.TabStop = true;
+            this.linkLabelPSA.Text = "PSA data model";
+            this.linkLabelPSA.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelPsa_LinkClicked);
             // 
-            // linkLabel2
+            // linkLabelStaging
             // 
-            this.linkLabel2.AutoSize = true;
-            this.linkLabel2.Location = new System.Drawing.Point(754, 43);
-            this.linkLabel2.Name = "linkLabel2";
-            this.linkLabel2.Size = new System.Drawing.Size(100, 13);
-            this.linkLabel2.TabIndex = 83;
-            this.linkLabel2.TabStop = true;
-            this.linkLabel2.Text = "Landing data model";
-            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            this.linkLabelStaging.AutoSize = true;
+            this.linkLabelStaging.Location = new System.Drawing.Point(754, 43);
+            this.linkLabelStaging.Name = "linkLabelStaging";
+            this.linkLabelStaging.Size = new System.Drawing.Size(100, 13);
+            this.linkLabelStaging.TabIndex = 83;
+            this.linkLabelStaging.TabStop = true;
+            this.linkLabelStaging.Text = "Landing data model";
+            this.linkLabelStaging.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelStaging_LinkClicked);
             // 
-            // linkLabel1
+            // linkLabelSource
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(758, 19);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(96, 13);
-            this.linkLabel1.TabIndex = 82;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "Source data model";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            this.linkLabelSource.AutoSize = true;
+            this.linkLabelSource.Location = new System.Drawing.Point(758, 19);
+            this.linkLabelSource.Name = "linkLabelSource";
+            this.linkLabelSource.Size = new System.Drawing.Size(96, 13);
+            this.linkLabelSource.TabIndex = 82;
+            this.linkLabelSource.TabStop = true;
+            this.linkLabelSource.Text = "Source data model";
+            this.linkLabelSource.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelSource_LinkClicked);
             // 
             // checkBoxCreateSamplePresentation
             // 
@@ -404,41 +344,18 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 66);
+            this.label3.Location = new System.Drawing.Point(6, 157);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(220, 26);
+            this.label3.Size = new System.Drawing.Size(399, 26);
             this.label3.TabIndex = 73;
-            this.label3.Text = "WARNING - the databases must already \r\nexist and existing information will be rem" +
-    "oved.";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.linkLabelRepositoryModel);
-            this.groupBox3.Controls.Add(this.buttonDeploy);
-            this.groupBox3.Controls.Add(this.label1);
-            this.groupBox3.Location = new System.Drawing.Point(12, 12);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(860, 130);
-            this.groupBox3.TabIndex = 1;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Create Metadata Repository";
-            // 
-            // linkLabelRepositoryModel
-            // 
-            this.linkLabelRepositoryModel.AutoSize = true;
-            this.linkLabelRepositoryModel.Location = new System.Drawing.Point(739, 19);
-            this.linkLabelRepositoryModel.Name = "linkLabelRepositoryModel";
-            this.linkLabelRepositoryModel.Size = new System.Drawing.Size(115, 13);
-            this.linkLabelRepositoryModel.TabIndex = 83;
-            this.linkLabelRepositoryModel.TabStop = true;
-            this.linkLabelRepositoryModel.Text = "Repository Data Model";
-            this.linkLabelRepositoryModel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel5_LinkClicked);
+            this.label3.Text = "WARNING - the databases associated with the selected connections must already \r\ne" +
+    "xist and existing information will be removed.";
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.button2);
             this.groupBox4.Controls.Add(this.checkBoxConfigurationSettings);
-            this.groupBox4.Location = new System.Drawing.Point(12, 526);
+            this.groupBox4.Location = new System.Drawing.Point(12, 390);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(860, 160);
             this.groupBox4.TabIndex = 88;
@@ -450,8 +367,6 @@
             this.backgroundWorkerMetadata.WorkerReportsProgress = true;
             this.backgroundWorkerMetadata.WorkerSupportsCancellation = true;
             this.backgroundWorkerMetadata.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerMetadata_DoWork);
-            this.backgroundWorkerMetadata.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerMetadata_ProgressChanged);
-            this.backgroundWorkerMetadata.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerMetadata_RunWorkerCompleted);
             // 
             // FormManageRepository
             // 
@@ -459,11 +374,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 711);
             this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.labelMetadataRepository);
-            this.Controls.Add(this.labelResult);
             this.Controls.Add(this.label4);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(900, 750);
@@ -474,8 +386,6 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
@@ -484,13 +394,8 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button buttonDeploy;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
-        private System.ComponentModel.BackgroundWorker backgroundWorkerRepository;
-        private System.Windows.Forms.Label labelResult;
-        private System.Windows.Forms.Label labelMetadataRepository;
         private System.ComponentModel.BackgroundWorker backgroundWorkerSampleData;
         private System.Windows.Forms.ToolTip toolTipRepository;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -503,14 +408,12 @@
         internal System.Windows.Forms.CheckBox checkBoxCreateSampleSource;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button buttonGenerateSampleMapping;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.LinkLabel linkLabel4;
-        private System.Windows.Forms.LinkLabel linkLabel3;
-        private System.Windows.Forms.LinkLabel linkLabel2;
-        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.LinkLabel linkLabelIntegration;
+        private System.Windows.Forms.LinkLabel linkLabelPSA;
+        private System.Windows.Forms.LinkLabel linkLabelStaging;
+        private System.Windows.Forms.LinkLabel linkLabelSource;
         internal System.Windows.Forms.CheckBox checkBoxConfigurationSettings;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.LinkLabel linkLabelRepositoryModel;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox groupBox4;

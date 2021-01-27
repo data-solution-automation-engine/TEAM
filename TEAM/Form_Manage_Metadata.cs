@@ -2891,10 +2891,65 @@ namespace TEAM
                         LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}.", EventTypes.Error);
                     }
                 }
-                # endregion
+                #endregion
+
+                #region Deploy repository / workspace
+                using (var connectionVersion = new SqlConnection(metaDataConnection))
+                {
+                    var commandVersion = new SqlCommand(deleteStatement.ToString(), connectionVersion);
+
+                    try
+                    {
+                        connectionVersion.Open();
+                        commandVersion.ExecuteNonQuery();
+
+                        if (worker != null) worker.ReportProgress(2);
+                        LogMetadataEvent($"Deploying repository / temporary workspace against metadata connection.", EventTypes.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}.", EventTypes.Error);
+                    }
+                }
+
+                LogMetadataEvent($"Deploying repository / temporary workspace against metadata connection.", EventTypes.Information);
+                try
+                {
+                    using (StreamReader sr = new StreamReader(GlobalParameters.ScriptPath + "generateRepository.sql"))
+                    {
+                        var sqlCommands = sr.ReadToEnd().Split(new string[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (var command in sqlCommands)
+                        {
+                            using (var connectionVersion = new SqlConnection(metaDataConnection))
+                            {
+                                var commandVersion = new SqlCommand(command, connectionVersion);
+
+                                try
+                                {
+                                    connectionVersion.Open();
+                                    commandVersion.ExecuteNonQuery();
+                                    LogMetadataEvent($"Executing statement: \r\n\r\n {command}", EventTypes.Information);
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {command} with exception {ex}.", EventTypes.Error);
+                                }
+                            }
+
+                        }
+                        worker.ReportProgress(2);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMetadataEvent($"An issue has occurred executing the repository creation logic. The reported error was: \r\n\r\n {ex}", EventTypes.Error);
+                }
+                LogMetadataEvent($"Preparation of the repository completed.", EventTypes.Information);
+                #endregion
 
 
-                # region Prepare Version Information - 3%
+                #region Prepare Version Information
                 // Prepare Version
                 LogMetadataEvent($"Commencing preparing the version metadata.", EventTypes.Information);
 

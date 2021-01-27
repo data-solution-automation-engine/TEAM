@@ -10,15 +10,12 @@ namespace TEAM
 {
     public partial class FormManageRepository : FormBase
     {
-        Form_Alert _alertRepository;
         Form_Alert _alertSampleData;
         Form_Alert _alertMetadata;
 
         public FormManageRepository()
         {
             InitializeComponent();
-
-            labelMetadataRepository.Text = "Repository type in configuration is set to " + TeamConfigurationSettings.MetadataRepositoryType;
 
             foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
             {
@@ -52,63 +49,6 @@ namespace TEAM
                 comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
                 comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
                 comboBoxPresentationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-            }
-        }
-
-        private void buttonDeploy_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorkerRepository.IsBusy != true)
-            {
-                // create a new instance of the alert form
-                _alertRepository = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
-                _alertRepository.Canceled += buttonCancel_Click;
-                _alertRepository.Show();
-                // Start the asynchronous operation.
-                backgroundWorkerRepository.RunWorkerAsync();
-            }
-        }
-
-        // This event handler cancels the backgroundworker, fired from Cancel button in AlertForm.
-        private void buttonCancel_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorkerRepository.WorkerSupportsCancellation)
-            {
-                // Cancel the asynchronous operation.
-                backgroundWorkerRepository.CancelAsync();
-                // Close the AlertForm
-                _alertRepository.Close();
-            }
-        }
-
-        /// <summary>
-        /// Run a SQL command against the provided database connection, capture any errors and report feedback to the Repository screen.
-        /// </summary>
-        /// <param name="connString"></param>
-        /// <param name="createStatement"></param>
-        /// <param name="worker"></param>
-        /// <param name="progressCounter"></param>
-        private void RunSqlCommandRepositoryForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter)
-        {
-            using (var connectionVersion = new SqlConnection(connString))
-            {
-                var commandVersion = new SqlCommand(createStatement, connectionVersion);
-
-                try
-                {
-                    connectionVersion.Open();
-                    commandVersion.ExecuteNonQuery();
-
-                    worker.ReportProgress(progressCounter);
-                    _alertRepository.SetTextLogging(createStatement);
-                }
-                catch (Exception ex)
-                {
-                    _alertRepository.SetTextLogging("An issue has occurred " + ex);
-                    _alertRepository.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
-                    ErrorHandlingParameters.ErrorCatcher++;
-                    ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
-                }
             }
         }
 
@@ -158,107 +98,7 @@ namespace TEAM
             }
         }
 
-        private void backgroundWorkerRepository_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Instantiate the thread / background worker
-            BackgroundWorker worker = sender as BackgroundWorker;
 
-            ErrorHandlingParameters.ErrorCatcher = 0;
-            ErrorHandlingParameters.ErrorLog = new StringBuilder();
-            
-            var localMetadataConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false);
-
-            // Handle multi-threading
-            if (worker != null && worker.CancellationPending)
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                // Create the repository
-                _alertRepository.SetTextLogging("--Commencing metadata repository creation.\r\n\r\n");
-
-                try
-                {  
-                    using (StreamReader sr = new StreamReader(GlobalParameters.ScriptPath+"generateRepository.sql"))
-                    {
-                        var sqlCommands = sr.ReadToEnd().Split(new string[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                        int counter = 0;
-
-                        foreach (var command in sqlCommands)
-                        {
-                            // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
-                            var normalisedValue = 1 + (counter - 0) * (100 - 1) / (sqlCommands.Length - 0);
-
-                            RunSqlCommandRepositoryForm(localMetadataConnectionString, command+"\r\n\r\n", worker, normalisedValue);
-                            counter++;
-                        }
-                        worker.ReportProgress(100);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _alertRepository.SetTextLogging("An issue has occurred executing the repository creation logic. The reported error was: " + ex);
-                }
-
-                // Error handling
-                if (ErrorHandlingParameters.ErrorCatcher > 0)
-                {
-                    _alertRepository.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the metadata.\r\n");
-                    _alertRepository.SetTextLogging("Please check the Error Log for details \r\n");
-                    _alertRepository.SetTextLogging("\r\n");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                    {
-                        outfile.Write(ErrorHandlingParameters.ErrorLog);
-                        outfile.Close();
-                    }
-                }
-                else
-                {
-                    _alertRepository.SetTextLogging("\r\nNo errors were detected.\r\n");
-                }
-
-            }
-        }
-
-        private void backgroundWorkerRepository_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
-
-            // Pass the progress to AlertForm label and progressbar
-            _alertRepository.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alertRepository.ProgressValue = e.ProgressPercentage;
-        }
-
-        private void backgroundWorkerRepository_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                labelResult.Text = "Cancelled!";
-            }
-            else if (e.Error != null)
-            {
-                labelResult.Text = "Error: " + e.Error.Message;
-            }
-            else
-            {
-                labelResult.Text = "Done!";
-                if (ErrorHandlingParameters.ErrorCatcher == 0)
-                {
-                    MessageBox.Show("The metadata repository has been created.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("The metadata repository has been created with " + ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    ErrorHandlingParameters.ErrorCatcher = 0;
-                }
-            }
-        }
 
         internal static class ErrorHandlingParameters
         {
@@ -489,8 +329,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                _alertRepository.SetTextLogging(
-                    "An issue has occured interpreting a file containing the SQL commands. The reported error was: " + ex);
+
             }
         }
 
@@ -591,46 +430,7 @@ namespace TEAM
                 LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
             }
         }
-
-        private void backgroundWorkerSampleData_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
-
-            // Pass the progress to AlertForm label and progressbar
-            _alertSampleData.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alertSampleData.ProgressValue = e.ProgressPercentage;
-
-            // Manage the logging
-        }
-
-        private void backgroundWorkerSampleData_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                labelResult.Text = "Cancelled!";
-            }
-            else if (e.Error != null)
-            {
-                labelResult.Text = "Error: " + e.Error.Message;
-            }
-            else
-            {
-                labelResult.Text = "Done!";
-                if (ErrorHandlingParameters.ErrorCatcher == 0)
-                {
-                    MessageBox.Show("The sample schema / data has been created.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("The sample schema / data has been created with "+ ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    ErrorHandlingParameters.ErrorCatcher = 0;
-                }
-            }
-        }
-
+         
         private void buttonClick_GenerateMetadata(object sender, EventArgs e)
         {
             if (backgroundWorkerMetadata.IsBusy != true)
@@ -638,7 +438,6 @@ namespace TEAM
                 // create a new instance of the alert form
                 _alertMetadata = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
-                _alertMetadata.Canceled += buttonCancel_Click;
                 _alertMetadata.Show();
                 // Start the asynchronous operation.
                 SetStandardConfigurationSettings();
@@ -652,54 +451,46 @@ namespace TEAM
             SetStandardConfigurationSettings();
         }
 
-        private void linkLabel5_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+
+
+
+        private void linkLabelSource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // Change the color of the link text by setting LinkVisited
             // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2YF5tTr");
-        }
-
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
+            linkLabelSource.LinkVisited = true;
             //Call the Process.Start method to open the default browser
             //with a URL:
             System.Diagnostics.Process.Start("https://bit.ly/2ARcCTw");
         }
 
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void linkLabelStaging_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // Change the color of the link text by setting LinkVisited
             // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
+            linkLabelStaging.LinkVisited = true;
             //Call the Process.Start method to open the default browser
             //with a URL:
             System.Diagnostics.Process.Start("https://bit.ly/2VY4Os3");
         
         }
 
-        private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void linkLabelPsa_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // Change the color of the link text by setting LinkVisited
             // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
+            linkLabelPSA.LinkVisited = true;
             //Call the Process.Start method to open the default browser
             //with a URL:
             System.Diagnostics.Process.Start("https://bit.ly/2SX0Xth");
         
         }
 
-        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void linkLabelIntegration_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             // Change the color of the link text by setting LinkVisited
             // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
+            linkLabelIntegration.LinkVisited = true;
             //Call the Process.Start method to open the default browser
             //with a URL:
             System.Diagnostics.Process.Start("https://bit.ly/2FuWBq5");
@@ -713,7 +504,6 @@ namespace TEAM
                 // create a new instance of the alert form
                 _alertSampleData = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
-                _alertSampleData.Canceled += buttonCancel_Click;
                 _alertSampleData.Show();
                 // Start the asynchronous operation.
                 SetStandardConfigurationSettings();
@@ -830,45 +620,6 @@ namespace TEAM
                 counter++;
 
                 worker.ReportProgress(100);
-            }
-        }
-
-        private void backgroundWorkerMetadata_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
-
-            // Pass the progress to AlertForm label and progressbar
-            _alertMetadata.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alertMetadata.ProgressValue = e.ProgressPercentage;
-
-            // Manage the logging
-        }
-
-        private void backgroundWorkerMetadata_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                labelResult.Text = "Cancelled!";
-            }
-            else if (e.Error != null)
-            {
-                labelResult.Text = "Error: " + e.Error.Message;
-            }
-            else
-            {
-                labelResult.Text = "Done!";
-                if (ErrorHandlingParameters.ErrorCatcher == 0)
-                {
-                    MessageBox.Show("The sample metadata has been created.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("The sample metadata has been created with " + ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    ErrorHandlingParameters.ErrorCatcher = 0;
-                }
             }
         }
     }

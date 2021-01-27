@@ -53,11 +53,11 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.repositoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createRebuildRepositoryToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patternDefinitionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.deployMetadataExamplesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -250,7 +250,6 @@
             this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.metadataToolStripMenuItem,
-            this.repositoryToolStripMenuItem,
             this.configurationToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
@@ -291,8 +290,8 @@
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMetadataFormToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
-            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
-            this.metadataToolStripMenuItem.Text = "&Metadata";
+            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(125, 20);
+            this.metadataToolStripMenuItem.Text = "&Metadata Mappings";
             // 
             // openMetadataFormToolStripMenuItem
             // 
@@ -303,28 +302,13 @@
             this.openMetadataFormToolStripMenuItem.Text = "Manage &Metadata";
             this.openMetadataFormToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFormToolStripMenuItem_Click);
             // 
-            // repositoryToolStripMenuItem
-            // 
-            this.repositoryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createRebuildRepositoryToolStripMenuItem1});
-            this.repositoryToolStripMenuItem.Name = "repositoryToolStripMenuItem";
-            this.repositoryToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
-            this.repositoryToolStripMenuItem.Text = "&Repository";
-            // 
-            // createRebuildRepositoryToolStripMenuItem1
-            // 
-            this.createRebuildRepositoryToolStripMenuItem1.Image = global::TEAM.Properties.Resources.database_icon;
-            this.createRebuildRepositoryToolStripMenuItem1.Name = "createRebuildRepositoryToolStripMenuItem1";
-            this.createRebuildRepositoryToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.createRebuildRepositoryToolStripMenuItem1.Size = new System.Drawing.Size(259, 22);
-            this.createRebuildRepositoryToolStripMenuItem1.Text = "&Create / Rebuild Repository";
-            this.createRebuildRepositoryToolStripMenuItem1.Click += new System.EventHandler(this.createRebuildRepositoryToolStripMenuItem1_Click);
-            // 
             // configurationToolStripMenuItem
             // 
             this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generalSettingsToolStripMenuItem,
-            this.patternDefinitionsToolStripMenuItem});
+            this.patternDefinitionsToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.deployMetadataExamplesToolStripMenuItem});
             this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
             this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
             this.configurationToolStripMenuItem.Text = "&Configuration";
@@ -334,7 +318,7 @@
             this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
             this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
             this.generalSettingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
             this.generalSettingsToolStripMenuItem.Text = "General &Settings";
             this.generalSettingsToolStripMenuItem.Click += new System.EventHandler(this.generalSettingsToolStripMenuItem_Click);
             // 
@@ -343,9 +327,23 @@
             this.patternDefinitionsToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
             this.patternDefinitionsToolStripMenuItem.Name = "patternDefinitionsToolStripMenuItem";
             this.patternDefinitionsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.patternDefinitionsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.patternDefinitionsToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.patternDefinitionsToolStripMenuItem.Text = "Pattern Definitions";
             this.patternDefinitionsToolStripMenuItem.Click += new System.EventHandler(this.patternDefinitionsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(214, 6);
+            // 
+            // deployMetadataExamplesToolStripMenuItem
+            // 
+            this.deployMetadataExamplesToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
+            this.deployMetadataExamplesToolStripMenuItem.Name = "deployMetadataExamplesToolStripMenuItem";
+            this.deployMetadataExamplesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.deployMetadataExamplesToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.deployMetadataExamplesToolStripMenuItem.Text = "Deploy Metadata Examples";
+            this.deployMetadataExamplesToolStripMenuItem.Click += new System.EventHandler(this.deployMetadataExamplesToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -464,8 +462,6 @@
         private System.Windows.Forms.Label labelRepositoryVersion;
         private System.Windows.Forms.Label labelMetadataRepository;
         private System.Windows.Forms.Label labelWorkingEnvironmentType;
-        private System.Windows.Forms.ToolStripMenuItem repositoryToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createRebuildRepositoryToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem patternDefinitionsToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker backgroundWorkerEventLog;
         private System.Windows.Forms.Label labelActiveVersionDateTime;
@@ -475,6 +471,8 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem displayEventLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem deployMetadataExamplesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 
