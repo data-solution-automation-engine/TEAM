@@ -618,6 +618,20 @@ namespace TEAM_Library
         {
             var returnValue = new StringBuilder();
 
+            returnValue.AppendLine("SELECT ");
+            returnValue.AppendLine(" [DATABASE_NAME] ");
+            returnValue.AppendLine(",[SCHEMA_NAME]");
+            returnValue.AppendLine(",[TABLE_NAME]");
+            returnValue.AppendLine(",[COLUMN_NAME]");
+            returnValue.AppendLine(",[DATA_TYPE]");
+            returnValue.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+            returnValue.AppendLine(",[NUMERIC_PRECISION]");
+            returnValue.AppendLine(",[NUMERIC_SCALE]");
+            returnValue.AppendLine(",[ORDINAL_POSITION]");
+            returnValue.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+            returnValue.AppendLine("FROM");
+            returnValue.AppendLine("(");
+
             returnValue.AppendLine("SELECT");
             returnValue.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS[DATABASE_NAME],");
             returnValue.AppendLine("  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) AS[SCHEMA_NAME],");
@@ -644,7 +658,7 @@ namespace TEAM_Library
             returnValue.AppendLine(" LEFT OUTER JOIN (");
             returnValue.AppendLine("     SELECT");
             returnValue.AppendLine("       sc.name AS TABLE_NAME,");
-            returnValue.AppendLine("       D.name AS [SCHEMA_NAME]");
+            returnValue.AppendLine("       D.name AS [SCHEMA_NAME],");
             returnValue.AppendLine("       C.name AS COLUMN_NAME");
             returnValue.AppendLine("     FROM [" + databaseName + "].sys.index_columns A");
             returnValue.AppendLine("     JOIN [" + databaseName + "].sys.indexes B");
@@ -656,10 +670,12 @@ namespace TEAM_Library
             returnValue.AppendLine("     WHERE is_primary_key = 1");
             returnValue.AppendLine(" ) keysub");
             returnValue.AppendLine("    ON OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) = keysub.[TABLE_NAME]");
-            returnValue.AppendLine("   AND OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "'))= keysub.[SCHEMA_NAME]");
+            returnValue.AppendLine("   AND OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) = keysub.[SCHEMA_NAME]");
             returnValue.AppendLine("   AND A.[name] = keysub.COLUMN_NAME");
             returnValue.AppendLine("    WHERE A.[OBJECT_ID] IN (" + filterObjects + ")");
-
+            
+            returnValue.AppendLine(") sub");
+            
             return returnValue;
         }
     }

@@ -54,18 +54,24 @@ namespace TEAM
 
             DataError += (DataGridView_DataError);
 
-            DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
-            enabledIndicator.Name = TableMappingMetadataColumns.Enabled.ToString();
-            enabledIndicator.HeaderText = TableMappingMetadataColumns.Enabled.ToString();
-            enabledIndicator.DataPropertyName = TableMappingMetadataColumns.Enabled.ToString();
-            Columns.Add(enabledIndicator);
+            if (!this.Controls.ContainsKey(TableMappingMetadataColumns.Enabled.ToString()))
+            {
+                DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
+                enabledIndicator.Name = TableMappingMetadataColumns.Enabled.ToString();
+                enabledIndicator.HeaderText = TableMappingMetadataColumns.Enabled.ToString();
+                enabledIndicator.DataPropertyName = TableMappingMetadataColumns.Enabled.ToString();
+                Columns.Add(enabledIndicator);
+            }
 
-            DataGridViewTextBoxColumn hashKey = new DataGridViewTextBoxColumn();
-            hashKey.Name = TableMappingMetadataColumns.HashKey.ToString();
-            hashKey.HeaderText = TableMappingMetadataColumns.HashKey.ToString();
-            hashKey.DataPropertyName = TableMappingMetadataColumns.HashKey.ToString();
-            hashKey.Visible = false;
-            Columns.Add(hashKey);
+            if (!this.Controls.ContainsKey(TableMappingMetadataColumns.HashKey.ToString()))
+            {
+                DataGridViewTextBoxColumn hashKey = new DataGridViewTextBoxColumn();
+                hashKey.Name = TableMappingMetadataColumns.HashKey.ToString();
+                hashKey.HeaderText = TableMappingMetadataColumns.HashKey.ToString();
+                hashKey.DataPropertyName = TableMappingMetadataColumns.HashKey.ToString();
+                hashKey.Visible = false;
+                Columns.Add(hashKey);
+            }
 
             DataGridViewTextBoxColumn versionId = new DataGridViewTextBoxColumn();
             versionId.Name = TableMappingMetadataColumns.VersionId.ToString();

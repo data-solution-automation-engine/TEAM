@@ -43,7 +43,7 @@ namespace TEAM
             // Hide the physical model tab if in physical mode
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
             {
-                tabControl1.TabPages.Remove(tabPagePhysicalModel);
+                tabControlDataMappings.TabPages.Remove(tabPagePhysicalModel);
             }
 
             // Default setting and initialisation of counters etc.
@@ -619,9 +619,9 @@ namespace TEAM
             }
 
             labelHubCount.Text = $@"{hubSet.Count} Core Business Concepts";
-            labelSatCount.Text = satSet.Count + @" Context Entities";
-            labelLnkCount.Text = lnkSet.Count + @" Natural Business Relationships";
-            labelLsatCount.Text = lsatSet.Count + @" Relationship Context Entities";
+            labelSatCount.Text = satSet.Count + @" Context";
+            labelLnkCount.Text = lnkSet.Count + @" Relationships";
+            labelLsatCount.Text = lsatSet.Count + @" Relationship Context";
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2070,26 +2070,11 @@ namespace TEAM
 
         }
         
-        //private void BindAttributeMappingJsonToDataTable()
-        //{
-        //    var inputFileName = JsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-
-        //    // Load the attribute mapping file, convert it to a DataTable and bind it to the source
-        //    List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(inputFileName));
-        //    DataTable dt = Utility.ConvertToDataTable(jsonArray);
-
-        //    //Make sure the changes are seen as committed, so that changes can be detected later on.
-        //    dt.AcceptChanges(); 
-
-        //    SetTeamDataTableProperties.SetAttributeDataTableColumns(dt);
-        //    _bindingSourceAttributeMetadata.DataSource = dt;
-        //}
-        
-        private void CreateTemporaryWorkerTable(string connString)
+       
+        private void CreateTemporaryWorkerTables(string connString)
         {
             var inputTableMapping = (DataTable)_bindingSourceTableMetadata.DataSource;
             var inputAttributeMapping = (DataTable)_bindingSourceAttributeMetadata.DataSource;
-            var inputPhysicalModel = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
 
             #region Attribute Mapping
             // Attribute mapping
@@ -2308,126 +2293,139 @@ namespace TEAM
             createStatement.Clear();
 
 
-            // Physical Model
-            createStatement.AppendLine();
-            createStatement.AppendLine("-- Version Attribute");
-            createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_VERSION_ATTRIBUTE]', 'U') IS NOT NULL");
-            createStatement.AppendLine(" DROP TABLE[TMP_MD_VERSION_ATTRIBUTE]");
-            createStatement.AppendLine("");
-            createStatement.AppendLine("CREATE TABLE[TMP_MD_VERSION_ATTRIBUTE]");
-            createStatement.AppendLine("( ");
-            createStatement.AppendLine("");
-            createStatement.AppendLine("    [VERSION_ATTRIBUTE_HASH] AS(");
-            createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DATABASE_NAME])),'NA')+'|'+");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SCHEMA_NAME])),'NA')+'|'+");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TABLE_NAME])),'NA')+'|'+");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[COLUMN_NAME])),'NA')+'|'+");
-            createStatement.AppendLine("                ISNULL(RTRIM(CONVERT(VARCHAR(100),[VERSION_ID])),'NA')+'|'");
-            createStatement.AppendLine("			),(2)");
-            createStatement.AppendLine("			)");
-            createStatement.AppendLine("		) PERSISTED NOT NULL ,");
-            createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
-            createStatement.AppendLine("	[DATABASE_NAME]      varchar(100)  NOT NULL ,");
-            createStatement.AppendLine("	[SCHEMA_NAME]        varchar(100)  NOT NULL ,");
-            createStatement.AppendLine("	[TABLE_NAME]         varchar(100)  NOT NULL ,");
-            createStatement.AppendLine("	[COLUMN_NAME]        varchar(100)  NOT NULL,");
-            createStatement.AppendLine("    [DATA_TYPE]          varchar(100)  NOT NULL ,");
-            createStatement.AppendLine("	[CHARACTER_MAXIMUM_LENGTH] integer NULL,");
-            createStatement.AppendLine("    [NUMERIC_PRECISION]  integer NULL,");
-            createStatement.AppendLine("    [NUMERIC_SCALE]  integer NULL,");
-            createStatement.AppendLine("    [ORDINAL_POSITION]   integer NULL,");
-            createStatement.AppendLine("    [PRIMARY_KEY_INDICATOR] varchar(1)  NULL ,");
-            createStatement.AppendLine("	[MULTI_ACTIVE_INDICATOR] varchar(1)  NULL ");
-            createStatement.AppendLine(")");
-            createStatement.AppendLine("");
-            createStatement.AppendLine("ALTER TABLE [TMP_MD_VERSION_ATTRIBUTE]");
-            createStatement.AppendLine("    ADD CONSTRAINT[PK_TMP_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([DATABASE_NAME] ASC, [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [VERSION_ID] ASC)");
-            createStatement.AppendLine();
-
-            ExecuteSqlCommand(createStatement, connString);
-            createStatement.Clear();
-
-            // Load the data table into the worker table for the physical model 
-            foreach (DataRow row in inputPhysicalModel.Rows)
+            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
-                string databaseName = "";
-                string schemaName = "";
-                string tableName = "";
-                string columnName = "";
-                string numericScale = "";
-                string numericPrecision = "";
-                string ordinalPosition = "";
-                string characterLength = "";
-                string dataType = "";
-                string primaryKeyIndicator = "";
-                string multiActiveIndicator = "";
+                var inputPhysicalModel = (DataTable) _bindingSourcePhysicalModelMetadata.DataSource;
+                // Physical Model
+                createStatement.AppendLine();
+                createStatement.AppendLine("-- Version Attribute");
+                createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_VERSION_ATTRIBUTE]', 'U') IS NOT NULL");
+                createStatement.AppendLine(" DROP TABLE[TMP_MD_VERSION_ATTRIBUTE]");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("CREATE TABLE[TMP_MD_VERSION_ATTRIBUTE]");
+                createStatement.AppendLine("( ");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("    [VERSION_ATTRIBUTE_HASH] AS(");
+                createStatement.AppendLine("                CONVERT([CHAR](32),HASHBYTES('MD5',");
+                createStatement.AppendLine(
+                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[DATABASE_NAME])),'NA')+'|'+");
+                createStatement.AppendLine(
+                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[SCHEMA_NAME])),'NA')+'|'+");
+                createStatement.AppendLine(
+                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[TABLE_NAME])),'NA')+'|'+");
+                createStatement.AppendLine(
+                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[COLUMN_NAME])),'NA')+'|'+");
+                createStatement.AppendLine(
+                    "                ISNULL(RTRIM(CONVERT(VARCHAR(100),[VERSION_ID])),'NA')+'|'");
+                createStatement.AppendLine("			),(2)");
+                createStatement.AppendLine("			)");
+                createStatement.AppendLine("		) PERSISTED NOT NULL ,");
+                createStatement.AppendLine("	[VERSION_ID] integer NOT NULL ,");
+                createStatement.AppendLine("	[DATABASE_NAME]      varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("	[SCHEMA_NAME]        varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("	[TABLE_NAME]         varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("	[COLUMN_NAME]        varchar(100)  NOT NULL,");
+                createStatement.AppendLine("    [DATA_TYPE]          varchar(100)  NOT NULL ,");
+                createStatement.AppendLine("	[CHARACTER_MAXIMUM_LENGTH] integer NULL,");
+                createStatement.AppendLine("    [NUMERIC_PRECISION]  integer NULL,");
+                createStatement.AppendLine("    [NUMERIC_SCALE]  integer NULL,");
+                createStatement.AppendLine("    [ORDINAL_POSITION]   integer NULL,");
+                createStatement.AppendLine("    [PRIMARY_KEY_INDICATOR] varchar(1)  NULL ,");
+                createStatement.AppendLine("	[MULTI_ACTIVE_INDICATOR] varchar(1)  NULL ");
+                createStatement.AppendLine(")");
+                createStatement.AppendLine("");
+                createStatement.AppendLine("ALTER TABLE [TMP_MD_VERSION_ATTRIBUTE]");
+                createStatement.AppendLine(
+                    "    ADD CONSTRAINT[PK_TMP_MD_VERSION_ATTRIBUTE] PRIMARY KEY CLUSTERED([DATABASE_NAME] ASC, [SCHEMA_NAME], [TABLE_NAME], [COLUMN_NAME], [VERSION_ID] ASC)");
+                createStatement.AppendLine();
 
-                if (row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()] != DBNull.Value)
-                    databaseName = (string)row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()];
+                ExecuteSqlCommand(createStatement, connString);
+                createStatement.Clear();
 
-                if (row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()] != DBNull.Value)
-                    schemaName = (string)row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()];
+                // Load the data table into the worker table for the physical model 
+                foreach (DataRow row in inputPhysicalModel.Rows)
+                {
+                    string databaseName = "";
+                    string schemaName = "";
+                    string tableName = "";
+                    string columnName = "";
+                    string numericScale = "";
+                    string numericPrecision = "";
+                    string ordinalPosition = "";
+                    string characterLength = "";
+                    string dataType = "";
+                    string primaryKeyIndicator = "";
+                    string multiActiveIndicator = "";
 
-                if (row[PhysicalModelMappingMetadataColumns.TableName.ToString()] != DBNull.Value) 
-                    tableName = (string)row[PhysicalModelMappingMetadataColumns.TableName.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()] != DBNull.Value)
+                        databaseName = (string) row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()] != DBNull.Value)
-                    columnName = (string)row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()] != DBNull.Value)
+                        schemaName = (string) row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()] != DBNull.Value)
-                    numericPrecision = (string)row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.TableName.ToString()] != DBNull.Value)
+                        tableName = (string) row[PhysicalModelMappingMetadataColumns.TableName.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()] != DBNull.Value)
-                    numericScale = (string)row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()] != DBNull.Value)
+                        columnName = (string) row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()] != DBNull.Value)
-                    ordinalPosition = (string)row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()] != DBNull.Value)
+                        numericPrecision =
+                            (string) row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.DataType.ToString()] != DBNull.Value)
-                    dataType = (string)row[PhysicalModelMappingMetadataColumns.DataType.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()] != DBNull.Value)
+                        numericScale = (string) row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()] != DBNull.Value)
-                    characterLength = (string)row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()] != DBNull.Value)
+                        ordinalPosition = (string) row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()] != DBNull.Value)
-                    primaryKeyIndicator = (string)row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.DataType.ToString()] != DBNull.Value)
+                        dataType = (string) row[PhysicalModelMappingMetadataColumns.DataType.ToString()];
 
-                if (row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()] != DBNull.Value)
-                    multiActiveIndicator = (string)row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()];
+                    if (row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()] != DBNull.Value)
+                        characterLength = (string) row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()];
+
+                    if (row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()] != DBNull.Value)
+                        primaryKeyIndicator =
+                            (string) row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()];
+
+                    if (row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()] != DBNull.Value)
+                        multiActiveIndicator =
+                            (string) row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()];
 
 
-                createStatement.AppendLine("INSERT [dbo].[TMP_MD_VERSION_ATTRIBUTE]" +
-                                           " ([VERSION_ID], " +
-                                           "[DATABASE_NAME], " +
-                                           "[SCHEMA_NAME], " +
-                                           "[TABLE_NAME], " +
-                                           "[COLUMN_NAME], " +
-                                           "[DATA_TYPE], " +
-                                           "[CHARACTER_MAXIMUM_LENGTH], " +
-                                           "[NUMERIC_PRECISION], " +
-                                           "[NUMERIC_SCALE], " +
-                                           "[ORDINAL_POSITION], " +
-                                           "[PRIMARY_KEY_INDICATOR], " +
-                                           "[MULTI_ACTIVE_INDICATOR]) " +
-                                           "VALUES(" +
-                                           "0, " +
-                                           "N'" + databaseName + "', " +
-                                           "N'" + schemaName + "', " +
-                                           "N'" + tableName + "', " +
-                                           "N'" + columnName + "', " +
-                                           "N'" + dataType + "', " +
-                                           "N'" + characterLength + "', " +
-                                           "N'" + numericPrecision + "', " +
-                                           "N'" + numericScale + "', " +
-                                           "N'" + ordinalPosition+ "', " +
-                                           "N'" + primaryKeyIndicator + "', " +
-                                           "N'" + multiActiveIndicator + "'" +
-                                           ");");
+                    createStatement.AppendLine("INSERT [dbo].[TMP_MD_VERSION_ATTRIBUTE]" +
+                                               " ([VERSION_ID], " +
+                                               "[DATABASE_NAME], " +
+                                               "[SCHEMA_NAME], " +
+                                               "[TABLE_NAME], " +
+                                               "[COLUMN_NAME], " +
+                                               "[DATA_TYPE], " +
+                                               "[CHARACTER_MAXIMUM_LENGTH], " +
+                                               "[NUMERIC_PRECISION], " +
+                                               "[NUMERIC_SCALE], " +
+                                               "[ORDINAL_POSITION], " +
+                                               "[PRIMARY_KEY_INDICATOR], " +
+                                               "[MULTI_ACTIVE_INDICATOR]) " +
+                                               "VALUES(" +
+                                               "0, " +
+                                               "N'" + databaseName + "', " +
+                                               "N'" + schemaName + "', " +
+                                               "N'" + tableName + "', " +
+                                               "N'" + columnName + "', " +
+                                               "N'" + dataType + "', " +
+                                               "N'" + characterLength + "', " +
+                                               "N'" + numericPrecision + "', " +
+                                               "N'" + numericScale + "', " +
+                                               "N'" + ordinalPosition + "', " +
+                                               "N'" + primaryKeyIndicator + "', " +
+                                               "N'" + multiActiveIndicator + "'" +
+                                               ");");
+                }
+
+                ExecuteSqlCommand(createStatement, connString);
+                createStatement.Clear();
             }
-
-            ExecuteSqlCommand(createStatement, connString);
-            createStatement.Clear();
 
         }
 
@@ -2549,7 +2547,12 @@ namespace TEAM
             // Check if there are any outstanding saves / commits in the data grid
             var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
             var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
-            var dataTablePhysicalModelChanges = ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+            DataTable dataTablePhysicalModelChanges = new DataTable();
+
+            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
+            {
+                dataTablePhysicalModelChanges =  ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+            }
 
             if (
                 (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
@@ -2611,7 +2614,7 @@ namespace TEAM
                 richTextBoxInformation.AppendText("Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n");
 
                 // Move data from the grids into temp tables
-                CreateTemporaryWorkerTable(TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
+                CreateTemporaryWorkerTables(TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
 
                 if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                 {
@@ -3030,24 +3033,24 @@ namespace TEAM
                             tableFilterObjects = tableFilterObjects.TrimEnd(',');
 
 
-                            var physicalModelStatement = new StringBuilder();
-                            physicalModelStatement.AppendLine("SELECT ");
-                            physicalModelStatement.AppendLine(" [DATABASE_NAME] ");
-                            physicalModelStatement.AppendLine(",[SCHEMA_NAME]");
-                            physicalModelStatement.AppendLine(",[TABLE_NAME]");
-                            physicalModelStatement.AppendLine(",[COLUMN_NAME]");
-                            physicalModelStatement.AppendLine(",[DATA_TYPE]");
-                            physicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-                            physicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
-                            physicalModelStatement.AppendLine(",[NUMERIC_SCALE]");
-                            physicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
-                            physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
-                            physicalModelStatement.AppendLine("FROM");
-                            physicalModelStatement.AppendLine("(");
-                            physicalModelStatement.AppendLine(physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.DatabaseServer.DatabaseName, tableFilterObjects).ToString());
-                            physicalModelStatement.AppendLine(") sub");
+                            //var physicalModelStatement = new StringBuilder();
+                            //physicalModelStatement.AppendLine("SELECT ");
+                            //physicalModelStatement.AppendLine(" [DATABASE_NAME] ");
+                            //physicalModelStatement.AppendLine(",[SCHEMA_NAME]");
+                            //physicalModelStatement.AppendLine(",[TABLE_NAME]");
+                            //physicalModelStatement.AppendLine(",[COLUMN_NAME]");
+                            //physicalModelStatement.AppendLine(",[DATA_TYPE]");
+                            //physicalModelStatement.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+                            //physicalModelStatement.AppendLine(",[NUMERIC_PRECISION]");
+                            //physicalModelStatement.AppendLine(",[NUMERIC_SCALE]");
+                            //physicalModelStatement.AppendLine(",[ORDINAL_POSITION]");
+                            //physicalModelStatement.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+                            //physicalModelStatement.AppendLine("FROM");
+                            //physicalModelStatement.AppendLine("(");
+                            //physicalModelStatement.AppendLine();
+                            //physicalModelStatement.AppendLine(") sub");
 
-                            var localPhysicalModelDataTable = Utility.GetDataTable(ref localSqlConnection, physicalModelStatement.ToString());
+                            var localPhysicalModelDataTable = Utility.GetDataTable(ref localSqlConnection, physicalModelInstantiation.CreatePhysicalModelSet(localConnectionObject.DatabaseServer.DatabaseName, tableFilterObjects).ToString());
 
                             if (localPhysicalModelDataTable != null)
                             {
@@ -6502,33 +6505,7 @@ namespace TEAM
             }
         }
 
-        /// <summary>
-        /// Run the validation based on the validation settings (in the validation form / file)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonValidation_Click(object sender, EventArgs e)
-        {
-            richTextBoxInformation.Clear();
 
-            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && _bindingSourcePhysicalModelMetadata.Count == 0)
-            {
-                richTextBoxInformation.Text += "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
-            }
-            else
-            {
-                if (backgroundWorkerValidationOnly.IsBusy) return;
-                // create a new instance of the alert form
-                _alertValidation = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
-                _alertValidation.Canceled += buttonCancel_Click;
-                _alertValidation.Show();
-                _alertValidation.ShowLogButton(false);
-                _alertValidation.ShowCancelButton(false);
-                // Start the asynchronous operation.
-                backgroundWorkerValidationOnly.RunWorkerAsync();
-            }
-        }
 
         private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -7699,10 +7676,7 @@ namespace TEAM
             _generatedScripts.Message = "Done";
         }
 
-        private void ButtonClickExportToJson(object sender, EventArgs e)
-        {
-            ManageFormOverallJsonExport();
-        }
+
 
         /// <summary>
         /// Convenience method to encapsulate all UI interactions. Needs to be merged further (interim solution).
@@ -9044,6 +9018,164 @@ namespace TEAM
                 // Start the asynchronous operation.
                 backgroundWorkerEventLog.RunWorkerAsync();
             }
+        }
+
+        private void buttonRunDataItemAutoMapper_Click(object sender, EventArgs e)
+        {
+            // Get a stable version of the Data Objects from the grid.
+            DataTable localDataObjectDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+
+            // Iterate across all Data Object Mappings, to see if there are corresponding Data Item Mappings.
+            foreach (DataRow dataObjectRow in localDataObjectDataTable.Rows)
+            {
+                // Generic
+                var localVersionId = dataObjectRow[TableMappingMetadataColumns.VersionId.ToString()].ToString();
+                
+                // Source Data Object details
+                var sourceDataObjectName = dataObjectRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                var sourceConnectionId = dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+
+                // Get the source details from the database
+                string tableFilterObjectsSource = $"OBJECT_ID(N'[{sourceConnection.DatabaseServer.DatabaseName}].{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}')";
+
+                var physicalModelInstantiationSource = new AttributeSelection();
+                var localSourceSqlConnection = new SqlConnection { ConnectionString = sourceConnection.CreateSqlServerConnectionString(false)};
+                var localSourceQuery = physicalModelInstantiationSource.CreatePhysicalModelSet(sourceConnection.DatabaseServer.DatabaseName, tableFilterObjectsSource).ToString();
+
+                DataTable localSourceDatabaseDataTable = Utility.GetDataTable(ref localSourceSqlConnection, localSourceQuery);
+         
+                
+                
+
+                // Target Data Object details
+                var targetDataObjectName = dataObjectRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                var targetConnectionId = dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+
+                // Get the target details from the database
+                string tableFilterObjectsTarget = $"OBJECT_ID(N'[{targetConnection.DatabaseServer.DatabaseName}].{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}')";
+
+                var physicalModelInstantiationTarget = new AttributeSelection();
+                var localTargetSqlConnection = new SqlConnection { ConnectionString = targetConnection.CreateSqlServerConnectionString(false) };
+                var localTargetQuery = physicalModelInstantiationTarget.CreatePhysicalModelSet(targetConnection.DatabaseServer.DatabaseName, tableFilterObjectsTarget).ToString();
+
+                DataTable localTargetDatabaseDataTable = Utility.GetDataTable(ref localTargetSqlConnection, localTargetQuery);
+
+                
+                
+                
+                List<TeamDataItemMappingRow> localDataItemMappings = new List<TeamDataItemMappingRow>();
+                // For each source Data Object, check if there is a matching target
+                foreach (DataRow sourceDataObjectRow in localSourceDatabaseDataTable.Rows)
+                {
+                    // Do the lookup in the target data table
+                    var results = from localRow in localTargetDatabaseDataTable.AsEnumerable()
+                        where localRow.Field<string>("COLUMN_NAME") == sourceDataObjectRow["COLUMN_NAME"].ToString()
+                        select localRow;
+
+                    if (results.FirstOrDefault() != null)
+                    {
+                        // There is a match
+                        var localMapping = new TeamDataItemMappingRow
+                        {
+                            sourceDataObjectName  = sourceDataObjectName,
+                            sourceDataObjectConnectionId = sourceConnectionId,
+                            sourceDataItemName = sourceDataObjectRow["COLUMN_NAME"].ToString(),
+                            targetDataObjectName = targetDataObjectName,
+                            targetDataObjectConnectionId = targetConnectionId,
+                            targetDataItemName = sourceDataObjectRow["COLUMN_NAME"].ToString() // Same as source, as it's a direct match on this value.
+                        };
+
+                        localDataItemMappings.Add(localMapping);
+                    }
+                }
+
+                // Now, for each item in the matched list check if there is a corresponding Data Item Mapping in the grid already.
+                DataTable localDataItemDataTable = (DataTable)_bindingSourceAttributeMetadata.DataSource;
+                
+                foreach (var matchedDataItemMappingFromDatabase in localDataItemMappings)
+                {
+                    // Do the lookup in the target data item grid
+                    var results = 
+                        from localRow in localDataItemDataTable.AsEnumerable()
+                        where 
+                            localRow.Field<string>(AttributeMappingMetadataColumns.SourceTable.ToString()) == matchedDataItemMappingFromDatabase.sourceDataObjectName &&
+                            localRow.Field<string>(AttributeMappingMetadataColumns.TargetTable.ToString()) == matchedDataItemMappingFromDatabase.targetDataObjectName &&
+                            localRow.Field<string>(AttributeMappingMetadataColumns.SourceColumn.ToString()) == matchedDataItemMappingFromDatabase.sourceDataItemName &&
+                            localRow.Field<string>(AttributeMappingMetadataColumns.TargetColumn.ToString()) == matchedDataItemMappingFromDatabase.targetDataItemName
+                        select localRow;
+
+                    if (results.FirstOrDefault() == null)
+                    {
+                        // There is NO match...
+                        // Add the row as Data Item Mapping in the grid.
+
+                        DataRow newRow = localDataItemDataTable.NewRow();
+
+                        newRow[AttributeMappingMetadataColumns.HashKey.ToString()] = Utility.CreateMd5(new string[] { Utility.GetRandomString(100) }, "#");
+                        newRow[AttributeMappingMetadataColumns.VersionId.ToString()] = localVersionId;
+                        newRow[AttributeMappingMetadataColumns.SourceTable.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
+                        newRow[AttributeMappingMetadataColumns.SourceColumn.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
+                        newRow[AttributeMappingMetadataColumns.TargetTable.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
+                        newRow[AttributeMappingMetadataColumns.TargetColumn.ToString()] = matchedDataItemMappingFromDatabase.targetDataItemName;
+                        newRow[AttributeMappingMetadataColumns.Notes.ToString()] = "Automatically matched";
+
+                        localDataItemDataTable.Rows.Add(newRow);
+                        //localDataItemDataTable.AcceptChanges();
+                    }
+
+
+                }
+            }
+
+        }
+
+        class TeamDataItemMappingRow
+        {
+            internal string sourceDataObjectName { get; set; }
+            internal string sourceDataObjectConnectionId { get; set; }
+            internal string sourceDataItemName { get; set; }
+
+            internal string targetDataObjectName { get; set; }
+            internal string targetDataObjectConnectionId { get; set; }
+            internal string targetDataItemName { get; set; }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void validateMetadataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            richTextBoxInformation.Clear();
+
+            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && _bindingSourcePhysicalModelMetadata.Count == 0)
+            {
+                richTextBoxInformation.Text += "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
+            }
+            else
+            {
+                if (backgroundWorkerValidationOnly.IsBusy) return;
+                // create a new instance of the alert form
+                _alertValidation = new Form_Alert();
+                // event handler for the Cancel button in AlertForm
+                _alertValidation.Canceled += buttonCancel_Click;
+                _alertValidation.Show();
+                _alertValidation.ShowLogButton(false);
+                _alertValidation.ShowCancelButton(false);
+                // Start the asynchronous operation.
+                backgroundWorkerValidationOnly.RunWorkerAsync();
+            }
+        }
+
+        private void generateJsonInterfaceFilesOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ManageFormOverallJsonExport();
         }
     }
 }

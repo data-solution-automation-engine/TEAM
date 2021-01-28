@@ -164,7 +164,8 @@ namespace TEAM_Library
                         switch (configuration)
                         {
                             case "EnvironmentMode":
-                                Enum.TryParse(configList[configuration], out EnvironmentModes EnvironmentMode);
+                                Enum.TryParse(configList[configuration], out EnvironmentModes localEnvironmentMode);
+                                EnvironmentMode = localEnvironmentMode;
                                 break;
                             case "StagingAreaPrefix":
                                 StgTablePrefixValue = configList[configuration];

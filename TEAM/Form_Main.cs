@@ -174,10 +174,11 @@ namespace TEAM
             {
                 // Load the configuration file.
                 TeamConfigurationSettings.LoadTeamConfigurationFile(configurationFile);
-
+                GlobalParameters.EnvironmentMode = TeamConfigurationSettings.EnvironmentMode;
                 // Retrieve the events into the main event log.
                 GlobalParameters.TeamEventLog.MergeEventLog(TeamConfigurationSettings.ConfigurationSettingsEventLog);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
+
             }
             catch
             {
@@ -200,7 +201,6 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
             }
 
-
             // Report the events (including errors) back to the user
             int errorCounter = 0;
             foreach (Event individualEvent in GlobalParameters.TeamEventLog)
@@ -211,7 +211,11 @@ namespace TEAM
                 }
             }
 
-            richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
+            if (errorCounter > 0)
+            {
+                richTextBoxInformation.AppendText(
+                    $"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
+            }
 
             TestConnections();
 
@@ -343,7 +347,7 @@ namespace TEAM
             }
             catch (Exception)
             {
-                labelActiveVersion.Text = "There has been an error displaying the active version";
+                labelActiveVersion.Text = "There has been an error while attempting to display the active version.";
             }
         }
 
