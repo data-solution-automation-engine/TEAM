@@ -43,7 +43,7 @@ namespace TEAM
             // Hide the physical model tab if in physical mode
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
             {
-
+                tabControl1.TabPages.Remove(tabPagePhysicalModel);
             }
 
             // Default setting and initialisation of counters etc.
@@ -431,50 +431,53 @@ namespace TEAM
         /// </summary>
         private void PopulatePhysicalModelGridWithVersion()
         {
-            //Check if the file exists, otherwise create a dummy / empty file   
-            if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()))
+            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
-                richTextBoxInformation.AppendText($"No Json file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
-                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                //Check if the file exists, otherwise create a dummy / empty file   
+                if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()))
+                {
+                    richTextBoxInformation.AppendText($"No Json file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
+                    TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                }
+
+                // Load the file into memory (data table and json list)
+                PhysicalModel.GetMetadata(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName());
+
+                //Make sure the changes are seen as committed, so that changes can be detected later on.
+                PhysicalModel.DataTable.AcceptChanges();
+
+                // Order by Source Table, Integration_Area table, Business Key Attribute.
+                PhysicalModel.SetDataTableColumns();
+                PhysicalModel.SetDataTableSorting();
+
+                _bindingSourcePhysicalModelMetadata.DataSource = PhysicalModel.DataTable;
+
+                // Data Grid View - set the column header names etc. for the data grid view.
+                dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
+
+                dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
+                dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
+                dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
+
+                dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key";
+                dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID";
+                dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name";
+                dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name";
+                dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name";
+                dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name";
+                dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
+                dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Character Length";
+                dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Numeric Precision";
+                dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Numeric Scale";
+                dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Ordinal Position";
+                dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Primary Key Indicator";
+                dataGridViewPhysicalModelMetadata.Columns[12].HeaderText = "Multi Active Indicator";
+
+                richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()} was loaded.\r\n");
+
+                // Resize the grid
+                GridAutoLayoutPhysicalModelMetadata();
             }
-
-            // Load the file into memory (data table and json list)
-            PhysicalModel.GetMetadata(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName());
-
-            //Make sure the changes are seen as committed, so that changes can be detected later on.
-            PhysicalModel.DataTable.AcceptChanges();
-
-            // Order by Source Table, Integration_Area table, Business Key Attribute.
-            PhysicalModel.SetDataTableColumns();
-            PhysicalModel.SetDataTableSorting();
-
-            _bindingSourcePhysicalModelMetadata.DataSource = PhysicalModel.DataTable;
-
-            // Data Grid View - set the column header names etc. for the data grid view.
-            dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
-
-            dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
-            dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
-            dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
-
-            dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key";
-            dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID";
-            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name";
-            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name";
-            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name";
-            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name";
-            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
-            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Character Length";
-            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Numeric Precision";
-            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Numeric Scale";
-            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Ordinal Position";
-            dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Primary Key Indicator";
-            dataGridViewPhysicalModelMetadata.Columns[12].HeaderText = "Multi Active Indicator";
-
-            richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()} was loaded.\r\n");
-
-            // Resize the grid
-            GridAutoLayoutPhysicalModelMetadata();
         }
 
         private DialogResult STAShowDialog(FileDialog dialog)
@@ -548,19 +551,22 @@ namespace TEAM
 
         private void GridAutoLayoutPhysicalModelMetadata()
         {
-            if (checkBoxResizeDataGrid.Checked == false)
-                return;
-
-            dataGridViewPhysicalModelMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            //dataGridViewLoadPatternCollection.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewPhysicalModelMetadata.Columns[dataGridViewPhysicalModelMetadata.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-
-            // Disable the auto size again (to enable manual resizing).
-            for (var i = 0; i < dataGridViewPhysicalModelMetadata.Columns.Count - 1; i++)
+            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
+                if (checkBoxResizeDataGrid.Checked == false)
+                    return;
 
-                dataGridViewPhysicalModelMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dataGridViewPhysicalModelMetadata.Columns[i].Width = dataGridViewPhysicalModelMetadata.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                dataGridViewPhysicalModelMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                //dataGridViewLoadPatternCollection.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridViewPhysicalModelMetadata.Columns[dataGridViewPhysicalModelMetadata.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+                // Disable the auto size again (to enable manual resizing).
+                for (var i = 0; i < dataGridViewPhysicalModelMetadata.Columns.Count - 1; i++)
+                {
+
+                    dataGridViewPhysicalModelMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                    dataGridViewPhysicalModelMetadata.Columns[i].Width = dataGridViewPhysicalModelMetadata.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                }
             }
         }
 

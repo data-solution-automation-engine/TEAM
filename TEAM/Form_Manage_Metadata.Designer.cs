@@ -58,7 +58,7 @@ namespace TEAM
             this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
             this.contextMenuStripAttributeMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteThisRowFromTheGridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabPagePhyscialModel = new System.Windows.Forms.TabPage();
+            this.tabPagePhysicalModel = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
             this.button2 = new System.Windows.Forms.Button();
@@ -256,7 +256,7 @@ namespace TEAM
             this.tabPageDataItemMapping.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).BeginInit();
             this.contextMenuStripAttributeMapping.SuspendLayout();
-            this.tabPagePhyscialModel.SuspendLayout();
+            this.tabPagePhysicalModel.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPhysicalModelMetadata)).BeginInit();
             this.contextMenuStripModel.SuspendLayout();
@@ -428,7 +428,7 @@ namespace TEAM
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPageDataObjectMapping);
             this.tabControl1.Controls.Add(this.tabPageDataItemMapping);
-            this.tabControl1.Controls.Add(this.tabPagePhyscialModel);
+            this.tabControl1.Controls.Add(this.tabPagePhysicalModel);
             this.tabControl1.Location = new System.Drawing.Point(16, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -529,18 +529,18 @@ namespace TEAM
             this.deleteThisRowFromTheGridToolStripMenuItem1.Text = "Delete this row from the grid";
             this.deleteThisRowFromTheGridToolStripMenuItem1.Click += new System.EventHandler(this.deleteThisRowFromTheGridToolStripMenuItem1_Click);
             // 
-            // tabPagePhyscialModel
+            // tabPagePhysicalModel
             // 
-            this.tabPagePhyscialModel.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPagePhyscialModel.Controls.Add(this.groupBox4);
-            this.tabPagePhyscialModel.Controls.Add(this.button2);
-            this.tabPagePhyscialModel.Controls.Add(this.dataGridViewPhysicalModelMetadata);
-            this.tabPagePhyscialModel.Location = new System.Drawing.Point(4, 22);
-            this.tabPagePhyscialModel.Name = "tabPagePhyscialModel";
-            this.tabPagePhyscialModel.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePhyscialModel.Size = new System.Drawing.Size(1050, 545);
-            this.tabPagePhyscialModel.TabIndex = 2;
-            this.tabPagePhyscialModel.Text = "Physical Model";
+            this.tabPagePhysicalModel.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPagePhysicalModel.Controls.Add(this.groupBox4);
+            this.tabPagePhysicalModel.Controls.Add(this.button2);
+            this.tabPagePhysicalModel.Controls.Add(this.dataGridViewPhysicalModelMetadata);
+            this.tabPagePhysicalModel.Location = new System.Drawing.Point(4, 22);
+            this.tabPagePhysicalModel.Name = "tabPagePhysicalModel";
+            this.tabPagePhysicalModel.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPagePhysicalModel.Size = new System.Drawing.Size(1050, 545);
+            this.tabPagePhysicalModel.TabIndex = 2;
+            this.tabPagePhysicalModel.Text = "Physical Model";
             // 
             // groupBox4
             // 
@@ -1924,7 +1924,7 @@ namespace TEAM
             this.tabPageDataItemMapping.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAttributeMetadata)).EndInit();
             this.contextMenuStripAttributeMapping.ResumeLayout(false);
-            this.tabPagePhyscialModel.ResumeLayout(false);
+            this.tabPagePhysicalModel.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPhysicalModelMetadata)).EndInit();
             this.contextMenuStripModel.ResumeLayout(false);
@@ -1981,7 +1981,7 @@ namespace TEAM
         private System.Windows.Forms.GroupBox groupBox2;
         private CustomTimedTextBox textBoxFilterCriterion;
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
-        private System.Windows.Forms.TabPage tabPagePhyscialModel;
+        private System.Windows.Forms.TabPage tabPagePhysicalModel;
         private CustomDataGridViewPhysicalModel dataGridViewPhysicalModelMetadata;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripTableMapping;
