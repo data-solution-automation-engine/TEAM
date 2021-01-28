@@ -313,7 +313,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
             }
         }
 

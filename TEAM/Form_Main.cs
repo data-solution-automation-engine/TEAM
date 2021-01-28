@@ -220,6 +220,7 @@ namespace TEAM
             richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
 
             labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
+            labelEnvironmentMode.Text = GlobalParameters.EnvironmentMode.ToString();
         }
 
         public sealed override string Text
@@ -274,7 +275,6 @@ namespace TEAM
 
                 DisplayMaxVersion();
                 DisplayCurrentVersionFromRepository(connOmd);
-                DisplayRepositoryVersion(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
 
                 labelMetadataSave.Text = TeamConfigurationSettings.MetadataRepositoryType.ToString();
@@ -348,30 +348,7 @@ namespace TEAM
         }
 
 
-        internal void DisplayRepositoryVersion(SqlConnection connOmd)
-        {
-            var sqlStatementForCurrentVersion = new StringBuilder();
-            sqlStatementForCurrentVersion.AppendLine("SELECT [REPOSITORY_VERSION],[REPOSITORY_UPDATE_DATETIME] FROM [MD_REPOSITORY_VERSION]");
 
-            var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
-
-            try
-            {
-                if (versionList != null && versionList.Rows.Count > 0)
-                {
-                    foreach (DataRow versionNameRow in versionList.Rows)
-                    {
-                        labelRepositoryVersion.Text = (string)versionNameRow["REPOSITORY_VERSION"];
-                        var versionDate = (DateTime) versionNameRow["REPOSITORY_UPDATE_DATETIME"];
-                        labelRepositoryCreationDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // THROW EXCEPTION
-            }
-        }
 
         private void CheckKeyword(string word, Color color, int startIndex)
         {
@@ -453,7 +430,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateEnvironment(object sender, MyWorkingEnvironmentEventArgs e)
+        private void UpdateEnvironmentLabel(object sender, MyWorkingEnvironmentEventArgs e)
         {
             var localEnvironment = e.Value;
             var localTextForLabel = localEnvironment.environmentKey;
@@ -468,6 +445,21 @@ namespace TEAM
             }
 
             LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+        }
+
+        private void UpdateEnvironmentModeLabel(object sender, MyStringEventArgs e)
+        {
+            var localEnvironmentModeText = e.Value;
+
+
+            if (labelEnvironmentMode.InvokeRequired)
+            {
+                labelEnvironmentMode.BeginInvoke((MethodInvoker)delegate { labelEnvironmentMode.Text = localEnvironmentModeText; });
+            }
+            else
+            {
+                labelEnvironmentMode.Text = localEnvironmentModeText;
+            }
         }
 
         private void ClosePatternForm(object sender, FormClosedEventArgs e)
@@ -515,7 +507,8 @@ namespace TEAM
             if (_myConfigurationForm == null)
             {
                 _myConfigurationForm = new FormManageConfiguration(this);
-                _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
+                _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
+                _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                 Application.Run(_myConfigurationForm);
             }
             else
@@ -525,7 +518,8 @@ namespace TEAM
                     // Thread Error
                     _myConfigurationForm.Invoke((MethodInvoker)delegate { _myConfigurationForm.Close(); });
                     _myConfigurationForm.FormClosed += CloseConfigurationForm;
-                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
+                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
+                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
 
                     _myConfigurationForm = new FormManageConfiguration(this);
                     Application.Run(_myConfigurationForm);
@@ -534,7 +528,8 @@ namespace TEAM
                 {
                     // No invoke required - same thread
                     _myConfigurationForm.FormClosed += CloseConfigurationForm; 
-                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
+                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
+                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                     _myConfigurationForm = new FormManageConfiguration(this);
 
                     Application.Run(_myConfigurationForm);

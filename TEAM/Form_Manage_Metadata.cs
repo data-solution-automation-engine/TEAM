@@ -40,6 +40,12 @@ namespace TEAM
         {
             InitializeComponent();
 
+            // Hide the physical model tab if in physical mode
+            if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
+            {
+
+            }
+
             // Default setting and initialisation of counters etc.
             radiobuttonNoVersionChange.Checked = true;
             MetadataParameters.ValidationIssues = 0;
@@ -2886,7 +2892,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}.", EventTypes.Error);
+                        LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}, and the message is {ex}.", EventTypes.Error);
                     }
                 }
                 #endregion

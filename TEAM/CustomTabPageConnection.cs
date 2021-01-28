@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using TEAM_Library;
+using static TEAM.FormBase;
 
 namespace TEAM
 {
@@ -661,7 +662,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    // Debugging
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
                 }
 
                 // The name of the tab page is passed back to the original control (the tab control).

@@ -211,7 +211,7 @@
             this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.toolStripMenuItem2.Size = new System.Drawing.Size(271, 22);
             this.toolStripMenuItem2.Text = "&Save Configuration File";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.saveConfigurationFileToolStripMenuItem_Click);
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.SaveConfigurationFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 

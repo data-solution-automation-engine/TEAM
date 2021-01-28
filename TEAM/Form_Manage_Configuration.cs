@@ -104,7 +104,20 @@ namespace TEAM
         {
             OnUpdateEnvironment(this, new MyWorkingEnvironmentEventArgs(environment));
         }
-        
+
+
+
+        /// <summary>
+        /// Delegate event handler from the 'main' form to pass back information when the environment mode is updated.
+        /// </summary>
+        public event EventHandler<MyStringEventArgs> OnUpdateEnvironmentMode = delegate { };
+
+        public void UpdateEnvironmentMode(string text)
+        {
+            OnUpdateEnvironmentMode(this, new MyStringEventArgs(text));
+        }
+
+
         /// <summary>
         /// This method will load an existing configuration file and display the values on the form, or create a new dummy one if not available.
         /// </summary>
@@ -350,7 +363,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void saveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             #region root path file
             // Update the paths in memory
@@ -433,7 +446,7 @@ namespace TEAM
                 TeamConfigurationSettings.EnvironmentMode = EnvironmentModes.PhysicalMode;
             }
 
-            if (radioButtonPhysicalMode.Checked)
+            if (radioButtonVirtualMode.Checked)
             {
                 TeamConfigurationSettings.EnvironmentMode = EnvironmentModes.VirtualMode;
             }
@@ -959,7 +972,7 @@ namespace TEAM
                     {
                         GlobalParameters.EnvironmentMode = EnvironmentModes.PhysicalMode;
                         richTextBoxInformation.AppendText(
-                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
+                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}.");
                     }
                 }
 
@@ -969,10 +982,13 @@ namespace TEAM
                     {
                         GlobalParameters.EnvironmentMode = EnvironmentModes.VirtualMode;
                         richTextBoxInformation.AppendText(
-                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}");
+                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}.");
                     }
                 }
             }
+
+            // Callback to the main form to update the label.
+            UpdateEnvironmentMode(GlobalParameters.EnvironmentMode.ToString());
         }
     }
 }

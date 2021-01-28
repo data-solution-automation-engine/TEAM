@@ -462,16 +462,6 @@ namespace TEAM
             // Create a counter to see if anything is checked at all
             var checkedCounter = 0;
 
-            string schemaName;
-            if (radioButtonPSA.Checked)
-            {
-                //schemaName = VdwConfigurationSettings.VdwSchema;
-            }
-            else
-            {
-                schemaName = "[dbo]";
-            }
-
             foreach (DataGridViewRow row in dataGridAttributes.Rows)
             {
                 var checkedAttribute = row.Cells[2] as DataGridViewCheckBoxCell;
