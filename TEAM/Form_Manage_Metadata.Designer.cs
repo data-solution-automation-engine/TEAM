@@ -1771,7 +1771,7 @@ namespace TEAM
             // 
             this.manageValidationRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageValidationRulesToolStripMenuItem.Name = "manageValidationRulesToolStripMenuItem";
-            this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
             this.manageValidationRulesToolStripMenuItem.Text = "Manage validation rules";
             this.manageValidationRulesToolStripMenuItem.Click += new System.EventHandler(this.manageValidationRulesToolStripMenuItem_Click);
             // 
@@ -1779,8 +1779,8 @@ namespace TEAM
             // 
             this.validateMetadataToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
             this.validateMetadataToolStripMenuItem.Name = "validateMetadataToolStripMenuItem";
-            this.validateMetadataToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.validateMetadataToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
+            this.validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
             this.validateMetadataToolStripMenuItem.Text = "&Validate Metadata";
             this.validateMetadataToolStripMenuItem.Click += new System.EventHandler(this.validateMetadataToolStripMenuItem_Click);
             // 
