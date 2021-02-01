@@ -5866,12 +5866,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D4E4C269202FD6867D3D30CCCCCCD400"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_BA9864E9B97FD31543B336A71729FE0D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5897,6 +5891,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_3AD90DDF12AC42A892FE6F452F986161"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D4E4C269202FD6867D3D30CCCCCCD400"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -15073,7 +15073,7 @@
         {
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_05933D7971DD45F2B83C8EDCB2C4458C"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -15682,7 +15682,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3AD90DDF12AC42A892FE6F452F986161"
             {
-            "SourcePath" = "8:..\\TEAM\\obj\\Release\\TEAM.exe"
+            "SourcePath" = "8:..\\TEAM\\obj\\Debug\\TEAM.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
