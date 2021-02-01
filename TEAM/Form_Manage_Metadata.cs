@@ -6765,8 +6765,7 @@ namespace TEAM
 
             if (activationDateTime == DateTime.MinValue)
             {
-                richTextBoxInformation.Text =
-                    "The metadata was not activated, so the graph is constructed only from the raw mappings.";
+                richTextBoxInformation.Text = "The metadata was not activated, so the graph is constructed only from the raw mappings.";
             }
             else
             {
@@ -6788,22 +6787,19 @@ namespace TEAM
             {
                 var chosenFile = theDialog.FileName;
 
-                var errorLog = new StringBuilder();
-                var errorCounter = 0;
+                int errorCounter = 0;
 
                 if (dataGridViewTableMetadata != null) // There needs to be metadata available
                 {
                     var connOmd = new SqlConnection
                     {
-                        ConnectionString =
-                            TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false)
+                        ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false)
                     };
 
                     //Write the DGML file
                     var dgmlExtract = new StringBuilder();
                     dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
-                    dgmlExtract.AppendLine(
-                        "<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
+                    dgmlExtract.AppendLine("<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
 
                     #region Table nodes
 
@@ -6814,70 +6810,63 @@ namespace TEAM
                     {
                         DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
                         string sourceNode = row.Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
-                        string targetNode = row.Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
+                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].ToString();
+                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                        KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
+
+
+                        string targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString();
+                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].ToString();
+                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
+
 
                         // Add source tables to Node List
-                        if (!nodeList.Contains(sourceNode))
+                        if (!nodeList.Contains(fullyQualifiedObjectSource.Key+'.'+ fullyQualifiedObjectSource.Value))
                         {
-                            nodeList.Add(sourceNode);
+                            nodeList.Add(fullyQualifiedObjectSource.Key + '.' + fullyQualifiedObjectSource.Value);
                         }
 
                         // Add target tables to Node List
-                        if (!nodeList.Contains(targetNode))
+                        if (!nodeList.Contains(fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value))
                         {
-                            nodeList.Add(targetNode);
+                            nodeList.Add(fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value);
                         }
                     }
 
                     dgmlExtract.AppendLine("  <Nodes>");
 
-                    var edgeBuilder =
-                        new StringBuilder(); // Also create the links while iterating through the below set
+                    var edgeBuilder = new StringBuilder(); // Also create the links while iterating through the below set
 
                     foreach (string node in nodeList)
                     {
                         if (node.Contains(TeamConfigurationSettings.StgTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node +
-                                                   "\"  Category=\"Landing Area\" Group=\"Collapsed\" Label=\"" + node +
-                                                   "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node +
-                                                   "\" Category=\"Contains\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Landing Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                         else if (node.Contains(TeamConfigurationSettings.PsaTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node +
-                                                   "\"  Category=\"Persistent Staging Area\" Group=\"Collapsed\" Label=\"" +
-                                                   node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node +
-                                                   "\" Category=\"Contains\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Persistent Staging Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                         else if (node.Contains(TeamConfigurationSettings.HubTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node +
-                                                   "\" />");
-                            //edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
                         }
                         else if (node.Contains(TeamConfigurationSettings.LinkTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" + node +
-                                                   "\" />");
-                            //edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" + node + "\" />");
                         }
                         else if (node.Contains(TeamConfigurationSettings.SatTablePrefixValue) ||
                                  node.Contains(TeamConfigurationSettings.LsatTablePrefixValue))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node +
-                                                   "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node +
-                                                   "\" />");
-                            //edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"" + node + "\" Category=\"Contains\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node + "\" />");
                         }
                         else
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Sources\" Label=\"" +
-                                                   node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Sources\" Target=\"" + node +
-                                                   "\" Category=\"Contains\" />");
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Sources\" Label=\"" + node + "\" />");
+                            edgeBuilder.AppendLine("     <Link Source=\"Sources\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
                     }
 
@@ -6887,12 +6876,10 @@ namespace TEAM
 
                     // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
                     var sqlStatementForSatelliteAttributes = new StringBuilder();
-                    sqlStatementForSatelliteAttributes.AppendLine("SELECT *");
-                    sqlStatementForSatelliteAttributes.AppendLine(
-                        "FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
+                    sqlStatementForSatelliteAttributes.AppendLine("SELECT SOURCE_SCHEMA_NAME+'.'+SOURCE_NAME AS SOURCE_NAME, TARGET_SCHEMA_NAME+'.'+TARGET_NAME AS TARGET_NAME, SOURCE_ATTRIBUTE_NAME, TARGET_ATTRIBUTE_NAME");
+                    sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
 
-                    var satelliteAttributes =
-                        Utility.GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
+                    var satelliteAttributes = Utility.GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
                     foreach (DataRow row in satelliteAttributes.Rows)
                     {
                         var sourceNodeLabel = (string) row["SOURCE_ATTRIBUTE_NAME"];
@@ -6912,10 +6899,8 @@ namespace TEAM
                             nodeList.Add(targetNode);
                         }
 
-                        dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode + "\"  Category=\"Attribute\" Label=\"" +
-                                               sourceNodeLabel + "\" />");
-                        dgmlExtract.AppendLine("     <Node Id=\"" + targetNode + "\"  Category=\"Attribute\" Label=\"" +
-                                               targetNodeLabel + "\" />");
+                        dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode + "\"  Category=\"Attribute\" Label=\"" + sourceNodeLabel + "\" />");
+                        dgmlExtract.AppendLine("     <Node Id=\"" + targetNode + "\"  Category=\"Attribute\" Label=\"" + targetNodeLabel + "\" />");
                     }
 
                     #endregion
@@ -6924,8 +6909,7 @@ namespace TEAM
 
                     //Adding the category nodes
                     dgmlExtract.AppendLine("     <Node Id=\"Sources\" Group=\"Collapsed\" Label=\"Sources\"/>");
-                    dgmlExtract.AppendLine(
-                        "     <Node Id=\"Staging Layer\" Group=\"Collapsed\" Label=\"Staging Layer\"/>");
+                    dgmlExtract.AppendLine("     <Node Id=\"Staging Layer\" Group=\"Collapsed\" Label=\"Staging Layer\"/>");
                     dgmlExtract.AppendLine("     <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
 
                     #endregion
@@ -6955,9 +6939,8 @@ namespace TEAM
                     }
                     catch (Exception)
                     {
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForSubjectAreas}."));
                         errorCounter++;
-                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
-                                            sqlStatementForSubjectAreas);
                     }
 
                     #endregion
@@ -6999,19 +6982,16 @@ namespace TEAM
                     var sqlStatementForHubCategories = new StringBuilder();
                     try
                     {
-
-                        sqlStatementForHubCategories.AppendLine("SELECT *");
+                        sqlStatementForHubCategories.AppendLine("SELECT  TARGET_SCHEMA_NAME+'.'+TARGET_NAME AS TARGET_NAME");
                         sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
                         sqlStatementForHubCategories.AppendLine("WHERE TARGET_TYPE = 'Normal'");
 
-                        modelRelationshipsHubDataTable =
-                            Utility.GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
+                        modelRelationshipsHubDataTable = Utility.GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
                     }
                     catch
                     {
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForHubCategories}."));
                         errorCounter++;
-                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
-                                            sqlStatementForHubCategories);
                     }
 
                     foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
@@ -7030,12 +7010,11 @@ namespace TEAM
                     var sqlStatementForRelationships = new StringBuilder();
                     try
                     {
-                        sqlStatementForRelationships.AppendLine("SELECT DISTINCT [HUB_NAME], [TARGET_NAME]");
+                        sqlStatementForRelationships.AppendLine("SELECT DISTINCT [HUB_NAME], TARGET_SCHEMA_NAME+'.'+[TARGET_NAME]");
                         sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
                         sqlStatementForRelationships.AppendLine("WHERE HUB_NAME NOT IN ('N/A')");
 
-                        var businessConceptsRelationships =
-                            Utility.GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
+                        var businessConceptsRelationships = Utility.GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
 
                         foreach (DataRow row in businessConceptsRelationships.Rows)
                         {
@@ -7045,15 +7024,13 @@ namespace TEAM
                     }
                     catch
                     {
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForRelationships}."));
                         errorCounter++;
-                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
-                                            sqlStatementForRelationships);
                     }
 
 
                     // Add the relationships to the context tables
-                    dgmlExtract.AppendLine(
-                        "     <!-- Relationships between Hubs/Links to context and their subject area -->");
+                    dgmlExtract.AppendLine("     <!-- Relationships between Hubs/Links to context and their subject area -->");
                     var sqlStatementForLinkCategories = new StringBuilder();
                     try
                     {
@@ -7086,24 +7063,31 @@ namespace TEAM
                     }
                     catch (Exception)
                     {
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForLinkCategories}."));
                         errorCounter++;
-                        errorLog.AppendLine("The following query caused an issue when generating the DGML file: " +
-                                            sqlStatementForLinkCategories);
                     }
 
 
-                    // Add the regular source-to-target mappings as edges using the datagrid
+                    // Add the regular source-to-target mappings as edges using the data grid
                     dgmlExtract.AppendLine("     <!-- Regular source-to-target mappings -->");
                     for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
                         var row = dataGridViewTableMetadata.Rows[i];
-                        var sourceNode = row.Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
-                        var targetNode = row.Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
-                        var businessKey = row.Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value
-                            .ToString();
+                        
+                        string sourceNode = row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString();
+                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].ToString();
+                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                        KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
-                        dgmlExtract.AppendLine("     <Link Source=\"" + sourceNode + "\" Target=\"" + targetNode +
-                                               "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
+                        string targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString();
+                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].ToString();
+                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
+
+                        var businessKey = row.Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString();
+
+
+                        dgmlExtract.AppendLine("     <Link Source=\"" + fullyQualifiedObjectSource.Key+'.'+ fullyQualifiedObjectSource.Value + "\" Target=\"" + fullyQualifiedObjectTarget.Key+'.'+fullyQualifiedObjectTarget.Value  + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
                     }
 
                     dgmlExtract.AppendLine("  </Links>");
@@ -7203,24 +7187,15 @@ namespace TEAM
                     // Error handling
                     if (errorCounter > 0)
                     {
-                        richTextBoxInformation.AppendText("\r\nWarning! There were " + errorCounter +
-                                                          " error(s) found while generating the DGML file.\r\n");
-                        richTextBoxInformation.AppendText("Please check the Error Log for details \r\n");
-                        richTextBoxInformation.AppendText("\r\n");
+                        richTextBoxInformation.AppendText("\r\nWarning! There were " + errorCounter + " error(s) found while generating the DGML file.\r\n");
+                        richTextBoxInformation.AppendText("Please check the Event Log for details \r\n");
 
-                        using (var outfile =
-                            new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                        {
-                            outfile.Write(errorLog.ToString());
-                            outfile.Close();
-                        }
                     }
                     else
                     {
                         richTextBoxInformation.AppendText("\r\nNo errors were detected.\r\n");
                     }
-
-
+                    
                     // Writing the output
                     using (StreamWriter outfile = new StreamWriter(chosenFile))
                     {
@@ -7228,13 +7203,11 @@ namespace TEAM
                         outfile.Close();
                     }
 
-                    richTextBoxInformation.AppendText("The DGML metadata file file://" + chosenFile +
-                                                      " has been saved successfully.");
+                    richTextBoxInformation.AppendText("The DGML metadata file file://" + chosenFile + " has been saved successfully.");
                 }
                 else
                 {
-                    richTextBoxInformation.AppendText(
-                        "There was no metadata to create the graph with, is the grid view empty?");
+                    richTextBoxInformation.AppendText("There was no metadata to create the graph with, is the grid view empty?");
                 }
             }
         }
@@ -7820,18 +7793,15 @@ namespace TEAM
             {
                 if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()]) // If row is enabled
                 {
-                    string localSourceConnectionInternalId =
-                        row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                    string localTargetConnectionInternalId =
-                        row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    string localSourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    string localTargetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
 
                     TeamConnection sourceConnection = GetTeamConnectionByConnectionId(localSourceConnectionInternalId);
                     TeamConnection targetConnection = GetTeamConnectionByConnectionId(localTargetConnectionInternalId);
 
                     // The values in the data grid, fully qualified. This means the default schema is added if necessary.
                     var sourceDataObject = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(
-                            row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(), sourceConnection)
+                        .GetFullyQualifiedDataObjectName(row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(), sourceConnection)
                         .FirstOrDefault();
                     var targetDataObject = MetadataHandling
                         .GetFullyQualifiedDataObjectName(
@@ -8098,11 +8068,9 @@ namespace TEAM
                 {
                     // Sources
                     var validationObjectSource = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
-                    var validationObjectSourceConnectionId =
-                        row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var validationObjectSourceConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = GetTeamConnectionByConnectionId(validationObjectSourceConnectionId);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
+                    KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
 
                     // Targets
                     var validationObjectTarget = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();

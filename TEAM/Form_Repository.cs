@@ -76,26 +76,20 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    targetForm.SetTextLogging("An issue has occurred " + ex);
+                    string errorMessage = $"An error has occurred with the following query: \r\n\r\n{createStatement}.\r\n\r\nThe error message is {ex}.";
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
+
+                    targetForm.SetTextLogging(errorMessage+"\r\n\r\n");
                     targetForm.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
-                    ErrorHandlingParameters.ErrorCatcher++;
-                    ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
                 }
             }
         }
 
-        internal static class ErrorHandlingParameters
-        {
-            public static int ErrorCatcher { get; set; }
-            public static StringBuilder ErrorLog { get; set; }
-        }
 
         private void backgroundWorkerSampleData_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            ErrorHandlingParameters.ErrorCatcher = 0;
-            ErrorHandlingParameters.ErrorLog = new StringBuilder();
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -120,23 +114,6 @@ namespace TEAM
                     MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
-                // Error handling
-                if (ErrorHandlingParameters.ErrorCatcher > 0)
-                {
-                    _alertSampleData.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the sample data.\r\n");
-                    _alertSampleData.SetTextLogging("Please check the Error Log for details \r\n");
-                    _alertSampleData.SetTextLogging("\r\n");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                    {
-                        outfile.Write(ErrorHandlingParameters.ErrorLog);
-                        outfile.Close();
-                    }
-                }
-                else
-                {
-                    _alertSampleData.SetTextLogging("\r\nNo errors were detected.\r\n");
-                }
 
                 backgroundWorkerSampleData.ReportProgress(100);
             }
@@ -498,9 +475,6 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            ErrorHandlingParameters.ErrorCatcher = 0;
-            ErrorHandlingParameters.ErrorLog = new StringBuilder();
-
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
             {
@@ -538,7 +512,7 @@ namespace TEAM
                         foreach (KeyValuePair<string, string> file in fileDictionary)
                         {
                             File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
-                            _alertMetadata.SetTextLogging("Created sample JSON file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
+                            _alertMetadata.SetTextLogging("Created sample Json file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
                         }
 
                     }
@@ -557,23 +531,6 @@ namespace TEAM
                     MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
-                // Error handling
-                if (ErrorHandlingParameters.ErrorCatcher > 0)
-                {
-                    _alertMetadata.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the sample data.\r\n");
-                    _alertMetadata.SetTextLogging("Please check the Error Log for details \r\n");
-                    _alertMetadata.SetTextLogging("\r\n");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                    {
-                        outfile.Write(ErrorHandlingParameters.ErrorLog);
-                        outfile.Close();
-                    }
-                }
-                else
-                {
-                    _alertMetadata.SetTextLogging("\r\nNo errors were detected.\r\n");
-                }
 
                 backgroundWorkerMetadata.ReportProgress(100);
             }

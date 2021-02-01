@@ -78,11 +78,9 @@ namespace TEAM
         internal static class ValidationSettings
         {
             // Configuration settings related to validation checks (in physical model or virtual representation of it)
-            public static string SourceObjectExistence { get; set; }
-            public static string TargetObjectExistence { get; set; }
+            public static string DataObjectExistence { get; set; }
             public static string SourceBusinessKeyExistence { get; set; }
-            public static string SourceAttributeExistence { get; set; }
-            public static string TargetAttributeExistence { get; set; }
+            public static string DataItemExistence { get; set; }
 
             // Consistency of the unit of work
             public static string LogicalGroup { get; set; }

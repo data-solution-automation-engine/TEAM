@@ -47,61 +47,32 @@ namespace TEAM
         private void LocalInitialiseValidationSettings()
         {
             // Source object existence
-            switch (ValidationSettings.SourceObjectExistence)
+            switch (ValidationSettings.DataObjectExistence)
             {
                 case "True":
-                    checkBoxSourceObjectExistence.Checked = true;
+                    checkBoxDataObjectExistence.Checked = true;
                     break;
                 case "False":
-                    checkBoxSourceObjectExistence.Checked = false;
+                    checkBoxDataObjectExistence.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the source object validation values, only true and false are allowed but this was encountered: " + ValidationSettings.SourceObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
-
-            // Target object existence
-            switch (ValidationSettings.TargetObjectExistence)
-            {
-                case "True":
-                    checkBoxTargetObjectExistence.Checked = true;
-                    break;
-                case "False":
-                    checkBoxTargetObjectExistence.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the target object validation values, only true and false are allowed but this was encountered: " +ValidationSettings.TargetObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the source object validation values, only true and false are allowed but this was encountered: " + ValidationSettings.DataObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Source attribute existence
-            switch (ValidationSettings.SourceAttributeExistence)
+            switch (ValidationSettings.DataItemExistence)
             {
                 case "True":
-                    checkBoxSourceAttribute.Checked = true;
+                    checkBoxDataItemExistence.Checked = true;
                     break;
                 case "False":
-                    checkBoxSourceAttribute.Checked = false;
+                    checkBoxDataItemExistence.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the source attribute validation values, only true and false are allowed but this was encountered: " + ValidationSettings.SourceAttributeExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the source attribute validation values, only true and false are allowed but this was encountered: " + ValidationSettings.DataItemExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
-
-            // Target attribute existence
-            switch (ValidationSettings.TargetAttributeExistence)
-            {
-                case "True":
-                    checkBoxTargetAttribute.Checked = true;
-                    break;
-                case "False":
-                    checkBoxTargetAttribute.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the target attribute validation values, only true and false are allowed but this was encountered: " + ValidationSettings.TargetAttributeExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
-
 
             if (ValidationSettings.SourceBusinessKeyExistence == "True")
             {
@@ -114,10 +85,8 @@ namespace TEAM
             else
             {
                 // Raise exception
-                MessageBox.Show(
-                    "There is something wrong with the business key validation values, only true and false are allowed but this was encountered: " +
-                    ValidationSettings.SourceBusinessKeyExistence +
-                    ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There is something wrong with the business key validation values, only true and false are allowed but this was encountered: " +
+                                ValidationSettings.SourceBusinessKeyExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
@@ -212,106 +181,38 @@ namespace TEAM
             try
             {
                 // Source object existence check
-                var stringSourceObjectExistence = "";
-                if (checkBoxSourceObjectExistence.Checked)
-                {
-                    stringSourceObjectExistence = "True";
-                }
-                else
-                {
-                    stringSourceObjectExistence = "False";
-                }
-                ValidationSettings.SourceObjectExistence = stringSourceObjectExistence;
-
-
-                // Target object existence check
-                var stringtargetObjectExistence = "";
-                if (checkBoxTargetObjectExistence.Checked)
-                {
-                    stringtargetObjectExistence = "True";
-                }
-                else
-                {
-                    stringtargetObjectExistence = "False";
-                }
-                ValidationSettings.TargetObjectExistence = stringtargetObjectExistence;
+                var dataObjectExistence = "";
+                dataObjectExistence = checkBoxDataObjectExistence.Checked ? "True" : "False";
+                ValidationSettings.DataObjectExistence = dataObjectExistence;
 
 
                 // Source business key existence check
                 var stringBusinessKeyExistence = "";
-                if (checkBoxSourceBusinessKeyExistence.Checked)
-                {
-                    stringBusinessKeyExistence = "True";
-                }
-                else
-                {
-                    stringBusinessKeyExistence = "False";
-                }
+                stringBusinessKeyExistence = checkBoxSourceBusinessKeyExistence.Checked ? "True" : "False";
                 ValidationSettings.SourceBusinessKeyExistence = stringBusinessKeyExistence;
 
 
                 // Source attribute existence check
                 var stringSourceAttributeExistence = "";
-                if (checkBoxSourceAttribute.Checked)
-                {
-                    stringSourceAttributeExistence = "True";
-                }
-                else
-                {
-                    stringSourceAttributeExistence = "False";
-                }
-                ValidationSettings.SourceAttributeExistence = stringSourceAttributeExistence;
-
-
-                // Target attribute existence check
-                var stringTargetAttributeExistence = "";
-                if (checkBoxTargetAttribute.Checked)
-                {
-                    stringTargetAttributeExistence = "True";
-                }
-                else
-                {
-                    stringTargetAttributeExistence = "False";
-                }
-                ValidationSettings.TargetAttributeExistence = stringTargetAttributeExistence;
+                stringSourceAttributeExistence = checkBoxDataItemExistence.Checked ? "True" : "False";
+                ValidationSettings.DataItemExistence = stringSourceAttributeExistence;
 
 
                 // Logical Group Validation
                 var stringLogicalGroup = "";
-                if (checkBoxLogicalGroup.Checked)
-                {
-                    stringLogicalGroup = "True";
-                }
-                else
-                {
-                    stringLogicalGroup = "False";
-                }
+                stringLogicalGroup = checkBoxLogicalGroup.Checked ? "True" : "False";
                 ValidationSettings.LogicalGroup = stringLogicalGroup;
 
 
                 // Link Key Order Validation
                 var stringLinkKeyOrder = "";
-                if (checkBoxLinkKeyOrder.Checked)
-                {
-                    stringLinkKeyOrder = "True";
-                }
-                else
-                {
-                    stringLinkKeyOrder = "False";
-                }
+                stringLinkKeyOrder = checkBoxLinkKeyOrder.Checked ? "True" : "False";
                 ValidationSettings.LinkKeyOrder = stringLinkKeyOrder;
 
 
                 // Business key syntax check
                 var businessKeySyntax = "";
-                if (checkBoxBusinessKeySyntaxValidation.Checked)
-                {
-                    businessKeySyntax = "True";
-                }
-                else
-                {
-                    businessKeySyntax = "False";
-                }
+                businessKeySyntax = checkBoxBusinessKeySyntaxValidation.Checked ? "True" : "False";
                 ValidationSettings.BusinessKeySyntax = businessKeySyntax;
 
 

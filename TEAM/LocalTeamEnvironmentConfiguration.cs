@@ -94,12 +94,10 @@ namespace TEAM
                 validationFile.AppendLine("/* TEAM Validation Settings */");
 
                 // Object existence validation
-                validationFile.AppendLine("SourceObjectExistence|True");
-                validationFile.AppendLine("TargetObjectExistence|True");
+                validationFile.AppendLine("DataObjectExistence|True");
                 validationFile.AppendLine("BusinessKeyExistence|True");
 
-                validationFile.AppendLine("SourceAttributeExistence|True");
-                validationFile.AppendLine("TargetAttributeExistence|True");
+                validationFile.AppendLine("DataItemExistence|True");
 
                 // Consistency validation
                 validationFile.AppendLine("LogicalGroup|True");
@@ -397,11 +395,9 @@ namespace TEAM
                 sr.Close();
                 fs.Close();
 
-                FormBase.ValidationSettings.SourceObjectExistence = configList["SourceObjectExistence"];
-                FormBase.ValidationSettings.TargetObjectExistence = configList["TargetObjectExistence"];
+                FormBase.ValidationSettings.DataObjectExistence = configList["DataObjectExistence"];
                 FormBase.ValidationSettings.SourceBusinessKeyExistence = configList["BusinessKeyExistence"];
-                FormBase.ValidationSettings.SourceAttributeExistence = configList["SourceAttributeExistence"];
-                FormBase.ValidationSettings.TargetAttributeExistence = configList["TargetAttributeExistence"];
+                FormBase.ValidationSettings.DataItemExistence = configList["DataItemExistence"];
 
                 FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
                 FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
@@ -425,11 +421,9 @@ namespace TEAM
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM Validation Settings */");
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-                validationFile.AppendLine("SourceObjectExistence|" + FormBase.ValidationSettings.SourceObjectExistence +"");
-                validationFile.AppendLine("TargetObjectExistence|" + FormBase.ValidationSettings.TargetObjectExistence +"");
+                validationFile.AppendLine("DataObjectExistence|" + FormBase.ValidationSettings.DataObjectExistence +"");
                 validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.SourceBusinessKeyExistence + "");
-                validationFile.AppendLine("SourceAttributeExistence|" + FormBase.ValidationSettings.SourceAttributeExistence + "");
-                validationFile.AppendLine("TargetAttributeExistence|" + FormBase.ValidationSettings.TargetAttributeExistence + "");
+                validationFile.AppendLine("DataItemExistence|" + FormBase.ValidationSettings.DataItemExistence + "");
                 validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
                 validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
                 validationFile.AppendLine("BusinessKeySyntax|" + FormBase.ValidationSettings.BusinessKeySyntax + "");
