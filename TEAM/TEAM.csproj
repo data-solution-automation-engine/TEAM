@@ -207,6 +207,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ValidationSetting.cs" />
     <EmbeddedResource Include="Form_About.resx">
       <DependentUpon>Form_About.cs</DependentUpon>
     </EmbeddedResource>

@@ -14,22 +14,21 @@ namespace TEAM
             _myParent = parent;
             InitializeComponent();
 
-            // Make sure the validation information is available in this form
+            // Make sure the validation information is available in this form.
             try
             {
-                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' +
-                                     GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(validationFile);
+                    ValidationSetting.CreateDummyValidationFile(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                LocalTeamEnvironmentConfiguration.LoadValidationFile(validationFile);
+                ValidationSetting.LoadValidationFile(validationFile);
 
-                richTextBoxInformation.Text += "The validation file " + validationFile + " has been loaded.";
+                richTextBoxInformation.Text += $@"The validation file {validationFile} has been loaded.";
 
                 // Apply the values to the form
                 LocalInitialiseValidationSettings();
@@ -42,12 +41,12 @@ namespace TEAM
         }
 
         /// <summary>
-        /// This method will update the validation values on the form
+        /// This method will update the validation values on the form.
         /// </summary>
         private void LocalInitialiseValidationSettings()
         {
             // Source object existence
-            switch (ValidationSettings.DataObjectExistence)
+            switch (ValidationSetting.DataObjectExistence)
             {
                 case "True":
                     checkBoxDataObjectExistence.Checked = true;
@@ -56,12 +55,12 @@ namespace TEAM
                     checkBoxDataObjectExistence.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the source object validation values, only true and false are allowed but this was encountered: " + ValidationSettings.DataObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the source object validation values, only true and false are allowed but this was encountered: " + ValidationSetting.DataObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Source attribute existence
-            switch (ValidationSettings.DataItemExistence)
+            switch (ValidationSetting.DataItemExistence)
             {
                 case "True":
                     checkBoxDataItemExistence.Checked = true;
@@ -70,15 +69,15 @@ namespace TEAM
                     checkBoxDataItemExistence.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the source attribute validation values, only true and false are allowed but this was encountered: " + ValidationSettings.DataItemExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the source attribute validation values, only true and false are allowed but this was encountered: " + ValidationSetting.DataItemExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
-            if (ValidationSettings.SourceBusinessKeyExistence == "True")
+            if (ValidationSetting.SourceBusinessKeyExistence == "True")
             {
                 checkBoxSourceBusinessKeyExistence.Checked = true;
             }
-            else if (ValidationSettings.SourceBusinessKeyExistence == "False")
+            else if (ValidationSetting.SourceBusinessKeyExistence == "False")
             {
                 checkBoxSourceBusinessKeyExistence.Checked = false;
             }
@@ -86,53 +85,53 @@ namespace TEAM
             {
                 // Raise exception
                 MessageBox.Show("There is something wrong with the business key validation values, only true and false are allowed but this was encountered: " +
-                                ValidationSettings.SourceBusinessKeyExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                ValidationSetting.SourceBusinessKeyExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
-            if (ValidationSettings.LogicalGroup == "True")
+            if (ValidationSetting.LogicalGroup == "True")
             {
                 checkBoxLogicalGroup.Checked = true;
             }
-            else if (ValidationSettings.LogicalGroup == "False")
+            else if (ValidationSetting.LogicalGroup == "False")
             {
                 checkBoxLogicalGroup.Checked = false;
             }
             else
             {
                 // Raise exception
-                MessageBox.Show("There is something wrong with the logical group validation values, only true and false are allowed but this was encountered: " + ValidationSettings.LogicalGroup + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There is something wrong with the logical group validation values, only true and false are allowed but this was encountered: " + ValidationSetting.LogicalGroup + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
             // Link Key order
-            if (ValidationSettings.LinkKeyOrder == "True")
+            if (ValidationSetting.LinkKeyOrder == "True")
             {
                 checkBoxLinkKeyOrder.Checked = true;
             }
-            else if (ValidationSettings.LinkKeyOrder == "False")
+            else if (ValidationSetting.LinkKeyOrder == "False")
             {
                 checkBoxLinkKeyOrder.Checked = false;
             }
             else
             {
                 // Raise exception
-                MessageBox.Show("There is something wrong with the Link key order validation values, only true and false are allowed but this was encountered: " + ValidationSettings.LinkKeyOrder + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There is something wrong with the Link key order validation values, only true and false are allowed but this was encountered: " + ValidationSetting.LinkKeyOrder + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             // Business Key Syntax
-            if (ValidationSettings.BusinessKeySyntax == "True")
+            if (ValidationSetting.BusinessKeySyntax == "True")
             {
                 checkBoxBusinessKeySyntaxValidation.Checked = true;
             }
-            else if (ValidationSettings.BusinessKeySyntax == "False")
+            else if (ValidationSetting.BusinessKeySyntax == "False")
             {
                 checkBoxBusinessKeySyntaxValidation.Checked = false;
             }
             else
             {
                 // Raise exception
-                MessageBox.Show("There is something wrong with the business key syntax validation values, only true and false are allowed but this was encountered: " + ValidationSettings.BusinessKeySyntax + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There is something wrong with the business key syntax validation values, only true and false are allowed but this was encountered: " + ValidationSetting.BusinessKeySyntax + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
@@ -157,9 +156,9 @@ namespace TEAM
                 {
                     richTextBoxInformation.Clear();
                     var chosenFile = theDialog.FileName;
-                    
+
                     // Load from disk into memory
-                    LocalTeamEnvironmentConfiguration.LoadValidationFile(chosenFile);
+                    ValidationSetting.LoadValidationFile(chosenFile);
 
                     // Update values on form
                     LocalInitialiseValidationSettings();
@@ -183,41 +182,41 @@ namespace TEAM
                 // Source object existence check
                 var dataObjectExistence = "";
                 dataObjectExistence = checkBoxDataObjectExistence.Checked ? "True" : "False";
-                ValidationSettings.DataObjectExistence = dataObjectExistence;
+                ValidationSetting.DataObjectExistence = dataObjectExistence;
 
 
                 // Source business key existence check
                 var stringBusinessKeyExistence = "";
                 stringBusinessKeyExistence = checkBoxSourceBusinessKeyExistence.Checked ? "True" : "False";
-                ValidationSettings.SourceBusinessKeyExistence = stringBusinessKeyExistence;
+                ValidationSetting.SourceBusinessKeyExistence = stringBusinessKeyExistence;
 
 
                 // Source attribute existence check
                 var stringSourceAttributeExistence = "";
                 stringSourceAttributeExistence = checkBoxDataItemExistence.Checked ? "True" : "False";
-                ValidationSettings.DataItemExistence = stringSourceAttributeExistence;
+                ValidationSetting.DataItemExistence = stringSourceAttributeExistence;
 
 
                 // Logical Group Validation
                 var stringLogicalGroup = "";
                 stringLogicalGroup = checkBoxLogicalGroup.Checked ? "True" : "False";
-                ValidationSettings.LogicalGroup = stringLogicalGroup;
+                ValidationSetting.LogicalGroup = stringLogicalGroup;
 
 
                 // Link Key Order Validation
                 var stringLinkKeyOrder = "";
                 stringLinkKeyOrder = checkBoxLinkKeyOrder.Checked ? "True" : "False";
-                ValidationSettings.LinkKeyOrder = stringLinkKeyOrder;
+                ValidationSetting.LinkKeyOrder = stringLinkKeyOrder;
 
 
                 // Business key syntax check
                 var businessKeySyntax = "";
                 businessKeySyntax = checkBoxBusinessKeySyntaxValidation.Checked ? "True" : "False";
-                ValidationSettings.BusinessKeySyntax = businessKeySyntax;
+                ValidationSetting.BusinessKeySyntax = businessKeySyntax;
 
 
                 // Write to disk
-                LocalTeamEnvironmentConfiguration.SaveValidationFile();
+                ValidationSetting.SaveValidationFile();
 
                 richTextBoxInformation.Text = "The values have been successfully saved.";
             }

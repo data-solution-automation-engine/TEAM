@@ -64,12 +64,12 @@ namespace TEAM
             {
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
                     $"Creating a new version list file {GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension}."));
-                EnvironmentVersion.CreateNewVersionListFile(
+                TeamVersionList.CreateNewVersionListFile(
                     GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension,
                     GlobalParameters.WorkingEnvironment);
             }
 
-            var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+            var selectedVersion = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
 
             if (selectedVersion != null)
             {
@@ -81,11 +81,11 @@ namespace TEAM
 
                 trackBarVersioning.Maximum = selectedVersion.Item1;
                 trackBarVersioning.TickFrequency =
-                    EnvironmentVersion.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
+                    TeamVersionList.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
 
                 //Make sure the version is displayed
                 var versionMajorMinor =
-                    EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
+                    TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
                         selectedVersion.Item1);
                 var majorVersion = versionMajorMinor.Item2;
                 var minorVersion = versionMajorMinor.Item3;
@@ -123,11 +123,11 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
                 {
-                    LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(validationFile);
+                    ValidationSetting.CreateDummyValidationFile(validationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                LocalTeamEnvironmentConfiguration.LoadValidationFile(validationFile);
+                ValidationSetting.LoadValidationFile(validationFile);
 
                 richTextBoxInformation.AppendText($"The configuration file {validationFile} has been loaded.\r\n");
             }
@@ -145,10 +145,10 @@ namespace TEAM
                                             GlobalParameters.JsonExportConfigurationFileName + '_' +
                                             GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
-                // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
+                // If the config file does not exist yet, create it.
                 if (!File.Exists(jsonConfigurationFile))
                 {
-                    LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(jsonConfigurationFile);
+                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFile);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
@@ -788,7 +788,7 @@ namespace TEAM
             PopulatePhysicalModelGridWithVersion();
 
             var versionMajorMinor =
-                EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
+                TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
                     trackBarVersioning.Value);
 
             labelVersion.Text = versionMajorMinor.Item2 + "." + versionMajorMinor.Item3;
@@ -894,11 +894,11 @@ namespace TEAM
                     if (oldVersionId != versionId)
                     {
                         var maxVersion =
-                            EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+                            TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
 
                         trackBarVersioning.Maximum = maxVersion.Item1;
                         trackBarVersioning.TickFrequency =
-                            EnvironmentVersion.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
+                            TeamVersionList.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
                         trackBarVersioning.Value = maxVersion.Item1;
                     }
                 }
@@ -919,7 +919,7 @@ namespace TEAM
             {
                 //If nothing is checked, just retrieve and return the current version
                 var versionKeyValuePair =
-                    EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+                    TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
                 var majorVersion = versionKeyValuePair.Item2;
                 var minorVersion = versionKeyValuePair.Item3;
 
@@ -931,8 +931,8 @@ namespace TEAM
                         //Creates a new version
                         majorVersion++;
                         minorVersion = 0;
-                        EnvironmentVersion.AddNewVersionToList(GlobalParameters.WorkingEnvironment, majorVersion, 0);
-                        EnvironmentVersion.SaveVersionList(GlobalParameters.CorePath +
+                        TeamVersionList.AddNewVersionToList(GlobalParameters.WorkingEnvironment, majorVersion, 0);
+                        TeamVersionList.SaveVersionList(GlobalParameters.CorePath +
                                                            GlobalParameters.VersionFileName +
                                                            GlobalParameters.JsonExtension);
                     }
@@ -949,9 +949,9 @@ namespace TEAM
                     {
                         //Creates a new version
                         minorVersion++;
-                        EnvironmentVersion.AddNewVersionToList(GlobalParameters.WorkingEnvironment, majorVersion,
+                        TeamVersionList.AddNewVersionToList(GlobalParameters.WorkingEnvironment, majorVersion,
                             minorVersion);
-                        EnvironmentVersion.SaveVersionList(GlobalParameters.CorePath +
+                        TeamVersionList.SaveVersionList(GlobalParameters.CorePath +
                                                            GlobalParameters.VersionFileName +
                                                            GlobalParameters.JsonExtension);
                     }
@@ -964,7 +964,7 @@ namespace TEAM
 
             //Retrieve the current version (again, may have changed).
             var newVersionKeyValuePair =
-                EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+                TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
 
             //Make sure the correct version is added to the global parameters
             GlobalParameters.CurrentVersionId = newVersionKeyValuePair.Item1;
@@ -2821,7 +2821,7 @@ namespace TEAM
 
                 // var versionMajorMinor = GetVersion(trackBarVersioning.Value, conn);
                 var versionMajorMinor =
-                    EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
+                    TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
                         trackBarVersioning.Value);
 
                 var majorVersion = versionMajorMinor.Item2;
@@ -3074,7 +3074,7 @@ namespace TEAM
                 var versionId = GetVersionFromTrackBar();
 
                 var versionMajorMinor =
-                    EnvironmentVersion.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, versionId);
+                    TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, versionId);
                 var majorVersion = versionMajorMinor.Item2;
                 var minorVersion = versionMajorMinor.Item3;
 
@@ -7727,7 +7727,7 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(30);
 
-                if (ValidationSettings.SourceBusinessKeyExistence == "True")
+                if (ValidationSetting.SourceBusinessKeyExistence == "True")
                 {
                     ValidateBusinessKeyObject();
                 }
@@ -7738,14 +7738,14 @@ namespace TEAM
 
                 if (worker != null) worker.ReportProgress(60);
 
-                if (ValidationSettings.LogicalGroup == "True")
+                if (ValidationSetting.LogicalGroup == "True")
                 {
                     ValidateLogicalGroup();
                 }
 
                 if (worker != null) worker.ReportProgress(75);
 
-                if (ValidationSettings.LinkKeyOrder == "True")
+                if (ValidationSetting.LinkKeyOrder == "True")
                 {
                     ValidateLinkKeyOrder();
                 }

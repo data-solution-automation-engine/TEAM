@@ -382,9 +382,9 @@ namespace TEAM
             // Check if the paths and files are available, just to be sure.
             FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
             FileHandling.InitialisePath(GlobalParameters.OutputPath);
-            TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension); 
-            LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-            LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+            TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+            ValidationSetting.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+            JsonExportSetting.CreateDummyJsonConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
 
             // Create a file backup for the configuration file
             try

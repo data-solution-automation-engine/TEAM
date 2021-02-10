@@ -132,7 +132,7 @@ namespace TEAM
 
             try
             {
-                LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(validationFileName);
+                ValidationSetting.CreateDummyValidationFile(validationFileName);
 
             }
             catch
@@ -149,7 +149,7 @@ namespace TEAM
 
             try
             {
-                LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(jsonConfigurationFileName);
+                JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFileName);
 
             }
             catch
@@ -188,7 +188,7 @@ namespace TEAM
 
             //FormBase.EnvironmentVersion.GetEnvironmentVersionsFromFile(Path.GetDirectoryName(configurationFile));
 
-            EnvironmentVersion.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
+            TeamVersionList.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
 
             // Load the pattern definition file.
             try
@@ -310,7 +310,7 @@ namespace TEAM
 
         internal void DisplayMaxVersion()
         {
-            var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+            var selectedVersion = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
 
             //var versionMajorMinor = GetVersion(selectedVersion, connOmd);
             var majorVersion = selectedVersion.Item2;

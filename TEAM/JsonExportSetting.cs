@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using TEAM_Library;
 
 namespace TEAM
 {
@@ -103,6 +104,44 @@ namespace TEAM
             catch (Exception ex)
             {
                 MessageBox.Show("An error occurred saving the Json configuration file. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Method to create a new validation file with default values at the default location
+        /// Checks if the file already exists. If it does, nothing will happen.
+        /// </summary>
+        internal static void CreateDummyJsonConfigurationFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                var validationFile = new StringBuilder();
+
+                validationFile.AppendLine("/* TEAM Json Export File Settings */");
+
+                validationFile.AppendLine("GenerateSourceDataItemTypes|True");
+                validationFile.AppendLine("GenerateTargetDataItemTypes|True");
+                validationFile.AppendLine("GenerateSourceDataObjectConnection|True");
+                validationFile.AppendLine("GenerateTargetDataObjectConnection|True");
+                validationFile.AppendLine("GenerateDatabaseAsExtension|True");
+                validationFile.AppendLine("GenerateSchemaAsExtension|True");
+                validationFile.AppendLine("AddMetadataAsRelatedDataObject|True");
+                validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|True");
+
+                validationFile.AppendLine("/* End of file */");
+
+                using (var outfile = new StreamWriter(fileName))
+                {
+                    outfile.Write(validationFile.ToString());
+                    outfile.Close();
+                }
+
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new Json extract configuration file was created for {fileName}."));
+
+            }
+            else
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing Json extract configuration file {fileName} was detected."));
             }
         }
     }

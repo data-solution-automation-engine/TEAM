@@ -22,7 +22,7 @@ namespace TEAM
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(configurationFileName))
                 {
-                    LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(configurationFileName);
+                    JsonExportSetting.CreateDummyJsonConfigurationFile(configurationFileName);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
