@@ -8735,6 +8735,7 @@ namespace TEAM
         /// New, WIP method to generate Data Warehouse Automation Json files, based on the name of the target Data Object.
         /// </summary>
         /// <param name="targetDataObjectNameFromDataGrid"></param>
+        /// <param name="jsonExportSetting"></param>
         private string GenerateJson(string targetDataObjectNameFromDataGrid, JsonExportSetting jsonExportSetting)
         {
             var localDataObjectMappingDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
@@ -8763,7 +8764,7 @@ namespace TEAM
 
                     DataWarehouseAutomation.DataObject targetDataObject = new DataWarehouseAutomation.DataObject();
                     targetDataObject.name = targetDataObjectName;
-                    targetDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(targetDataObject, targetConnection, jsonExportSetting);
+                    targetDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(targetDataObject, targetConnection, jsonExportSetting);
 
                     dataObjectMapping.targetDataObject = targetDataObject;
 
@@ -8798,8 +8799,7 @@ namespace TEAM
 
                 // Get the source info
                 var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
-                var sourceConnectionInternalId =
-                    row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                 var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
 
@@ -8809,28 +8809,22 @@ namespace TEAM
                 // Create the classifications for the source Data Objects
                 List<Classification> sourceDataObjectClassifications = new List<Classification>();
                 var sourceDataObjectClassification = new Classification();
-                sourceDataObjectClassification.classification = MetadataHandling
-                    .GetDataObjectType(sourceDataObjectName, "", TeamConfigurationSettings).ToString();
+                sourceDataObjectClassification.classification = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", TeamConfigurationSettings).ToString();
                 sourceDataObjectClassifications.Add(sourceDataObjectClassification);
                 sourceDataObject.dataObjectClassification = sourceDataObjectClassifications;
 
                 // Generate data items for each source, and for the mapping overall
                 List<dynamic> sourceDataItems = new List<dynamic>();
 
-                var dataItemRows = localDataItemMappingDataTable.Select(
-                    $"[{AttributeMappingMetadataColumns.SourceTable}] = '{sourceDataObjectName}' AND [{AttributeMappingMetadataColumns.TargetTable}] = '{targetDataObjectNameFromDataGrid}'");
+                var dataItemRows = localDataItemMappingDataTable.Select($"[{AttributeMappingMetadataColumns.SourceTable}] = '{sourceDataObjectName}' AND [{AttributeMappingMetadataColumns.TargetTable}] = '{targetDataObjectNameFromDataGrid}'");
                 foreach (DataRow dataItemRow in dataItemRows)
                 {
                     var sourceDataItem = new DataItem();
-                    List<dynamic>
-                        sourceDataItemLocalList =
-                            new List<dynamic>(); // Creating a single source-to-target Data Item mapping
+                    List<dynamic> sourceDataItemLocalList = new List<dynamic>(); // Creating a single source-to-target Data Item mapping
                     var targetDataItem = new DataItem();
 
-                    var localSourceDataItemFromGrid =
-                        dataItemRow[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
-                    var localTargetDataItemFromGrid =
-                        dataItemRow[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
+                    var localSourceDataItemFromGrid = dataItemRow[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
+                    var localTargetDataItemFromGrid = dataItemRow[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
                     sourceDataItem.name = localSourceDataItemFromGrid;
                     sourceDataItems.Add(sourceDataItem);
@@ -8851,7 +8845,7 @@ namespace TEAM
                 }
 
                 // Add extensions (database and schema)
-                sourceDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(sourceDataObject, sourceConnection, jsonExportSetting);
+                sourceDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(sourceDataObject, sourceConnection, jsonExportSetting);
                 sourceDataObjects.Add(sourceDataObject);
 
                 counter++;
@@ -8859,6 +8853,15 @@ namespace TEAM
 
             // Add the source data objects
             dataObjectMapping.sourceDataObjects = sourceDataObjects;
+            
+            // Related Data Objects
+            List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
+
+            relatedDataObjects.Add(JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, jsonExportSetting));
+            
+            dataObjectMapping.relatedDataObjects = relatedDataObjects;
+            
+            
 
             // Add the data item mappings
             dataObjectMapping.dataItemMappings = dataItemMappings;
@@ -8866,7 +8869,9 @@ namespace TEAM
             // Adding the Data Object Mapping to the list of Data Object Mappings (the top level object)
             dataObjectMappings.Add(dataObjectMapping);
 
-            // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
+            
+            
+            // Create an instance of the non-generic information i.e. VDW specific. For example the generation date/time.
             GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata(targetDataObjectNameFromDataGrid);
             MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfigurationSettings);
 
@@ -9022,8 +9027,8 @@ namespace TEAM
                             targetDataObject.name = (string) row["TARGET_NAME"];
 
                             // Source and target connection information
-                            sourceDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(sourceDataObject, sourceConnection, JsonExportSetting);
-                            targetDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(targetDataObject, targetConnection, JsonExportSetting);
+                            sourceDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(sourceDataObject, sourceConnection, JsonExportSetting);
+                            targetDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(targetDataObject, targetConnection, JsonExportSetting);
 
                             sourceDataObjects.Add(sourceDataObject);
                             sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
@@ -9040,8 +9045,7 @@ namespace TEAM
                             foreach (var dependentRow in dependentRows)
                             {
                                 var relatedDataObject = new DataWarehouseAutomation.DataObject();
-                                relatedDataObject.name =
-                                    dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                                relatedDataObject.name = dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                                 relatedDataObjects.Add(relatedDataObject);
                             }
 
@@ -9072,8 +9076,7 @@ namespace TEAM
                             }
                             else
                             {
-                                int prefixLocation = row["TARGET_NAME"].ToString()
-                                    .LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
+                                int prefixLocation = row["TARGET_NAME"].ToString().LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
                                 if (prefixLocation != -1
                                 ) // The suffix is found in the name of the data object (table).
                                 {
@@ -9086,14 +9089,20 @@ namespace TEAM
                                     List<Classification> dataObjectClassificationList = new List<Classification>();
                                     var dataObjectClassification = new Classification();
                                     dataObjectClassification.classification = "Lookup";
-                                    dataObjectClassification.notes =
-                                        "Lookup table related to the source-to-target mapping";
+                                    dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
                                     dataObjectClassificationList.Add(dataObjectClassification);
 
                                     relatedDataObject.dataObjectClassification = dataObjectClassificationList;
                                     relatedDataObjects.Add(relatedDataObject);
                                 }
                             }
+
+                            // Add the metadata connection as related data object (assuming this is set in the json export settings).
+                            relatedDataObjects.Add(JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, JsonExportSetting));
+
+
+
+
 
                             // If the list contains entries, add it to the mapping.
                             if (relatedDataObjects.Count > 0)

@@ -17,7 +17,7 @@ namespace TEAM
         /// <param name="dataObject"></param>
         /// <param name="teamConnection"></param>
         /// <returns></returns>
-        public static DataObject AddDataObjectExtensionsForDatabase(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
+        public static DataObject CreateDataObjectDatabaseExtensions(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
             // Add dataObjectConnection, including connection string (to Data Object)
             var localDataConnection = new DataConnection();
@@ -67,6 +67,21 @@ namespace TEAM
             return dataObject;
         }
 
+        public static DataObject CreateMetadataDataObject(TeamConnection metaDataConnection, JsonExportSetting jsonExportSetting)
+        {
+            DataObject localDataObject = new DataObject();
+
+            if (jsonExportSetting.AddMetadataAsRelatedDataObject == "True")
+            {
+                localDataObject.name = "Metadata";
+                
+                //Add schema and database extensions
+                localDataObject = CreateDataObjectDatabaseExtensions(localDataObject, metaDataConnection, jsonExportSetting);
+            }
+
+            return localDataObject;
+        }
+        
         /// <summary>
         /// Returns a list of Data Item Mappings for a source- and target Business Key definition.
         /// The Business Keys will be split into components and mapped in order.

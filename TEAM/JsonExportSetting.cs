@@ -8,6 +8,7 @@ namespace TEAM
 {
     /// <summary>
     /// Configuration settings related to the export of Json files.
+    /// This class manages the settings (true/false) that dictate whether certain objects are generated or not.
     /// </summary>
     public class JsonExportSetting
     {
