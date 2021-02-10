@@ -14,11 +14,10 @@ namespace TEAM
             _myParent = parent;
             InitializeComponent();
 
-            // Make sure the configuration information is available in this form
+            // Make sure the configuration information is available in this form.
             try
             {
-                var configurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' +
-                                     GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+                var configurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(configurationFileName))
@@ -42,7 +41,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// This method will update the validation values on the form
+        /// This method will update the validation values on the form.
         /// </summary>
         private void LocalInitialiseJsonExtractSettings()
         {
@@ -126,7 +125,35 @@ namespace TEAM
                     checkBoxSchemaExtension.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateSchemaAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateSchemaAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+            }
+
+            // Add Metadata as object
+            switch (JsonExportSettings.AddMetadataAsRelatedDataObject)
+            {
+                case "True":
+                    checkBoxAddMetadataConnection.Checked = true;
+                    break;
+                case "False":
+                    checkBoxAddMetadataConnection.Checked = false;
+                    break;
+                default:
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.AddMetadataAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+            }
+
+            // Add upstream connections as objects
+            switch (JsonExportSettings.AddUpstreamDataObjectsAsRelatedDataObject)
+            {
+                case "True":
+                    checkBoxNextUpDataObjects.Checked = true;
+                    break;
+                case "False":
+                    checkBoxNextUpDataObjects.Checked = false;
+                    break;
+                default:
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.AddUpstreamDataObjectsAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
         }
@@ -204,6 +231,16 @@ namespace TEAM
                 var stringSchemaExtension = "";
                 stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
                 JsonExportSettings.GenerateSchemaAsExtension = stringSchemaExtension;
+
+                // Add metadata
+                var stringAddMetadataConnection = "";
+                stringAddMetadataConnection = checkBoxAddMetadataConnection.Checked ? "True" : "False";
+                JsonExportSettings.AddMetadataAsRelatedDataObject = stringAddMetadataConnection;
+
+                // Add metadata
+                var stringAddNextUpObjects = "";
+                stringAddNextUpObjects = checkBoxNextUpDataObjects.Checked ? "True" : "False";
+                JsonExportSettings.AddUpstreamDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
 
                 // Write to disk
                 LocalTeamEnvironmentConfiguration.SaveJsonConfigurationFile();

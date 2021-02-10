@@ -68,6 +68,10 @@ namespace TEAM
             public static string GenerateTargetDataObjectConnection { get; set; }
             public static string GenerateDatabaseAsExtension { get; set; }
             public static string GenerateSchemaAsExtension { get; set; }
+            
+            // Related Data Objects
+            public static string AddMetadataAsRelatedDataObject { get; set; }
+            public static string AddUpstreamDataObjectsAsRelatedDataObject { get; set; }
 
 
         }

@@ -214,6 +214,7 @@
             // 
             this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxInformation.Location = new System.Drawing.Point(12, 403);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
             this.richTextBoxInformation.Size = new System.Drawing.Size(697, 69);

@@ -142,6 +142,8 @@ namespace TEAM
                 validationFile.AppendLine("GenerateTargetDataObjectConnection|True");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|True");
                 validationFile.AppendLine("GenerateSchemaAsExtension|True");
+                validationFile.AppendLine("AddMetadataAsRelatedDataObject|True");
+                validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|True");
 
                 validationFile.AppendLine("/* End of file */");
 
@@ -327,6 +329,9 @@ namespace TEAM
                 FormBase.JsonExportSettings.GenerateDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
                 FormBase.JsonExportSettings.GenerateSchemaAsExtension = configList["GenerateSchemaAsExtension"];
 
+                FormBase.JsonExportSettings.GenerateSchemaAsExtension = configList["AddMetadataAsRelatedDataObject"];
+                FormBase.JsonExportSettings.GenerateSchemaAsExtension = configList["AddUpstreamDataObjectsAsRelatedDataObject"];
+
             }
             catch (Exception)
             {
@@ -349,6 +354,9 @@ namespace TEAM
                 validationFile.AppendLine("GenerateTargetDataObjectConnection|" + FormBase.JsonExportSettings.GenerateTargetDataObjectConnection + "");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|" + FormBase.JsonExportSettings.GenerateDatabaseAsExtension + "");
                 validationFile.AppendLine("GenerateSchemaAsExtension|" + FormBase.JsonExportSettings.GenerateSchemaAsExtension + "");
+
+                validationFile.AppendLine("AddMetadataAsRelatedDataObject|" + FormBase.JsonExportSettings.AddMetadataAsRelatedDataObject + "");
+                validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|" + FormBase.JsonExportSettings.AddUpstreamDataObjectsAsRelatedDataObject + "");
 
                 // Closing off
                 validationFile.AppendLine("/* End of file */");
