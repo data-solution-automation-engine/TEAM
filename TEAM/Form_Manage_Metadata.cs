@@ -152,7 +152,7 @@ namespace TEAM
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                LocalTeamEnvironmentConfiguration.LoadJsonConfigurationFile(jsonConfigurationFile);
+                JsonExportSetting.LoadJsonConfigurationFile(jsonConfigurationFile);
 
                 richTextBoxInformation.AppendText(
                     $"The configuration file {jsonConfigurationFile} has been loaded.\r\n");
@@ -7664,7 +7664,7 @@ namespace TEAM
             }
             else
             {
-                ManageFormJsonInteraction(targetDataObjectName);
+                ManageFormJsonInteraction(targetDataObjectName, JsonExportSetting);
             }
         }
 
@@ -8677,7 +8677,6 @@ namespace TEAM
 
             // Take all the rows from the grid
             List<DataRow> rowList = new List<DataRow>();
-            HashSet<string> presentationRowList = new HashSet<string>();
 
             // Exclude presentation layer for now, working on a new approach for this.
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
@@ -8692,7 +8691,7 @@ namespace TEAM
                 }
                 else if (enabled && tableType == MetadataHandling.TableTypes.Presentation)
                 {
-                    ManageFormJsonInteraction(targetDataObjectName);
+                    ManageFormJsonInteraction(targetDataObjectName, JsonExportSetting);
                 }
             }
 
@@ -8704,9 +8703,10 @@ namespace TEAM
         /// Convenience method to do all the form stuff related to Json generation, such as saving and showing the status form, in one go.
         /// </summary>
         /// <param name="targetDataObjectName"></param>
-        private void ManageFormJsonInteraction(string targetDataObjectName)
+        /// <param name="jsonExportSettings"></param>
+        private void ManageFormJsonInteraction(string targetDataObjectName, JsonExportSetting jsonExportSettings)
         {
-            var dataObjectMappings = GenerateJson(targetDataObjectName);
+            var dataObjectMappings = GenerateJson(targetDataObjectName, jsonExportSettings);
 
             if (checkBoxShowJsonOutput.Checked)
             {
@@ -8735,14 +8735,12 @@ namespace TEAM
         /// New, WIP method to generate Data Warehouse Automation Json files, based on the name of the target Data Object.
         /// </summary>
         /// <param name="targetDataObjectNameFromDataGrid"></param>
-        private string GenerateJson(string targetDataObjectNameFromDataGrid)
+        private string GenerateJson(string targetDataObjectNameFromDataGrid, JsonExportSetting jsonExportSetting)
         {
             var localDataObjectMappingDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             var localDataItemMappingDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
 
-            var mappingRows =
-                localDataObjectMappingDataTable.Select(
-                    $"[{TableMappingMetadataColumns.TargetTable}] = '{targetDataObjectNameFromDataGrid}'");
+            var mappingRows = localDataObjectMappingDataTable.Select($"[{TableMappingMetadataColumns.TargetTable}] = '{targetDataObjectNameFromDataGrid}'");
 
             List<DataObjectMapping> dataObjectMappings = new List<DataObjectMapping>();
             DataObjectMapping dataObjectMapping = new DataObjectMapping();
@@ -8759,22 +8757,18 @@ namespace TEAM
                 if (counter == 0)
                 {
                     var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    var targetConnectionInternalId =
-                        row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-                    var targetFullyQualifiedName = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
 
                     DataWarehouseAutomation.DataObject targetDataObject = new DataWarehouseAutomation.DataObject();
                     targetDataObject.name = targetDataObjectName;
-                    targetDataObject =
-                        JsonOutputHandling.AddDataObjectExtensionsForDatabase(targetDataObject, targetConnection);
+                    targetDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(targetDataObject, targetConnection, jsonExportSetting);
 
                     dataObjectMapping.targetDataObject = targetDataObject;
 
                     // Also add the classification at Data Object Mapping level, as this is derived from the target Data Object.
-                    var tableType =
-                        MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfigurationSettings);
+                    var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfigurationSettings);
 
                     List<Classification> dataObjectsMappingClassifications = new List<Classification>();
                     var dataObjectMappingClassification = new Classification();
@@ -8787,8 +8781,7 @@ namespace TEAM
                     List<BusinessKey> businessKeys = new List<BusinessKey>();
                     BusinessKey businessKey = new BusinessKey();
 
-                    var businessKeyDefinition =
-                        row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
+                    var businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
                     var businessKeyDataItemMappings =
                         JsonOutputHandling.GetBusinessKeyComponentDataItemMappings(businessKeyDefinition,
                             businessKeyDefinition);
@@ -8801,18 +8794,14 @@ namespace TEAM
 
                     businessKeys.Add(businessKey);
                     dataObjectMapping.businessKeys = businessKeys;
-                    //businessKey.surrogateKey = GetSu
                 }
-
-
 
                 // Get the source info
                 var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
                 var sourceConnectionInternalId =
                     row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
-                var sourceFullyQualifiedName = MetadataHandling
-                    .GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
 
                 DataWarehouseAutomation.DataObject sourceDataObject = new DataWarehouseAutomation.DataObject();
                 sourceDataObject.name = sourceFullyQualifiedName.Value;
@@ -8862,12 +8851,8 @@ namespace TEAM
                 }
 
                 // Add extensions (database and schema)
-                if (JsonExportSettings.GenerateDatabaseAsExtension == "True")
-                {
-                    sourceDataObject =
-                        JsonOutputHandling.AddDataObjectExtensionsForDatabase(sourceDataObject, sourceConnection);
-                    sourceDataObjects.Add(sourceDataObject);
-                }
+                sourceDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(sourceDataObject, sourceConnection, jsonExportSetting);
+                sourceDataObjects.Add(sourceDataObject);
 
                 counter++;
             }
@@ -9025,8 +9010,7 @@ namespace TEAM
                             sourceToTargetMapping.enabled = true;
 
                             // Data Object Mapping name
-                            sourceToTargetMapping.mappingName =
-                                (string) row["TARGET_NAME"]; // Source-to-target mapping name
+                            sourceToTargetMapping.mappingName = (string) row["TARGET_NAME"]; // Source-to-target mapping name
 
                             #region Data Objects
 
@@ -9038,20 +9022,8 @@ namespace TEAM
                             targetDataObject.name = (string) row["TARGET_NAME"];
 
                             // Source and target connection information
-                            if (JsonExportSettings.GenerateSourceDataObjectConnection == "True")
-                            {
-                                sourceDataObject =
-                                    JsonOutputHandling.AddDataObjectExtensionsForDatabase(sourceDataObject,
-                                        sourceConnection);
-                            }
-
-                            if (JsonExportSettings.GenerateTargetDataObjectConnection == "True")
-                            {
-                                // Add any extensions necessary for the data object.
-                                targetDataObject =
-                                    JsonOutputHandling.AddDataObjectExtensionsForDatabase(targetDataObject,
-                                        targetConnection);
-                            }
+                            sourceDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(sourceDataObject, sourceConnection, JsonExportSetting);
+                            targetDataObject = JsonOutputHandling.AddDataObjectExtensionsForDatabase(targetDataObject, targetConnection, JsonExportSetting);
 
                             sourceDataObjects.Add(sourceDataObject);
                             sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
@@ -9061,12 +9033,9 @@ namespace TEAM
 
                             #region Related Data Objects (e.g. lookup tables, references)
 
-                            List<DataWarehouseAutomation.DataObject> relatedDataObjects =
-                                new List<DataWarehouseAutomation.DataObject>();
+                            List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
-                            var dependentRows = TableMapping.GetDependentDataRows((string) row["SOURCE_NAME"],
-                                (string) row["TARGET_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"],
-                                TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
+                            var dependentRows = TableMapping.GetDependentDataRows((string) row["SOURCE_NAME"], (string) row["TARGET_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"], TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
 
                             foreach (var dependentRow in dependentRows)
                             {
@@ -9080,8 +9049,7 @@ namespace TEAM
                             // Define a lookup table, in case there is a desire to do key lookups.
                             if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
                             {
-                                int prefixLocation = row["TARGET_NAME"].ToString()
-                                    .IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
+                                int prefixLocation = row["TARGET_NAME"].ToString().IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
                                 if (prefixLocation != -1
                                 ) // The prefix is found in the name of the data object (table).
                                 {
@@ -9225,7 +9193,7 @@ namespace TEAM
                                 foreach (var component in businessKey.businessKeyComponentMapping)
                                 {
 
-                                    if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
+                                    if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
                                     {
                                         Dictionary<string, string> tableSchema =
                                             MetadataHandling.GetFullyQualifiedDataObjectName(
@@ -9248,7 +9216,7 @@ namespace TEAM
 
                                     try
                                     {
-                                        if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
+                                        if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
                                         {
                                             var tableSchema =
                                                 MetadataHandling.GetFullyQualifiedDataObjectName(
@@ -9314,7 +9282,7 @@ namespace TEAM
                                                                       sourceDataItem.name.EndsWith("'");
                                     targetDataItem.name = (string) column["TARGET_ATTRIBUTE_NAME"];
 
-                                    if (JsonExportSettings.GenerateSourceDataItemTypes == "True")
+                                    if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
                                     {
                                         var tableSchema =
                                             MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName,
@@ -9344,7 +9312,7 @@ namespace TEAM
 
                                     }
 
-                                    if (JsonExportSettings.GenerateTargetDataItemTypes == "True")
+                                    if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
                                     {
                                         var tableSchema =
                                             MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName,

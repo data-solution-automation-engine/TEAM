@@ -1705,7 +1705,7 @@ namespace TEAM
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.openMetadataFileToolStripMenuItem.Text = "Open Table Mapping File";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
             // 
@@ -1713,7 +1713,7 @@ namespace TEAM
             // 
             this.saveTableMappingAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveTableMappingAsJSONToolStripMenuItem.Name = "saveTableMappingAsJSONToolStripMenuItem";
-            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.saveTableMappingAsJSONToolStripMenuItem.Text = "Export Table Mapping";
             this.saveTableMappingAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveTableMappingAsJSONToolStripMenuItem_Click);
             // 
@@ -1721,7 +1721,7 @@ namespace TEAM
             // 
             this.openAttributeMappingFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
-            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.openAttributeMappingFileToolStripMenuItem.Text = "Open Attribute Mapping File";
             this.openAttributeMappingFileToolStripMenuItem.Click += new System.EventHandler(this.openAttributeMappingFileToolStripMenuItem_Click);
             // 
@@ -1729,7 +1729,7 @@ namespace TEAM
             // 
             this.saveAttributeMappingAsJSONToolStripMenuItem1.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveAttributeMappingAsJSONToolStripMenuItem1.Name = "saveAttributeMappingAsJSONToolStripMenuItem1";
-            this.saveAttributeMappingAsJSONToolStripMenuItem1.Size = new System.Drawing.Size(236, 30);
+            this.saveAttributeMappingAsJSONToolStripMenuItem1.Size = new System.Drawing.Size(228, 22);
             this.saveAttributeMappingAsJSONToolStripMenuItem1.Text = "Export Attribute Mapping";
             this.saveAttributeMappingAsJSONToolStripMenuItem1.Click += new System.EventHandler(this.saveAttributeMappingAsJSONToolStripMenuItem1_Click);
             // 
@@ -1737,7 +1737,7 @@ namespace TEAM
             // 
             this.openPhysicalModelFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openPhysicalModelFileToolStripMenuItem.Name = "openPhysicalModelFileToolStripMenuItem";
-            this.openPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.openPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.openPhysicalModelFileToolStripMenuItem.Text = "Open Physical Model File";
             this.openPhysicalModelFileToolStripMenuItem.Click += new System.EventHandler(this.openPhysicalModelFileToolStripMenuItem_Click);
             // 
@@ -1745,7 +1745,7 @@ namespace TEAM
             // 
             this.exportPhysicalModelFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.exportPhysicalModelFileToolStripMenuItem.Name = "exportPhysicalModelFileToolStripMenuItem";
-            this.exportPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.exportPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.exportPhysicalModelFileToolStripMenuItem.Text = "Export Physical Model File";
             this.exportPhysicalModelFileToolStripMenuItem.Click += new System.EventHandler(this.exportPhysicalModelFileToolStripMenuItem_Click);
             // 
@@ -1754,7 +1754,7 @@ namespace TEAM
             this.automapDataItemsToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
             this.automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
             this.automapDataItemsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.automapDataItemsToolStripMenuItem.Text = "Automap Data Items";
             this.automapDataItemsToolStripMenuItem.Click += new System.EventHandler(this.AutoMapDataItemsToolStripMenuItem_Click);
             // 
@@ -1771,7 +1771,7 @@ namespace TEAM
             // 
             this.manageValidationRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageValidationRulesToolStripMenuItem.Name = "manageValidationRulesToolStripMenuItem";
-            this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
+            this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.manageValidationRulesToolStripMenuItem.Text = "Manage validation rules";
             this.manageValidationRulesToolStripMenuItem.Click += new System.EventHandler(this.manageValidationRulesToolStripMenuItem_Click);
             // 
@@ -1780,7 +1780,7 @@ namespace TEAM
             this.validateMetadataToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
             this.validateMetadataToolStripMenuItem.Name = "validateMetadataToolStripMenuItem";
             this.validateMetadataToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
+            this.validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.validateMetadataToolStripMenuItem.Text = "&Validate Metadata";
             this.validateMetadataToolStripMenuItem.Click += new System.EventHandler(this.validateMetadataToolStripMenuItem_Click);
             // 

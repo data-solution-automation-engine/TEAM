@@ -26,9 +26,9 @@ namespace TEAM
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                LocalTeamEnvironmentConfiguration.LoadValidationFile(configurationFileName);
+                JsonExportSetting.LoadJsonConfigurationFile(configurationFileName);
 
-                richTextBoxInformation.Text += "The Json extract configuration file " + configurationFileName + " has been loaded.";
+                richTextBoxInformation.Text += $"The Json extract configuration file {configurationFileName} has been loaded.";
 
                 // Apply the values to the form
                 LocalInitialiseJsonExtractSettings();
@@ -46,7 +46,7 @@ namespace TEAM
         private void LocalInitialiseJsonExtractSettings()
         {
             // Source data types
-            switch (JsonExportSettings.GenerateSourceDataItemTypes)
+            switch (JsonExportSetting.GenerateSourceDataItemTypes)
             {
                 case "True":
                     checkBoxSourceDataType.Checked = true;
@@ -55,12 +55,12 @@ namespace TEAM
                     checkBoxSourceDataType.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateSourceDataItemTypes + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateSourceDataItemTypes + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Target data types
-            switch (JsonExportSettings.GenerateTargetDataItemTypes)
+            switch (JsonExportSetting.GenerateTargetDataItemTypes)
             {
                 case "True":
                     checkBoxTargetDataType.Checked = true;
@@ -69,12 +69,12 @@ namespace TEAM
                     checkBoxTargetDataType.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateTargetDataItemTypes + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateTargetDataItemTypes + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Source connection
-            switch (JsonExportSettings.GenerateSourceDataObjectConnection)
+            switch (JsonExportSetting.GenerateSourceDataObjectConnection)
             {
                 case "True":
                     checkBoxSourceConnectionKey.Checked = true;
@@ -83,12 +83,12 @@ namespace TEAM
                     checkBoxSourceConnectionKey.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateSourceDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateSourceDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Target connection
-            switch (JsonExportSettings.GenerateTargetDataObjectConnection)
+            switch (JsonExportSetting.GenerateTargetDataObjectConnection)
             {
                 case "True":
                     checkBoxTargetConnectionKey.Checked = true;
@@ -97,12 +97,12 @@ namespace TEAM
                     checkBoxTargetConnectionKey.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateTargetDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateTargetDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Database Extension
-            switch (JsonExportSettings.GenerateDatabaseAsExtension)
+            switch (JsonExportSetting.GenerateDatabaseAsExtension)
             {
                 case "True":
                     checkBoxDatabaseExtension.Checked = true;
@@ -111,12 +111,12 @@ namespace TEAM
                     checkBoxDatabaseExtension.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateDatabaseAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateDatabaseAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Schema Extension
-            switch (JsonExportSettings.GenerateSchemaAsExtension)
+            switch (JsonExportSetting.GenerateSchemaAsExtension)
             {
                 case "True":
                     checkBoxSchemaExtension.Checked = true;
@@ -125,12 +125,12 @@ namespace TEAM
                     checkBoxSchemaExtension.Checked = false;
                     break;
                 default:
-                    //MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.GenerateSchemaAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateSchemaAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Add Metadata as object
-            switch (JsonExportSettings.AddMetadataAsRelatedDataObject)
+            switch (JsonExportSetting.AddMetadataAsRelatedDataObject)
             {
                 case "True":
                     checkBoxAddMetadataConnection.Checked = true;
@@ -139,12 +139,12 @@ namespace TEAM
                     checkBoxAddMetadataConnection.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.AddMetadataAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.AddMetadataAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
             // Add upstream connections as objects
-            switch (JsonExportSettings.AddUpstreamDataObjectsAsRelatedDataObject)
+            switch (JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject)
             {
                 case "True":
                     checkBoxNextUpDataObjects.Checked = true;
@@ -153,7 +153,7 @@ namespace TEAM
                     checkBoxNextUpDataObjects.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSettings.AddUpstreamDataObjectsAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
         }
@@ -176,9 +176,9 @@ namespace TEAM
                 {
                     richTextBoxInformation.Clear();
                     var chosenFile = theDialog.FileName;
-                    
+
                     // Load from disk into memory
-                    LocalTeamEnvironmentConfiguration.LoadJsonConfigurationFile(chosenFile);
+                    JsonExportSetting.LoadJsonConfigurationFile(chosenFile);
 
                     // Update values on form
                     LocalInitialiseJsonExtractSettings();
@@ -202,48 +202,48 @@ namespace TEAM
                 // Source data types
                 var stringSourceDataTypes = "";
                 stringSourceDataTypes = checkBoxSourceDataType.Checked ? "True" : "False";
-                JsonExportSettings.GenerateSourceDataItemTypes = stringSourceDataTypes;
+                JsonExportSetting.GenerateSourceDataItemTypes = stringSourceDataTypes;
 
 
                 // Target data types
                 var stringTargetDataTypes = "";
                 stringTargetDataTypes = checkBoxTargetDataType.Checked ? "True" : "False";
-                JsonExportSettings.GenerateTargetDataItemTypes = stringTargetDataTypes;
+                JsonExportSetting.GenerateTargetDataItemTypes = stringTargetDataTypes;
 
 
                 // Source connection
                 var stringSourceConnection= "";
                 stringSourceConnection = checkBoxSourceConnectionKey.Checked ? "True" : "False";
-                JsonExportSettings.GenerateSourceDataObjectConnection = stringSourceConnection;
+                JsonExportSetting.GenerateSourceDataObjectConnection = stringSourceConnection;
 
 
                 // Target connection
                 var stringTargetConnection = "";
                 stringTargetConnection = checkBoxTargetConnectionKey.Checked ? "True" : "False";
-                JsonExportSettings.GenerateTargetDataObjectConnection = stringTargetConnection;
+                JsonExportSetting.GenerateTargetDataObjectConnection = stringTargetConnection;
 
                 // Target connection
                 var stringDatabaseExtension = "";
                 stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
-                JsonExportSettings.GenerateDatabaseAsExtension = stringDatabaseExtension;
+                JsonExportSetting.GenerateDatabaseAsExtension = stringDatabaseExtension;
 
                 // Target connection
                 var stringSchemaExtension = "";
                 stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
-                JsonExportSettings.GenerateSchemaAsExtension = stringSchemaExtension;
+                JsonExportSetting.GenerateSchemaAsExtension = stringSchemaExtension;
 
                 // Add metadata
                 var stringAddMetadataConnection = "";
                 stringAddMetadataConnection = checkBoxAddMetadataConnection.Checked ? "True" : "False";
-                JsonExportSettings.AddMetadataAsRelatedDataObject = stringAddMetadataConnection;
+                JsonExportSetting.AddMetadataAsRelatedDataObject = stringAddMetadataConnection;
 
                 // Add metadata
                 var stringAddNextUpObjects = "";
                 stringAddNextUpObjects = checkBoxNextUpDataObjects.Checked ? "True" : "False";
-                JsonExportSettings.AddUpstreamDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
+                JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
 
                 // Write to disk
-                LocalTeamEnvironmentConfiguration.SaveJsonConfigurationFile();
+                JsonExportSetting.SaveJsonConfigurationFile();
 
                 richTextBoxInformation.Text = "The values have been successfully saved.";
             }

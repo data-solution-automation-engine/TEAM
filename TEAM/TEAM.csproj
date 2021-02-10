@@ -114,6 +114,7 @@
     <Compile Include="Form_PIT.Designer.cs">
       <DependentUpon>Form_PIT.cs</DependentUpon>
     </Compile>
+    <Compile Include="JsonExportSetting.cs" />
     <Compile Include="TeamLoadPatternHandling.cs" />
     <Compile Include="TeamUtility.cs" />
     <Compile Include="TeamObjectModel.cs" />

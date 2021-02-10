@@ -17,7 +17,7 @@ namespace TEAM
         /// <param name="dataObject"></param>
         /// <param name="teamConnection"></param>
         /// <returns></returns>
-        public static DataObject AddDataObjectExtensionsForDatabase(DataObject dataObject, TeamConnection teamConnection)
+        public static DataObject AddDataObjectExtensionsForDatabase(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
             // Add dataObjectConnection, including connection string (to Data Object)
             var localDataConnection = new DataConnection();
@@ -26,7 +26,7 @@ namespace TEAM
             List<Extension> extensions = new List<Extension>();
 
             // Database Extension
-            if (FormBase.JsonExportSettings.GenerateDatabaseAsExtension == "True")
+            if (jsonExportSetting.GenerateDatabaseAsExtension == "True")
             {
                 var extension = new Extension
                 {
@@ -39,7 +39,7 @@ namespace TEAM
             }
 
             // Schema Extension
-            if (FormBase.JsonExportSettings.GenerateSchemaAsExtension == "True")
+            if (jsonExportSetting.GenerateSchemaAsExtension == "True")
             {
                 var extension = new Extension
                 {

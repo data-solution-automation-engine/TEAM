@@ -38,7 +38,7 @@ namespace TEAM
         }
 
         // TEAM working environment collection.
-    public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set;  } = new TeamWorkingEnvironmentCollection();
+        public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set;  } = new TeamWorkingEnvironmentCollection();
 
         #region Metadata objects in memory
         // In-memory representation of the Table Mapping Metadata.
@@ -53,28 +53,10 @@ namespace TEAM
 
         // TEAM Version List.
         public static TeamVersionList EnvironmentVersion { get; set; } = new TeamVersionList();
+
+
+        public static JsonExportSetting JsonExportSetting { get; set; } = new JsonExportSetting();
         
-        /// <summary>
-        /// Configuration settings related to the export of Json files.
-        /// </summary>
-        internal static class JsonExportSettings
-        {
-            // Data Item
-            public static string GenerateSourceDataItemTypes { get; set; }
-            public static string GenerateTargetDataItemTypes { get; set; }
-
-            // Data Object Connection
-            public static string GenerateSourceDataObjectConnection { get; set; }
-            public static string GenerateTargetDataObjectConnection { get; set; }
-            public static string GenerateDatabaseAsExtension { get; set; }
-            public static string GenerateSchemaAsExtension { get; set; }
-            
-            // Related Data Objects
-            public static string AddMetadataAsRelatedDataObject { get; set; }
-            public static string AddUpstreamDataObjectsAsRelatedDataObject { get; set; }
-
-
-        }
 
         /// <summary>
         /// Gets or sets the values for the validation of the metadata.
