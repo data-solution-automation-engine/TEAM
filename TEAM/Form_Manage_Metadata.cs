@@ -3674,15 +3674,12 @@ namespace TEAM
                             }
 
                             string businessKeyString = string.Join(",", businessKey);
-                            string surrogateKey = MetadataHandling.GetSurrogateKey(dataObjectTuple.Item1,
-                                dataObjectTuple.Item3, TeamConfiguration);
+                            string surrogateKey = MetadataHandling.GetSurrogateKey(dataObjectTuple.Item1, dataObjectTuple.Item3, TeamConfiguration);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine($"INSERT INTO [{localTableTypeEvaluation}]");
-                            insertStatement.AppendLine(
-                                $"([{localAttributeEvaluation}], [{localAttributeEvaluationShort}],[SCHEMA_NAME], [BUSINESS_KEY], [SURROGATE_KEY])");
-                            insertStatement.AppendLine(
-                                $"VALUES ('{fullyQualifiedName.Key}.{fullyQualifiedName.Value}','{fullyQualifiedName.Value}','{fullyQualifiedName.Key}', '{businessKeyString}', '{surrogateKey}')");
+                            insertStatement.AppendLine($"([{localAttributeEvaluation}], [{localAttributeEvaluationShort}],[SCHEMA_NAME], [BUSINESS_KEY], [SURROGATE_KEY])");
+                            insertStatement.AppendLine($"VALUES ('{fullyQualifiedName.Key}.{fullyQualifiedName.Value}','{fullyQualifiedName.Value}','{fullyQualifiedName.Key}', '{businessKeyString}', '{surrogateKey}')");
 
                             var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -7783,8 +7780,7 @@ namespace TEAM
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
 
             // Informing the user.
-            _alertValidation.SetTextLogging(
-                $"--> Commencing the validation to check if connection settings align with schemas entered in the Data Object mapping grid.\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to check if connection settings align with schemas entered in the Data Object mapping grid.\r\n");
 
             var resultList = new Dictionary<string, string>();
 
@@ -8217,30 +8213,30 @@ namespace TEAM
 
         internal void ValidateAttributeDataObjectsForTableMappings()
         {
-            _alertValidation.SetTextLogging(
-                $"--> Commencing the validation to see if all data item (attribute) mappings exist as data object (table) mapping also (if enabled in the grid).\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to see if all data item (attribute) mappings exist as data object (table) mapping also (if enabled in the grid).\r\n");
             int issueCounter = 0;
 
             var localDataTableTableMappings = (DataTable) _bindingSourceTableMetadata.DataSource;
             var localDataTableAttributeMappings = (DataTable) _bindingSourceAttributeMetadata.DataSource;
 
-            // Create a list of all sources and targets
-            List<string> sourceList = new List<string>();
-            List<string> targetList = new List<string>();
+            // Create a list of all sources and targets for the Data Object mappings
+            List<Tuple<string,bool>> sourceDataObjectListTableMapping = new List<Tuple<string, bool>>();
+            List<Tuple<string, bool>> targetDataObjectListTableMapping = new List<Tuple<string, bool>>();
 
             foreach (DataRow row in localDataTableTableMappings.Rows)
             {
-                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
-                {
-                    if (!sourceList.Contains((string) row[TableMappingMetadataColumns.SourceTable.ToString()]))
-                    {
-                        sourceList.Add((string) row[TableMappingMetadataColumns.SourceTable.ToString()]);
-                    }
+                var sourceDataObjectTuple = new Tuple<string, bool>((string)row[TableMappingMetadataColumns.SourceTable.ToString()], (bool) row[TableMappingMetadataColumns.Enabled.ToString()]);
+                var targetDataObjectTuple = new Tuple<string, bool>((string)row[TableMappingMetadataColumns.TargetTable.ToString()], (bool)row[TableMappingMetadataColumns.Enabled.ToString()]);
 
-                    if (!targetList.Contains((string) row[TableMappingMetadataColumns.TargetTable.ToString()]))
-                    {
-                        targetList.Add((string) row[TableMappingMetadataColumns.TargetTable.ToString()]);
-                    }
+                if (!sourceDataObjectListTableMapping.Contains(sourceDataObjectTuple))
+                {
+
+                    sourceDataObjectListTableMapping.Add(sourceDataObjectTuple);
+                }
+
+                if (!targetDataObjectListTableMapping.Contains(targetDataObjectTuple))
+                {
+                    targetDataObjectListTableMapping.Add(targetDataObjectTuple);
                 }
             }
 
@@ -8249,25 +8245,41 @@ namespace TEAM
                 var localSource = (string) row[AttributeMappingMetadataColumns.SourceTable.ToString()];
                 var localTarget = (string) row[AttributeMappingMetadataColumns.TargetTable.ToString()];
 
-                if (!sourceList.Contains(localSource))
+                // If the value exists, but is disabled just a warning is sufficient.
+                // If the value does not exist for an enabled mapping or at all, then it's an error.
+                
+                if (sourceDataObjectListTableMapping.Contains(new Tuple<string, bool>(localSource, false)))
                 {
-                    _alertValidation.SetTextLogging(
-                        $"     Data Object {(string) row[AttributeMappingMetadataColumns.SourceTable.ToString()]} in the attribute mappings does not seem to exist in the table mappings. Please check if this name is mapped at table level in the grid also.\r\n");
+                    //_alertValidation.SetTextLogging($"     Data Object {localSource} in the attribute mappings exists in the table mappings for an disabled mapping. This can be disregarded.\r\n");
+                }
+                else if (sourceDataObjectListTableMapping.Contains(new Tuple<string, bool>(localSource, true)))
+                {
+                    // No problem, it's found
+                }
+                else 
+                {
+                    _alertValidation.SetTextLogging($"     Data Object {localSource} in the attribute mappings (source) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
                     issueCounter++;
                 }
 
-                if (!targetList.Contains(localTarget))
+                if (targetDataObjectListTableMapping.Contains(new Tuple<string, bool>(localTarget, false)))
                 {
-                    _alertValidation.SetTextLogging(
-                        $"     Data Object {(string) row[AttributeMappingMetadataColumns.TargetTable.ToString()]} in the attribute mappings does not seem to exist in the table mappings. Please check if this name is mapped at table level in the grid also.\r\n");
+                    //_alertValidation.SetTextLogging($"     Data Object {localTarget} in the attribute mappings exists in the table mappings for an disabled mapping. This can be disregarded.\r\n");
+                }
+                else if (targetDataObjectListTableMapping.Contains(new Tuple<string, bool>(localTarget, true)))
+                {
+                    // No problem, it's found
+                }
+                else
+                {
+                    _alertValidation.SetTextLogging($"     Data Object {localTarget} in the attribute mappings (target) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
                     issueCounter++;
                 }
             }
 
             if (issueCounter == 0)
             {
-                _alertValidation.SetTextLogging(
-                    $"     There were no validation issues related to the definition of hard-coded Business Key components.\r\n\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of Data Objects related to defined Data Item Mappings.\r\n\r\n");
             }
 
             MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + issueCounter;
@@ -8373,8 +8385,7 @@ namespace TEAM
             #region Retrieving the Integration Layer tables
 
             // Informing the user.
-            _alertValidation.SetTextLogging(
-                "--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
 
             // Creating a list of tables which are dependent on other tables being present
             var objectList = new List<Tuple<string, string, string>>();
@@ -8383,22 +8394,25 @@ namespace TEAM
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
-                if ((row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                         .StartsWith(TeamConfiguration.LinkTablePrefixValue) ||
-                     row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                         .StartsWith(TeamConfiguration.SatTablePrefixValue) ||
-                     row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                         .StartsWith(TeamConfiguration.LsatTablePrefixValue)))
+                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
                 {
-                    var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString()
-                        .Replace("''''", "'");
-                    if (!objectList.Contains(new Tuple<string, string, string>(
-                        row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(),
-                        row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), businessKey)))
+                    if ((row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
+                             .StartsWith(TeamConfiguration.LinkTablePrefixValue) ||
+                         row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
+                             .StartsWith(TeamConfiguration.SatTablePrefixValue) ||
+                         row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
+                             .StartsWith(TeamConfiguration.LsatTablePrefixValue)))
                     {
-                        objectList.Add(new Tuple<string, string, string>(
+                        var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString()
+                            .Replace("''''", "'");
+                        if (!objectList.Contains(new Tuple<string, string, string>(
                             row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(),
-                            row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), businessKey));
+                            row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), businessKey)))
+                        {
+                            objectList.Add(new Tuple<string, string, string>(
+                                row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(),
+                                row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), businessKey));
+                        }
                     }
                 }
             }
@@ -8442,8 +8456,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging(
-                    "     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
         }
 

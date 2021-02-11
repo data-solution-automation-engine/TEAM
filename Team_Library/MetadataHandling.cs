@@ -59,10 +59,9 @@ namespace TEAM_Library
                 {
                     foreach (string prefixValue in prefixSuffixArray)
                     {
-                        string prefixValueWithUnderscore = prefixValue + '_';
-                        if (newTableName.StartsWith(prefixValueWithUnderscore))
+                        if (newTableName.StartsWith(prefixValue))
                         {
-                            newTableName = newTableName.Replace(prefixValueWithUnderscore, "");
+                            newTableName = newTableName.Replace(prefixValue, "");
                         }
                     }
                 }
@@ -70,10 +69,9 @@ namespace TEAM_Library
                 {
                     foreach (string suffixValue in prefixSuffixArray)
                     {
-                        string suffixValueWithUnderscore = '_'+suffixValue;
-                        if (newTableName.EndsWith(suffixValueWithUnderscore))
+                        if (newTableName.EndsWith(suffixValue))
                         {
-                            newTableName = newTableName.Replace(suffixValueWithUnderscore, "");
+                            newTableName = newTableName.Replace(suffixValue, "");
                         }
                     }
                 }
@@ -82,11 +80,11 @@ namespace TEAM_Library
                 // Define the surrogate key using the table name and key prefix/suffix settings.
                 if (configuration.KeyNamingLocation == "Prefix")
                 {
-                    surrogateKey = keyLocation + '_' + newTableName;
+                    surrogateKey = keyLocation + newTableName;
                 }
                 else
                 {
-                    surrogateKey = newTableName + '_' + keyLocation;
+                    surrogateKey = newTableName + keyLocation;
                 }
             }
             return surrogateKey;
