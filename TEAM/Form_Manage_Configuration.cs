@@ -157,8 +157,6 @@ namespace TEAM
                     comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(metadataKey.ConnectionKey);
                 }
 
-
-
                 Enum.TryParse(configList["EnvironmentMode"], out EnvironmentModes environmentMode);
                 if (environmentMode == EnvironmentModes.PhysicalMode)
                 {
@@ -923,6 +921,7 @@ namespace TEAM
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
 
+                
                 try
                 {
                     LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
@@ -932,21 +931,23 @@ namespace TEAM
                     richTextBoxInformation.AppendText("Errors occurred trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
                 }
 
+
+
                 //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(TeamConfigurationSettings.MetadataConnection, TeamConfigurationSettings.MetadataConnection.ConnectionKey);
 
-                if (TeamConfiguration.MetadataConnection is null)
+                    if (TeamConfiguration.MetadataConnection is null)
                 {
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"No metadata connection is set."));
                 }
                 else
                 {
-
-                    comboBoxMetadataConnection.SelectedIndex =
-                        comboBoxMetadataConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                    comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
                 }
 
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
+                
+  
             }
         }
 
@@ -981,8 +982,7 @@ namespace TEAM
                     if (radioButtonVirtualMode.Checked)
                     {
                         GlobalParameters.EnvironmentMode = EnvironmentModes.VirtualMode;
-                        richTextBoxInformation.AppendText(
-                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}.");
+                        richTextBoxInformation.AppendText($"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}.");
                     }
                 }
             }

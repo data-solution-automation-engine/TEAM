@@ -28,23 +28,23 @@ namespace TEAM
 
             if (FormBase.TeamConfiguration.TableNamingLocation == "Prefix")
             {
-                hubIdentifier = FormBase.TeamConfiguration.HubTablePrefixValue + "_";
-                satIdentifier = FormBase.TeamConfiguration.SatTablePrefixValue + "_";
-                lnkIdentifier = FormBase.TeamConfiguration.LinkTablePrefixValue + "_";
-                lsatIdentifier = FormBase.TeamConfiguration.LsatTablePrefixValue + "_";
-                stgIdentifier = FormBase.TeamConfiguration.StgTablePrefixValue + "_";
-                psaIdentifier = FormBase.TeamConfiguration.PsaTablePrefixValue + "_";
+                hubIdentifier = FormBase.TeamConfiguration.HubTablePrefixValue;
+                satIdentifier = FormBase.TeamConfiguration.SatTablePrefixValue ;
+                lnkIdentifier = FormBase.TeamConfiguration.LinkTablePrefixValue ;
+                lsatIdentifier = FormBase.TeamConfiguration.LsatTablePrefixValue;
+                stgIdentifier = FormBase.TeamConfiguration.StgTablePrefixValue ;
+                psaIdentifier = FormBase.TeamConfiguration.PsaTablePrefixValue ;
                 dimIdentifier = "DIM_";
                 factIdentifier = "FACT_";
             }
             else
             {
-                hubIdentifier = '_' + FormBase.TeamConfiguration.HubTablePrefixValue;
-                satIdentifier = '_' + FormBase.TeamConfiguration.SatTablePrefixValue;
-                lnkIdentifier = '_' + FormBase.TeamConfiguration.LinkTablePrefixValue;
-                lsatIdentifier = '_' + FormBase.TeamConfiguration.LsatTablePrefixValue;
-                stgIdentifier = '_' + FormBase.TeamConfiguration.StgTablePrefixValue;
-                psaIdentifier = '_' + FormBase.TeamConfiguration.PsaTablePrefixValue;
+                hubIdentifier = FormBase.TeamConfiguration.HubTablePrefixValue;
+                satIdentifier =FormBase.TeamConfiguration.SatTablePrefixValue;
+                lnkIdentifier =  FormBase.TeamConfiguration.LinkTablePrefixValue;
+                lsatIdentifier = FormBase.TeamConfiguration.LsatTablePrefixValue;
+                stgIdentifier = FormBase.TeamConfiguration.StgTablePrefixValue;
+                psaIdentifier = FormBase.TeamConfiguration.PsaTablePrefixValue;
                 dimIdentifier = "_DIM";
                 factIdentifier = "_FACT";
             }

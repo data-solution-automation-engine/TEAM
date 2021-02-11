@@ -9,6 +9,7 @@ using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -3086,8 +3087,7 @@ namespace TEAM
                 var localTableEnabledDictionary = GetEnabledForDataObject();
 
                 // Event reporting - informing the user that the activation process has started.
-                LogMetadataEvent(
-                    $"Commencing metadata preparation / activation for version {majorVersion}.{minorVersion} at {activationStartDateTime}.",
+                LogMetadataEvent($"Commencing metadata preparation / activation for version {majorVersion}.{minorVersion} at {activationStartDateTime}.",
                     EventTypes.Information);
 
                 // Event reporting - alerting the user what kind of metadata is prepared.
@@ -4967,55 +4967,53 @@ namespace TEAM
                 subProcess.Reset();
                 subProcess.Start();
                 _alert.SetTextLogging("\r\n");
-                LogMetadataEvent(
-                    $"Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.",
+                LogMetadataEvent($"Commencing preparing the Source to Staging column-to-column mapping metadata based on the manual mappings.",
                     EventTypes.Information);
 
                 // Getting the distinct list of row from the data table
-                selectionRows = inputAttributeMetadata.Select("" +
-                                                              AttributeMappingMetadataColumns.TargetTable.ToString() +
-                                                              " LIKE '%" + stagingPrefix + "%'");
+                selectionRows = inputAttributeMetadata.Select("" + AttributeMappingMetadataColumns.TargetTable + " LIKE '%" + stagingPrefix + "%'");
 
                 if (selectionRows.Length == 0)
                 {
-                    LogMetadataEvent($"No manual column-to-column mappings for Source-to-Staging were detected.",
-                        EventTypes.Information);
+                    LogMetadataEvent($"No manual column-to-column mappings for Source-to-Staging were detected.", EventTypes.Information);
                 }
                 else
                 {
                     // Process the unique Staging Area records
                     foreach (var row in selectionRows)
                     {
-                        if (localTableEnabledDictionary.TryGetValue(
-                            row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString(),
-                            out var enabledValue))
+                        if (localTableEnabledDictionary.TryGetValue(row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString(), out var enabledValue))
                         {
                             // The key isn't in the dictionary.
 
-                            var fromAttribute =
-                                MetadataHandling.QuoteStringValuesForAttributes(
-                                    (string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()]);
-                            var toAttribute =
-                                MetadataHandling.QuoteStringValuesForAttributes(
-                                    (string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()]);
+                            var fromAttribute = MetadataHandling.QuoteStringValuesForAttributes((string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()]);
+                            var toAttribute = MetadataHandling.QuoteStringValuesForAttributes((string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()]);
 
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                LogMetadataEvent(
-                                    $"Processing the mapping from  {row[AttributeMappingMetadataColumns.SourceTable.ToString()]} - {fromAttribute} to {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} - {toAttribute}.\r\n",
-                                    EventTypes.Information);
+                                var localSourceTable = row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString();
+                                var localTargetTable = row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString();
+
+                                LogMetadataEvent($"Processing the mapping from  {row[AttributeMappingMetadataColumns.SourceTable.ToString()]} - {fromAttribute} to {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} - {toAttribute}.", EventTypes.Information);
+
+                                // Get the corresponding Data Object.
+                                var dataObjectRow = inputTableMetadata.Select($"[{TableMappingMetadataColumns.SourceTable}] = '{localSourceTable}' AND [{TableMappingMetadataColumns.TargetTable}] = '{localTargetTable}'").FirstOrDefault();
+
+                                var sourceConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString());
+                                var targetConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString());
+
+                                var sourceDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localSourceTable, sourceConnection).FirstOrDefault();
+                                var targetDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localTargetTable, targetConnection).FirstOrDefault();
+
+
 
                                 var insertStatement = new StringBuilder();
                                 insertStatement.AppendLine("INSERT INTO [MD_SOURCE_STAGING_ATTRIBUTE_XREF]");
-                                insertStatement.AppendLine(
-                                    "([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
-                                insertStatement.AppendLine("VALUES (" +
-                                                           "'" + row[
-                                                               AttributeMappingMetadataColumns.SourceTable.ToString()] +
-                                                           "'," +
-                                                           "'" + row[
-                                                               AttributeMappingMetadataColumns.TargetTable.ToString()] +
-                                                           "', " +
+                                insertStatement.AppendLine("([SOURCE_NAME], [STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                                insertStatement.AppendLine("VALUES " +
+                                                           "(" + 
+                                                           $"'{sourceDataObjectFullyQualified.Key}.{sourceDataObjectFullyQualified.Value}'," +
+                                                           $"'{targetDataObjectFullyQualified.Key}.{targetDataObjectFullyQualified.Value}'," +
                                                            "'" + fromAttribute + "', " +
                                                            "'" + toAttribute + "', " +
                                                            "'Manual mapping'" +
@@ -5038,9 +5036,8 @@ namespace TEAM
                         }
                         else
                         {
-                            LogMetadataEvent(
-                                $"The enabled / disabled state for {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} could not be asserted.",
-                                EventTypes.Error);
+
+                            LogMetadataEvent($"The enabled / disabled state for {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} could not be asserted.", EventTypes.Error);
                         }
                     }
                 }
@@ -5201,20 +5198,14 @@ namespace TEAM
                 subProcess.Reset();
                 subProcess.Start();
                 _alert.SetTextLogging("\r\n");
-                LogMetadataEvent(
-                    "Commencing preparing the Source to Persistent Staging column-to-column mapping metadata based on the manual mappings.",
-                    EventTypes.Information);
+                LogMetadataEvent("Commencing preparing the Source to Persistent Staging column-to-column mapping metadata based on the manual mappings.", EventTypes.Information);
 
                 // Getting the distinct list of row from the data table
-                selectionRows = inputAttributeMetadata.Select("" +
-                                                              AttributeMappingMetadataColumns.TargetTable.ToString() +
-                                                              " LIKE '%" + psaPrefix + "%'");
+                selectionRows = inputAttributeMetadata.Select("" + AttributeMappingMetadataColumns.TargetTable + " LIKE '%" + psaPrefix + "%'");
 
                 if (selectionRows.Length == 0)
                 {
-                    LogMetadataEvent(
-                        "No manual column-to-column mappings for Source to Persistent Staging were detected.",
-                        EventTypes.Information);
+                    LogMetadataEvent("No manual column-to-column mappings for Source to Persistent Staging were detected.", EventTypes.Information);
                 }
                 else
                 {
@@ -5222,43 +5213,41 @@ namespace TEAM
                     foreach (var row in selectionRows)
                     {
                         // Only process rows whose parent is enabled
-                        if (localTableEnabledDictionary.TryGetValue(
-                            row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString(),
-                            out var enabledValue) == true)
+                        if (localTableEnabledDictionary.TryGetValue(row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString(), out var enabledValue) == true)
                         {
-
 
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                LogMetadataEvent("Processing the mapping from " +
-                                                 row[AttributeMappingMetadataColumns.SourceTable.ToString()] + " - " +
-                                                 (string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()] +
-                                                 " to " +
-                                                 row[AttributeMappingMetadataColumns.TargetTable.ToString()] + " - " +
-                                                 (string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()] +
-                                                 ".", EventTypes.Information);
+                                var localSourceTable = row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString();
+                                var localTargetTable = row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString();
+
+                                LogMetadataEvent($"Processing the mapping from {row[AttributeMappingMetadataColumns.SourceTable.ToString()]} - {(string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()]} to {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} - {(string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()]}.", EventTypes.Information);
 
                                 //var localTableName = MetadataHandling.GetNonQualifiedTableName(row[TableMetadataColumns.TargetTable.ToString()].ToString());
 
+                                // selectionRows = inputTableMetadata.Select("" + AttributeMappingMetadataColumns.TargetTable + " LIKE '%" + psaPrefix + "%'");
+                                
+                                // Get the corresponding Data Object.
+                                var dataObjectRow = inputTableMetadata.Select($"[{TableMappingMetadataColumns.SourceTable}] = '{localSourceTable}' AND [{TableMappingMetadataColumns.TargetTable}] = '{localTargetTable}'").FirstOrDefault();
+
+                                var sourceConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString());
+                                var targetConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString());
+
+                                var sourceDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localSourceTable, sourceConnection).FirstOrDefault();
+                                var targetDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localTargetTable, targetConnection).FirstOrDefault();
+
+
                                 var insertStatement = new StringBuilder();
                                 insertStatement.AppendLine("INSERT INTO [MD_SOURCE_PERSISTENT_STAGING_ATTRIBUTE_XREF]");
-                                insertStatement.AppendLine(
-                                    "([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
-                                insertStatement.AppendLine("VALUES (" +
-                                                           "'" + row[
-                                                               AttributeMappingMetadataColumns.SourceTable.ToString()] +
-                                                           "', " +
-                                                           "'" + row[
-                                                               AttributeMappingMetadataColumns.TargetTable.ToString()] +
-                                                           "', " +
-                                                           "'" + (string) row[
-                                                               AttributeMappingMetadataColumns.SourceColumn
-                                                                   .ToString()] + "', " +
-                                                           "'" + (string) row[
-                                                               AttributeMappingMetadataColumns.TargetColumn
-                                                                   .ToString()] + "', " +
-                                                           "'Manual mapping'" +
-                                                           ")");
+                                insertStatement.AppendLine("([SOURCE_NAME], [PERSISTENT_STAGING_NAME], [ATTRIBUTE_NAME_FROM], [ATTRIBUTE_NAME_TO], [MAPPING_TYPE])");
+                                insertStatement.AppendLine($"VALUES " +
+                                                           $"(" +
+                                                           $" '{sourceDataObjectFullyQualified.Key}.{sourceDataObjectFullyQualified.Value}'," +
+                                                           $" '{targetDataObjectFullyQualified.Key}.{targetDataObjectFullyQualified.Value}'," +
+                                                           $" '{row[AttributeMappingMetadataColumns.SourceColumn.ToString()]}'," +
+                                                           $" '{row[AttributeMappingMetadataColumns.TargetColumn.ToString()]}', " +
+                                                           $" 'Manual mapping'" +
+                                                           $")");
 
                                 var command = new SqlCommand(insertStatement.ToString(), connection);
 
@@ -5277,9 +5266,9 @@ namespace TEAM
                         }
                         else
                         {
-                            LogMetadataEvent(
-                                $"The enabled / disabled state for {row["TARGET_TABLE"]} could not be asserted.",
-                                EventTypes.Error);
+                            var test = localTableEnabledDictionary;
+                            var test2 = row[AttributeMappingMetadataColumns.TargetTable.ToString()];
+                            LogMetadataEvent($"The enabled / disabled state for {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} could not be asserted.", EventTypes.Error);
                         }
                     }
                 }
@@ -8028,8 +8017,7 @@ namespace TEAM
             {
                 if (row.IsNewRow == false)
                 {
-                    string targetDataObject =
-                        row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
+                    string targetDataObject = row.Cells[TableMappingMetadataColumns.TargetTable.ToString()].Value.ToString();
                     bool rowEnabled = (bool) row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value;
 
                     if (rowEnabled)
@@ -10067,12 +10055,12 @@ namespace TEAM
 
         private void AutoMapDataItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var dataTableAttributeMappingChanges =
-                ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
+            tabControlDataMappings.SelectedTab = tabPageDataItemMapping;
+            
+            var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
             if (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
             {
-                string localMessage =
-                    "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the automap.";
+                string localMessage = "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the automap.";
                 MessageBox.Show(localMessage);
                 richTextBoxInformation.AppendText(localMessage);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
@@ -10082,11 +10070,8 @@ namespace TEAM
                 // Get a stable version of the Data Objects from the grid.
                 DataTable localDataObjectDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
 
-
                 //dataTableChanges.AcceptChanges();
                 ((DataTable) _bindingSourceAttributeMetadata.DataSource).AcceptChanges();
-
-
 
                 // Iterate across all Data Object Mappings, to see if there are corresponding Data Item Mappings.
                 foreach (DataRow dataObjectRow in localDataObjectDataTable.Rows)
@@ -10095,29 +10080,20 @@ namespace TEAM
                     var localVersionId = dataObjectRow[TableMappingMetadataColumns.VersionId.ToString()].ToString();
 
                     // Source Data Object details
-                    var sourceDataObjectName =
-                        dataObjectRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
-                    var sourceConnectionId =
-                        dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var sourceDataObjectName = dataObjectRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                    var sourceConnectionId = dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                     TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                     var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling
                         .GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
 
                     // Get the source details from the database
-                    string tableFilterObjectsSource =
-                        $"OBJECT_ID(N'[{sourceConnection.DatabaseServer.DatabaseName}].{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}')";
+                    string tableFilterObjectsSource = $"OBJECT_ID(N'[{sourceConnection.DatabaseServer.DatabaseName}].{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}')";
 
                     var physicalModelInstantiationSource = new AttributeSelection();
-                    var localSourceSqlConnection = new SqlConnection
-                        {ConnectionString = sourceConnection.CreateSqlServerConnectionString(false)};
-                    var localSourceQuery = physicalModelInstantiationSource
-                        .CreatePhysicalModelSet(sourceConnection.DatabaseServer.DatabaseName, tableFilterObjectsSource)
-                        .ToString();
+                    var localSourceSqlConnection = new SqlConnection {ConnectionString = sourceConnection.CreateSqlServerConnectionString(false)};
+                    var localSourceQuery = physicalModelInstantiationSource.CreatePhysicalModelSet(sourceConnection.DatabaseServer.DatabaseName, tableFilterObjectsSource).ToString();
 
-                    DataTable localSourceDatabaseDataTable =
-                        Utility.GetDataTable(ref localSourceSqlConnection, localSourceQuery);
-
-
+                    DataTable localSourceDatabaseDataTable = Utility.GetDataTable(ref localSourceSqlConnection, localSourceQuery);
 
 
                     // Target Data Object details
@@ -10140,10 +10116,7 @@ namespace TEAM
                         .CreatePhysicalModelSet(targetConnection.DatabaseServer.DatabaseName, tableFilterObjectsTarget)
                         .ToString();
 
-                    DataTable localTargetDatabaseDataTable =
-                        Utility.GetDataTable(ref localTargetSqlConnection, localTargetQuery);
-
-
+                    DataTable localTargetDatabaseDataTable = Utility.GetDataTable(ref localTargetSqlConnection, localTargetQuery);
 
 
                     List<TeamDataItemMappingRow> localDataItemMappings = new List<TeamDataItemMappingRow>();
