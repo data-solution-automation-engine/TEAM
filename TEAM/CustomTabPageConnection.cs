@@ -573,7 +573,7 @@ namespace TEAM
                         $"The connection {_localConnection.ConnectionKey} was removed from {_connectionFileName}.\r\n");
 
                     // Remove the connection from the global dictionary
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Remove(_localConnection.ConnectionInternalId);
+                    FormBase.TeamConfiguration.ConnectionDictionary.Remove(_localConnection.ConnectionInternalId);
                 }
 
                 // Save the updated file to disk.
@@ -599,13 +599,13 @@ namespace TEAM
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.TeamConfigurationSettings.ConnectionDictionary.ContainsKey(_localConnection.ConnectionInternalId))
+                if (FormBase.TeamConfiguration.ConnectionDictionary.ContainsKey(_localConnection.ConnectionInternalId))
                 {
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary[_localConnection.ConnectionInternalId] = _localConnection;
+                    FormBase.TeamConfiguration.ConnectionDictionary[_localConnection.ConnectionInternalId] = _localConnection;
                 }
                 else
                 {
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Add(_localConnection.ConnectionInternalId, _localConnection);
+                    FormBase.TeamConfiguration.ConnectionDictionary.Add(_localConnection.ConnectionInternalId, _localConnection);
                 }
 
                 // Update the connection on disk

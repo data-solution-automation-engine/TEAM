@@ -160,7 +160,7 @@ namespace TEAM
                 List<Classification> localClassifications = new List<Classification>();
                 Classification localClassification = new Classification();
                 
-                var tableType = MetadataHandling.GetDataObjectType(dataObject.name, "", FormBase.TeamConfigurationSettings);
+                var tableType = MetadataHandling.GetDataObjectType(dataObject.name, "", FormBase.TeamConfiguration);
                 localClassification.classification = tableType.ToString();
 
                 localClassifications.Add(localClassification);

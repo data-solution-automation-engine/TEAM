@@ -91,7 +91,7 @@ namespace TEAM
             sourceConnection.HeaderText = "Source Connection";
             sourceConnection.DataPropertyName = TableMappingMetadataColumns.SourceConnection.ToString();
             sourceConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfigurationSettings.ConnectionDictionary);
+            sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             sourceConnection.DisplayMember = "ConnectionKey";
             sourceConnection.ValueMember = "ConnectionId";
             sourceConnection.ValueType = typeof(string);
@@ -108,7 +108,7 @@ namespace TEAM
             targetConnection.HeaderText = "Target Connection";
             targetConnection.DataPropertyName = TableMappingMetadataColumns.TargetConnection.ToString();
             targetConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-            targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfigurationSettings.ConnectionDictionary);
+            targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             targetConnection.DisplayMember = "ConnectionKey";
             targetConnection.ValueMember = "ConnectionId";
             targetConnection.ValueType = typeof(string);
@@ -143,8 +143,8 @@ namespace TEAM
         {
             var counter = 0;
 
-            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.PresentationLayerLabels);
-            var transformationLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfigurationSettings.TransformationLabels);
+            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfiguration.PresentationLayerLabels);
+            var transformationLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfiguration.TransformationLabels);
 
             foreach (DataGridViewRow row in Rows)
             {
@@ -169,11 +169,11 @@ namespace TEAM
                     {
                         // Hub
                         if (
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration
                                  .HubTablePrefixValue)) ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration
                                  .HubTablePrefixValue))
                         )
                         {
@@ -185,11 +185,11 @@ namespace TEAM
                         }
                         // Link-Sat
                         else if (
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration
                                  .LsatTablePrefixValue)) ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration
                                  .LsatTablePrefixValue))
                         )
                         {
@@ -197,11 +197,11 @@ namespace TEAM
                         }
                         // Context
                         else if (
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration
                                  .SatTablePrefixValue)) ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration
                                  .SatTablePrefixValue))
                         )
                         {
@@ -212,11 +212,11 @@ namespace TEAM
                         }
                         // Natural Business Relationship
                         else if (
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration
                                  .LinkTablePrefixValue)) ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration
                                  .LinkTablePrefixValue))
                         )
                         {
@@ -228,11 +228,11 @@ namespace TEAM
                         }
                         // PSA
                         else if (
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration
                                  .PsaTablePrefixValue)) ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration
                                  .PsaTablePrefixValue))
                         )
                         {
@@ -244,11 +244,11 @@ namespace TEAM
                         }
                         // Staging
                         else if (
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
+                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration
                                  .StgTablePrefixValue)) ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfigurationSettings
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
+                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration
                                  .StgTablePrefixValue))
                         )
                         {
@@ -261,10 +261,10 @@ namespace TEAM
                         // Presentation Layer
                         else if (
 
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
                              presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s)))
                             ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
                              presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s)))
                         )
                         {
@@ -277,10 +277,10 @@ namespace TEAM
                         // Derived objects / transformations
                         else if (
 
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
                              transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s)))
                             ||
-                            (FormBase.TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
                              transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s)))
                         )
                         {

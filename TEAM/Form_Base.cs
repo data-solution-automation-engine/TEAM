@@ -21,7 +21,7 @@ namespace TEAM
         /// <summary>
         /// TEAM configurations (e.g. conventions, prefixes, attribute names).
         /// </summary>
-        public static TeamConfiguration TeamConfigurationSettings { get; set; } = new TeamConfiguration();
+        public static TeamConfiguration TeamConfiguration { get; set; } = new TeamConfiguration();
 
         /// <summary>
         /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
@@ -30,7 +30,7 @@ namespace TEAM
         /// <returns></returns>
         public static TeamConnection GetTeamConnectionByConnectionId(string connectionId)
         {
-            if (!TeamConfigurationSettings.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
+            if (!TeamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
             {
                 // The key isn't in the dictionary.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));

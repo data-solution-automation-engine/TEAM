@@ -170,7 +170,7 @@ namespace TEAM
             checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
 
             // Load the checkboxes for the reverse-engineering tab
-            foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
+            foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
                 checkedListBoxReverseEngineeringAreas.Items.Add(
                     new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
@@ -223,7 +223,7 @@ namespace TEAM
                 if (e.Value != null && sourceDataObjectName != null && targetDataObjectName != null)
                 {
                     loadVector = MetadataHandling.GetDataObjectMappingLoadVector(sourceDataObjectFullyQualifiedName,
-                        targetDataObjectFullyQualifiedName, TeamConfigurationSettings);
+                        targetDataObjectFullyQualifiedName, TeamConfiguration);
                 }
 
                 // Assert table type for Source column, retrieve the specific cell value for the hover-over.
@@ -231,7 +231,7 @@ namespace TEAM
                     .Index && e.Value != null)
                 {
                     cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), "", TeamConfigurationSettings);
+                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), "", TeamConfiguration);
                 }
                 // Assert table type for the Target column, , retrieve the specific cell value for the hover-over.
                 else if ((e.ColumnIndex == dataGridViewTableMetadata
@@ -241,7 +241,7 @@ namespace TEAM
                     tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(),
                         selectedRow.DataGridView.Rows[e.RowIndex]
                             .Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString(),
-                        TeamConfigurationSettings);
+                        TeamConfiguration);
                 }
                 else
                 {
@@ -368,7 +368,7 @@ namespace TEAM
 
             // Handle unknown combobox values, by setting them to empty.
             var localConnectionKeyList =
-                LocalTeamConnection.TeamConnectionKeyList(TeamConfigurationSettings.ConnectionDictionary);
+                LocalTeamConnection.TeamConnectionKeyList(TeamConfiguration.ConnectionDictionary);
             List<string> userFeedbackList = new List<string>();
             foreach (DataRow row in TableMapping.DataTable.Rows)
             {
@@ -2321,11 +2321,11 @@ namespace TEAM
 
                 var fullyQualifiedSourceName = MetadataHandling
                     .GetFullyQualifiedDataObjectName(sourceTable, connectionInternalIdTuple.Item3).FirstOrDefault();
-                var sourceType = MetadataHandling.GetDataObjectType(sourceTable, "", TeamConfigurationSettings);
+                var sourceType = MetadataHandling.GetDataObjectType(sourceTable, "", TeamConfiguration);
 
                 var fullyQualifiedTargetName = MetadataHandling
                     .GetFullyQualifiedDataObjectName(targetTable, connectionInternalIdTuple.Item5).FirstOrDefault();
-                var targetType = MetadataHandling.GetDataObjectType(targetTable, "", TeamConfigurationSettings);
+                var targetType = MetadataHandling.GetDataObjectType(targetTable, "", TeamConfiguration);
 
                 createStatement.AppendLine("INSERT[dbo].[TMP_MD_ATTRIBUTE_MAPPING] (" +
                                            "[VERSION_ID], " +
@@ -2434,14 +2434,14 @@ namespace TEAM
                 var sourceConnection = GetTeamConnectionByConnectionId(localInternalSourceConnectionId);
                 var fullyQualifiedSourceName = MetadataHandling
                     .GetFullyQualifiedDataObjectName(sourceTable, sourceConnection).FirstOrDefault();
-                var sourceType = MetadataHandling.GetDataObjectType(sourceTable, "", TeamConfigurationSettings);
+                var sourceType = MetadataHandling.GetDataObjectType(sourceTable, "", TeamConfiguration);
 
                 string localInternalTargetConnectionId =
                     row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                 var targetConnection = GetTeamConnectionByConnectionId(localInternalTargetConnectionId);
                 var fullyQualifiedTargetName = MetadataHandling
                     .GetFullyQualifiedDataObjectName(targetTable, targetConnection).FirstOrDefault();
-                var targetType = MetadataHandling.GetDataObjectType(targetTable, "", TeamConfigurationSettings);
+                var targetType = MetadataHandling.GetDataObjectType(targetTable, "", TeamConfiguration);
 
                 createStatement.AppendLine("INSERT [dbo].[TMP_MD_TABLE_MAPPING] (" +
                                            "[VERSION_ID], " +
@@ -2814,7 +2814,7 @@ namespace TEAM
                 var conn = new SqlConnection
                 {
                     ConnectionString =
-                        TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false)
+                        TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
                 };
 
                 richTextBoxInformation.Clear();
@@ -2831,7 +2831,7 @@ namespace TEAM
 
                 // Move data from the grids into temp tables
                 CreateTemporaryWorkerTables(
-                    TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
+                    TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
 
                 if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                 {
@@ -3005,35 +3005,35 @@ namespace TEAM
 
             var connOmd = new SqlConnection
             {
-                ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false)
+                ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
             };
             var metaDataConnection =
-                TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false);
+                TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false);
 
 
             var effectiveDateTimeAttribute =
-                TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
-                    ? TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute
-                    : TeamConfigurationSettings.LoadDateTimeAttribute;
-            var currentRecordAttribute = TeamConfigurationSettings.CurrentRowAttribute;
-            var eventDateTimeAttribute = TeamConfigurationSettings.EventDateTimeAttribute;
-            var recordSource = TeamConfigurationSettings.RecordSourceAttribute;
-            var alternativeRecordSource = TeamConfigurationSettings.AlternativeRecordSourceAttribute;
-            var sourceRowId = TeamConfigurationSettings.RowIdAttribute;
-            var recordChecksum = TeamConfigurationSettings.RecordChecksumAttribute;
-            var changeDataCaptureIndicator = TeamConfigurationSettings.ChangeDataCaptureAttribute;
-            var hubAlternativeLdts = TeamConfigurationSettings.AlternativeLoadDateTimeAttribute;
-            var etlProcessId = TeamConfigurationSettings.EtlProcessAttribute;
-            var loadDateTimeStamp = TeamConfigurationSettings.LoadDateTimeAttribute;
+                TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
+                    ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
+                    : TeamConfiguration.LoadDateTimeAttribute;
+            var currentRecordAttribute = TeamConfiguration.CurrentRowAttribute;
+            var eventDateTimeAttribute = TeamConfiguration.EventDateTimeAttribute;
+            var recordSource = TeamConfiguration.RecordSourceAttribute;
+            var alternativeRecordSource = TeamConfiguration.AlternativeRecordSourceAttribute;
+            var sourceRowId = TeamConfiguration.RowIdAttribute;
+            var recordChecksum = TeamConfiguration.RecordChecksumAttribute;
+            var changeDataCaptureIndicator = TeamConfiguration.ChangeDataCaptureAttribute;
+            var hubAlternativeLdts = TeamConfiguration.AlternativeLoadDateTimeAttribute;
+            var etlProcessId = TeamConfiguration.EtlProcessAttribute;
+            var loadDateTimeStamp = TeamConfiguration.LoadDateTimeAttribute;
 
-            var stagingPrefix = TeamConfigurationSettings.StgTablePrefixValue;
-            var psaPrefix = TeamConfigurationSettings.PsaTablePrefixValue;
-            var hubTablePrefix = TeamConfigurationSettings.HubTablePrefixValue;
-            var lnkTablePrefix = TeamConfigurationSettings.LinkTablePrefixValue;
-            var satTablePrefix = TeamConfigurationSettings.SatTablePrefixValue;
-            var lsatTablePrefix = TeamConfigurationSettings.LsatTablePrefixValue;
+            var stagingPrefix = TeamConfiguration.StgTablePrefixValue;
+            var psaPrefix = TeamConfiguration.PsaTablePrefixValue;
+            var hubTablePrefix = TeamConfiguration.HubTablePrefixValue;
+            var lnkTablePrefix = TeamConfiguration.LinkTablePrefixValue;
+            var satTablePrefix = TeamConfiguration.SatTablePrefixValue;
+            var lsatTablePrefix = TeamConfiguration.LsatTablePrefixValue;
 
-            if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
+            if (TeamConfiguration.TableNamingLocation == "Prefix")
             {
                 stagingPrefix = stagingPrefix + "%";
                 psaPrefix = psaPrefix + "%";
@@ -3052,9 +3052,9 @@ namespace TEAM
                 lsatTablePrefix = "%" + lsatTablePrefix;
             }
 
-            var dwhKeyIdentifier = TeamConfigurationSettings.DwhKeyIdentifier;
+            var dwhKeyIdentifier = TeamConfiguration.DwhKeyIdentifier;
 
-            if (TeamConfigurationSettings.KeyNamingLocation == "Prefix")
+            if (TeamConfiguration.KeyNamingLocation == "Prefix")
             {
                 dwhKeyIdentifier = dwhKeyIdentifier + '%';
             }
@@ -3253,7 +3253,7 @@ namespace TEAM
                 {
                     var physicalModelInstantiation = new AttributeSelection();
 
-                    foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
+                    foreach (var connection in TeamConfiguration.ConnectionDictionary)
                     {
                         if (connection.Value.ConnectionKey != "Metadata")
                         {
@@ -3662,20 +3662,20 @@ namespace TEAM
                                     if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                                     {
                                         businessKey = MetadataHandling.GetHubTargetBusinessKeyListPhysical(
-                                            dataObjectTuple.Item1, dataObjectTuple.Item3, TeamConfigurationSettings);
+                                            dataObjectTuple.Item1, dataObjectTuple.Item3, TeamConfiguration);
                                     }
                                     else
                                     {
                                         businessKey =
                                             MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1,
-                                                dataObjectTuple.Item3, versionId, TeamConfigurationSettings);
+                                                dataObjectTuple.Item3, versionId, TeamConfiguration);
                                     }
                                 }
                             }
 
                             string businessKeyString = string.Join(",", businessKey);
                             string surrogateKey = MetadataHandling.GetSurrogateKey(dataObjectTuple.Item1,
-                                dataObjectTuple.Item3, TeamConfigurationSettings);
+                                dataObjectTuple.Item3, TeamConfiguration);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine($"INSERT INTO [{localTableTypeEvaluation}]");
@@ -3771,7 +3771,7 @@ namespace TEAM
 
                             var loadVector =
                                 MetadataHandling.GetDataObjectMappingLoadVector(row.Item1, row.Item2,
-                                    TeamConfigurationSettings);
+                                    TeamConfiguration);
 
                             var insertStatement = new StringBuilder();
                             insertStatement.AppendLine($"INSERT INTO [{localTableTypeEvaluation}]");
@@ -4068,7 +4068,7 @@ namespace TEAM
 
                         var loadVector = MetadataHandling.GetDataObjectMappingLoadVector(
                             tableName["SOURCE_NAME"].ToString(),
-                            tableName["SATELLITE_NAME"].ToString(), TeamConfigurationSettings);
+                            tableName["SATELLITE_NAME"].ToString(), TeamConfiguration);
 
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_SATELLITE_XREF]");
                         insertStatement.AppendLine(
@@ -4167,7 +4167,7 @@ namespace TEAM
 
                         var loadVector = MetadataHandling.GetDataObjectMappingLoadVector(
                             tableName["SOURCE_NAME"].ToString(),
-                            tableName["HUB_NAME"].ToString(), TeamConfigurationSettings);
+                            tableName["HUB_NAME"].ToString(), TeamConfiguration);
 
                         var insertStatement = new StringBuilder();
                         insertStatement.AppendLine("INSERT INTO [MD_SOURCE_HUB_XREF]");
@@ -4673,15 +4673,15 @@ namespace TEAM
                     virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
                     virtualisationSnippet.AppendLine(" AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
                     virtualisationSnippet.AppendLine(" AND COLUMN_NAME NOT IN ('" +
-                                                     TeamConfigurationSettings.RecordSourceAttribute + "','" +
-                                                     TeamConfigurationSettings.AlternativeRecordSourceAttribute +
+                                                     TeamConfiguration.RecordSourceAttribute + "','" +
+                                                     TeamConfiguration.AlternativeRecordSourceAttribute +
                                                      "','" +
-                                                     TeamConfigurationSettings.AlternativeLoadDateTimeAttribute +
+                                                     TeamConfiguration.AlternativeLoadDateTimeAttribute +
                                                      "','" +
-                                                     TeamConfigurationSettings
+                                                     TeamConfiguration
                                                          .AlternativeSatelliteLoadDateTimeAttribute + "','" +
-                                                     TeamConfigurationSettings.EtlProcessAttribute + "','" +
-                                                     TeamConfigurationSettings.LoadDateTimeAttribute +
+                                                     TeamConfiguration.EtlProcessAttribute + "','" +
+                                                     TeamConfiguration.LoadDateTimeAttribute +
                                                      "')");
                 }
                 else
@@ -4696,15 +4696,15 @@ namespace TEAM
                     virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
                     virtualisationSnippet.AppendLine(" AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
                     virtualisationSnippet.AppendLine(" AND COLUMN_NAME NOT IN ('" +
-                                                     TeamConfigurationSettings.RecordSourceAttribute + "','" +
-                                                     TeamConfigurationSettings.AlternativeRecordSourceAttribute +
+                                                     TeamConfiguration.RecordSourceAttribute + "','" +
+                                                     TeamConfiguration.AlternativeRecordSourceAttribute +
                                                      "','" +
-                                                     TeamConfigurationSettings.AlternativeLoadDateTimeAttribute +
+                                                     TeamConfiguration.AlternativeLoadDateTimeAttribute +
                                                      "','" +
-                                                     TeamConfigurationSettings
+                                                     TeamConfiguration
                                                          .AlternativeSatelliteLoadDateTimeAttribute + "','" +
-                                                     TeamConfigurationSettings.EtlProcessAttribute + "','" +
-                                                     TeamConfigurationSettings.LoadDateTimeAttribute +
+                                                     TeamConfiguration.EtlProcessAttribute + "','" +
+                                                     TeamConfiguration.LoadDateTimeAttribute +
                                                      "')");
                 }
 
@@ -4854,7 +4854,7 @@ namespace TEAM
 
                             var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key,
                                 fullyQualifiedName.Value, versionId,
-                                TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
+                                TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
                             string businessKey = string.Join(",", businessKeyList);
 
                             var updateStatement = new StringBuilder();
@@ -4926,7 +4926,7 @@ namespace TEAM
 
                         var loadVector = MetadataHandling.GetDataObjectMappingLoadVector(
                             tableName["SOURCE_NAME"].ToString(),
-                            tableName["LINK_NAME"].ToString(), TeamConfigurationSettings);
+                            tableName["LINK_NAME"].ToString(), TeamConfiguration);
 
 
                         var insertStatement = new StringBuilder();
@@ -6199,7 +6199,7 @@ namespace TEAM
 
                 // Remove the temporary tables that have been used
                 DropTemporaryWorkerTable(
-                    TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
+                    TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
 
                 // Report completion
                 totalProcess.Stop();
@@ -6235,11 +6235,11 @@ namespace TEAM
 
             if // Evaluate STG
             (
-                (TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                 localTableNonQualified.StartsWith(TeamConfigurationSettings.StgTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Prefix" &&
+                 localTableNonQualified.StartsWith(TeamConfiguration.StgTablePrefixValue))
                 ||
-                (TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                 localTableNonQualified.EndsWith(TeamConfigurationSettings.StgTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Suffix" &&
+                 localTableNonQualified.EndsWith(TeamConfiguration.StgTablePrefixValue))
             )
             {
                 var localDataObjectListEntry =
@@ -6266,11 +6266,11 @@ namespace TEAM
             }
             else if // Evaluate PSA
             (
-                (TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                 localTableNonQualified.StartsWith(TeamConfigurationSettings.PsaTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Prefix" &&
+                 localTableNonQualified.StartsWith(TeamConfiguration.PsaTablePrefixValue))
                 ||
-                (TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                 localTableNonQualified.EndsWith(TeamConfigurationSettings.PsaTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Suffix" &&
+                 localTableNonQualified.EndsWith(TeamConfiguration.PsaTablePrefixValue))
             )
             {
                 var localDataObjectListEntry = new Tuple<string, MetadataHandling.TableTypes, TeamConnection>(
@@ -6295,11 +6295,11 @@ namespace TEAM
                 }
             }
             else if ( // Evaluate Core Business Concepts
-                (TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                 localTableNonQualified.StartsWith(TeamConfigurationSettings.HubTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Prefix" &&
+                 localTableNonQualified.StartsWith(TeamConfiguration.HubTablePrefixValue))
                 ||
-                (TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                 localTableNonQualified.EndsWith(TeamConfigurationSettings.HubTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Suffix" &&
+                 localTableNonQualified.EndsWith(TeamConfiguration.HubTablePrefixValue))
             )
             {
                 var localDataObjectListEntry = new Tuple<string, MetadataHandling.TableTypes, TeamConnection>(
@@ -6324,11 +6324,11 @@ namespace TEAM
                 }
             }
             else if ( // Evaluate Context objects
-                (TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                 localTableNonQualified.StartsWith(TeamConfigurationSettings.SatTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Prefix" &&
+                 localTableNonQualified.StartsWith(TeamConfiguration.SatTablePrefixValue))
                 ||
-                (TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                 localTableNonQualified.EndsWith(TeamConfigurationSettings.SatTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Suffix" &&
+                 localTableNonQualified.EndsWith(TeamConfiguration.SatTablePrefixValue))
             )
             {
                 var localDataObjectListEntry =
@@ -6354,11 +6354,11 @@ namespace TEAM
                 }
             }
             else if ( // Evaluate Relationship objects
-                (TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                 localTableNonQualified.StartsWith(TeamConfigurationSettings.LinkTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Prefix" &&
+                 localTableNonQualified.StartsWith(TeamConfiguration.LinkTablePrefixValue))
                 ||
-                (TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                 localTableNonQualified.EndsWith(TeamConfigurationSettings.LinkTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Suffix" &&
+                 localTableNonQualified.EndsWith(TeamConfiguration.LinkTablePrefixValue))
             )
             {
                 var localDataObjectListEntry = new Tuple<string, MetadataHandling.TableTypes, TeamConnection>(
@@ -6384,11 +6384,11 @@ namespace TEAM
                 }
             }
             else if ( // Evaluate Relationship Context objects
-                (TeamConfigurationSettings.TableNamingLocation == "Prefix" &&
-                 localTableNonQualified.StartsWith(TeamConfigurationSettings.LsatTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Prefix" &&
+                 localTableNonQualified.StartsWith(TeamConfiguration.LsatTablePrefixValue))
                 ||
-                (TeamConfigurationSettings.TableNamingLocation == "Suffix" &&
-                 localTableNonQualified.EndsWith(TeamConfigurationSettings.LsatTablePrefixValue))
+                (TeamConfiguration.TableNamingLocation == "Suffix" &&
+                 localTableNonQualified.EndsWith(TeamConfiguration.LsatTablePrefixValue))
             )
             {
                 var localDataObjectListEntry = new Tuple<string, MetadataHandling.TableTypes, TeamConnection>(
@@ -6735,7 +6735,7 @@ namespace TEAM
 
             var connOmd = new SqlConnection
             {
-                ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false)
+                ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
             };
 
             var sqlStatementForActivationMetadata = new StringBuilder();
@@ -6793,7 +6793,7 @@ namespace TEAM
                 {
                     var connOmd = new SqlConnection
                     {
-                        ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false)
+                        ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
                     };
 
                     //Write the DGML file
@@ -6840,26 +6840,26 @@ namespace TEAM
 
                     foreach (string node in nodeList)
                     {
-                        if (node.Contains(TeamConfigurationSettings.StgTablePrefixValue))
+                        if (node.Contains(TeamConfiguration.StgTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Landing Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
                             edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
-                        else if (node.Contains(TeamConfigurationSettings.PsaTablePrefixValue))
+                        else if (node.Contains(TeamConfiguration.PsaTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Persistent Staging Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
                             edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
                         }
-                        else if (node.Contains(TeamConfigurationSettings.HubTablePrefixValue))
+                        else if (node.Contains(TeamConfiguration.HubTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
                         }
-                        else if (node.Contains(TeamConfigurationSettings.LinkTablePrefixValue))
+                        else if (node.Contains(TeamConfiguration.LinkTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" + node + "\" />");
                         }
-                        else if (node.Contains(TeamConfigurationSettings.SatTablePrefixValue) ||
-                                 node.Contains(TeamConfigurationSettings.LsatTablePrefixValue))
+                        else if (node.Contains(TeamConfiguration.SatTablePrefixValue) ||
+                                 node.Contains(TeamConfiguration.LsatTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node + "\" />");
                         }
@@ -7413,11 +7413,11 @@ namespace TEAM
 
             // Get everything as local variables to reduce multi-threading issues
             var effectiveDateTimeAttribute =
-                TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
-                    ? TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute
-                    : TeamConfigurationSettings.LoadDateTimeAttribute;
-            var dwhKeyIdentifier = TeamConfigurationSettings.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
-            var keyIdentifierLocation = TeamConfigurationSettings.KeyNamingLocation;
+                TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
+                    ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
+                    : TeamConfiguration.LoadDateTimeAttribute;
+            var dwhKeyIdentifier = TeamConfiguration.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
+            var keyIdentifierLocation = TeamConfiguration.KeyNamingLocation;
 
             // Create the attribute selection statement for the array
             var sqlStatementForAttributeVersion = new StringBuilder();
@@ -7653,7 +7653,7 @@ namespace TEAM
             var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
             var targetFullyQualifiedName = MetadataHandling
                 .GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-            var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfigurationSettings);
+            var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
 
             if (tableType != MetadataHandling.TableTypes.Presentation)
             {
@@ -7811,12 +7811,12 @@ namespace TEAM
                     // The values as defined in the associated connections
                     var sourceSchemaNameForConnection = TeamConfiguration
                         .GetTeamConnectionByInternalId(localSourceConnectionInternalId,
-                            TeamConfigurationSettings.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "")
+                            TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "")
                         .Replace("]", "");
                     ;
                     var targetSchemaNameForConnection = TeamConfiguration
                         .GetTeamConnectionByInternalId(localTargetConnectionInternalId,
-                            TeamConfigurationSettings.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "")
+                            TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "")
                         .Replace("]", "");
                     ;
 
@@ -7878,7 +7878,7 @@ namespace TEAM
                         row[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
                     if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode &&
-                        MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings)
+                        MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration)
                             .ToString() !=
                         MetadataHandling.TableTypes.Source.ToString()
                     ) // No need to evaluate the operational system (real sources)
@@ -7925,7 +7925,7 @@ namespace TEAM
 
                     }
                     else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode &&
-                             MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings)
+                             MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration)
                                  .ToString() !=
                              MetadataHandling.TableTypes.Source.ToString()
                     ) // No need to evaluate the operational system (real sources)
@@ -7991,7 +7991,7 @@ namespace TEAM
 
             // Create the dictionary of the connection keys and their connection strings.
             var localConnectionDictionary =
-                LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfigurationSettings.ConnectionDictionary);
+                LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
 
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
 
@@ -8081,7 +8081,7 @@ namespace TEAM
                         .GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
 
                     // No need to evaluate the operational system (real sources))
-                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfigurationSettings)
+                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration)
                         .ToString() != MetadataHandling.TableTypes.Source.ToString())
                     {
                         string objectValidated;
@@ -8194,7 +8194,7 @@ namespace TEAM
                 // If enabled and is a Staging Layer object
                 if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()] && MetadataHandling
                     .GetDataObjectType((string) row[TableMappingMetadataColumns.TargetTable.ToString()], "",
-                        TeamConfigurationSettings).In(MetadataHandling.TableTypes.StagingArea,
+                        TeamConfiguration).In(MetadataHandling.TableTypes.StagingArea,
                         MetadataHandling.TableTypes.PersistentStagingArea))
                 {
                     if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
@@ -8285,7 +8285,7 @@ namespace TEAM
                 "--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
 
             var localConnectionDictionary =
-                LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfigurationSettings.ConnectionDictionary);
+                LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
 
 
             // Creating a list of unique Link business key combinations from the data grid / data table
@@ -8293,7 +8293,7 @@ namespace TEAM
             foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow && row.Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString()
-                    .StartsWith(TeamConfigurationSettings.LinkTablePrefixValue)
+                    .StartsWith(TeamConfiguration.LinkTablePrefixValue)
                 ) // Only select the lines that relate to a Link target
                 {
                     // Derive the business key.
@@ -8384,11 +8384,11 @@ namespace TEAM
             foreach (DataRow row in localDataTable.Rows)
             {
                 if ((row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                         .StartsWith(TeamConfigurationSettings.LinkTablePrefixValue) ||
+                         .StartsWith(TeamConfiguration.LinkTablePrefixValue) ||
                      row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                         .StartsWith(TeamConfigurationSettings.SatTablePrefixValue) ||
+                         .StartsWith(TeamConfiguration.SatTablePrefixValue) ||
                      row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                         .StartsWith(TeamConfigurationSettings.LsatTablePrefixValue)))
+                         .StartsWith(TeamConfiguration.LsatTablePrefixValue)))
                 {
                     var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString()
                         .Replace("''''", "'");
@@ -8477,7 +8477,7 @@ namespace TEAM
 
 
                     if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode &&
-                        MetadataHandling.GetDataObjectType(validationObject, "", TeamConfigurationSettings)
+                        MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration)
                             .ToString() !=
                         MetadataHandling.TableTypes.Source.ToString()
                     ) // No need to evaluate the operational system (real sources)
@@ -8497,7 +8497,7 @@ namespace TEAM
                     else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                     {
                         // Exclude a lookup to the source
-                        if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfigurationSettings)
+                        if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration)
                             .ToString() != MetadataHandling.TableTypes.Source.ToString())
                         {
                             objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(
@@ -8507,7 +8507,7 @@ namespace TEAM
                     }
                     else
                     {
-                        if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfigurationSettings)
+                        if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration)
                                 .ToString() !=
                             MetadataHandling.TableTypes.Source.ToString())
                         {
@@ -8684,7 +8684,7 @@ namespace TEAM
             {
                 bool enabled = (bool) row[TableMappingMetadataColumns.Enabled.ToString()];
                 var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfigurationSettings);
+                var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
                 if (enabled && tableType != MetadataHandling.TableTypes.Presentation)
                 {
                     rowList.Add(row); //add the row to the list
@@ -8766,7 +8766,7 @@ namespace TEAM
                     dataObjectMapping.targetDataObject = JsonOutputHandling.CreateDataObject(targetDataObjectName, targetConnection, JsonExportSetting);
 
                     // Also add the classification at Data Object Mapping level, as this is derived from the target Data Object.
-                    var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfigurationSettings);
+                    var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
 
                     List<Classification> dataObjectsMappingClassifications = new List<Classification>();
                     var dataObjectMappingClassification = new Classification();
@@ -8784,7 +8784,7 @@ namespace TEAM
                     businessKey.businessKeyComponentMapping = businessKeyDataItemMappings;
 
                     // Derive the surrogate key using conventions.
-                    var targetDataObjectSurrogateKey = MetadataHandling.GetSurrogateKey(targetDataObjectName, targetConnection, TeamConfigurationSettings);
+                    var targetDataObjectSurrogateKey = MetadataHandling.GetSurrogateKey(targetDataObjectName, targetConnection, TeamConfiguration);
                     businessKey.surrogateKey = targetDataObjectSurrogateKey;
 
                     businessKeys.Add(businessKey);
@@ -8851,7 +8851,7 @@ namespace TEAM
             List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
             // Add the metadata connection as related data object (assuming this is set in the json export settings).
-            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, JsonExportSetting);
+            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting);
             if (metaDataObject.name != null)
             {
                 relatedDataObjects.Add(metaDataObject);
@@ -8871,7 +8871,7 @@ namespace TEAM
             
             // Create an instance of the non-generic information i.e. VDW specific. For example the generation date/time.
             GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata(targetDataObjectNameFromDataGrid);
-            MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfigurationSettings);
+            MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfiguration);
 
             VDW_DataObjectMappingList sourceTargetMappingList = new VDW_DataObjectMappingList();
             sourceTargetMappingList.dataObjectMappings = dataObjectMappings;
@@ -8907,7 +8907,7 @@ namespace TEAM
             EventLog eventLog = new EventLog();
             SqlConnection conn = new SqlConnection
             {
-                ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false)
+                ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
             };
 
             foreach (DataRow metadataRow in generationMetadataList)
@@ -8922,7 +8922,7 @@ namespace TEAM
                 
 
                 // Find out what the correct patterns is.
-                var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition, TeamConfigurationSettings);
+                var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition, TeamConfiguration);
                 LoadPatternDefinition loadPatternDefinition = GlobalParameters.PatternDefinitionList.FirstOrDefault(item => item.LoadPatternType == tableType.ToString());
 
                 // Exception handling, if null then break
@@ -9030,7 +9030,7 @@ namespace TEAM
                             
 
                             // Add the metadata connection as related data object (assuming this is set in the json export settings).
-                            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, JsonExportSetting);
+                            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting);
                             if (metaDataObject.name != null)
                             {
                                 relatedDataObjects.Add(metaDataObject);
@@ -9357,7 +9357,7 @@ namespace TEAM
 
                     // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
                     GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata(targetDataObjectName);
-                    MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfigurationSettings);
+                    MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfiguration);
 
                     VDW_DataObjectMappingList sourceTargetMappingList = new VDW_DataObjectMappingList();
                     sourceTargetMappingList.dataObjectMappings = dataObjectMappingList;
@@ -10152,19 +10152,19 @@ namespace TEAM
 
                             string[] exclusionAttribute =
                             {
-                                TeamConfigurationSettings.RecordSourceAttribute,
-                                TeamConfigurationSettings.AlternativeRecordSourceAttribute,
-                                TeamConfigurationSettings.RowIdAttribute,
-                                TeamConfigurationSettings.RecordChecksumAttribute,
-                                TeamConfigurationSettings.ChangeDataCaptureAttribute,
-                                TeamConfigurationSettings.AlternativeLoadDateTimeAttribute,
-                                TeamConfigurationSettings.LoadDateTimeAttribute,
-                                TeamConfigurationSettings.EventDateTimeAttribute,
-                                TeamConfigurationSettings.ExpiryDateTimeAttribute,
-                                TeamConfigurationSettings.EtlProcessAttribute,
-                                TeamConfigurationSettings.EtlProcessUpdateAttribute,
-                                TeamConfigurationSettings.CurrentRowAttribute,
-                                TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute
+                                TeamConfiguration.RecordSourceAttribute,
+                                TeamConfiguration.AlternativeRecordSourceAttribute,
+                                TeamConfiguration.RowIdAttribute,
+                                TeamConfiguration.RecordChecksumAttribute,
+                                TeamConfiguration.ChangeDataCaptureAttribute,
+                                TeamConfiguration.AlternativeLoadDateTimeAttribute,
+                                TeamConfiguration.LoadDateTimeAttribute,
+                                TeamConfiguration.EventDateTimeAttribute,
+                                TeamConfiguration.ExpiryDateTimeAttribute,
+                                TeamConfiguration.EtlProcessAttribute,
+                                TeamConfiguration.EtlProcessUpdateAttribute,
+                                TeamConfiguration.CurrentRowAttribute,
+                                TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
                             };
 
                             if (!exclusionAttribute.Contains(sourceDataObjectRow["COLUMN_NAME"].ToString()))

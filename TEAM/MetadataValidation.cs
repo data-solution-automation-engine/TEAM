@@ -176,19 +176,19 @@ namespace TEAM
             // The only interest is whether the Hub is there...
             string tableInclusionFilterCriterion;
             var tableClassification = "";
-            if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
+            if (validationObject.Item2.StartsWith(FormBase.TeamConfiguration.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
             {
-                tableInclusionFilterCriterion = FormBase.TeamConfigurationSettings.HubTablePrefixValue;
-                tableClassification = FormBase.TeamConfigurationSettings.SatTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.TeamConfiguration.HubTablePrefixValue;
+                tableClassification = FormBase.TeamConfiguration.SatTablePrefixValue;
             }
-            else if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
+            else if (validationObject.Item2.StartsWith(FormBase.TeamConfiguration.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
             {
-                tableInclusionFilterCriterion = FormBase.TeamConfigurationSettings.HubTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.TeamConfiguration.HubTablePrefixValue;
                 tableClassification = "LNK";
             }
-            else if (validationObject.Item2.StartsWith(FormBase.TeamConfigurationSettings.LsatTablePrefixValue)) // If the table is a Link-Satellite, only the Link is required
+            else if (validationObject.Item2.StartsWith(FormBase.TeamConfiguration.LsatTablePrefixValue)) // If the table is a Link-Satellite, only the Link is required
             {
-                tableInclusionFilterCriterion = FormBase.TeamConfigurationSettings.LinkTablePrefixValue;
+                tableInclusionFilterCriterion = FormBase.TeamConfiguration.LinkTablePrefixValue;
                 tableClassification = "LSAT";
             }
             else
@@ -199,7 +199,7 @@ namespace TEAM
             // Unfortunately, there is a separate process for Links and Sats
             // Iterate through the various keys (mainly for the purpose of evaluating Links)
             int numberOfDependents = 0;
-            if (tableClassification == FormBase.TeamConfigurationSettings.SatTablePrefixValue || tableClassification == "LNK")
+            if (tableClassification == FormBase.TeamConfiguration.SatTablePrefixValue || tableClassification == "LNK")
             {
                 foreach (string businessKeyComponent in hubBusinessKeys)
                 {
@@ -240,7 +240,7 @@ namespace TEAM
             // Run the comparison
             // Test for equality.
             bool equal;
-            if ((tableClassification == FormBase.TeamConfigurationSettings.SatTablePrefixValue || tableClassification == "LNK") && businessKeyCount == numberOfDependents) // For Sats and Links we can count the keys and rows
+            if ((tableClassification == FormBase.TeamConfiguration.SatTablePrefixValue || tableClassification == "LNK") && businessKeyCount == numberOfDependents) // For Sats and Links we can count the keys and rows
             {
                 equal = true;
             }
@@ -284,13 +284,13 @@ namespace TEAM
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.TeamConfigurationSettings.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.TeamConfiguration.SatTablePrefixValue + "_%'");
 
                 try
                 {
                     // Derive the Hub surrogate key name, as this can be compared against the Link
                     string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    string hubSurrogateKeyName = hubTableName.Replace(FormBase.TeamConfigurationSettings.HubTablePrefixValue + '_', "") + "_" + FormBase.TeamConfigurationSettings.DwhKeyIdentifier;
+                    string hubSurrogateKeyName = hubTableName.Replace(FormBase.TeamConfiguration.HubTablePrefixValue + '_', "") + "_" + FormBase.TeamConfiguration.DwhKeyIdentifier;
 
                     // Add to the dictionary that contains the keys in order.
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -316,7 +316,7 @@ namespace TEAM
                 sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
                 sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
                 sqlStatementForLink.AppendLine("FROM [" + connDatabase + "].sys.columns");
-                sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.TeamConfigurationSettings.LinkTablePrefixValue + "_%'");
+                sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.TeamConfiguration.LinkTablePrefixValue + "_%'");
                 sqlStatementForLink.AppendLine("AND column_id > 4");
                 sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
 
@@ -331,7 +331,7 @@ namespace TEAM
                     var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
                     int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
 
-                    if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfigurationSettings.DwhKeyIdentifier)
+                    if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)
                     ) // Exclude degenerate attributes from the order
                     {
                         linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
@@ -349,7 +349,7 @@ namespace TEAM
                     // Select only the business keys in a link table. 
                     // Excluding all non-business key attributes
                     workingTable = physicalModelDataTable
-                        .Select("" + PhysicalModelMappingMetadataColumns.TableName.ToString() + " LIKE '" + FormBase.TeamConfigurationSettings.LinkTablePrefixValue +
+                        .Select("" + PhysicalModelMappingMetadataColumns.TableName.ToString() + " LIKE '" + FormBase.TeamConfiguration.LinkTablePrefixValue +
                                 "_%' AND " + PhysicalModelMappingMetadataColumns.TableName.ToString() + " = '" + validationObject.Item2 + "' AND "+PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()+" > 4",
                             " " + PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString() + " ASC").CopyToDataTable();
                 }
@@ -364,7 +364,7 @@ namespace TEAM
                     {
                         var linkHubSurrogateKeyName = row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()].ToString();
 
-                        if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfigurationSettings.DwhKeyIdentifier)
+                        if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)
                         ) // Exclude degenerate attributes from the order
                         {
                             linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);

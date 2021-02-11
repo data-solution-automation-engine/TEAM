@@ -18,7 +18,7 @@ namespace TEAM
         {
             InitializeComponent();
 
-            foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
+            foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
                 // Adding items in the drop down list
                 comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
@@ -39,17 +39,17 @@ namespace TEAM
             comboBoxPresentationConnection.ValueMember = "Key";
             comboBoxPresentationConnection.DisplayMember = "Value";
 
-            if (TeamConfigurationSettings.MetadataConnection is null)
+            if (TeamConfiguration.MetadataConnection is null)
             {
                 // Do nothing
             }
             else
             {
-                comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxPresentationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
+                comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxPresentationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
             }
         }
 
@@ -355,37 +355,37 @@ namespace TEAM
                 alternativeSatelliteLoadDateTimeFunction = "False";
 
 
-                TeamConfigurationSettings.EnvironmentMode = EnvironmentModes.PhysicalMode;
+                TeamConfiguration.EnvironmentMode = EnvironmentModes.PhysicalMode;
 
-                TeamConfigurationSettings.StgTablePrefixValue = stagingAreaPrefix;
-                TeamConfigurationSettings.PsaTablePrefixValue = persistentStagingAreaPrefix;
+                TeamConfiguration.StgTablePrefixValue = stagingAreaPrefix;
+                TeamConfiguration.PsaTablePrefixValue = persistentStagingAreaPrefix;
 
-                TeamConfigurationSettings.HubTablePrefixValue = hubTablePrefix;
-                TeamConfigurationSettings.SatTablePrefixValue = satTablePrefix;
-                TeamConfigurationSettings.LinkTablePrefixValue = linkTablePrefix;
-                TeamConfigurationSettings.LsatTablePrefixValue = linkSatTablePrefix;
-                TeamConfigurationSettings.DwhKeyIdentifier = keyIdentifier;
-                TeamConfigurationSettings.PsaKeyLocation = psaKeyLocation;
-                TeamConfigurationSettings.TableNamingLocation = tableNamingLocation;
-                TeamConfigurationSettings.KeyNamingLocation = keyNamingLocation;
+                TeamConfiguration.HubTablePrefixValue = hubTablePrefix;
+                TeamConfiguration.SatTablePrefixValue = satTablePrefix;
+                TeamConfiguration.LinkTablePrefixValue = linkTablePrefix;
+                TeamConfiguration.LsatTablePrefixValue = linkSatTablePrefix;
+                TeamConfiguration.DwhKeyIdentifier = keyIdentifier;
+                TeamConfiguration.PsaKeyLocation = psaKeyLocation;
+                TeamConfiguration.TableNamingLocation = tableNamingLocation;
+                TeamConfiguration.KeyNamingLocation = keyNamingLocation;
 
-                TeamConfigurationSettings.EventDateTimeAttribute = eventDateTime;
-                TeamConfigurationSettings.LoadDateTimeAttribute = loadDateTime;
-                TeamConfigurationSettings.ExpiryDateTimeAttribute = expiryDateTime;
-                TeamConfigurationSettings.ChangeDataCaptureAttribute = changeDataIndicator;
-                TeamConfigurationSettings.RecordSourceAttribute = recordSource;
-                TeamConfigurationSettings.EtlProcessAttribute = etlProcessId;
-                TeamConfigurationSettings.EtlProcessUpdateAttribute = etlUpdateProcessId;
-                TeamConfigurationSettings.RowIdAttribute = sourceRowId;
-                TeamConfigurationSettings.RecordChecksumAttribute = recordChecksum;
-                TeamConfigurationSettings.CurrentRowAttribute = currentRecordIndicator;
-                TeamConfigurationSettings.LogicalDeleteAttribute = logicalDeleteAttribute;
-                TeamConfigurationSettings.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
-                TeamConfigurationSettings.AlternativeRecordSourceAttribute = alternativeRecordSource;
-                TeamConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;
-                TeamConfigurationSettings.AlternativeLoadDateTimeAttribute = alternativeHubLoadDateTime;
-                TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
-                TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
+                TeamConfiguration.EventDateTimeAttribute = eventDateTime;
+                TeamConfiguration.LoadDateTimeAttribute = loadDateTime;
+                TeamConfiguration.ExpiryDateTimeAttribute = expiryDateTime;
+                TeamConfiguration.ChangeDataCaptureAttribute = changeDataIndicator;
+                TeamConfiguration.RecordSourceAttribute = recordSource;
+                TeamConfiguration.EtlProcessAttribute = etlProcessId;
+                TeamConfiguration.EtlProcessUpdateAttribute = etlUpdateProcessId;
+                TeamConfiguration.RowIdAttribute = sourceRowId;
+                TeamConfiguration.RecordChecksumAttribute = recordChecksum;
+                TeamConfiguration.CurrentRowAttribute = currentRecordIndicator;
+                TeamConfiguration.LogicalDeleteAttribute = logicalDeleteAttribute;
+                TeamConfiguration.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
+                TeamConfiguration.AlternativeRecordSourceAttribute = alternativeRecordSource;
+                TeamConfiguration.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;
+                TeamConfiguration.AlternativeLoadDateTimeAttribute = alternativeHubLoadDateTime;
+                TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
+                TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
 
                 LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
             }
@@ -489,7 +489,7 @@ namespace TEAM
 
                 try
                 {
-                    if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+                    if (TeamConfiguration.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                     {
                         Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 
@@ -544,7 +544,7 @@ namespace TEAM
 
                 PopulateSqlCommandDictionaryFromFile(
                     GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
-                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
+                    commandDictionary, TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
             
 
             // Execute the SQL statements

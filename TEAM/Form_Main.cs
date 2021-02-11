@@ -110,7 +110,7 @@ namespace TEAM
             {
                 if (!File.Exists(configurationFileName))
                 {
-                    TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
+                    TeamConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
                 }
                 else
@@ -165,7 +165,7 @@ namespace TEAM
                 GlobalParameters.WorkingEnvironment +
                 GlobalParameters.JsonExtension;
 
-            TeamConfigurationSettings.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
+            TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
             #region Load configuration file
             // Load the available configuration file into memory.
@@ -173,10 +173,10 @@ namespace TEAM
             try
             {
                 // Load the configuration file.
-                TeamConfigurationSettings.LoadTeamConfigurationFile(configurationFile);
-                GlobalParameters.EnvironmentMode = TeamConfigurationSettings.EnvironmentMode;
+                TeamConfiguration.LoadTeamConfigurationFile(configurationFile);
+                GlobalParameters.EnvironmentMode = TeamConfiguration.EnvironmentMode;
                 // Retrieve the events into the main event log.
-                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfigurationSettings.ConfigurationSettingsEventLog);
+                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfiguration.ConfigurationSettingsEventLog);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
 
             }
@@ -243,13 +243,13 @@ namespace TEAM
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
 
             // There is no metadata object available (set)
-            if (TeamConfigurationSettings.MetadataConnection is null)
+            if (TeamConfiguration.MetadataConnection is null)
             {
                 DisableMenu();
                 return;
             }
 
-            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
+            var connOmd = new SqlConnection { ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false) };
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try
@@ -281,7 +281,7 @@ namespace TEAM
                 DisplayCurrentVersionFromRepository(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
 
-                labelMetadataSave.Text = TeamConfigurationSettings.MetadataRepositoryType.ToString();
+                labelMetadataSave.Text = TeamConfiguration.MetadataRepositoryType.ToString();
             }
             catch
             {
