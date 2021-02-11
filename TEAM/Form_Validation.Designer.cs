@@ -48,9 +48,12 @@
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
+            this.groupBoxDataVaultValidation = new System.Windows.Forms.GroupBox();
+            this.checkBoxBasicDataVaultValidation = new System.Windows.Forms.CheckBox();
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxExistenceChecks.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBoxDataVaultValidation.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStripMainMenu
@@ -223,7 +226,6 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.checkBoxLinkKeyOrder);
             this.groupBox2.Controls.Add(this.checkBoxBusinessKeySyntaxValidation);
             this.groupBox2.Controls.Add(this.checkBoxLogicalGroup);
@@ -232,7 +234,7 @@
             this.groupBox2.Size = new System.Drawing.Size(226, 136);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Consistency";
+            this.groupBox2.Text = "Metadata consistency";
             // 
             // checkBoxBusinessKeySyntaxValidation
             // 
@@ -246,11 +248,34 @@
             this.checkBoxBusinessKeySyntaxValidation.Text = "Business Key syntax validation";
             this.checkBoxBusinessKeySyntaxValidation.UseVisualStyleBackColor = true;
             // 
+            // groupBoxDataVaultValidation
+            // 
+            this.groupBoxDataVaultValidation.Controls.Add(this.checkBoxBasicDataVaultValidation);
+            this.groupBoxDataVaultValidation.Location = new System.Drawing.Point(12, 184);
+            this.groupBoxDataVaultValidation.Name = "groupBoxDataVaultValidation";
+            this.groupBoxDataVaultValidation.Size = new System.Drawing.Size(458, 136);
+            this.groupBoxDataVaultValidation.TabIndex = 28;
+            this.groupBoxDataVaultValidation.TabStop = false;
+            this.groupBoxDataVaultValidation.Text = "Modelling validation";
+            // 
+            // checkBoxBasicDataVaultValidation
+            // 
+            this.checkBoxBasicDataVaultValidation.AutoSize = true;
+            this.checkBoxBasicDataVaultValidation.Checked = true;
+            this.checkBoxBasicDataVaultValidation.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxBasicDataVaultValidation.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxBasicDataVaultValidation.Name = "checkBoxBasicDataVaultValidation";
+            this.checkBoxBasicDataVaultValidation.Size = new System.Drawing.Size(234, 17);
+            this.checkBoxBasicDataVaultValidation.TabIndex = 9;
+            this.checkBoxBasicDataVaultValidation.Text = "Validate basic Data Vault attribute existence";
+            this.checkBoxBasicDataVaultValidation.UseVisualStyleBackColor = true;
+            // 
             // FormManageValidation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(721, 485);
+            this.Controls.Add(this.groupBoxDataVaultValidation);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.labelInformation);
             this.Controls.Add(this.richTextBoxInformation);
@@ -265,6 +290,8 @@
             this.groupBoxExistenceChecks.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBoxDataVaultValidation.ResumeLayout(false);
+            this.groupBoxDataVaultValidation.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -290,5 +317,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBoxBusinessKeySyntaxValidation;
         private System.Windows.Forms.CheckBox checkBoxDataItemExistence;
+        private System.Windows.Forms.GroupBox groupBoxDataVaultValidation;
+        private System.Windows.Forms.CheckBox checkBoxBasicDataVaultValidation;
     }
 }

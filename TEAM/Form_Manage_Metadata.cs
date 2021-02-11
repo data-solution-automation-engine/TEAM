@@ -9,11 +9,9 @@ using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using TEAM_Library;
 using EventLog = TEAM_Library.EventLog;
 
@@ -9020,8 +9018,12 @@ namespace TEAM
 
                             foreach (var dependentRow in dependentRows)
                             {
-                                var relatedDataObject = new DataWarehouseAutomation.DataObject();
-                                relatedDataObject.name = dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                                var localRelatedDataObjectName = dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                                var localRelatedDataObjectConnectionId = dependentRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                                var localRelatedDataObjectConnection = GetTeamConnectionByConnectionId(localRelatedDataObjectConnectionId);
+
+                                var relatedDataObject = JsonOutputHandling.CreateDataObject(localRelatedDataObjectName, localRelatedDataObjectConnection, JsonExportSetting);
+
                                 relatedDataObjects.Add(relatedDataObject);
                             }
                             
@@ -9328,10 +9330,9 @@ namespace TEAM
                             dataObjectMappingClassification.classification = loadPatternDefinition.LoadPatternType;
                             dataObjectMappingClassification.notes = loadPatternDefinition.LoadPatternNotes;
                             dataObjectMappingClassificationList.Add(dataObjectMappingClassification);
-
+                            
                             sourceToTargetMapping.mappingClassifications = dataObjectMappingClassificationList;
-                            //sourceToTargetMapping.classification = MetadataHandling.GetTableType((string)row["TARGET_NAME"], "").Split(',').ToList();
-                            //sourceToTargetMapping.classification = pattern.LoadPatternType.Split(',').ToList(); ;
+
 
                             sourceToTargetMapping.filterCriterion =
                                 (string) row["FILTER_CRITERIA"]; // Filter criterion
@@ -9348,8 +9349,7 @@ namespace TEAM
                             dataObjectMappingList.Add(sourceToTargetMapping);
                         }
                     }
-
-
+                    
                     #region Wrap-up
 
                     // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
@@ -9374,19 +9374,14 @@ namespace TEAM
                         // Spool the output to disk
                         if (checkBoxSaveInterfaceToJson.Checked)
                         {
-                            Event fileSaveEventLog =
-                                TeamUtility.SaveTextToFile(
-                                    GlobalParameters.OutputPath + targetDataObjectName + ".json",
-                                    json);
+                            Event fileSaveEventLog = TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", json);
                             eventLog.Add(fileSaveEventLog);
                             mappingCounter++;
                         }
                     }
                     catch (Exception ex)
                     {
-                        richTextBoxInformation.AppendText(
-                            "An error was encountered while generating the Json metadata. The error message is: " +
-                            ex);
+                        richTextBoxInformation.AppendText("An error was encountered while generating the Json metadata. The error message is: " + ex);
                     }
 
                     #endregion
@@ -9394,8 +9389,7 @@ namespace TEAM
                 }
                 else
                 {
-                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                        $"The load pattern was not found for {targetDataObjectName}."));
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The load pattern was not found for {targetDataObjectName}."));
                 }
 
             }
