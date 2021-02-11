@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using TEAM_Library;
 using EventLog = TEAM_Library.EventLog;
 
@@ -3661,14 +3662,11 @@ namespace TEAM
                                 {
                                     if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                                     {
-                                        businessKey = MetadataHandling.GetHubTargetBusinessKeyListPhysical(
-                                            dataObjectTuple.Item1, dataObjectTuple.Item3, TeamConfiguration);
+                                        businessKey = MetadataHandling.GetHubTargetBusinessKeyListPhysical(dataObjectTuple.Item1, dataObjectTuple.Item3, TeamConfiguration);
                                     }
                                     else
                                     {
-                                        businessKey =
-                                            MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1,
-                                                dataObjectTuple.Item3, versionId, TeamConfiguration);
+                                        businessKey = MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1, dataObjectTuple.Item3, versionId, TeamConfiguration);
                                     }
                                 }
                             }
@@ -8293,41 +8291,39 @@ namespace TEAM
             #region Retrieving the Links
 
             // Informing the user.
-            _alertValidation.SetTextLogging(
-                "--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
 
-            var localConnectionDictionary =
-                LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
-
+            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
 
             // Creating a list of unique Link business key combinations from the data grid / data table
+            var localDataTableTableMappings = (DataTable)_bindingSourceTableMetadata.DataSource;
             var objectList = new List<Tuple<string, string, string, string>>();
-            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            
+            foreach (DataRow row in localDataTableTableMappings.Rows)
             {
-                if (!row.IsNewRow && row.Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString()
-                    .StartsWith(TeamConfiguration.LinkTablePrefixValue)
-                ) // Only select the lines that relate to a Link target
+                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
                 {
-                    // Derive the business key.
-                    var businessKey = row.Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value
-                        .ToString().Replace("''''", "'");
-
-                    // Derive the connection
-                    localConnectionDictionary.TryGetValue(
-                        row.Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString(),
-                        out var connectionValue);
-
-                    var newValidationObject = new Tuple<string, string, string, string>
-                    (
-                        row.Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString(),
-                        row.Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString(),
-                        businessKey,
-                        connectionValue
-                    );
-
-                    if (!objectList.Contains(newValidationObject))
+                    // Only select the lines that relate to a Link target.
+                    if (row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
                     {
-                        objectList.Add(newValidationObject);
+                        // Derive the business key.
+                        var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
+
+                        // Derive the connection
+                        localConnectionDictionary.TryGetValue(row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString(), out var connectionValue);
+                        
+                        var newValidationObject = new Tuple<string, string, string, string>
+                        (
+                            row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(),
+                            row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(),
+                            businessKey,
+                            connectionValue
+                        );
+
+                        if (!objectList.Contains(newValidationObject))
+                        {
+                            objectList.Add(newValidationObject);
+                        }
                     }
                 }
             }

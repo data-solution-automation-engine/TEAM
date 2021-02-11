@@ -489,15 +489,14 @@ namespace TEAM_Library
             catch (Exception)
             {
                 configuration.ConfigurationSettingsEventLog
-                    .Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"The connection to the database for object {fullyQualifiedTableName} could not be established via {conn.ConnectionString}."));
+                    .Add(Event.CreateNewEvent(EventTypes.Error, $"The connection to the database for object {fullyQualifiedTableName} could not be established via {conn.ConnectionString}."));
             }
 
             var sqlStatementForBusinessKeys = new StringBuilder();
 
             var keyText = configuration.DwhKeyIdentifier;
             var localkeyLength = keyText.Length;
-            var localkeySubstring = localkeyLength + 1;
+            var localkeySubstring = localkeyLength - 1;
 
             // Make sure brackets are removed
             var schemaName = fullyQualifiedName.Key?.Replace("[", "").Replace("]", "");
@@ -506,15 +505,23 @@ namespace TEAM_Library
             // Make sure the live database is hit when the checkbox is ticked
             sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
             sqlStatementForBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
-            sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength +
-                                                   "," + localkeySubstring + ")!='_" +
-                                                   configuration.DwhKeyIdentifier + "'");
+
+            if (configuration.KeyNamingLocation == "Prefix")
+            {
+                sqlStatementForBusinessKeys.AppendLine($"WHERE SUBSTRING(COLUMN_NAME,1,{localkeyLength})!='{configuration.DwhKeyIdentifier}'");
+            }
+            else
+            {
+                sqlStatementForBusinessKeys.AppendLine($"WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-{localkeySubstring},{localkeyLength})!='{configuration.DwhKeyIdentifier}'");
+            }
+            
+
             sqlStatementForBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + schemaName + "'");
             sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
             sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" +
                                                    configuration.RecordSourceAttribute + "','" +
-                                                   configuration.AlternativeRecordSourceAttribute +
-                                                   "','" + configuration.AlternativeLoadDateTimeAttribute + "','" +
+                                                   configuration.AlternativeRecordSourceAttribute + "','" + 
+                                                   configuration.AlternativeLoadDateTimeAttribute + "','" +
                                                    configuration.AlternativeSatelliteLoadDateTimeAttribute + "','" +
                                                    configuration.EtlProcessAttribute + "','" +
                                                    configuration.LoadDateTimeAttribute + "')");

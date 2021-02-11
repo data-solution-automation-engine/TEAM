@@ -208,8 +208,8 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred saving the Configuration File. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"An error occurred saving the Configuration File. The error message is " + ex,
+                    @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

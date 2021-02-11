@@ -325,11 +325,11 @@ namespace TEAM_Library
                 initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
                 initialConfigurationFile.AppendLine("PresentationLayerLabels|DIM, FACT");
                 initialConfigurationFile.AppendLine("TransformationLabels|BDV");
-                initialConfigurationFile.AppendLine("HubTablePrefix|HUB");
-                initialConfigurationFile.AppendLine("SatTablePrefix|SAT");
-                initialConfigurationFile.AppendLine("LinkTablePrefix|LNK");
-                initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT");
-                initialConfigurationFile.AppendLine("KeyIdentifier|HSH");
+                initialConfigurationFile.AppendLine("HubTablePrefix|HUB_");
+                initialConfigurationFile.AppendLine("SatTablePrefix|SAT_");
+                initialConfigurationFile.AppendLine("LinkTablePrefix|LNK_");
+                initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT_");
+                initialConfigurationFile.AppendLine("KeyIdentifier|_SK");
                 initialConfigurationFile.AppendLine("SchemaName|dbo");
                 initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
                 initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");

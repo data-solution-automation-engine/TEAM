@@ -302,13 +302,14 @@ namespace TEAM
 
                 // Shared values (same for all samples)
                 var stagingAreaPrefix = "STG";
-                var hubTablePrefix = "HUB";
-                var satTablePrefix = "SAT";
-                var linkTablePrefix = "LNK";
-                var linkSatTablePrefix = "LSAT";
+                var persistentStagingAreaPrefix = "PSA";
+                
+                var hubTablePrefix = "HUB_";
+                var satTablePrefix = "SAT_";
+                var linkTablePrefix = "LNK_";
+                var linkSatTablePrefix = "LSAT_";
                 string psaKeyLocation = "PrimaryKey";
 
-                string persistentStagingAreaPrefix;
                 string keyIdentifier;
                 string sourceRowId;
                 string eventDateTime;
@@ -331,8 +332,8 @@ namespace TEAM
                 string alternativeSatelliteLoadDateTimeFunction;
 
 
-                persistentStagingAreaPrefix = "PSA";
-                keyIdentifier = "SK";
+
+                keyIdentifier = "_SK";
 
                 sourceRowId = "SOURCE_ROW_ID";
                 eventDateTime = "EVENT_DATETIME";

@@ -290,7 +290,10 @@ namespace TEAM
                 {
                     // Derive the Hub surrogate key name, as this can be compared against the Link
                     string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    string hubSurrogateKeyName = hubTableName.Replace(FormBase.TeamConfiguration.HubTablePrefixValue + '_', "") + "_" + FormBase.TeamConfiguration.DwhKeyIdentifier;
+                    string hubTableConnectionId = selectionRows[0][TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var hubTableConnection = GetTeamConnectionByConnectionId(hubTableConnectionId);
+                    
+                    string hubSurrogateKeyName = MetadataHandling.GetSurrogateKey(hubTableName, hubTableConnection, FormBase.TeamConfiguration);
 
                     // Add to the dictionary that contains the keys in order.
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -349,13 +352,13 @@ namespace TEAM
                     // Select only the business keys in a link table. 
                     // Excluding all non-business key attributes
                     workingTable = physicalModelDataTable
-                        .Select("" + PhysicalModelMappingMetadataColumns.TableName.ToString() + " LIKE '" + FormBase.TeamConfiguration.LinkTablePrefixValue +
-                                "_%' AND " + PhysicalModelMappingMetadataColumns.TableName.ToString() + " = '" + validationObject.Item2 + "' AND "+PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()+" > 4",
-                            " " + PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString() + " ASC").CopyToDataTable();
+                        .Select($"{PhysicalModelMappingMetadataColumns.TableName} LIKE '%{FormBase.TeamConfiguration.LinkTablePrefixValue}%' " +
+                                $"AND {PhysicalModelMappingMetadataColumns.TableName} = '{validationObject.Item2}' " +
+                                $"AND {PhysicalModelMappingMetadataColumns.OrdinalPosition} > 4", $"{PhysicalModelMappingMetadataColumns.OrdinalPosition} ASC").CopyToDataTable();
                 }
                 catch (Exception ex)
                 {
-                    FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred during validation of the metadata. The errors is {ex}."));
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred during validation of the metadata. The errors is {ex}."));
                 }
 
                 if (workingTable.Rows.Count > 0)
