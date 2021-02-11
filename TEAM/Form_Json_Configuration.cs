@@ -73,8 +73,8 @@ namespace TEAM
                     break;
             }
 
-            // Source connection
-            switch (JsonExportSetting.GenerateSourceDataObjectConnection)
+            // Connection
+            switch (JsonExportSetting.GenerateDataObjectConnection)
             {
                 case "True":
                     checkBoxSourceConnectionKey.Checked = true;
@@ -83,21 +83,7 @@ namespace TEAM
                     checkBoxSourceConnectionKey.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateSourceDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
-
-            // Target connection
-            switch (JsonExportSetting.GenerateTargetDataObjectConnection)
-            {
-                case "True":
-                    checkBoxTargetConnectionKey.Checked = true;
-                    break;
-                case "False":
-                    checkBoxTargetConnectionKey.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateTargetDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
@@ -128,6 +114,21 @@ namespace TEAM
                     MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateSchemaAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
+
+            // Type classification
+            switch (JsonExportSetting.GenerateTypeAsClassification)
+            {
+                case "True":
+                    checkBoxAddType.Checked = true;
+                    break;
+                case "False":
+                    checkBoxAddType.Checked = false;
+                    break;
+                default:
+                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateTypeAsClassification + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+            }
+
 
             // Add Metadata as object
             switch (JsonExportSetting.AddMetadataAsRelatedDataObject)
@@ -199,45 +200,42 @@ namespace TEAM
         {
             try
             {
+                // Connection
+                var stringSourceConnection= "";
+                stringSourceConnection = checkBoxSourceConnectionKey.Checked ? "True" : "False";
+                JsonExportSetting.GenerateDataObjectConnection = stringSourceConnection;
+
+                // Database extension
+                var stringDatabaseExtension = "";
+                stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
+                JsonExportSetting.GenerateDatabaseAsExtension = stringDatabaseExtension;
+
+                // Schema extension
+                var stringSchemaExtension = "";
+                stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
+                JsonExportSetting.GenerateSchemaAsExtension = stringSchemaExtension;
+
+                // Type classification
+                var stringTypeClassification = "";
+                stringTypeClassification = checkBoxAddType.Checked ? "True" : "False";
+                JsonExportSetting.GenerateTypeAsClassification = stringTypeClassification;
+
                 // Source data types
                 var stringSourceDataTypes = "";
                 stringSourceDataTypes = checkBoxSourceDataType.Checked ? "True" : "False";
                 JsonExportSetting.GenerateSourceDataItemTypes = stringSourceDataTypes;
-
 
                 // Target data types
                 var stringTargetDataTypes = "";
                 stringTargetDataTypes = checkBoxTargetDataType.Checked ? "True" : "False";
                 JsonExportSetting.GenerateTargetDataItemTypes = stringTargetDataTypes;
 
-
-                // Source connection
-                var stringSourceConnection= "";
-                stringSourceConnection = checkBoxSourceConnectionKey.Checked ? "True" : "False";
-                JsonExportSetting.GenerateSourceDataObjectConnection = stringSourceConnection;
-
-
-                // Target connection
-                var stringTargetConnection = "";
-                stringTargetConnection = checkBoxTargetConnectionKey.Checked ? "True" : "False";
-                JsonExportSetting.GenerateTargetDataObjectConnection = stringTargetConnection;
-
-                // Target connection
-                var stringDatabaseExtension = "";
-                stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
-                JsonExportSetting.GenerateDatabaseAsExtension = stringDatabaseExtension;
-
-                // Target connection
-                var stringSchemaExtension = "";
-                stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
-                JsonExportSetting.GenerateSchemaAsExtension = stringSchemaExtension;
-
-                // Add metadata
+                // Add metadata related data object
                 var stringAddMetadataConnection = "";
                 stringAddMetadataConnection = checkBoxAddMetadataConnection.Checked ? "True" : "False";
                 JsonExportSetting.AddMetadataAsRelatedDataObject = stringAddMetadataConnection;
 
-                // Add metadata
+                // Add next up related data objects from lineage
                 var stringAddNextUpObjects = "";
                 stringAddNextUpObjects = checkBoxNextUpDataObjects.Checked ? "True" : "False";
                 JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
@@ -245,11 +243,11 @@ namespace TEAM
                 // Write to disk
                 JsonExportSetting.SaveJsonConfigurationFile();
 
-                richTextBoxInformation.Text = "The values have been successfully saved.";
+                richTextBoxInformation.Text = @"The values have been successfully saved.";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: Could not write values to memory and disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Error: Could not write values to memory and disk. Original error: " + ex.Message, @"An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

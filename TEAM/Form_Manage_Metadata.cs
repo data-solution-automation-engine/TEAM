@@ -8762,11 +8762,8 @@ namespace TEAM
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                     var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
 
-                    DataWarehouseAutomation.DataObject targetDataObject = new DataWarehouseAutomation.DataObject();
-                    targetDataObject.name = targetDataObjectName;
-                    targetDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(targetDataObject, targetConnection, jsonExportSetting);
-
-                    dataObjectMapping.targetDataObject = targetDataObject;
+                    // Create and set target Data Object.
+                    dataObjectMapping.targetDataObject = JsonOutputHandling.CreateDataObject(targetDataObjectName, targetConnection, JsonExportSetting);
 
                     // Also add the classification at Data Object Mapping level, as this is derived from the target Data Object.
                     var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfigurationSettings);
@@ -8783,14 +8780,11 @@ namespace TEAM
                     BusinessKey businessKey = new BusinessKey();
 
                     var businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
-                    var businessKeyDataItemMappings =
-                        JsonOutputHandling.GetBusinessKeyComponentDataItemMappings(businessKeyDefinition,
-                            businessKeyDefinition);
+                    var businessKeyDataItemMappings = JsonOutputHandling.GetBusinessKeyComponentDataItemMappings(businessKeyDefinition, businessKeyDefinition);
                     businessKey.businessKeyComponentMapping = businessKeyDataItemMappings;
 
                     // Derive the surrogate key using conventions.
-                    var targetDataObjectSurrogateKey = MetadataHandling.GetSurrogateKey(targetDataObjectName,
-                        targetConnection, TeamConfigurationSettings);
+                    var targetDataObjectSurrogateKey = MetadataHandling.GetSurrogateKey(targetDataObjectName, targetConnection, TeamConfigurationSettings);
                     businessKey.surrogateKey = targetDataObjectSurrogateKey;
 
                     businessKeys.Add(businessKey);
@@ -8803,15 +8797,14 @@ namespace TEAM
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                 var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
 
-                DataWarehouseAutomation.DataObject sourceDataObject = new DataWarehouseAutomation.DataObject();
-                sourceDataObject.name = sourceFullyQualifiedName.Value;
+                var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, jsonExportSetting);
 
-                // Create the classifications for the source Data Objects
-                List<Classification> sourceDataObjectClassifications = new List<Classification>();
-                var sourceDataObjectClassification = new Classification();
-                sourceDataObjectClassification.classification = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", TeamConfigurationSettings).ToString();
-                sourceDataObjectClassifications.Add(sourceDataObjectClassification);
-                sourceDataObject.dataObjectClassification = sourceDataObjectClassifications;
+                //// Create the classifications for the source Data Objects
+                //List<Classification> sourceDataObjectClassifications = new List<Classification>();
+                //var sourceDataObjectClassification = new Classification();
+                //sourceDataObjectClassification.classification = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", TeamConfigurationSettings).ToString();
+                //sourceDataObjectClassifications.Add(sourceDataObjectClassification);
+                //sourceDataObject.dataObjectClassification = sourceDataObjectClassifications;
 
                 // Generate data items for each source, and for the mapping overall
                 List<dynamic> sourceDataItems = new List<dynamic>();
@@ -8845,7 +8838,7 @@ namespace TEAM
                 }
 
                 // Add extensions (database and schema)
-                sourceDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(sourceDataObject, sourceConnection, jsonExportSetting);
+                //sourceDataObject = JsonOutputHandling.SetDataObjectDatabaseExtension(sourceDataObject, sourceConnection, jsonExportSetting);
                 sourceDataObjects.Add(sourceDataObject);
 
                 counter++;
@@ -8857,8 +8850,13 @@ namespace TEAM
             // Related Data Objects
             List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
-            relatedDataObjects.Add(JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, jsonExportSetting));
-            
+            // Add the metadata connection as related data object (assuming this is set in the json export settings).
+            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, JsonExportSetting);
+            if (metaDataObject.name != null)
+            {
+                relatedDataObjects.Add(metaDataObject);
+            }
+
             dataObjectMapping.relatedDataObjects = relatedDataObjects;
             
             
@@ -8918,28 +8916,21 @@ namespace TEAM
 
                 var sourceDataObjectName = metadataRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
                 var targetDataObjectName = metadataRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                var sourceConnectionInternalId =
-                    metadataRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                var targetConnectionInternalId =
-                    metadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
-                var drivingKeyDefinition =
-                    metadataRow[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].ToString();
+                var sourceConnectionInternalId = metadataRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                var targetConnectionInternalId = metadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                var drivingKeyDefinition = metadataRow[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].ToString();
+                
 
                 // Find out what the correct patterns is.
-                var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition,
-                    TeamConfigurationSettings);
-                LoadPatternDefinition loadPatternDefinition =
-                    GlobalParameters.PatternDefinitionList.FirstOrDefault(item =>
-                        item.LoadPatternType == tableType.ToString());
+                var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition, TeamConfigurationSettings);
+                LoadPatternDefinition loadPatternDefinition = GlobalParameters.PatternDefinitionList.FirstOrDefault(item => item.LoadPatternType == tableType.ToString());
 
                 // Exception handling, if null then break
                 if (loadPatternDefinition == null)
                 {
-                    var outputMessage =
-                        $"No Json interface file was created for the mapping from '{sourceDataObjectName}' to '{targetDataObjectName}' because its type could not be asserted.";
+                    var outputMessage = $"No Json interface file was created for the mapping from '{sourceDataObjectName}' to '{targetDataObjectName}' because its type could not be asserted.";
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, outputMessage));
                     richTextBoxInformation.AppendText(outputMessage + "\r\n");
-                    //break;
                 }
 
                 // Retrieve the source-to-target mappings (base query).
@@ -8965,14 +8956,10 @@ namespace TEAM
                     var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
 
-                    var fullyQualifiedNameSource = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-                    var fullyQualifiedNameTarget = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+                    var fullyQualifiedNameSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                    var fullyQualifiedNameTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
 
-                    mappingRows = metadataDataTable.Select("[TARGET_NAME] = '" + fullyQualifiedNameTarget.Value +
-                                                           "' AND [TARGET_SCHEMA_NAME]='" +
-                                                           fullyQualifiedNameTarget.Key + "' ");
+                    mappingRows = metadataDataTable.Select("[TARGET_NAME] = '" + fullyQualifiedNameTarget.Value + "' AND [TARGET_SCHEMA_NAME]='" + fullyQualifiedNameTarget.Key + "' ");
 
                     // Populate the additional business key information (i.e. links)
                     var additionalBusinessKeyQuery = loadPatternDefinition.LoadPatternAdditionalBusinessKeyQuery;
@@ -9020,15 +9007,8 @@ namespace TEAM
                             #region Data Objects
 
                             var sourceDataObjects = new List<dynamic>();
-                            var sourceDataObject = new DataWarehouseAutomation.DataObject();
-                            var targetDataObject = new DataWarehouseAutomation.DataObject();
-
-                            sourceDataObject.name = (string) row["SOURCE_NAME"];
-                            targetDataObject.name = (string) row["TARGET_NAME"];
-
-                            // Source and target connection information
-                            sourceDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(sourceDataObject, sourceConnection, JsonExportSetting);
-                            targetDataObject = JsonOutputHandling.CreateDataObjectDatabaseExtensions(targetDataObject, targetConnection, JsonExportSetting);
+                            var sourceDataObject = JsonOutputHandling.CreateDataObject((string) row["SOURCE_NAME"], sourceConnection, JsonExportSetting);
+                            var targetDataObject = JsonOutputHandling.CreateDataObject((string) row["TARGET_NAME"], targetConnection, JsonExportSetting);
 
                             sourceDataObjects.Add(sourceDataObject);
                             sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
@@ -9037,10 +9017,9 @@ namespace TEAM
                             #endregion
 
                             #region Related Data Objects (e.g. lookup tables, references)
-
                             List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
-                            var dependentRows = TableMapping.GetDependentDataRows((string) row["SOURCE_NAME"], (string) row["TARGET_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"], TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
+                            var dependentRows = TableMapping.GetPeerDataRows((string) row["SOURCE_NAME"], (string) row["TARGET_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"], TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
 
                             foreach (var dependentRow in dependentRows)
                             {
@@ -9048,59 +9027,17 @@ namespace TEAM
                                 relatedDataObject.name = dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                                 relatedDataObjects.Add(relatedDataObject);
                             }
-
-                            // ONLY FOR STG patterns.
-                            // Define a lookup table, in case there is a desire to do key lookups.
-                            if (TeamConfigurationSettings.TableNamingLocation == "Prefix")
-                            {
-                                int prefixLocation = row["TARGET_NAME"].ToString().IndexOf(TeamConfigurationSettings.StgTablePrefixValue);
-                                if (prefixLocation != -1
-                                ) // The prefix is found in the name of the data object (table).
-                                {
-                                    var relatedDataObject = new DataWarehouseAutomation.DataObject();
-                                    relatedDataObject.name = row["TARGET_NAME"].ToString()
-                                        .Remove(prefixLocation, TeamConfigurationSettings.StgTablePrefixValue.Length)
-                                        .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
-
-                                    // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
-                                    List<Classification> dataObjectClassificationList = new List<Classification>();
-                                    var dataObjectClassification = new Classification();
-                                    dataObjectClassification.classification = "Lookup";
-                                    dataObjectClassification.notes =
-                                        "Lookup table related to the source-to-target mapping";
-                                    dataObjectClassificationList.Add(dataObjectClassification);
-
-                                    relatedDataObject.dataObjectClassification = dataObjectClassificationList;
-                                    relatedDataObjects.Add(relatedDataObject);
-                                }
-                            }
-                            else
-                            {
-                                int prefixLocation = row["TARGET_NAME"].ToString().LastIndexOf(TeamConfigurationSettings.StgTablePrefixValue);
-                                if (prefixLocation != -1
-                                ) // The suffix is found in the name of the data object (table).
-                                {
-                                    var relatedDataObject = new DataWarehouseAutomation.DataObject();
-                                    relatedDataObject.name = row["TARGET_NAME"].ToString().Remove(prefixLocation,
-                                            TeamConfigurationSettings.StgTablePrefixValue.Length)
-                                        .Insert(prefixLocation, TeamConfigurationSettings.PsaTablePrefixValue);
-
-                                    // Create the classifications at Related Data Object level, to capture this is a Lookup relationship.
-                                    List<Classification> dataObjectClassificationList = new List<Classification>();
-                                    var dataObjectClassification = new Classification();
-                                    dataObjectClassification.classification = "Lookup";
-                                    dataObjectClassification.notes = "Lookup table related to the source-to-target mapping";
-                                    dataObjectClassificationList.Add(dataObjectClassification);
-
-                                    relatedDataObject.dataObjectClassification = dataObjectClassificationList;
-                                    relatedDataObjects.Add(relatedDataObject);
-                                }
-                            }
+                            
 
                             // Add the metadata connection as related data object (assuming this is set in the json export settings).
-                            relatedDataObjects.Add(JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, JsonExportSetting));
+                            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfigurationSettings.MetadataConnection, JsonExportSetting);
+                            if (metaDataObject.name != null)
+                            {
+                                relatedDataObjects.Add(metaDataObject);
+                            }
 
-
+                            // Add upstream related Data Objects (assuming this is set in the json export settings).
+                            relatedDataObjects.AddRange(JsonOutputHandling.SetLineageRelatedDataObjectList((DataTable)_bindingSourceTableMetadata.DataSource, targetDataObjectName, JsonExportSetting));
 
 
 

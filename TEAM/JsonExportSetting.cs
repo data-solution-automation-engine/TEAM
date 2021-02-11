@@ -13,16 +13,16 @@ namespace TEAM
     /// </summary>
     public class JsonExportSetting
     {
+        // Data Objects
+        public string GenerateDataObjectConnection { get; set; }
+        public string GenerateDatabaseAsExtension { get; set; }
+        public string GenerateSchemaAsExtension { get; set; }
+        public string GenerateTypeAsClassification { get; set; }
+
         // Data Item
         public string GenerateSourceDataItemTypes { get; set; }
         public string GenerateTargetDataItemTypes { get; set; }
-
-        // Data Object Connection
-        public string GenerateSourceDataObjectConnection { get; set; }
-        public string GenerateTargetDataObjectConnection { get; set; }
-        public string GenerateDatabaseAsExtension { get; set; }
-        public string GenerateSchemaAsExtension { get; set; }
-
+        
         // Related Data Objects
         public string AddMetadataAsRelatedDataObject { get; set; }
         public string AddUpstreamDataObjectsAsRelatedDataObject { get; set; }
@@ -52,13 +52,13 @@ namespace TEAM
                 sr.Close();
                 fs.Close();
 
-                GenerateSourceDataItemTypes = configList["GenerateSourceDataItemTypes"];
-                GenerateTargetDataItemTypes = configList["GenerateTargetDataItemTypes"];
-
-                GenerateSourceDataObjectConnection = configList["GenerateSourceDataObjectConnection"];
-                GenerateTargetDataObjectConnection = configList["GenerateTargetDataObjectConnection"];
+                GenerateDataObjectConnection = configList["GenerateDataObjectConnection"];
                 GenerateDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
                 GenerateSchemaAsExtension = configList["GenerateSchemaAsExtension"];
+                GenerateTypeAsClassification = configList["GenerateTypeAsClassification"];
+
+                GenerateSourceDataItemTypes = configList["GenerateSourceDataItemTypes"];
+                GenerateTargetDataItemTypes = configList["GenerateTargetDataItemTypes"];
 
                 AddMetadataAsRelatedDataObject = configList["AddMetadataAsRelatedDataObject"];
                 AddUpstreamDataObjectsAsRelatedDataObject = configList["AddUpstreamDataObjectsAsRelatedDataObject"];
@@ -77,13 +77,14 @@ namespace TEAM
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM Json Export Configuration Settings */");
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-                validationFile.AppendLine("GenerateSourceDataItemTypes|" + GenerateSourceDataItemTypes + "");
-                validationFile.AppendLine("GenerateTargetDataItemTypes|" + GenerateTargetDataItemTypes + "");
 
-                validationFile.AppendLine("GenerateSourceDataObjectConnection|" + GenerateSourceDataObjectConnection + "");
-                validationFile.AppendLine("GenerateTargetDataObjectConnection|" + GenerateTargetDataObjectConnection + "");
+                validationFile.AppendLine("GenerateDataObjectConnection|" + GenerateDataObjectConnection + "");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|" + GenerateDatabaseAsExtension + "");
                 validationFile.AppendLine("GenerateSchemaAsExtension|" + GenerateSchemaAsExtension + "");
+                validationFile.AppendLine("GenerateTypeAsClassification|" + GenerateTypeAsClassification + "");
+
+                validationFile.AppendLine("GenerateSourceDataItemTypes|" + GenerateSourceDataItemTypes + "");
+                validationFile.AppendLine("GenerateTargetDataItemTypes|" + GenerateTargetDataItemTypes + "");
 
                 validationFile.AppendLine("AddMetadataAsRelatedDataObject|" +AddMetadataAsRelatedDataObject + "");
                 validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|" + AddUpstreamDataObjectsAsRelatedDataObject + "");
@@ -119,12 +120,14 @@ namespace TEAM
 
                 validationFile.AppendLine("/* TEAM Json Export File Settings */");
 
-                validationFile.AppendLine("GenerateSourceDataItemTypes|True");
-                validationFile.AppendLine("GenerateTargetDataItemTypes|True");
-                validationFile.AppendLine("GenerateSourceDataObjectConnection|True");
-                validationFile.AppendLine("GenerateTargetDataObjectConnection|True");
+                validationFile.AppendLine("GenerateDataObjectConnection|True");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|True");
                 validationFile.AppendLine("GenerateSchemaAsExtension|True");
+                validationFile.AppendLine("GenerateTypeAsClassification|True");
+
+                validationFile.AppendLine("GenerateSourceDataItemTypes|True");
+                validationFile.AppendLine("GenerateTargetDataItemTypes|True");
+
                 validationFile.AppendLine("AddMetadataAsRelatedDataObject|True");
                 validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|True");
 
