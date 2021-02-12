@@ -11,7 +11,73 @@ namespace TEAM
 {
     internal class MetadataValidation 
     {
+        internal static List<Tuple<string,string, bool>> BasicDataVaultValidation(string dataObjectName, TeamConnection teamConnection, MetadataHandling.TableTypes tableType)
+        {
+            // Initialise the return type
+            List<Tuple<string, string, bool>> returnList = new List<Tuple<string, string, bool>>();
+            
+            // Define the list to validate, this is different for each validation type.
+            List<string> validationAttributeList = new List<string>();
 
+            switch (tableType)
+            {
+                case MetadataHandling.TableTypes.CoreBusinessConcept:
+                    validationAttributeList.Add(FormBase.TeamConfiguration.LoadDateTimeAttribute);
+                    break;
+                
+                case MetadataHandling.TableTypes.Context:
+
+                    if (FormBase.TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True")
+                    {
+                        validationAttributeList.Add(FormBase.TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute);
+                    }
+                    else
+                    {
+                        validationAttributeList.Add(FormBase.TeamConfiguration.LoadDateTimeAttribute);
+                    }
+
+                    validationAttributeList.Add(FormBase.TeamConfiguration.RecordChecksumAttribute);
+                    break;
+                
+                case MetadataHandling.TableTypes.NaturalBusinessRelationship:
+                    validationAttributeList.Add(FormBase.TeamConfiguration.LoadDateTimeAttribute);
+                    break;
+            }
+
+            // Now check if the attribute exists in the table
+            foreach (string validationAttribute in validationAttributeList)
+            {
+                var fullyQualifiedValidationObject = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
+                var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
+                var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
+
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
+                {
+                    var conn = new SqlConnection
+                        {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
+                    conn.Open();
+
+                    // Execute the check
+                    var cmd = new SqlCommand(
+                        "SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS " +
+                        "WHERE " +
+                        "[TABLE_NAME] = '" + localTable + "' AND " +
+                        "[TABLE_SCHEMA] = '" + localSchema + "' AND " +
+                        "[COLUMN_NAME] = '" + validationAttribute + "')) THEN 1 ELSE 0 END", conn);
+
+                    var exists = (int) cmd.ExecuteScalar() == 1;
+
+                    returnList.Add(new Tuple<string, string, bool>(localSchema + '.'+localTable, validationAttribute, exists));
+
+                    conn.Close();
+                }
+            }
+
+            // return the result of the test;
+            return returnList;
+        }
+        
+        
         /// <summary>
         /// This method ensures that a table object exists in the physical model against the catalog.
         /// </summary>

@@ -135,6 +135,21 @@ namespace TEAM
             }
 
 
+            // Data Vault checks
+            if (ValidationSetting.BasicDataVaultValidation == "True")
+            {
+                checkBoxBasicDataVaultValidation.Checked = true;
+            }
+            else if (ValidationSetting.BasicDataVaultValidation == "False")
+            {
+                checkBoxBasicDataVaultValidation.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the business key syntax validation values, only true and false are allowed but this was encountered: " + ValidationSetting.BasicDataVaultValidation + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
 
         }
 
@@ -214,11 +229,16 @@ namespace TEAM
                 businessKeySyntax = checkBoxBusinessKeySyntaxValidation.Checked ? "True" : "False";
                 ValidationSetting.BusinessKeySyntax = businessKeySyntax;
 
+                // Data Vault model syntax check
+                var dataVaultBasicCheck = "";
+                dataVaultBasicCheck = checkBoxBasicDataVaultValidation.Checked ? "True" : "False";
+                ValidationSetting.BasicDataVaultValidation = dataVaultBasicCheck;
+
 
                 // Write to disk
                 ValidationSetting.SaveValidationFile();
 
-                richTextBoxInformation.Text = "The values have been successfully saved.";
+                richTextBoxInformation.Text = @"The values have been successfully saved.";
             }
             catch (Exception ex)
             {

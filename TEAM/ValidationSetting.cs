@@ -23,6 +23,9 @@ namespace TEAM
 
         // Syntax validation.
         public string BusinessKeySyntax { get; set; }
+        
+        // Modelling
+        public string BasicDataVaultValidation { get; set; }
 
         /// <summary>
         /// Retrieve the validation information from disk and save this to memory.
@@ -57,6 +60,8 @@ namespace TEAM
                 LinkKeyOrder = configList["LinkKeyOrder"];
 
                 BusinessKeySyntax = configList["BusinessKeySyntax"];
+                
+                BasicDataVaultValidation = configList["BasicDataVaultValidation"];
             }
             catch (Exception)
             {
@@ -81,6 +86,7 @@ namespace TEAM
                 validationFile.AppendLine("LogicalGroup|" + LogicalGroup + "");
                 validationFile.AppendLine("LinkKeyOrder|" + LinkKeyOrder + "");
                 validationFile.AppendLine("BusinessKeySyntax|" + BusinessKeySyntax + "");
+                validationFile.AppendLine("BasicDataVaultValidation|" + BasicDataVaultValidation + "");
 
                 // Closing off.
                 validationFile.AppendLine("/* End of file */");
@@ -124,6 +130,7 @@ namespace TEAM
                 validationFile.AppendLine("LinkKeyOrder|True");
                 validationFile.AppendLine("BusinessKeySyntax|True");
 
+                validationFile.AppendLine("BasicDataVaultValidation|True");
 
                 validationFile.AppendLine("/* End of file */");
 
@@ -133,14 +140,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"A new configuration file was created for {fileName}."));
-
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file was created for {fileName}."));
             }
             else
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The existing configuration file {fileName} was detected."));
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {fileName} was detected."));
             }
         }
     }

@@ -75,18 +75,14 @@ namespace TEAM
             {
                 // Set the version in memory
                 GlobalParameters.CurrentVersionId = selectedVersion.Item1;
-                GlobalParameters.HighestVersionId =
-                    selectedVersion.Item1; // On startup, the highest version is the same as the current version
+                GlobalParameters.HighestVersionId = selectedVersion.Item1; // On startup, the highest version is the same as the current version
                 TeamJsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + selectedVersion.Item1 + ".json";
 
                 trackBarVersioning.Maximum = selectedVersion.Item1;
-                trackBarVersioning.TickFrequency =
-                    TeamVersionList.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
+                trackBarVersioning.TickFrequency = TeamVersionList.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
 
                 //Make sure the version is displayed
-                var versionMajorMinor =
-                    TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
-                        selectedVersion.Item1);
+                var versionMajorMinor = TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, selectedVersion.Item1);
                 var majorVersion = versionMajorMinor.Item2;
                 var minorVersion = versionMajorMinor.Item3;
 
@@ -108,8 +104,7 @@ namespace TEAM
             }
             else
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
-                    $"No version information was loaded, and therefore the metadata could not be loaded either."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No version information was loaded, and therefore the metadata could not be loaded either."));
             }
 
             ContentCounter();
@@ -7695,56 +7690,65 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging(
-                    "Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+                _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
                 MetadataParameters.ValidationIssues = 0;
 
+                if (ValidationSetting.DataObjectExistence == "True")
+                {
+                    ValidateObjectExistence();
+                }
 
-                ValidateObjectExistence();
+                worker?.ReportProgress(10);
 
-
-                if (worker != null) worker.ReportProgress(15);
-
-
-
-                if (worker != null) worker.ReportProgress(30);
 
                 if (ValidationSetting.SourceBusinessKeyExistence == "True")
                 {
                     ValidateBusinessKeyObject();
                 }
 
+                worker?.ReportProgress(20);
 
-                ValidateAttributeExistence();
 
+                if (ValidationSetting.DataItemExistence == "True")
+                {
+                    ValidateAttributeExistence();
+                }
+                worker?.ReportProgress(30);
 
-                if (worker != null) worker.ReportProgress(60);
 
                 if (ValidationSetting.LogicalGroup == "True")
                 {
                     ValidateLogicalGroup();
                 }
+                worker?.ReportProgress(40);
 
-                if (worker != null) worker.ReportProgress(75);
+
 
                 if (ValidationSetting.LinkKeyOrder == "True")
                 {
                     ValidateLinkKeyOrder();
                 }
+                worker?.ReportProgress(50);
 
-                if (worker != null) worker.ReportProgress(80);
 
                 ValidateHardcodedFields();
                 ValidateAttributeDataObjectsForTableMappings();
 
                 ValidateSchemaConfiguration();
 
+                worker?.ReportProgress(80);
 
-                if (worker != null) worker.ReportProgress(100);
+                if (ValidationSetting.BasicDataVaultValidation == "True")
+                {
+                    ValidateBasicDataVaultAttributeExistence();
+                }
+
+                
+
+                worker?.ReportProgress(100);
 
                 // Informing the user.
-                _alertValidation.SetTextLogging("\r\n\r\nIn total " + MetadataParameters.ValidationIssues +
-                                                " validation issues have been found.");
+                _alertValidation.SetTextLogging("\r\n\r\nIn total " + MetadataParameters.ValidationIssues + " validation issues have been found.");
             }
         }
 
@@ -7767,9 +7771,8 @@ namespace TEAM
             // Informing the user.
             _alertValidation.SetTextLogging($"--> Commencing the validation to check if connection settings align with schemas entered in the Data Object mapping grid.\r\n");
 
-            var resultList = new Dictionary<string, string>();
-
-
+            int resultCounter = 0;
+            
             foreach (DataRow row in localDataTable.Rows)
             {
                 if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()]) // If row is enabled
@@ -7804,18 +7807,23 @@ namespace TEAM
 
                     if (sourceDataObject.Key.Replace("[", "").Replace("]", "") != sourceSchemaNameForConnection)
                     {
-                        _alertValidation.SetTextLogging(
-                            $"--> Inconsistency detected for {sourceDataObject.Value} between the schema definition in the table grid {sourceDataObject.Key} and its assigned connection {sourceSchemaNameForConnection}.\r\n");
+                        _alertValidation.SetTextLogging($"--> Inconsistency detected for {sourceDataObject.Value} between the schema definition in the table grid {sourceDataObject.Key} and its assigned connection {sourceSchemaNameForConnection}.\r\n");
+                        resultCounter++;
                     }
 
                     if (targetDataObject.Key.Replace("[", "").Replace("]", "") != targetSchemaNameForConnection)
                     {
-                        _alertValidation.SetTextLogging(
-                            $"--> Inconsistency for {targetDataObject.Value} detected between the schema definition in the table grid {targetDataObject.Key} and its assigned connection {targetSchemaNameForConnection}.\r\n");
+                        _alertValidation.SetTextLogging($"--> Inconsistency for {targetDataObject.Value} detected between the schema definition in the table grid {targetDataObject.Key} and its assigned connection {targetSchemaNameForConnection}.\r\n");
+                        resultCounter++;
                     }
 
                 }
 
+            }
+
+            if (resultCounter == 0)
+            {
+                _alertValidation.SetTextLogging("     There were no validation issues related to schema configuration.\r\n\r\n");
             }
 
         }
@@ -7828,8 +7836,7 @@ namespace TEAM
         private void ValidateAttributeExistence()
         {
             // Informing the user.
-            _alertValidation.SetTextLogging(
-                $"--> Commencing the validation to determine if the attributes in the metadata exists in the model.\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the attributes in the metadata exists in the model.\r\n");
 
             var resultList = new Dictionary<string, string>();
 
@@ -7960,47 +7967,6 @@ namespace TEAM
                 _alertValidation.SetTextLogging(
                     $"     There were no validation issues related to the existence of the attribute(s).\r\n\r\n");
             }
-        }
-
-        /// <summary>
-        /// Create a dictionary of all tables in the table mapping metadata grid and their connection strings.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, string> GetTableMappingConnections()
-        {
-            Dictionary<string, string> returnDictionary = new Dictionary<string, string>();
-
-            // Create the dictionary of the connection keys and their connection strings.
-            var localConnectionDictionary =
-                LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
-
-            var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
-
-            foreach (DataRow row in localDataTable.Rows)
-            {
-
-                var sourceDataObject = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
-                var sourceDataObjectConnectionId =
-                    row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-
-                var targetDataObject = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                var targetDataObjectConnectionId =
-                    row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
-
-                if (localConnectionDictionary.TryGetValue(sourceDataObjectConnectionId, out var sourceConnectionValue))
-                {
-                    returnDictionary[sourceDataObject] = sourceConnectionValue;
-                    //returnDictionary.Add(sourceDataObject, sourceConnectionValue);
-                }
-
-                if (localConnectionDictionary.TryGetValue(targetDataObjectConnectionId, out var targetConnectionValue))
-                {
-                    returnDictionary[targetDataObject] = targetConnectionValue;
-                    //returnDictionary.Add(targetDataObject, targetConnectionValue);
-                }
-            }
-
-            return returnDictionary;
         }
 
         /// <summary>
@@ -8357,6 +8323,78 @@ namespace TEAM
                 _alertValidation.SetTextLogging(
                     "     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
+        }
+
+
+        internal void ValidateBasicDataVaultAttributeExistence()
+        {
+            // Informing the user.
+            _alertValidation.SetTextLogging("--> Commencing the validation to check if basic Data Vault attributes are present.\r\n");
+
+            List<Tuple<string,string,bool>> masterResultList = new List<Tuple<string, string, bool>>();
+            
+            var localDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
+            foreach (DataRow row in localDataTable.Rows)
+            {
+                if ((bool)row[TableMappingMetadataColumns.Enabled.ToString()])
+                {
+                    var localDataObjectSourceName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                    var localDataObjectSourceConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var localDataObjectSourceConnection = GetTeamConnectionByConnectionId(localDataObjectSourceConnectionId);
+                    var localDataObjectSourceTableType = MetadataHandling.GetDataObjectType(localDataObjectSourceName, "", TeamConfiguration);
+                    
+                    var localDataObjectTargetName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    var localDataObjectTargetConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var localDataObjectTargetConnection = GetTeamConnectionByConnectionId(localDataObjectTargetConnectionId);
+                    var localDataObjectTargetTableType = MetadataHandling.GetDataObjectType(localDataObjectTargetName, "", TeamConfiguration);
+
+                    // Source
+                    if (localDataObjectSourceTableType == MetadataHandling.TableTypes.CoreBusinessConcept ||
+                        localDataObjectSourceTableType == MetadataHandling.TableTypes.Context ||
+                        localDataObjectSourceTableType == MetadataHandling.TableTypes.NaturalBusinessRelationship ||
+                        localDataObjectSourceTableType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContext ||
+                        localDataObjectSourceTableType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContextDrivingKey)
+                    {
+                        var result = MetadataValidation.BasicDataVaultValidation(localDataObjectSourceName, localDataObjectSourceConnection, localDataObjectSourceTableType);
+                        masterResultList.AddRange(result);
+                        
+                    }
+
+                    // Target
+                    if (localDataObjectTargetTableType == MetadataHandling.TableTypes.CoreBusinessConcept ||
+                        localDataObjectTargetTableType == MetadataHandling.TableTypes.Context ||
+                        localDataObjectTargetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationship ||
+                        localDataObjectTargetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContext ||
+                        localDataObjectTargetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContextDrivingKey)
+                    {
+                        var result = MetadataValidation.BasicDataVaultValidation(localDataObjectTargetName, localDataObjectTargetConnection, localDataObjectTargetTableType);
+                        masterResultList.AddRange(result);
+
+                    }
+                }
+            }
+            
+            // Evaluate the results
+            int resultsCounter = 0;
+
+            // Deduplicate
+            List<Tuple<string,string,bool>> deduplicatedResultList = masterResultList.Distinct().ToList();
+
+            foreach (var result in deduplicatedResultList)
+            {
+                if (result.Item3 == false)
+                {
+                    _alertValidation.SetTextLogging($"     Warning - {result.Item1} was evaluated as a Data Vault object but the expected attribute {result.Item2} was not found in the table.\r\n");
+                    resultsCounter++;
+                }
+            }
+
+            if (resultsCounter == 0)
+            {
+                _alertValidation.SetTextLogging("     There were no validation issues related Data Vault attribute existence.\r\n\r\n");
+            }
+
+
         }
 
         /// <summary>
