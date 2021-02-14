@@ -9066,17 +9066,15 @@ namespace TEAM
                             }
                             
 
+                            // Add upstream related Data Objects (assuming this is set in the json export settings).
+                            relatedDataObjects.AddRange(JsonOutputHandling.SetLineageRelatedDataObjectList((DataTable)_bindingSourceTableMetadata.DataSource, targetDataObjectName, JsonExportSetting));
+
                             // Add the metadata connection as related data object (assuming this is set in the json export settings).
                             var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting);
                             if (metaDataObject.name != null)
                             {
                                 relatedDataObjects.Add(metaDataObject);
                             }
-
-                            // Add upstream related Data Objects (assuming this is set in the json export settings).
-                            relatedDataObjects.AddRange(JsonOutputHandling.SetLineageRelatedDataObjectList((DataTable)_bindingSourceTableMetadata.DataSource, targetDataObjectName, JsonExportSetting));
-
-
 
                             // If the list contains entries, add it to the mapping.
                             if (relatedDataObjects.Count > 0)
