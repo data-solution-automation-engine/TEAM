@@ -629,38 +629,45 @@ namespace TEAM
             var lnkSet = new HashSet<string>();
             var lsatSet = new HashSet<string>();
 
-            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
-            {
-                var integrationTable = row.Cells[(int) TableMappingMetadataColumns.TargetTable].Value;
+            var inputTableMapping = (DataTable)_bindingSourceTableMetadata.DataSource;
 
-                if (gridViewRows != counter + 1 && integrationTable.ToString().Length > 3)
+            foreach (DataRow row in inputTableMapping.Rows)
+            {
+                var targetDataObject = row[(string) TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                string targetSourceConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                var targetConnection = GetTeamConnectionByConnectionId(targetSourceConnectionId);
+                var targetDataObjectType = MetadataHandling.GetDataObjectType(targetDataObject, "", TeamConfiguration);
+
+
+
+                if (gridViewRows != counter + 1 && targetDataObject.Length > 3)
                 {
-                    if (integrationTable.ToString().Substring(0, 4) == "HUB_")
+                    if (targetDataObjectType==MetadataHandling.TableTypes.CoreBusinessConcept)
                     {
-                        if (!hubSet.Contains(integrationTable.ToString()))
+                        if (!hubSet.Contains(targetDataObject))
                         {
-                            hubSet.Add(integrationTable.ToString());
+                            hubSet.Add(targetDataObject);
                         }
                     }
-                    else if (integrationTable.ToString().Substring(0, 4) == "SAT_")
+                    else if (targetDataObjectType == MetadataHandling.TableTypes.Context)
                     {
-                        if (!satSet.Contains(integrationTable.ToString()))
+                        if (!satSet.Contains(targetDataObject))
                         {
-                            satSet.Add(integrationTable.ToString());
+                            satSet.Add(targetDataObject);
                         }
                     }
-                    else if (integrationTable.ToString().Substring(0, 5) == "LSAT_")
+                    else if (targetDataObjectType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContext|| targetDataObjectType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContextDrivingKey)
                     {
-                        if (!lsatSet.Contains(integrationTable.ToString()))
+                        if (!lsatSet.Contains(targetDataObject))
                         {
-                            lsatSet.Add(integrationTable.ToString());
+                            lsatSet.Add(targetDataObject);
                         }
                     }
-                    else if (integrationTable.ToString().Substring(0, 4) == "LNK_")
+                    else if (targetDataObjectType == MetadataHandling.TableTypes.NaturalBusinessRelationship)
                     {
-                        if (!lnkSet.Contains(integrationTable.ToString()))
+                        if (!lnkSet.Contains(targetDataObject))
                         {
-                            lnkSet.Add(integrationTable.ToString());
+                            lnkSet.Add(targetDataObject);
                         }
                     }
                 }
