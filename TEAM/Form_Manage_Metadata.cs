@@ -6787,13 +6787,13 @@ namespace TEAM
                     {
                         DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
                         string sourceNode = row.Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
-                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].ToString();
+                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
 
                         string targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString();
-                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].ToString();
+                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].Value.ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
@@ -6815,6 +6815,10 @@ namespace TEAM
 
                     var edgeBuilder = new StringBuilder(); // Also create the links while iterating through the below set
 
+                    var presentationLayerLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
+                    
+                    
+                        
                     foreach (string node in nodeList)
                     {
                         if (node.Contains(TeamConfiguration.StgTablePrefixValue))
@@ -6839,6 +6843,10 @@ namespace TEAM
                                  node.Contains(TeamConfiguration.LsatTablePrefixValue))
                         {
                             dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node + "\" />");
+                        }
+                        else if (presentationLayerLabelArray.Any(s => node.Contains(s)))
+                        {
+                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Presentation\" Label=\"" + node + "\" />");
                         }
                         else
                         {
@@ -6987,7 +6995,7 @@ namespace TEAM
                     var sqlStatementForRelationships = new StringBuilder();
                     try
                     {
-                        sqlStatementForRelationships.AppendLine("SELECT DISTINCT [HUB_NAME], TARGET_SCHEMA_NAME+'.'+[TARGET_NAME]");
+                        sqlStatementForRelationships.AppendLine("SELECT DISTINCT [HUB_NAME], TARGET_SCHEMA_NAME+'.'+[TARGET_NAME] AS TARGET_NAME");
                         sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
                         sqlStatementForRelationships.AppendLine("WHERE HUB_NAME NOT IN ('N/A')");
 
@@ -6995,8 +7003,7 @@ namespace TEAM
 
                         foreach (DataRow row in businessConceptsRelationships.Rows)
                         {
-                            dgmlExtract.AppendLine("     <Link Source=\"" + (string) row["HUB_NAME"] + "\" Target=\"" +
-                                                   (string) row["TARGET_NAME"] + "\" />");
+                            dgmlExtract.AppendLine("     <Link Source=\"" + (string) row["HUB_NAME"] + "\" Target=\"" + (string) row["TARGET_NAME"] + "\" />");
                         }
                     }
                     catch
@@ -7052,12 +7059,12 @@ namespace TEAM
                         var row = dataGridViewTableMetadata.Rows[i];
                         
                         string sourceNode = row.Cells[(int)TableMappingMetadataColumns.SourceTable].Value.ToString();
-                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].ToString();
+                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
                         string targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetTable].Value.ToString();
-                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].ToString();
+                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].Value.ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
