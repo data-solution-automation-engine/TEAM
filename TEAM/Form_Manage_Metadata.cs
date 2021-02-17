@@ -8424,28 +8424,39 @@ namespace TEAM
             // Creating a list of tables which are dependent on other tables being present
             var objectList = new List<Tuple<string, string, string>>();
 
-
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+            
             foreach (DataRow row in localDataTable.Rows)
             {
                 if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
                 {
-                    if ((row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                             .StartsWith(TeamConfiguration.LinkTablePrefixValue) ||
-                         row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                             .StartsWith(TeamConfiguration.SatTablePrefixValue) ||
-                         row[TableMappingMetadataColumns.TargetTable.ToString()].ToString()
-                             .StartsWith(TeamConfiguration.LsatTablePrefixValue)))
+                    var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
+                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+                    var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
+
+                    var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                    var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+                    var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                    var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", TeamConfiguration);
+
+
+                    if (targetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationship || targetTableType == MetadataHandling.TableTypes.Context || targetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContext)
                     {
-                        var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString()
-                            .Replace("''''", "'");
-                        if (!objectList.Contains(new Tuple<string, string, string>(
-                            row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(),
-                            row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), businessKey)))
+                        var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
+                        
+                        if (!objectList.Contains(new Tuple<string, string, string>
+                            (
+                            sourceFullyQualifiedName.Key+'.'+sourceFullyQualifiedName.Value, targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value, businessKey)
+                            )
+                        )
                         {
-                            objectList.Add(new Tuple<string, string, string>(
-                                row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(),
-                                row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(), businessKey));
+                            objectList.Add(new Tuple<string, string, string>
+                                (
+                                    sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value, targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value, businessKey)
+                            );
                         }
                     }
                 }
@@ -8457,8 +8468,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(sourceObject,
-                    (DataTable) _bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(sourceObject, (DataTable) _bindingSourceTableMetadata.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -8516,11 +8526,9 @@ namespace TEAM
 
                     // Source table and business key definitions.
                     string validationObject = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
-                    string validationConnectionId =
-                        row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    string validationConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                     TeamConnection validationConnection = GetTeamConnectionByConnectionId(validationConnectionId);
-                    string businessKeyDefinition =
-                        row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
+                    string businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
 
 
                     if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode &&

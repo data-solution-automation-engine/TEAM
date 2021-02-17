@@ -242,17 +242,20 @@ namespace TEAM
             // The only interest is whether the Hub is there...
             string tableInclusionFilterCriterion;
             var tableClassification = "";
-            if (validationObject.Item2.StartsWith(FormBase.TeamConfiguration.SatTablePrefixValue)) // If the table is a Satellite, only the Hub is required
+
+            var inputTargetTableType = MetadataHandling.GetDataObjectType(validationObject.Item2, "", FormBase.TeamConfiguration);
+            
+            if (inputTargetTableType == MetadataHandling.TableTypes.Context) // If the table is a Satellite, only the Hub is required
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfiguration.HubTablePrefixValue;
                 tableClassification = FormBase.TeamConfiguration.SatTablePrefixValue;
             }
-            else if (validationObject.Item2.StartsWith(FormBase.TeamConfiguration.LinkTablePrefixValue)) // If the table is a Link, we're only interested in the Hubs
+            else if (inputTargetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationship) // If the table is a Link, we're only interested in the Hubs
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfiguration.HubTablePrefixValue;
                 tableClassification = "LNK";
             }
-            else if (validationObject.Item2.StartsWith(FormBase.TeamConfiguration.LsatTablePrefixValue)) // If the table is a Link-Satellite, only the Link is required
+            else if (inputTargetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContext) // If the table is a Link-Satellite, only the Link is required
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfiguration.LinkTablePrefixValue;
                 tableClassification = "LSAT";
@@ -271,12 +274,25 @@ namespace TEAM
                 {
                     foreach (DataRow row in inputDataTable.Rows)
                     {
+                        var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                        var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
+                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+                        var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
+
+                        var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                        var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+                        var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                        var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
+
+
                         if (
-                             (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
-                             (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
+                             (bool)row[TableMappingMetadataColumns.Enabled.ToString()] && // Only active generated objects
+                             sourceFullyQualifiedName.Key+'.'+ sourceFullyQualifiedName.Value == validationObject.Item1 &&
                              (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
-                             (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
-                             row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion) 
+                             targetFullyQualifiedName.Key+'.'+targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
+                             targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion) 
                            )
                         {
                             var bla = row;
@@ -290,12 +306,24 @@ namespace TEAM
                 // Query the dependent information
                 foreach (DataRow row in inputDataTable.Rows)
                 {
+                    var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
+                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+                    var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
+
+                    var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                    var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+                    var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                    var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
+
                     if (
                          (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
-                         (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == validationObject.Item1 &&
+                         sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
                          (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
-                         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != validationObject.Item2 && // Exclude itself
-                         row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                         targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
+                         targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion)
                        )
                     {
                         numberOfDependents++;
