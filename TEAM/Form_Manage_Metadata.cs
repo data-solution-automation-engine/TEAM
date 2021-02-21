@@ -3214,10 +3214,10 @@ namespace TEAM
                     var insertVersionStatement = new StringBuilder();
                     insertVersionStatement.AppendLine("INSERT INTO [MD_MODEL_METADATA]");
                     insertVersionStatement.AppendLine("([VERSION_NAME],[ACTIVATION_DATETIME])");
-                    insertVersionStatement.AppendLine("VALUES ('" + versionName + "','" +
-                                                      DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz") + "')");
+                    insertVersionStatement.AppendLine("VALUES ('" + versionName + "',@Now)");
 
                     var command = new SqlCommand(insertVersionStatement.ToString(), connection);
+                    command.Parameters.AddWithValue("@Now", DateTime.Now);
 
                     try
                     {
