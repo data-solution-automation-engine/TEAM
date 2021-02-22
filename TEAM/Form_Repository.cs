@@ -10,8 +10,8 @@ namespace TEAM
 {
     public partial class FormManageRepository : FormBase
     {
-        Form_Alert _alertSampleData;
-        Form_Alert _alertMetadata;
+        Form_Alert _alertSampleDataCreationInDatabase;
+        Form_Alert _alertSampleJsonMetadata;
 
         public FormManageRepository()
         {
@@ -59,7 +59,8 @@ namespace TEAM
         /// <param name="createStatement"></param>
         /// <param name="worker"></param>
         /// <param name="progressCounter"></param>
-        private void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, Form_Alert targetForm)
+        /// <param name="targetForm"></param>
+        private static void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, Form_Alert targetForm)
         {
             using (var connectionVersion = new SqlConnection(connString))
             {
@@ -84,6 +85,19 @@ namespace TEAM
             }
         }
 
+        private void ButtonGenerateDatabaseSamples(object sender, EventArgs e)
+        {
+            if (backgroundWorkerSampleData.IsBusy != true)
+            {
+                // create a new instance of the alert form
+                _alertSampleDataCreationInDatabase = new Form_Alert();
+                // event handler for the Cancel button in AlertForm
+                _alertSampleDataCreationInDatabase.Show();
+                _alertSampleDataCreationInDatabase.ShowLogButton(false);
+
+                backgroundWorkerSampleData.RunWorkerAsync();
+            }
+        }
 
         private void backgroundWorkerSampleData_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -96,24 +110,24 @@ namespace TEAM
             }
             else
             {
-                backgroundWorkerSampleData.ReportProgress(0);
+                worker.ReportProgress(0);
+
 
                 // Create the sample data
-                _alertSampleData.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
+                _alertSampleDataCreationInDatabase.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
 
                 try
                 {
-
                     GenerateDatabaseSample(worker);
+                    
+                    _alertSampleDataCreationInDatabase.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
                     SetStandardConfigurationSettings();
+                    worker.ReportProgress(100);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-
-                backgroundWorkerSampleData.ReportProgress(100);
             }
         }
 
@@ -256,13 +270,12 @@ namespace TEAM
                 // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
                 var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
 
-                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertSampleData);
+                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertSampleDataCreationInDatabase);
                 counter++;
 
-                worker.ReportProgress(100);
+                worker.ReportProgress(normalisedValue);
             }
         }
-
 
         /// <summary>
         /// This method reads a file (using filePath) and populates a Dictionary collection using the individual commands and provided Connection String
@@ -394,85 +407,16 @@ namespace TEAM
         {
             if (backgroundWorkerMetadata.IsBusy != true)
             {
-                // create a new instance of the alert form
-                _alertMetadata = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
-                _alertMetadata.ShowLogButton(false);
-                _alertMetadata.ShowCancelButton(false);
-                _alertMetadata.ShowProgressBar(false);
-                _alertMetadata.ShowProgressLabel(false);
-                _alertMetadata.Show();
-                // Start the asynchronous operation.
-                SetStandardConfigurationSettings();
-
-                backgroundWorkerMetadata.RunWorkerAsync();
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            SetStandardConfigurationSettings();
-        }
-
-
-
-
-        private void linkLabelSource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelSource.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2ARcCTw");
-        }
-
-        private void linkLabelStaging_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelStaging.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2VY4Os3");
-        
-        }
-
-        private void linkLabelPsa_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelPSA.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2SX0Xth");
-        
-        }
-
-        private void linkLabelIntegration_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelIntegration.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2FuWBq5");
-        
-        }
-
-        private void buttonGenerateDatabaseSamples(object sender, EventArgs e)
-        {
-            if (backgroundWorkerSampleData.IsBusy != true)
-            {
-                // create a new instance of the alert form
-                _alertSampleData = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
-                _alertSampleData.Show();
-                _alertSampleData.ShowLogButton(false);
+                // Create a new instance of the alert form, disabling most stuff.
+                _alertSampleJsonMetadata = new Form_Alert();
+                _alertSampleJsonMetadata.ShowLogButton(false);
+                _alertSampleJsonMetadata.ShowCancelButton(false);
+                _alertSampleJsonMetadata.ShowProgressBar(false);
+                _alertSampleJsonMetadata.ShowProgressLabel(false);
+                _alertSampleJsonMetadata.Show();
                 
-                // Start the asynchronous operation.
-                SetStandardConfigurationSettings();
-                backgroundWorkerSampleData.RunWorkerAsync();
+                // Start the asynchronous operation to create / move the sample Json files.
+                backgroundWorkerMetadata.RunWorkerAsync();
             }
         }
 
@@ -491,7 +435,7 @@ namespace TEAM
             else
             {
                 // Create the sample data
-                _alertMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
+                _alertSampleJsonMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
 
                 try
                 {
@@ -515,16 +459,16 @@ namespace TEAM
                         foreach (KeyValuePair<string, string> file in fileDictionary)
                         {
                             File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
-                            _alertMetadata.SetTextLogging("Created sample Json file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
+                            _alertSampleJsonMetadata.SetTextLogging("Created sample Json file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
                         }
                     }
 
-                    _alertMetadata.SetTextLogging("\r\nThis metadata will populate the data grids in the 'metadata mapping' screen, but not create any data structures in a database.");
-                    _alertMetadata.SetTextLogging("\r\nIn other words, this is just the source-target mapping metadata (dataObjectsMappings and dataItemMappings).");
+                    _alertSampleJsonMetadata.SetTextLogging("\r\nThis metadata will populate the data grids in the 'metadata mapping' screen, but not create any data structures in a database.");
+                    _alertSampleJsonMetadata.SetTextLogging("\r\nIn other words, this is just the source-target mapping metadata (dataObjectsMappings and dataItemMappings).");
 
                     #region Configuration Settings
-                    
-                    _alertMetadata.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
+
+                    _alertSampleJsonMetadata.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
                     SetStandardConfigurationSettings();
 
                     #endregion
@@ -534,6 +478,59 @@ namespace TEAM
                     MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
+        }
+
+        private void ButtonSetStandardConfiguration(object sender, EventArgs e)
+        {
+            SetStandardConfigurationSettings();
+        }
+
+        private void linkLabelSource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelSource.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2ARcCTw");
+        }
+
+        private void linkLabelStaging_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelStaging.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2VY4Os3");
+        }
+
+        private void linkLabelPsa_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelPSA.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2SX0Xth");
+        }
+
+        private void linkLabelIntegration_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelIntegration.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2FuWBq5");
+        }
+
+
+        private void backgroundWorkerSampleData_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            // Pass the progress to AlertForm label and progressbar
+            _alertSampleDataCreationInDatabase.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertSampleDataCreationInDatabase.ProgressValue = e.ProgressPercentage;
         }
     }
 }

@@ -296,7 +296,7 @@
             this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
             this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
             this.generalSettingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
             this.generalSettingsToolStripMenuItem.Text = "General &Settings";
             this.generalSettingsToolStripMenuItem.Click += new System.EventHandler(this.generalSettingsToolStripMenuItem_Click);
             // 
@@ -305,22 +305,22 @@
             this.patternDefinitionsToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
             this.patternDefinitionsToolStripMenuItem.Name = "patternDefinitionsToolStripMenuItem";
             this.patternDefinitionsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.patternDefinitionsToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.patternDefinitionsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
             this.patternDefinitionsToolStripMenuItem.Text = "Pattern Definitions";
             this.patternDefinitionsToolStripMenuItem.Click += new System.EventHandler(this.patternDefinitionsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(255, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(210, 6);
             // 
             // deployMetadataExamplesToolStripMenuItem
             // 
             this.deployMetadataExamplesToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
             this.deployMetadataExamplesToolStripMenuItem.Name = "deployMetadataExamplesToolStripMenuItem";
             this.deployMetadataExamplesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.deployMetadataExamplesToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
-            this.deployMetadataExamplesToolStripMenuItem.Text = "Deploy Metadata Examples";
+            this.deployMetadataExamplesToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.deployMetadataExamplesToolStripMenuItem.Text = "Deploy Examples";
             this.deployMetadataExamplesToolStripMenuItem.Click += new System.EventHandler(this.deployMetadataExamplesToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem

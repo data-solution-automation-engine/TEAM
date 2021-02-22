@@ -85,6 +85,7 @@
             this.backgroundWorkerSampleData.WorkerReportsProgress = true;
             this.backgroundWorkerSampleData.WorkerSupportsCancellation = true;
             this.backgroundWorkerSampleData.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerSampleData_DoWork);
+            this.backgroundWorkerSampleData.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerSampleData_ProgressChanged);
             // 
             // checkBoxConfigurationSettings
             // 
@@ -109,7 +110,7 @@
             this.button2.Text = "Reset standard Configuration Settings";
             this.toolTipRepository.SetToolTip(this.button2, resources.GetString("button2.ToolTip"));
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.ButtonSetStandardConfiguration);
             // 
             // buttonGenerateSampleMapping
             // 
@@ -227,7 +228,7 @@
             this.button3.TabIndex = 4;
             this.button3.Text = "Generate Sample Database content";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.buttonGenerateDatabaseSamples);
+            this.button3.Click += new System.EventHandler(this.ButtonGenerateDatabaseSamples);
             // 
             // linkLabelIntegration
             // 
@@ -367,6 +368,7 @@
             this.backgroundWorkerMetadata.WorkerReportsProgress = true;
             this.backgroundWorkerMetadata.WorkerSupportsCancellation = true;
             this.backgroundWorkerMetadata.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerMetadata_DoWork);
+
             // 
             // FormManageRepository
             // 
