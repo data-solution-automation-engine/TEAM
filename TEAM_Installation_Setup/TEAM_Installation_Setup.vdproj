@@ -5866,6 +5866,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D4E4C269202FD6867D3D30CCCCCCD400"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_BA9864E9B97FD31543B336A71729FE0D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5891,12 +5897,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_3AD90DDF12AC42A892FE6F452F986161"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D4E4C269202FD6867D3D30CCCCCCD400"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -15073,7 +15073,7 @@
         {
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_05933D7971DD45F2B83C8EDCB2C4458C"
             {
-            "DefaultLocation" = "8:[Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[WindowsVolume][Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -15133,7 +15133,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
         "ProductCode" = "8:{63F5D954-C064-4E5F-AAF8-40586CF699D9}"
-        "PackageCode" = "8:{D035CFA2-AAB3-40F7-8552-E9DDB6B28CDC}"
+        "PackageCode" = "8:{2892F29D-317F-450B-8B0C-D48246AB2360}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -15141,7 +15141,7 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:1.6.3"
-        "Manufacturer" = "8:Roelant Vos"
+        "Manufacturer" = "8:RoelantVos"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.roelantvos.com/blog"
         "Title" = "8:Taxonomy of ETL Automation Metadata (TEAM)"
@@ -15682,7 +15682,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3AD90DDF12AC42A892FE6F452F986161"
             {
-            "SourcePath" = "8:..\\TEAM\\obj\\Debug\\TEAM.exe"
+            "SourcePath" = "8:..\\TEAM\\obj\\Release\\TEAM.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
