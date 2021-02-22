@@ -15132,8 +15132,8 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
-        "ProductCode" = "8:{63F5D954-C064-4E5F-AAF8-40586CF699D9}"
-        "PackageCode" = "8:{2892F29D-317F-450B-8B0C-D48246AB2360}"
+        "ProductCode" = "8:{C684A236-EF7D-4B16-9AB1-2BB904847588}"
+        "PackageCode" = "8:{B4FA1727-D92D-4F95-94B1-57EC46F71C8A}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -15682,7 +15682,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3AD90DDF12AC42A892FE6F452F986161"
             {
-            "SourcePath" = "8:..\\TEAM\\obj\\Release\\TEAM.exe"
+            "SourcePath" = "8:..\\TEAM\\obj\\Debug\\TEAM.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
