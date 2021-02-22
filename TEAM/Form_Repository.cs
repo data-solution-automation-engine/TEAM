@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using TEAM_Library;
 
@@ -89,7 +88,6 @@ namespace TEAM
         private void backgroundWorkerSampleData_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -399,6 +397,10 @@ namespace TEAM
                 // create a new instance of the alert form
                 _alertMetadata = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
+                _alertMetadata.ShowLogButton(false);
+                _alertMetadata.ShowCancelButton(false);
+                _alertMetadata.ShowProgressBar(false);
+                _alertMetadata.ShowProgressLabel(false);
                 _alertMetadata.Show();
                 // Start the asynchronous operation.
                 SetStandardConfigurationSettings();
@@ -466,25 +468,28 @@ namespace TEAM
                 _alertSampleData = new Form_Alert();
                 // event handler for the Cancel button in AlertForm
                 _alertSampleData.Show();
+                _alertSampleData.ShowLogButton(false);
+                
                 // Start the asynchronous operation.
                 SetStandardConfigurationSettings();
                 backgroundWorkerSampleData.RunWorkerAsync();
             }
         }
 
+        /// <summary>
+        /// Background worker to populate the metadata grids (by creating sample Json files).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorkerMetadata_DoWork(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
-
             // Handle multi-threading
-            if (worker != null && worker.CancellationPending)
+            if (sender is BackgroundWorker worker && worker.CancellationPending)
             {
                 e.Cancel = true;
             }
             else
             {
-                backgroundWorkerMetadata.ReportProgress(0);
-
                 // Create the sample data
                 _alertMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
 
@@ -499,14 +504,11 @@ namespace TEAM
                         {
                             var fileName = Path.GetFileName(filePath);
 
-
-                                if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
-                                {
-                                    fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment+"_");
-                                    fileDictionary.Add(filePath, fileName);
-                                }
-                            
-
+                            if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
+                            {
+                                fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment + "_");
+                                fileDictionary.Add(filePath, fileName);
+                            }
                         }
 
                         // And then process them
@@ -515,14 +517,14 @@ namespace TEAM
                             File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
                             _alertMetadata.SetTextLogging("Created sample Json file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
                         }
-
                     }
 
-
-
+                    _alertMetadata.SetTextLogging("\r\nThis metadata will populate the data grids in the 'metadata mapping' screen, but not create any data structures in a database.");
+                    _alertMetadata.SetTextLogging("\r\nIn other words, this is just the source-target mapping metadata (dataObjectsMappings and dataItemMappings).");
 
                     #region Configuration Settings
-
+                    
+                    _alertMetadata.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
                     SetStandardConfigurationSettings();
 
                     #endregion
@@ -531,36 +533,6 @@ namespace TEAM
                 {
                     MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-
-                backgroundWorkerMetadata.ReportProgress(100);
-            }
-        }
-
-        private void GenerateMetadataInDatabase(BackgroundWorker worker)
-        {
-            // Create a dictionary for all SQL files to execute
-            Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
-
-
-                PopulateSqlCommandDictionaryFromFile(
-                    GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
-                    commandDictionary, TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
-            
-
-            // Execute the SQL statements
-            int counter = 0;
-            foreach (var individualSQlCommand in commandDictionary)
-            {
-                var sqlCommand = individualSQlCommand.Key;
-
-                // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
-                var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
-
-                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertMetadata);
-                counter++;
-
-                worker.ReportProgress(100);
             }
         }
     }
