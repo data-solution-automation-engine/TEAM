@@ -114,6 +114,7 @@
     <Compile Include="Form_PIT.Designer.cs">
       <DependentUpon>Form_PIT.cs</DependentUpon>
     </Compile>
+    <Compile Include="JsonExportSetting.cs" />
     <Compile Include="TeamLoadPatternHandling.cs" />
     <Compile Include="TeamUtility.cs" />
     <Compile Include="TeamObjectModel.cs" />
@@ -206,6 +207,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ValidationSetting.cs" />
     <EmbeddedResource Include="Form_About.resx">
       <DependentUpon>Form_About.cs</DependentUpon>
     </EmbeddedResource>

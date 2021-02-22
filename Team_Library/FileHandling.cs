@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace TEAM
+namespace TEAM_Library
 {
     /// <summary>
     /// The FileHandling class concerns the basic IO operations required to create directories and configuration files (without any specific content).

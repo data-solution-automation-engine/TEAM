@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.Data.SqlClient;
+using System.Data;
 using System.Security.Cryptography;
 using System.Text;
-using System.Data;
-using System.Reflection;
+using Microsoft.Data.SqlClient;
 
-namespace TEAM
+namespace TEAM_Library
 {
     public class Utility
     {

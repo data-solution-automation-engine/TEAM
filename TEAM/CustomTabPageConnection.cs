@@ -6,6 +6,8 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
+using TEAM_Library;
+using static TEAM.FormBase;
 
 namespace TEAM
 {
@@ -571,7 +573,7 @@ namespace TEAM
                         $"The connection {_localConnection.ConnectionKey} was removed from {_connectionFileName}.\r\n");
 
                     // Remove the connection from the global dictionary
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Remove(_localConnection.ConnectionInternalId);
+                    FormBase.TeamConfiguration.ConnectionDictionary.Remove(_localConnection.ConnectionInternalId);
                 }
 
                 // Save the updated file to disk.
@@ -597,13 +599,13 @@ namespace TEAM
                 // If the connection key (also the dictionary key) already exists, then update the values.
                 // If the key does not exist then insert a new row in the connection dictionary.
 
-                if (FormBase.TeamConfigurationSettings.ConnectionDictionary.ContainsKey(_localConnection.ConnectionInternalId))
+                if (FormBase.TeamConfiguration.ConnectionDictionary.ContainsKey(_localConnection.ConnectionInternalId))
                 {
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary[_localConnection.ConnectionInternalId] = _localConnection;
+                    FormBase.TeamConfiguration.ConnectionDictionary[_localConnection.ConnectionInternalId] = _localConnection;
                 }
                 else
                 {
-                    FormBase.TeamConfigurationSettings.ConnectionDictionary.Add(_localConnection.ConnectionInternalId, _localConnection);
+                    FormBase.TeamConfiguration.ConnectionDictionary.Add(_localConnection.ConnectionInternalId, _localConnection);
                 }
 
                 // Update the connection on disk
@@ -660,7 +662,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    // Debugging
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
                 }
 
                 // The name of the tab page is passed back to the original control (the tab control).

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace TEAM
+namespace TEAM_Library
 {
     /// <summary>
     /// An event log is a list of events.

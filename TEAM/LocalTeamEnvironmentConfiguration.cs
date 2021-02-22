@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using TEAM_Library;
 
 namespace TEAM
 {
@@ -81,89 +82,6 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Method to create a new validation file with default values at the default location
-        /// Checks if the file already exists. If it does, nothing will happen.
-        /// </summary>
-        internal static void CreateDummyValidationFile(string fileName)
-        {
-            if (!File.Exists(fileName))
-            {
-                var validationFile = new StringBuilder();
-
-                validationFile.AppendLine("/* TEAM Validation Settings */");
-
-                // Object existence validation
-                validationFile.AppendLine("SourceObjectExistence|True");
-                validationFile.AppendLine("TargetObjectExistence|True");
-                validationFile.AppendLine("BusinessKeyExistence|True");
-
-                validationFile.AppendLine("SourceAttributeExistence|True");
-                validationFile.AppendLine("TargetAttributeExistence|True");
-
-                // Consistency validation
-                validationFile.AppendLine("LogicalGroup|True");
-                validationFile.AppendLine("LinkKeyOrder|True");
-                validationFile.AppendLine("BusinessKeySyntax|True");
-
-
-                validationFile.AppendLine("/* End of file */");
-
-                using (var outfile = new StreamWriter(fileName))
-                {
-                    outfile.Write(validationFile.ToString());
-                    outfile.Close();
-                }
-
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"A new configuration file was created for {fileName}."));
-
-            }
-            else
-            {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The existing configuration file {fileName} was detected."));
-            }
-        }
-
-        /// <summary>
-        /// Method to create a new validation file with default values at the default location
-        /// Checks if the file already exists. If it does, nothing will happen.
-        /// </summary>
-        internal static void CreateDummyJsonExtractConfigurationFile(string fileName)
-        {
-            if (!File.Exists(fileName))
-            {
-                var validationFile = new StringBuilder();
-
-                validationFile.AppendLine("/* TEAM Json Export File Settings */");
-
-                validationFile.AppendLine("GenerateSourceDataItemTypes|True");
-                validationFile.AppendLine("GenerateTargetDataItemTypes|True");
-                validationFile.AppendLine("GenerateSourceDataObjectConnection|True");
-                validationFile.AppendLine("GenerateTargetDataObjectConnection|True");
-                validationFile.AppendLine("GenerateDatabaseAsExtension|True");
-                validationFile.AppendLine("GenerateSchemaAsExtension|True");
-
-                validationFile.AppendLine("/* End of file */");
-
-                using (var outfile = new StreamWriter(fileName))
-                {
-                    outfile.Write(validationFile.ToString());
-                    outfile.Close();
-                }
-
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"A new Json extract configuration file was created for {fileName}."));
-
-            }
-            else
-            {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The existing Json extract configuration file {fileName} was detected."));
-            }
-        }
-
-        /// <summary>
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
         /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
         /// </summary
@@ -224,7 +142,7 @@ namespace TEAM
             }
             catch (Exception)
             {
-                // richTextBoxInformation.AppendText("\r\n\r\nAn error occured while interpreting the configuration file. The original error is: '" + ex.Message + "'");
+                // richTextBoxInformation.AppendText("\r\n\r\nAn error occurred while interpreting the configuration file. The original error is: '" + ex.Message + "'");
             }
         }
 
@@ -239,39 +157,40 @@ namespace TEAM
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
                 configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                configurationFile.AppendLine("MetadataConnectionId|" + FormBase.TeamConfigurationSettings.MetadataConnection.ConnectionInternalId + "");
+                configurationFile.AppendLine("MetadataConnectionId|" + FormBase.TeamConfiguration.MetadataConnection.ConnectionInternalId + "");
 
-                configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.TeamConfigurationSettings.StgTablePrefixValue +"");
-                configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.TeamConfigurationSettings.PsaTablePrefixValue + "");
-                configurationFile.AppendLine("PresentationLayerLabels|" + FormBase.TeamConfigurationSettings.PresentationLayerLabels + "");
-                configurationFile.AppendLine("TransformationLabels|" + FormBase.TeamConfigurationSettings.TransformationLabels + "");
-                configurationFile.AppendLine("HubTablePrefix|" + FormBase.TeamConfigurationSettings.HubTablePrefixValue + "");
-                configurationFile.AppendLine("SatTablePrefix|" + FormBase.TeamConfigurationSettings.SatTablePrefixValue + "");
-                configurationFile.AppendLine("LinkTablePrefix|" + FormBase.TeamConfigurationSettings.LinkTablePrefixValue +"");
-                configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.TeamConfigurationSettings.LsatTablePrefixValue + "");
-                configurationFile.AppendLine("KeyIdentifier|" + FormBase.TeamConfigurationSettings.DwhKeyIdentifier + "");
-                configurationFile.AppendLine("SchemaName|" + FormBase.TeamConfigurationSettings.SchemaName + "");
-                configurationFile.AppendLine("RowID|" + FormBase.TeamConfigurationSettings.RowIdAttribute + "");
-                configurationFile.AppendLine("EventDateTimeStamp|" + FormBase.TeamConfigurationSettings.EventDateTimeAttribute + "");
-                configurationFile.AppendLine("LoadDateTimeStamp|" + FormBase.TeamConfigurationSettings.LoadDateTimeAttribute + "");
-                configurationFile.AppendLine("ExpiryDateTimeStamp|" + FormBase.TeamConfigurationSettings.ExpiryDateTimeAttribute + "");
-                configurationFile.AppendLine("ChangeDataIndicator|" + FormBase.TeamConfigurationSettings.ChangeDataCaptureAttribute +"");
-                configurationFile.AppendLine("RecordSourceAttribute|" + FormBase.TeamConfigurationSettings.RecordSourceAttribute + "");
-                configurationFile.AppendLine("ETLProcessID|" + FormBase.TeamConfigurationSettings.EtlProcessAttribute + "");
-                configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.TeamConfigurationSettings.EtlProcessUpdateAttribute +"");
-                configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.TeamConfigurationSettings.LogicalDeleteAttribute +"");
-                configurationFile.AppendLine("TableNamingLocation|" + FormBase.TeamConfigurationSettings.TableNamingLocation + "");
-                configurationFile.AppendLine("KeyNamingLocation|" + FormBase.TeamConfigurationSettings.KeyNamingLocation +"");
-                configurationFile.AppendLine("RecordChecksum|" +FormBase.TeamConfigurationSettings.RecordChecksumAttribute + "");
-                configurationFile.AppendLine("CurrentRecordAttribute|" +FormBase.TeamConfigurationSettings.CurrentRowAttribute +"");
-                configurationFile.AppendLine("AlternativeRecordSource|" +FormBase.TeamConfigurationSettings.AlternativeRecordSourceAttribute + "");
-                configurationFile.AppendLine("AlternativeHubLDTS|" +FormBase.TeamConfigurationSettings.AlternativeLoadDateTimeAttribute + "");
-                configurationFile.AppendLine("AlternativeSatelliteLDTS|" +FormBase.TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute +"");
-                configurationFile.AppendLine("AlternativeRecordSourceFunction|" +FormBase.TeamConfigurationSettings.EnableAlternativeRecordSourceAttribute +"");
-                configurationFile.AppendLine("AlternativeHubLDTSFunction|" +FormBase.TeamConfigurationSettings.EnableAlternativeLoadDateTimeAttribute +"");
-                configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +FormBase.TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute +"");
-                configurationFile.AppendLine("PSAKeyLocation|" + FormBase.TeamConfigurationSettings.PsaKeyLocation + "");
-                configurationFile.AppendLine("metadataRepositoryType|" +FormBase.TeamConfigurationSettings.MetadataRepositoryType +"");
+                configurationFile.AppendLine("StagingAreaPrefix|" + FormBase.TeamConfiguration.StgTablePrefixValue +"");
+                configurationFile.AppendLine("PersistentStagingAreaPrefix|" +FormBase.TeamConfiguration.PsaTablePrefixValue + "");
+                configurationFile.AppendLine("PresentationLayerLabels|" + FormBase.TeamConfiguration.PresentationLayerLabels + "");
+                configurationFile.AppendLine("TransformationLabels|" + FormBase.TeamConfiguration.TransformationLabels + "");
+                configurationFile.AppendLine("HubTablePrefix|" + FormBase.TeamConfiguration.HubTablePrefixValue + "");
+                configurationFile.AppendLine("SatTablePrefix|" + FormBase.TeamConfiguration.SatTablePrefixValue + "");
+                configurationFile.AppendLine("LinkTablePrefix|" + FormBase.TeamConfiguration.LinkTablePrefixValue +"");
+                configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.TeamConfiguration.LsatTablePrefixValue + "");
+                configurationFile.AppendLine("KeyIdentifier|" + FormBase.TeamConfiguration.DwhKeyIdentifier + "");
+                configurationFile.AppendLine("SchemaName|" + FormBase.TeamConfiguration.SchemaName + "");
+                configurationFile.AppendLine("RowID|" + FormBase.TeamConfiguration.RowIdAttribute + "");
+                configurationFile.AppendLine("EventDateTimeStamp|" + FormBase.TeamConfiguration.EventDateTimeAttribute + "");
+                configurationFile.AppendLine("LoadDateTimeStamp|" + FormBase.TeamConfiguration.LoadDateTimeAttribute + "");
+                configurationFile.AppendLine("ExpiryDateTimeStamp|" + FormBase.TeamConfiguration.ExpiryDateTimeAttribute + "");
+                configurationFile.AppendLine("ChangeDataIndicator|" + FormBase.TeamConfiguration.ChangeDataCaptureAttribute +"");
+                configurationFile.AppendLine("RecordSourceAttribute|" + FormBase.TeamConfiguration.RecordSourceAttribute + "");
+                configurationFile.AppendLine("ETLProcessID|" + FormBase.TeamConfiguration.EtlProcessAttribute + "");
+                configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.TeamConfiguration.EtlProcessUpdateAttribute +"");
+                configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.TeamConfiguration.LogicalDeleteAttribute +"");
+                configurationFile.AppendLine("TableNamingLocation|" + FormBase.TeamConfiguration.TableNamingLocation + "");
+                configurationFile.AppendLine("KeyNamingLocation|" + FormBase.TeamConfiguration.KeyNamingLocation +"");
+                configurationFile.AppendLine("RecordChecksum|" +FormBase.TeamConfiguration.RecordChecksumAttribute + "");
+                configurationFile.AppendLine("CurrentRecordAttribute|" +FormBase.TeamConfiguration.CurrentRowAttribute +"");
+                configurationFile.AppendLine("AlternativeRecordSource|" +FormBase.TeamConfiguration.AlternativeRecordSourceAttribute + "");
+                configurationFile.AppendLine("AlternativeHubLDTS|" +FormBase.TeamConfiguration.AlternativeLoadDateTimeAttribute + "");
+                configurationFile.AppendLine("AlternativeSatelliteLDTS|" +FormBase.TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("AlternativeRecordSourceFunction|" +FormBase.TeamConfiguration.EnableAlternativeRecordSourceAttribute +"");
+                configurationFile.AppendLine("AlternativeHubLDTSFunction|" +FormBase.TeamConfiguration.EnableAlternativeLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +FormBase.TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute +"");
+                configurationFile.AppendLine("PSAKeyLocation|" + FormBase.TeamConfiguration.PsaKeyLocation + "");
+                configurationFile.AppendLine("MetadataRepositoryType|" +FormBase.TeamConfiguration.MetadataRepositoryType +"");
+                configurationFile.AppendLine("EnvironmentMode|" + FormBase.TeamConfiguration.EnvironmentMode + "");
 
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
@@ -289,166 +208,8 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occured saving the Configuration File. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// Retrieve the validation information from disk and save this to memory.
-        /// </summary>
-        /// <param name="filename"></param>
-        internal static void LoadJsonConfigurationFile(string filename)
-        {
-            try
-            {
-                var configList = new Dictionary<string, string>();
-                var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
-                var sr = new StreamReader(fs);
-
-                string textline;
-                while ((textline = sr.ReadLine()) != null)
-                {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
-                    {
-                        var line = textline.Split('|');
-                        configList.Add(line[0], line[1]);
-                    }
-                }
-
-                sr.Close();
-                fs.Close();
-
-                FormBase.JsonExportSettings.GenerateSourceDataItemTypes = configList["GenerateSourceDataItemTypes"];
-                FormBase.JsonExportSettings.GenerateTargetDataItemTypes = configList["GenerateTargetDataItemTypes"];
-
-                FormBase.JsonExportSettings.GenerateSourceDataObjectConnection = configList["GenerateSourceDataObjectConnection"];
-                FormBase.JsonExportSettings.GenerateTargetDataObjectConnection = configList["GenerateTargetDataObjectConnection"];
-                FormBase.JsonExportSettings.GenerateDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
-                FormBase.JsonExportSettings.GenerateSchemaAsExtension = configList["GenerateSchemaAsExtension"];
-
-            }
-            catch (Exception)
-            {
-                // Do nothing
-            }
-        }
-
-        internal static void SaveJsonConfigurationFile()
-        {
-            try
-            {
-                // Creating the file
-                var validationFile = new StringBuilder();
-                validationFile.AppendLine("/* TEAM Json Export Configuration Settings */");
-                validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-                validationFile.AppendLine("GenerateSourceDataItemTypes|" + FormBase.JsonExportSettings.GenerateSourceDataItemTypes + "");
-                validationFile.AppendLine("GenerateTargetDataItemTypes|" + FormBase.JsonExportSettings.GenerateTargetDataItemTypes + "");
-
-                validationFile.AppendLine("GenerateSourceDataObjectConnection|" + FormBase.JsonExportSettings.GenerateSourceDataObjectConnection + "");
-                validationFile.AppendLine("GenerateTargetDataObjectConnection|" + FormBase.JsonExportSettings.GenerateTargetDataObjectConnection + "");
-                validationFile.AppendLine("GenerateDatabaseAsExtension|" + FormBase.JsonExportSettings.GenerateDatabaseAsExtension + "");
-                validationFile.AppendLine("GenerateSchemaAsExtension|" + FormBase.JsonExportSettings.GenerateSchemaAsExtension + "");
-
-                // Closing off
-                validationFile.AppendLine("/* End of file */");
-
-                using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                     FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' +
-                                     FormBase.GlobalParameters.WorkingEnvironment +
-                                     FormBase.GlobalParameters.FileExtension))
-                {
-                    outfile.Write(validationFile.ToString());
-                    outfile.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occured saving the Json configuration file. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// Retrieve the validation information from disk and save this to memory.
-        /// </summary>
-        /// <param name="filename"></param>
-        internal static void LoadValidationFile(string filename)
-        {
-            try
-            {
-                var configList = new Dictionary<string, string>();
-                var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
-                var sr = new StreamReader(fs);
-
-                string textline;
-                while ((textline = sr.ReadLine()) != null)
-                {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
-                    {
-                        var line = textline.Split('|');
-                        configList.Add(line[0], line[1]);
-                    }
-                }
-
-                sr.Close();
-                fs.Close();
-
-                FormBase.ValidationSettings.SourceObjectExistence = configList["SourceObjectExistence"];
-                FormBase.ValidationSettings.TargetObjectExistence = configList["TargetObjectExistence"];
-                FormBase.ValidationSettings.SourceBusinessKeyExistence = configList["BusinessKeyExistence"];
-                FormBase.ValidationSettings.SourceAttributeExistence = configList["SourceAttributeExistence"];
-                FormBase.ValidationSettings.TargetAttributeExistence = configList["TargetAttributeExistence"];
-
-                FormBase.ValidationSettings.LogicalGroup = configList["LogicalGroup"];
-                FormBase.ValidationSettings.LinkKeyOrder = configList["LinkKeyOrder"];
-
-                FormBase.ValidationSettings.BusinessKeySyntax = configList["BusinessKeySyntax"];
-            }
-            catch (Exception)
-            {
-                // Do nothing
-            }
-        }
-        
-        /// <summary>
-        /// Retrieve the validation information from memory and save this to disk.
-        /// </summary>
-        internal static void SaveValidationFile()
-        {
-            try
-            {
-                // Creating the file
-                var validationFile = new StringBuilder();
-                validationFile.AppendLine("/* TEAM Validation Settings */");
-                validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-                validationFile.AppendLine("SourceObjectExistence|" + FormBase.ValidationSettings.SourceObjectExistence +"");
-                validationFile.AppendLine("TargetObjectExistence|" + FormBase.ValidationSettings.TargetObjectExistence +"");
-                validationFile.AppendLine("BusinessKeyExistence|" +FormBase.ValidationSettings.SourceBusinessKeyExistence + "");
-                validationFile.AppendLine("SourceAttributeExistence|" + FormBase.ValidationSettings.SourceAttributeExistence + "");
-                validationFile.AppendLine("TargetAttributeExistence|" + FormBase.ValidationSettings.TargetAttributeExistence + "");
-                validationFile.AppendLine("LogicalGroup|" +FormBase.ValidationSettings.LogicalGroup + "");
-                validationFile.AppendLine("LinkKeyOrder|" + FormBase.ValidationSettings.LinkKeyOrder + "");
-                validationFile.AppendLine("BusinessKeySyntax|" + FormBase.ValidationSettings.BusinessKeySyntax + "");
-
-                // Closing off
-                validationFile.AppendLine("/* End of file */");
-
-                using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                     FormBase.GlobalParameters.ValidationFileName + '_' +
-                                     FormBase.GlobalParameters.WorkingEnvironment +
-                                     FormBase.GlobalParameters.FileExtension))
-                {
-                    outfile.Write(validationFile.ToString());
-                    outfile.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occured saving the Validation File. The error message is " + ex,
-                    "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"An error occurred saving the Configuration File. The error message is " + ex,
+                    @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

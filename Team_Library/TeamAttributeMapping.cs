@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using Newtonsoft.Json;
 
-
-namespace TEAM
+namespace TEAM_Library
 {
     public class AttributeMappingJson
     {

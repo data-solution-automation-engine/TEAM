@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Transactions;
 using Newtonsoft.Json;
 
-namespace TEAM
+namespace TEAM_Library
 {
     public class TableMappingJson
     {
@@ -64,7 +63,16 @@ namespace TEAM
             Partial // The business is broken into components and evaluated separately.
         }
 
-        public List<DataRow> GetDependentDataRows(string SourceDataObjectName, string TargetDataObjectName, string BusinessKey, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
+        /// <summary>
+        /// Find the related Data Objects in the same level, based on the business key evaluation.
+        /// </summary>
+        /// <param name="SourceDataObjectName"></param>
+        /// <param name="TargetDataObjectName"></param>
+        /// <param name="BusinessKey"></param>
+        /// <param name="DataTable"></param>
+        /// <param name="businessKeyEvaluationMode"></param>
+        /// <returns></returns>
+        public List<DataRow> GetPeerDataRows(string SourceDataObjectName, string TargetDataObjectName, string BusinessKey, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
         {
             // Prepare the return information
             List<DataRow> localDataRows = new List<DataRow>();

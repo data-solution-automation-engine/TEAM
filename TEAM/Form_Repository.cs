@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
+using TEAM_Library;
 
 namespace TEAM
 {
     public partial class FormManageRepository : FormBase
     {
-        Form_Alert _alertRepository;
-        Form_Alert _alertSampleData;
-        Form_Alert _alertMetadata;
+        Form_Alert _alertSampleDataCreationInDatabase;
+        Form_Alert _alertSampleJsonMetadata;
 
         public FormManageRepository()
         {
             InitializeComponent();
 
-            labelMetadataRepository.Text = "Repository type in configuration is set to " + TeamConfigurationSettings.MetadataRepositoryType;
-
-            foreach (var connection in TeamConfigurationSettings.ConnectionDictionary)
+            foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
                 // Adding items in the drop down list
                 comboBoxSourceConnection.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
@@ -41,74 +38,17 @@ namespace TEAM
             comboBoxPresentationConnection.ValueMember = "Key";
             comboBoxPresentationConnection.DisplayMember = "Value";
 
-            if (TeamConfigurationSettings.MetadataConnection is null)
+            if (TeamConfiguration.MetadataConnection is null)
             {
                 // Do nothing
             }
             else
             {
-                comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-                comboBoxPresentationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-            }
-        }
-
-        private void buttonDeploy_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorkerRepository.IsBusy != true)
-            {
-                // create a new instance of the alert form
-                _alertRepository = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
-                _alertRepository.Canceled += buttonCancel_Click;
-                _alertRepository.Show();
-                // Start the asynchronous operation.
-                backgroundWorkerRepository.RunWorkerAsync();
-            }
-        }
-
-        // This event handler cancels the backgroundworker, fired from Cancel button in AlertForm.
-        private void buttonCancel_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorkerRepository.WorkerSupportsCancellation)
-            {
-                // Cancel the asynchronous operation.
-                backgroundWorkerRepository.CancelAsync();
-                // Close the AlertForm
-                _alertRepository.Close();
-            }
-        }
-
-        /// <summary>
-        /// Run a SQL command against the provided database connection, capture any errors and report feedback to the Repository screen.
-        /// </summary>
-        /// <param name="connString"></param>
-        /// <param name="createStatement"></param>
-        /// <param name="worker"></param>
-        /// <param name="progressCounter"></param>
-        private void RunSqlCommandRepositoryForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter)
-        {
-            using (var connectionVersion = new SqlConnection(connString))
-            {
-                var commandVersion = new SqlCommand(createStatement, connectionVersion);
-
-                try
-                {
-                    connectionVersion.Open();
-                    commandVersion.ExecuteNonQuery();
-
-                    worker.ReportProgress(progressCounter);
-                    _alertRepository.SetTextLogging(createStatement);
-                }
-                catch (Exception ex)
-                {
-                    _alertRepository.SetTextLogging("An issue has occurred " + ex);
-                    _alertRepository.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
-                    ErrorHandlingParameters.ErrorCatcher++;
-                    ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
-                }
+                comboBoxSourceConnection.SelectedIndex = comboBoxSourceConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxStagingConnection.SelectedIndex = comboBoxStagingConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxPsaConnection.SelectedIndex = comboBoxPsaConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxIntegrationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
+                comboBoxPresentationConnection.SelectedIndex = comboBoxIntegrationConnection.FindStringExact(TeamConfiguration.MetadataConnection.ConnectionKey);
             }
         }
 
@@ -119,7 +59,8 @@ namespace TEAM
         /// <param name="createStatement"></param>
         /// <param name="worker"></param>
         /// <param name="progressCounter"></param>
-        private void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, Form_Alert targetForm)
+        /// <param name="targetForm"></param>
+        private static void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, Form_Alert targetForm)
         {
             using (var connectionVersion = new SqlConnection(connString))
             {
@@ -135,144 +76,33 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    targetForm.SetTextLogging("An issue has occurred " + ex);
+                    string errorMessage = $"An error has occurred with the following query: \r\n\r\n{createStatement}.\r\n\r\nThe error message is {ex}.";
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
+
+                    targetForm.SetTextLogging(errorMessage+"\r\n\r\n");
                     targetForm.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
-                    ErrorHandlingParameters.ErrorCatcher++;
-                    ErrorHandlingParameters.ErrorLog.AppendLine("An error occurred with the following query: " + createStatement + "\r\n\r\n)");
                 }
             }
         }
 
-        /// <summary>
-        /// Truncate the existing metdata (MD) schema.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonTruncate_Click(object sender, EventArgs e)
+        private void ButtonGenerateDatabaseSamples(object sender, EventArgs e)
         {
-            if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+            if (backgroundWorkerSampleData.IsBusy != true)
             {
-                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
-                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
-                TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                // create a new instance of the alert form
+                _alertSampleDataCreationInDatabase = new Form_Alert();
+                // event handler for the Cancel button in AlertForm
+                _alertSampleDataCreationInDatabase.Show();
+                _alertSampleDataCreationInDatabase.ShowLogButton(false);
+
+                backgroundWorkerSampleData.RunWorkerAsync();
             }
-        }
-
-        private void backgroundWorkerRepository_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Instantiate the thread / background worker
-            BackgroundWorker worker = sender as BackgroundWorker;
-
-            ErrorHandlingParameters.ErrorCatcher = 0;
-            ErrorHandlingParameters.ErrorLog = new StringBuilder();
-            
-            var localMetadataConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false);
-
-            // Handle multi-threading
-            if (worker != null && worker.CancellationPending)
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                // Create the repository
-                _alertRepository.SetTextLogging("--Commencing metadata repository creation.\r\n\r\n");
-
-                try
-                {  
-                    using (StreamReader sr = new StreamReader(GlobalParameters.ScriptPath+"generateRepository.sql"))
-                    {
-                        var sqlCommands = sr.ReadToEnd().Split(new string[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                        int counter = 0;
-
-                        foreach (var command in sqlCommands)
-                        {
-                            // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
-                            var normalisedValue = 1 + (counter - 0) * (100 - 1) / (sqlCommands.Length - 0);
-
-                            RunSqlCommandRepositoryForm(localMetadataConnectionString, command+"\r\n\r\n", worker, normalisedValue);
-                            counter++;
-                        }
-                        worker.ReportProgress(100);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _alertRepository.SetTextLogging("An issue has occurred executing the repository creation logic. The reported error was: " + ex);
-                }
-
-                // Error handling
-                if (ErrorHandlingParameters.ErrorCatcher > 0)
-                {
-                    _alertRepository.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the metadata.\r\n");
-                    _alertRepository.SetTextLogging("Please check the Error Log for details \r\n");
-                    _alertRepository.SetTextLogging("\r\n");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                    {
-                        outfile.Write(ErrorHandlingParameters.ErrorLog);
-                        outfile.Close();
-                    }
-                }
-                else
-                {
-                    _alertRepository.SetTextLogging("\r\nNo errors were detected.\r\n");
-                }
-
-            }
-        }
-
-        private void backgroundWorkerRepository_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
-
-            // Pass the progress to AlertForm label and progressbar
-            _alertRepository.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alertRepository.ProgressValue = e.ProgressPercentage;
-        }
-
-        private void backgroundWorkerRepository_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                labelResult.Text = "Cancelled!";
-            }
-            else if (e.Error != null)
-            {
-                labelResult.Text = "Error: " + e.Error.Message;
-            }
-            else
-            {
-                labelResult.Text = "Done!";
-                if (ErrorHandlingParameters.ErrorCatcher == 0)
-                {
-                    MessageBox.Show("The metadata repository has been created.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("The metadata repository has been created with " + ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    ErrorHandlingParameters.ErrorCatcher = 0;
-                }
-            }
-        }
-
-        internal static class ErrorHandlingParameters
-        {
-            public static int ErrorCatcher { get; set; }
-            public static StringBuilder ErrorLog { get; set; }
         }
 
         private void backgroundWorkerSampleData_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            ErrorHandlingParameters.ErrorCatcher = 0;
-            ErrorHandlingParameters.ErrorLog = new StringBuilder();
-
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
             {
@@ -280,41 +110,24 @@ namespace TEAM
             }
             else
             {
-                backgroundWorkerSampleData.ReportProgress(0);
+                worker.ReportProgress(0);
+
 
                 // Create the sample data
-                _alertSampleData.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
+                _alertSampleDataCreationInDatabase.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
 
                 try
                 {
-
                     GenerateDatabaseSample(worker);
+                    
+                    _alertSampleDataCreationInDatabase.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
                     SetStandardConfigurationSettings();
+                    worker.ReportProgress(100);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-                // Error handling
-                if (ErrorHandlingParameters.ErrorCatcher > 0)
-                {
-                    _alertSampleData.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the sample data.\r\n");
-                    _alertSampleData.SetTextLogging("Please check the Error Log for details \r\n");
-                    _alertSampleData.SetTextLogging("\r\n");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                    {
-                        outfile.Write(ErrorHandlingParameters.ErrorLog);
-                        outfile.Close();
-                    }
-                }
-                else
-                {
-                    _alertSampleData.SetTextLogging("\r\nNo errors were detected.\r\n");
-                }
-
-                backgroundWorkerSampleData.ReportProgress(100);
             }
         }
 
@@ -457,13 +270,12 @@ namespace TEAM
                 // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
                 var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
 
-                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertSampleData);
+                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertSampleDataCreationInDatabase);
                 counter++;
 
-                worker.ReportProgress(100);
+                worker.ReportProgress(normalisedValue);
             }
         }
-
 
         /// <summary>
         /// This method reads a file (using filePath) and populates a Dictionary collection using the individual commands and provided Connection String
@@ -489,8 +301,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                _alertRepository.SetTextLogging(
-                    "An issue has occured interpreting a file containing the SQL commands. The reported error was: " + ex);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
             }
         }
 
@@ -501,15 +312,15 @@ namespace TEAM
                 TeamUtility.CreateFileBackup(GlobalParameters.ConfigurationPath +GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
 
                 // Shared values (same for all samples)
-                //var metadataRepositoryType = "SqlServer";
                 var stagingAreaPrefix = "STG";
-                var hubTablePrefix = "HUB";
-                var satTablePrefix = "SAT";
-                var linkTablePrefix = "LNK";
-                var linkSatTablePrefix = "LSAT";
+                var persistentStagingAreaPrefix = "PSA";
+                
+                var hubTablePrefix = "HUB_";
+                var satTablePrefix = "SAT_";
+                var linkTablePrefix = "LNK_";
+                var linkSatTablePrefix = "LSAT_";
                 string psaKeyLocation = "PrimaryKey";
 
-                string persistentStagingAreaPrefix;
                 string keyIdentifier;
                 string sourceRowId;
                 string eventDateTime;
@@ -532,8 +343,8 @@ namespace TEAM
                 string alternativeSatelliteLoadDateTimeFunction;
 
 
-                persistentStagingAreaPrefix = "PSA";
-                keyIdentifier = "SK";
+
+                keyIdentifier = "_SK";
 
                 sourceRowId = "SOURCE_ROW_ID";
                 eventDateTime = "EVENT_DATETIME";
@@ -554,195 +365,81 @@ namespace TEAM
                 alternativeRecordSourceFunction = "False";
                 alternativeHubLoadDateTimeFunction = "False";
                 alternativeSatelliteLoadDateTimeFunction = "False";
-                
 
-                //TeamConfigurationSettings.MetadataRepositoryType = metadataRepositoryType;
 
-                TeamConfigurationSettings.StgTablePrefixValue = stagingAreaPrefix;
-                TeamConfigurationSettings.PsaTablePrefixValue = persistentStagingAreaPrefix;
+                TeamConfiguration.EnvironmentMode = EnvironmentModes.PhysicalMode;
 
-                TeamConfigurationSettings.HubTablePrefixValue = hubTablePrefix;
-                TeamConfigurationSettings.SatTablePrefixValue = satTablePrefix;
-                TeamConfigurationSettings.LinkTablePrefixValue = linkTablePrefix;
-                TeamConfigurationSettings.LsatTablePrefixValue = linkSatTablePrefix;
-                TeamConfigurationSettings.DwhKeyIdentifier = keyIdentifier;
-                TeamConfigurationSettings.PsaKeyLocation = psaKeyLocation;
-                TeamConfigurationSettings.TableNamingLocation = tableNamingLocation;
-                TeamConfigurationSettings.KeyNamingLocation = keyNamingLocation;
+                TeamConfiguration.StgTablePrefixValue = stagingAreaPrefix;
+                TeamConfiguration.PsaTablePrefixValue = persistentStagingAreaPrefix;
 
-                TeamConfigurationSettings.EventDateTimeAttribute = eventDateTime;
-                TeamConfigurationSettings.LoadDateTimeAttribute = loadDateTime;
-                TeamConfigurationSettings.ExpiryDateTimeAttribute = expiryDateTime;
-                TeamConfigurationSettings.ChangeDataCaptureAttribute = changeDataIndicator;
-                TeamConfigurationSettings.RecordSourceAttribute = recordSource;
-                TeamConfigurationSettings.EtlProcessAttribute = etlProcessId;
-                TeamConfigurationSettings.EtlProcessUpdateAttribute = etlUpdateProcessId;
-                TeamConfigurationSettings.RowIdAttribute = sourceRowId;
-                TeamConfigurationSettings.RecordChecksumAttribute = recordChecksum;
-                TeamConfigurationSettings.CurrentRowAttribute = currentRecordIndicator;
-                TeamConfigurationSettings.LogicalDeleteAttribute = logicalDeleteAttribute;
-                TeamConfigurationSettings.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
-                TeamConfigurationSettings.AlternativeRecordSourceAttribute = alternativeRecordSource;
-                TeamConfigurationSettings.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;
-                TeamConfigurationSettings.AlternativeLoadDateTimeAttribute = alternativeHubLoadDateTime;
-                TeamConfigurationSettings.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
-                TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
+                TeamConfiguration.HubTablePrefixValue = hubTablePrefix;
+                TeamConfiguration.SatTablePrefixValue = satTablePrefix;
+                TeamConfiguration.LinkTablePrefixValue = linkTablePrefix;
+                TeamConfiguration.LsatTablePrefixValue = linkSatTablePrefix;
+                TeamConfiguration.DwhKeyIdentifier = keyIdentifier;
+                TeamConfiguration.PsaKeyLocation = psaKeyLocation;
+                TeamConfiguration.TableNamingLocation = tableNamingLocation;
+                TeamConfiguration.KeyNamingLocation = keyNamingLocation;
+
+                TeamConfiguration.EventDateTimeAttribute = eventDateTime;
+                TeamConfiguration.LoadDateTimeAttribute = loadDateTime;
+                TeamConfiguration.ExpiryDateTimeAttribute = expiryDateTime;
+                TeamConfiguration.ChangeDataCaptureAttribute = changeDataIndicator;
+                TeamConfiguration.RecordSourceAttribute = recordSource;
+                TeamConfiguration.EtlProcessAttribute = etlProcessId;
+                TeamConfiguration.EtlProcessUpdateAttribute = etlUpdateProcessId;
+                TeamConfiguration.RowIdAttribute = sourceRowId;
+                TeamConfiguration.RecordChecksumAttribute = recordChecksum;
+                TeamConfiguration.CurrentRowAttribute = currentRecordIndicator;
+                TeamConfiguration.LogicalDeleteAttribute = logicalDeleteAttribute;
+                TeamConfiguration.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
+                TeamConfiguration.AlternativeRecordSourceAttribute = alternativeRecordSource;
+                TeamConfiguration.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;
+                TeamConfiguration.AlternativeLoadDateTimeAttribute = alternativeHubLoadDateTime;
+                TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
+                TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
 
                 LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
             }
         }
-
-        private void backgroundWorkerSampleData_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
-
-            // Pass the progress to AlertForm label and progressbar
-            _alertSampleData.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alertSampleData.ProgressValue = e.ProgressPercentage;
-
-            // Manage the logging
-        }
-
-        private void backgroundWorkerSampleData_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                labelResult.Text = "Cancelled!";
-            }
-            else if (e.Error != null)
-            {
-                labelResult.Text = "Error: " + e.Error.Message;
-            }
-            else
-            {
-                labelResult.Text = "Done!";
-                if (ErrorHandlingParameters.ErrorCatcher == 0)
-                {
-                    MessageBox.Show("The sample schema / data has been created.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("The sample schema / data has been created with "+ ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    ErrorHandlingParameters.ErrorCatcher = 0;
-                }
-            }
-        }
-
+         
         private void buttonClick_GenerateMetadata(object sender, EventArgs e)
         {
             if (backgroundWorkerMetadata.IsBusy != true)
             {
-                // create a new instance of the alert form
-                _alertMetadata = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
-                _alertMetadata.Canceled += buttonCancel_Click;
-                _alertMetadata.Show();
-                // Start the asynchronous operation.
-                SetStandardConfigurationSettings();
-
+                // Create a new instance of the alert form, disabling most stuff.
+                _alertSampleJsonMetadata = new Form_Alert();
+                _alertSampleJsonMetadata.ShowLogButton(false);
+                _alertSampleJsonMetadata.ShowCancelButton(false);
+                _alertSampleJsonMetadata.ShowProgressBar(false);
+                _alertSampleJsonMetadata.ShowProgressLabel(false);
+                _alertSampleJsonMetadata.Show();
+                
+                // Start the asynchronous operation to create / move the sample Json files.
                 backgroundWorkerMetadata.RunWorkerAsync();
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            SetStandardConfigurationSettings();
-        }
-
-        private void linkLabel5_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2YF5tTr");
-        }
-
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2ARcCTw");
-        }
-
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2VY4Os3");
-        
-        }
-
-        private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2SX0Xth");
-        
-        }
-
-        private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelRepositoryModel.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2FuWBq5");
-        
-        }
-
-        private void buttonGenerateDatabaseSamples(object sender, EventArgs e)
-        {
-            if (backgroundWorkerSampleData.IsBusy != true)
-            {
-                // create a new instance of the alert form
-                _alertSampleData = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
-                _alertSampleData.Canceled += buttonCancel_Click;
-                _alertSampleData.Show();
-                // Start the asynchronous operation.
-                SetStandardConfigurationSettings();
-                backgroundWorkerSampleData.RunWorkerAsync();
-            }
-        }
-
+        /// <summary>
+        /// Background worker to populate the metadata grids (by creating sample Json files).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorkerMetadata_DoWork(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
-
-            ErrorHandlingParameters.ErrorCatcher = 0;
-            ErrorHandlingParameters.ErrorLog = new StringBuilder();
-
             // Handle multi-threading
-            if (worker != null && worker.CancellationPending)
+            if (sender is BackgroundWorker worker && worker.CancellationPending)
             {
                 e.Cancel = true;
             }
             else
             {
-                backgroundWorkerMetadata.ReportProgress(0);
-
                 // Create the sample data
-                _alertMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
+                _alertSampleJsonMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
 
                 try
                 {
-                    if (TeamConfigurationSettings.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+                    if (TeamConfiguration.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
                     {
                         Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 
@@ -751,125 +448,89 @@ namespace TEAM
                         {
                             var fileName = Path.GetFileName(filePath);
 
-
-                                if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
-                                {
-                                    fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment+"_");
-                                    fileDictionary.Add(filePath, fileName);
-                                }
-                            
-
+                            if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
+                            {
+                                fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment + "_");
+                                fileDictionary.Add(filePath, fileName);
+                            }
                         }
 
                         // And then process them
                         foreach (KeyValuePair<string, string> file in fileDictionary)
                         {
                             File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
-                            _alertMetadata.SetTextLogging("Created sample JSON file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
+                            _alertSampleJsonMetadata.SetTextLogging("Created sample Json file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
                         }
-
                     }
 
-
-
+                    _alertSampleJsonMetadata.SetTextLogging("\r\nThis metadata will populate the data grids in the 'metadata mapping' screen, but not create any data structures in a database.");
+                    _alertSampleJsonMetadata.SetTextLogging("\r\nIn other words, this is just the source-target mapping metadata (dataObjectsMappings and dataItemMappings).");
 
                     #region Configuration Settings
 
+                    _alertSampleJsonMetadata.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
                     SetStandardConfigurationSettings();
 
                     #endregion
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occured", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-                // Error handling
-                if (ErrorHandlingParameters.ErrorCatcher > 0)
-                {
-                    _alertMetadata.SetTextLogging("\r\nWarning! There were " + ErrorHandlingParameters.ErrorCatcher + " error(s) found while processing the sample data.\r\n");
-                    _alertMetadata.SetTextLogging("Please check the Error Log for details \r\n");
-                    _alertMetadata.SetTextLogging("\r\n");
-
-                    using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                    {
-                        outfile.Write(ErrorHandlingParameters.ErrorLog);
-                        outfile.Close();
-                    }
-                }
-                else
-                {
-                    _alertMetadata.SetTextLogging("\r\nNo errors were detected.\r\n");
-                }
-
-                backgroundWorkerMetadata.ReportProgress(100);
             }
         }
 
-        private void GenerateMetadataInDatabase(BackgroundWorker worker)
+        private void ButtonSetStandardConfiguration(object sender, EventArgs e)
         {
-            // Create a dictionary for all SQL files to execute
-            Dictionary<string, string> commandDictionary = new Dictionary<string, string>();
-
-
-                PopulateSqlCommandDictionaryFromFile(
-                    GlobalParameters.ScriptPath + @"generateSampleMappingMetadata.sql",
-                    commandDictionary, TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false));
-            
-
-            // Execute the SQL statements
-            int counter = 0;
-            foreach (var individualSQlCommand in commandDictionary)
-            {
-                var sqlCommand = individualSQlCommand.Key;
-
-                // Normalise all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.                        
-                var normalisedValue = 1 + (counter - 0) * (100 - 1) / (commandDictionary.Count - 0);
-
-                RunSqlCommandSampleDataForm(individualSQlCommand.Value, sqlCommand + "\r\n\r\n", worker, normalisedValue, _alertMetadata);
-                counter++;
-
-                worker.ReportProgress(100);
-            }
+            SetStandardConfigurationSettings();
         }
 
-        private void backgroundWorkerMetadata_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void linkLabelSource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelSource.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2ARcCTw");
+        }
 
+        private void linkLabelStaging_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelStaging.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2VY4Os3");
+        }
+
+        private void linkLabelPsa_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelPSA.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2SX0Xth");
+        }
+
+        private void linkLabelIntegration_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Change the color of the link text by setting LinkVisited
+            // to true.
+            linkLabelIntegration.LinkVisited = true;
+            //Call the Process.Start method to open the default browser
+            //with a URL:
+            System.Diagnostics.Process.Start("https://bit.ly/2FuWBq5");
+        }
+
+
+        private void backgroundWorkerSampleData_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
             // Pass the progress to AlertForm label and progressbar
-            _alertMetadata.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alertMetadata.ProgressValue = e.ProgressPercentage;
-
-            // Manage the logging
-        }
-
-        private void backgroundWorkerMetadata_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                labelResult.Text = "Cancelled!";
-            }
-            else if (e.Error != null)
-            {
-                labelResult.Text = "Error: " + e.Error.Message;
-            }
-            else
-            {
-                labelResult.Text = "Done!";
-                if (ErrorHandlingParameters.ErrorCatcher == 0)
-                {
-                    MessageBox.Show("The sample metadata has been created.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("The sample metadata has been created with " + ErrorHandlingParameters.ErrorCatcher + " errors. Please review the results.", "Completed", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    ErrorHandlingParameters.ErrorCatcher = 0;
-                }
-            }
+            _alertSampleDataCreationInDatabase.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertSampleDataCreationInDatabase.ProgressValue = e.ProgressPercentage;
         }
     }
 }

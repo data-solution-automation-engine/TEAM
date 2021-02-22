@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
 
-namespace TEAM
+namespace TEAM_Library
 {
     public class MetadataHandling
     {
@@ -59,10 +59,9 @@ namespace TEAM
                 {
                     foreach (string prefixValue in prefixSuffixArray)
                     {
-                        string prefixValueWithUnderscore = prefixValue + '_';
-                        if (newTableName.StartsWith(prefixValueWithUnderscore))
+                        if (newTableName.StartsWith(prefixValue))
                         {
-                            newTableName = newTableName.Replace(prefixValueWithUnderscore, "");
+                            newTableName = newTableName.Replace(prefixValue, "");
                         }
                     }
                 }
@@ -70,10 +69,9 @@ namespace TEAM
                 {
                     foreach (string suffixValue in prefixSuffixArray)
                     {
-                        string suffixValueWithUnderscore = '_'+suffixValue;
-                        if (newTableName.EndsWith(suffixValueWithUnderscore))
+                        if (newTableName.EndsWith(suffixValue))
                         {
-                            newTableName = newTableName.Replace(suffixValueWithUnderscore, "");
+                            newTableName = newTableName.Replace(suffixValue, "");
                         }
                     }
                 }
@@ -82,11 +80,11 @@ namespace TEAM
                 // Define the surrogate key using the table name and key prefix/suffix settings.
                 if (configuration.KeyNamingLocation == "Prefix")
                 {
-                    surrogateKey = keyLocation + '_' + newTableName;
+                    surrogateKey = keyLocation + newTableName;
                 }
                 else
                 {
-                    surrogateKey = newTableName + '_' + keyLocation;
+                    surrogateKey = newTableName + keyLocation;
                 }
             }
             return surrogateKey;
@@ -491,15 +489,14 @@ namespace TEAM
             catch (Exception)
             {
                 configuration.ConfigurationSettingsEventLog
-                    .Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"The connection to the database for object {fullyQualifiedTableName} could not be established via {conn.ConnectionString}."));
+                    .Add(Event.CreateNewEvent(EventTypes.Error, $"The connection to the database for object {fullyQualifiedTableName} could not be established via {conn.ConnectionString}."));
             }
 
             var sqlStatementForBusinessKeys = new StringBuilder();
 
             var keyText = configuration.DwhKeyIdentifier;
             var localkeyLength = keyText.Length;
-            var localkeySubstring = localkeyLength + 1;
+            var localkeySubstring = localkeyLength - 1;
 
             // Make sure brackets are removed
             var schemaName = fullyQualifiedName.Key?.Replace("[", "").Replace("]", "");
@@ -508,15 +505,23 @@ namespace TEAM
             // Make sure the live database is hit when the checkbox is ticked
             sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
             sqlStatementForBusinessKeys.AppendLine("FROM INFORMATION_SCHEMA.COLUMNS");
-            sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength +
-                                                   "," + localkeySubstring + ")!='_" +
-                                                   configuration.DwhKeyIdentifier + "'");
+
+            if (configuration.KeyNamingLocation == "Prefix")
+            {
+                sqlStatementForBusinessKeys.AppendLine($"WHERE SUBSTRING(COLUMN_NAME,1,{localkeyLength})!='{configuration.DwhKeyIdentifier}'");
+            }
+            else
+            {
+                sqlStatementForBusinessKeys.AppendLine($"WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-{localkeySubstring},{localkeyLength})!='{configuration.DwhKeyIdentifier}'");
+            }
+            
+
             sqlStatementForBusinessKeys.AppendLine("AND TABLE_SCHEMA = '" + schemaName + "'");
             sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
             sqlStatementForBusinessKeys.AppendLine("  AND COLUMN_NAME NOT IN ('" +
                                                    configuration.RecordSourceAttribute + "','" +
-                                                   configuration.AlternativeRecordSourceAttribute +
-                                                   "','" + configuration.AlternativeLoadDateTimeAttribute + "','" +
+                                                   configuration.AlternativeRecordSourceAttribute + "','" + 
+                                                   configuration.AlternativeLoadDateTimeAttribute + "','" +
                                                    configuration.AlternativeSatelliteLoadDateTimeAttribute + "','" +
                                                    configuration.EtlProcessAttribute + "','" +
                                                    configuration.LoadDateTimeAttribute + "')");
@@ -618,6 +623,20 @@ namespace TEAM
         {
             var returnValue = new StringBuilder();
 
+            returnValue.AppendLine("SELECT ");
+            returnValue.AppendLine(" [DATABASE_NAME] ");
+            returnValue.AppendLine(",[SCHEMA_NAME]");
+            returnValue.AppendLine(",[TABLE_NAME]");
+            returnValue.AppendLine(",[COLUMN_NAME]");
+            returnValue.AppendLine(",[DATA_TYPE]");
+            returnValue.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
+            returnValue.AppendLine(",[NUMERIC_PRECISION]");
+            returnValue.AppendLine(",[NUMERIC_SCALE]");
+            returnValue.AppendLine(",[ORDINAL_POSITION]");
+            returnValue.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+            returnValue.AppendLine("FROM");
+            returnValue.AppendLine("(");
+
             returnValue.AppendLine("SELECT");
             returnValue.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS[DATABASE_NAME],");
             returnValue.AppendLine("  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) AS[SCHEMA_NAME],");
@@ -644,6 +663,7 @@ namespace TEAM
             returnValue.AppendLine(" LEFT OUTER JOIN (");
             returnValue.AppendLine("     SELECT");
             returnValue.AppendLine("       sc.name AS TABLE_NAME,");
+            returnValue.AppendLine("       D.name AS [SCHEMA_NAME],");
             returnValue.AppendLine("       C.name AS COLUMN_NAME");
             returnValue.AppendLine("     FROM [" + databaseName + "].sys.index_columns A");
             returnValue.AppendLine("     JOIN [" + databaseName + "].sys.indexes B");
@@ -651,12 +671,16 @@ namespace TEAM
             returnValue.AppendLine("     JOIN [" + databaseName + "].sys.columns C");
             returnValue.AppendLine("     ON A.column_id= C.column_id AND A.OBJECT_ID= C.OBJECT_ID");
             returnValue.AppendLine("     JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            returnValue.AppendLine("     JOIN [" + databaseName + "].sys.schemas D ON sc.SCHEMA_ID = D.schema_id");
             returnValue.AppendLine("     WHERE is_primary_key = 1");
             returnValue.AppendLine(" ) keysub");
             returnValue.AppendLine("    ON OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) = keysub.[TABLE_NAME]");
+            returnValue.AppendLine("   AND OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) = keysub.[SCHEMA_NAME]");
             returnValue.AppendLine("   AND A.[name] = keysub.COLUMN_NAME");
             returnValue.AppendLine("    WHERE A.[OBJECT_ID] IN (" + filterObjects + ")");
-
+            
+            returnValue.AppendLine(") sub");
+            
             return returnValue;
         }
     }

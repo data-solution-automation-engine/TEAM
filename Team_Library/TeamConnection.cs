@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace TEAM
+namespace TEAM_Library
 {
     /// <summary>
     /// Possible ways to authenticate (SQL Server).

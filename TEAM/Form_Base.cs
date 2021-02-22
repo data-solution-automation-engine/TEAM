@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
+using TEAM_Library;
 
 namespace TEAM
 {
@@ -17,8 +18,10 @@ namespace TEAM
             InitializeComponent();
         }
 
-        // TEAM configuration settings.
-        public static TeamConfiguration TeamConfigurationSettings { get; set; } = new TeamConfiguration();
+        /// <summary>
+        /// TEAM configurations (e.g. conventions, prefixes, attribute names).
+        /// </summary>
+        public static TeamConfiguration TeamConfiguration { get; set; } = new TeamConfiguration();
 
         /// <summary>
         /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
@@ -27,7 +30,7 @@ namespace TEAM
         /// <returns></returns>
         public static TeamConnection GetTeamConnectionByConnectionId(string connectionId)
         {
-            if (!TeamConfigurationSettings.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
+            if (!TeamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
             {
                 // The key isn't in the dictionary.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
@@ -36,8 +39,7 @@ namespace TEAM
             return teamConnection;
         }
 
-        // TEAM working environment collection.
-    public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set;  } = new TeamWorkingEnvironmentCollection();
+
 
         #region Metadata objects in memory
         // In-memory representation of the Table Mapping Metadata.
@@ -50,46 +52,25 @@ namespace TEAM
         public static  TeamAttributeMapping AttributeMapping { get; set; } = new TeamAttributeMapping();
         #endregion
 
-        // TEAM Version List.
-        public static TeamVersionList EnvironmentVersion { get; set; } = new TeamVersionList();
-        
         /// <summary>
-        /// Configuration settings related to the export of Json files.
+        /// Instance of a Team Version List, basically containing the list of versions for a given active environment.
         /// </summary>
-        internal static class JsonExportSettings
-        {
-            // Data Item
-            public static string GenerateSourceDataItemTypes { get; set; }
-            public static string GenerateTargetDataItemTypes { get; set; }
-
-            // Data Object Connection
-            public static string GenerateSourceDataObjectConnection { get; set; }
-            public static string GenerateTargetDataObjectConnection { get; set; }
-            public static string GenerateDatabaseAsExtension { get; set; }
-            public static string GenerateSchemaAsExtension { get; set; }
-
-
-        }
+        public static TeamVersionList TeamVersionList { get; set; } = new TeamVersionList();
 
         /// <summary>
-        /// Gets or sets the values for the validation of the metadata.
+        /// TEAM working environment collection.
         /// </summary>
-        internal static class ValidationSettings
-        {
-            // Configuration settings related to validation checks (in physical model or virtual representation of it)
-            public static string SourceObjectExistence { get; set; }
-            public static string TargetObjectExistence { get; set; }
-            public static string SourceBusinessKeyExistence { get; set; }
-            public static string SourceAttributeExistence { get; set; }
-            public static string TargetAttributeExistence { get; set; }
+        public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set; } = new TeamWorkingEnvironmentCollection();
 
-            // Consistency of the unit of work
-            public static string LogicalGroup { get; set; }
-            public static string LinkKeyOrder { get; set; }
+        /// <summary>
+        /// Instance of the export configuration for Json files (options).
+        /// </summary>
+        public static JsonExportSetting JsonExportSetting { get; set; } = new JsonExportSetting();
 
-            // Syntax validation
-            public static string BusinessKeySyntax { get; set; }
-        }
+        /// <summary>
+        /// Instance of the validation settings (validation options).
+        /// </summary>
+        public static ValidationSetting ValidationSetting { get; set; } = new ValidationSetting();
 
         /// <summary>
         /// These parameters are used as global constants throughout the application.
@@ -134,6 +115,9 @@ namespace TEAM
 
             // File paths
             public static List<LoadPatternDefinition> PatternDefinitionList { get; set; }
+
+            // Environment mode
+            public static EnvironmentModes EnvironmentMode { get; set; }
         }
     }
 }

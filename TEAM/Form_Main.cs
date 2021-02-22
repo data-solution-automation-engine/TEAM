@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using TEAM_Library;
 
 namespace TEAM
 {
@@ -23,7 +24,7 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.2";
+            const string versionNumberForTeamApplication = "v1.6.3";
             Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
 
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
@@ -109,7 +110,7 @@ namespace TEAM
             {
                 if (!File.Exists(configurationFileName))
                 {
-                    TeamConfigurationSettings.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
+                    TeamConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
                 }
                 else
@@ -131,7 +132,7 @@ namespace TEAM
 
             try
             {
-                LocalTeamEnvironmentConfiguration.CreateDummyValidationFile(validationFileName);
+                ValidationSetting.CreateDummyValidationFile(validationFileName);
 
             }
             catch
@@ -148,7 +149,7 @@ namespace TEAM
 
             try
             {
-                LocalTeamEnvironmentConfiguration.CreateDummyJsonExtractConfigurationFile(jsonConfigurationFileName);
+                JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFileName);
 
             }
             catch
@@ -164,7 +165,7 @@ namespace TEAM
                 GlobalParameters.WorkingEnvironment +
                 GlobalParameters.JsonExtension;
 
-            TeamConfigurationSettings.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
+            TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
             #region Load configuration file
             // Load the available configuration file into memory.
@@ -172,11 +173,12 @@ namespace TEAM
             try
             {
                 // Load the configuration file.
-                TeamConfigurationSettings.LoadTeamConfigurationFile(configurationFile);
-
+                TeamConfiguration.LoadTeamConfigurationFile(configurationFile);
+                GlobalParameters.EnvironmentMode = TeamConfiguration.EnvironmentMode;
                 // Retrieve the events into the main event log.
-                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfigurationSettings.ConfigurationSettingsEventLog);
+                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfiguration.ConfigurationSettingsEventLog);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
+
             }
             catch
             {
@@ -186,7 +188,7 @@ namespace TEAM
 
             //FormBase.EnvironmentVersion.GetEnvironmentVersionsFromFile(Path.GetDirectoryName(configurationFile));
 
-            EnvironmentVersion.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
+            TeamVersionList.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
 
             // Load the pattern definition file.
             try
@@ -199,7 +201,6 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
             }
 
-
             // Report the events (including errors) back to the user
             int errorCounter = 0;
             foreach (Event individualEvent in GlobalParameters.TeamEventLog)
@@ -210,7 +211,11 @@ namespace TEAM
                 }
             }
 
-            richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup.\r\n\r\n");
+            if (errorCounter > 0)
+            {
+                richTextBoxInformation.AppendText(
+                    $"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
+            }
 
             TestConnections();
 
@@ -219,6 +224,7 @@ namespace TEAM
             richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
 
             labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
+            labelEnvironmentMode.Text = GlobalParameters.EnvironmentMode.ToString();
         }
 
         public sealed override string Text
@@ -237,13 +243,13 @@ namespace TEAM
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
 
             // There is no metadata object available (set)
-            if (TeamConfigurationSettings.MetadataConnection is null)
+            if (TeamConfiguration.MetadataConnection is null)
             {
                 DisableMenu();
                 return;
             }
 
-            var connOmd = new SqlConnection { ConnectionString = TeamConfigurationSettings.MetadataConnection.CreateSqlServerConnectionString(false) };
+            var connOmd = new SqlConnection { ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false) };
 
             if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
                 try
@@ -273,10 +279,9 @@ namespace TEAM
 
                 DisplayMaxVersion();
                 DisplayCurrentVersionFromRepository(connOmd);
-                DisplayRepositoryVersion(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
 
-                labelMetadataSave.Text = TeamConfigurationSettings.MetadataRepositoryType.ToString();
+                labelMetadataSave.Text = TeamConfiguration.MetadataRepositoryType.ToString();
             }
             catch
             {
@@ -305,7 +310,7 @@ namespace TEAM
 
         internal void DisplayMaxVersion()
         {
-            var selectedVersion = EnvironmentVersion.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+            var selectedVersion = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
 
             //var versionMajorMinor = GetVersion(selectedVersion, connOmd);
             var majorVersion = selectedVersion.Item2;
@@ -342,35 +347,12 @@ namespace TEAM
             }
             catch (Exception)
             {
-                labelActiveVersion.Text = "There has been an error displaying the active version";
+                labelActiveVersion.Text = "There has been an error while attempting to display the active version.";
             }
         }
 
 
-        internal void DisplayRepositoryVersion(SqlConnection connOmd)
-        {
-            var sqlStatementForCurrentVersion = new StringBuilder();
-            sqlStatementForCurrentVersion.AppendLine("SELECT [REPOSITORY_VERSION],[REPOSITORY_UPDATE_DATETIME] FROM [MD_REPOSITORY_VERSION]");
 
-            var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
-
-            try
-            {
-                if (versionList != null && versionList.Rows.Count > 0)
-                {
-                    foreach (DataRow versionNameRow in versionList.Rows)
-                    {
-                        labelRepositoryVersion.Text = (string)versionNameRow["REPOSITORY_VERSION"];
-                        var versionDate = (DateTime) versionNameRow["REPOSITORY_UPDATE_DATETIME"];
-                        labelRepositoryCreationDate.Text = versionDate.ToString(CultureInfo.InvariantCulture);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // THROW EXCEPTION
-            }
-        }
 
         private void CheckKeyword(string word, Color color, int startIndex)
         {
@@ -397,7 +379,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occured while attempting to open the output directory. The error message is: "+ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the output directory. The error message is: "+ex;
             }
         }
 
@@ -452,7 +434,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateEnvironment(object sender, MyWorkingEnvironmentEventArgs e)
+        private void UpdateEnvironmentLabel(object sender, MyWorkingEnvironmentEventArgs e)
         {
             var localEnvironment = e.Value;
             var localTextForLabel = localEnvironment.environmentKey;
@@ -467,6 +449,21 @@ namespace TEAM
             }
 
             LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
+        }
+
+        private void UpdateEnvironmentModeLabel(object sender, MyStringEventArgs e)
+        {
+            var localEnvironmentModeText = e.Value;
+
+
+            if (labelEnvironmentMode.InvokeRequired)
+            {
+                labelEnvironmentMode.BeginInvoke((MethodInvoker)delegate { labelEnvironmentMode.Text = localEnvironmentModeText; });
+            }
+            else
+            {
+                labelEnvironmentMode.Text = localEnvironmentModeText;
+            }
         }
 
         private void ClosePatternForm(object sender, FormClosedEventArgs e)
@@ -514,7 +511,8 @@ namespace TEAM
             if (_myConfigurationForm == null)
             {
                 _myConfigurationForm = new FormManageConfiguration(this);
-                _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
+                _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
+                _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                 Application.Run(_myConfigurationForm);
             }
             else
@@ -524,7 +522,8 @@ namespace TEAM
                     // Thread Error
                     _myConfigurationForm.Invoke((MethodInvoker)delegate { _myConfigurationForm.Close(); });
                     _myConfigurationForm.FormClosed += CloseConfigurationForm;
-                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
+                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
+                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
 
                     _myConfigurationForm = new FormManageConfiguration(this);
                     Application.Run(_myConfigurationForm);
@@ -533,7 +532,8 @@ namespace TEAM
                 {
                     // No invoke required - same thread
                     _myConfigurationForm.FormClosed += CloseConfigurationForm; 
-                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironment;
+                    _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
+                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                     _myConfigurationForm = new FormManageConfiguration(this);
 
                     Application.Run(_myConfigurationForm);
@@ -680,12 +680,7 @@ namespace TEAM
             Application.Exit();
         }
 
-        private void createRebuildRepositoryToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcRepository);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-        }
+
 
         private void patternDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -770,6 +765,13 @@ namespace TEAM
         {
             Process.Start(ExtensionMethod.GetDefaultBrowserPath(),
                 "http://roelantvos.com/blog/team/");
+        }
+
+        private void deployMetadataExamplesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var t = new Thread(ThreadProcRepository);
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
     }
 }

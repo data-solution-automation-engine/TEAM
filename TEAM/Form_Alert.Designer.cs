@@ -58,7 +58,7 @@
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancel.Location = new System.Drawing.Point(464, 430);
+            this.buttonCancel.Location = new System.Drawing.Point(579, 430);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(109, 40);
             this.buttonCancel.TabIndex = 2;
@@ -95,7 +95,7 @@
             // buttonShowLog
             // 
             this.buttonShowLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonShowLog.Location = new System.Drawing.Point(579, 430);
+            this.buttonShowLog.Location = new System.Drawing.Point(464, 430);
             this.buttonShowLog.Name = "buttonShowLog";
             this.buttonShowLog.Size = new System.Drawing.Size(109, 40);
             this.buttonShowLog.TabIndex = 5;
@@ -103,7 +103,7 @@
             this.buttonShowLog.UseVisualStyleBackColor = true;
             this.buttonShowLog.Click += new System.EventHandler(this.buttonShowLog_Click);
             // 
-            // FormAlert
+            // Form_Alert
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -115,7 +115,7 @@
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.labelProgressMessage);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "FormAlert";
+            this.Name = "Form_Alert";
             this.Text = "Processing the metadata";
             this.ResumeLayout(false);
             this.PerformLayout();
