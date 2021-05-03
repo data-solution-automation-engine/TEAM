@@ -226,10 +226,13 @@ namespace TEAM
             this.businessKeyMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTableMappingAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.openAttributeMappingFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAttributeMappingAsJSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.openPhysicalModelFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportPhysicalModelFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.automapDataItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageValidationRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1692,10 +1695,13 @@ namespace TEAM
             this.businessKeyMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMetadataFileToolStripMenuItem,
             this.saveTableMappingAsJSONToolStripMenuItem,
+            this.toolStripSeparator1,
             this.openAttributeMappingFileToolStripMenuItem,
             this.saveAttributeMappingAsJSONToolStripMenuItem1,
+            this.toolStripSeparator2,
             this.openPhysicalModelFileToolStripMenuItem,
             this.exportPhysicalModelFileToolStripMenuItem,
+            this.toolStripSeparator3,
             this.automapDataItemsToolStripMenuItem});
             this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
             this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
@@ -1705,56 +1711,71 @@ namespace TEAM
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-            this.openMetadataFileToolStripMenuItem.Text = "Open Table Mapping File";
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.openMetadataFileToolStripMenuItem.Text = "Import Data Object Mapping";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
             // 
             // saveTableMappingAsJSONToolStripMenuItem
             // 
             this.saveTableMappingAsJSONToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveTableMappingAsJSONToolStripMenuItem.Name = "saveTableMappingAsJSONToolStripMenuItem";
-            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-            this.saveTableMappingAsJSONToolStripMenuItem.Text = "Export Table Mapping";
+            this.saveTableMappingAsJSONToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.saveTableMappingAsJSONToolStripMenuItem.Text = "Export Data Object Mapping";
             this.saveTableMappingAsJSONToolStripMenuItem.Click += new System.EventHandler(this.saveTableMappingAsJSONToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(233, 6);
             // 
             // openAttributeMappingFileToolStripMenuItem
             // 
             this.openAttributeMappingFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
-            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-            this.openAttributeMappingFileToolStripMenuItem.Text = "Open Attribute Mapping File";
+            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.openAttributeMappingFileToolStripMenuItem.Text = "Import Data Item Mapping";
             this.openAttributeMappingFileToolStripMenuItem.Click += new System.EventHandler(this.openAttributeMappingFileToolStripMenuItem_Click);
             // 
             // saveAttributeMappingAsJSONToolStripMenuItem1
             // 
             this.saveAttributeMappingAsJSONToolStripMenuItem1.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveAttributeMappingAsJSONToolStripMenuItem1.Name = "saveAttributeMappingAsJSONToolStripMenuItem1";
-            this.saveAttributeMappingAsJSONToolStripMenuItem1.Size = new System.Drawing.Size(228, 22);
-            this.saveAttributeMappingAsJSONToolStripMenuItem1.Text = "Export Attribute Mapping";
+            this.saveAttributeMappingAsJSONToolStripMenuItem1.Size = new System.Drawing.Size(236, 30);
+            this.saveAttributeMappingAsJSONToolStripMenuItem1.Text = "Export Data Item Mapping";
             this.saveAttributeMappingAsJSONToolStripMenuItem1.Click += new System.EventHandler(this.saveAttributeMappingAsJSONToolStripMenuItem1_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(233, 6);
             // 
             // openPhysicalModelFileToolStripMenuItem
             // 
             this.openPhysicalModelFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openPhysicalModelFileToolStripMenuItem.Name = "openPhysicalModelFileToolStripMenuItem";
-            this.openPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-            this.openPhysicalModelFileToolStripMenuItem.Text = "Open Physical Model File";
+            this.openPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.openPhysicalModelFileToolStripMenuItem.Text = "Import Physical Model";
             this.openPhysicalModelFileToolStripMenuItem.Click += new System.EventHandler(this.openPhysicalModelFileToolStripMenuItem_Click);
             // 
             // exportPhysicalModelFileToolStripMenuItem
             // 
             this.exportPhysicalModelFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.exportPhysicalModelFileToolStripMenuItem.Name = "exportPhysicalModelFileToolStripMenuItem";
-            this.exportPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-            this.exportPhysicalModelFileToolStripMenuItem.Text = "Export Physical Model File";
+            this.exportPhysicalModelFileToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
+            this.exportPhysicalModelFileToolStripMenuItem.Text = "Export Physical Model";
             this.exportPhysicalModelFileToolStripMenuItem.Click += new System.EventHandler(this.exportPhysicalModelFileToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(233, 6);
             // 
             // automapDataItemsToolStripMenuItem
             // 
             this.automapDataItemsToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
             this.automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
             this.automapDataItemsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(236, 30);
             this.automapDataItemsToolStripMenuItem.Text = "Automap Data Items";
             this.automapDataItemsToolStripMenuItem.Click += new System.EventHandler(this.AutoMapDataItemsToolStripMenuItem_Click);
             // 
@@ -2166,5 +2187,8 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem validateMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generateJsonInterfaceFilesOnlyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem automapDataItemsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }

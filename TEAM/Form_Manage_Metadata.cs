@@ -7737,13 +7737,17 @@ namespace TEAM
                 worker?.ReportProgress(40);
 
 
-
                 if (ValidationSetting.LinkKeyOrder == "True")
                 {
                     ValidateLinkKeyOrder();
                 }
-                worker?.ReportProgress(50);
+                worker?.ReportProgress(45);
 
+                if (ValidationSetting.LinkCompletion == "True")
+                {
+                    ValidateLinkCompletion();
+                }
+                worker?.ReportProgress(50);
 
                 ValidateHardcodedFields();
                 ValidateAttributeDataObjectsForTableMappings();
@@ -7839,6 +7843,87 @@ namespace TEAM
             {
                 _alertValidation.SetTextLogging("     There were no validation issues related to schema configuration.\r\n\r\n");
             }
+
+        }
+
+
+        private void ValidateLinkCompletion()
+        {
+            // Informing the user.
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if Link concept is correctly defined.\r\n");
+
+            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
+
+            // Creating a list of unique Link business key combinations from the data grid / data table
+            var localDataTableTableMappings = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var objectList = new List<Tuple<string, string, string, string>>(); // Source, Target, Business Key, Target Connection
+
+            foreach (DataRow row in localDataTableTableMappings.Rows)
+            {
+                // Only process enabled mappings.
+                if (!(bool) row[TableMappingMetadataColumns.Enabled.ToString()]) continue;
+
+                // Only select the lines that relate to a Link target.
+                if (row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
+                {
+                    // Derive the business key.
+                    var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
+
+                    // Derive the connection
+                    localConnectionDictionary.TryGetValue(row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString(), out var targetConnectionValue);
+
+                    var newValidationObject = new Tuple<string, string, string, string>
+                    (
+                        row[TableMappingMetadataColumns.SourceTable.ToString()].ToString(),
+                        row[TableMappingMetadataColumns.TargetTable.ToString()].ToString(),
+                        businessKey,
+                        targetConnectionValue
+                    );
+
+                    if (!objectList.Contains(newValidationObject))
+                    {
+                        objectList.Add(newValidationObject);
+                    }
+                }
+            }
+            
+            // Execute the validation check using the list of unique objects
+            var resultList = new Dictionary<string, bool>();
+
+            foreach (var linkObject in objectList)
+            {
+                 // The validation check returns a Dictionary
+                var validatedObject = MetadataValidation.ValidateLinkBusinessKeyForCompletion(linkObject);
+
+                // Looping through the dictionary to evaluate results.
+                foreach (var pair in validatedObject)
+                {
+                    if (pair.Value == false)
+                    {
+                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
+                        {
+                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
+                        }
+                    }
+                }
+            }
+
+            // Return the results back to the user
+            if (resultList.Count > 0)
+            {
+                foreach (var sourceObjectResult in resultList)
+                {
+                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + ". This means there is an issue with the Link definition, and in particular the Business Key. Are two Hubs assigned?\r\n");
+                }
+
+                MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count();
+                _alertValidation.SetTextLogging("\r\n");
+            }
+            else
+            {
+                _alertValidation.SetTextLogging("     There were no validation issues related to the definition of Link tables.\r\n\r\n");
+            }
+
 
         }
 

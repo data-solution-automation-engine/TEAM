@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageValidation));
             this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +51,8 @@
             this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
             this.groupBoxDataVaultValidation = new System.Windows.Forms.GroupBox();
             this.checkBoxBasicDataVaultValidation = new System.Windows.Forms.CheckBox();
+            this.checkBoxLinkCompletion = new System.Windows.Forms.CheckBox();
+            this.toolTipValidation = new System.Windows.Forms.ToolTip(this.components);
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxExistenceChecks.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -226,6 +229,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.checkBoxLinkCompletion);
             this.groupBox2.Controls.Add(this.checkBoxLinkKeyOrder);
             this.groupBox2.Controls.Add(this.checkBoxBusinessKeySyntaxValidation);
             this.groupBox2.Controls.Add(this.checkBoxLogicalGroup);
@@ -269,6 +273,19 @@
             this.checkBoxBasicDataVaultValidation.TabIndex = 9;
             this.checkBoxBasicDataVaultValidation.Text = "Validate basic Data Vault attribute existence";
             this.checkBoxBasicDataVaultValidation.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLinkCompletion
+            // 
+            this.checkBoxLinkCompletion.AutoSize = true;
+            this.checkBoxLinkCompletion.Checked = true;
+            this.checkBoxLinkCompletion.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxLinkCompletion.Location = new System.Drawing.Point(6, 88);
+            this.checkBoxLinkCompletion.Name = "checkBoxLinkCompletion";
+            this.checkBoxLinkCompletion.Size = new System.Drawing.Size(100, 17);
+            this.checkBoxLinkCompletion.TabIndex = 11;
+            this.checkBoxLinkCompletion.Text = "Link completion";
+            this.toolTipValidation.SetToolTip(this.checkBoxLinkCompletion, resources.GetString("checkBoxLinkCompletion.ToolTip"));
+            this.checkBoxLinkCompletion.UseVisualStyleBackColor = true;
             // 
             // FormManageValidation
             // 
@@ -319,5 +336,7 @@
         private System.Windows.Forms.CheckBox checkBoxDataItemExistence;
         private System.Windows.Forms.GroupBox groupBoxDataVaultValidation;
         private System.Windows.Forms.CheckBox checkBoxBasicDataVaultValidation;
+        private System.Windows.Forms.CheckBox checkBoxLinkCompletion;
+        private System.Windows.Forms.ToolTip toolTipValidation;
     }
 }

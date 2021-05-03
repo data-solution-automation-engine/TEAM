@@ -24,8 +24,8 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.3";
-            Text = "TEAM - Taxonomy for ETL Automation Metadata " + versionNumberForTeamApplication;
+            const string versionNumberForTeamApplication = "v1.6.3.1";
+            Text = $"TEAM - Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}.";
 
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
@@ -101,10 +101,7 @@ namespace TEAM
 
             // Create a dummy configuration file if it does not exist.
             var configurationFileName =
-                GlobalParameters.ConfigurationPath +
-                GlobalParameters.ConfigFileName + '_' +
-                GlobalParameters.WorkingEnvironment +
-                GlobalParameters.FileExtension;
+                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -125,10 +122,7 @@ namespace TEAM
 
             // Create a default validation file if the file does not exist as expected.
             var validationFileName =
-                GlobalParameters.ConfigurationPath +
-                GlobalParameters.ValidationFileName + '_' +
-                GlobalParameters.WorkingEnvironment +
-                GlobalParameters.FileExtension;
+                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -142,10 +136,7 @@ namespace TEAM
 
             // Create a default json configuration file if the file does not exist as expected.
             var jsonConfigurationFileName =
-                GlobalParameters.ConfigurationPath +
-                GlobalParameters.JsonExportConfigurationFileName + '_' +
-                GlobalParameters.WorkingEnvironment +
-                GlobalParameters.FileExtension;
+                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -160,16 +151,14 @@ namespace TEAM
 
             // Load the connections file for the respective environment.
             var connectionFileName =
-                GlobalParameters.ConfigurationPath +
-                GlobalParameters.JsonConnectionFileName + '_' +
-                GlobalParameters.WorkingEnvironment +
-                GlobalParameters.JsonExtension;
+                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.JsonExtension}";
 
             TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
             #region Load configuration file
             // Load the available configuration file into memory.
-            var configurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+            var configurationFile =
+                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
             try
             {
                 // Load the configuration file.
@@ -221,7 +210,7 @@ namespace TEAM
 
             //Startup information
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
-            richTextBoxInformation.AppendText("Welcome to version " + versionNumberForTeamApplication + ".\r\n\r\n");
+            richTextBoxInformation.AppendText($"Welcome to version {versionNumberForTeamApplication}.\r\n\r\n");
 
             labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
             labelEnvironmentMode.Text = GlobalParameters.EnvironmentMode.ToString();

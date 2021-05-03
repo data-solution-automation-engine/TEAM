@@ -135,6 +135,22 @@ namespace TEAM
             }
 
 
+            // Link Completion
+            if (ValidationSetting.LinkCompletion == "True")
+            {
+                checkBoxLinkCompletion.Checked = true;
+            }
+            else if (ValidationSetting.LinkCompletion == "False")
+            {
+                checkBoxLinkCompletion.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show("There is something wrong with the Link completion validation values, only true and false are allowed but this was encountered: " + ValidationSetting.BusinessKeySyntax + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
             // Data Vault checks
             if (ValidationSetting.BasicDataVaultValidation == "True")
             {
@@ -223,11 +239,18 @@ namespace TEAM
                 stringLinkKeyOrder = checkBoxLinkKeyOrder.Checked ? "True" : "False";
                 ValidationSetting.LinkKeyOrder = stringLinkKeyOrder;
 
+                
+                // Business key syntax check
+                var linkCompletion = "";
+                linkCompletion = checkBoxLinkCompletion.Checked ? "True" : "False";
+                ValidationSetting.LinkCompletion = linkCompletion;
+
 
                 // Business key syntax check
                 var businessKeySyntax = "";
                 businessKeySyntax = checkBoxBusinessKeySyntaxValidation.Checked ? "True" : "False";
                 ValidationSetting.BusinessKeySyntax = businessKeySyntax;
+
 
                 // Data Vault model syntax check
                 var dataVaultBasicCheck = "";

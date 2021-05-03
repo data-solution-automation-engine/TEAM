@@ -353,6 +353,28 @@ namespace TEAM
             return result;
         }
 
+        internal static Dictionary<string, bool> ValidateLinkBusinessKeyForCompletion(Tuple<string, string, string, string> validationObject)
+        {
+            // Incoming validationObject Tuple is defined as Source, Target, Business Key, Target Connection.
+
+            // Preparing result set to store validation results.
+            Dictionary<string, bool> result = new Dictionary<string, bool>();
+
+            List<string> hubBusinessKeysForLink = validationObject.Item3.Split(',').ToList();
+
+            if (hubBusinessKeysForLink.Count <= 1)
+            {
+                // This is not correct, there should be at least 2 Hub keys
+                result.Add(validationObject.Item2, false);
+            }
+            else
+            {
+                result.Add(validationObject.Item2, true);
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Check the ordinal position of Link Keys against their business key definitions.
         /// </summary>
