@@ -72,7 +72,7 @@ namespace TEAM_Library
         /// <param name="DataTable"></param>
         /// <param name="businessKeyEvaluationMode"></param>
         /// <returns></returns>
-        public List<DataRow> GetPeerDataRows(string SourceDataObjectName, string TargetDataObjectName, string BusinessKey, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
+        public List<DataRow> GetPeerDataRows(string SourceDataObjectName, string SourceDataObjectSchema, string TargetDataObjectName, string TargetDataObjectSchema, string BusinessKey, string FilterCriterion, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
         {
             // Prepare the return information
             List<DataRow> localDataRows = new List<DataRow>();
@@ -80,26 +80,51 @@ namespace TEAM_Library
             // First, the Business Key need to be checked. This is to determine how many dependents are expected.
             // For instance, if a Link has a three-part Business Key then three Hubs will be expected
             List<string> businessKeyComponents = BusinessKey.Split(',').ToList();
-            
-            // E.g. for Links and stuff
+
+            //var localSourceDataObjectName = SourceDataObjectSchema + "." + SourceDataObjectName;
+            //var localTargetDataObjectName = TargetDataObjectSchema + "." + TargetDataObjectName;
+
+            // NOTE: THIS NEEDS TO BE REFACTORED TO USE THE FULLY QUALIFIED NAME BUT THIS REQUIRES THE LOADPATTERNQUERY (e.g. base query) CONCEPT TO BE DEPRECATED
+            var localSourceDataObjectName = SourceDataObjectName.Substring(SourceDataObjectName.IndexOf('.') + 1);
+            var localTargetDataObjectName = TargetDataObjectName.Substring(TargetDataObjectName.IndexOf('.') + 1);
+
+
+            // Only evaluate a business key component based on its part.
+            // E.g. a single business key such as CustomerID will be looked up in the rest of the mappings.
+            // E.g. a Composite business key such as for a Link (customerID, OfferID) will be evaluated on each component to find any Hubs, Sats etc.
             if (businessKeyEvaluationMode == BusinessKeyEvaluationMode.Partial)
             {
                 foreach (string businessKeyComponent in businessKeyComponents)
                 {
-                    foreach (DataRow row in DataTable.Rows)
+                    var relatedDataObjectRows = from localRow in DataTable.AsEnumerable()
+                        where 
+                              localRow.Field<bool>(TableMappingMetadataColumns.Enabled.ToString()) == true &&
+                              localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()).Substring(localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()).IndexOf('.') + 1 ) == localSourceDataObjectName &&
+                              localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()) == businessKeyComponent.Trim() &&
+                              localRow.Field<string>(TableMappingMetadataColumns.FilterCriterion.ToString()) == FilterCriterion &&
+                              localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()).Substring(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()).IndexOf('.') + 1) != localTargetDataObjectName
+                        select localRow;
+
+                    foreach (DataRow detailRow in relatedDataObjectRows)
                     {
-                        if (
-                             (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
-                             (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == SourceDataObjectName &&
-                             (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
-                             (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObjectName 
-                            // && // Exclude itself
-                            // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
-                           )
-                        {
-                            localDataRows.Add(row);
-                        }
+                        localDataRows.Add(detailRow);
                     }
+
+                    //foreach (DataRow row in DataTable.Rows)
+                    //{
+                    //    if (
+                    //         (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                    //         (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == SourceDataObjectName &&
+                    //         (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
+                    //         (string)row[TableMappingMetadataColumns.FilterCriterion.ToString()] == FilterCriterion &&
+                    //         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObjectName 
+                    //        // && // Exclude itself
+                    //        // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                    //    )
+                    //    {
+                    //        localDataRows.Add(row);
+                    //    }
+                    //}
                 }
             }
             else // In the case of an LSAT, only join on the Link using the full business key
