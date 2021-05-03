@@ -46,9 +46,6 @@
             this.comboBoxStagingConnection = new System.Windows.Forms.ComboBox();
             this.comboBoxSourceConnection = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.linkLabelIntegration = new System.Windows.Forms.LinkLabel();
-            this.linkLabelPSA = new System.Windows.Forms.LinkLabel();
-            this.linkLabelStaging = new System.Windows.Forms.LinkLabel();
             this.linkLabelSource = new System.Windows.Forms.LinkLabel();
             this.checkBoxCreateSamplePresentation = new System.Windows.Forms.CheckBox();
             this.checkBoxCreateSamplePSA = new System.Windows.Forms.CheckBox();
@@ -156,9 +153,6 @@
             this.groupBox2.Controls.Add(this.comboBoxStagingConnection);
             this.groupBox2.Controls.Add(this.comboBoxSourceConnection);
             this.groupBox2.Controls.Add(this.button3);
-            this.groupBox2.Controls.Add(this.linkLabelIntegration);
-            this.groupBox2.Controls.Add(this.linkLabelPSA);
-            this.groupBox2.Controls.Add(this.linkLabelStaging);
             this.groupBox2.Controls.Add(this.linkLabelSource);
             this.groupBox2.Controls.Add(this.checkBoxCreateSamplePresentation);
             this.groupBox2.Controls.Add(this.checkBoxCreateSamplePSA);
@@ -230,48 +224,15 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.ButtonGenerateDatabaseSamples);
             // 
-            // linkLabelIntegration
-            // 
-            this.linkLabelIntegration.AutoSize = true;
-            this.linkLabelIntegration.Location = new System.Drawing.Point(713, 89);
-            this.linkLabelIntegration.Name = "linkLabelIntegration";
-            this.linkLabelIntegration.Size = new System.Drawing.Size(141, 13);
-            this.linkLabelIntegration.TabIndex = 85;
-            this.linkLabelIntegration.TabStop = true;
-            this.linkLabelIntegration.Text = "Integration Layer data model";
-            this.linkLabelIntegration.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelIntegration_LinkClicked);
-            // 
-            // linkLabelPSA
-            // 
-            this.linkLabelPSA.AutoSize = true;
-            this.linkLabelPSA.Location = new System.Drawing.Point(771, 66);
-            this.linkLabelPSA.Name = "linkLabelPSA";
-            this.linkLabelPSA.Size = new System.Drawing.Size(83, 13);
-            this.linkLabelPSA.TabIndex = 84;
-            this.linkLabelPSA.TabStop = true;
-            this.linkLabelPSA.Text = "PSA data model";
-            this.linkLabelPSA.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelPsa_LinkClicked);
-            // 
-            // linkLabelStaging
-            // 
-            this.linkLabelStaging.AutoSize = true;
-            this.linkLabelStaging.Location = new System.Drawing.Point(754, 43);
-            this.linkLabelStaging.Name = "linkLabelStaging";
-            this.linkLabelStaging.Size = new System.Drawing.Size(100, 13);
-            this.linkLabelStaging.TabIndex = 83;
-            this.linkLabelStaging.TabStop = true;
-            this.linkLabelStaging.Text = "Landing data model";
-            this.linkLabelStaging.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelStaging_LinkClicked);
-            // 
             // linkLabelSource
             // 
             this.linkLabelSource.AutoSize = true;
-            this.linkLabelSource.Location = new System.Drawing.Point(758, 19);
+            this.linkLabelSource.Location = new System.Drawing.Point(757, 165);
             this.linkLabelSource.Name = "linkLabelSource";
-            this.linkLabelSource.Size = new System.Drawing.Size(96, 13);
+            this.linkLabelSource.Size = new System.Drawing.Size(99, 13);
             this.linkLabelSource.TabIndex = 82;
             this.linkLabelSource.TabStop = true;
-            this.linkLabelSource.Text = "Source data model";
+            this.linkLabelSource.Text = "Link to data models";
             this.linkLabelSource.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelSource_LinkClicked);
             // 
             // checkBoxCreateSamplePresentation
@@ -368,7 +329,6 @@
             this.backgroundWorkerMetadata.WorkerReportsProgress = true;
             this.backgroundWorkerMetadata.WorkerSupportsCancellation = true;
             this.backgroundWorkerMetadata.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerMetadata_DoWork);
-
             // 
             // FormManageRepository
             // 
@@ -410,9 +370,6 @@
         internal System.Windows.Forms.CheckBox checkBoxCreateSampleSource;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button buttonGenerateSampleMapping;
-        private System.Windows.Forms.LinkLabel linkLabelIntegration;
-        private System.Windows.Forms.LinkLabel linkLabelPSA;
-        private System.Windows.Forms.LinkLabel linkLabelStaging;
         private System.Windows.Forms.LinkLabel linkLabelSource;
         internal System.Windows.Forms.CheckBox checkBoxConfigurationSettings;
         private System.Windows.Forms.Button button2;
