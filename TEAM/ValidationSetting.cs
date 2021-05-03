@@ -23,6 +23,8 @@ namespace TEAM
 
         // Syntax validation.
         public string BusinessKeySyntax { get; set; }
+
+        public string LinkCompletion { get; set; }
         
         // Modelling
         public string BasicDataVaultValidation { get; set; }
@@ -58,9 +60,9 @@ namespace TEAM
 
                 LogicalGroup = configList["LogicalGroup"];
                 LinkKeyOrder = configList["LinkKeyOrder"];
-
                 BusinessKeySyntax = configList["BusinessKeySyntax"];
-                
+                LinkCompletion = configList["LinkCompletion"];
+
                 BasicDataVaultValidation = configList["BasicDataVaultValidation"];
             }
             catch (Exception)
@@ -86,6 +88,7 @@ namespace TEAM
                 validationFile.AppendLine("LogicalGroup|" + LogicalGroup + "");
                 validationFile.AppendLine("LinkKeyOrder|" + LinkKeyOrder + "");
                 validationFile.AppendLine("BusinessKeySyntax|" + BusinessKeySyntax + "");
+                validationFile.AppendLine("LinkCompletion|" + BusinessKeySyntax + "");
                 validationFile.AppendLine("BasicDataVaultValidation|" + BasicDataVaultValidation + "");
 
                 // Closing off.
@@ -129,6 +132,7 @@ namespace TEAM
                 validationFile.AppendLine("LogicalGroup|True");
                 validationFile.AppendLine("LinkKeyOrder|True");
                 validationFile.AppendLine("BusinessKeySyntax|True");
+                validationFile.AppendLine("LinkCompletion|True");
 
                 validationFile.AppendLine("BasicDataVaultValidation|True");
 

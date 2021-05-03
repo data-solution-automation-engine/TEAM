@@ -93,7 +93,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "15=15"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -105,7 +105,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "14=14"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -117,7 +117,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID, COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "16=16"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -129,7 +129,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID, COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "17=17"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -141,7 +141,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "5=5"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -153,7 +153,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "6=6"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -165,7 +165,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID, OfferID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "7=7"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -177,7 +177,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID, OfferID",
     "drivingKeyDefinition": "CustomerID",
-    "filterCriteria": "7=7"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -189,7 +189,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "1=1"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -201,7 +201,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CustomerID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "2=2"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -225,7 +225,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "12=12"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -237,7 +237,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "13=13"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -249,7 +249,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "3=3"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -261,7 +261,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "OfferID",
     "drivingKeyDefinition": "",
-    "filterCriteria": "4=4"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -285,7 +285,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "18=18"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -333,7 +333,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "10=10"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -345,7 +345,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Renewal_Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "1=1"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -357,7 +357,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ'),COMPOSITE(Renewal_Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "1=1"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -369,7 +369,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "COMPOSITE(Plan_Code;'XYZ')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "11=11"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -381,7 +381,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CONCATENATE(Demographic_Segment_Code;'TEST')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "8=8"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,
@@ -393,7 +393,7 @@
     "targetConnectionKey": "IntegrationConnectionInternalId",
     "businessKeyDefinition": "CONCATENATE(Demographic_Segment_Code;'TEST')",
     "drivingKeyDefinition": "",
-    "filterCriteria": "9=9"
+    "filterCriteria": ""
   },
   {
     "enabledIndicator": true,

@@ -492,41 +492,10 @@ namespace TEAM
             linkLabelSource.LinkVisited = true;
             //Call the Process.Start method to open the default browser
             //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2ARcCTw");
+            System.Diagnostics.Process.Start("http://roelantvos.com/blog/team-sample-data/");
         }
 
-        private void linkLabelStaging_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelStaging.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2VY4Os3");
-        }
-
-        private void linkLabelPsa_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelPSA.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2SX0Xth");
-        }
-
-        private void linkLabelIntegration_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelIntegration.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("https://bit.ly/2FuWBq5");
-        }
-
-
-        private void backgroundWorkerSampleData_ProgressChanged(object sender, ProgressChangedEventArgs e)
+ private void backgroundWorkerSampleData_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Pass the progress to AlertForm label and progressbar
             _alertSampleDataCreationInDatabase.Message = "In progress, please wait... " + e.ProgressPercentage + "%";

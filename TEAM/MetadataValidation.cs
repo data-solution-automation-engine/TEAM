@@ -231,20 +231,24 @@ namespace TEAM
         /// <param name="validationObject"></param>
         /// <param name="inputDataTable"></param>
         /// <returns></returns>
-        internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string> validationObject, DataTable inputDataTable)
+        internal static Dictionary<string, bool> ValidateLogicalGroup(Tuple<string, string, string, string> validationObject, DataTable inputDataTable)
         {
+            // The incoming validationObject is defined as Source Name, Target Name and Business Key.
+
             // First, the Business Key need to be checked. This is to determine how many dependents are expected.
             // For instance, if a Link has a three-part Business Key then three Hubs will be expected
             List<string> hubBusinessKeys = validationObject.Item3.Split(',').ToList();
             int businessKeyCount = hubBusinessKeys.Count;
 
             // We need to manipulate the query to account for multiplicity in the model i.e. many Satellites linking to a single Hub.
-            // The only interest is whether the Hub is there...
+            // The only interest is whether the Hub is there.
             string tableInclusionFilterCriterion;
             var tableClassification = "";
 
             var inputTargetTableType = MetadataHandling.GetDataObjectType(validationObject.Item2, "", FormBase.TeamConfiguration);
             
+
+
             if (inputTargetTableType == MetadataHandling.TableTypes.Context) // If the table is a Satellite, only the Hub is required
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfiguration.HubTablePrefixValue;
@@ -265,37 +269,39 @@ namespace TEAM
                 tableInclusionFilterCriterion = "";
             }
 
-            // Unfortunately, there is a separate process for Links and Sats
+            // Unfortunately, there is a separate process for Links and Satellites
             // Iterate through the various keys (mainly for the purpose of evaluating Links)
             int numberOfDependents = 0;
             if (tableClassification == FormBase.TeamConfiguration.SatTablePrefixValue || tableClassification == "LNK")
             {
                 foreach (string businessKeyComponent in hubBusinessKeys)
                 {
-                    foreach (DataRow row in inputDataTable.Rows)
+                    foreach (DataRow dataObjectRow in inputDataTable.Rows)
                     {
-                        var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                        var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                        var targetDataObjectName = dataObjectRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                        var targetConnectionInternalId = dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                         var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                         var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
+                        var filterCriterion = dataObjectRow[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString();
 
-                        var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
-                        var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                        var sourceDataObjectName = dataObjectRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                        var sourceConnectionInternalId = dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                         var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                         var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
 
-
+                        // Count the number of dependents.
                         if (
-                             (bool)row[TableMappingMetadataColumns.Enabled.ToString()] && // Only active generated objects
+                             (bool)dataObjectRow[TableMappingMetadataColumns.Enabled.ToString()] && // Only active generated objects
                              sourceFullyQualifiedName.Key+'.'+ sourceFullyQualifiedName.Value == validationObject.Item1 &&
-                             (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
+                             (string)dataObjectRow[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
                              targetFullyQualifiedName.Key+'.'+targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
+                             filterCriterion == validationObject.Item4 && // Adding filtercriterion for uniquification of join (see https://github.com/RoelantVos/TEAM/issues/87);
                              targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion) 
                            )
                         {
-                            var bla = row;
+                            var bla = dataObjectRow;
                             numberOfDependents++;
                         }
                     }
@@ -350,6 +356,28 @@ namespace TEAM
             // return the result of the test;
             Dictionary<string, bool> result = new Dictionary<string, bool>();
             result.Add(validationObject.Item2, equal);
+            return result;
+        }
+
+        internal static Dictionary<string, bool> ValidateLinkBusinessKeyForCompletion(Tuple<string, string, string, string> validationObject)
+        {
+            // Incoming validationObject Tuple is defined as Source, Target, Business Key, Target Connection.
+
+            // Preparing result set to store validation results.
+            Dictionary<string, bool> result = new Dictionary<string, bool>();
+
+            List<string> hubBusinessKeysForLink = validationObject.Item3.Split(',').ToList();
+
+            if (hubBusinessKeysForLink.Count <= 1)
+            {
+                // This is not correct, there should be at least 2 Hub keys
+                result.Add(validationObject.Item2, false);
+            }
+            else
+            {
+                result.Add(validationObject.Item2, true);
+            }
+
             return result;
         }
 
