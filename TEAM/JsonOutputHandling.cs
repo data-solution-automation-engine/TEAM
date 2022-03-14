@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using DataWarehouseAutomation;
+using Microsoft.Data.SqlClient;
 using TEAM_Library;
 using Extension = DataWarehouseAutomation.Extension;
 
@@ -18,13 +19,13 @@ namespace TEAM
         /// <param name="dataObjectName"></param>
         /// <param name="teamConnection"></param>
         /// <param name="jsonExportSetting"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="sourceOrTarget"></param>
         /// <returns></returns>
-        public static DataObject CreateDataObject(string dataObjectName, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
+        public static DataObject CreateDataObject(string dataObjectName, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string sourceOrTarget = "Source")
         {
-            DataObject localDataObject = new DataObject();
-
-            localDataObject.name = dataObjectName;
-
+            DataObject localDataObject = new DataObject {name = dataObjectName};
+            
             // Data Object Connection
             localDataObject = SetDataObjectConnection(localDataObject, teamConnection, jsonExportSetting);
             
@@ -34,7 +35,39 @@ namespace TEAM
 
             // Add classifications
             localDataObject = SetDataObjectTypeClassification(localDataObject, jsonExportSetting);
-            
+
+            // Add Data Items
+            if (sourceOrTarget == "Source" && jsonExportSetting.GenerateSourceDataItemTypes == "True" || sourceOrTarget == "Target" && jsonExportSetting.GenerateTargetDataItemTypes == "True")
+            {
+                var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
+
+                SqlConnection metadataConnection = new SqlConnection
+                {
+                    ConnectionString = teamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
+                };
+
+                var physicalModelDataTable = MetadataHandling.GetPhysicalModelDataTable(metadataConnection);
+
+                DataRow[] dataItemRows = physicalModelDataTable.Select(
+                    "[TABLE_NAME] = '" + fullyQualifiedName.Value + "' " +
+                    "AND [SCHEMA_NAME] = '" + fullyQualifiedName.Key + "' " +
+                    "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'");
+
+                var sortedDataItemRows = dataItemRows.OrderBy(dr => dr["ORDINAL_POSITION"]);
+
+                List<dynamic> dataItems = new List<dynamic>();
+
+                foreach (var dataItemRow in sortedDataItemRows)
+                {
+                    DataItem dataItem = new DataItem {name = (string) dataItemRow["COLUMN_NAME"]};
+
+                    MetadataHandling.PrepareDataItemDataType(dataItem, dataItemRow);
+
+                    dataItems.Add(dataItem);
+                }
+
+                localDataObject.dataItems = dataItems;
+            }
             return localDataObject;
         }
 
@@ -50,8 +83,7 @@ namespace TEAM
             if (jsonExportSetting.GenerateDataObjectConnection == "True")
             {
                 // Add dataObjectConnection, including connection string (to Data Object).
-                var localDataConnection = new DataConnection();
-                localDataConnection.dataConnectionString = teamConnection.ConnectionKey;
+                var localDataConnection = new DataConnection {dataConnectionString = teamConnection.ConnectionKey};
 
                 dataObject.dataObjectConnection = localDataConnection;
             }
@@ -129,24 +161,24 @@ namespace TEAM
             return dataObject;
         }
         
-        public static List<DataObject> SetLineageRelatedDataObjectList(DataTable dataObjectMappingDataTable, string targetDataObjectName, JsonExportSetting jsonExportSetting)
+        public static List<DataObject> SetLineageRelatedDataObjectList(DataTable dataObjectMappingDataTable, string targetDataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
         {
             List<DataObject> dataObjectList = new List<DataObject>();
 
             if (jsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject == "True")
             {
                 // Find the corresponding row in the Data Object Mapping grid
-                DataRow[] DataObjectMappings = dataObjectMappingDataTable.Select("[" + TableMappingMetadataColumns.SourceTable + "] = '" + targetDataObjectName + "'");
+                DataRow[] dataObjectMappings = dataObjectMappingDataTable.Select("[" + TableMappingMetadataColumns.SourceTable + "] = '" + targetDataObjectName + "'");
 
-                foreach (DataRow DataObjectMapping in DataObjectMappings)
+                foreach (DataRow dataObjectMapping in dataObjectMappings)
                 {
-                    var localDataObjectName = DataObjectMapping[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    var localDataObjectConnectionInternalId = DataObjectMapping[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var localDataObjectName = dataObjectMapping[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    var localDataObjectConnectionInternalId = dataObjectMapping[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
 
                     TeamConnection localConnection = FormBase.GetTeamConnectionByConnectionId(localDataObjectConnectionInternalId);
 
                     // Set the name and further settings.
-                    dataObjectList.Add(CreateDataObject(localDataObjectName, localConnection, jsonExportSetting));
+                    dataObjectList.Add(CreateDataObject(localDataObjectName, localConnection, jsonExportSetting, teamConfiguration));
                 }
             }
 
@@ -184,14 +216,15 @@ namespace TEAM
         /// </summary>
         /// <param name="metaDataConnection"></param>
         /// <param name="jsonExportSetting"></param>
+        /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static DataObject CreateMetadataDataObject(TeamConnection metaDataConnection, JsonExportSetting jsonExportSetting)
+        public static DataObject CreateMetadataDataObject(TeamConnection metaDataConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
         {
             DataObject localDataObject = new DataObject();
 
             if (jsonExportSetting.AddMetadataAsRelatedDataObject == "True")
             {
-                localDataObject = CreateDataObject("Metadata", metaDataConnection, jsonExportSetting);
+                localDataObject = CreateDataObject("Metadata", metaDataConnection, jsonExportSetting, teamConfiguration);
 
                 // Override classification
                 if (jsonExportSetting.GenerateTypeAsClassification == "True")
@@ -242,14 +275,8 @@ namespace TEAM
                 keyComponent.sourceDataItems = sourceColumns;
 
                 var indexExists = targetBusinessKeyComponentList.ElementAtOrDefault(counter) != null;
-                if (indexExists)
-                {
-                    targetColumn.name = targetBusinessKeyComponentList[counter];
-                }
-                else
-                {
-                    targetColumn.name = "";
-                }
+                
+                targetColumn.name = indexExists ? targetBusinessKeyComponentList[counter] : "";
 
                 keyComponent.targetDataItem = targetColumn;
 
@@ -269,12 +296,11 @@ namespace TEAM
         {
             var temporaryBusinessKeyComponentList = sourceBusinessKeyDefinition.Split(',').ToList();
 
-            List<string> sourceBusinessKeyComponentList = new List<string>();
+            var sourceBusinessKeyComponentList = new List<string>();
 
             foreach (var keyComponent in temporaryBusinessKeyComponentList)
             {
-                var keyPart = keyComponent.TrimStart().TrimEnd();
-                keyPart = keyComponent.Replace("(", "").Replace(")", "").Replace(" ", "");
+                var keyPart = keyComponent.Replace("(", "").Replace(")", "").Replace(" ", "");
 
                 if (keyPart.StartsWith("COMPOSITE"))
                 {

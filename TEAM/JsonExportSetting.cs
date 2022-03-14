@@ -39,12 +39,12 @@ namespace TEAM
                 var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
                 var sr = new StreamReader(fs);
 
-                string textline;
-                while ((textline = sr.ReadLine()) != null)
+                string textLine;
+                while ((textLine = sr.ReadLine()) != null)
                 {
-                    if (textline.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textline.Trim() != "")
+                    if (textLine.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textLine.Trim() != "")
                     {
-                        var line = textline.Split('|');
+                        var line = textLine.Split('|');
                         configList.Add(line[0], line[1]);
                     }
                 }
@@ -104,7 +104,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred saving the Json configuration file. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"An error occurred saving the Json configuration file. The error message is {ex.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

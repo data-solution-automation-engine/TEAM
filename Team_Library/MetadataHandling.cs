@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using DataWarehouseAutomation;
 
 namespace TEAM_Library
 {
@@ -27,6 +28,120 @@ namespace TEAM_Library
             Unknown
         }
 
+        public static DataTable GetPhysicalModelDataTable(SqlConnection conn)
+        {
+            // Retrieve the physical model.
+            // Add data type details, if requested.
+            var physicalModelQuery = @"SELECT
+                                             [DATABASE_NAME]
+                                            ,[SCHEMA_NAME]
+                                            ,[TABLE_NAME]
+                                            ,[COLUMN_NAME]
+                                            ,[DATA_TYPE]
+                                            ,[CHARACTER_MAXIMUM_LENGTH]
+                                            ,[NUMERIC_PRECISION]
+                                            ,[NUMERIC_SCALE]
+                                            ,[ORDINAL_POSITION]
+                                            ,[PRIMARY_KEY_INDICATOR]
+                                       FROM [interface].[INTERFACE_PHYSICAL_MODEL]";
+
+            var physicalModelDataTable = Utility.GetDataTable(ref conn, physicalModelQuery);
+            return physicalModelDataTable;
+        }
+
+        public static void GetFullSourceDataItemPresentation(string dataObjectName, TeamConnection teamConnection, DataTable physicalModelDataTable, DataRow column, DataItem dataItem, string sourceOrTarget = "Regular")
+        {
+            var tableSchema = GetFullyQualifiedDataObjectName(dataObjectName, teamConnection);
+
+            var columnNameFilter = "";
+            if (sourceOrTarget == "Source")
+            {
+                //columnNameFilter = QuoteStringValuesForAttributes((string)column[$"SOURCE_ATTRIBUTE_NAME"]);
+                columnNameFilter = QuoteStringValuesForAttributes((string)column[3]);
+            }
+            else if (sourceOrTarget == "Target")
+            {
+                columnNameFilter = QuoteStringValuesForAttributes((string)column[5]);
+            }
+
+            try
+            {
+                DataRow physicalModelRow = physicalModelDataTable.Select($"[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() + "' " +
+                                                                         "AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' " +
+                                                                         "AND [COLUMN_NAME] = '" + columnNameFilter + "' " +
+                                                                         "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
+                                                                         "").FirstOrDefault();
+                PrepareDataItemDataType(dataItem, physicalModelRow);
+            }
+            catch (Exception ex)
+            {
+                // TBD
+            }
+        }
+
+
+        public static void GetFullSourceDataItem(string dataObjectName, TeamConnection teamConnection, DataTable physicalModelDataTable, DataRow column, DataItem dataItem, string sourceOrTarget = "Regular")
+        {
+            var tableSchema = GetFullyQualifiedDataObjectName(dataObjectName, teamConnection);
+
+            var columnNameFilter = "";
+            if (sourceOrTarget == "Source")
+            {
+                columnNameFilter = QuoteStringValuesForAttributes((string)column[$"SOURCE_ATTRIBUTE_NAME"]);
+            }
+            else if (sourceOrTarget == "Target")
+            {
+                columnNameFilter = QuoteStringValuesForAttributes((string)column[$"TARGET_ATTRIBUTE_NAME"]);
+            }
+
+            try
+            {
+                DataRow physicalModelRow = physicalModelDataTable.Select($"[TABLE_NAME] = '" +tableSchema.Values.FirstOrDefault() + "' " +
+                                                                         "AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' " +
+                                                                         "AND [COLUMN_NAME] = '" + columnNameFilter + "' " +
+                                                                         "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
+                                                                         "").FirstOrDefault();
+                PrepareDataItemDataType(dataItem, physicalModelRow);
+            }
+            catch (Exception ex)
+            {
+                // TBD
+            }
+        }
+
+
+        public static void PrepareDataItemDataType(DataItem dataItem, DataRow physicalModelRow)
+        {
+            if (physicalModelRow != null)
+            {
+                var dataType = physicalModelRow.ItemArray[4].ToString();
+                dataItem.dataType = dataType;
+
+                switch (dataType)
+                {
+                    case "varchar":
+                    case "nvarchar":
+                    case "binary":
+                        dataItem.characterLength = (int) physicalModelRow.ItemArray[5];
+                        break;
+                    case "numeric":
+                        dataItem.numericPrecision = (int) physicalModelRow.ItemArray[6];
+                        dataItem.numericScale = (int) physicalModelRow.ItemArray[7];
+                        break;
+                    case "int":
+                        // No length etc.
+                        break;
+                    case "datetime":
+                    case "datetime2":
+                    case "date":
+                        dataItem.numericScale = (int) physicalModelRow.ItemArray[7];
+                        break;
+                }
+
+                dataItem.ordinalPosition = (int) physicalModelRow.ItemArray[8];
+            }
+        }
+
         /// <summary>
         /// Return the Surrogate Key for a given table using the TEAM settings (i.e. prefix/suffix settings etc.).
         /// </summary>
@@ -35,7 +150,7 @@ namespace TEAM_Library
         public static string GetSurrogateKey(string tableName, TeamConnection teamConnection, TeamConfiguration configuration)
         {
             // Get the fully qualified name
-            KeyValuePair<string,string> fullyQualifiedName = GetFullyQualifiedDataObjectName(tableName, teamConnection).FirstOrDefault();
+            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(tableName, teamConnection).FirstOrDefault();
             
             // Initialise the return value
             string surrogateKey = "";
@@ -91,7 +206,7 @@ namespace TEAM_Library
         }
         
         /// <summary>
-        /// This method returns the type of table (classification) as an enumerator based on the name and active conventions.
+        /// This method returns the type (classification) of Data Object as an TableTypes enumerator based on the name and active conventions.
         /// Requires fully qualified name, or at least ignores schemas in the name.
         /// </summary>
         /// <param name="dataObjectName"></param>

@@ -59,14 +59,10 @@ namespace TEAM
             radiobuttonNoVersionChange.Checked = true;
 
             // Check if the version file exists and create a new file containing the list of versions.
-            if (!File.Exists(GlobalParameters.CorePath + GlobalParameters.VersionFileName +
-                             GlobalParameters.JsonExtension))
+            if (!File.Exists(GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension))
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"Creating a new version list file {GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension}."));
-                TeamVersionList.CreateNewVersionListFile(
-                    GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension,
-                    GlobalParameters.WorkingEnvironment);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Creating a new version list file {GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension}."));
+                TeamVersionList.CreateNewVersionListFile(GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension, GlobalParameters.WorkingEnvironment);
             }
 
             var selectedVersion = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
@@ -189,23 +185,18 @@ namespace TEAM
             if (selectedRow.IsNewRow == false)
             {
                 // Source info
-                var sourceDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex]
-                    .Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
-                var sourceConnectionId = selectedRow.DataGridView.Rows[e.RowIndex]
-                    .Cells[(int) TableMappingMetadataColumns.SourceConnection].Value.ToString();
+                var sourceDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.SourceTable].Value.ToString();
+                var sourceConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.SourceConnection].Value.ToString();
                 TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                 var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                 string sourceDataObjectFullyQualifiedName = $"{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}";
 
                 // Target info
-                var targetDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex]
-                    .Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
-                var targetConnectionId = selectedRow.DataGridView.Rows[e.RowIndex]
-                    .Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString();
+                var targetDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetTable].Value.ToString();
+                var targetConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString();
                 TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
                 var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                string targetDataObjectFullyQualifiedName =
-                    $"{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}";
+                string targetDataObjectFullyQualifiedName = $"{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}";
 
 
                 var loadVector = "";
@@ -219,21 +210,16 @@ namespace TEAM
                 }
 
                 // Assert table type for Source column, retrieve the specific cell value for the hover-over.
-                if (e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceTable]
-                    .Index && e.Value != null)
+                if (e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceTable].Index && e.Value != null)
                 {
                     cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
                     tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), "", TeamConfiguration);
                 }
                 // Assert table type for the Target column, , retrieve the specific cell value for the hover-over.
-                else if ((e.ColumnIndex == dataGridViewTableMetadata
-                    .Columns[(int) TableMappingMetadataColumns.TargetTable].Index && e.Value != null))
+                else if ((e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.TargetTable].Index && e.Value != null))
                 {
                     cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(),
-                        selectedRow.DataGridView.Rows[e.RowIndex]
-                            .Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString(),
-                        TeamConfiguration);
+                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString(), TeamConfiguration);
                 }
                 else
                 {
@@ -243,8 +229,7 @@ namespace TEAM
 
                 if (cell != null)
                 {
-                    cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." +
-                                       "\n" + "The direction of loading is " + loadVector + ".";
+                    cell.ToolTipText = "The table " + e.Value + " has been evaluated as a " + tableType + " object." + "\n" + "The direction of loading is " + loadVector + ".";
                 }
             }
         }
@@ -2628,8 +2613,7 @@ namespace TEAM
         /// <param name="targetTable"></param>
         /// <returns></returns>
         private static Tuple<bool, string, TeamConnection, string, TeamConnection>
-            GetDataObjectMappingFromDataItemMapping(DataTable tableMappingDataTable, string sourceTable,
-                string targetTable)
+            GetDataObjectMappingFromDataItemMapping(DataTable tableMappingDataTable, string sourceTable, string targetTable)
         {
             // Default return value
             Tuple<bool, string, TeamConnection, string, TeamConnection> returnTuple =
@@ -2651,22 +2635,18 @@ namespace TEAM
             if (DataObjectMappings is null || DataObjectMappings.Length == 0)
             {
                 // There is no matching row found in the Data Object Mapping grid. Validation should pick this up!
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"While processing the Data Item mappings, no matching Data Object mapping was found."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, no matching Data Object mapping was found."));
 
             }
             else if (DataObjectMappings.Length > 1)
             {
                 // There are too many entries! There should be only a single mapping from source to target
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found."));
             }
             else
             {
-                var connectionInternalIdSource =
-                    DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                var connectionInternalIdTarget =
-                    DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                var connectionInternalIdSource = DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                var connectionInternalIdTarget = DataObjectMappings[0][TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                 TeamConnection sourceConnection = GetTeamConnectionByConnectionId(connectionInternalIdSource);
                 TeamConnection targetConnection = GetTeamConnectionByConnectionId(connectionInternalIdTarget);
 
@@ -2825,8 +2805,7 @@ namespace TEAM
 
                 var majorVersion = versionMajorMinor.Item2;
                 var minorVersion = versionMajorMinor.Item3;
-                richTextBoxInformation.AppendText("Commencing preparation / activation for version " + majorVersion +
-                                                  "." + minorVersion + ".\r\n");
+                richTextBoxInformation.AppendText("Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n");
 
                 // Move data from the grids into temp tables
                 CreateTemporaryWorkerTables(
@@ -2836,11 +2815,9 @@ namespace TEAM
                 {
                     var versionExistenceCheck = new StringBuilder();
 
-                    versionExistenceCheck.AppendLine("SELECT * FROM TMP_MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " +
-                                                     trackBarVersioning.Value);
+                    versionExistenceCheck.AppendLine("SELECT * FROM TMP_MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
 
-                    var versionExistenceCheckDataTable =
-                        Utility.GetDataTable(ref conn, versionExistenceCheck.ToString());
+                    var versionExistenceCheckDataTable = Utility.GetDataTable(ref conn, versionExistenceCheck.ToString());
 
                     if (versionExistenceCheckDataTable != null && versionExistenceCheckDataTable.Rows.Count > 0)
                     {
@@ -2859,8 +2836,7 @@ namespace TEAM
                     }
                     else
                     {
-                        richTextBoxInformation.AppendText(
-                            "There is no model metadata available for this version, so the metadata can only be activated with the 'Ignore Version' enabled for this specific version.\r\n");
+                        richTextBoxInformation.AppendText("There is no model metadata available for this version, so the metadata can only be activated with the 'Ignore Version' enabled for this specific version.\r\n");
                     }
                 }
                 else
@@ -4628,30 +4604,12 @@ namespace TEAM
                 var virtualisationSnippet = new StringBuilder();
                 if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                 {
-                    //virtualisationSnippet.AppendLine("SELECT ");
-                    //virtualisationSnippet.AppendLine("  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + TeamConfigurationSettings.IntegrationDatabaseName + "')) AS LINK_SCHEMA,");
-                    //virtualisationSnippet.AppendLine("  OBJECT_NAME(OBJECT_ID,DB_ID('" + TeamConfigurationSettings.IntegrationDatabaseName + "'))  AS LINK_NAME,");
-                    //virtualisationSnippet.AppendLine("  [name] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    //virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY OBJECT_NAME(OBJECT_ID,DB_ID('" + TeamConfigurationSettings.IntegrationDatabaseName + "')) ORDER BY column_id) AS LINK_ORDER");
-                    //virtualisationSnippet.AppendLine("FROM " + linkedServer + integrationDatabase + @".sys.columns");
-                    //virtualisationSnippet.AppendLine("WHERE [column_id] > 1");
-                    //virtualisationSnippet.AppendLine("AND OBJECT_NAME(OBJECT_ID,DB_ID('" + TeamConfigurationSettings.IntegrationDatabaseName + "')) LIKE '" + lnkTablePrefix + @"'");
-                    //virtualisationSnippet.AppendLine("   AND [name] NOT IN ('" +
-                    //                                 TeamConfigurationSettings.RecordSourceAttribute + "','" +
-                    //                                 TeamConfigurationSettings.AlternativeRecordSourceAttribute + "','" +
-                    //                                 TeamConfigurationSettings.AlternativeLoadDateTimeAttribute + "','" +
-                    //                                 TeamConfigurationSettings.AlternativeSatelliteLoadDateTimeAttribute + "','" +
-                    //                                 TeamConfigurationSettings.EtlProcessAttribute + "','" +
-                    //                                 TeamConfigurationSettings.LoadDateTimeAttribute + "" +
-                    //                                 "')");
-
                     // Use the physical model snapshot.
                     virtualisationSnippet.AppendLine("SELECT");
                     virtualisationSnippet.AppendLine("  [SCHEMA_NAME] AS LINK_SCHEMA,");
                     virtualisationSnippet.AppendLine("  [TABLE_NAME]  AS LINK_NAME,");
                     virtualisationSnippet.AppendLine("  [COLUMN_NAME] AS HUB_TARGET_KEY_NAME_IN_LINK,");
-                    virtualisationSnippet.AppendLine(
-                        "  ROW_NUMBER() OVER(PARTITION BY [TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
+                    virtualisationSnippet.AppendLine("  ROW_NUMBER() OVER(PARTITION BY [TABLE_NAME] ORDER BY ORDINAL_POSITION) AS LINK_ORDER");
                     virtualisationSnippet.AppendLine("FROM MD_PHYSICAL_MODEL");
                     virtualisationSnippet.AppendLine("WHERE [ORDINAL_POSITION] > 1");
                     virtualisationSnippet.AppendLine(" AND TABLE_NAME LIKE '" + lnkTablePrefix + @"'");
@@ -7412,18 +7370,14 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("  main.[name] AS [COLUMN_NAME], ");
             sqlStatementForAttributeVersion.AppendLine("  t.[name] AS [DATA_TYPE], ");
             sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(");
-            sqlStatementForAttributeVersion.AppendLine(
-                "    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
+            sqlStatementForAttributeVersion.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
             sqlStatementForAttributeVersion.AppendLine("    ELSE main.[max_length]");
             sqlStatementForAttributeVersion.AppendLine("    END");
             sqlStatementForAttributeVersion.AppendLine("     ,0) AS VARCHAR(100)) AS [CHARACTER_MAXIMUM_LENGTH],");
-            sqlStatementForAttributeVersion.AppendLine(
-                "  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [NUMERIC_PRECISION], ");
-            sqlStatementForAttributeVersion.AppendLine(
-                "  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS[NUMERIC_SCALE], ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [NUMERIC_PRECISION], ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS[NUMERIC_SCALE], ");
 
-            sqlStatementForAttributeVersion.AppendLine(
-                "  CAST(main.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION], ");
+            sqlStatementForAttributeVersion.AppendLine("  CAST(main.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION], ");
 
             sqlStatementForAttributeVersion.AppendLine("  CASE ");
             sqlStatementForAttributeVersion.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
@@ -7449,8 +7403,7 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
             sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName +
-                                                       "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
             sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1 ");
             sqlStatementForAttributeVersion.AppendLine(") keysub");
             sqlStatementForAttributeVersion.AppendLine("   ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
@@ -7467,8 +7420,7 @@ namespace TEAM
             sqlStatementForAttributeVersion.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
             sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
             sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName +
-                                                       "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
             sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1");
             sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
 
@@ -7523,17 +7475,11 @@ namespace TEAM
 
             foreach (var filter in filterList)
             {
-                var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2)
-                    .FirstOrDefault();
+                var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
 
                 // Always add the 'regular' mapping.
-                sqlStatementForAttributeVersion.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '" +
-                                                           fullyQualifiedName.Value +
-                                                           "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '" +
-                                                           fullyQualifiedName.Key + "')");
+                sqlStatementForAttributeVersion.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Value + "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Key + "')");
                 sqlStatementForAttributeVersion.AppendLine("  OR");
-
-
             }
 
             sqlStatementForAttributeVersion.Remove(sqlStatementForAttributeVersion.Length - 6, 6);
@@ -7625,21 +7571,17 @@ namespace TEAM
 
             var generationMetadataRow = ((DataRowView) dataGridViewTableMetadata.Rows[selectedRow].DataBoundItem).Row;
 
-            var targetDataObjectName =
-                generationMetadataRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-            var targetConnectionInternalId =
-                generationMetadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+            var targetDataObjectName = generationMetadataRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+            var targetConnectionInternalId = generationMetadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
             var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-            var targetFullyQualifiedName = MetadataHandling
-                .GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+            var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
             var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
 
             if (tableType != MetadataHandling.TableTypes.Presentation)
             {
-
                 List<DataRow> generationMetadataList = new List<DataRow>();
                 generationMetadataList.Add(generationMetadataRow);
-                GenerateJsonFromPattern(generationMetadataList);
+                GenerateJsonFromPattern(generationMetadataList, JsonExportSetting);
             }
             else
             {
@@ -7738,6 +7680,7 @@ namespace TEAM
                 worker?.ReportProgress(50);
 
                 ValidateHardcodedFields();
+
                 ValidateAttributeDataObjectsForTableMappings();
 
                 ValidateSchemaConfiguration();
@@ -7933,99 +7876,73 @@ namespace TEAM
             foreach (DataRow row in localDataItemTable.Rows)
             {
                 // Look for the corresponding Data Object Mapping row.
-                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable,
-                    row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString(),
-                    row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString());
-
+                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable, row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString(), row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString());
 
                 if (dataObjectRow.Item1) //If the corresponding Data Object is enabled
                 {
                     string objectValidated = "";
-                    var validationObjectSource =
-                        row[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
+                    var validationObjectSource = row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString();
                     TeamConnection sourceConnection = dataObjectRow.Item3;
-                    var validationAttributeSource =
-                        row[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
+                    var validationAttributeSource = row[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
 
                     var validationObjectTarget = row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString();
                     TeamConnection targetConnection = dataObjectRow.Item5;
-                    var validationAttributeTarget =
-                        row[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
+                    var validationAttributeTarget = row[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
-                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode &&
-                        MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration)
-                            .ToString() !=
-                        MetadataHandling.TableTypes.Source.ToString()
-                    ) // No need to evaluate the operational system (real sources)
+                    var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString();
+
+                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode && sourceDataObjectType != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         // Check the source
                         try
                         {
-                            objectValidated =
-                                MetadataValidation.ValidateAttributeExistencePhysical(validationObjectSource,
-                                    validationAttributeSource, sourceConnection);
+                            objectValidated = MetadataValidation.ValidateAttributeExistencePhysical(validationObjectSource, validationAttributeSource, sourceConnection);
 
                             // Add negative results to dictionary
-                            if (objectValidated == "False")
+                            if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
                             {
-                                resultList.Add(validationAttributeSource,
-                                    objectValidated); // Add objects that did not pass the test
+                                resultList.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
                             }
                         }
                         catch (Exception ex)
                         {
-                            _alertValidation.SetTextLogging(
-                                $"An issue was encountered running the validation check. The message is:\r\n\r\n{ex}.\r\n");
+                            _alertValidation.SetTextLogging($"An issue was encountered running the validation check. The message is:\r\n\r\n{ex}.\r\n");
                         }
 
                         // Check the target
                         try
                         {
-                            objectValidated =
-                                MetadataValidation.ValidateAttributeExistencePhysical(validationObjectTarget,
-                                    validationAttributeTarget, targetConnection);
+                            objectValidated = MetadataValidation.ValidateAttributeExistencePhysical(validationObjectTarget, validationAttributeTarget, targetConnection);
 
                             // Add negative results to dictionary
-                            if (objectValidated == "False")
+                            if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeTarget))
                             {
-                                resultList.Add(validationAttributeTarget,
-                                    objectValidated); // Add objects that did not pass the test
+                                resultList.Add(validationAttributeTarget, validationObjectTarget); // Add objects that did not pass the test
                             }
                         }
                         catch (Exception ex)
                         {
-                            _alertValidation.SetTextLogging(
-                                $"An issue was encountered running the validation check. The message is:\r\n\r\n{ex}.\r\n");
+                            _alertValidation.SetTextLogging($"An issue was encountered running the validation check. The message is:\r\n\r\n{ex}.\r\n");
                         }
 
                     }
-                    else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode &&
-                             MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration)
-                                 .ToString() !=
-                             MetadataHandling.TableTypes.Source.ToString()
-                    ) // No need to evaluate the operational system (real sources)
+                    else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && sourceDataObjectType != MetadataHandling.TableTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
                         objectValidated = "";
 
-                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectSource,
-                            validationAttributeSource, sourceConnection,
-                            (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
                         // Add negative results to dictionary
-                        if (objectValidated == "False")
+                        if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
                         {
-                            resultList.Add(validationAttributeSource,
-                                objectValidated); // Add objects that did not pass the test
+                            resultList.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
                         }
 
-                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectTarget,
-                            validationAttributeTarget, targetConnection,
-                            (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectTarget, validationAttributeTarget, targetConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
 
                         // Add negative results to dictionary
-                        if (objectValidated == "False")
+                        if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeTarget))
                         {
-                            resultList.Add(validationAttributeTarget,
-                                objectValidated); // Add objects that did not pass the test
+                            resultList.Add(validationAttributeTarget, validationObjectTarget); // Add objects that did not pass the test
                         }
                     }
                     else
@@ -8040,9 +7957,7 @@ namespace TEAM
             {
                 foreach (var objectValidationResult in resultList)
                 {
-                    _alertValidation.SetTextLogging("     " + objectValidationResult.Key +
-                                                    " is tested with this outcome: " + objectValidationResult.Value +
-                                                    "\r\n");
+                    _alertValidation.SetTextLogging($"     {objectValidationResult.Key} belonging to {objectValidationResult.Value} does not exist in the physical model.\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count;
@@ -8051,8 +7966,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging(
-                    $"     There were no validation issues related to the existence of the attribute(s).\r\n\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of the attribute(s).\r\n\r\n");
             }
         }
 
@@ -8803,7 +8717,7 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             // Take all the rows from the grid
-            List<DataRow> rowList = new List<DataRow>();
+            List<DataRow> generationMetadataList = new List<DataRow>();
 
             // Exclude presentation layer for now, working on a new approach for this.
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
@@ -8812,9 +8726,10 @@ namespace TEAM
                 bool enabled = (bool) row[TableMappingMetadataColumns.Enabled.ToString()];
                 var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                 var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
+
                 if (enabled && tableType != MetadataHandling.TableTypes.Presentation)
                 {
-                    rowList.Add(row); //add the row to the list
+                    generationMetadataList.Add(row); //add the row to the list
                 }
                 else if (enabled && tableType == MetadataHandling.TableTypes.Presentation)
                 {
@@ -8823,7 +8738,7 @@ namespace TEAM
             }
 
             // Do all the regular stuff
-            GenerateJsonFromPattern(rowList);
+            GenerateJsonFromPattern(generationMetadataList, JsonExportSetting);
         }
 
         /// <summary>
@@ -8851,20 +8766,27 @@ namespace TEAM
             // Spool the output to disk
             if (checkBoxSaveInterfaceToJson.Checked)
             {
-                TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json",
-                    dataObjectMappings);
-                richTextBoxInformation.AppendText(
-                    $"The file {GlobalParameters.OutputPath}{targetDataObjectName}.json has been created.");
+                TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", dataObjectMappings);
+                richTextBoxInformation.AppendText($"The file {GlobalParameters.OutputPath}{targetDataObjectName}.json has been created.");
             }
         }
 
         /// <summary>
         /// New, WIP method to generate Data Warehouse Automation Json files, based on the name of the target Data Object.
+        /// Used for Presentation Layer objects for now.
         /// </summary>
         /// <param name="targetDataObjectNameFromDataGrid"></param>
         /// <param name="jsonExportSetting"></param>
         private string GenerateJson(string targetDataObjectNameFromDataGrid, JsonExportSetting jsonExportSetting)
         {
+            //In-memory physical model
+            SqlConnection metadataConnection = new SqlConnection
+            {
+                ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
+            };
+
+            var physicalModelDataTable = MetadataHandling.GetPhysicalModelDataTable(metadataConnection);
+
             var localDataObjectMappingDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             var localDataItemMappingDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
 
@@ -8877,6 +8799,16 @@ namespace TEAM
 
             List<dynamic> sourceDataObjects = new List<dynamic>();
             List<DataItemMapping> dataItemMappings = new List<DataItemMapping>();
+            
+            // Generate data items for each source, and for the mapping overall
+            List<dynamic> targetDataItems = new List<dynamic>();
+
+            // Only used to prevent a data item to be added twice to the list of data items for an object.
+            List<string> targetDataItemNames = new List<string>();
+
+            var targetDataObjectName = "";
+            var targetConnectionInternalId = "";
+            var targetConnection = new TeamConnection();
 
             int counter = 0;
             foreach (DataRow row in mappingRows)
@@ -8884,13 +8816,13 @@ namespace TEAM
                 // Get the full details of the target first, and only once
                 if (counter == 0)
                 {
-                    var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
+                    targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                     var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-
+                    
                     // Create and set target Data Object.
-                    dataObjectMapping.targetDataObject = JsonOutputHandling.CreateDataObject(targetDataObjectName, targetConnection, JsonExportSetting);
+                    dataObjectMapping.targetDataObject = JsonOutputHandling.CreateDataObject(targetDataObjectName, targetConnection, JsonExportSetting, TeamConfiguration, "Target");
 
                     // Also add the classification at Data Object Mapping level, as this is derived from the target Data Object.
                     var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
@@ -8924,44 +8856,73 @@ namespace TEAM
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                 var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
 
-                var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, jsonExportSetting);
-
-                //// Create the classifications for the source Data Objects
-                //List<Classification> sourceDataObjectClassifications = new List<Classification>();
-                //var sourceDataObjectClassification = new Classification();
-                //sourceDataObjectClassification.classification = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", TeamConfigurationSettings).ToString();
-                //sourceDataObjectClassifications.Add(sourceDataObjectClassification);
-                //sourceDataObject.dataObjectClassification = sourceDataObjectClassifications;
+                var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, jsonExportSetting, TeamConfiguration);
 
                 // Generate data items for each source, and for the mapping overall
                 List<dynamic> sourceDataItems = new List<dynamic>();
+                List<string> sourceDataItemNames = new List<string>();
 
                 var dataItemRows = localDataItemMappingDataTable.Select($"[{AttributeMappingMetadataColumns.SourceTable}] = '{sourceDataObjectName}' AND [{AttributeMappingMetadataColumns.TargetTable}] = '{targetDataObjectNameFromDataGrid}'");
+                
                 foreach (DataRow dataItemRow in dataItemRows)
                 {
                     var sourceDataItem = new DataItem();
+
                     List<dynamic> sourceDataItemLocalList = new List<dynamic>(); // Creating a single source-to-target Data Item mapping
+
                     var targetDataItem = new DataItem();
 
                     var localSourceDataItemFromGrid = dataItemRow[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
                     var localTargetDataItemFromGrid = dataItemRow[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
                     sourceDataItem.name = localSourceDataItemFromGrid;
-                    sourceDataItems.Add(sourceDataItem);
-                    sourceDataItemLocalList.Add(sourceDataItem);
-
                     targetDataItem.name = localTargetDataItemFromGrid;
+
+                    // Adding the source data items
+                    if (!sourceDataItemNames.Contains(sourceDataItem.name) && JsonExportSetting.GenerateSourceDataItemTypes == "True")
+                    {
+                        sourceDataItemNames.Add(sourceDataItem.name);
+                        MetadataHandling.GetFullSourceDataItemPresentation(sourceDataObjectName, sourceConnection, physicalModelDataTable, dataItemRow, sourceDataItem, "Source");
+                        sourceDataItems.Add(sourceDataItem);
+                    }
+
+                    // Adding the target data items
+                    if (!targetDataItemNames.Contains(targetDataItem.name) && JsonExportSetting.GenerateTargetDataItemTypes == "True")
+                    {
+                        targetDataItemNames.Add(targetDataItem.name);
+                        MetadataHandling.GetFullSourceDataItemPresentation(targetDataObjectName, targetConnection, physicalModelDataTable, dataItemRow, targetDataItem, "Target");
+                        targetDataItems.Add(targetDataItem);
+                    }
+
+                    sourceDataItemLocalList.Add(sourceDataItem);
 
                     DataItemMapping dataItemMapping = new DataItemMapping();
                     dataItemMapping.sourceDataItems = sourceDataItemLocalList;
                     dataItemMapping.targetDataItem = targetDataItem;
 
-                    dataItemMappings.Add(dataItemMapping);
-                }
 
-                if (sourceDataItems.Count != 0)
-                {
-                    sourceDataObject.dataItems = sourceDataItems;
+                    //sourceDataItem.name = (string)dataItemRow["SOURCE_ATTRIBUTE_NAME"];
+                    //sourceDataItem.isHardCodedValue = sourceDataItem.name.StartsWith("'") && sourceDataItem.name.EndsWith("'");
+                    //targetDataItem.name = (string)dataItemRow["TARGET_ATTRIBUTE_NAME"];
+
+                    //if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
+                    //{
+                    //    MetadataHandling.GetFullSourceDataItem(sourceDataObjectName, sourceConnection, physicalModelDataTable, dataItemRow, sourceDataItem, "Source");
+                    //}
+
+                    //if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
+                    //{
+                    //    MetadataHandling.GetFullSourceDataItem(targetDataObjectName, targetConnection, physicalModelDataTable, dataItemRow, targetDataItem, "Target");
+                    //}
+
+                    //sourceDataItems.Add(sourceDataItem);
+
+                    //dataItemMapping.sourceDataItems = sourceDataItems;
+                    //dataItemMapping.targetDataItem = targetDataItem;
+
+
+
+                    dataItemMappings.Add(dataItemMapping);
                 }
 
                 // Add extensions (database and schema)
@@ -8978,7 +8939,7 @@ namespace TEAM
             List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
             // Add the metadata connection as related data object (assuming this is set in the json export settings).
-            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting);
+            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting, TeamConfiguration);
             if (metaDataObject.name != null)
             {
                 relatedDataObjects.Add(metaDataObject);
@@ -9015,7 +8976,7 @@ namespace TEAM
         /// Creates a Json schema based on the Data Warehouse Automation interface definition.
         /// </summary>
         /// <param name="generationMetadataList"></param>
-        private void GenerateJsonFromPattern(List<DataRow> generationMetadataList)
+        private void GenerateJsonFromPattern(List<DataRow> generationMetadataList, JsonExportSetting jsonExportSetting)
         {
             // Set up the form in case the show Json output checkbox has been selected
             if (checkBoxShowJsonOutput.Checked)
@@ -9032,26 +8993,26 @@ namespace TEAM
             int mappingCounter = 0;
 
             EventLog eventLog = new EventLog();
-            SqlConnection conn = new SqlConnection
+            SqlConnection metadataConnection = new SqlConnection
             {
                 ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
             };
 
+            var physicalModelDataTable = MetadataHandling.GetPhysicalModelDataTable(metadataConnection);
 
             // Iterate over the list of dataRows.
-            foreach (DataRow metadataRow in generationMetadataList)
+            foreach (DataRow dataObjectMetadataRow in generationMetadataList)
             {
                 #region Preparation
-
-                var sourceDataObjectName = metadataRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
-                var targetDataObjectName = metadataRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                var sourceConnectionInternalId = metadataRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                var targetConnectionInternalId = metadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                var sourceDataObjectName = dataObjectMetadataRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                var targetDataObjectName = dataObjectMetadataRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                var sourceConnectionInternalId = dataObjectMetadataRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                var targetConnectionInternalId = dataObjectMetadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                 var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                 var fullyQualifiedNameSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                 var fullyQualifiedNameTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                var drivingKeyDefinition = metadataRow[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].ToString();
+                var drivingKeyDefinition = dataObjectMetadataRow[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].ToString();
 
                 // Find out what the correct patterns is.
                 var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition, TeamConfiguration);
@@ -9072,7 +9033,7 @@ namespace TEAM
                     try
                     {
                         var metadataQuery = loadPatternDefinition.LoadPatternBaseQuery;
-                        metadataDataTable = Utility.GetDataTable(ref conn, metadataQuery);
+                        metadataDataTable = Utility.GetDataTable(ref metadataConnection, metadataQuery);
                     }
                     catch (Exception ex)
                     {
@@ -9084,31 +9045,13 @@ namespace TEAM
 
                     // Populate the additional business key information (i.e. links)
                     var additionalBusinessKeyQuery = loadPatternDefinition.LoadPatternAdditionalBusinessKeyQuery;
-                    var additionalBusinessKeyDataTable = Utility.GetDataTable(ref conn, additionalBusinessKeyQuery);
+                    var additionalBusinessKeyDataTable = Utility.GetDataTable(ref metadataConnection, additionalBusinessKeyQuery);
 
                     // Select the right mapping and map the metadata to the DWH automation schema
                     richTextBoxInformation.AppendText(@"Processing generation for " + targetDataObjectName + ".\r\n");
 
                     // Create the list of Data Object Mappings, the top array of the file that needs to be created.
                     List<DataObjectMapping> dataObjectMappingList = new List<DataObjectMapping>();
-
-                    // Retrieve the physical model.
-                    // Add data type details, if requested.
-                    var physicalModelQuery = @"SELECT
-                                                           [DATABASE_NAME]
-                                                          ,[SCHEMA_NAME]
-                                                          ,[TABLE_NAME]
-                                                          ,[COLUMN_NAME]
-                                                          ,[DATA_TYPE]
-                                                          ,[CHARACTER_MAXIMUM_LENGTH]
-                                                          ,[NUMERIC_PRECISION]
-                                                          ,[NUMERIC_SCALE]
-                                                          ,[ORDINAL_POSITION]
-                                                          ,[PRIMARY_KEY_INDICATOR]
-                                                      FROM [interface].[INTERFACE_PHYSICAL_MODEL]";
-
-                    var physicalModelDataTable = Utility.GetDataTable(ref conn, physicalModelQuery);
-
                     #endregion
 
                     // Now, it's time to iterate over the right scope of mappings.
@@ -9126,10 +9069,9 @@ namespace TEAM
                             sourceToTargetMapping.mappingName = (string) row["TARGET_NAME"]; // Source-to-target mapping name
 
                             #region Data Objects
-
                             var sourceDataObjects = new List<dynamic>();
-                            var sourceDataObject = JsonOutputHandling.CreateDataObject((string) row["SOURCE_NAME"], sourceConnection, JsonExportSetting);
-                            var targetDataObject = JsonOutputHandling.CreateDataObject((string) row["TARGET_NAME"], targetConnection, JsonExportSetting);
+                            var sourceDataObject = JsonOutputHandling.CreateDataObject((string) row["SOURCE_NAME"], sourceConnection, JsonExportSetting, TeamConfiguration);
+                            var targetDataObject = JsonOutputHandling.CreateDataObject((string) row["TARGET_NAME"], targetConnection, JsonExportSetting, TeamConfiguration, "Target");
 
                             sourceDataObjects.Add(sourceDataObject);
                             sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
@@ -9140,9 +9082,6 @@ namespace TEAM
                             #region Related Data Objects (e.g. lookup tables, references)
                             List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
-
-
-
                             var dependentRows = TableMapping.GetPeerDataRows((string) row["SOURCE_NAME"], (string)row["SOURCE_SCHEMA_NAME"], (string) row["TARGET_NAME"], (string)row["TARGET_SCHEMA_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"], (string) row["FILTER_CRITERIA"], TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
 
                             foreach (var dependentRow in dependentRows)
@@ -9150,17 +9089,16 @@ namespace TEAM
                                 var localRelatedDataObjectName = dependentRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
                                 var localRelatedDataObjectConnectionId = dependentRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                                 var localRelatedDataObjectConnection = GetTeamConnectionByConnectionId(localRelatedDataObjectConnectionId);
-                                var relatedDataObject = JsonOutputHandling.CreateDataObject(localRelatedDataObjectName, localRelatedDataObjectConnection, JsonExportSetting);
+                                var relatedDataObject = JsonOutputHandling.CreateDataObject(localRelatedDataObjectName, localRelatedDataObjectConnection, JsonExportSetting, TeamConfiguration);
 
                                 relatedDataObjects.Add(relatedDataObject);
                             }
-                            
 
                             // Add upstream related Data Objects (assuming this is set in the json export settings).
-                            relatedDataObjects.AddRange(JsonOutputHandling.SetLineageRelatedDataObjectList((DataTable)_bindingSourceTableMetadata.DataSource, targetDataObjectName, JsonExportSetting));
+                            relatedDataObjects.AddRange(JsonOutputHandling.SetLineageRelatedDataObjectList((DataTable)_bindingSourceTableMetadata.DataSource, targetDataObjectName, JsonExportSetting, TeamConfiguration));
 
                             // Add the metadata connection as related data object (assuming this is set in the json export settings).
-                            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting);
+                            var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting, TeamConfiguration);
                             if (metaDataObject.name != null)
                             {
                                 relatedDataObjects.Add(metaDataObject);
@@ -9171,7 +9109,6 @@ namespace TEAM
                             {
                                 sourceToTargetMapping.relatedDataObjects = relatedDataObjects;
                             }
-
                             #endregion
 
                             #region Business Keys
@@ -9218,7 +9155,6 @@ namespace TEAM
                             #endregion
 
                             #region Additional Business Keys
-
                             if (additionalBusinessKeyDataTable != null &&
                                 additionalBusinessKeyDataTable.Rows.Count > 0)
                             {
@@ -9254,34 +9190,22 @@ namespace TEAM
                                 }
                             }
 
-
                             sourceToTargetMapping.businessKeys = businessKeyList; // Business Key
-
 
                             // Set the data types, if required
                             foreach (var localBusinessKey in sourceToTargetMapping.businessKeys)
                             {
                                 foreach (var component in businessKey.businessKeyComponentMapping)
                                 {
-
                                     if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
                                     {
-                                        Dictionary<string, string> tableSchema =
-                                            MetadataHandling.GetFullyQualifiedDataObjectName(
-                                                sourceToTargetMapping.sourceDataObjects[0].name, sourceConnection);
+                                        Dictionary<string, string> tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(sourceToTargetMapping.sourceDataObjects[0].name, sourceConnection);
 
-                                        DataRow[] physicalModelRow = physicalModelDataTable.Select(
-                                            "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
-                                            "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() +
-                                            "' AND " +
-                                            "[COLUMN_NAME] = '" +
-                                            component.sourceDataItems[0].name.Replace("'", "") +
-                                            "'"
-                                        );
-                                        if (physicalModelRow.Length > 0)
-                                        {
-                                            PrepareDataTypes(component.sourceDataItems[0], physicalModelRow);
-                                        }
+                                        string componentName = component.sourceDataItems[0].name.Replace("'", "");
+
+                                        var physicalModelRow = physicalModelDataTable.Select("[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() + "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' AND " + "[COLUMN_NAME] = '" + componentName + "'").FirstOrDefault();
+
+                                        MetadataHandling.PrepareDataItemDataType(component.sourceDataItems[0], physicalModelRow);
 
                                     }
 
@@ -9289,57 +9213,44 @@ namespace TEAM
                                     {
                                         if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
                                         {
-                                            var tableSchema =
-                                                MetadataHandling.GetFullyQualifiedDataObjectName(
-                                                    sourceToTargetMapping.targetDataObject.name, targetConnection);
+                                            var tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(sourceToTargetMapping.targetDataObject.name, targetConnection).FirstOrDefault();
 
-                                            DataRow[] physicalModelRow = physicalModelDataTable.Select(
-                                                "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
-                                                "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() +
-                                                "' AND " +
-                                                "[COLUMN_NAME] = '" + component.targetDataItem.name + "'"
-                                            );
-                                            if (physicalModelRow.Length > 0)
+                                            var physicalModelRow = physicalModelDataTable.Select("[TABLE_NAME] = '" + tableSchema.Value + "' AND [SCHEMA_NAME] = '" + tableSchema.Key + "' AND " + "[COLUMN_NAME] = '" + component.targetDataItem.name + "'").FirstOrDefault();
+
+                                            if (physicalModelRow != null)
                                             {
-                                                PrepareDataTypes(component.targetDataItem, physicalModelRow);
+                                                MetadataHandling.PrepareDataItemDataType(component.targetDataItem, physicalModelRow);
                                             }
-
                                         }
                                     }
                                     catch (Exception ex)
                                     {
-                                        LogMetadataEvent(
-                                            $"An issue has occurred during generation of the Json files: \r\n\r\n {ex}.",
-                                            EventTypes.Error);
+                                        LogMetadataEvent($"An issue has occurred during generation of the Json files: \r\n\r\n {ex}.", EventTypes.Error);
                                     }
 
                                 }
                             }
-
-
-
                             #endregion
 
                             #region Data Item Mapping (column to column mappings)
-
                             // Create the column-to-column mapping.
 
                             // Populate the attribute mappings
                             // Create the column-to-column mapping
                             var columnMetadataQuery = loadPatternDefinition.LoadPatternAttributeQuery;
-                            var columnMetadataDataTable = Utility.GetDataTable(ref conn, columnMetadataQuery);
+                            var columnMetadataDataTable = Utility.GetDataTable(ref metadataConnection, columnMetadataQuery);
 
                             List<DataItemMapping> dataItemMappingList = new List<DataItemMapping>();
 
                             if (columnMetadataDataTable != null && columnMetadataDataTable.Rows.Count > 0)
                             {
-                                DataRow[] columnRows = columnMetadataDataTable.Select(
+                                DataRow[] dataItemRows = columnMetadataDataTable.Select(
                                     "[TARGET_NAME] = '" + fullyQualifiedNameTarget.Value + "' " +
                                     "AND [TARGET_SCHEMA_NAME] = '" + fullyQualifiedNameTarget.Key + "' " +
                                     "AND [SOURCE_NAME] = '" + fullyQualifiedNameSource.Value + "' " +
                                     "AND [SOURCE_SCHEMA_NAME] = '" + fullyQualifiedNameSource.Key + "'");
 
-                                foreach (DataRow column in columnRows)
+                                foreach (DataRow dataItemRow in dataItemRows)
                                 {
                                     DataItemMapping dataItemMapping = new DataItemMapping();
 
@@ -9348,59 +9259,18 @@ namespace TEAM
                                     DataItem sourceDataItem = new DataItem();
                                     DataItem targetDataItem = new DataItem();
 
-                                    sourceDataItem.name = (string) column["SOURCE_ATTRIBUTE_NAME"];
-                                    sourceDataItem.isHardCodedValue = sourceDataItem.name.StartsWith("'") &&
-                                                                      sourceDataItem.name.EndsWith("'");
-                                    targetDataItem.name = (string) column["TARGET_ATTRIBUTE_NAME"];
+                                    sourceDataItem.name = (string) dataItemRow["SOURCE_ATTRIBUTE_NAME"];
+                                    sourceDataItem.isHardCodedValue = sourceDataItem.name.StartsWith("'") && sourceDataItem.name.EndsWith("'");
+                                    targetDataItem.name = (string) dataItemRow["TARGET_ATTRIBUTE_NAME"];
 
                                     if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
                                     {
-                                        var tableSchema =
-                                            MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName,
-                                                sourceConnection);
-
-                                        try
-                                        {
-                                            DataRow[] physicalModelRow = physicalModelDataTable.Select(
-                                                "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
-                                                "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() +
-                                                "' AND " +
-                                                "[COLUMN_NAME] = '" +
-                                                MetadataHandling.QuoteStringValuesForAttributes(
-                                                    (string) column["SOURCE_ATTRIBUTE_NAME"]) + "'"
-                                            );
-                                            if (physicalModelRow.Length > 0)
-                                            {
-                                                PrepareDataTypes(sourceDataItem, physicalModelRow);
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            LogMetadataEvent(
-                                                $"An issue has occurred during generation of the Json files: \r\n\r\n {ex}.",
-                                                EventTypes.Error);
-                                        }
-
+                                        MetadataHandling.GetFullSourceDataItem(sourceDataObjectName, sourceConnection, physicalModelDataTable, dataItemRow, sourceDataItem, "Source");
                                     }
 
                                     if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
                                     {
-                                        var tableSchema =
-                                            MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName,
-                                                targetConnection);
-
-                                        DataRow[] physicalModelRow = physicalModelDataTable.Select(
-                                            "[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() +
-                                            "' AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() +
-                                            "' AND " +
-                                            "[COLUMN_NAME] = '" +
-                                            MetadataHandling.QuoteStringValuesForAttributes(
-                                                (string) column["TARGET_ATTRIBUTE_NAME"]) + "'"
-                                        );
-                                        if (physicalModelRow.Length > 0)
-                                        {
-                                            PrepareDataTypes(targetDataItem, physicalModelRow);
-                                        }
+                                        MetadataHandling.GetFullSourceDataItem(targetDataObjectName, targetConnection, physicalModelDataTable, dataItemRow, targetDataItem, "Target");
                                     }
 
                                     sourceDataItems.Add(sourceDataItem);
@@ -9409,38 +9279,33 @@ namespace TEAM
                                     dataItemMapping.targetDataItem = targetDataItem;
 
                                     // Adding Multi-Active Key classification
-                                    if (column.Table.Columns.Contains("MULTI_ACTIVE_KEY_INDICATOR"))
+                                    if (dataItemRow.Table.Columns.Contains("MULTI_ACTIVE_KEY_INDICATOR"))
                                     {
-                                        if ((string) column["MULTI_ACTIVE_KEY_INDICATOR"] == "Y")
+                                        if ((string) dataItemRow["MULTI_ACTIVE_KEY_INDICATOR"] == "Y")
                                         {
                                             // Create the classifications at Data Item (target) level, to capture if this attribute is a Multi-Active attribute.
-                                            List<Classification> dataItemClassificationList =
-                                                new List<Classification>();
+                                            List<Classification> dataItemClassificationList = new List<Classification>();
                                             var dataItemClassification = new Classification();
                                             dataItemClassification.classification = "MultiActive";
-                                            dataItemClassification.notes =
-                                                "A multi-active attribute is part of the target table key.";
+                                            dataItemClassification.notes = "A multi-active attribute is part of the target table key.";
                                             dataItemClassificationList.Add(dataItemClassification);
 
                                             // Add the classification to the target Data Item
-                                            dataItemMapping.targetDataItem.dataItemClassification =
-                                                dataItemClassificationList;
+                                            dataItemMapping.targetDataItem.dataItemClassification = dataItemClassificationList;
                                         }
                                     }
 
                                     // Adding NULL classification
-                                    if ((string) column["SOURCE_ATTRIBUTE_NAME"] == "NULL")
+                                    if ((string) dataItemRow["SOURCE_ATTRIBUTE_NAME"] == "NULL")
                                     {
                                         // Create the classifications at Data Item (target) level, to capture if this attribute is a NULL.
-                                        List<Classification> dataItemClassificationList =
-                                            new List<Classification>();
+                                        List<Classification> dataItemClassificationList = new List<Classification>();
                                         var dataItemClassification = new Classification();
                                         dataItemClassification.classification = "NULL value";
                                         dataItemClassificationList.Add(dataItemClassification);
 
                                         // Add the classification to the target Data Item
-                                        dataItemMapping.sourceDataItems[0].dataItemClassification =
-                                            dataItemClassificationList;
+                                        dataItemMapping.sourceDataItems[0].dataItemClassification = dataItemClassificationList;
                                     }
 
                                     dataItemMappingList.Add(dataItemMapping);
@@ -9449,6 +9314,7 @@ namespace TEAM
 
                             #endregion
 
+                            #region Classifications
                             // Create the classifications at Data Object Mapping level.
                             List<Classification> dataObjectMappingClassificationList = new List<Classification>();
                             var dataObjectMappingClassification = new Classification();
@@ -9458,8 +9324,9 @@ namespace TEAM
                             dataObjectMappingClassificationList.Add(dataObjectMappingClassification);
                             
                             sourceToTargetMapping.mappingClassifications = dataObjectMappingClassificationList;
+                            #endregion
 
-
+                            #region Filters
                             sourceToTargetMapping.filterCriterion =
                                 (string) row["FILTER_CRITERIA"]; // Filter criterion
 
@@ -9467,9 +9334,9 @@ namespace TEAM
                             {
                                 dataItemMappingList = null;
                             }
+                            #endregion
 
-                            sourceToTargetMapping.dataItemMappings =
-                                dataItemMappingList; // Column to column mapping
+                            sourceToTargetMapping.dataItemMappings = dataItemMappingList; // Column to column mapping
 
                             // Add the source-to-target mapping to the mapping list
                             dataObjectMappingList.Add(sourceToTargetMapping);
@@ -9477,7 +9344,6 @@ namespace TEAM
                     }
                     
                     #region Wrap-up
-
                     // Create an instance of the non-generic information i.e. VEDW specific. For example the generation date/time.
                     GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata(targetDataObjectName);
                     MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfiguration);
@@ -9545,39 +9411,10 @@ namespace TEAM
 
             richTextBoxInformation.ScrollToCaret();
 
-            conn.Close();
-            conn.Dispose();
+            metadataConnection.Close();
+            metadataConnection.Dispose();
         }
-
-        private static void PrepareDataTypes(DataItem dataItem, DataRow[] physicalModelRow)
-        {
-            var dataType = physicalModelRow[0].ItemArray[4].ToString();
-            dataItem.dataType = dataType;
-
-            switch (dataType)
-            {
-                case "varchar":
-                case "nvarchar":
-                case "binary":
-                    dataItem.characterLength = (int) physicalModelRow[0].ItemArray[5];
-                    break;
-                case "numeric":
-                    dataItem.numericPrecision = (int) physicalModelRow[0].ItemArray[6];
-                    dataItem.numericScale = (int) physicalModelRow[0].ItemArray[7];
-                    break;
-                case "int":
-                    // No length etc.
-                    break;
-                case "datetime":
-                case "datetime2":
-                case "date":
-                    dataItem.numericScale = (int) physicalModelRow[0].ItemArray[7];
-                    break;
-            }
-
-            dataItem.ordinalPosition = (int) physicalModelRow[0].ItemArray[8];
-        }
-
+        
         private void openConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -9588,15 +9425,12 @@ namespace TEAM
                 }
                 else
                 {
-                    richTextBoxInformation.Text =
-                        "There is no value given for the Configuration Path. Please enter a valid path name.";
+                    richTextBoxInformation.Text = @"There is no value given for the Configuration Path. Please enter a valid path name.";
                 }
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text =
-                    "An error has occurred while attempting to open the configuration directory. The error message is: " +
-                    ex;
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: {ex.Message}";
             }
         }
 
@@ -9740,8 +9574,7 @@ namespace TEAM
                         DataTable gridDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
 
                         // Make sure the output is sorted
-                        gridDataTable.DefaultView.Sort =
-                            "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
+                        gridDataTable.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
 
                         gridDataTable.TableName = "AttributeMappingMetadata";
 
@@ -10032,7 +9865,7 @@ namespace TEAM
 
                         File.WriteAllText(chosenFile, json);
 
-                        richTextBoxInformation.Text = "The model metadata file " + chosenFile + " saved successfully.";
+                        richTextBoxInformation.Text = $@"The model metadata file {chosenFile} saved successfully.";
                     }
                     catch (Exception ex)
                     {
@@ -10045,10 +9878,8 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.AppendText(
-                    "An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"An exception has been encountered: {ex.Message}."));
+                richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -10084,8 +9915,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred displaying the event log. The error message is: " + ex,
-                        "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("An issue occurred displaying the event log. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
