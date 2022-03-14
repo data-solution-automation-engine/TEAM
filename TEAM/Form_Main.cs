@@ -24,7 +24,7 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.3.1";
+            const string versionNumberForTeamApplication = "v1.6.4";
             Text = $"TEAM - Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}.";
 
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
