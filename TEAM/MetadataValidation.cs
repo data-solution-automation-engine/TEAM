@@ -442,11 +442,11 @@ namespace TEAM
                 sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
                 sqlStatementForLink.AppendLine("FROM [" + connDatabase + "].sys.columns");
                 sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.TeamConfiguration.LinkTablePrefixValue + "_%'");
+                sqlStatementForLink.AppendLine("AND OBJECTPROPERTY([object_id], 'IsTable') = 1");
                 sqlStatementForLink.AppendLine("AND column_id > 4");
                 sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
 
                 // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
-
                 connTarget.Open();
                 var linkList = Utility.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
                 connTarget.Close();
@@ -456,8 +456,7 @@ namespace TEAM
                     var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
                     int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
 
-                    if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)
-                    ) // Exclude degenerate attributes from the order
+                    if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)) // Exclude degenerate attributes from the order
                     {
                         linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
                     }
