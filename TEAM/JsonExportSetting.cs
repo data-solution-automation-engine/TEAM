@@ -8,8 +8,7 @@ using TEAM_Library;
 namespace TEAM
 {
     /// <summary>
-    /// Configuration settings related to the export of Json files.
-    /// This class manages the settings (true/false) that dictate whether certain objects are generated or not.
+    /// Configuration settings related to the export of JSON files. This class manages the settings (true/false) that dictate whether certain objects are generated or not.
     /// </summary>
     public class JsonExportSetting
     {
@@ -18,29 +17,30 @@ namespace TEAM
         public string GenerateDatabaseAsExtension { get; set; }
         public string GenerateSchemaAsExtension { get; set; }
         public string GenerateTypeAsClassification { get; set; }
+        public string GenerateDataObjectDataItems { get; set; }
 
-        // Data Item
-        public string GenerateSourceDataItemTypes { get; set; }
-        public string GenerateTargetDataItemTypes { get; set; }
-        
+        // Data Items
+        public string GenerateDataItemDataTypes { get; set; }
+        public string GenerateParentDataObject { get; set; }
+
         // Related Data Objects
         public string AddMetadataAsRelatedDataObject { get; set; }
         public string AddUpstreamDataObjectsAsRelatedDataObject { get; set; }
 
         /// <summary>
-        /// Retrieve the validation information from disk and save this to memory.
+        /// Retrieve the JSON export settings from disk and store them in the application (memory).
         /// </summary>
-        /// <param name="filename"></param>
-        internal void LoadJsonConfigurationFile(string filename)
+        /// <param name="fileName"></param>
+        internal void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
         {
             try
             {
                 var configList = new Dictionary<string, string>();
-                var fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
-                var sr = new StreamReader(fs);
+                var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                var streamReader = new StreamReader(fileStream);
 
                 string textLine;
-                while ((textLine = sr.ReadLine()) != null)
+                while ((textLine = streamReader.ReadLine()) != null)
                 {
                     if (textLine.IndexOf(@"/*", StringComparison.Ordinal) == -1 && textLine.Trim() != "")
                     {
@@ -49,42 +49,50 @@ namespace TEAM
                     }
                 }
 
-                sr.Close();
-                fs.Close();
+                streamReader.Close();
+                fileStream.Close();
 
                 GenerateDataObjectConnection = configList["GenerateDataObjectConnection"];
+                GenerateDataObjectDataItems = configList["GenerateDataObjectDataItems"];
                 GenerateDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
                 GenerateSchemaAsExtension = configList["GenerateSchemaAsExtension"];
                 GenerateTypeAsClassification = configList["GenerateTypeAsClassification"];
 
-                GenerateSourceDataItemTypes = configList["GenerateSourceDataItemTypes"];
-                GenerateTargetDataItemTypes = configList["GenerateTargetDataItemTypes"];
+                GenerateDataItemDataTypes = configList["GenerateDataItemDataTypes"];
+                GenerateParentDataObject = configList["GenerateParentDataObject"];
 
                 AddMetadataAsRelatedDataObject = configList["AddMetadataAsRelatedDataObject"];
                 AddUpstreamDataObjectsAsRelatedDataObject = configList["AddUpstreamDataObjectsAsRelatedDataObject"];
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                // Do nothing
+                if (applyChecks)
+                {
+                    MessageBox.Show($@"A non-fatal error occurred loading the JSON configuration file. This is likely related to a specific setting not found in the file. Please check the JSON export file settings and save the configuration again so that all values can be reset and/or updated. The full technical error message is '{exception.Message}'.", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
+        /// <summary>
+        /// Save the JSON export settings to disk.
+        /// </summary>
         internal void SaveJsonConfigurationFile()
         {
             try
             {
                 // Creating the file
                 var validationFile = new StringBuilder();
-                validationFile.AppendLine("/* TEAM Json Export Configuration Settings */");
+                validationFile.AppendLine("/* TEAM JSON Export Configuration Settings */");
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
                 validationFile.AppendLine("GenerateDataObjectConnection|" + GenerateDataObjectConnection + "");
+                validationFile.AppendLine("GenerateDataObjectDataItems|" + GenerateDataObjectDataItems + "");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|" + GenerateDatabaseAsExtension + "");
                 validationFile.AppendLine("GenerateSchemaAsExtension|" + GenerateSchemaAsExtension + "");
                 validationFile.AppendLine("GenerateTypeAsClassification|" + GenerateTypeAsClassification + "");
 
-                validationFile.AppendLine("GenerateSourceDataItemTypes|" + GenerateSourceDataItemTypes + "");
-                validationFile.AppendLine("GenerateTargetDataItemTypes|" + GenerateTargetDataItemTypes + "");
+                validationFile.AppendLine("GenerateDataItemDataTypes|" + GenerateDataItemDataTypes + "");
+                validationFile.AppendLine("GenerateParentDataObject|" + GenerateParentDataObject + "");
 
                 validationFile.AppendLine("AddMetadataAsRelatedDataObject|" +AddMetadataAsRelatedDataObject + "");
                 validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|" + AddUpstreamDataObjectsAsRelatedDataObject + "");
@@ -93,24 +101,21 @@ namespace TEAM
                 validationFile.AppendLine("/* End of file */");
 
                 using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                     FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' +
-                                     FormBase.GlobalParameters.WorkingEnvironment +
+                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' + FormBase.GlobalParameters.WorkingEnvironment +
                                      FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                MessageBox.Show($@"An error occurred saving the Json configuration file. The error message is {ex.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"An error occurred saving the JSON configuration file. The error message is {exception.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         /// <summary>
-        /// Method to create a new validation file with default values at the default location
-        /// Checks if the file already exists. If it does, nothing will happen.
+        /// Method to create a new validation file with default values, at the default location. Checks if the file already exists. If it does, nothing will happen.
         /// </summary>
         internal static void CreateDummyJsonConfigurationFile(string fileName)
         {
@@ -118,16 +123,21 @@ namespace TEAM
             {
                 var validationFile = new StringBuilder();
 
-                validationFile.AppendLine("/* TEAM Json Export File Settings */");
+                validationFile.AppendLine("/* TEAM JSON Export File Settings */");
 
+                // Data Object group.
                 validationFile.AppendLine("GenerateDataObjectConnection|True");
+                validationFile.AppendLine("GenerateDataObjectDataItems|True");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|True");
                 validationFile.AppendLine("GenerateSchemaAsExtension|True");
                 validationFile.AppendLine("GenerateTypeAsClassification|True");
 
-                validationFile.AppendLine("GenerateSourceDataItemTypes|True");
+                // Data Item group.
+                validationFile.AppendLine("GenerateDataItemDataTypes|True");
                 validationFile.AppendLine("GenerateTargetDataItemTypes|True");
+                validationFile.AppendLine("GenerateParentDataObject|True");
 
+                // Related Data Objects.
                 validationFile.AppendLine("AddMetadataAsRelatedDataObject|True");
                 validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|True");
 
@@ -139,12 +149,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new Json extract configuration file was created for {fileName}."));
-
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
             }
             else
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing Json extract configuration file {fileName} was detected."));
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
             }
         }
     }

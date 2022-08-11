@@ -56,7 +56,6 @@ namespace TEAM_Library
             var columnNameFilter = "";
             if (sourceOrTarget == "Source")
             {
-                //columnNameFilter = QuoteStringValuesForAttributes((string)column[$"SOURCE_ATTRIBUTE_NAME"]);
                 columnNameFilter = QuoteStringValuesForAttributes((string)column[3]);
             }
             else if (sourceOrTarget == "Target")
@@ -71,18 +70,19 @@ namespace TEAM_Library
                                                                          "AND [COLUMN_NAME] = '" + columnNameFilter + "' " +
                                                                          "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
                                                                          "").FirstOrDefault();
+
                 PrepareDataItemDataType(dataItem, physicalModelRow);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 // TBD
             }
         }
 
 
-        public static void GetFullSourceDataItem(string dataObjectName, TeamConnection teamConnection, DataTable physicalModelDataTable, DataRow column, DataItem dataItem, string sourceOrTarget = "Regular")
+        public static void GetFullSourceDataItem(DataObject dataObject, TeamConnection teamConnection, DataTable physicalModelDataTable, DataRow column, DataItem dataItem, bool AddParentDataObject, string sourceOrTarget = "Regular")
         {
-            var tableSchema = GetFullyQualifiedDataObjectName(dataObjectName, teamConnection);
+            var tableSchema = GetFullyQualifiedDataObjectName(dataObject.name, teamConnection);
 
             var columnNameFilter = "";
             if (sourceOrTarget == "Source")
@@ -102,14 +102,19 @@ namespace TEAM_Library
                                                                          "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
                                                                          "").FirstOrDefault();
                 PrepareDataItemDataType(dataItem, physicalModelRow);
+
+                // Add the Data Object, if required.
+                if (AddParentDataObject)
+                {
+                    dataItem.dataObject = dataObject;
+                }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 // TBD
             }
         }
-
-
+        
         public static void PrepareDataItemDataType(DataItem dataItem, DataRow physicalModelRow)
         {
             if (physicalModelRow != null)

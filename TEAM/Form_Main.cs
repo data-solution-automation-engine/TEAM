@@ -24,8 +24,8 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.4";
-            Text = $"TEAM - Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}.";
+            const string versionNumberForTeamApplication = "v1.6.5";
+            Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}.";
 
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
@@ -38,9 +38,9 @@ namespace TEAM
             {
                 LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{ex}"));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{exception.Message}"));
             }
 
             #region Load the root path configuration settings (user defined paths and working environment)
@@ -202,8 +202,7 @@ namespace TEAM
 
             if (errorCounter > 0)
             {
-                richTextBoxInformation.AppendText(
-                    $"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
+                richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
             }
 
             TestConnections();

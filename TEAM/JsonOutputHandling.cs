@@ -24,20 +24,21 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject CreateDataObject(string dataObjectName, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string sourceOrTarget = "Source")
         {
+            // Initialise the object and set the name.
             DataObject localDataObject = new DataObject {name = dataObjectName};
             
-            // Data Object Connection
+            // Add Connection to Data Object, if allowed.
             localDataObject = SetDataObjectConnection(localDataObject, teamConnection, jsonExportSetting);
             
-            // Source and target connection information as extensions
+            // Connection information as extensions. Only allowed if a Connection is added to the Data Object.
             localDataObject = SetDataObjectDatabaseExtension(localDataObject, teamConnection, jsonExportSetting);
             localDataObject = SetDataObjectSchemaExtension(localDataObject, teamConnection, jsonExportSetting);
 
-            // Add classifications
+            // Add classifications.
             localDataObject = SetDataObjectTypeClassification(localDataObject, jsonExportSetting);
 
-            // Add Data Items
-            if (sourceOrTarget == "Source" && jsonExportSetting.GenerateSourceDataItemTypes == "True" || sourceOrTarget == "Target" && jsonExportSetting.GenerateTargetDataItemTypes == "True")
+            // Only add if setting is enabled.
+            if (jsonExportSetting.GenerateDataObjectDataItems == "True")
             {
                 var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
 
@@ -48,10 +49,7 @@ namespace TEAM
 
                 var physicalModelDataTable = MetadataHandling.GetPhysicalModelDataTable(metadataConnection);
 
-                DataRow[] dataItemRows = physicalModelDataTable.Select(
-                    "[TABLE_NAME] = '" + fullyQualifiedName.Value + "' " +
-                    "AND [SCHEMA_NAME] = '" + fullyQualifiedName.Key + "' " +
-                    "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'");
+                DataRow[] dataItemRows = physicalModelDataTable.Select("[TABLE_NAME] = '" + fullyQualifiedName.Value + "' " + "AND [SCHEMA_NAME] = '" + fullyQualifiedName.Key + "' " + "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'");
 
                 var sortedDataItemRows = dataItemRows.OrderBy(dr => dr["ORDINAL_POSITION"]);
 
@@ -59,20 +57,25 @@ namespace TEAM
 
                 foreach (var dataItemRow in sortedDataItemRows)
                 {
-                    DataItem dataItem = new DataItem {name = (string) dataItemRow["COLUMN_NAME"]};
+                    DataItem dataItem = new DataItem { name = (string)dataItemRow["COLUMN_NAME"] };
 
-                    MetadataHandling.PrepareDataItemDataType(dataItem, dataItemRow);
+                    // Only add Data Type details if the setting is enabled.
+                    if (sourceOrTarget == "Source" && jsonExportSetting.GenerateDataItemDataTypes == "True" || sourceOrTarget == "Target" && jsonExportSetting.GenerateDataItemDataTypes == "True")
+                    {
+                        MetadataHandling.PrepareDataItemDataType(dataItem, dataItemRow);
+                    }
 
                     dataItems.Add(dataItem);
                 }
 
                 localDataObject.dataItems = dataItems;
             }
+
             return localDataObject;
         }
 
         /// <summary>
-        /// Add a Data Object Connection based on the TeamConnection details.
+        /// Add a Connection to a Data Object based on the TeamConnection details.
         /// </summary>
         /// <param name="dataObject"></param>
         /// <param name="teamConnection"></param>
@@ -100,7 +103,7 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject SetDataObjectDatabaseExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            if (jsonExportSetting.GenerateDatabaseAsExtension == "True" && dataObject.dataObjectConnection != null)
+            if (jsonExportSetting.GenerateDatabaseAsExtension == "True" && jsonExportSetting.GenerateDataObjectConnection == "True" && dataObject.dataObjectConnection != null)
             {
                 List<Extension> extensions = new List<Extension>();
                 
@@ -135,7 +138,7 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject SetDataObjectSchemaExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            if (jsonExportSetting.GenerateSchemaAsExtension == "True" && dataObject.dataObjectConnection != null)
+            if (jsonExportSetting.GenerateSchemaAsExtension == "True" && jsonExportSetting.GenerateDataObjectConnection == "True" && dataObject.dataObjectConnection != null)
             {
                 List<Extension> extensions = new List<Extension>();
 

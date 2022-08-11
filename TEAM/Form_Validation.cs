@@ -171,33 +171,16 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var theDialog = new OpenFileDialog
-            {
-                Title = @"Open Validation File",
-                Filter = @"Text files|*.txt",
-                InitialDirectory = @"" + GlobalParameters.ConfigurationPath + ""
-            };
+            var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
-            if (theDialog.ShowDialog() != DialogResult.OK) return;
             try
             {
-                var myStream = theDialog.OpenFile();
+                Process.Start(validationFile);
 
-                using (myStream)
-                {
-                    richTextBoxInformation.Clear();
-                    var chosenFile = theDialog.FileName;
-
-                    // Load from disk into memory
-                    ValidationSetting.LoadValidationFile(chosenFile);
-
-                    // Update values on form
-                    LocalInitialiseValidationSettings();
-                }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                richTextBoxInformation.Text += $@"An error has occurred while attempting to open the validation configuration file '{validationFile}'. The error message is: '{exception.Message}'.";
             }
         }
         

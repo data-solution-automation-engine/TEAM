@@ -17,20 +17,21 @@ namespace TEAM
             // Make sure the configuration information is available in this form.
             try
             {
-                var configurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+                var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
-                // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
-                if (!File.Exists(configurationFileName))
+                // If the JSON export configuration file does not exist yet, create it.
+                if (!File.Exists(jsonExportConfigurationFileName))
                 {
-                    JsonExportSetting.CreateDummyJsonConfigurationFile(configurationFileName);
+                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonExportConfigurationFileName);
                 }
 
-                // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                JsonExportSetting.LoadJsonConfigurationFile(configurationFileName);
+                // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
+                JsonExportSetting.LoadJsonConfigurationFile(jsonExportConfigurationFileName);
 
-                richTextBoxInformation.Text += $"The Json extract configuration file {configurationFileName} has been loaded.";
+                // ReSharper disable once LocalizableElement
+                richTextBoxJsonExportInformation.Text += $"The JSON extract configuration file {jsonExportConfigurationFileName} has been loaded.\r\n";
 
-                // Apply the values to the form
+                // Apply the values to the form.
                 LocalInitialiseJsonExtractSettings();
             }
             catch (Exception)
@@ -38,6 +39,18 @@ namespace TEAM
                 // Do nothing
             }
 
+
+
+        }
+
+        /// <summary>
+        /// Reusable / convenience information update for when a JSON export setting was not detected.
+        /// </summary>
+        /// <param name="settingName"></param>
+        /// <returns></returns>
+        private string JsonConfigurationWarning(string settingName)
+        {
+            return $"The value for '{settingName}' was not found. This needs to be either True (enabled) or False (disabled). The setting has been automatically disabled as a result. Please save your JSON export configuration file to persist this.\r\n";
         }
 
         /// <summary>
@@ -45,205 +58,155 @@ namespace TEAM
         /// </summary>
         private void LocalInitialiseJsonExtractSettings()
         {
-            // Source data types
-            switch (JsonExportSetting.GenerateSourceDataItemTypes)
-            {
-                case "True":
-                    checkBoxSourceDataType.Checked = true;
-                    break;
-                case "False":
-                    checkBoxSourceDataType.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateSourceDataItemTypes + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
+            int issueCounter = 0;
 
-            // Target data types
-            switch (JsonExportSetting.GenerateTargetDataItemTypes)
-            {
-                case "True":
-                    checkBoxTargetDataType.Checked = true;
-                    break;
-                case "False":
-                    checkBoxTargetDataType.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateTargetDataItemTypes + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
+            #region Data Objects
+            // GenerateTypeAsClassification
+            EvaluateJsonExportCheckbox(checkBoxAddType, JsonExportSetting.GenerateTypeAsClassification, ref issueCounter);
 
-            // Connection
+            // GenerateDataObjectDataItems
+            EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.GenerateDataObjectDataItems, ref issueCounter);
+
+            // GenerateDataObjectConnection
             switch (JsonExportSetting.GenerateDataObjectConnection)
             {
                 case "True":
                     checkBoxSourceConnectionKey.Checked = true;
+
+                    // GenerateDatabaseAsExtension
+                    EvaluateJsonExportCheckbox(checkBoxDatabaseExtension, JsonExportSetting.GenerateDatabaseAsExtension, ref issueCounter);
+
+                    // GenerateSchemaAsExtension
+                    EvaluateJsonExportCheckbox(checkBoxSchemaExtension, JsonExportSetting.GenerateSchemaAsExtension, ref issueCounter);
+
                     break;
                 case "False":
                     checkBoxSourceConnectionKey.Checked = false;
+                    checkBoxDatabaseExtension.Visible = false; // Hide these checkboxes because they are related to the connection.
+                    checkBoxSchemaExtension.Visible = false;
+
                     break;
+
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateDataObjectConnection + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    richTextBoxJsonExportInformation.Text += JsonConfigurationWarning(checkBoxSourceConnectionKey.Text);
+                    checkBoxSourceConnectionKey.Checked = false;
+                    issueCounter++;
                     break;
             }
+            #endregion
 
-            // Database Extension
-            switch (JsonExportSetting.GenerateDatabaseAsExtension)
-            {
-                case "True":
-                    checkBoxDatabaseExtension.Checked = true;
-                    break;
-                case "False":
-                    checkBoxDatabaseExtension.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateDatabaseAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
+            #region Data Items
+            // GenerateDataItemTypes
+            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.GenerateDataItemDataTypes, ref issueCounter);
 
-            // Schema Extension
-            switch (JsonExportSetting.GenerateSchemaAsExtension)
-            {
-                case "True":
-                    checkBoxSchemaExtension.Checked = true;
-                    break;
-                case "False":
-                    checkBoxSchemaExtension.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateSchemaAsExtension + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
+            // GenerateParentDataObject
+            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.GenerateParentDataObject, ref issueCounter);
+            #endregion
 
-            // Type classification
-            switch (JsonExportSetting.GenerateTypeAsClassification)
-            {
-                case "True":
-                    checkBoxAddType.Checked = true;
-                    break;
-                case "False":
-                    checkBoxAddType.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.GenerateTypeAsClassification + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
-
-
+            #region Related Data Objects
             // Add Metadata as object
-            switch (JsonExportSetting.AddMetadataAsRelatedDataObject)
-            {
-                case "True":
-                    checkBoxAddMetadataConnection.Checked = true;
-                    break;
-                case "False":
-                    checkBoxAddMetadataConnection.Checked = false;
-                    break;
-                default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.AddMetadataAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
+            EvaluateJsonExportCheckbox(checkBoxAddMetadataConnection, JsonExportSetting.AddMetadataAsRelatedDataObject, ref issueCounter);
 
             // Add upstream connections as objects
-            switch (JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject)
+            EvaluateJsonExportCheckbox(checkBoxNextUpDataObjects, JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject, ref issueCounter);
+            #endregion
+
+            // Report back the the user
+            if (issueCounter > 0)
+            {
+                MessageBox.Show(@"Non-critical issues were detected loading the JSON export configuration file. Please check the information on the screen, review the settings and save again to resolve this. Otherwise, some settings may be ignored during the activation process.", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+        }
+
+        /// <summary>
+        /// Reusable / convenience method to handle enabling of form checkboxes based on values retrieved from the configuration file.
+        /// </summary>
+        /// <param name="checkBox"></param>
+        /// <param name="exportSettingValue"></param>
+        /// <param name="issueCounter"></param>
+        private void EvaluateJsonExportCheckbox(CheckBox checkBox, string exportSettingValue, ref int issueCounter)
+        {
+            switch (exportSettingValue)
             {
                 case "True":
-                    checkBoxNextUpDataObjects.Checked = true;
+                    checkBox.Checked = true;
                     break;
                 case "False":
-                    checkBoxNextUpDataObjects.Checked = false;
+                    checkBox.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the checkbox values, only true and false are allowed but this was encountered: " + JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject + ". Please check the configuration file (TEAM_<environment>_jsonconfiguration.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    richTextBoxJsonExportInformation.Text += JsonConfigurationWarning(checkBox.Text);
+                    checkBox.Checked = false;
+                    issueCounter++;
                     break;
             }
         }
 
-        private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs args)
         {
-            var theDialog = new OpenFileDialog
-            {
-                Title = @"Open Json Configuration File",
-                Filter = @"Text files|*.txt",
-                InitialDirectory = @"" + GlobalParameters.ConfigurationPath + ""
-            };
+            var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
-            if (theDialog.ShowDialog() != DialogResult.OK) return;
             try
             {
-                var myStream = theDialog.OpenFile();
+                Process.Start(jsonExportConfigurationFileName);
 
-                using (myStream)
-                {
-                    richTextBoxInformation.Clear();
-                    var chosenFile = theDialog.FileName;
-
-                    // Load from disk into memory
-                    JsonExportSetting.LoadJsonConfigurationFile(chosenFile);
-
-                    // Update values on form
-                    LocalInitialiseJsonExtractSettings();
-                }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                richTextBoxJsonExportInformation.Text += $@"An error has occurred while attempting to open the JSON export configuration file '{jsonExportConfigurationFileName}'. The error message is: '{exception.Message}'.";
             }
         }
-        
+
         /// <summary>
         /// Save settings
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void toolStripMenuItemSaveSettings_Click(object sender, EventArgs e)
+        /// <param name="args"></param>
+        private void ToolStripMenuItemSaveSettings_Click(object sender, EventArgs args)
         {
             try
             {
-                // Connection
-                var stringSourceConnection= "";
-                stringSourceConnection = checkBoxSourceConnectionKey.Checked ? "True" : "False";
+                // GenerateDataObjectConnection
+                var stringSourceConnection = checkBoxSourceConnectionKey.Checked ? "True" : "False";
                 JsonExportSetting.GenerateDataObjectConnection = stringSourceConnection;
 
-                // Database extension
-                var stringDatabaseExtension = "";
-                stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
+                // GenerateDataObjectDataItems
+                var stringDataObjectDataItems = checkBoxDataObjectDataItems.Checked ? "True" : "False";
+                JsonExportSetting.GenerateDataObjectDataItems = stringDataObjectDataItems;
+
+                // GenerateDatabaseAsExtension
+                var stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
                 JsonExportSetting.GenerateDatabaseAsExtension = stringDatabaseExtension;
 
-                // Schema extension
-                var stringSchemaExtension = "";
-                stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
+                // GenerateSchemaAsExtension
+                var stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
                 JsonExportSetting.GenerateSchemaAsExtension = stringSchemaExtension;
 
-                // Type classification
-                var stringTypeClassification = "";
-                stringTypeClassification = checkBoxAddType.Checked ? "True" : "False";
+                // GenerateTypeAsClassification
+                var stringTypeClassification = checkBoxAddType.Checked ? "True" : "False";
                 JsonExportSetting.GenerateTypeAsClassification = stringTypeClassification;
 
-                // Source data types
-                var stringSourceDataTypes = "";
-                stringSourceDataTypes = checkBoxSourceDataType.Checked ? "True" : "False";
-                JsonExportSetting.GenerateSourceDataItemTypes = stringSourceDataTypes;
+                // GenerateDataItemDataTypes
+                var stringSourceDataTypes = checkBoxDataItemDataType.Checked ? "True" : "False";
+                JsonExportSetting.GenerateDataItemDataTypes = stringSourceDataTypes;
 
-                // Target data types
-                var stringTargetDataTypes = "";
-                stringTargetDataTypes = checkBoxTargetDataType.Checked ? "True" : "False";
-                JsonExportSetting.GenerateTargetDataItemTypes = stringTargetDataTypes;
+                // GenerateParentDataObject
+                var stringAddParentDataObject = checkBoxDataItemAddParentDataObject.Checked ? "True" : "False";
+                JsonExportSetting.GenerateParentDataObject = stringAddParentDataObject;
 
-                // Add metadata related data object
-                var stringAddMetadataConnection = "";
-                stringAddMetadataConnection = checkBoxAddMetadataConnection.Checked ? "True" : "False";
+                // AddMetadataAsRelatedDataObject
+                var stringAddMetadataConnection = checkBoxAddMetadataConnection.Checked ? "True" : "False";
                 JsonExportSetting.AddMetadataAsRelatedDataObject = stringAddMetadataConnection;
 
-                // Add next up related data objects from lineage
-                var stringAddNextUpObjects = "";
-                stringAddNextUpObjects = checkBoxNextUpDataObjects.Checked ? "True" : "False";
+                // AddUpstreamDataObjectsAsRelatedDataObject
+                var stringAddNextUpObjects = checkBoxNextUpDataObjects.Checked ? "True" : "False";
                 JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
 
                 // Write to disk
                 JsonExportSetting.SaveJsonConfigurationFile();
 
-                richTextBoxInformation.Text = @"The values have been successfully saved.";
+                richTextBoxJsonExportInformation.Text += "The values have been successfully saved.\r\n";
             }
             catch (Exception ex)
             {
@@ -251,7 +214,7 @@ namespace TEAM
             }
         }
 
-        private void openConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs args)
         {
             try
             {
@@ -259,11 +222,11 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
+                richTextBoxJsonExportInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: '{ex.Message}'.";
             }
         }
 
-        private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs args)
         {
             try
             {
@@ -271,13 +234,28 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
+                richTextBoxJsonExportInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: '{ex.Message}'.";
             }
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs args)
         {
             Close();
+        }
+
+        private void checkBoxSourceConnectionKey_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!checkBoxSourceConnectionKey.Checked)
+            {
+                checkBoxDatabaseExtension.Visible = false;
+                checkBoxSchemaExtension.Visible = false;
+            }
+
+            if (checkBoxSourceConnectionKey.Checked)
+            {
+                checkBoxDatabaseExtension.Visible = true;
+                checkBoxSchemaExtension.Visible = true;
+            }
         }
     }
 }

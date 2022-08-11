@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
+using DataWarehouseAutomation;
 using TEAM_Library;
+using DataObject = System.Windows.Forms.DataObject;
 
 namespace TEAM
 {
@@ -39,8 +41,6 @@ namespace TEAM
             return teamConnection;
         }
 
-
-
         #region Metadata objects in memory
         // In-memory representation of the Table Mapping Metadata.
         public static TeamTableMapping TableMapping { get; set; } = new TeamTableMapping();
@@ -63,7 +63,7 @@ namespace TEAM
         public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set; } = new TeamWorkingEnvironmentCollection();
 
         /// <summary>
-        /// Instance of the export configuration for Json files (options).
+        /// Instance of the export configuration for JSON files (options).
         /// </summary>
         public static JsonExportSetting JsonExportSetting { get; set; } = new JsonExportSetting();
 
@@ -99,7 +99,7 @@ namespace TEAM
             internal static string WorkingEnvironment { get; set; } = "Development";
             internal static string WorkingEnvironmentInternalId { get; set; }
 
-            // Json file name parameters
+            // JSON file name parameters
             public static string JsonTableMappingFileName { get; } = "TEAM_Table_Mapping";
             public static string JsonAttributeMappingFileName { get; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; } = "TEAM_Model_Metadata";

@@ -36,8 +36,6 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxExistenceChecks = new System.Windows.Forms.GroupBox();
             this.checkBoxDataItemExistence = new System.Windows.Forms.CheckBox();
@@ -48,10 +46,10 @@
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBoxLinkCompletion = new System.Windows.Forms.CheckBox();
             this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
             this.groupBoxDataVaultValidation = new System.Windows.Forms.GroupBox();
             this.checkBoxBasicDataVaultValidation = new System.Windows.Forms.CheckBox();
-            this.checkBoxLinkCompletion = new System.Windows.Forms.CheckBox();
             this.toolTipValidation = new System.Windows.Forms.ToolTip(this.components);
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxExistenceChecks.SuspendLayout();
@@ -76,8 +74,6 @@
             this.toolStripMenuItem2,
             this.openConfigurationDirectoryToolStripMenuItem,
             this.toolStripSeparator1,
-            this.openOutputDirectoryToolStripMenuItem,
-            this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -112,19 +108,6 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(256, 6);
-            // 
-            // openOutputDirectoryToolStripMenuItem
-            // 
-            this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
-            this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(256, 6);
             // 
             // exitToolStripMenuItem
             // 
@@ -240,6 +223,19 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Metadata consistency";
             // 
+            // checkBoxLinkCompletion
+            // 
+            this.checkBoxLinkCompletion.AutoSize = true;
+            this.checkBoxLinkCompletion.Checked = true;
+            this.checkBoxLinkCompletion.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxLinkCompletion.Location = new System.Drawing.Point(6, 88);
+            this.checkBoxLinkCompletion.Name = "checkBoxLinkCompletion";
+            this.checkBoxLinkCompletion.Size = new System.Drawing.Size(100, 17);
+            this.checkBoxLinkCompletion.TabIndex = 11;
+            this.checkBoxLinkCompletion.Text = "Link completion";
+            this.toolTipValidation.SetToolTip(this.checkBoxLinkCompletion, resources.GetString("checkBoxLinkCompletion.ToolTip"));
+            this.checkBoxLinkCompletion.UseVisualStyleBackColor = true;
+            // 
             // checkBoxBusinessKeySyntaxValidation
             // 
             this.checkBoxBusinessKeySyntaxValidation.AutoSize = true;
@@ -274,19 +270,6 @@
             this.checkBoxBasicDataVaultValidation.Text = "Validate basic Data Vault attribute existence";
             this.checkBoxBasicDataVaultValidation.UseVisualStyleBackColor = true;
             // 
-            // checkBoxLinkCompletion
-            // 
-            this.checkBoxLinkCompletion.AutoSize = true;
-            this.checkBoxLinkCompletion.Checked = true;
-            this.checkBoxLinkCompletion.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxLinkCompletion.Location = new System.Drawing.Point(6, 88);
-            this.checkBoxLinkCompletion.Name = "checkBoxLinkCompletion";
-            this.checkBoxLinkCompletion.Size = new System.Drawing.Size(100, 17);
-            this.checkBoxLinkCompletion.TabIndex = 11;
-            this.checkBoxLinkCompletion.Text = "Link completion";
-            this.toolTipValidation.SetToolTip(this.checkBoxLinkCompletion, resources.GetString("checkBoxLinkCompletion.ToolTip"));
-            this.checkBoxLinkCompletion.UseVisualStyleBackColor = true;
-            // 
             // FormManageValidation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -319,7 +302,6 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBoxExistenceChecks;
         private System.Windows.Forms.CheckBox checkBoxSourceBusinessKeyExistence;
@@ -330,7 +312,6 @@
         private System.Windows.Forms.RichTextBox richTextBoxInformation;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBoxBusinessKeySyntaxValidation;
         private System.Windows.Forms.CheckBox checkBoxDataItemExistence;

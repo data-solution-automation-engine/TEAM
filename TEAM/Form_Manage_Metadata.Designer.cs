@@ -1580,7 +1580,7 @@ namespace TEAM
             this.checkBoxShowJsonOutput.Name = "checkBoxShowJsonOutput";
             this.checkBoxShowJsonOutput.Size = new System.Drawing.Size(118, 17);
             this.checkBoxShowJsonOutput.TabIndex = 10;
-            this.checkBoxShowJsonOutput.Text = "Display Json output";
+            this.checkBoxShowJsonOutput.Text = "Display JSON output";
             this.checkBoxShowJsonOutput.UseVisualStyleBackColor = true;
             // 
             // checkBoxSaveInterfaceToJson
@@ -1592,10 +1592,8 @@ namespace TEAM
             this.checkBoxSaveInterfaceToJson.Name = "checkBoxSaveInterfaceToJson";
             this.checkBoxSaveInterfaceToJson.Size = new System.Drawing.Size(110, 17);
             this.checkBoxSaveInterfaceToJson.TabIndex = 11;
-            this.checkBoxSaveInterfaceToJson.Text = "Save Json to disk";
-            this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNo" +
-        "t having this option checked will overwrite the mapping information for the sele" +
-        "cted version (in the datagrid).");
+            this.checkBoxSaveInterfaceToJson.Text = "Save JSON to disk";
+            this.toolTipMetadata.SetToolTip(this.checkBoxSaveInterfaceToJson, "Check this option if loaded files (JSON or XML) are added to existing data.\r\n\r\nNot having this option checked will overwrite the mapping information for the selected version (in the datagrid).");
             this.checkBoxSaveInterfaceToJson.UseVisualStyleBackColor = true;
             // 
             // checkBoxValidation
@@ -1812,14 +1810,14 @@ namespace TEAM
             this.generateJsonInterfaceFilesOnlyToolStripMenuItem});
             this.jsonExportConfigurationToolStripMenuItem.Name = "jsonExportConfigurationToolStripMenuItem";
             this.jsonExportConfigurationToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
-            this.jsonExportConfigurationToolStripMenuItem.Text = "&Json";
+            this.jsonExportConfigurationToolStripMenuItem.Text = "&JSON";
             // 
             // manageJsonExportRulesToolStripMenuItem
             // 
             this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
             this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
-            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage Json export rules";
+            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON export rules";
             this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
             // 
             // generateJsonInterfaceFilesOnlyToolStripMenuItem
@@ -1828,7 +1826,7 @@ namespace TEAM
             this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Name = "generateJsonInterfaceFilesOnlyToolStripMenuItem";
             this.generateJsonInterfaceFilesOnlyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
             this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Text = "&Generate Json Interface Files Only";
+            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Text = "&Generate JSON Interface Files Only";
             this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Click += new System.EventHandler(this.generateJsonInterfaceFilesOnlyToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -1907,7 +1905,7 @@ namespace TEAM
             this.groupBoxJsonOptions.Size = new System.Drawing.Size(139, 66);
             this.groupBoxJsonOptions.TabIndex = 26;
             this.groupBoxJsonOptions.TabStop = false;
-            this.groupBoxJsonOptions.Text = "Json / XML load options";
+            this.groupBoxJsonOptions.Text = "JSON load options";
             // 
             // backgroundWorkerEventLog
             // 

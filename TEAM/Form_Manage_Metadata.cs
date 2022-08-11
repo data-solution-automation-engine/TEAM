@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using TEAM_Library;
+using DataObject = DataWarehouseAutomation.DataObject;
 using EventLog = TEAM_Library.EventLog;
 
 namespace TEAM
@@ -46,7 +47,7 @@ namespace TEAM
                 tabControlDataMappings.TabPages.Remove(tabPagePhysicalModel);
             }
 
-            // Default setting and initialisation of counters etc.
+            // Default setting and start setting of counters etc.
             radiobuttonNoVersionChange.Checked = true;
             MetadataParameters.ValidationIssues = 0;
             MetadataParameters.ValidationRunning = false;
@@ -143,19 +144,16 @@ namespace TEAM
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
-                JsonExportSetting.LoadJsonConfigurationFile(jsonConfigurationFile);
+                JsonExportSetting.LoadJsonConfigurationFile(jsonConfigurationFile, true);
 
-                richTextBoxInformation.AppendText(
-                    $"The configuration file {jsonConfigurationFile} has been loaded.\r\n");
+                richTextBoxInformation.AppendText($"The configuration file {jsonConfigurationFile} has been loaded.\r\n");
             }
             catch (Exception ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
-                    $"The Json export configuration file could not be loaded, so default (all) validation will be used. The exception message is {ex}."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The JSON export configuration file could not be loaded, so default (all) validation will be used. The exception message is {ex}."));
             }
 
             #region CheckedListBox for reverse engineering
-
             checkedListBoxReverseEngineeringAreas.CheckOnClick = true;
             checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
             checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
@@ -166,7 +164,6 @@ namespace TEAM
                 checkedListBoxReverseEngineeringAreas.Items.Add(
                     new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
             }
-
             #endregion
         }
 
@@ -328,7 +325,7 @@ namespace TEAM
         #endregion
 
         /// <summary>
-        /// Populate the Table Mapping DataGrid from an existing Json file.
+        /// Populate the Table Mapping DataGrid from an existing JSON file.
         /// </summary>
         private void PopulateTableMappingGridWithVersion()
         {
@@ -336,7 +333,7 @@ namespace TEAM
             if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName()))
             {
                 richTextBoxInformation.AppendText(
-                    $"No Json file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName()}.\r\n");
+                    $"No JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName()}.\r\n");
                 TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
             }
 
@@ -404,7 +401,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Populates the Attribute Mapping DataGrid directly from an existing Json file.
+        /// Populates the Attribute Mapping DataGrid directly from an existing JSON file.
         /// </summary>
         private void PopulateAttributeGridWithVersion()
         {
@@ -412,7 +409,7 @@ namespace TEAM
             if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()))
             {
                 richTextBoxInformation.AppendText(
-                    $"No attribute mapping Json file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()}.\r\n");
+                    $"No attribute mapping JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()}.\r\n");
                 TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
             }
 
@@ -450,7 +447,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Populates the Physical Model DataGrid from an existing Json file.
+        /// Populates the Physical Model DataGrid from an existing JSON file.
         /// </summary>
         private void PopulatePhysicalModelGridWithVersion()
         {
@@ -460,7 +457,7 @@ namespace TEAM
                 if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()))
                 {
                     richTextBoxInformation.AppendText(
-                        $"No Json file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
+                        $"No JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
                     TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 }
 
@@ -962,7 +959,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Creates a new snapshot of the Physical Model metadata to a Json target repository, with the versionId as input parameter.
+        /// Creates a new snapshot of the Physical Model metadata to a JSON target repository, with the versionId as input parameter.
         /// This method creates a new version in the repository for the physical model (TEAM_Model.json file).
         /// </summary>
         /// <param name="versionId"></param>
@@ -1074,7 +1071,7 @@ namespace TEAM
             catch (Exception ex)
             {
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
-                    $"A snapshot of the physical model was attempted to be created as a Json array, but this did not succeed. The message is {ex}."));
+                    $"A snapshot of the physical model was attempted to be created as a JSON array, but this did not succeed. The message is {ex}."));
             }
 
             try
@@ -1087,7 +1084,7 @@ namespace TEAM
             catch (JsonReaderException ex)
             {
                 richTextBoxInformation.Text +=
-                    "There were issues inserting the new Json version file for the Physical Model.\r\n" + ex;
+                    "There were issues inserting the new JSON version file for the Physical Model.\r\n" + ex;
             }
 
         }
@@ -1212,7 +1209,7 @@ namespace TEAM
             catch (JsonReaderException ex)
             {
                 richTextBoxInformation.Text +=
-                    "There were issues inserting the new Json version file for the Table Mapping.\r\n" + ex;
+                    "There were issues inserting the new JSON version file for the Table Mapping.\r\n" + ex;
             }
         }
 
@@ -1394,7 +1391,7 @@ namespace TEAM
                             if (jsonHash.tableMappingHash == "")
                             {
                                 richTextBoxInformation.Text +=
-                                    "The correct segment in the Json file was not found.\r\n";
+                                    "The correct segment in the JSON file was not found.\r\n";
                             }
                             else
                             {
@@ -1421,7 +1418,7 @@ namespace TEAM
                             catch (JsonReaderException ex)
                             {
                                 richTextBoxInformation.Text +=
-                                    "There were issues saving the Json update to disk.\r\n" + ex;
+                                    "There were issues saving the JSON update to disk.\r\n" + ex;
                             }
                         }
 
@@ -1544,7 +1541,7 @@ namespace TEAM
                             catch (JsonReaderException ex)
                             {
                                 richTextBoxInformation.Text +=
-                                    "There were issues inserting the Json segment / record.\r\n" + ex;
+                                    "There were issues inserting the JSON segment / record.\r\n" + ex;
                             }
 
                         }
@@ -1576,7 +1573,7 @@ namespace TEAM
                                 if (jsonSegment.tableMappingHash == "")
                                 {
                                     richTextBoxInformation.Text +=
-                                        "The correct segment in the Json file was not found.\r\n";
+                                        "The correct segment in the JSON file was not found.\r\n";
                                 }
                                 else
                                 {
@@ -1592,7 +1589,7 @@ namespace TEAM
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues applying the Json update.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
                             }
 
                         }
@@ -1738,11 +1735,11 @@ namespace TEAM
                                 if (jsonHash.versionAttributeHash == "")
                                 {
                                     richTextBoxInformation.Text +=
-                                        "The correct segment in the Json file was not found.\r\n";
+                                        "The correct segment in the JsJSONon file was not found.\r\n";
                                 }
                                 else
                                 {
-                                    // Update the values in the Json segment
+                                    // Update the values in the JSON segment
                                     jsonHash.databaseName = databaseName;
                                     jsonHash.schemaName = schemaName;
                                     jsonHash.tableName = tableName;
@@ -1764,7 +1761,7 @@ namespace TEAM
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues applying the Json update.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
                             }
 
                         }
@@ -2048,7 +2045,7 @@ namespace TEAM
                                 if (jsonHash.attributeMappingHash == "")
                                 {
                                     richTextBoxInformation.Text +=
-                                        "The correct segment in the Json file was not found.\r\n";
+                                        "The correct segment in the JSON file was not found.\r\n";
                                 }
                                 else
                                 {
@@ -2067,7 +2064,7 @@ namespace TEAM
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues applying the Json update.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
                             }
                         }
 
@@ -2155,7 +2152,7 @@ namespace TEAM
                             catch (JsonReaderException ex)
                             {
                                 richTextBoxInformation.Text +=
-                                    "There were issues inserting the Json segment / record.\r\n" + ex;
+                                    "There were issues inserting the JSON segment / record.\r\n" + ex;
                             }
 
 
@@ -2190,7 +2187,7 @@ namespace TEAM
                                 if (jsonSegment.attributeMappingHash == "")
                                 {
                                     richTextBoxInformation.Text +=
-                                        "The correct segment in the Json file was not found.\r\n";
+                                        "The correct segment in the JSON file was not found.\r\n";
                                 }
                                 else
                                 {
@@ -2206,7 +2203,7 @@ namespace TEAM
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues applying the Json update.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
                             }
 
                         }
@@ -2915,7 +2912,7 @@ namespace TEAM
 
                 #region Save the JSON interface files
 
-                // Saving the interfaces to Json
+                // Saving the interfaces to JSON
                 if (checkBoxSaveInterfaceToJson.Checked)
                 {
                     // Take all the rows from the grid
@@ -7183,7 +7180,7 @@ namespace TEAM
                 {
                     Title = @"Save Table Mapping Metadata File",
                     Filter = @"JSON files|*.json",
-                    InitialDirectory = GlobalParameters.ConfigurationPath //Application.StartupPath + @"\Configuration\"
+                    InitialDirectory = GlobalParameters.ConfigurationPath
                 };
 
                 var ret = STAShowDialog(theDialog);
@@ -7228,24 +7225,19 @@ namespace TEAM
 
                         File.WriteAllText(chosenFile, json);
 
-                        richTextBoxInformation.Text =
-                            "The Table Mapping metadata file " + chosenFile + " saved successfully.";
+                        richTextBoxInformation.Text = "The Table Mapping metadata file " + chosenFile + " saved successfully.";
                     }
                     catch (Exception ex)
                     {
-                        richTextBoxInformation.AppendText(
-                            "An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
-                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                            $"An exception has been encountered: {ex.Message}."));
+                        richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
                     }
                 }
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.AppendText(
-                    "An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"An exception has been encountered: {ex.Message}."));
+                richTextBoxInformation.AppendText("An error has been encountered when attempting to save the file to disk. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -7259,8 +7251,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text =
-                    "An error has occurred while attempting to open the output directory. The error message is: " + ex;
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the output directory. The error message is: " + ex;
             }
         }
 
@@ -7558,7 +7549,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// This method is called from the context menu on the data grid. It exports the selected row to Json.
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -7777,7 +7768,6 @@ namespace TEAM
 
         }
 
-
         private void ValidateLinkCompletion()
         {
             // Informing the user.
@@ -7857,7 +7847,6 @@ namespace TEAM
 
 
         }
-
 
         /// <summary>
         /// This method runs a check against the Attribute Mappings DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
@@ -7994,7 +7983,6 @@ namespace TEAM
 
             return returnDictionary;
         }
-
 
         /// <summary>
         /// This method runs a check against the DataGrid to assert if model metadata is available for the object. The object needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run succesfully.
@@ -8325,8 +8313,6 @@ namespace TEAM
                     "     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
         }
-
-
         internal void ValidateBasicDataVaultAttributeExistence()
         {
             // Informing the user.
@@ -8707,8 +8693,6 @@ namespace TEAM
             _generatedScripts.Message = "Done";
         }
 
-
-
         /// <summary>
         /// Convenience method to encapsulate all UI interactions. Needs to be merged further (interim solution).
         /// </summary>
@@ -8737,12 +8721,12 @@ namespace TEAM
                 }
             }
 
-            // Do all the regular stuff
+            // Do all the regular stuff.
             GenerateJsonFromPattern(generationMetadataList, JsonExportSetting);
         }
 
         /// <summary>
-        /// Convenience method to do all the form stuff related to Json generation, such as saving and showing the status form, in one go.
+        /// Convenience method to do all the form stuff related to JSON generation, such as saving and showing the status form, in one go.
         /// </summary>
         /// <param name="targetDataObjectName"></param>
         /// <param name="jsonExportSettings"></param>
@@ -8753,7 +8737,7 @@ namespace TEAM
             if (checkBoxShowJsonOutput.Checked)
             {
                 _generatedJsonInterface = new Form_Alert();
-                _generatedJsonInterface.SetFormName("Exporting the metadata as Json files");
+                _generatedJsonInterface.SetFormName("Exporting the metadata as JSON files");
                 _generatedJsonInterface.ShowProgressBar(false);
                 _generatedJsonInterface.ShowCancelButton(false);
                 _generatedJsonInterface.ShowLogButton(false);
@@ -8772,30 +8756,31 @@ namespace TEAM
         }
 
         /// <summary>
-        /// New, WIP method to generate Data Warehouse Automation Json files, based on the name of the target Data Object.
+        /// New, WIP method to generate Data Warehouse Automation JSON files, based on the name of the target Data Object.
         /// Used for Presentation Layer objects for now.
         /// </summary>
-        /// <param name="targetDataObjectNameFromDataGrid"></param>
+        /// <param name="dataObjectName"></param>
         /// <param name="jsonExportSetting"></param>
-        private string GenerateJson(string targetDataObjectNameFromDataGrid, JsonExportSetting jsonExportSetting)
+        private string GenerateJson(string dataObjectName, JsonExportSetting jsonExportSetting)
         {
-            //In-memory physical model
+            //In-memory physical model.
             SqlConnection metadataConnection = new SqlConnection
             {
                 ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
             };
 
             var physicalModelDataTable = MetadataHandling.GetPhysicalModelDataTable(metadataConnection);
-
             var localDataObjectMappingDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             var localDataItemMappingDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
 
-            var mappingRows = localDataObjectMappingDataTable.Select($"[{TableMappingMetadataColumns.TargetTable}] = '{targetDataObjectNameFromDataGrid}'");
+            var mappingRows = localDataObjectMappingDataTable.Select($"[{TableMappingMetadataColumns.TargetTable}] = '{dataObjectName}'");
 
             List<DataObjectMapping> dataObjectMappings = new List<DataObjectMapping>();
-            DataObjectMapping dataObjectMapping = new DataObjectMapping();
-            dataObjectMapping.enabled = true;
-            dataObjectMapping.mappingName = targetDataObjectNameFromDataGrid;
+            DataObjectMapping dataObjectMapping = new DataObjectMapping
+            {
+                enabled = true,
+                mappingName = dataObjectName
+            };
 
             List<dynamic> sourceDataObjects = new List<dynamic>();
             List<DataItemMapping> dataItemMappings = new List<DataItemMapping>();
@@ -8807,7 +8792,6 @@ namespace TEAM
             List<string> targetDataItemNames = new List<string>();
 
             var targetDataObjectName = "";
-            var targetConnectionInternalId = "";
             var targetConnection = new TeamConnection();
 
             int counter = 0;
@@ -8817,24 +8801,26 @@ namespace TEAM
                 if (counter == 0)
                 {
                     targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                     targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                     
                     // Create and set target Data Object.
                     dataObjectMapping.targetDataObject = JsonOutputHandling.CreateDataObject(targetDataObjectName, targetConnection, JsonExportSetting, TeamConfiguration, "Target");
 
+                    #region Classification
                     // Also add the classification at Data Object Mapping level, as this is derived from the target Data Object.
                     var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
 
                     List<Classification> dataObjectsMappingClassifications = new List<Classification>();
-                    var dataObjectMappingClassification = new Classification();
-                    dataObjectMappingClassification.classification = tableType.ToString();
+                    var dataObjectMappingClassification = new Classification
+                    {
+                        classification = tableType.ToString()
+                    };
                     dataObjectsMappingClassifications.Add(dataObjectMappingClassification);
-
                     dataObjectMapping.mappingClassifications = dataObjectsMappingClassifications;
+                    #endregion
 
-                    // Business key, also only needs to be set once
+                    // Business key, also only needs to be set once.
                     List<BusinessKey> businessKeys = new List<BusinessKey>();
                     BusinessKey businessKey = new BusinessKey();
 
@@ -8850,19 +8836,18 @@ namespace TEAM
                     dataObjectMapping.businessKeys = businessKeys;
                 }
 
-                // Get the source info
+                // Get the source information to construct the source Data Object.
                 var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
                 var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                 var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-
                 var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, jsonExportSetting, TeamConfiguration);
 
-                // Generate data items for each source, and for the mapping overall
+                // Generate data items for each source, and for the mapping overall.
                 List<dynamic> sourceDataItems = new List<dynamic>();
                 List<string> sourceDataItemNames = new List<string>();
 
-                var dataItemRows = localDataItemMappingDataTable.Select($"[{AttributeMappingMetadataColumns.SourceTable}] = '{sourceDataObjectName}' AND [{AttributeMappingMetadataColumns.TargetTable}] = '{targetDataObjectNameFromDataGrid}'");
+                var dataItemRows = localDataItemMappingDataTable.Select($"[{AttributeMappingMetadataColumns.SourceTable}] = '{sourceDataObjectName}' AND [{AttributeMappingMetadataColumns.TargetTable}] = '{dataObjectName}'");
                 
                 foreach (DataRow dataItemRow in dataItemRows)
                 {
@@ -8878,65 +8863,52 @@ namespace TEAM
                     sourceDataItem.name = localSourceDataItemFromGrid;
                     targetDataItem.name = localTargetDataItemFromGrid;
 
-                    // Adding the source data items
-                    if (!sourceDataItemNames.Contains(sourceDataItem.name) && JsonExportSetting.GenerateSourceDataItemTypes == "True")
+                    #region Add data types for Data Items
+                    // Adding the data types for the source data items.
+                    if (!sourceDataItemNames.Contains(sourceDataItem.name) && JsonExportSetting.GenerateDataItemDataTypes == "True")
                     {
                         sourceDataItemNames.Add(sourceDataItem.name);
                         MetadataHandling.GetFullSourceDataItemPresentation(sourceDataObjectName, sourceConnection, physicalModelDataTable, dataItemRow, sourceDataItem, "Source");
                         sourceDataItems.Add(sourceDataItem);
                     }
 
-                    // Adding the target data items
-                    if (!targetDataItemNames.Contains(targetDataItem.name) && JsonExportSetting.GenerateTargetDataItemTypes == "True")
+                    // Adding the data types for the target data items.
+                    if (!targetDataItemNames.Contains(targetDataItem.name) && JsonExportSetting.GenerateDataItemDataTypes == "True")
                     {
                         targetDataItemNames.Add(targetDataItem.name);
                         MetadataHandling.GetFullSourceDataItemPresentation(targetDataObjectName, targetConnection, physicalModelDataTable, dataItemRow, targetDataItem, "Target");
                         targetDataItems.Add(targetDataItem);
                     }
+                    #endregion
 
+                    // Add parent Data Object to the Data Item.
+                    AddDataObjectToDataItem(sourceDataObject, sourceDataItem);
+                    AddDataObjectToDataItem(dataObjectMapping.targetDataObject, targetDataItem);
+
+                    // Populate the list of source Data Items.
                     sourceDataItemLocalList.Add(sourceDataItem);
 
-                    DataItemMapping dataItemMapping = new DataItemMapping();
-                    dataItemMapping.sourceDataItems = sourceDataItemLocalList;
-                    dataItemMapping.targetDataItem = targetDataItem;
+                    // Create a Data Item Mapping.
+                    DataItemMapping dataItemMapping = new DataItemMapping
+                    {
+                        sourceDataItems = sourceDataItemLocalList,
+                        targetDataItem = targetDataItem
+                    };
 
-
-                    //sourceDataItem.name = (string)dataItemRow["SOURCE_ATTRIBUTE_NAME"];
-                    //sourceDataItem.isHardCodedValue = sourceDataItem.name.StartsWith("'") && sourceDataItem.name.EndsWith("'");
-                    //targetDataItem.name = (string)dataItemRow["TARGET_ATTRIBUTE_NAME"];
-
-                    //if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
-                    //{
-                    //    MetadataHandling.GetFullSourceDataItem(sourceDataObjectName, sourceConnection, physicalModelDataTable, dataItemRow, sourceDataItem, "Source");
-                    //}
-
-                    //if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
-                    //{
-                    //    MetadataHandling.GetFullSourceDataItem(targetDataObjectName, targetConnection, physicalModelDataTable, dataItemRow, targetDataItem, "Target");
-                    //}
-
-                    //sourceDataItems.Add(sourceDataItem);
-
-                    //dataItemMapping.sourceDataItems = sourceDataItems;
-                    //dataItemMapping.targetDataItem = targetDataItem;
-
-
-
+                    // Add the Data Items Mapping to the list of mappings.
                     dataItemMappings.Add(dataItemMapping);
                 }
 
-                // Add extensions (database and schema)
-                //sourceDataObject = JsonOutputHandling.SetDataObjectDatabaseExtension(sourceDataObject, sourceConnection, jsonExportSetting);
                 sourceDataObjects.Add(sourceDataObject);
-
                 counter++;
             }
 
             // Add the source data objects
             dataObjectMapping.sourceDataObjects = sourceDataObjects;
-            
+
+            #region Related Data Objects
             // Related Data Objects
-            List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
+            List<DataObject> relatedDataObjects = new List<DataObject>();
 
             // Add the metadata connection as related data object (assuming this is set in the json export settings).
             var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting, TeamConfiguration);
@@ -8946,8 +8918,7 @@ namespace TEAM
             }
 
             dataObjectMapping.relatedDataObjects = relatedDataObjects;
-            
-            
+            #endregion
 
             // Add the data item mappings
             dataObjectMapping.dataItemMappings = dataItemMappings;
@@ -8955,34 +8926,34 @@ namespace TEAM
             // Adding the Data Object Mapping to the list of Data Object Mappings (the top level object)
             dataObjectMappings.Add(dataObjectMapping);
 
-            
-            
             // Create an instance of the non-generic information i.e. VDW specific. For example the generation date/time.
-            GenerationSpecificMetadata vedwMetadata = new GenerationSpecificMetadata(targetDataObjectNameFromDataGrid);
+            GenerationSpecificMetadata vdwMetadata = new GenerationSpecificMetadata(dataObjectName);
             MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfiguration);
 
-            VDW_DataObjectMappingList sourceTargetMappingList = new VDW_DataObjectMappingList();
-            sourceTargetMappingList.dataObjectMappings = dataObjectMappings;
-            sourceTargetMappingList.generationSpecificMetadata = vedwMetadata;
-            sourceTargetMappingList.metadataConfiguration = metadataConfiguration;
-
-
+            VDW_DataObjectMappingList sourceTargetMappingList = new VDW_DataObjectMappingList
+            {
+                dataObjectMappings = dataObjectMappings,
+                generationSpecificMetadata = vdwMetadata,
+                metadataConfiguration = metadataConfiguration
+            };
+            
             var jsonOutputAsString = JsonConvert.SerializeObject(sourceTargetMappingList, Formatting.Indented);
 
             return jsonOutputAsString;
         }
 
         /// <summary>
-        /// Creates a Json schema based on the Data Warehouse Automation interface definition.
+        /// Creates a JSON schema based on the Data Warehouse Automation interface definition.
         /// </summary>
         /// <param name="generationMetadataList"></param>
+        /// <param name="jsonExportSetting"></param>
         private void GenerateJsonFromPattern(List<DataRow> generationMetadataList, JsonExportSetting jsonExportSetting)
         {
-            // Set up the form in case the show Json output checkbox has been selected
+            // Set up the form in case the show JSON output checkbox has been selected
             if (checkBoxShowJsonOutput.Checked)
             {
                 _generatedJsonInterface = new Form_Alert();
-                _generatedJsonInterface.SetFormName("Exporting the metadata as Json files");
+                _generatedJsonInterface.SetFormName("Exporting the metadata as JSON files");
                 _generatedJsonInterface.ShowProgressBar(false);
                 _generatedJsonInterface.ShowCancelButton(false);
                 _generatedJsonInterface.ShowLogButton(false);
@@ -9018,10 +8989,10 @@ namespace TEAM
                 var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition, TeamConfiguration);
                 LoadPatternDefinition loadPatternDefinition = GlobalParameters.PatternDefinitionList.FirstOrDefault(item => item.LoadPatternType == tableType.ToString());
 
-                // Exception handling, if null then break
+                // Exception handling, if null then break.
                 if (loadPatternDefinition == null)
                 {
-                    var outputMessage = $"No Json interface file was created for the mapping from '{sourceDataObjectName}' to '{targetDataObjectName}' because its type could not be asserted.";
+                    var outputMessage = $"No JSON interface file was created for the mapping from '{sourceDataObjectName}' to '{targetDataObjectName}' because its type could not be asserted.";
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, outputMessage));
                     richTextBoxInformation.AppendText(outputMessage + "\r\n");
                 }
@@ -9054,19 +9025,19 @@ namespace TEAM
                     List<DataObjectMapping> dataObjectMappingList = new List<DataObjectMapping>();
                     #endregion
 
-                    // Now, it's time to iterate over the right scope of mappings.
+                    // Now, it's time to iterate over the selected mappings (enabled in the grid).
                     if (mappingRows != null)
                     {
                         foreach (DataRow row in mappingRows)
                         {
-                            // Create the individual Data Object Mapping
+                            // Create the individual Data Object Mapping.
                             var sourceToTargetMapping = new DataObjectMapping();
 
-                            // Enabled flag
+                            // Enabled flag.
                             sourceToTargetMapping.enabled = true;
 
-                            // Data Object Mapping name
-                            sourceToTargetMapping.mappingName = (string) row["TARGET_NAME"]; // Source-to-target mapping name
+                            // Data Object Mapping name.
+                            sourceToTargetMapping.mappingName = (string) row["TARGET_NAME"]; // Source-to-target mapping name.
 
                             #region Data Objects
                             var sourceDataObjects = new List<dynamic>();
@@ -9076,7 +9047,6 @@ namespace TEAM
                             sourceDataObjects.Add(sourceDataObject);
                             sourceToTargetMapping.sourceDataObjects = sourceDataObjects;
                             sourceToTargetMapping.targetDataObject = targetDataObject;
-
                             #endregion
 
                             #region Related Data Objects (e.g. lookup tables, references)
@@ -9197,7 +9167,7 @@ namespace TEAM
                             {
                                 foreach (var component in businessKey.businessKeyComponentMapping)
                                 {
-                                    if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
+                                    if (JsonExportSetting.GenerateDataItemDataTypes == "True")
                                     {
                                         Dictionary<string, string> tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(sourceToTargetMapping.sourceDataObjects[0].name, sourceConnection);
 
@@ -9211,7 +9181,7 @@ namespace TEAM
 
                                     try
                                     {
-                                        if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
+                                        if (JsonExportSetting.GenerateDataItemDataTypes == "True")
                                         {
                                             var tableSchema = MetadataHandling.GetFullyQualifiedDataObjectName(sourceToTargetMapping.targetDataObject.name, targetConnection).FirstOrDefault();
 
@@ -9225,7 +9195,7 @@ namespace TEAM
                                     }
                                     catch (Exception ex)
                                     {
-                                        LogMetadataEvent($"An issue has occurred during generation of the Json files: \r\n\r\n {ex}.", EventTypes.Error);
+                                        LogMetadataEvent($"An issue has occurred during generation of the JSON files: \r\n\r\n {ex}.", EventTypes.Error);
                                     }
 
                                 }
@@ -9234,9 +9204,6 @@ namespace TEAM
 
                             #region Data Item Mapping (column to column mappings)
                             // Create the column-to-column mapping.
-
-                            // Populate the attribute mappings
-                            // Create the column-to-column mapping
                             var columnMetadataQuery = loadPatternDefinition.LoadPatternAttributeQuery;
                             var columnMetadataDataTable = Utility.GetDataTable(ref metadataConnection, columnMetadataQuery);
 
@@ -9261,16 +9228,25 @@ namespace TEAM
 
                                     sourceDataItem.name = (string) dataItemRow["SOURCE_ATTRIBUTE_NAME"];
                                     sourceDataItem.isHardCodedValue = sourceDataItem.name.StartsWith("'") && sourceDataItem.name.EndsWith("'");
-                                    targetDataItem.name = (string) dataItemRow["TARGET_ATTRIBUTE_NAME"];
+                                    AddDataObjectToDataItem(sourceDataObject, sourceDataItem);
 
-                                    if (JsonExportSetting.GenerateSourceDataItemTypes == "True")
+                                    targetDataItem.name = (string) dataItemRow["TARGET_ATTRIBUTE_NAME"];
+                                    AddDataObjectToDataItem(targetDataObject, targetDataItem);
+
+                                    bool localJsonExportAddDataObjectToDataItem = false;
+                                    if (JsonExportSetting.GenerateParentDataObject == "True")
                                     {
-                                        MetadataHandling.GetFullSourceDataItem(sourceDataObjectName, sourceConnection, physicalModelDataTable, dataItemRow, sourceDataItem, "Source");
+                                        localJsonExportAddDataObjectToDataItem = false;
                                     }
 
-                                    if (JsonExportSetting.GenerateTargetDataItemTypes == "True")
+                                    if (JsonExportSetting.GenerateDataItemDataTypes == "True")
                                     {
-                                        MetadataHandling.GetFullSourceDataItem(targetDataObjectName, targetConnection, physicalModelDataTable, dataItemRow, targetDataItem, "Target");
+                                        MetadataHandling.GetFullSourceDataItem(sourceDataObject, sourceConnection, physicalModelDataTable, dataItemRow, sourceDataItem, localJsonExportAddDataObjectToDataItem, "Source");
+                                    }
+
+                                    if (JsonExportSetting.GenerateDataItemDataTypes == "True")
+                                    {
+                                        MetadataHandling.GetFullSourceDataItem(targetDataObject, targetConnection, physicalModelDataTable, dataItemRow, targetDataItem, localJsonExportAddDataObjectToDataItem, "Target");
                                     }
 
                                     sourceDataItems.Add(sourceDataItem);
@@ -9308,10 +9284,17 @@ namespace TEAM
                                         dataItemMapping.sourceDataItems[0].dataItemClassification = dataItemClassificationList;
                                     }
 
+                                    //// Remove any circular dependencies.
+                                    //foreach (DataItem dataItem in dataItemMapping.sourceDataItems)
+                                    //{
+                                    //    dataItem.dataObject.dataItems = null;
+                                    //}
+
+                                    //dataItemMapping.targetDataItem.dataObject.dataItems = null;
+
                                     dataItemMappingList.Add(dataItemMapping);
                                 }
                             }
-
                             #endregion
 
                             #region Classifications
@@ -9336,9 +9319,9 @@ namespace TEAM
                             }
                             #endregion
 
-                            sourceToTargetMapping.dataItemMappings = dataItemMappingList; // Column to column mapping
+                            sourceToTargetMapping.dataItemMappings = dataItemMappingList; // Column to column mapping.
 
-                            // Add the source-to-target mapping to the mapping list
+                            // Add the source-to-target mapping to the mapping list.
                             dataObjectMappingList.Add(sourceToTargetMapping);
                         }
                     }
@@ -9353,7 +9336,7 @@ namespace TEAM
                     sourceTargetMappingList.generationSpecificMetadata = vedwMetadata;
                     sourceTargetMappingList.metadataConfiguration = metadataConfiguration;
 
-                    // Check if the metadata needs to be displayed
+                    // Check if the metadata needs to be displayed.
                     try
                     {
                         var json = JsonConvert.SerializeObject(sourceTargetMappingList, Formatting.Indented);
@@ -9363,7 +9346,7 @@ namespace TEAM
                             _generatedJsonInterface.SetTextLogging(json + "\r\n\r\n");
                         }
 
-                        // Spool the output to disk
+                        // Spool the output to disk.
                         if (checkBoxSaveInterfaceToJson.Checked)
                         {
                             Event fileSaveEventLog = TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", json);
@@ -9373,9 +9356,8 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        richTextBoxInformation.AppendText("An error was encountered while generating the Json metadata. The error message is: " + ex);
+                        richTextBoxInformation.AppendText("An error was encountered while generating the JSON metadata. The error message is: " + ex.Message);
                     }
-
                     #endregion
 
                 }
@@ -9414,7 +9396,38 @@ namespace TEAM
             metadataConnection.Close();
             metadataConnection.Dispose();
         }
-        
+
+        /// <summary>
+        /// Adds the parent Data Object as a property to the Data Item. This is sometimes needed to produce fully qualified names to the Data Items in a Data Item Mapping.
+        /// Only applies to Data Items that are part of a Data Item mapping.
+        /// </summary>
+        /// <param name="dataItem"></param>
+        /// <param name="dataObject"></param>
+        private static void AddDataObjectToDataItem(DataObject dataObject, DataItem dataItem)
+        {
+            // Create separate smaller Data Object to avoid any circular dependencies assigning the Data Object to the Data Item.
+            var localDataObject = new DataObject
+            {
+                name = dataObject.name
+            };
+
+            if (dataObject.dataObjectClassification != null && dataObject.dataObjectClassification.Count>0)
+            {
+                localDataObject.dataObjectClassification = dataObject.dataObjectClassification;
+            }
+
+            if (dataObject.dataObjectConnection != null && !String.IsNullOrEmpty(dataObject.dataObjectConnection.dataConnectionString))
+            {
+                localDataObject.dataObjectConnection = dataObject.dataObjectConnection;
+            }
+
+            if (JsonExportSetting.GenerateParentDataObject == "True")
+            {
+                // Add the Data Object to the Data Item.
+                dataItem.dataObject = localDataObject;
+            }
+        }
+
         private void openConfigurationDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -9479,17 +9492,12 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new TeamJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(
-                                    GlobalParameters.JsonAttributeMappingFileName + @"_v" +
-                                    GlobalParameters.CurrentVersionId + ".json", GlobalParameters.ConfigurationPath);
-                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " +
-                                                              targetFileName + ".\r\n\r\n";
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", GlobalParameters.ConfigurationPath);
+                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
                             {
-                                richTextBoxInformation.Text =
-                                    "An issue occurred when trying to make a backup of the in-use JSON file. The error message was " +
-                                    exception + ".";
+                                richTextBoxInformation.Text = "An issue occurred when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
                             }
                         }
 
@@ -9620,7 +9628,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Load a Table Mapping Metadata Json or XML file into the data grid.
+        ///   Load a Table Mapping Metadata JSON file into the data grid.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -9759,13 +9767,13 @@ namespace TEAM
                                     GlobalParameters.JsonModelMetadataFileName + @"_v" +
                                     GlobalParameters.CurrentVersionId + ".json",
                                     FormBase.GlobalParameters.ConfigurationPath);
-                                richTextBoxInformation.Text = "A backup of the in-use Json file was created as " +
+                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " +
                                                               targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
                             {
                                 richTextBoxInformation.Text =
-                                    "An issue occurred when trying to make a backup of the in-use Json file. The error message was " +
+                                    "An issue occurred when trying to make a backup of the in-use JSON file. The error message was " +
                                     exception + ".";
                             }
                         }
