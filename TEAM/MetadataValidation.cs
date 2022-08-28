@@ -99,7 +99,6 @@ namespace TEAM
                 "JOIN sys.schemas b on a.schema_id = b.schema_id " +
                 "WHERE a.[name] = '" + localTable + "' and b.[name]= '"+ localSchema + "')) THEN 1 ELSE 0 END", conn);
 
-            
             var exists = (int) cmd.ExecuteScalar() == 1;
             string returnExistenceEvaluation = exists.ToString();
 

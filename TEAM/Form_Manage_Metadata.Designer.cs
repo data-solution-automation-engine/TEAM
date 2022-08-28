@@ -1791,7 +1791,7 @@ namespace TEAM
             this.manageValidationRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageValidationRulesToolStripMenuItem.Name = "manageValidationRulesToolStripMenuItem";
             this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.manageValidationRulesToolStripMenuItem.Text = "Manage validation rules";
+            this.manageValidationRulesToolStripMenuItem.Text = "Manage Validation Rules";
             this.manageValidationRulesToolStripMenuItem.Click += new System.EventHandler(this.manageValidationRulesToolStripMenuItem_Click);
             // 
             // validateMetadataToolStripMenuItem
@@ -1817,7 +1817,7 @@ namespace TEAM
             this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
             this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
-            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON export rules";
+            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON Export Rules";
             this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
             // 
             // generateJsonInterfaceFilesOnlyToolStripMenuItem

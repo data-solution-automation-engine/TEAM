@@ -7701,7 +7701,7 @@ namespace TEAM
 
 
         /// <summary>
-        /// This method runs a check against the Attribute Mappings DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
+        /// This method runs a check against the Column Mappings DataGrid to assert if model metadata is available for the attributes. The column needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
         /// </summary>
         /// <param name="area"></param>
         private void ValidateSchemaConfiguration()
@@ -7733,32 +7733,25 @@ namespace TEAM
                         .FirstOrDefault();
 
                     // The values as defined in the associated connections
-                    var sourceSchemaNameForConnection = TeamConfiguration
-                        .GetTeamConnectionByInternalId(localSourceConnectionInternalId,
-                            TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "")
-                        .Replace("]", "");
-                    ;
-                    var targetSchemaNameForConnection = TeamConfiguration
-                        .GetTeamConnectionByInternalId(localTargetConnectionInternalId,
-                            TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "")
-                        .Replace("]", "");
-                    ;
+                    var sourceSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localSourceConnectionInternalId, TeamConfiguration.ConnectionDictionary).DatabaseServer
+                        .SchemaName.Replace("[", "").Replace("]", "");
+
+                    var targetSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localTargetConnectionInternalId, TeamConfiguration.ConnectionDictionary).DatabaseServer
+                        .SchemaName.Replace("[", "").Replace("]", "");
 
 
                     if (sourceDataObject.Key.Replace("[", "").Replace("]", "") != sourceSchemaNameForConnection)
                     {
-                        _alertValidation.SetTextLogging($"--> Inconsistency detected for {sourceDataObject.Value} between the schema definition in the table grid {sourceDataObject.Key} and its assigned connection {sourceSchemaNameForConnection}.\r\n");
+                        _alertValidation.SetTextLogging($"--> Inconsistency detected for '{sourceDataObject.Key}.{sourceDataObject.Value}' between the schema definition in the table grid '{sourceDataObject.Key}' and its assigned connection '{sourceConnection.ConnectionName}' which has been configured as '{sourceSchemaNameForConnection}'.\r\n");
                         resultCounter++;
                     }
 
                     if (targetDataObject.Key.Replace("[", "").Replace("]", "") != targetSchemaNameForConnection)
                     {
-                        _alertValidation.SetTextLogging($"--> Inconsistency for {targetDataObject.Value} detected between the schema definition in the table grid {targetDataObject.Key} and its assigned connection {targetSchemaNameForConnection}.\r\n");
+                        _alertValidation.SetTextLogging($"--> Inconsistency for '{sourceDataObject.Key}.{sourceDataObject.Value}' detected between the schema definition in the table grid {targetDataObject.Key} and its assigned connection ''{targetConnection.ConnectionName}'' which has been configured as '{targetSchemaNameForConnection}'.\r\n");
                         resultCounter++;
                     }
-
                 }
-
             }
 
             if (resultCounter == 0)
@@ -7990,8 +7983,7 @@ namespace TEAM
         private void ValidateObjectExistence()
         {
             // Informing the user.
-            _alertValidation.SetTextLogging(
-                $"--> Commencing the validation to determine if the defined Data Objects exists in the model in {GlobalParameters.EnvironmentMode} mode.\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the defined Data Objects exists in the model in {GlobalParameters.EnvironmentMode} mode.\r\n");
 
             var resultList = new Dictionary<string, string>();
 
@@ -8009,86 +8001,58 @@ namespace TEAM
 
                     // Targets
                     var validationObjectTarget = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
-                    var validationObjectTargetConnectionId =
-                        row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var validationObjectTargetConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(validationObjectTargetConnectionId);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
+                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
 
                     // No need to evaluate the operational system (real sources))
-                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration)
-                        .ToString() != MetadataHandling.TableTypes.Source.ToString())
+                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString() != MetadataHandling.TableTypes.Source.ToString())
                     {
                         string objectValidated;
                         if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
                         {
                             try
                             {
-                                objectValidated =
-                                    MetadataValidation.ValidateObjectExistencePhysical(
-                                        fullyQualifiedValidationObjectSource, sourceConnection);
-                                // Add negative results to dictionary
-                                if (objectValidated == "False" && !resultList.ContainsKey(
-                                    fullyQualifiedValidationObjectSource.Key + '.' +
-                                    fullyQualifiedValidationObjectSource.Value))
-                                {
-                                    resultList.Add(
-                                        fullyQualifiedValidationObjectSource.Key + '.' +
-                                        fullyQualifiedValidationObjectSource.Value,
-                                        objectValidated); // Add objects that did not pass the test
-                                }
+                                objectValidated = MetadataValidation.ValidateObjectExistencePhysical(fullyQualifiedValidationObjectSource, sourceConnection);
 
-                                objectValidated =
-                                    MetadataValidation.ValidateObjectExistencePhysical(
-                                        fullyQualifiedValidationObjectTarget, targetConnection);
                                 // Add negative results to dictionary
-                                if (objectValidated == "False" && !resultList.ContainsKey(
-                                    fullyQualifiedValidationObjectTarget.Key + '.' +
-                                    fullyQualifiedValidationObjectTarget.Value))
+                                if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
                                 {
-                                    resultList.Add(
-                                        fullyQualifiedValidationObjectTarget.Key + '.' +
-                                        fullyQualifiedValidationObjectTarget.Value,
-                                        objectValidated); // Add objects that did not pass the test
+                                    resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); 
+                                }
+                                
+                                objectValidated = MetadataValidation.ValidateObjectExistencePhysical(fullyQualifiedValidationObjectTarget, targetConnection);
+
+                                // Add negative results to dictionary
+                                if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
+                                {
+                                    resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); 
                                 }
                             }
                             catch (Exception ex)
                             {
-                                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                                    $"An issue occurred connecting to the database: \r\n\r\n {ex}."));
+                                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,$"An issue occurred connecting to the database: \r\n\r\n {ex}."));
                             }
                         }
                         else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                         {
+                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectSource, sourceConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
 
-                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectSource,
-                                sourceConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
-                            if (objectValidated == "False" && !resultList.ContainsKey(
-                                fullyQualifiedValidationObjectSource.Key + '.' +
-                                fullyQualifiedValidationObjectSource.Value))
+                            if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
                             {
-                                resultList.Add(
-                                    fullyQualifiedValidationObjectSource.Key + '.' +
-                                    fullyQualifiedValidationObjectSource.Value,
-                                    objectValidated); // Add objects that did not pass the test
+                                resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
                             }
 
-                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectTarget,
-                                targetConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
-                            if (objectValidated == "False" && !resultList.ContainsKey(
-                                fullyQualifiedValidationObjectTarget.Key + '.' +
-                                fullyQualifiedValidationObjectTarget.Value))
+                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectTarget, targetConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+
+                            if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
                             {
-                                resultList.Add(
-                                    fullyQualifiedValidationObjectTarget.Key + '.' +
-                                    fullyQualifiedValidationObjectTarget.Value,
-                                    objectValidated); // Add objects that did not pass the test
+                                resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); // Add objects that did not pass the test
                             }
                         }
                         else
                         {
-                            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
-                                $"The validation approach (physical/virtual) could not be asserted."));
+                            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,$"The validation approach (physical/virtual) could not be asserted."));
                         }
                     }
                 }
@@ -8099,8 +8063,7 @@ namespace TEAM
             {
                 foreach (var objectValidationResult in resultList)
                 {
-                    _alertValidation.SetTextLogging(
-                        $"     {objectValidationResult.Key} is tested with outcome {objectValidationResult.Value}. This may be because the schema is defined differently in the connection, or because it simply does not exist.\r\n");
+                    _alertValidation.SetTextLogging($"     {objectValidationResult.Key} is tested with outcome {objectValidationResult.Value}. This may be because the schema is defined differently in the connection, or because it simply does not exist.\r\n");
                 }
 
                 MetadataParameters.ValidationIssues = MetadataParameters.ValidationIssues + resultList.Count;
@@ -8108,8 +8071,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging(
-                    $"     There were no validation issues related to the (physical) existence of the defined Data Object in the model using {GlobalParameters.EnvironmentMode} mode.\r\n\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model using {GlobalParameters.EnvironmentMode} mode.\r\n\r\n");
             }
 
         }
