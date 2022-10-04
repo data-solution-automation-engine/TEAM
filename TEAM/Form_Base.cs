@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using DataWarehouseAutomation;
 using TEAM_Library;
-using DataObject = System.Windows.Forms.DataObject;
 
 namespace TEAM
 {
@@ -14,12 +13,13 @@ namespace TEAM
         {
             InitializeComponent();
         }
+
         public FormBase(FormMain myParent)
         {
             MyParent = myParent;
             InitializeComponent();
         }
-
+        
         /// <summary>
         /// TEAM configurations (e.g. conventions, prefixes, attribute names).
         /// </summary>
@@ -39,6 +39,21 @@ namespace TEAM
             }
 
             return teamConnection;
+        }
+
+        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey)
+        {
+            TeamConnection returnTeamConnection = new TeamConnection();
+
+            foreach (var teamConnection in TeamConfiguration.ConnectionDictionary)
+            {
+                if (teamConnection.Value.ConnectionKey == connectionKey)
+                {
+                    returnTeamConnection = teamConnection.Value;
+                }
+            }
+
+            return returnTeamConnection;
         }
 
         #region Metadata objects in memory

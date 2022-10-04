@@ -30,9 +30,9 @@ namespace TEAM_Library
         Enabled = 0,
         HashKey = 1,
         VersionId = 2,
-        SourceTable = 3,
+        SourceDataObject = 3,
         SourceConnection = 4,
-        TargetTable = 5,
+        TargetDataObject = 5,
         TargetConnection = 6,
         BusinessKeyDefinition = 7,
         DrivingKeyDefinition = 8,
@@ -99,10 +99,10 @@ namespace TEAM_Library
                     var relatedDataObjectRows = from localRow in DataTable.AsEnumerable()
                         where 
                               localRow.Field<bool>(TableMappingMetadataColumns.Enabled.ToString()) == true &&
-                              localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()).Substring(localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()).IndexOf('.') + 1 ) == localSourceDataObjectName &&
+                              localRow.Field<string>(TableMappingMetadataColumns.SourceDataObject.ToString()).Substring(localRow.Field<string>(TableMappingMetadataColumns.SourceDataObject.ToString()).IndexOf('.') + 1 ) == localSourceDataObjectName &&
                               localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()) == businessKeyComponent.Trim() &&
                               localRow.Field<string>(TableMappingMetadataColumns.FilterCriterion.ToString()) == FilterCriterion &&
-                              localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()).Substring(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()).IndexOf('.') + 1) != localTargetDataObjectName
+                              localRow.Field<string>(TableMappingMetadataColumns.TargetDataObject.ToString()).Substring(localRow.Field<string>(TableMappingMetadataColumns.TargetDataObject.ToString()).IndexOf('.') + 1) != localTargetDataObjectName
                         select localRow;
 
                     foreach (DataRow detailRow in relatedDataObjectRows)
@@ -134,9 +134,9 @@ namespace TEAM_Library
                 {
                     if (
                          (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
-                         (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == SourceDataObjectName &&
+                         (string)row[TableMappingMetadataColumns.SourceDataObject.ToString()] == SourceDataObjectName &&
                          (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == BusinessKey &&
-                         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObjectName 
+                         (string)row[TableMappingMetadataColumns.TargetDataObject.ToString()] != TargetDataObjectName 
                          //&& // Exclude itself
                         // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
                        )
@@ -186,7 +186,7 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{TableMappingMetadataColumns.TargetTable}] ASC, [{TableMappingMetadataColumns.SourceTable}] ASC, [{TableMappingMetadataColumns.BusinessKeyDefinition}] ASC";
+            DataTable.DefaultView.Sort = $"[{TableMappingMetadataColumns.TargetDataObject}] ASC, [{TableMappingMetadataColumns.SourceDataObject}] ASC, [{TableMappingMetadataColumns.BusinessKeyDefinition}] ASC";
         }
 
         /// <summary>
@@ -197,9 +197,9 @@ namespace TEAM_Library
             DataTable.Columns[(int)TableMappingMetadataColumns.Enabled].ColumnName = TableMappingMetadataColumns.Enabled.ToString();
             DataTable.Columns[(int)TableMappingMetadataColumns.HashKey].ColumnName = TableMappingMetadataColumns.HashKey.ToString();
             DataTable.Columns[(int)TableMappingMetadataColumns.VersionId].ColumnName = TableMappingMetadataColumns.VersionId.ToString();
-            DataTable.Columns[(int)TableMappingMetadataColumns.SourceTable].ColumnName = TableMappingMetadataColumns.SourceTable.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.SourceDataObject].ColumnName = TableMappingMetadataColumns.SourceDataObject.ToString();
             DataTable.Columns[(int)TableMappingMetadataColumns.SourceConnection].ColumnName = TableMappingMetadataColumns.SourceConnection.ToString();
-            DataTable.Columns[(int)TableMappingMetadataColumns.TargetTable].ColumnName = TableMappingMetadataColumns.TargetTable.ToString();
+            DataTable.Columns[(int)TableMappingMetadataColumns.TargetDataObject].ColumnName = TableMappingMetadataColumns.TargetDataObject.ToString();
             DataTable.Columns[(int)TableMappingMetadataColumns.TargetConnection].ColumnName = TableMappingMetadataColumns.TargetConnection.ToString();
             DataTable.Columns[(int)TableMappingMetadataColumns.BusinessKeyDefinition].ColumnName = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
             DataTable.Columns[(int)TableMappingMetadataColumns.DrivingKeyDefinition].ColumnName = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
@@ -252,46 +252,46 @@ namespace TEAM_Library
         public List<Tuple<string, string>> BusinessConceptRelationshipList(TeamConfiguration configurationSetting)
         {
             DataView sourceContainerView = new DataView((DataTable)DataTable);
-            DataTable distinctValues = sourceContainerView.ToTable(true, TableMappingMetadataColumns.SourceTable.ToString());
+            DataTable distinctValues = sourceContainerView.ToTable(true, TableMappingMetadataColumns.SourceDataObject.ToString());
             var businessConceptRelationshipList = new List<Tuple<string, string>>();
 
             foreach (DataRow sourceContainerRow in distinctValues.Rows)
             {
-                string sourceContainer = (string)sourceContainerRow[TableMappingMetadataColumns.SourceTable.ToString()];
+                string sourceContainer = (string)sourceContainerRow[TableMappingMetadataColumns.SourceDataObject.ToString()];
 
                 foreach (DataRow row in DataTable.Rows)
                 {
-                    string sourceObject = (string)row[TableMappingMetadataColumns.SourceTable.ToString()];
+                    string sourceObject = (string)row[TableMappingMetadataColumns.SourceDataObject.ToString()];
 
                     if (sourceContainer == sourceObject)
                     {
                         //var sourceObject = (string) row[TableMappingMetadataColumns.SourceTable.ToString()];
-                        var targetObject = (string)row[TableMappingMetadataColumns.TargetTable.ToString()];
+                        var targetObject = (string)row[TableMappingMetadataColumns.TargetDataObject.ToString()];
 
                         //var sourceObjectType = MetadataHandling.GetTableType(sourceObject, "", TeamConfigurationSettings);
                         var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
                         var targetObjectBusinessKey =
                             (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
 
-                        if (targetObjectType == MetadataHandling.TableTypes.CoreBusinessConcept)
+                        if (targetObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
                         {
                             // Retrieve the related objects to a CBC.
                             var cbcResults = from localRow in DataTable.AsEnumerable()
-                                             where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) ==
+                                             where localRow.Field<string>(TableMappingMetadataColumns.SourceDataObject.ToString()) ==
                                                    sourceObject && // Is in the same source cluster
                                                    localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString())
                                                        .Contains(targetObjectBusinessKey) && // Contains a part of the business key
-                                                   localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) !=
+                                                   localRow.Field<string>(TableMappingMetadataColumns.TargetDataObject.ToString()) !=
                                                    targetObject && // Is not itself
                                                    MetadataHandling.GetDataObjectType(
-                                                       localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
+                                                       localRow.Field<string>(TableMappingMetadataColumns.TargetDataObject.ToString()), "",
                                                        configurationSetting) ==
-                                                   MetadataHandling.TableTypes.NaturalBusinessRelationship // Is a NBR.
+                                                   MetadataHandling.DataObjectTypes.NaturalBusinessRelationship // Is a NBR.
                                              select localRow;
 
                             foreach (DataRow detailRow in cbcResults)
                             {
-                                var targetObjectDetail = (string)detailRow[TableMappingMetadataColumns.TargetTable.ToString()];
+                                var targetObjectDetail = (string)detailRow[TableMappingMetadataColumns.TargetDataObject.ToString()];
                                 businessConceptRelationshipList.Add(new Tuple<string, string>(targetObject, targetObjectDetail));
                             }
                         }
@@ -313,30 +313,30 @@ namespace TEAM_Library
 
             foreach (DataRow row in DataTable.Rows)
             {
-                string sourceObject = (string)row[TableMappingMetadataColumns.SourceTable.ToString()];
-                string targetObject = (string)row[TableMappingMetadataColumns.TargetTable.ToString()];
+                string sourceObject = (string)row[TableMappingMetadataColumns.SourceDataObject.ToString()];
+                string targetObject = (string)row[TableMappingMetadataColumns.TargetDataObject.ToString()];
 
                 var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
                 var targetObjectBusinessKey = (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
 
-                if (targetObjectType == MetadataHandling.TableTypes.CoreBusinessConcept)
+                if (targetObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
                 {
                     string subjectArea = targetObject.Replace(configurationSetting.HubTablePrefixValue + "_", "");
 
                     // Retrieve the related objects (Context Tables in this case)
                     var results = from localRow in DataTable.AsEnumerable()
-                                  where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) == sourceObject && // Is in the same source cluster
+                                  where localRow.Field<string>(TableMappingMetadataColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
-                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
-                                            configurationSetting) != MetadataHandling.TableTypes.NaturalBusinessRelationship &&
-                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
-                                            configurationSetting) != MetadataHandling.TableTypes.NaturalBusinessRelationshipContext
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetDataObject.ToString()), "",
+                                            configurationSetting) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationship &&
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetDataObject.ToString()), "",
+                                            configurationSetting) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext
                                   select localRow;
 
                     foreach (DataRow detailRow in results)
                     {
-                        var targetObjectDetail = (string)detailRow[TableMappingMetadataColumns.TargetTable.ToString()];
+                        var targetObjectDetail = (string)detailRow[TableMappingMetadataColumns.TargetDataObject.ToString()];
 
                         bool tupleAlreadyExists = subjectAreaList.Any(m => m.Item1 == subjectArea && m.Item2 == targetObject && m.Item3 == targetObjectDetail);
 
@@ -347,22 +347,22 @@ namespace TEAM_Library
                     }
                 }
 
-                if (targetObjectType == MetadataHandling.TableTypes.NaturalBusinessRelationship)
+                if (targetObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship)
                 {
                     string subjectArea = targetObject.Replace(configurationSetting.LinkTablePrefixValue + "_", "");
 
                     // Retrieve the related objects (relationship context tables in this case)
                     var results = from localRow in DataTable.AsEnumerable()
-                                  where localRow.Field<string>(TableMappingMetadataColumns.SourceTable.ToString()) == sourceObject && // Is in the same source cluster
+                                  where localRow.Field<string>(TableMappingMetadataColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(TableMappingMetadataColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
-                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()), "",
-                                            configurationSetting) != MetadataHandling.TableTypes.CoreBusinessConcept // Is a relationship context table.
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(TableMappingMetadataColumns.TargetDataObject.ToString()), "",
+                                            configurationSetting) != MetadataHandling.DataObjectTypes.CoreBusinessConcept // Is a relationship context table.
                                   select localRow;
 
                     foreach (DataRow detailRow in results)
                     {
-                        var targetObjectDetail = (string)detailRow[TableMappingMetadataColumns.TargetTable.ToString()];
+                        var targetObjectDetail = (string)detailRow[TableMappingMetadataColumns.TargetDataObject.ToString()];
 
                         bool tupleAlreadyExists = subjectAreaList.Any(m => m.Item1 == subjectArea && m.Item2 == targetObject && m.Item3 == targetObjectDetail);
 

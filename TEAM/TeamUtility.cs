@@ -14,6 +14,23 @@ namespace TEAM
     /// </summary>
     public static class ExtensionMethod
     {
+        /// <summary>
+        /// Evaluates if the given string value (cell value in most cases) can be considered a Data Query, as opposed to a Data Object or Data Item.
+        /// </summary>
+        /// <param name="stringValue"></param>
+        /// <returns></returns>
+        public static Boolean IsDataQuery(this string stringValue)
+        {
+            bool isDataQuery = false;
+
+            if (stringValue == null || (stringValue.StartsWith("`") && stringValue.EndsWith("`")))
+            {
+                isDataQuery = true;
+            }
+
+            return isDataQuery;
+        }
+
         public static DataTable ToDataTable<T>(this IList<T> data)
         {
             PropertyDescriptorCollection props =

@@ -171,11 +171,11 @@ namespace TEAM
             if (jsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject == "True")
             {
                 // Find the corresponding row in the Data Object Mapping grid
-                DataRow[] dataObjectMappings = dataObjectMappingDataTable.Select("[" + TableMappingMetadataColumns.SourceTable + "] = '" + targetDataObjectName + "'");
+                DataRow[] dataObjectMappings = dataObjectMappingDataTable.Select("[" + TableMappingMetadataColumns.SourceDataObject + "] = '" + targetDataObjectName + "'");
 
                 foreach (DataRow dataObjectMapping in dataObjectMappings)
                 {
-                    var localDataObjectName = dataObjectMapping[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    var localDataObjectName = dataObjectMapping[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
                     var localDataObjectConnectionInternalId = dataObjectMapping[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
 
                     TeamConnection localConnection = FormBase.GetTeamConnectionByConnectionId(localDataObjectConnectionInternalId);

@@ -151,15 +151,13 @@ namespace TEAM
         /// <param name="inputFileName"></param>
         internal string BackupJsonFile(string inputFileName, string inputFilePath)
         {
-            string result;
             var shortDatetime = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-            //var targetFilePathName = FormBase.GlobalParameters.ConfigurationPath + string.Concat("Backup_" + shortDatetime + "_", inputFileName);
             var targetFilePathName = inputFilePath + string.Concat("Backup_" + shortDatetime + "_", inputFileName);
 
-            //File.Copy(FormBase.GlobalParameters.ConfigurationPath + inputFileName, targetFilePathName);
             File.Copy( inputFilePath+inputFileName, targetFilePathName);
-            result = targetFilePathName;
+
+            var result = targetFilePathName;
 
             return result;
         }

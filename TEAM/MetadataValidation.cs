@@ -11,7 +11,7 @@ namespace TEAM
 {
     internal class MetadataValidation 
     {
-        internal static List<Tuple<string,string, bool>> BasicDataVaultValidation(string dataObjectName, TeamConnection teamConnection, MetadataHandling.TableTypes tableType)
+        internal static List<Tuple<string,string, bool>> BasicDataVaultValidation(string dataObjectName, TeamConnection teamConnection, MetadataHandling.DataObjectTypes tableType)
         {
             // Initialise the return type
             List<Tuple<string, string, bool>> returnList = new List<Tuple<string, string, bool>>();
@@ -21,11 +21,11 @@ namespace TEAM
 
             switch (tableType)
             {
-                case MetadataHandling.TableTypes.CoreBusinessConcept:
+                case MetadataHandling.DataObjectTypes.CoreBusinessConcept:
                     validationAttributeList.Add(FormBase.TeamConfiguration.LoadDateTimeAttribute);
                     break;
                 
-                case MetadataHandling.TableTypes.Context:
+                case MetadataHandling.DataObjectTypes.Context:
 
                     if (FormBase.TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True")
                     {
@@ -39,7 +39,7 @@ namespace TEAM
                     validationAttributeList.Add(FormBase.TeamConfiguration.RecordChecksumAttribute);
                     break;
                 
-                case MetadataHandling.TableTypes.NaturalBusinessRelationship:
+                case MetadataHandling.DataObjectTypes.NaturalBusinessRelationship:
                     validationAttributeList.Add(FormBase.TeamConfiguration.LoadDateTimeAttribute);
                     break;
             }
@@ -85,12 +85,18 @@ namespace TEAM
         /// <param name="teamConnection"></param>
         /// <returns></returns>
         internal static string ValidateObjectExistencePhysical (KeyValuePair<string, string> fullyQualifiedValidationObject, TeamConnection teamConnection)
-        { 
-            var conn = new SqlConnection {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
-            conn.Open();
-
+        {
             var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
             var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
+
+            // If the value is a Data Query, the validation can be skipped immediately.
+            if (localTable.IsDataQuery())
+            {
+                return "true";
+            }
+
+            var conn = new SqlConnection {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
+            conn.Open();
 
             // Execute the check
             var cmd = new SqlCommand(
@@ -248,17 +254,17 @@ namespace TEAM
             
 
 
-            if (inputTargetTableType == MetadataHandling.TableTypes.Context) // If the table is a Satellite, only the Hub is required
+            if (inputTargetTableType == MetadataHandling.DataObjectTypes.Context) // If the table is a Satellite, only the Hub is required
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfiguration.HubTablePrefixValue;
                 tableClassification = FormBase.TeamConfiguration.SatTablePrefixValue;
             }
-            else if (inputTargetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationship) // If the table is a Link, we're only interested in the Hubs
+            else if (inputTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship) // If the table is a Link, we're only interested in the Hubs
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfiguration.HubTablePrefixValue;
                 tableClassification = "LNK";
             }
-            else if (inputTargetTableType == MetadataHandling.TableTypes.NaturalBusinessRelationshipContext) // If the table is a Link-Satellite, only the Link is required
+            else if (inputTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext) // If the table is a Link-Satellite, only the Link is required
             {
                 tableInclusionFilterCriterion = FormBase.TeamConfiguration.LinkTablePrefixValue;
                 tableClassification = "LSAT";
@@ -277,14 +283,14 @@ namespace TEAM
                 {
                     foreach (DataRow dataObjectRow in inputDataTable.Rows)
                     {
-                        var targetDataObjectName = dataObjectRow[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                        var targetDataObjectName = dataObjectRow[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
                         var targetConnectionInternalId = dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                         var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                         var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
                         var filterCriterion = dataObjectRow[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString();
 
-                        var sourceDataObjectName = dataObjectRow[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                        var sourceDataObjectName = dataObjectRow[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
                         var sourceConnectionInternalId = dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                         var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
@@ -311,13 +317,13 @@ namespace TEAM
                 // Query the dependent information
                 foreach (DataRow row in inputDataTable.Rows)
                 {
-                    var targetDataObjectName = row[TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    var targetDataObjectName = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
                     var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                     var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                     var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
 
-                    var sourceDataObjectName = row[TableMappingMetadataColumns.SourceTable.ToString()].ToString();
+                    var sourceDataObjectName = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
                     var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                     var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
@@ -405,12 +411,12 @@ namespace TEAM
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceTable+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetTable+" NOT LIKE '" + FormBase.TeamConfiguration.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceDataObject+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetDataObject+" NOT LIKE '" + FormBase.TeamConfiguration.SatTablePrefixValue + "_%'");
 
                 try
                 {
                     // Derive the Hub surrogate key name, as this can be compared against the Link
-                    string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
                     string hubTableConnectionId = selectionRows[0][TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
                     var hubTableConnection = GetTeamConnectionByConnectionId(hubTableConnectionId);
                     
