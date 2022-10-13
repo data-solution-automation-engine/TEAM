@@ -7,7 +7,7 @@ using TEAM_Library;
 
 namespace TEAM
 {
-    internal class CustomDataGridViewTable : DataGridView
+    internal class TeamDataGridView : DataGridView
     {
         /// <summary>
         /// Override event for the OnPaint event to apply colour coding.
@@ -20,48 +20,15 @@ namespace TEAM
             ColourGridView();
         }
 
-        private void DataGridView_DataError(object sender, DataGridViewDataErrorEventArgs anError)
-        {
-            //MessageBox.Show("Error in Custom Data Grid View. The error is: " + anError.Context);
-
-            if (anError.Context == DataGridViewDataErrorContexts.Commit)
-            {
-                MessageBox.Show("Commit error");
-            }
-            if (anError.Context == DataGridViewDataErrorContexts.CurrentCellChange)
-            {
-                MessageBox.Show("Cell change");
-            }
-            if (anError.Context == DataGridViewDataErrorContexts.Parsing)
-            {
-                MessageBox.Show("parsing error");
-            }
-            if (anError.Context == DataGridViewDataErrorContexts.LeaveControl)
-            {
-                MessageBox.Show("leave control error");
-            }
-
-            if ((anError.Exception) is ConstraintException)
-            {
-                DataGridView view = (DataGridView)sender;
-                view.Rows[anError.RowIndex].ErrorText = "an error";
-                view.Rows[anError.RowIndex].Cells[anError.ColumnIndex].ErrorText = "an error";
-
-                anError.ThrowException = false;
-            }
-        }
-
         /// <summary>
         /// The definition of the Data Grid View for table mappings (DataObject mappings).
         /// </summary>
-        public CustomDataGridViewTable()
+        public TeamDataGridView()
         {
             AutoGenerateColumns = false;
             ColumnHeadersVisible = true;
             EditMode = DataGridViewEditMode.EditOnEnter;
-
-            DataError += (DataGridView_DataError);
-
+            
             if (!Controls.ContainsKey(TableMappingMetadataColumns.Enabled.ToString()))
             {
                 DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
@@ -191,12 +158,7 @@ namespace TEAM
                         }
                         // Natural Business Relationship
                         else if (
-                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" &&
-                             targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration
-                                 .LinkTablePrefixValue)) ||
-                            (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" &&
-                             targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration
-                                 .LinkTablePrefixValue))
+                            (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration.LinkTablePrefixValue)) || (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.LinkTablePrefixValue))
                         )
                         {
                             this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.OrangeRed;

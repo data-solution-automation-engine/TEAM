@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,6 +26,7 @@ namespace TEAM
         Form_Alert _generatedScripts;
         Form_Alert _generatedJsonInterface;
         Form_Alert _alertEventLog;
+        private TeamDataGridView _dataGridViewTableMetadata;
 
         // Getting the DataTable to bind to something
         private BindingSource _bindingSourceTableMetadata = new BindingSource();
@@ -41,6 +41,43 @@ namespace TEAM
         public FormManageMetadata(FormMain parent) : base(parent)
         {
             InitializeComponent();
+
+            _dataGridViewTableMetadata = new TeamDataGridView();
+            ((ISupportInitialize)(this._dataGridViewTableMetadata)).BeginInit();
+
+            // Add as tab
+            tabPageDataObjectMapping.Controls.Add(this._dataGridViewTableMetadata);
+            tabPageDataObjectMapping.Location = new System.Drawing.Point(4, 22);
+            tabPageDataObjectMapping.Name = "tabPageDataObjectMapping";
+            tabPageDataObjectMapping.Padding = new Padding(3);
+            tabPageDataObjectMapping.Size = new System.Drawing.Size(1106, 545);
+            tabPageDataObjectMapping.TabIndex = 0;
+            tabPageDataObjectMapping.Text = @"Data Object (Table) Mappings";
+            tabPageDataObjectMapping.UseVisualStyleBackColor = true;
+
+            // Define gridview control
+            _dataGridViewTableMetadata.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            _dataGridViewTableMetadata.BorderStyle = BorderStyle.None;
+            _dataGridViewTableMetadata.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            _dataGridViewTableMetadata.ContextMenuStrip = this.contextMenuStripTableMapping;
+            _dataGridViewTableMetadata.EditMode = DataGridViewEditMode.EditOnEnter;
+            _dataGridViewTableMetadata.Location = new System.Drawing.Point(2, 3);
+            _dataGridViewTableMetadata.MinimumSize = new System.Drawing.Size(964, 511);
+            _dataGridViewTableMetadata.Name = "dataGridViewTableMetadata";
+            _dataGridViewTableMetadata.Size = new System.Drawing.Size(1101, 543);
+            _dataGridViewTableMetadata.TabIndex = 1;
+            _dataGridViewTableMetadata.CellFormatting += DataGridViewTableMetadata_CellFormatting;
+            _dataGridViewTableMetadata.CellValidating += dataGridViewTableMetadata_CellValidating;
+            _dataGridViewTableMetadata.EditingControlShowing += dataGridViewTableMetadata_EditingControlShowing;
+            _dataGridViewTableMetadata.Sorted += textBoxFilterCriterion_OnDelayedTextChanged;
+            _dataGridViewTableMetadata.KeyDown += DataGridViewTableMetadataKeyDown;
+            _dataGridViewTableMetadata.MouseDown += dataGridViewTableMetadata_MouseDown;
+
+            ((ISupportInitialize)(_dataGridViewTableMetadata)).EndInit();
+
+
+
+
 
             // Hide the physical model tab if in physical mode
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
@@ -85,7 +122,7 @@ namespace TEAM
                 var minorVersion = versionMajorMinor.Item3;
 
                 trackBarVersioning.Value = selectedVersion.Item1;
-                labelVersion.Text = majorVersion + "." + minorVersion;
+                labelVersion.Text = $"{majorVersion}.{minorVersion}";
 
                 //  Load the grids from the repository
                 richTextBoxInformation.Clear();
@@ -164,7 +201,7 @@ namespace TEAM
             #endregion
         }
 
-        #region Grid View Formatting & Handling
+        #region Grid View Hover Over
         /// <summary>
         /// Sets the ToolTip text for cells in the Data Object grid view (hover over).
         /// </summary>
@@ -173,7 +210,7 @@ namespace TEAM
         private void DataGridViewTableMetadata_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             // Retrieve the full row for the selected cell
-            DataGridViewRow selectedRow = dataGridViewTableMetadata.Rows[e.RowIndex];
+            DataGridViewRow selectedRow = _dataGridViewTableMetadata.Rows[e.RowIndex];
 
             if (selectedRow.IsNewRow == false)
             {
@@ -201,15 +238,15 @@ namespace TEAM
                 }
 
                 // Assert type for source column, retrieve the specific cell value.
-                if (e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceDataObject].Index && e.Value != null)
+                if (e.ColumnIndex == _dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceDataObject].Index && e.Value != null)
                 {
-                    cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    cell = _dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
                     tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), "", TeamConfiguration);
                 }
                 // Assert type for the target column, retrieve the specific cell value.
-                else if ((e.ColumnIndex == dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.TargetDataObject].Index && e.Value != null))
+                else if ((e.ColumnIndex == _dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.TargetDataObject].Index && e.Value != null))
                 {
-                    cell = dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    cell = _dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
                     tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString(), TeamConfiguration);
                 }
                 else
@@ -380,7 +417,7 @@ namespace TEAM
             _bindingSourceTableMetadata.DataSource = TableMapping.DataTable;
 
             // Set the column header names etc. for the data grid view.
-            dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
+            _dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
 
             richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName()} was loaded.\r\n");
 
@@ -396,8 +433,7 @@ namespace TEAM
             //Check if the file exists, otherwise create a dummy / empty file   
             if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()))
             {
-                richTextBoxInformation.AppendText(
-                    $"No attribute mapping JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()}.\r\n");
+                richTextBoxInformation.AppendText($"No attribute mapping JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()}.\r\n");
                 TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonAttributeMappingFileName);
             }
 
@@ -527,16 +563,16 @@ namespace TEAM
             if (checkBoxResizeDataGrid.Checked == false)
                 return;
 
-            dataGridViewTableMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dataGridViewTableMetadata.Columns[dataGridViewTableMetadata.ColumnCount - 1].AutoSizeMode =
+            _dataGridViewTableMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            _dataGridViewTableMetadata.Columns[_dataGridViewTableMetadata.ColumnCount - 1].AutoSizeMode =
                 DataGridViewAutoSizeColumnMode.Fill;
 
             // Disable the auto size again (to enable manual resizing).
-            for (var i = 0; i < dataGridViewTableMetadata.Columns.Count - 1; i++)
+            for (var i = 0; i < _dataGridViewTableMetadata.Columns.Count - 1; i++)
             {
 
-                dataGridViewTableMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dataGridViewTableMetadata.Columns[i].Width = dataGridViewTableMetadata.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                _dataGridViewTableMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                _dataGridViewTableMetadata.Columns[i].Width = _dataGridViewTableMetadata.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
             }
 
         }
@@ -582,7 +618,7 @@ namespace TEAM
 
         private void ContentCounter()
         {
-            int gridViewRows = dataGridViewTableMetadata.RowCount;
+            int gridViewRows = _dataGridViewTableMetadata.RowCount;
             var counter = 0;
 
             var hubSet = new HashSet<string>();
@@ -750,9 +786,7 @@ namespace TEAM
             PopulateAttributeGridWithVersion();
             PopulatePhysicalModelGridWithVersion();
 
-            var versionMajorMinor =
-                TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
-                    trackBarVersioning.Value);
+            var versionMajorMinor = TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, trackBarVersioning.Value);
 
             labelVersion.Text = versionMajorMinor.Item2 + "." + versionMajorMinor.Item3;
 
@@ -782,12 +816,11 @@ namespace TEAM
             {
                 // Create a data table containing the changes, to check if there are changes made to begin with
                 var dataTableTableMappingChanges = ((DataTable) _bindingSourceTableMetadata.DataSource).GetChanges();
-                var dataTableAttributeMappingChanges =
-                    ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
+                var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
 
                 // Check if there are any rows available in the grid view, and if changes have been detected at all
                 if (
-                    dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null &&
+                    _dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null &&
                     dataTableTableMappingChanges.Rows.Count > 0 ||
                     dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null &&
                     dataTableAttributeMappingChanges.Rows.Count > 0
@@ -881,8 +914,7 @@ namespace TEAM
             if (!radiobuttonNoVersionChange.Checked)
             {
                 //If nothing is checked, just retrieve and return the current version
-                var versionKeyValuePair =
-                    TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
+                var versionKeyValuePair = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
                 var majorVersion = versionKeyValuePair.Item2;
                 var minorVersion = versionKeyValuePair.Item3;
 
@@ -1082,7 +1114,7 @@ namespace TEAM
             // Create a JArray so segments can be added easily from the data table
             var jsonTableMappingFull = new JArray();
 
-            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            foreach (DataGridViewRow row in _dataGridViewTableMetadata.Rows)
             {
                 if (!row.IsNewRow)
                 {
@@ -6054,17 +6086,7 @@ namespace TEAM
                 //
                 // Activation completed!
                 //
-
-                // Error handling
-                // Clear out the existing error log, or create an empty new file
-                using (var outfile = new StreamWriter(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
-                {
-                    outfile.Write(String.Empty);
-                    outfile.Close();
-                }
-
-                // Write any errors
-
+                
                 int errorCounter = 0;
                 foreach (var individualEvent in GlobalParameters.TeamEventLog)
                 {
@@ -6077,9 +6099,7 @@ namespace TEAM
 
                 if (errorCounter > 0)
                 {
-                    _alert.SetTextLogging("\r\n");
-                    LogMetadataEvent("There were " + errorCounter + " error(s) found while processing the metadata.",
-                        EventTypes.Warning);
+                    _alert.SetTextLogging("\r\n"); LogMetadataEvent("There were " + errorCounter + " error(s) found while processing the metadata.", EventTypes.Warning);
                     LogMetadataEvent("Please check the TEAM Event Log for details.", EventTypes.Information);
                 }
                 else
@@ -6091,14 +6111,11 @@ namespace TEAM
                 }
 
                 // Remove the temporary tables that have been used
-                DropTemporaryWorkerTable(
-                    TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
+                DropTemporaryWorkerTable(TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
 
                 // Report completion
                 totalProcess.Stop();
-                LogMetadataEvent(
-                    "The full activation process has taken " + totalProcess.Elapsed.TotalSeconds + " seconds.",
-                    EventTypes.Information);
+                LogMetadataEvent("The full activation process has taken " + totalProcess.Elapsed.TotalSeconds + " seconds.", EventTypes.Information);
                 worker.ReportProgress(100);
 
             }
@@ -6401,10 +6418,10 @@ namespace TEAM
                 string s = Clipboard.GetText();
                 string[] lines = s.Split('\n');
 
-                int iRow = dataGridViewTableMetadata.CurrentCell.RowIndex;
-                int iCol = dataGridViewTableMetadata.CurrentCell.ColumnIndex;
+                int iRow = _dataGridViewTableMetadata.CurrentCell.RowIndex;
+                int iCol = _dataGridViewTableMetadata.CurrentCell.ColumnIndex;
                 DataGridViewCell oCell;
-                if (iRow + lines.Length > dataGridViewTableMetadata.Rows.Count - 1)
+                if (iRow + lines.Length > _dataGridViewTableMetadata.Rows.Count - 1)
                 {
                     bool bFlag = false;
                     foreach (string sEmpty in lines)
@@ -6415,28 +6432,28 @@ namespace TEAM
                         }
                     }
 
-                    int iNewRows = iRow + lines.Length - dataGridViewTableMetadata.Rows.Count;
+                    int iNewRows = iRow + lines.Length - _dataGridViewTableMetadata.Rows.Count;
                     if (iNewRows > 0)
                     {
                         if (bFlag)
-                            dataGridViewTableMetadata.Rows.Add(iNewRows);
+                            _dataGridViewTableMetadata.Rows.Add(iNewRows);
                         else
-                            dataGridViewTableMetadata.Rows.Add(iNewRows + 1);
+                            _dataGridViewTableMetadata.Rows.Add(iNewRows + 1);
                     }
                     else
-                        dataGridViewTableMetadata.Rows.Add(iNewRows + 1);
+                        _dataGridViewTableMetadata.Rows.Add(iNewRows + 1);
                 }
 
                 foreach (string line in lines)
                 {
-                    if (iRow < dataGridViewTableMetadata.RowCount && line.Length > 0)
+                    if (iRow < _dataGridViewTableMetadata.RowCount && line.Length > 0)
                     {
                         string[] sCells = line.Split('\t');
                         for (int i = 0; i < sCells.GetLength(0); ++i)
                         {
-                            if (iCol + i < dataGridViewTableMetadata.ColumnCount)
+                            if (iCol + i < _dataGridViewTableMetadata.ColumnCount)
                             {
-                                oCell = dataGridViewTableMetadata[iCol + i, iRow];
+                                oCell = _dataGridViewTableMetadata[iCol + i, iRow];
                                 oCell.Value = Convert.ChangeType(sCells[i].Replace("\r", ""), oCell.ValueType);
                             }
                             else
@@ -6552,24 +6569,24 @@ namespace TEAM
             // Source Table (Source)
             if (e.ColumnIndex == (int) TableMappingMetadataColumns.SourceDataObject)
             {
-                dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
+                _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
                 if (e.FormattedValue == DBNull.Value || valueLength == 0)
                 {
                     e.Cancel = true;
-                    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) table cannot be empty!";
+                    _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Source (Source) table cannot be empty!";
                 }
             }
 
             // Target Table
             if (e.ColumnIndex == (int) TableMappingMetadataColumns.TargetDataObject)
             {
-                dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
+                _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
                 if (e.FormattedValue == DBNull.Value || valueLength == 0)
                 {
                     e.Cancel = true;
-                    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
+                    _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
                         "The Target (Integration Layer) table cannot be empty!";
                 }
             }
@@ -6577,26 +6594,26 @@ namespace TEAM
             // Business Key
             if (e.ColumnIndex == (int) TableMappingMetadataColumns.BusinessKeyDefinition)
             {
-                dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
+                _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
                 if (e.FormattedValue == DBNull.Value || valueLength == 0)
                 {
                     e.Cancel = true;
-                    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Business Key cannot be empty!";
+                    _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "The Business Key cannot be empty!";
                 }
             }
 
             // Filter criteria
             if (e.ColumnIndex == (int) TableMappingMetadataColumns.FilterCriterion)
             {
-                dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
+                _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
                 //int newInteger;
                 var equalSignIndex = e.FormattedValue.ToString().IndexOf('=') + 1;
 
                 if (valueLength > 0 && valueLength < 3)
                 {
                     e.Cancel = true;
-                    dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
+                    _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
                         "The filter criterion cannot only be just one or two characters as it translates into a WHERE clause.";
                 }
 
@@ -6606,7 +6623,7 @@ namespace TEAM
                     if (e.FormattedValue.ToString() == "=")
                     {
                         e.Cancel = true;
-                        dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
+                        _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
                             "The filter criterion cannot only be '=' as it translates into a WHERE clause.";
                     }
 
@@ -6615,7 +6632,7 @@ namespace TEAM
                         (e.FormattedValue.ToString().Contains("=") && !(equalSignIndex < valueLength)))
                     {
                         e.Cancel = true;
-                        dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
+                        _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText =
                             "The filter criterion include values either side of the '=' sign as it is expressed as a WHERE clause.";
                     }
                 }
@@ -6682,7 +6699,7 @@ namespace TEAM
 
                 int errorCounter = 0;
 
-                if (dataGridViewTableMetadata != null) // There needs to be metadata available
+                if (_dataGridViewTableMetadata != null) // There needs to be metadata available
                 {
                     var connOmd = new SqlConnection
                     {
@@ -6699,9 +6716,9 @@ namespace TEAM
                     //Build up the list of nodes based on the data grid
                     List<string> nodeList = new List<string>();
 
-                    for (int i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
+                    for (int i = 0; i < _dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
-                        DataGridViewRow row = dataGridViewTableMetadata.Rows[i];
+                        DataGridViewRow row = _dataGridViewTableMetadata.Rows[i];
                         string sourceNode = row.Cells[(int) TableMappingMetadataColumns.SourceDataObject].Value.ToString();
                         var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
@@ -6970,9 +6987,9 @@ namespace TEAM
 
                     // Add the regular source-to-target mappings as edges using the data grid
                     dgmlExtract.AppendLine("     <!-- Regular source-to-target mappings -->");
-                    for (var i = 0; i < dataGridViewTableMetadata.Rows.Count - 1; i++)
+                    for (var i = 0; i < _dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
-                        var row = dataGridViewTableMetadata.Rows[i];
+                        var row = _dataGridViewTableMetadata.Rows[i];
                         
                         string sourceNode = row.Cells[(int)TableMappingMetadataColumns.SourceDataObject].Value.ToString();
                         var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString();
@@ -7114,12 +7131,12 @@ namespace TEAM
 
         private void textBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow dr in dataGridViewTableMetadata.Rows)
+            foreach (DataGridViewRow dr in _dataGridViewTableMetadata.Rows)
             {
                 dr.Visible = true;
             }
 
-            foreach (DataGridViewRow dr in dataGridViewTableMetadata.Rows)
+            foreach (DataGridViewRow dr in _dataGridViewTableMetadata.Rows)
             {
                 if (dr.Cells[(int) TableMappingMetadataColumns.TargetDataObject].Value != null)
                 {
@@ -7129,7 +7146,7 @@ namespace TEAM
                         .Contains(textBoxFilterCriterion.Text))
                     {
                         CurrencyManager currencyManager1 =
-                            (CurrencyManager) BindingContext[dataGridViewTableMetadata.DataSource];
+                            (CurrencyManager) BindingContext[_dataGridViewTableMetadata.DataSource];
                         currencyManager1.SuspendBinding();
                         dr.Visible = false;
                         currencyManager1.ResumeBinding();
@@ -7451,7 +7468,7 @@ namespace TEAM
         {
             if (e.Button == MouseButtons.Right)
             {
-                var hti = dataGridViewTableMetadata.HitTest(e.X, e.Y);
+                var hti = _dataGridViewTableMetadata.HitTest(e.X, e.Y);
 
                 // If the column in the selected cell is a Combobox and there are multiple cells selected then c\setup a separate context menu
                 //var currentCell = dataGridViewTableMetadata.Rows[hti.RowIndex].Cells[hti.ColumnIndex];
@@ -7470,8 +7487,8 @@ namespace TEAM
                 //else
                 //{
                 // Normal selection
-                dataGridViewTableMetadata.ClearSelection();
-                dataGridViewTableMetadata.Rows[hti.RowIndex].Selected = true;
+                _dataGridViewTableMetadata.ClearSelection();
+                _dataGridViewTableMetadata.Rows[hti.RowIndex].Selected = true;
                 //}
             }
             //if (e.Button == MouseButtons.Left)
@@ -7520,9 +7537,9 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             // Check if any cells were clicked / selected.
-            Int32 selectedRow = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            Int32 selectedRow = _dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
-            var generationMetadataRow = ((DataRowView) dataGridViewTableMetadata.Rows[selectedRow].DataBoundItem).Row;
+            var generationMetadataRow = ((DataRowView) _dataGridViewTableMetadata.Rows[selectedRow].DataBoundItem).Row;
 
             var targetDataObjectName = generationMetadataRow[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
             var targetConnectionInternalId = generationMetadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
@@ -7551,7 +7568,7 @@ namespace TEAM
         {
 
 
-            var selectedRows = dataGridViewTableMetadata.SelectedRows;
+            var selectedRows = _dataGridViewTableMetadata.SelectedRows;
 
             foreach (DataGridViewRow bla in selectedRows)
             {
@@ -7561,8 +7578,8 @@ namespace TEAM
                 }
                 else
                 {
-                    Int32 rowToDelete = dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
-                    dataGridViewTableMetadata.Rows.RemoveAt(rowToDelete);
+                    Int32 rowToDelete = _dataGridViewTableMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+                    _dataGridViewTableMetadata.Rows.RemoveAt(rowToDelete);
                 }
             }
 
@@ -7922,7 +7939,7 @@ namespace TEAM
         {
             Dictionary<string, bool> returnDictionary = new Dictionary<string, bool>();
 
-            foreach (DataGridViewRow row in dataGridViewTableMetadata.Rows)
+            foreach (DataGridViewRow row in _dataGridViewTableMetadata.Rows)
             {
                 if (row.IsNewRow == false)
                 {
@@ -9579,8 +9596,8 @@ namespace TEAM
                     {
                         dataSet.ReadXml(chosenFile);
 
-                        dataGridViewTableMetadata.DataSource = dataSet.Tables[0];
-                        _bindingSourceTableMetadata.DataSource = dataGridViewTableMetadata.DataSource;
+                        _dataGridViewTableMetadata.DataSource = dataSet.Tables[0];
+                        _bindingSourceTableMetadata.DataSource = _dataGridViewTableMetadata.DataSource;
 
                     }
                     else if (fileExtension == ".json" || fileExtension == ".JSON")
@@ -9619,13 +9636,13 @@ namespace TEAM
                         _bindingSourceTableMetadata.DataSource = null;
                         _bindingSourceTableMetadata.Clear();
 
-                        dataGridViewTableMetadata.DataSource = null;
+                        _dataGridViewTableMetadata.DataSource = null;
 
                         // Bind the datatable to the gridview
                         _bindingSourceTableMetadata.DataSource = TableMapping.DataTable;
 
                         // Set the column header names
-                        dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
+                        _dataGridViewTableMetadata.DataSource = _bindingSourceTableMetadata;
                     }
 
                     GridAutoLayoutTableMappingMetadata();
