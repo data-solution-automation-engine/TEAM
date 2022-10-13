@@ -9335,9 +9335,9 @@ namespace TEAM
                 name = dataObject.name
             };
 
-            if (dataObject.dataObjectClassification != null && dataObject.dataObjectClassification.Count>0)
+            if (dataObject.dataObjectClassifications != null && dataObject.dataObjectClassifications.Count>0)
             {
-                localDataObject.dataObjectClassification = dataObject.dataObjectClassification;
+                localDataObject.dataObjectClassifications = dataObject.dataObjectClassifications;
             }
 
             if (dataObject.dataObjectConnection != null && !String.IsNullOrEmpty(dataObject.dataObjectConnection.dataConnectionString))

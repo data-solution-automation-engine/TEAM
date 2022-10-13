@@ -200,13 +200,13 @@ namespace TEAM
 
                 localClassifications.Add(localClassification);
 
-                if (dataObject.dataObjectClassification is null)
+                if (dataObject.dataObjectClassifications is null)
                 {
-                    dataObject.dataObjectClassification = localClassifications;
+                    dataObject.dataObjectClassifications = localClassifications;
                 }
                 else
                 {
-                    dataObject.dataObjectClassification.AddRange(localClassifications);
+                    dataObject.dataObjectClassifications.AddRange(localClassifications);
                 }
 
             }
@@ -232,7 +232,7 @@ namespace TEAM
                 // Override classification
                 if (jsonExportSetting.GenerateTypeAsClassification == "True")
                 {
-                    localDataObject.dataObjectClassification[0].classification = "Metadata";
+                    localDataObject.dataObjectClassifications[0].classification = "Metadata";
                 }
             }
 
