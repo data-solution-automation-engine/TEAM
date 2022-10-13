@@ -225,8 +225,8 @@ namespace TEAM
         {
             if (RevalidateFlag == false)
                 return;
+
             RevalidateFlag = false;
-            //MessageBox.Show("Validating Connections");
 
             richTextBoxInformation.AppendText("Validating database connections.\r\n");
 
@@ -246,15 +246,13 @@ namespace TEAM
                 }
                 catch
                 {
-                    richTextBoxInformation.AppendText(
-                        "There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
+                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
                     DisableMenu();
                     return;
                 }
             else
             {
-                richTextBoxInformation.AppendText(
-                    "Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
+                richTextBoxInformation.AppendText("Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
                 DisableMenu();
                 return;
             }
@@ -273,8 +271,7 @@ namespace TEAM
             }
             catch
             {
-                richTextBoxInformation.AppendText(
-                    "There was an issue while reading Metadata Database. The Database is missing tables.\r\n");
+                richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables.\r\n");
                 openMetadataFormToolStripMenuItem.Enabled = false;
                 RevalidateFlag = true;
             }

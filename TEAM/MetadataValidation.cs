@@ -283,24 +283,24 @@ namespace TEAM
                 {
                     foreach (DataRow dataObjectRow in inputDataTable.Rows)
                     {
-                        var targetDataObjectName = dataObjectRow[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                        var targetConnectionInternalId = dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                        var targetDataObjectName = dataObjectRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                        var targetConnectionInternalId = dataObjectRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                         var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                         var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
-                        var filterCriterion = dataObjectRow[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString();
+                        var filterCriterion = dataObjectRow[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
-                        var sourceDataObjectName = dataObjectRow[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                        var sourceConnectionInternalId = dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                        var sourceDataObjectName = dataObjectRow[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                        var sourceConnectionInternalId = dataObjectRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                         var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                         var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
 
                         // Count the number of dependents.
                         if (
-                             (bool)dataObjectRow[TableMappingMetadataColumns.Enabled.ToString()] && // Only active generated objects
+                             (bool)dataObjectRow[DataObjectMappingGridColumns.Enabled.ToString()] && // Only active generated objects
                              sourceFullyQualifiedName.Key+'.'+ sourceFullyQualifiedName.Value == validationObject.Item1 &&
-                             (string)dataObjectRow[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
+                             (string)dataObjectRow[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
                              targetFullyQualifiedName.Key+'.'+targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
                              filterCriterion == validationObject.Item4 && // Adding filtercriterion for uniquification of join (see https://github.com/RoelantVos/TEAM/issues/87);
                              targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion) 
@@ -317,22 +317,22 @@ namespace TEAM
                 // Query the dependent information
                 foreach (DataRow row in inputDataTable.Rows)
                 {
-                    var targetDataObjectName = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                     var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                     var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
 
-                    var sourceDataObjectName = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                    var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                     var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                     var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
 
                     if (
-                         (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                         (bool)row[DataObjectMappingGridColumns.Enabled.ToString()] == true && // Only active generated objects
                          sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
-                         (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
+                         (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
                          targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
                          targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion)
                        )
@@ -411,13 +411,13 @@ namespace TEAM
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select(TableMappingMetadataColumns.SourceDataObject+" = '" + validationObject.Item1+ "' AND "+TableMappingMetadataColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+TableMappingMetadataColumns.TargetDataObject+" NOT LIKE '" + FormBase.TeamConfiguration.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select(DataObjectMappingGridColumns.SourceDataObject+" = '" + validationObject.Item1+ "' AND "+DataObjectMappingGridColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+DataObjectMappingGridColumns.TargetDataObject+" NOT LIKE '" + FormBase.TeamConfiguration.SatTablePrefixValue + "_%'");
 
                 try
                 {
                     // Derive the Hub surrogate key name, as this can be compared against the Link
-                    string hubTableName = selectionRows[0][TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                    string hubTableConnectionId = selectionRows[0][TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    string hubTableName = selectionRows[0][DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    string hubTableConnectionId = selectionRows[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var hubTableConnection = GetTeamConnectionByConnectionId(hubTableConnectionId);
                     
                     string hubSurrogateKeyName = MetadataHandling.GetSurrogateKey(hubTableName, hubTableConnection, FormBase.TeamConfiguration);

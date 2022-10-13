@@ -29,42 +29,42 @@ namespace TEAM
             ColumnHeadersVisible = true;
             EditMode = DataGridViewEditMode.EditOnEnter;
             
-            if (!Controls.ContainsKey(TableMappingMetadataColumns.Enabled.ToString()))
+            if (!Controls.ContainsKey(DataObjectMappingGridColumns.Enabled.ToString()))
             {
                 DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
-                enabledIndicator.Name = TableMappingMetadataColumns.Enabled.ToString();
-                enabledIndicator.HeaderText = TableMappingMetadataColumns.Enabled.ToString();
-                enabledIndicator.DataPropertyName = TableMappingMetadataColumns.Enabled.ToString();
+                enabledIndicator.Name = DataObjectMappingGridColumns.Enabled.ToString();
+                enabledIndicator.HeaderText = DataObjectMappingGridColumns.Enabled.ToString();
+                enabledIndicator.DataPropertyName = DataObjectMappingGridColumns.Enabled.ToString();
                 Columns.Add(enabledIndicator);
             }
 
-            if (!Controls.ContainsKey(TableMappingMetadataColumns.HashKey.ToString()))
+            if (!Controls.ContainsKey(DataObjectMappingGridColumns.HashKey.ToString()))
             {
                 DataGridViewTextBoxColumn hashKey = new DataGridViewTextBoxColumn();
-                hashKey.Name = TableMappingMetadataColumns.HashKey.ToString();
-                hashKey.HeaderText = TableMappingMetadataColumns.HashKey.ToString();
-                hashKey.DataPropertyName = TableMappingMetadataColumns.HashKey.ToString();
+                hashKey.Name = DataObjectMappingGridColumns.HashKey.ToString();
+                hashKey.HeaderText = DataObjectMappingGridColumns.HashKey.ToString();
+                hashKey.DataPropertyName = DataObjectMappingGridColumns.HashKey.ToString();
                 hashKey.Visible = false;
                 Columns.Add(hashKey);
             }
 
             DataGridViewTextBoxColumn versionId = new DataGridViewTextBoxColumn();
-            versionId.Name = TableMappingMetadataColumns.VersionId.ToString();
-            versionId.HeaderText = TableMappingMetadataColumns.VersionId.ToString();
-            versionId.DataPropertyName = TableMappingMetadataColumns.VersionId.ToString();
+            versionId.Name = DataObjectMappingGridColumns.VersionId.ToString();
+            versionId.HeaderText = DataObjectMappingGridColumns.VersionId.ToString();
+            versionId.DataPropertyName = DataObjectMappingGridColumns.VersionId.ToString();
             versionId.Visible = false;
             Columns.Add(versionId);
 
             DataGridViewTextBoxColumn sourceTable = new DataGridViewTextBoxColumn();
-            sourceTable.Name = TableMappingMetadataColumns.SourceDataObject.ToString();
+            sourceTable.Name = DataObjectMappingGridColumns.SourceDataObject.ToString();
             sourceTable.HeaderText = @"Source Data Object";
-            sourceTable.DataPropertyName = TableMappingMetadataColumns.SourceDataObject.ToString();
+            sourceTable.DataPropertyName = DataObjectMappingGridColumns.SourceDataObject.ToString();
             Columns.Add(sourceTable);
 
             DataGridViewComboBoxColumn sourceConnection = new DataGridViewComboBoxColumn();
-            sourceConnection.Name = TableMappingMetadataColumns.SourceConnection.ToString();
+            sourceConnection.Name = DataObjectMappingGridColumns.SourceConnection.ToString();
             sourceConnection.HeaderText = @"Source Connection";
-            sourceConnection.DataPropertyName = TableMappingMetadataColumns.SourceConnection.ToString();
+            sourceConnection.DataPropertyName = DataObjectMappingGridColumns.SourceConnection.ToString();
             sourceConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
             sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             sourceConnection.DisplayMember = "ConnectionKey";
@@ -73,15 +73,15 @@ namespace TEAM
             Columns.Add(sourceConnection);
 
             DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
-            targetTable.Name = TableMappingMetadataColumns.TargetDataObject.ToString();
+            targetTable.Name = DataObjectMappingGridColumns.TargetDataObject.ToString();
             targetTable.HeaderText = @"Target Data Object";
-            targetTable.DataPropertyName = TableMappingMetadataColumns.TargetDataObject.ToString();
+            targetTable.DataPropertyName = DataObjectMappingGridColumns.TargetDataObject.ToString();
             Columns.Add(targetTable);
 
             DataGridViewComboBoxColumn targetConnection = new DataGridViewComboBoxColumn();
-            targetConnection.Name = TableMappingMetadataColumns.TargetConnection.ToString();
+            targetConnection.Name = DataObjectMappingGridColumns.TargetConnection.ToString();
             targetConnection.HeaderText = @"Target Connection";
-            targetConnection.DataPropertyName = TableMappingMetadataColumns.TargetConnection.ToString();
+            targetConnection.DataPropertyName = DataObjectMappingGridColumns.TargetConnection.ToString();
             targetConnection.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
             targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             targetConnection.DisplayMember = "ConnectionKey";
@@ -90,21 +90,21 @@ namespace TEAM
             Columns.Add(targetConnection);
 
             DataGridViewTextBoxColumn businessKeyDefinition = new DataGridViewTextBoxColumn();
-            businessKeyDefinition.Name = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
+            businessKeyDefinition.Name = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
             businessKeyDefinition.HeaderText = @"Business Key Definition";
-            businessKeyDefinition.DataPropertyName = TableMappingMetadataColumns.BusinessKeyDefinition.ToString();
+            businessKeyDefinition.DataPropertyName = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
             Columns.Add(businessKeyDefinition);
 
             DataGridViewTextBoxColumn drivingKeyDefinition = new DataGridViewTextBoxColumn();
-            drivingKeyDefinition.Name = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
+            drivingKeyDefinition.Name = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
             drivingKeyDefinition.HeaderText = @"Driving Key Definition";
-            drivingKeyDefinition.DataPropertyName = TableMappingMetadataColumns.DrivingKeyDefinition.ToString();
+            drivingKeyDefinition.DataPropertyName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
             Columns.Add(drivingKeyDefinition);
 
             DataGridViewTextBoxColumn filterCriterion = new DataGridViewTextBoxColumn();
-            filterCriterion.Name = TableMappingMetadataColumns.FilterCriterion.ToString();
+            filterCriterion.Name = DataObjectMappingGridColumns.FilterCriterion.ToString();
             filterCriterion.HeaderText = @"Filter Criterion";
-            filterCriterion.DataPropertyName = TableMappingMetadataColumns.FilterCriterion.ToString();
+            filterCriterion.DataPropertyName = DataObjectMappingGridColumns.FilterCriterion.ToString();
             Columns.Add(filterCriterion);
         }
 
@@ -120,15 +120,15 @@ namespace TEAM
                 if (!row.IsNewRow)
                 {
                     // Target info
-                    string targetDataObjectName = row.Cells[(int) TableMappingMetadataColumns.TargetDataObject].Value.ToString();
-                    var targetConnectionId = row.Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString();
+                    string targetDataObjectName = row.Cells[(int) DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
+                    var targetConnectionId = row.Cells[(int) DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                     TeamConnection targetConnection = FormBase.GetTeamConnectionByConnectionId(targetConnectionId);
                     KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
 
                     // Only the name (e.g. without the schema) should be evaluated.
                     string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
 
-                    var businessKeySyntax = row.Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value;
+                    var businessKeySyntax = row.Cells[(int) DataObjectMappingGridColumns.BusinessKeyDefinition].Value;
 
                     if (targetDataObjectNonQualifiedName != null && businessKeySyntax != null && row.IsNewRow == false)
                     {
@@ -137,23 +137,23 @@ namespace TEAM
                             (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration.HubTablePrefixValue)) || (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.HubTablePrefixValue))
                         )
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.CornflowerBlue;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.CornflowerBlue;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                         }
                         // Link-Sat
                         else if ((FormBase.TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration.LsatTablePrefixValue)) || (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.LsatTablePrefixValue)))
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.Gold;
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.Gold;
                         }
                         // Context
                         else if (
                             (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration.SatTablePrefixValue)) || (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.SatTablePrefixValue))
                         )
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.Yellow;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor =
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.Yellow;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor =
                                 Color.LightGray;
                         }
                         // Natural Business Relationship
@@ -161,9 +161,9 @@ namespace TEAM
                             (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration.LinkTablePrefixValue)) || (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.LinkTablePrefixValue))
                         )
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.OrangeRed;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.OrangeRed;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                         }
                         // PSA
                         else if (
@@ -171,18 +171,18 @@ namespace TEAM
                             (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.PsaTablePrefixValue))
                         )
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.AntiqueWhite;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.AntiqueWhite;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                         }
                         // Staging
                         else if (
                             (FormBase.TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(FormBase.TeamConfiguration.StgTablePrefixValue)) || (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.StgTablePrefixValue))
                         )
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.WhiteSmoke;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.WhiteSmoke;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                         }
                         // Presentation Layer
                         else if (
@@ -192,9 +192,9 @@ namespace TEAM
                             (FormBase.TeamConfiguration.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s)))
                         )
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.Aquamarine;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.Aquamarine;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                         }
                         // Derived objects / transformations
                         else if (
@@ -206,9 +206,9 @@ namespace TEAM
                              transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s)))
                         )
                         {
-                            this[(int) TableMappingMetadataColumns.TargetDataObject, counter].Style.BackColor = Color.LightGreen;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ReadOnly = true;
-                            row.Cells[(int) TableMappingMetadataColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            this[(int) DataObjectMappingGridColumns.TargetDataObject, counter].Style.BackColor = Color.LightGreen;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                            row.Cells[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                         }
                         else
                         {
@@ -219,24 +219,24 @@ namespace TEAM
                         //Syntax highlighting for code.
                         if (businessKeySyntax.ToString().Contains("CONCATENATE") || businessKeySyntax.ToString().Contains("COMPOSITE"))
                         {
-                            this[(int) TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.ForeColor = Color.DarkBlue;
-                            this[(int)TableMappingMetadataColumns.BusinessKeyDefinition, counter].Style.BackColor = Color.AliceBlue;
+                            this[(int) DataObjectMappingGridColumns.BusinessKeyDefinition, counter].Style.ForeColor = Color.DarkBlue;
+                            this[(int)DataObjectMappingGridColumns.BusinessKeyDefinition, counter].Style.BackColor = Color.AliceBlue;
                         }
 
                         //Syntax highlighting for in source data objects.
-                        var sourceDataObjectName = row.Cells[(int)TableMappingMetadataColumns.SourceDataObject].Value.ToString();
+                        var sourceDataObjectName = row.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
                         if (sourceDataObjectName.StartsWith("`"))
                         {
-                            this[(int)TableMappingMetadataColumns.SourceDataObject, counter].Style.BackColor = Color.AliceBlue;
+                            this[(int)DataObjectMappingGridColumns.SourceDataObject, counter].Style.BackColor = Color.AliceBlue;
 
                             if (sourceDataObjectName.EndsWith("`"))
                             {
-                                this[(int)TableMappingMetadataColumns.SourceDataObject, counter].Style.ForeColor = Color.DarkBlue;
+                                this[(int)DataObjectMappingGridColumns.SourceDataObject, counter].Style.ForeColor = Color.DarkBlue;
                             }
                             else
                             {
                                 // Show issue.
-                                this[(int)TableMappingMetadataColumns.SourceDataObject, counter].Style.ForeColor = Color.Red;
+                                this[(int)DataObjectMappingGridColumns.SourceDataObject, counter].Style.ForeColor = Color.Red;
                             }
                         }
                     }

@@ -21,8 +21,13 @@ namespace TEAM
             CreateOutputPath();
             CreateBackupPath();
             CreateCorePath();
+            CreateMetadataPath();
         }
 
+        #region Standard directories
+        /// <summary>
+        /// Create a 'Configuration' directory, if not existing yet.
+        /// </summary>
         internal static void CreateConfigurationPath()
         {
             try
@@ -37,6 +42,9 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// Create a 'Output' directory, if not existing yet.
+        /// </summary>
         internal static void CreateOutputPath()
         {
             try
@@ -52,21 +60,41 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// Create a 'Metadata' directory, if not existing yet.
+        /// </summary>
+        internal static void CreateMetadataPath()
+        {
+            try
+            {
+                FileHandling.InitialisePath(FormBase.GlobalParameters.MetadataPath);
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.MetadataPath} is available."));
+            }
+            catch
+            {
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+            }
+        }
+        
+        /// <summary>
+        /// Create a 'Core' directory, if not existing yet.
+        /// </summary>
         internal static void CreateCorePath()
         {
             try
             {
                 FileHandling.InitialisePath(FormBase.GlobalParameters.CorePath);
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The TEAM directory {FormBase.GlobalParameters.CorePath} is available."));
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.CorePath} is available."));
             }
             catch
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
             }
         }
 
+        /// <summary>
+        /// Create a 'Backup' directory, if not existing yet.
+        /// </summary>
         internal static void CreateBackupPath()
         {
             try
@@ -76,10 +104,10 @@ namespace TEAM
             }
             catch
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
             }
         }
+        #endregion
 
         /// <summary>
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
@@ -213,8 +241,7 @@ namespace TEAM
             }
         }
     }
-
-
+    
     // Delegate to pass through a string (for example to update text boxes in a delegate function).
     public class MyStringEventArgs : EventArgs
     {

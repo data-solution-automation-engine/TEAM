@@ -215,15 +215,15 @@ namespace TEAM
             if (selectedRow.IsNewRow == false)
             {
                 // Source data object
-                var sourceDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.SourceDataObject].Value.ToString();
-                var sourceConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.SourceConnection].Value.ToString();
+                var sourceDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
+                var sourceConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.SourceConnection].Value.ToString();
                 TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                 var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                 string sourceDataObjectFullyQualifiedName = $"{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}";
 
                 // Target data object
-                var targetDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetDataObject].Value.ToString();
-                var targetConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.TargetConnection].Value.ToString();
+                var targetDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
+                var targetConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                 TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
                 var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                 string targetDataObjectFullyQualifiedName = $"{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}";
@@ -238,16 +238,16 @@ namespace TEAM
                 }
 
                 // Assert type for source column, retrieve the specific cell value.
-                if (e.ColumnIndex == _dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.SourceDataObject].Index && e.Value != null)
+                if (e.ColumnIndex == _dataGridViewTableMetadata.Columns[(int) DataObjectMappingGridColumns.SourceDataObject].Index && e.Value != null)
                 {
                     cell = _dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
                     tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), "", TeamConfiguration);
                 }
                 // Assert type for the target column, retrieve the specific cell value.
-                else if ((e.ColumnIndex == _dataGridViewTableMetadata.Columns[(int) TableMappingMetadataColumns.TargetDataObject].Index && e.Value != null))
+                else if ((e.ColumnIndex == _dataGridViewTableMetadata.Columns[(int) DataObjectMappingGridColumns.TargetDataObject].Index && e.Value != null))
                 {
                     cell = _dataGridViewTableMetadata.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString(), TeamConfiguration);
+                    tableType = MetadataHandling.GetDataObjectType(e.Value.ToString(), selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString(), TeamConfiguration);
                 }
                 else
                 {
@@ -365,6 +365,10 @@ namespace TEAM
                 TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonTableMappingFileName);
             }
 
+            //var teamDataObjectMappings = new TeamDataObjectMappings(GlobalParameters.MetadataPath);
+            //teamDataObjectMappings.GetMetadata();
+            //teamDataObjectMappings.SetDataTable();
+
             // Load the file into memory (data table and json list)
             TableMapping.GetMetadata(TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName());
 
@@ -374,8 +378,8 @@ namespace TEAM
 
             foreach (DataRow row in TableMapping.DataTable.Rows)
             {
-                var comboBoxValueSource = row[(int) TableMappingMetadataColumns.SourceConnection].ToString();
-                var comboBoxValueTarget = row[(int) TableMappingMetadataColumns.TargetConnection].ToString();
+                var comboBoxValueSource = row[(int) DataObjectMappingGridColumns.SourceConnection].ToString();
+                var comboBoxValueTarget = row[(int) DataObjectMappingGridColumns.TargetConnection].ToString();
 
                 if (!localConnectionKeyList.Contains(comboBoxValueSource))
                 {
@@ -384,7 +388,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueSource);
                     }
 
-                    row[(int) TableMappingMetadataColumns.SourceConnection] = DBNull.Value;
+                    row[(int) DataObjectMappingGridColumns.SourceConnection] = DBNull.Value;
                 }
 
                 if (!localConnectionKeyList.Contains(comboBoxValueTarget))
@@ -394,7 +398,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueTarget);
                     }
 
-                    row[(int) TableMappingMetadataColumns.TargetConnection] = DBNull.Value;
+                    row[(int) DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
                 }
             }
 
@@ -411,8 +415,8 @@ namespace TEAM
             TableMapping.DataTable.AcceptChanges();
 
             // Order by Source Table, Integration_Area table, Business Key Attribute.
-            TableMapping.SetDataTableColumns();
-            TableMapping.SetDataTableSorting();
+            //teamDataObjectMappings.SetDataTableColumns();
+            //teamDataObjectMappings.SetDataTableSorting();
 
             _bindingSourceTableMetadata.DataSource = TableMapping.DataTable;
 
@@ -630,8 +634,8 @@ namespace TEAM
 
             foreach (DataRow row in inputTableMapping.Rows)
             {
-                var targetDataObject = row[(string) TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                string targetSourceConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                var targetDataObject = row[(string) DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                string targetSourceConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 var targetConnection = GetTeamConnectionByConnectionId(targetSourceConnectionId);
                 var targetDataObjectType = MetadataHandling.GetDataObjectType(targetDataObject, "", TeamConfiguration);
 
@@ -1129,46 +1133,46 @@ namespace TEAM
                         var filterCriterion = "";
                         bool generateIndicator = true;
 
-                        if (row.Cells[TableMappingMetadataColumns.SourceDataObject.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value != DBNull.Value)
                         {
-                            sourceTable = (string) row.Cells[TableMappingMetadataColumns.SourceDataObject.ToString()].Value;
+                            sourceTable = (string) row.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
                         }
 
                         // Source Connection
-                        if (row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value != DBNull.Value)
                         {
-                            sourceConnectionKey = (string) row.Cells[TableMappingMetadataColumns.SourceConnection.ToString()].Value;
+                            sourceConnectionKey = (string) row.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value;
                         }
 
-                        if (row.Cells[TableMappingMetadataColumns.TargetDataObject.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value != DBNull.Value)
                         {
-                            targetTable = (string) row.Cells[TableMappingMetadataColumns.TargetDataObject.ToString()].Value;
+                            targetTable = (string) row.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
                         }
 
                         // Target Connection
-                        if (row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value != DBNull.Value)
                         {
-                            targetConnectionKey = (string) row.Cells[TableMappingMetadataColumns.TargetConnection.ToString()].Value;
+                            targetConnectionKey = (string) row.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value;
                         }
 
-                        if (row.Cells[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value != DBNull.Value)
                         {
-                            businessKeyDefinition = (string) row.Cells[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].Value;
+                            businessKeyDefinition = (string) row.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value;
                         }
 
-                        if (row.Cells[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value != DBNull.Value)
                         {
-                            drivingKeyDefinition = (string) row.Cells[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].Value;
+                            drivingKeyDefinition = (string) row.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value;
                         }
 
-                        if (row.Cells[TableMappingMetadataColumns.FilterCriterion.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.FilterCriterion.ToString()].Value != DBNull.Value)
                         {
-                            filterCriterion = (string) row.Cells[TableMappingMetadataColumns.FilterCriterion.ToString()].Value;
+                            filterCriterion = (string) row.Cells[DataObjectMappingGridColumns.FilterCriterion.ToString()].Value;
                         }
 
-                        if (row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value != DBNull.Value)
+                        if (row.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value != DBNull.Value)
                         {
-                            generateIndicator = (bool) row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value;
+                            generateIndicator = (bool) row.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
                         }
 
                         string[] inputHashValue = new string[]
@@ -1328,8 +1332,8 @@ namespace TEAM
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
                             //Grab the attributes into local variables
-                            string hashKey = (string) row[TableMappingMetadataColumns.HashKey.ToString()];
-                            int versionKey = (int) row[TableMappingMetadataColumns.VersionId.ToString()];
+                            string hashKey = (string) row[DataObjectMappingGridColumns.HashKey.ToString()];
+                            int versionKey = (int) row[DataObjectMappingGridColumns.VersionId.ToString()];
                             var stagingTable = "";
                             var sourceConnectionKey = "";
                             var targetConnectionKey = "";
@@ -1339,48 +1343,48 @@ namespace TEAM
                             var filterCriterion = "";
                             bool generateIndicator = true;
 
-                            if (row[TableMappingMetadataColumns.Enabled.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.Enabled.ToString()] != DBNull.Value)
                             {
-                                generateIndicator = (bool) row[TableMappingMetadataColumns.Enabled.ToString()];
+                                generateIndicator = (bool) row[DataObjectMappingGridColumns.Enabled.ToString()];
                             }
 
-                            if (row[TableMappingMetadataColumns.SourceDataObject.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.SourceDataObject.ToString()] != DBNull.Value)
                             {
-                                stagingTable = (string) row[TableMappingMetadataColumns.SourceDataObject.ToString()];
+                                stagingTable = (string) row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
                             }
 
-                            if (row[TableMappingMetadataColumns.SourceConnection.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.SourceConnection.ToString()] != DBNull.Value)
                             {
                                 sourceConnectionKey =
-                                    (string) row[TableMappingMetadataColumns.SourceConnection.ToString()];
+                                    (string) row[DataObjectMappingGridColumns.SourceConnection.ToString()];
                             }
 
-                            if (row[TableMappingMetadataColumns.TargetDataObject.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != DBNull.Value)
                             {
-                                integrationTable = (string) row[TableMappingMetadataColumns.TargetDataObject.ToString()];
+                                integrationTable = (string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
                             }
 
-                            if (row[TableMappingMetadataColumns.TargetConnection.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.TargetConnection.ToString()] != DBNull.Value)
                             {
                                 targetConnectionKey =
-                                    (string) row[TableMappingMetadataColumns.TargetConnection.ToString()];
+                                    (string) row[DataObjectMappingGridColumns.TargetConnection.ToString()];
                             }
 
-                            if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
                             {
                                 businessKeyDefinition =
-                                    (string) row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
+                                    (string) row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
                             }
 
-                            if (row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
                             {
                                 drivingKeyDefinition =
-                                    (string) row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()];
+                                    (string) row[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()];
                             }
 
-                            if (row[TableMappingMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
+                            if (row[DataObjectMappingGridColumns.FilterCriterion.ToString()] != DBNull.Value)
                             {
-                                filterCriterion = (string) row[TableMappingMetadataColumns.FilterCriterion.ToString()];
+                                filterCriterion = (string) row[DataObjectMappingGridColumns.FilterCriterion.ToString()];
                             }
 
                             //Read the file in memory
@@ -1438,56 +1442,56 @@ namespace TEAM
                             var filterCriterion = "";
                             bool generateIndicator = true;
 
-                            if (row[(int) TableMappingMetadataColumns.Enabled] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.Enabled] != DBNull.Value)
                             {
-                                generateIndicator = (bool) row[(int) TableMappingMetadataColumns.Enabled];
+                                generateIndicator = (bool) row[(int) DataObjectMappingGridColumns.Enabled];
                                 //generateIndicator = generateIndicator.Replace("'", "''");
                             }
 
                             // Source
-                            if (row[(int) TableMappingMetadataColumns.SourceDataObject] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.SourceDataObject] != DBNull.Value)
                             {
-                                sourceTable = (string) row[(int) TableMappingMetadataColumns.SourceDataObject];
+                                sourceTable = (string) row[(int) DataObjectMappingGridColumns.SourceDataObject];
                             }
 
                             // Source Connection
-                            if (row[(int) TableMappingMetadataColumns.SourceConnection] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.SourceConnection] != DBNull.Value)
                             {
                                 sourceConnectionKey =
-                                    (string) row[TableMappingMetadataColumns.SourceConnection.ToString()];
+                                    (string) row[DataObjectMappingGridColumns.SourceConnection.ToString()];
                             }
 
                             // Target
-                            if (row[(int) TableMappingMetadataColumns.TargetDataObject] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.TargetDataObject] != DBNull.Value)
                             {
-                                targetTable = (string) row[(int) TableMappingMetadataColumns.TargetDataObject];
+                                targetTable = (string) row[(int) DataObjectMappingGridColumns.TargetDataObject];
                             }
 
                             // Target Connection
-                            if (row[(int) TableMappingMetadataColumns.TargetConnection] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.TargetConnection] != DBNull.Value)
                             {
                                 targetConnectionKey =
-                                    (string) row[TableMappingMetadataColumns.TargetConnection.ToString()];
+                                    (string) row[DataObjectMappingGridColumns.TargetConnection.ToString()];
                             }
 
-                            if (row[(int) TableMappingMetadataColumns.BusinessKeyDefinition] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.BusinessKeyDefinition] != DBNull.Value)
                             {
                                 businessKeyDefinition =
-                                    (string) row[(int) TableMappingMetadataColumns.BusinessKeyDefinition];
+                                    (string) row[(int) DataObjectMappingGridColumns.BusinessKeyDefinition];
                                 //businessKeyDefinition = businessKeyDefinition.Replace("'", "''");
                                 //Double quotes for composites
                             }
 
-                            if (row[(int) TableMappingMetadataColumns.DrivingKeyDefinition] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.DrivingKeyDefinition] != DBNull.Value)
                             {
                                 drivingKeyDefinition =
-                                    (string) row[(int) TableMappingMetadataColumns.DrivingKeyDefinition];
+                                    (string) row[(int) DataObjectMappingGridColumns.DrivingKeyDefinition];
                                 //drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
                             }
 
-                            if (row[(int) TableMappingMetadataColumns.FilterCriterion] != DBNull.Value)
+                            if (row[(int) DataObjectMappingGridColumns.FilterCriterion] != DBNull.Value)
                             {
-                                filterCriterion = (string) row[(int) TableMappingMetadataColumns.FilterCriterion];
+                                filterCriterion = (string) row[(int) DataObjectMappingGridColumns.FilterCriterion];
                                 //filterCriterion = filterCriterion.Replace("'", "''");
                             }
 
@@ -1535,7 +1539,7 @@ namespace TEAM
                                 File.WriteAllText(outputFileName, output);
 
                                 //Making sure the hash key value is added to the data table as well
-                                row[(int) TableMappingMetadataColumns.HashKey] = hashKey;
+                                row[(int) DataObjectMappingGridColumns.HashKey] = hashKey;
 
                             }
                             catch (JsonReaderException ex)
@@ -1553,9 +1557,9 @@ namespace TEAM
                         //Deleted rows
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
-                            var hashKey = row[TableMappingMetadataColumns.HashKey.ToString(), DataRowVersion.Original]
+                            var hashKey = row[DataObjectMappingGridColumns.HashKey.ToString(), DataRowVersion.Original]
                                 .ToString();
-                            var versionKey = row[TableMappingMetadataColumns.VersionId.ToString(),
+                            var versionKey = row[DataObjectMappingGridColumns.VersionId.ToString(),
                                 DataRowVersion.Original].ToString();
 
                             try
@@ -2386,37 +2390,37 @@ namespace TEAM
                 string DRIVING_KEY_ATTRIBUTE = "";
                 string ENABLED_INDICATOR = "";
 
-                if (row[TableMappingMetadataColumns.SourceDataObject.ToString()] != DBNull.Value)
-                    sourceTable = (string) row[TableMappingMetadataColumns.SourceDataObject.ToString()];
+                if (row[DataObjectMappingGridColumns.SourceDataObject.ToString()] != DBNull.Value)
+                    sourceTable = (string) row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
 
-                if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
-                    BUSINESS_KEY_ATTRIBUTE = (string) row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()];
+                if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
+                    BUSINESS_KEY_ATTRIBUTE = (string) row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
 
-                if (row[TableMappingMetadataColumns.TargetDataObject.ToString()] != DBNull.Value)
-                    targetTable = (string) row[TableMappingMetadataColumns.TargetDataObject.ToString()];
+                if (row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != DBNull.Value)
+                    targetTable = (string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
 
-                if (row[TableMappingMetadataColumns.FilterCriterion.ToString()] != DBNull.Value)
+                if (row[DataObjectMappingGridColumns.FilterCriterion.ToString()] != DBNull.Value)
                 {
-                    FILTER_CRITERIA = (string) row[TableMappingMetadataColumns.FilterCriterion.ToString()];
+                    FILTER_CRITERIA = (string) row[DataObjectMappingGridColumns.FilterCriterion.ToString()];
                     FILTER_CRITERIA = FILTER_CRITERIA.Replace("'", "''");
                 }
 
-                if (row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
-                    DRIVING_KEY_ATTRIBUTE = (string) row[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()];
+                if (row[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
+                    DRIVING_KEY_ATTRIBUTE = (string) row[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()];
 
-                if (row[TableMappingMetadataColumns.Enabled.ToString()] != DBNull.Value)
-                    ENABLED_INDICATOR = (string) row[TableMappingMetadataColumns.Enabled.ToString()].ToString();
+                if (row[DataObjectMappingGridColumns.Enabled.ToString()] != DBNull.Value)
+                    ENABLED_INDICATOR = (string) row[DataObjectMappingGridColumns.Enabled.ToString()].ToString();
 
 
                 string localInternalSourceConnectionId =
-                    row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(localInternalSourceConnectionId);
                 var fullyQualifiedSourceName = MetadataHandling
                     .GetFullyQualifiedDataObjectName(sourceTable, sourceConnection).FirstOrDefault();
                 var sourceType = MetadataHandling.GetDataObjectType(sourceTable, "", TeamConfiguration);
 
                 string localInternalTargetConnectionId =
-                    row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                 var targetConnection = GetTeamConnectionByConnectionId(localInternalTargetConnectionId);
                 var fullyQualifiedTargetName = MetadataHandling
                     .GetFullyQualifiedDataObjectName(targetTable, targetConnection).FirstOrDefault();
@@ -2622,9 +2626,9 @@ namespace TEAM
                 );
 
             // Find the corresponding row in the Data Object Mapping grid
-            DataRow[] DataObjectMappings = tableMappingDataTable.Select("[" + TableMappingMetadataColumns.SourceDataObject +
+            DataRow[] DataObjectMappings = tableMappingDataTable.Select("[" + DataObjectMappingGridColumns.SourceDataObject +
                                                                         "] = '" + sourceTable + "' AND" +
-                                                                        "[" + TableMappingMetadataColumns.TargetDataObject +
+                                                                        "[" + DataObjectMappingGridColumns.TargetDataObject +
                                                                         "] = '" + targetTable + "'");
 
             if (DataObjectMappings is null || DataObjectMappings.Length == 0)
@@ -2640,15 +2644,15 @@ namespace TEAM
             }
             else
             {
-                var connectionInternalIdSource = DataObjectMappings[0][TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                var connectionInternalIdTarget = DataObjectMappings[0][TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                var connectionInternalIdSource = DataObjectMappings[0][DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                var connectionInternalIdTarget = DataObjectMappings[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 TeamConnection sourceConnection = GetTeamConnectionByConnectionId(connectionInternalIdSource);
                 TeamConnection targetConnection = GetTeamConnectionByConnectionId(connectionInternalIdTarget);
 
                 // Set the right values
                 returnTuple = new Tuple<bool, string, TeamConnection, string, TeamConnection>
                 (
-                    (bool) DataObjectMappings[0][TableMappingMetadataColumns.Enabled.ToString()],
+                    (bool) DataObjectMappings[0][DataObjectMappingGridColumns.Enabled.ToString()],
                     sourceTable,
                     sourceConnection,
                     targetTable,
@@ -2918,7 +2922,7 @@ namespace TEAM
                     List<DataRow> rowList = new List<DataRow>();
                     foreach (DataRow row in localDataTable.Rows)
                     {
-                        if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
+                        if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()])
                         {
                             rowList.Add(row); //add the row to the list
                         }
@@ -3235,16 +3239,16 @@ namespace TEAM
                             foreach (DataRow row in inputTableMetadata.Rows)
                             {
                                 var localInternalConnectionIdSource =
-                                    row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                                    row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                                 var sourceConnection = GetTeamConnectionByConnectionId(localInternalConnectionIdSource);
 
                                 var localInternalConnectionIdTarget =
-                                    row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                                    row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                                 var targetConnection = GetTeamConnectionByConnectionId(localInternalConnectionIdTarget);
 
                                 if (localInternalConnectionIdSource == connection.Value.ConnectionInternalId)
                                 {
-                                    var localTable = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
+                                    var localTable = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
 
                                     // Schema and Table Name
                                     var localFullyQualifiedTableName = MetadataHandling
@@ -3256,12 +3260,12 @@ namespace TEAM
                                                          localFullyQualifiedTableName.Value + "') ,";
                                 }
 
-                                if (row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString() ==
+                                if (row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString() ==
                                     connection.Value.ConnectionInternalId)
                                 {
-                                    var localTable = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
+                                    var localTable = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                                     var localInternalConnectionId =
-                                        row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                                        row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
 
                                     // Schema and Table Name
                                     var localFullyQualifiedTableName = MetadataHandling
@@ -3413,7 +3417,7 @@ namespace TEAM
                 LogMetadataEvent($"Commencing preparing the source metadata.", EventTypes.Information);
 
                 // Getting the distinct list of tables to go into the 'source'
-                selectionRows = inputTableMetadata.Select(TableMappingMetadataColumns.Enabled + " = 'true'");
+                selectionRows = inputTableMetadata.Select(DataObjectMappingGridColumns.Enabled + " = 'true'");
 
                 var distinctSourceList = new List<Tuple<string, TeamConnection>>();
                 distinctSourceList.Add(new Tuple<string, TeamConnection>("Not applicable", null));
@@ -3421,9 +3425,9 @@ namespace TEAM
                 // Create a distinct list of sources from the data grid
                 foreach (DataRow row in selectionRows)
                 {
-                    string sourceTable = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString().Trim();
+                    string sourceTable = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString().Trim();
                     string sourceInternalConnectionId =
-                        row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                        row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     var sourceTableConnection = GetTeamConnectionByConnectionId(sourceInternalConnectionId);
 
                     var localTuple = new Tuple<string, TeamConnection>(sourceTable, sourceTableConnection);
@@ -3510,17 +3514,17 @@ namespace TEAM
                 // Iterate over enabled row to see if there are any sources and targets to add to the list.
                 foreach (DataRow row in inputTableMetadata.Rows)
                 {
-                    if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
+                    if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()])
                     {
                         // Need to evaluate the non qualified name for the table type, i.e. disregarding schemas etc.
                         // The Data Object either has a Staging prefix defined and starts with it, or an suffix and ends with it.
 
                         /* SOURCES */
                         string localTableSourceName =
-                            row[TableMappingMetadataColumns.SourceDataObject.ToString()]
+                            row[DataObjectMappingGridColumns.SourceDataObject.ToString()]
                                 .ToString(); // The full table as visible in the data grid view.
                         string localTableSourceConnectionId =
-                            row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                            row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                         TeamConnection localTableConnectionSource =
                             GetTeamConnectionByConnectionId(localTableSourceConnectionId);
                         var localFullyQualifiedKeyValuePairSource = MetadataHandling
@@ -3531,15 +3535,15 @@ namespace TEAM
                             localFullyQualifiedKeyValuePairSource.Value;
 
                         /* TARGETS and Xref  */
-                        var localBusinessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()]
+                        var localBusinessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()]
                             .ToString();
                         var localFilterCriterion =
-                            row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString();
+                            row[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
                         string localTableTargetName =
-                            row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
+                            row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                         string localTableTargetConnectionId =
-                            row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                            row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                         TeamConnection localTableConnectionTarget =
                             GetTeamConnectionByConnectionId(localTableTargetConnectionId);
                         var localFullyQualifiedKeyValuePairTarget = MetadataHandling
@@ -4938,10 +4942,10 @@ namespace TEAM
                                 LogMetadataEvent($"Processing the mapping from  {row[AttributeMappingMetadataColumns.SourceTable.ToString()]} - {fromAttribute} to {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} - {toAttribute}.", EventTypes.Information);
 
                                 // Get the corresponding Data Object.
-                                var dataObjectRow = inputTableMetadata.Select($"[{TableMappingMetadataColumns.SourceDataObject}] = '{localSourceTable}' AND [{TableMappingMetadataColumns.TargetDataObject}] = '{localTargetTable}'").FirstOrDefault();
+                                var dataObjectRow = inputTableMetadata.Select($"[{DataObjectMappingGridColumns.SourceDataObject}] = '{localSourceTable}' AND [{DataObjectMappingGridColumns.TargetDataObject}] = '{localTargetTable}'").FirstOrDefault();
 
-                                var sourceConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString());
-                                var targetConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString());
+                                var sourceConnection = GetTeamConnectionByConnectionId(dataObjectRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString());
+                                var targetConnection = GetTeamConnectionByConnectionId(dataObjectRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString());
 
                                 var sourceDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localSourceTable, sourceConnection).FirstOrDefault();
                                 var targetDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localTargetTable, targetConnection).FirstOrDefault();
@@ -5169,10 +5173,10 @@ namespace TEAM
                                 // selectionRows = inputTableMetadata.Select("" + AttributeMappingMetadataColumns.TargetTable + " LIKE '%" + psaPrefix + "%'");
                                 
                                 // Get the corresponding Data Object.
-                                var dataObjectRow = inputTableMetadata.Select($"[{TableMappingMetadataColumns.SourceDataObject}] = '{localSourceTable}' AND [{TableMappingMetadataColumns.TargetDataObject}] = '{localTargetTable}'").FirstOrDefault();
+                                var dataObjectRow = inputTableMetadata.Select($"[{DataObjectMappingGridColumns.SourceDataObject}] = '{localSourceTable}' AND [{DataObjectMappingGridColumns.TargetDataObject}] = '{localTargetTable}'").FirstOrDefault();
 
-                                var sourceConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString());
-                                var targetConnection = GetTeamConnectionByConnectionId(dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString());
+                                var sourceConnection = GetTeamConnectionByConnectionId(dataObjectRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString());
+                                var targetConnection = GetTeamConnectionByConnectionId(dataObjectRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString());
 
                                 var sourceDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localSourceTable, sourceConnection).FirstOrDefault();
                                 var targetDataObjectFullyQualified = MetadataHandling.GetFullyQualifiedDataObjectName(localTargetTable, targetConnection).FirstOrDefault();
@@ -6567,7 +6571,7 @@ namespace TEAM
             var valueLength = e.FormattedValue.ToString().Length;
 
             // Source Table (Source)
-            if (e.ColumnIndex == (int) TableMappingMetadataColumns.SourceDataObject)
+            if (e.ColumnIndex == (int) DataObjectMappingGridColumns.SourceDataObject)
             {
                 _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
@@ -6579,7 +6583,7 @@ namespace TEAM
             }
 
             // Target Table
-            if (e.ColumnIndex == (int) TableMappingMetadataColumns.TargetDataObject)
+            if (e.ColumnIndex == (int) DataObjectMappingGridColumns.TargetDataObject)
             {
                 _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
@@ -6592,7 +6596,7 @@ namespace TEAM
             }
 
             // Business Key
-            if (e.ColumnIndex == (int) TableMappingMetadataColumns.BusinessKeyDefinition)
+            if (e.ColumnIndex == (int) DataObjectMappingGridColumns.BusinessKeyDefinition)
             {
                 _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
 
@@ -6604,7 +6608,7 @@ namespace TEAM
             }
 
             // Filter criteria
-            if (e.ColumnIndex == (int) TableMappingMetadataColumns.FilterCriterion)
+            if (e.ColumnIndex == (int) DataObjectMappingGridColumns.FilterCriterion)
             {
                 _dataGridViewTableMetadata.Rows[e.RowIndex].ErrorText = "";
                 //int newInteger;
@@ -6719,14 +6723,14 @@ namespace TEAM
                     for (int i = 0; i < _dataGridViewTableMetadata.Rows.Count - 1; i++)
                     {
                         DataGridViewRow row = _dataGridViewTableMetadata.Rows[i];
-                        string sourceNode = row.Cells[(int) TableMappingMetadataColumns.SourceDataObject].Value.ToString();
-                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString();
+                        string sourceNode = row.Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
+                        var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
 
-                        string targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetDataObject].Value.ToString();
-                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].Value.ToString();
+                        string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
+                        var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
@@ -6991,17 +6995,17 @@ namespace TEAM
                     {
                         var row = _dataGridViewTableMetadata.Rows[i];
                         
-                        string sourceNode = row.Cells[(int)TableMappingMetadataColumns.SourceDataObject].Value.ToString();
-                        var sourceConnectionId = row.Cells[(int)TableMappingMetadataColumns.SourceConnection].Value.ToString();
+                        string sourceNode = row.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
+                        var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
                         var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
-                        string targetNode = row.Cells[(int)TableMappingMetadataColumns.TargetDataObject].Value.ToString();
-                        var targetConnectionId = row.Cells[(int)TableMappingMetadataColumns.TargetConnection].Value.ToString();
+                        string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
+                        var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
-                        var businessKey = row.Cells[(int) TableMappingMetadataColumns.BusinessKeyDefinition].Value.ToString();
+                        var businessKey = row.Cells[(int) DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString();
 
 
                         dgmlExtract.AppendLine("     <Link Source=\"" + fullyQualifiedObjectSource.Key+'.'+ fullyQualifiedObjectSource.Value + "\" Target=\"" + fullyQualifiedObjectTarget.Key+'.'+fullyQualifiedObjectTarget.Value  + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
@@ -7138,11 +7142,11 @@ namespace TEAM
 
             foreach (DataGridViewRow dr in _dataGridViewTableMetadata.Rows)
             {
-                if (dr.Cells[(int) TableMappingMetadataColumns.TargetDataObject].Value != null)
+                if (dr.Cells[(int) DataObjectMappingGridColumns.TargetDataObject].Value != null)
                 {
-                    if (!dr.Cells[(int) TableMappingMetadataColumns.TargetDataObject].Value.ToString()
+                    if (!dr.Cells[(int) DataObjectMappingGridColumns.TargetDataObject].Value.ToString()
                         .Contains(textBoxFilterCriterion.Text) && !dr
-                        .Cells[(int) TableMappingMetadataColumns.SourceDataObject].Value.ToString()
+                        .Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString()
                         .Contains(textBoxFilterCriterion.Text))
                     {
                         CurrencyManager currencyManager1 =
@@ -7186,16 +7190,16 @@ namespace TEAM
                         {
                             JObject individualRow = JObject.FromObject(new
                             {
-                                enabledIndicator = singleRow[(int) TableMappingMetadataColumns.Enabled].ToString(),
-                                tableMappingHash = singleRow[(int) TableMappingMetadataColumns.HashKey].ToString(),
-                                versionId = singleRow[(int) TableMappingMetadataColumns.VersionId].ToString(),
-                                sourceTable = singleRow[(int) TableMappingMetadataColumns.SourceDataObject].ToString(),
-                                sourceConnection = singleRow[(int) TableMappingMetadataColumns.SourceConnection].ToString(),
-                                targetTable = singleRow[(int) TableMappingMetadataColumns.TargetDataObject].ToString(),
-                                targetConnection = singleRow[(int) TableMappingMetadataColumns.TargetConnection].ToString(),
-                                businessKeyDefinition = singleRow[(int) TableMappingMetadataColumns.BusinessKeyDefinition].ToString(),
-                                drivingKeyDefinition = singleRow[(int) TableMappingMetadataColumns.DrivingKeyDefinition].ToString(),
-                                filterCriteria = singleRow[(int) TableMappingMetadataColumns.FilterCriterion].ToString()
+                                enabledIndicator = singleRow[(int) DataObjectMappingGridColumns.Enabled].ToString(),
+                                tableMappingHash = singleRow[(int) DataObjectMappingGridColumns.HashKey].ToString(),
+                                versionId = singleRow[(int) DataObjectMappingGridColumns.VersionId].ToString(),
+                                sourceTable = singleRow[(int) DataObjectMappingGridColumns.SourceDataObject].ToString(),
+                                sourceConnection = singleRow[(int) DataObjectMappingGridColumns.SourceConnection].ToString(),
+                                targetTable = singleRow[(int) DataObjectMappingGridColumns.TargetDataObject].ToString(),
+                                targetConnection = singleRow[(int) DataObjectMappingGridColumns.TargetConnection].ToString(),
+                                businessKeyDefinition = singleRow[(int) DataObjectMappingGridColumns.BusinessKeyDefinition].ToString(),
+                                drivingKeyDefinition = singleRow[(int) DataObjectMappingGridColumns.DrivingKeyDefinition].ToString(),
+                                filterCriteria = singleRow[(int) DataObjectMappingGridColumns.FilterCriterion].ToString()
                             });
                             outputFileArray.Add(individualRow);
                         }
@@ -7419,18 +7423,18 @@ namespace TEAM
             foreach (DataRow row in ((DataTable) _bindingSourceTableMetadata.DataSource).Rows)
             {
                 string localInternalConnectionIdSource =
-                    row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                 TeamConnection localConnectionSource = GetTeamConnectionByConnectionId(localInternalConnectionIdSource);
 
                 string localInternalConnectionIdTarget =
-                    row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 TeamConnection localConnectionTarget = GetTeamConnectionByConnectionId(localInternalConnectionIdTarget);
 
                 var localTupleSource = new Tuple<string, TeamConnection>(
-                    (string) row[TableMappingMetadataColumns.SourceDataObject.ToString()], localConnectionSource);
+                    (string) row[DataObjectMappingGridColumns.SourceDataObject.ToString()], localConnectionSource);
 
                 var localTupleTarget = new Tuple<string, TeamConnection>(
-                    (string) row[TableMappingMetadataColumns.TargetDataObject.ToString()], localConnectionTarget);
+                    (string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()], localConnectionTarget);
 
                 if (!filterList.Contains(localTupleSource))
                 {
@@ -7541,8 +7545,8 @@ namespace TEAM
 
             var generationMetadataRow = ((DataRowView) _dataGridViewTableMetadata.Rows[selectedRow].DataBoundItem).Row;
 
-            var targetDataObjectName = generationMetadataRow[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-            var targetConnectionInternalId = generationMetadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+            var targetDataObjectName = generationMetadataRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+            var targetConnectionInternalId = generationMetadataRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
             var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
             var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
             var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
@@ -7694,21 +7698,21 @@ namespace TEAM
             
             foreach (DataRow row in localDataTable.Rows)
             {
-                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()]) // If row is enabled
+                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()]) // If row is enabled
                 {
-                    string localSourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                    string localTargetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    string localSourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                    string localTargetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
 
                     TeamConnection sourceConnection = GetTeamConnectionByConnectionId(localSourceConnectionInternalId);
                     TeamConnection targetConnection = GetTeamConnectionByConnectionId(localTargetConnectionInternalId);
 
                     // The values in the data grid, fully qualified. This means the default schema is added if necessary.
                     var sourceDataObject = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString(), sourceConnection)
+                        .GetFullyQualifiedDataObjectName(row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString(), sourceConnection)
                         .FirstOrDefault();
                     var targetDataObject = MetadataHandling
                         .GetFullyQualifiedDataObjectName(
-                            row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString(), targetConnection)
+                            row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString(), targetConnection)
                         .FirstOrDefault();
 
                     // The values as defined in the associated connections
@@ -7754,21 +7758,21 @@ namespace TEAM
             foreach (DataRow row in localDataTableTableMappings.Rows)
             {
                 // Only process enabled mappings.
-                if (!(bool) row[TableMappingMetadataColumns.Enabled.ToString()]) continue;
+                if (!(bool) row[DataObjectMappingGridColumns.Enabled.ToString()]) continue;
 
                 // Only select the lines that relate to a Link target.
-                if (row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
+                if (row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
                 {
                     // Derive the business key.
-                    var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
+                    var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
 
                     // Derive the connection
-                    localConnectionDictionary.TryGetValue(row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString(), out var targetConnectionValue);
+                    localConnectionDictionary.TryGetValue(row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString(), out var targetConnectionValue);
 
                     var newValidationObject = new Tuple<string, string, string, string>
                     (
-                        row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString(),
-                        row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString(),
+                        row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString(),
+                        row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString(),
                         businessKey,
                         targetConnectionValue
                     );
@@ -7943,8 +7947,8 @@ namespace TEAM
             {
                 if (row.IsNewRow == false)
                 {
-                    string targetDataObject = row.Cells[TableMappingMetadataColumns.TargetDataObject.ToString()].Value.ToString();
-                    bool rowEnabled = (bool) row.Cells[TableMappingMetadataColumns.Enabled.ToString()].Value;
+                    string targetDataObject = row.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
+                    bool rowEnabled = (bool) row.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
 
                     if (rowEnabled)
                     {
@@ -7970,17 +7974,17 @@ namespace TEAM
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
-                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
+                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()])
                 {
                     // Sources
-                    var validationObjectSource = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                    var validationObjectSourceConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var validationObjectSource = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    var validationObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = GetTeamConnectionByConnectionId(validationObjectSourceConnectionId);
                     KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
 
                     // Targets
-                    var validationObjectTarget = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                    var validationObjectTargetConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var validationObjectTarget = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    var validationObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(validationObjectTargetConnectionId);
                     KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
 
@@ -8068,16 +8072,16 @@ namespace TEAM
             foreach (DataRow row in localDataTable.Rows)
             {
                 // If enabled and is a Staging Layer object
-                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()] && MetadataHandling
-                    .GetDataObjectType((string) row[TableMappingMetadataColumns.TargetDataObject.ToString()], "",
+                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()] && MetadataHandling
+                    .GetDataObjectType((string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()], "",
                         TeamConfiguration).In(MetadataHandling.DataObjectTypes.StagingArea,
                         MetadataHandling.DataObjectTypes.PersistentStagingArea))
                 {
-                    if (row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
+                    if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
                     {
                         issueCounter++;
                         _alertValidation.SetTextLogging(
-                            $"     Data Object {(string) row[TableMappingMetadataColumns.TargetDataObject.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
+                            $"     Data Object {(string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
                     }
                 }
             }
@@ -8105,8 +8109,8 @@ namespace TEAM
 
             foreach (DataRow row in localDataTableTableMappings.Rows)
             {
-                var sourceDataObjectTuple = new Tuple<string, bool>((string)row[TableMappingMetadataColumns.SourceDataObject.ToString()], (bool) row[TableMappingMetadataColumns.Enabled.ToString()]);
-                var targetDataObjectTuple = new Tuple<string, bool>((string)row[TableMappingMetadataColumns.TargetDataObject.ToString()], (bool)row[TableMappingMetadataColumns.Enabled.ToString()]);
+                var sourceDataObjectTuple = new Tuple<string, bool>((string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()], (bool) row[DataObjectMappingGridColumns.Enabled.ToString()]);
+                var targetDataObjectTuple = new Tuple<string, bool>((string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()], (bool)row[DataObjectMappingGridColumns.Enabled.ToString()]);
 
                 if (!sourceDataObjectListTableMapping.Contains(sourceDataObjectTuple))
                 {
@@ -8183,21 +8187,21 @@ namespace TEAM
             
             foreach (DataRow row in localDataTableTableMappings.Rows)
             {
-                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
+                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()])
                 {
                     // Only select the lines that relate to a Link target.
-                    if (row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
+                    if (row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
                     {
                         // Derive the business key.
-                        var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
+                        var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
 
                         // Derive the connection
-                        localConnectionDictionary.TryGetValue(row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString(), out var connectionValue);
+                        localConnectionDictionary.TryGetValue(row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString(), out var connectionValue);
                         
                         var newValidationObject = new Tuple<string, string, string, string>
                         (
-                            row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString(),
-                            row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString(),
+                            row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString(),
+                            row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString(),
                             businessKey,
                             connectionValue
                         );
@@ -8264,15 +8268,15 @@ namespace TEAM
             var localDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
-                if ((bool)row[TableMappingMetadataColumns.Enabled.ToString()])
+                if ((bool)row[DataObjectMappingGridColumns.Enabled.ToString()])
                 {
-                    var localDataObjectSourceName = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                    var localDataObjectSourceConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var localDataObjectSourceName = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    var localDataObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     var localDataObjectSourceConnection = GetTeamConnectionByConnectionId(localDataObjectSourceConnectionId);
                     var localDataObjectSourceTableType = MetadataHandling.GetDataObjectType(localDataObjectSourceName, "", TeamConfiguration);
                     
-                    var localDataObjectTargetName = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                    var localDataObjectTargetConnectionId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var localDataObjectTargetName = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    var localDataObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var localDataObjectTargetConnection = GetTeamConnectionByConnectionId(localDataObjectTargetConnectionId);
                     var localDataObjectTargetTableType = MetadataHandling.GetDataObjectType(localDataObjectTargetName, "", TeamConfiguration);
 
@@ -8342,24 +8346,24 @@ namespace TEAM
             
             foreach (DataRow row in localDataTable.Rows)
             {
-                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()])
+                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()])
                 {
-                    var targetDataObjectName = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                     var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                     var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
-                    var targetFilterCriterion = row[TableMappingMetadataColumns.FilterCriterion.ToString()].ToString();
+                    var targetFilterCriterion = row[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
-                    var sourceDataObjectName = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                    var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                     var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
 
 
                     if (targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship || targetTableType == MetadataHandling.DataObjectTypes.Context || targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
                     {
-                        var businessKey = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
+                        var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
                         
                         if (!objectList.Contains(new Tuple<string, string, string, string>
                             (
@@ -8432,16 +8436,16 @@ namespace TEAM
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
-                if ((bool) row[TableMappingMetadataColumns.Enabled.ToString()]) // If row is enabled
+                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()]) // If row is enabled
                 {
                     Dictionary<Tuple<string, string>, bool> objectValidated =
                         new Dictionary<Tuple<string, string>, bool>();
 
                     // Source table and business key definitions.
-                    string validationObject = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                    string validationConnectionId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    string validationObject = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    string validationConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     TeamConnection validationConnection = GetTeamConnectionByConnectionId(validationConnectionId);
-                    string businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
+                    string businessKeyDefinition = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString();
 
 
                     if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode &&
@@ -8648,8 +8652,8 @@ namespace TEAM
             var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
-                bool enabled = (bool) row[TableMappingMetadataColumns.Enabled.ToString()];
-                var targetDataObjectName = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
+                bool enabled = (bool) row[DataObjectMappingGridColumns.Enabled.ToString()];
+                var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                 var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
 
                 if (enabled && tableType != MetadataHandling.DataObjectTypes.Presentation)
@@ -8714,7 +8718,7 @@ namespace TEAM
             var localDataObjectMappingDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
             var localDataItemMappingDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
 
-            var mappingRows = localDataObjectMappingDataTable.Select($"[{TableMappingMetadataColumns.TargetDataObject}] = '{dataObjectName}'");
+            var mappingRows = localDataObjectMappingDataTable.Select($"[{DataObjectMappingGridColumns.TargetDataObject}] = '{dataObjectName}'");
 
             List<DataObjectMapping> dataObjectMappings = new List<DataObjectMapping>();
             DataObjectMapping dataObjectMapping = new DataObjectMapping
@@ -8741,8 +8745,8 @@ namespace TEAM
                 // Get the full details of the target first, and only once
                 if (counter == 0)
                 {
-                    targetDataObjectName = row[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                    var targetConnectionInternalId = row[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                    targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                     
                     // Create and set target Data Object.
@@ -8765,7 +8769,7 @@ namespace TEAM
                     List<BusinessKey> businessKeys = new List<BusinessKey>();
                     BusinessKey businessKey = new BusinessKey();
 
-                    var businessKeyDefinition = row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()].ToString();
+                    var businessKeyDefinition = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString();
                     var businessKeyDataItemMappings = JsonOutputHandling.GetBusinessKeyComponentDataItemMappings(businessKeyDefinition, businessKeyDefinition);
                     businessKey.businessKeyComponentMapping = businessKeyDataItemMappings;
 
@@ -8778,8 +8782,8 @@ namespace TEAM
                 }
 
                 // Get the source information to construct the source Data Object.
-                var sourceDataObjectName = row[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                var sourceConnectionInternalId = row[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                 var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                 var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, jsonExportSetting, TeamConfiguration);
@@ -8916,15 +8920,15 @@ namespace TEAM
             foreach (DataRow dataObjectMetadataRow in generationMetadataList)
             {
                 #region Preparation
-                var sourceDataObjectName = dataObjectMetadataRow[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                var targetDataObjectName = dataObjectMetadataRow[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                var sourceConnectionInternalId = dataObjectMetadataRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
-                var targetConnectionInternalId = dataObjectMetadataRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                var sourceDataObjectName = dataObjectMetadataRow[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                var targetDataObjectName = dataObjectMetadataRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                var sourceConnectionInternalId = dataObjectMetadataRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                var targetConnectionInternalId = dataObjectMetadataRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
                 var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
                 var fullyQualifiedNameSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                 var fullyQualifiedNameTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                var drivingKeyDefinition = dataObjectMetadataRow[TableMappingMetadataColumns.DrivingKeyDefinition.ToString()].ToString();
+                var drivingKeyDefinition = dataObjectMetadataRow[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].ToString();
 
                 // Find out what the correct patterns is.
                 var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, drivingKeyDefinition, TeamConfiguration);
@@ -8993,12 +8997,12 @@ namespace TEAM
                             #region Related Data Objects (e.g. lookup tables, references)
                             List<DataWarehouseAutomation.DataObject> relatedDataObjects = new List<DataWarehouseAutomation.DataObject>();
 
-                            var dependentRows = TableMapping.GetPeerDataRows((string) row["SOURCE_NAME"], (string)row["SOURCE_SCHEMA_NAME"], (string) row["TARGET_NAME"], (string)row["TARGET_SCHEMA_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"], (string) row["FILTER_CRITERIA"], TableMapping.DataTable, TeamTableMapping.BusinessKeyEvaluationMode.Partial);
+                            var dependentRows = TableMapping.GetPeerDataRows((string) row["SOURCE_NAME"], (string)row["SOURCE_SCHEMA_NAME"], (string) row["TARGET_NAME"], (string)row["TARGET_SCHEMA_NAME"], (string) row["SOURCE_BUSINESS_KEY_DEFINITION"], (string) row["FILTER_CRITERIA"], TableMapping.DataTable, TeamDataObjectMapping.BusinessKeyEvaluationMode.Partial);
 
                             foreach (var dependentRow in dependentRows)
                             {
-                                var localRelatedDataObjectName = dependentRow[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
-                                var localRelatedDataObjectConnectionId = dependentRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                                var localRelatedDataObjectName = dependentRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                                var localRelatedDataObjectConnectionId = dependentRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                                 var localRelatedDataObjectConnection = GetTeamConnectionByConnectionId(localRelatedDataObjectConnectionId);
                                 var relatedDataObject = JsonOutputHandling.CreateDataObject(localRelatedDataObjectName, localRelatedDataObjectConnection, JsonExportSetting, TeamConfiguration);
 
@@ -9964,11 +9968,11 @@ namespace TEAM
                 foreach (DataRow dataObjectRow in localDataObjectDataTable.Rows)
                 {
                     // Generic
-                    var localVersionId = dataObjectRow[TableMappingMetadataColumns.VersionId.ToString()].ToString();
+                    var localVersionId = dataObjectRow[DataObjectMappingGridColumns.VersionId.ToString()].ToString();
 
                     // Source Data Object details
-                    var sourceDataObjectName = dataObjectRow[TableMappingMetadataColumns.SourceDataObject.ToString()].ToString();
-                    var sourceConnectionId = dataObjectRow[TableMappingMetadataColumns.SourceConnection.ToString()].ToString();
+                    var sourceDataObjectName = dataObjectRow[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    var sourceConnectionId = dataObjectRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
                     var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling
                         .GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
@@ -9985,9 +9989,9 @@ namespace TEAM
 
                     // Target Data Object details
                     var targetDataObjectName =
-                        dataObjectRow[TableMappingMetadataColumns.TargetDataObject.ToString()].ToString();
+                        dataObjectRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                     var targetConnectionId =
-                        dataObjectRow[TableMappingMetadataColumns.TargetConnection.ToString()].ToString();
+                        dataObjectRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
                     var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling
                         .GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
@@ -10204,16 +10208,16 @@ namespace TEAM
                                     };
                                     Utility.CreateMd5(hashKey, Utility.SandingElement);
 
-                                    newRow[(int)TableMappingMetadataColumns.Enabled] = dataObjectMapping.enabled;
-                                    newRow[(int)TableMappingMetadataColumns.HashKey] = hashKey;
-                                    newRow[(int)TableMappingMetadataColumns.VersionId] = versionId;
-                                    newRow[(int)TableMappingMetadataColumns.SourceDataObject] = sourceDataObjectName;
-                                    newRow[(int)TableMappingMetadataColumns.SourceConnection] = sourceConnectionInternalId;
-                                    newRow[(int)TableMappingMetadataColumns.TargetDataObject] = targetDataObjectName;
-                                    newRow[(int)TableMappingMetadataColumns.TargetConnection] = targetConnectionInternalId;
-                                    newRow[(int)TableMappingMetadataColumns.BusinessKeyDefinition] = businessKeyDefinition;
-                                    newRow[(int)TableMappingMetadataColumns.DrivingKeyDefinition] = drivingKeyDefinition;
-                                    newRow[(int)TableMappingMetadataColumns.FilterCriterion] = filterCriterion;
+                                    newRow[(int)DataObjectMappingGridColumns.Enabled] = dataObjectMapping.enabled;
+                                    newRow[(int)DataObjectMappingGridColumns.HashKey] = hashKey;
+                                    newRow[(int)DataObjectMappingGridColumns.VersionId] = versionId;
+                                    newRow[(int)DataObjectMappingGridColumns.SourceDataObject] = sourceDataObjectName;
+                                    newRow[(int)DataObjectMappingGridColumns.SourceConnection] = sourceConnectionInternalId;
+                                    newRow[(int)DataObjectMappingGridColumns.TargetDataObject] = targetDataObjectName;
+                                    newRow[(int)DataObjectMappingGridColumns.TargetConnection] = targetConnectionInternalId;
+                                    newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = businessKeyDefinition;
+                                    newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = drivingKeyDefinition;
+                                    newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = filterCriterion;
 
                                     TableMapping.DataTable.Rows.Add(newRow);
                                 }

@@ -42,7 +42,6 @@ namespace TEAM_Library
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TeamFileConnection FileConnection { get; set; }
 
-
         /// <summary>
         /// Generate a SQL Server connection string from available information.
         /// </summary>

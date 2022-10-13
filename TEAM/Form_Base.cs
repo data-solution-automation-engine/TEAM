@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 using TEAM_Library;
 
@@ -58,7 +57,7 @@ namespace TEAM
 
         #region Metadata objects in memory
         // In-memory representation of the Table Mapping Metadata.
-        public static TeamTableMapping TableMapping { get; set; } = new TeamTableMapping();
+        public static TeamDataObjectMapping TableMapping { get; set; } = new TeamDataObjectMapping();
 
         // In-memory representation of the Physical Model Metadata.
         public static TeamPhysicalModel PhysicalModel { get; set; } = new TeamPhysicalModel();
@@ -98,6 +97,7 @@ namespace TEAM
             public static string RootPath { get; } = Application.StartupPath + @"\";
             public static string ConfigurationPath { get; set; } = RootPath + @"Configuration\";
             public static string OutputPath { get; set; } = RootPath + @"Output\";
+            public static string MetadataPath { get; set; } = RootPath + @"Metadata\";
             public static string CorePath { get; } = RootPath + @"Core\";
 
             public static string BackupPath { get; } = RootPath + @"Backup\";
@@ -115,6 +115,7 @@ namespace TEAM
             internal static string WorkingEnvironmentInternalId { get; set; }
 
             // JSON file name parameters
+            public static string JsonSchemaForDataWarehouseAutomationFileName { get; } = "interfaceDataWarehouseAutomationMetadata.json";
             public static string JsonTableMappingFileName { get; } = "TEAM_Table_Mapping";
             public static string JsonAttributeMappingFileName { get; } = "TEAM_Attribute_Mapping";
             public static string JsonModelMetadataFileName { get; } = "TEAM_Model_Metadata";

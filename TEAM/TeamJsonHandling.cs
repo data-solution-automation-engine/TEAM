@@ -91,7 +91,7 @@ namespace TEAM
             /// <returns></returns>
             public static string TableMappingJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.ConfigurationPath +
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath +
                                            FormBase.GlobalParameters.WorkingEnvironment + "_" +
                                            FormBase.GlobalParameters.JsonTableMappingFileName +
                                            jsonVersionExtension;
@@ -105,7 +105,7 @@ namespace TEAM
             /// <returns></returns>
             public static string AttributeMappingJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.ConfigurationPath +
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath +
                                            FormBase.GlobalParameters.WorkingEnvironment + "_" +
                                            FormBase.GlobalParameters.JsonAttributeMappingFileName +
                                            jsonVersionExtension;
@@ -119,7 +119,7 @@ namespace TEAM
             /// <returns></returns>
             public static string PhysicalModelJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.ConfigurationPath +
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath +
                                                        FormBase.GlobalParameters.WorkingEnvironment + "_" +
                                                        FormBase.GlobalParameters.JsonModelMetadataFileName +
                                                        jsonVersionExtension;
