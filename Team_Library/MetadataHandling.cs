@@ -63,20 +63,14 @@ namespace TEAM_Library
                 columnNameFilter = QuoteStringValuesForAttributes((string)column[5]);
             }
 
-            try
-            {
-                DataRow physicalModelRow = physicalModelDataTable.Select($"[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() + "' " +
-                                                                         "AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' " +
-                                                                         "AND [COLUMN_NAME] = '" + columnNameFilter + "' " +
-                                                                         "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
-                                                                         "").FirstOrDefault();
+            DataRow physicalModelRow = physicalModelDataTable.Select($"[TABLE_NAME] = '" + tableSchema.Values.FirstOrDefault() + "' " +
+                                                                     "AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' " +
+                                                                     "AND [COLUMN_NAME] = '" + columnNameFilter + "' " +
+                                                                     "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
+                                                                     "").FirstOrDefault();
 
-                PrepareDataItemDataType(dataItem, physicalModelRow);
-            }
-            catch (Exception exception)
-            {
-                // TBD
-            }
+            PrepareDataItemDataType(dataItem, physicalModelRow);
+
         }
 
 
@@ -94,24 +88,17 @@ namespace TEAM_Library
                 columnNameFilter = QuoteStringValuesForAttributes((string)column[$"TARGET_ATTRIBUTE_NAME"]);
             }
 
-            try
-            {
-                DataRow physicalModelRow = physicalModelDataTable.Select($"[TABLE_NAME] = '" +tableSchema.Values.FirstOrDefault() + "' " +
-                                                                         "AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' " +
-                                                                         "AND [COLUMN_NAME] = '" + columnNameFilter + "' " +
-                                                                         "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
-                                                                         "").FirstOrDefault();
-                PrepareDataItemDataType(dataItem, physicalModelRow);
+            DataRow physicalModelRow = physicalModelDataTable.Select($"[TABLE_NAME] = '" +tableSchema.Values.FirstOrDefault() + "' " +
+                                                                     "AND [SCHEMA_NAME] = '" + tableSchema.Keys.FirstOrDefault() + "' " +
+                                                                     "AND [COLUMN_NAME] = '" + columnNameFilter + "' " +
+                                                                     "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'" +
+                                                                     "").FirstOrDefault();
+            PrepareDataItemDataType(dataItem, physicalModelRow);
 
-                // Add the Data Object, if required.
-                if (AddParentDataObject)
-                {
-                    dataItem.dataObject = dataObject;
-                }
-            }
-            catch (Exception exception)
+            // Add the Data Object, if required.
+            if (AddParentDataObject)
             {
-                // TBD
+                dataItem.dataObject = dataObject;
             }
         }
         
@@ -150,32 +137,31 @@ namespace TEAM_Library
         /// <summary>
         /// Return the Surrogate Key for a given table using the TEAM settings (i.e. prefix/suffix settings etc.).
         /// </summary>
-        /// <param name="tableName"></param>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="teamConfiguration"></param>
         /// <returns>surrogateKey</returns>
-        public static string GetSurrogateKey(string tableName, TeamConnection teamConnection, TeamConfiguration configuration)
+        public static string GetSurrogateKey(string dataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             // Get the fully qualified name
-            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(tableName, teamConnection).FirstOrDefault();
+            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
             
             // Initialise the return value
             string surrogateKey = "";
             string newTableName = fullyQualifiedName.Value;
-
-
-
-            string keyLocation = configuration.DwhKeyIdentifier;
+            string keyLocation = teamConfiguration.DwhKeyIdentifier;
 
             string[] prefixSuffixArray = {
-                configuration.HubTablePrefixValue,
-                configuration.SatTablePrefixValue,
-                configuration.LinkTablePrefixValue,
-                configuration.LsatTablePrefixValue
+                teamConfiguration.HubTablePrefixValue,
+                teamConfiguration.SatTablePrefixValue,
+                teamConfiguration.LinkTablePrefixValue,
+                teamConfiguration.LsatTablePrefixValue
             };
 
             if (newTableName != "Not applicable")
             {
                 // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
-                if (configuration.TableNamingLocation == "Prefix")
+                if (teamConfiguration.TableNamingLocation == "Prefix")
                 {
                     foreach (string prefixValue in prefixSuffixArray)
                     {
@@ -198,7 +184,7 @@ namespace TEAM_Library
 
 
                 // Define the surrogate key using the table name and key prefix/suffix settings.
-                if (configuration.KeyNamingLocation == "Prefix")
+                if (teamConfiguration.KeyNamingLocation == "Prefix")
                 {
                     surrogateKey = keyLocation + newTableName;
                 }
@@ -426,12 +412,8 @@ namespace TEAM_Library
         /// <summary>
         /// Returns a list of Business Key attributes as they are defined in the target Hub table (virtual setup)
         /// </summary>
-        /// <param name="schemaName"></param>
-        /// <param name="tableName"></param>
-        /// <param name="versionId"></param>
-        /// <param name="queryMode"></param>
         /// <returns></returns>
-        public static List<string> GetHubTargetBusinessKeyListVirtual(string fullyQualifiedTableName, TeamConnection teamConnection, int versionId, TeamConfiguration configuration)
+        public static List<string> GetHubTargetBusinessKeyListVirtual(string fullyQualifiedTableName, TeamConnection teamConnection, TeamConfiguration configuration)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
@@ -458,11 +440,11 @@ namespace TEAM_Library
             var localkeyLength = keyText.Length;
             var localkeySubstring = localkeyLength + 1;
 
-            // Make sure brackets are removed
+            // Make sure brackets are removed.
             var schemaName = fullyQualifiedName.Key?.Replace("[", "").Replace("]", "");
             var tableName = fullyQualifiedName.Value?.Replace("[", "").Replace("]", "");
 
-            //Ignore version is not checked, so versioning is used - meaning the business key metadata is sourced from the version history metadata.
+            // The business key metadata is sourced from the version history metadata.
             sqlStatementForBusinessKeys.AppendLine("SELECT COLUMN_NAME");
             sqlStatementForBusinessKeys.AppendLine("FROM TMP_MD_VERSION_ATTRIBUTE");
             sqlStatementForBusinessKeys.AppendLine("WHERE SUBSTRING(COLUMN_NAME,LEN(COLUMN_NAME)-" + localkeyLength +
@@ -478,7 +460,7 @@ namespace TEAM_Library
                                                    "','" + configuration.AlternativeSatelliteLoadDateTimeAttribute + "','" +
                                                    configuration.EtlProcessAttribute + "','" +
                                                    configuration.LoadDateTimeAttribute + "')");
-            sqlStatementForBusinessKeys.AppendLine("  AND VERSION_ID = " + versionId + "");
+            sqlStatementForBusinessKeys.AppendLine("  AND VERSION_ID = 0");
 
             var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
 
@@ -498,97 +480,10 @@ namespace TEAM_Library
 
             return businessKeyList;
         }
-
+        
         /// <summary>
         /// Returns a list of Business Key attributes as they are defined in the target Hub table (physical setup).
         /// </summary>
-        /// <param name="schemaName"></param>
-        /// <param name="tableName"></param>
-        /// <param name="versionId"></param>
-        /// <param name="queryMode"></param>
-        /// <returns></returns>
-        public static List<string> GetRegularTableBusinessKeyListPhysical(string fullyQualifiedTableName, TeamConnection teamConnection, string connectionstring, TeamConfiguration configuration)
-        {
-            // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
-            var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(fullyQualifiedTableName, teamConnection).FirstOrDefault();
-
-           // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
-            var conn = new SqlConnection
-            {
-                ConnectionString = connectionstring
-            };
-
-            try
-            {
-                conn.Open();
-            }
-            catch (Exception)
-            {
-                configuration.ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The connection to the database for object {fullyQualifiedTableName} could not be established via {conn.ConnectionString}."));
-            }
-
-            var sqlStatementForBusinessKeys = new StringBuilder();
-
-            var keyText = configuration.DwhKeyIdentifier;
-            var localkeyLength = keyText.Length;
-            var localkeySubstring = localkeyLength + 1;
-
-            // Make sure brackets are removed
-            var schemaName = fullyQualifiedName.Key?.Replace("[", "").Replace("]", "");
-            var tableName = fullyQualifiedName.Value?.Replace("[", "").Replace("]", "");
-
-            // Make sure the live database is hit when the checkbox is ticked
-            sqlStatementForBusinessKeys.AppendLine("SELECT");
-            sqlStatementForBusinessKeys.AppendLine("  SCHEMA_NAME(TAB.SCHEMA_ID) AS[SCHEMA_NAME],");
-            sqlStatementForBusinessKeys.AppendLine("  PK.[NAME] AS PK_NAME,");
-            sqlStatementForBusinessKeys.AppendLine("  IC.INDEX_COLUMN_ID AS COLUMN_ID,");
-            sqlStatementForBusinessKeys.AppendLine("  COL.[NAME] AS COLUMN_NAME,");
-            sqlStatementForBusinessKeys.AppendLine("  TAB.[NAME] AS TABLE_NAME");
-            sqlStatementForBusinessKeys.AppendLine("FROM SYS.TABLES TAB");
-            sqlStatementForBusinessKeys.AppendLine("INNER JOIN SYS.INDEXES PK");
-            sqlStatementForBusinessKeys.AppendLine("  ON TAB.OBJECT_ID = PK.OBJECT_ID");
-            sqlStatementForBusinessKeys.AppendLine(" AND PK.IS_PRIMARY_KEY = 1");
-            sqlStatementForBusinessKeys.AppendLine("INNER JOIN SYS.INDEX_COLUMNS IC");
-            sqlStatementForBusinessKeys.AppendLine("  ON IC.OBJECT_ID = PK.OBJECT_ID");
-            sqlStatementForBusinessKeys.AppendLine(" AND IC.INDEX_ID = PK.INDEX_ID");
-            sqlStatementForBusinessKeys.AppendLine("INNER JOIN SYS.COLUMNS COL");
-            sqlStatementForBusinessKeys.AppendLine("  ON PK.OBJECT_ID = COL.OBJECT_ID");
-            sqlStatementForBusinessKeys.AppendLine(" AND COL.COLUMN_ID = IC.COLUMN_ID");
-            sqlStatementForBusinessKeys.AppendLine("WHERE");
-            sqlStatementForBusinessKeys.AppendLine("      SCHEMA_NAME(TAB.SCHEMA_ID)= '" + schemaName + "'");
-            sqlStatementForBusinessKeys.AppendLine("  AND TABLE_NAME= '" + tableName + "'");
-            sqlStatementForBusinessKeys.AppendLine("ORDER BY");
-            sqlStatementForBusinessKeys.AppendLine("  SCHEMA_NAME(TAB.SCHEMA_ID),");
-            sqlStatementForBusinessKeys.AppendLine("  PK.[NAME],");
-            sqlStatementForBusinessKeys.AppendLine("  IC.INDEX_COLUMN_ID");
-
-
-            var tableKeyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
-
-            if (tableKeyList == null)
-            {
-                //SetTextDebug("An error has occurred defining the Hub Business Key in the model for " + hubTableName + ". The Business Key was not found when querying the underlying metadata. This can be either that the attribute is missing in the metadata or in the table (depending if versioning is used). If the 'ignore versioning' option is checked, then the metadata will be retrieved directly from the data dictionary. Otherwise the metadata needs to be available in the repository (manage model metadata).");
-            }
-
-            var keyList = new List<string>();
-            foreach (DataRow row in tableKeyList.Rows)
-            {
-                if (!keyList.Contains((string)row["COLUMN_NAME"]))
-                {
-                    keyList.Add((string)row["COLUMN_NAME"]);
-                }
-            }
-
-            return keyList;
-        }
-
-        /// <summary>
-        /// Returns a list of Business Key attributes as they are defined in the target Hub table (physical setup).
-        /// </summary>
-        /// <param name="schemaName"></param>
-        /// <param name="tableName"></param>
-        /// <param name="versionId"></param>
-        /// <param name="queryMode"></param>
         /// <returns></returns>
         public static List<string> GetHubTargetBusinessKeyListPhysical(string fullyQualifiedTableName, TeamConnection teamConnection, TeamConfiguration configuration)
         {
@@ -596,7 +491,7 @@ namespace TEAM_Library
 
             var fullyQualifiedName = GetFullyQualifiedDataObjectName(fullyQualifiedTableName, teamConnection).FirstOrDefault();
 
-            // If the querymode is physical the real connection needs to be asserted based on the connection associated with the table.
+            // If the query mode is physical the real connection needs to be asserted based on the connection associated with the table.
             var conn = new SqlConnection
             {
                 ConnectionString = teamConnection.CreateSqlServerConnectionString(false)
@@ -668,10 +563,8 @@ namespace TEAM_Library
         /// </summary>
         /// <param name="schemaName"></param>
         /// <param name="tableName"></param>
-        /// <param name="versionId"></param>
-        /// <param name="queryMode"></param>
         /// <returns></returns>
-        public static List<string> GetLinkTargetBusinessKeyList(string schemaName, string tableName, int versionId, string connectionString)
+        public static List<string> GetLinkTargetBusinessKeyList(string schemaName, string tableName, string connectionString)
         {
             // Obtain the business key as it is known in the target Hub table. Can be multiple due to composite keys.
 
@@ -701,18 +594,10 @@ namespace TEAM_Library
 
             var keyList = Utility.GetDataTable(ref conn, sqlStatementForBusinessKeys.ToString());
 
-            if (keyList == null)
-            {
-                //SetTextDebug("An error has occurred defining the Hub Business Key in the model for " + hubTableName + ". The Business Key was not found when querying the underlying metadata. This can be either that the attribute is missing in the metadata or in the table (depending if versioning is used). If the 'ignore versioning' option is checked, then the metadata will be retrieved directly from the data dictionary. Otherwise the metadata needs to be available in the repository (manage model metadata).");
-            }
-
             var businessKeyList = new List<string>();
             foreach (DataRow row in keyList.Rows)
             {
-                //if (!businessKeyList.Contains((string)row["BUSINESS_KEY"]))
-               // {
-                    businessKeyList.Add((string)row["BUSINESS_KEY"]);
-               // }
+                businessKeyList.Add((string)row["BUSINESS_KEY"]);
             }
 
             return businessKeyList;

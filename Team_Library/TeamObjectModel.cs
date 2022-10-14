@@ -8,7 +8,7 @@ namespace TEAM
     /// The parent object containing the list of source-to-target mappings. This is the highest level and contains the list of mappings (as individual objects
     /// but also the parameters inherited from TEAM and VEDW.
     /// </summary>
-    class VDW_DataObjectMappingList : DataObjectMappings
+    public class VDW_DataObjectMappingList : DataObjectMappings
     {
         // Generic interface definitions
         //public List<DataObjectMapping> dataObjectMapping { get; set; }
@@ -35,7 +35,7 @@ namespace TEAM
     /// <summary>
     /// The parameters that have been inherited from TEAM or are set in VDW, passed as properties of the metadata - and can be used in the templates.
     /// </summary>
-    class MetadataConfiguration
+    public class MetadataConfiguration
     {
         // Attributes
         public string changeDataCaptureAttribute { get; set; }

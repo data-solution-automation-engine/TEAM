@@ -81,11 +81,13 @@ namespace TEAM_Library
                 EnvironmentDictionary.Clear();
                 TeamWorkingEnvironment[] environmentJson = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(fileName));
 
-                foreach (var environment in environmentJson)
-                {
-                    EnvironmentDictionary.Add(environment.environmentInternalId, environment);
-                    EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment '{environment.environmentName}'with identifier {environment.environmentInternalId} has been loaded."));
-                }
+                if (environmentJson != null)
+                    foreach (var environment in environmentJson)
+                    {
+                        EnvironmentDictionary.Add(environment.environmentInternalId, environment);
+                        EventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                            $"The environment '{environment.environmentName}'with identifier {environment.environmentInternalId} has been loaded."));
+                    }
             }
         }
 

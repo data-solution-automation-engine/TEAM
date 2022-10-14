@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace TEAM_Library
 {
@@ -10,6 +12,65 @@ namespace TEAM_Library
     /// </summary>
     public static class FileHandling
     {
+        /// <summary>
+        ///    Create a file backup for the configuration file at the provided location
+        /// </summary>
+        public static Event CreateFileBackup(string fileName, string filePath)
+        {
+            Event localEvent = new Event();
+
+            var localFileName = Path.GetFileName(fileName);
+
+            try
+            {
+                if (File.Exists(fileName))
+                {
+                    var targetFilePathName = filePath + string.Concat("Backup_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + "_", localFileName);
+
+                    if (fileName != null)
+                    {
+                        File.Copy(fileName, targetFilePathName);
+                    }
+                    else
+                    {
+                        localEvent = Event.CreateNewEvent(EventTypes.Error, $"The file cannot be backed up because it cannot be identified.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("TEAM couldn't locate a configuration file! Can you check the paths and existence of directories?", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error has occurred while creating a file backup. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return localEvent;
+        }
+
+        public static Event SaveTextToFile(string targetFile, string textContent)
+        {
+            Event localEvent = new Event();
+            try
+            {
+                //Output to file
+                using (var outfile = new StreamWriter(targetFile))
+                {
+                    outfile.Write(textContent);
+                    outfile.Close();
+                }
+
+                localEvent = Event.CreateNewEvent(EventTypes.Information, "The file was successfully saved to disk.\r\n");
+            }
+            catch (Exception ex)
+            {
+                localEvent = Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n");
+            }
+
+            return localEvent;
+        }
+
         /// <summary>
         /// Check if the path exists and create it if necessary. Returns an Event.
         /// </summary>
@@ -68,7 +129,7 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Retrieve the values of a settings file and return this as a dictionary<string,string> object containing the configuration settings. Returns an Event.
+        /// Retrieve the values of a settings file and return this as a dictionary [string,string] object containing the configuration settings. Returns an Event.
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>

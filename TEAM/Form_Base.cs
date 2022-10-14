@@ -63,13 +63,8 @@ namespace TEAM
         public static TeamPhysicalModel PhysicalModel { get; set; } = new TeamPhysicalModel();
 
         // In-memory representation of the Attribute Mapping Metadata.
-        public static  TeamAttributeMapping AttributeMapping { get; set; } = new TeamAttributeMapping();
+        public static  TeamDataItemMapping AttributeMapping { get; set; } = new TeamDataItemMapping();
         #endregion
-
-        /// <summary>
-        /// Instance of a Team Version List, basically containing the list of versions for a given active environment.
-        /// </summary>
-        public static TeamVersionList TeamVersionList { get; set; } = new TeamVersionList();
 
         /// <summary>
         /// TEAM working environment collection.
@@ -109,7 +104,6 @@ namespace TEAM
             public static string PathFileName { get; set; } = "TEAM_Path_configuration";
             public static string ValidationFileName { get; set; } = "TEAM_validation";
             public static string JsonExportConfigurationFileName { get; set; } = "TEAM_jsonconfiguration";
-            public static string VersionFileName { get; } = "TEAM_versions";
             public static string FileExtension { get; set; } = ".txt";
             internal static string WorkingEnvironment { get; set; } = "Development";
             internal static string WorkingEnvironmentInternalId { get; set; }
@@ -124,10 +118,6 @@ namespace TEAM
             public static string JsonExtension { get;  } = ".json";
 
             public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";
-
-            // Version handling
-            public static int CurrentVersionId { get; set; } = 0;
-            public static int HighestVersionId { get; set; } = 0;
 
             // File paths
             public static List<LoadPatternDefinition> PatternDefinitionList { get; set; }

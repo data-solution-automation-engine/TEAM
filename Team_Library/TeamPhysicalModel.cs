@@ -9,8 +9,7 @@ namespace TEAM_Library
     public class PhysicalModelMetadataJson
     {
         //JSON representation of the physical model metadata
-        public string versionAttributeHash { get; set; }
-        public int versionId { get; set; }
+        public string attributeHash { get; set; }
         public string databaseName { get; set; }
         public string schemaName { get; set; }
         public string tableName { get; set; }
@@ -30,18 +29,17 @@ namespace TEAM_Library
     public enum PhysicalModelMappingMetadataColumns
     {
         HashKey = 0,
-        VersionId = 1,
-        DatabaseName = 2,
-        SchemaName = 3,
-        TableName = 4,
-        ColumnName = 5,
-        DataType = 6,
-        CharacterLength = 7,
-        NumericPrecision = 8,
-        NumericScale = 9,
-        OrdinalPosition = 10,
-        PrimaryKeyIndicator = 11,
-        MultiActiveIndicator = 12
+        DatabaseName = 1,
+        SchemaName = 2,
+        TableName = 3,
+        ColumnName = 4,
+        DataType = 5,
+        CharacterLength = 6,
+        NumericPrecision = 7,
+        NumericScale = 8,
+        OrdinalPosition = 9,
+        PrimaryKeyIndicator = 10,
+        MultiActiveIndicator = 11
     }
 
     /// <summary>
@@ -76,7 +74,6 @@ namespace TEAM_Library
         public void SetDataTableColumns()
         {
             DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].ColumnName = PhysicalModelMappingMetadataColumns.HashKey.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.VersionId].ColumnName = PhysicalModelMappingMetadataColumns.VersionId.ToString();
             DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.DatabaseName].ColumnName = PhysicalModelMappingMetadataColumns.DatabaseName.ToString();
             DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.SchemaName].ColumnName = PhysicalModelMappingMetadataColumns.SchemaName.ToString();
             DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.TableName].ColumnName = PhysicalModelMappingMetadataColumns.TableName.ToString();

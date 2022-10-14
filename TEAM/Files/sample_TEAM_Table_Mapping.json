@@ -2,7 +2,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "FFC638CE16A3C9EC16C3575DE032F89C",
-    "versionId": 0,
     "sourceTable": "CUST_MEMBERSHIP",
     "sourceConnectionKey": "SourceConnectionInternalId",
     "targetTable": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -14,7 +13,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "8B944F0BCB1BE4DFC73366FDC7E3607E",
-    "versionId": 0,
     "sourceTable": "CUSTOMER_OFFER",
     "sourceConnectionKey": "SourceConnectionInternalId",
     "targetTable": "STG_PROFILER_CUSTOMER_OFFER",
@@ -26,7 +24,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "A3D7B5908AA0209776360A8E8ED3C7B1",
-    "versionId": 0,
     "sourceTable": "CUSTOMER_PERSONAL",
     "sourceConnectionKey": "SourceConnectionInternalId",
     "targetTable": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -38,7 +35,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "10F64C7F68BCC0AA7AECCBFD13C8F60D",
-    "versionId": 0,
     "sourceTable": "ESTIMATED_WORTH",
     "sourceConnectionKey": "SourceConnectionInternalId",
     "targetTable": "STG_PROFILER_ESTIMATED_WORTH",
@@ -50,7 +46,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "1A355AC5CD1F36F2C8BE439A8321B1FD",
-    "versionId": 0,
     "sourceTable": "OFFER",
     "sourceConnectionKey": "SourceConnectionInternalId",
     "targetTable": "STG_PROFILER_OFFER",
@@ -62,7 +57,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "616EA2CDDB10F14E7143C0B128A55167",
-    "versionId": 0,
     "sourceTable": "PERSONALISED_COSTING",
     "sourceConnectionKey": "SourceConnectionInternalId",
     "targetTable": "STG_PROFILER_PERSONALISED_COSTING",
@@ -74,7 +68,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "7DA9F00BEB242E77A8CCE4ACBB794C5B",
-    "versionId": 0,
     "sourceTable": "PLAN",
     "sourceConnectionKey": "SourceConnectionInternalId",
     "targetTable": "STG_PROFILER_PLAN",
@@ -86,7 +79,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "626C37F1B930B24CA835A1F0F9D73E0D",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_CUSTOMER",
@@ -98,7 +90,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "9FB98E86B3A9D692A6EB1A214833A9F4",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_MEMBERSHIP_PLAN",
@@ -110,7 +101,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "BFDD5976088B0EF7A4F67CD0E8BC34BB",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "LNK_MEMBERSHIP",
@@ -122,7 +112,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "2E7984ED9A459323016832895438A379",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "LSAT_MEMBERSHIP",
@@ -134,7 +123,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "6FA204E18168C2B7E054E6A02E259587",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_CUSTOMER",
@@ -146,7 +134,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "8D93B4849393772F1803F99C3D0AC22D",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_INCENTIVE_OFFER",
@@ -158,7 +145,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "FB730BB84E06FE568A7CA494F4B97B32",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "LNK_CUSTOMER_OFFER",
@@ -170,7 +156,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "E12B89FC652997B51E2E962F9DAA1A2A",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "LSAT_CUSTOMER_OFFER",
@@ -182,7 +167,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "D8595025739BA599663F990458EEABA2",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_CUSTOMER",
@@ -194,7 +178,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "15D93719AE2B516B0A3624694FE41D67",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "SAT_CUSTOMER",
@@ -206,7 +189,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "69C076F75631FEAE2625CF133319EE44",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -218,7 +200,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "8F4E35021BA6D179A96DD12216C09476",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_ESTIMATED_WORTH",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_MEMBERSHIP_PLAN",
@@ -230,7 +211,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "7E8F62C8D0B85DD22EFE9060F24BF22E",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_ESTIMATED_WORTH",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -242,7 +222,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "2F5AD76AFE34DD4DA871249731CD5669",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_OFFER",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_INCENTIVE_OFFER",
@@ -254,7 +233,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "57F9EF44DB251C209C950277D579EB1C",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_OFFER",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "SAT_INCENTIVE_OFFER",
@@ -266,7 +244,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "13B25E1C213C7152F9E9C4343D714DDA",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_CUSTOMER",
@@ -278,7 +255,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "97BC088A50708F9C5C70AE3A56771029",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_MEMBERSHIP_PLAN",
@@ -290,7 +266,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "A7BAD4CDFF75A0F40DF656E105821E5F",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_SEGMENT",
@@ -302,7 +277,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "4F0B8B8F0482EF7012D6530162FA404D",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "LNK_CUSTOMER_COSTING",
@@ -314,7 +288,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "07E25ECC5FE8653B070575109EEB7B6F",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "LSAT_CUSTOMER_COSTING",
@@ -326,7 +299,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "020A932E1FFD7AB74A085804C287B8C3",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PLAN",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_MEMBERSHIP_PLAN",
@@ -338,7 +310,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "7097CE35A260193214FD430D459F04B5",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PLAN",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_MEMBERSHIP_PLAN",
@@ -350,7 +321,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "62BF748B9F0CFFBE5AB3CC36C76E33E9",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PLAN",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "LNK_RENEWAL_MEMBERSHIP",
@@ -362,7 +332,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "D3FEF327166AD678C7B1EC30DB0D1FC9",
-    "versionId": 0,
     "sourceTable": "PSA_PROFILER_PLAN",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -374,7 +343,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "7DA185111347E9AC1509AF473D6ECFCB",
-    "versionId": 0,
     "sourceTable": "PSA_USERMANAGED_SEGMENT",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "HUB_SEGMENT",
@@ -386,7 +354,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "5690BA359F340709587CB48F131D7907",
-    "versionId": 0,
     "sourceTable": "PSA_USERMANAGED_SEGMENT",
     "sourceConnectionKey": "PsaConnectionInternalId",
     "targetTable": "SAT_SEGMENT",
@@ -398,7 +365,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "DDE6F2640C57B0BB6F5CCB34CBAC766C",
-    "versionId": 0,
     "sourceTable": "STG_PROFILER_CUST_MEMBERSHIP",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -410,7 +376,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "4AFD7345417B1911A650F7649A6A00AF",
-    "versionId": 0,
     "sourceTable": "STG_PROFILER_CUSTOMER_OFFER",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -422,7 +387,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "CA36FC3BE063D3227D8871B7CC420C59",
-    "versionId": 0,
     "sourceTable": "STG_PROFILER_CUSTOMER_PERSONAL",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -434,7 +398,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "7BDEA58BD160F165C203E2D9729A5A9A",
-    "versionId": 0,
     "sourceTable": "STG_PROFILER_ESTIMATED_WORTH",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -446,7 +409,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "51241819420ACC40D50C2F131B1C8B3F",
-    "versionId": 0,
     "sourceTable": "STG_PROFILER_OFFER",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_PROFILER_OFFER",
@@ -458,7 +420,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "255A1E911A6165531B68E2A892F4310C",
-    "versionId": 0,
     "sourceTable": "STG_PROFILER_PERSONALISED_COSTING",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -470,7 +431,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "7646F16C53050981918843E6A5CCDB43",
-    "versionId": 0,
     "sourceTable": "STG_PROFILER_PLAN",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_PROFILER_PLAN",
@@ -482,7 +442,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "81AABBBF9A6E1D6A75FD6AEDE54ACD47",
-    "versionId": 0,
     "sourceTable": "STG_USERMANAGED_SEGMENT",
     "sourceConnectionKey": "StagingConnectionInternalId",
     "targetTable": "PSA_USERMANAGED_SEGMENT",
@@ -494,7 +453,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "C330B791DBC0F977DF5E0B24DA344909",
-    "versionId": 0,
     "sourceTable": "HUB_CUSTOMER",
     "sourceConnectionKey": "IntegrationConnectionInternalId",
     "targetTable": "DIM_CUSTOMER",
@@ -506,7 +464,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "5E9EA22FD23B1BD2C3AD9DE85A618462",
-    "versionId": 0,
     "sourceTable": "SAT_CUSTOMER",
     "sourceConnectionKey": "IntegrationConnectionInternalId",
     "targetTable": "DIM_CUSTOMER",
@@ -518,7 +475,6 @@
   {
     "enabledIndicator": true,
     "tableMappingHash": "EF7BD027DDC046E88331AC404FB37DF7",
-    "versionId": 0,
     "sourceTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
     "sourceConnectionKey": "IntegrationConnectionInternalId",
     "targetTable": "DIM_CUSTOMER",

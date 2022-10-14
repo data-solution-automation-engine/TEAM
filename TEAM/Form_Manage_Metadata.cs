@@ -86,7 +86,6 @@ namespace TEAM
             }
 
             // Default setting and start setting of counters etc.
-            radiobuttonNoVersionChange.Checked = true;
             MetadataParameters.ValidationIssues = 0;
             MetadataParameters.ValidationRunning = false;
 
@@ -95,52 +94,18 @@ namespace TEAM
             labelLnkCount.Text = @"0 Relationships";
             labelLsatCount.Text = @"0 Relationship context entities";
 
-            radiobuttonNoVersionChange.Checked = true;
+            //  Load the grids from the repository
+            richTextBoxInformation.Clear();
 
-            // Check if the version file exists and create a new file containing the list of versions.
-            if (!File.Exists(GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension))
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Creating a new version list file {GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension}."));
-                TeamVersionList.CreateNewVersionListFile(GlobalParameters.CorePath + GlobalParameters.VersionFileName + GlobalParameters.JsonExtension, GlobalParameters.WorkingEnvironment);
-            }
+            // Load the data grids
+            PopulateDataObjectMappingGrid();
+            PopulateDataItemMappingGrid();
+            PopulatePhysicalModelGrid();
 
-            var selectedVersion = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
-
-            if (selectedVersion != null)
-            {
-                // Set the version in memory
-                GlobalParameters.CurrentVersionId = selectedVersion.Item1;
-                GlobalParameters.HighestVersionId = selectedVersion.Item1; // On startup, the highest version is the same as the current version
-                TeamJsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + selectedVersion.Item1 + ".json";
-
-                trackBarVersioning.Maximum = selectedVersion.Item1;
-                trackBarVersioning.TickFrequency = TeamVersionList.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
-
-                //Make sure the version is displayed
-                var versionMajorMinor = TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, selectedVersion.Item1);
-                var majorVersion = versionMajorMinor.Item2;
-                var minorVersion = versionMajorMinor.Item3;
-
-                trackBarVersioning.Value = selectedVersion.Item1;
-                labelVersion.Text = $"{majorVersion}.{minorVersion}";
-
-                //  Load the grids from the repository
-                richTextBoxInformation.Clear();
-
-                // Load the data grids
-                PopulateTableMappingGridWithVersion();
-                PopulateAttributeGridWithVersion();
-                PopulatePhysicalModelGridWithVersion();
-
-                // Inform the user
-                string userFeedback = $"The metadata for version {majorVersion}.{minorVersion} has been loaded.";
-                richTextBoxInformation.AppendText($"{userFeedback}\r\n");
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
-            }
-            else
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No version information was loaded, and therefore the metadata could not be loaded either."));
-            }
+            // Inform the user
+            string userFeedback = $"The metadata has been loaded.";
+            richTextBoxInformation.AppendText($"{userFeedback}\r\n");
+            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
 
             ContentCounter();
 
@@ -356,7 +321,7 @@ namespace TEAM
         /// <summary>
         /// Populate the Table Mapping DataGrid from an existing JSON file.
         /// </summary>
-        private void PopulateTableMappingGridWithVersion()
+        private void PopulateDataObjectMappingGrid()
         {
             // Create a new dummy / starter file, if it doesn't exist.
             if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName()))
@@ -432,7 +397,7 @@ namespace TEAM
         /// <summary>
         /// Populates the Attribute Mapping DataGrid directly from an existing JSON file.
         /// </summary>
-        private void PopulateAttributeGridWithVersion()
+        private void PopulateDataItemMappingGrid()
         {
             //Check if the file exists, otherwise create a dummy / empty file   
             if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()))
@@ -455,17 +420,15 @@ namespace TEAM
             // Set the column header names.
             dataGridViewAttributeMetadata.DataSource = _bindingSourceAttributeMetadata;
             dataGridViewAttributeMetadata.ColumnHeadersVisible = true;
-            dataGridViewAttributeMetadata.Columns[0].Visible = false;
-            dataGridViewAttributeMetadata.Columns[1].Visible = false;
-            dataGridViewAttributeMetadata.Columns[6].ReadOnly = false;
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.HashKey].Visible = false;
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.Notes].ReadOnly = false;
 
-            dataGridViewAttributeMetadata.Columns[0].HeaderText = "Hash Key";
-            dataGridViewAttributeMetadata.Columns[1].HeaderText = "Version ID";
-            dataGridViewAttributeMetadata.Columns[2].HeaderText = "Source Table";
-            dataGridViewAttributeMetadata.Columns[3].HeaderText = "Source Column";
-            dataGridViewAttributeMetadata.Columns[4].HeaderText = "Target Table";
-            dataGridViewAttributeMetadata.Columns[5].HeaderText = "Target Column";
-            dataGridViewAttributeMetadata.Columns[6].HeaderText = "Notes";
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.HashKey].HeaderText = "Hash Key";
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.SourceTable].HeaderText = "Source Table";
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.SourceColumn].HeaderText = "Source Column";
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.TargetTable].HeaderText = "Target Table";
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.TargetColumn].HeaderText = "Target Column";
+            dataGridViewAttributeMetadata.Columns[(int)DataItemMappingMetadataColumns.Notes].HeaderText = "Notes";
 
             richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()} was loaded.\r\n");
 
@@ -476,15 +439,14 @@ namespace TEAM
         /// <summary>
         /// Populates the Physical Model DataGrid from an existing JSON file.
         /// </summary>
-        private void PopulatePhysicalModelGridWithVersion()
+        private void PopulatePhysicalModelGrid()
         {
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
                 //Check if the file exists, otherwise create a dummy / empty file   
                 if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()))
                 {
-                    richTextBoxInformation.AppendText(
-                        $"No JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
+                    richTextBoxInformation.AppendText($"No JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
                     TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 }
 
@@ -504,25 +466,22 @@ namespace TEAM
                 dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
 
                 dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
-                dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
-                dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].Visible = false;
 
-                dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key";
-                dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID";
-                dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name";
-                dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name";
-                dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name";
-                dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name";
-                dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
-                dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Character Length";
-                dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Numeric Precision";
-                dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Numeric Scale";
-                dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Ordinal Position";
-                dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Primary Key Indicator";
-                dataGridViewPhysicalModelMetadata.Columns[12].HeaderText = "Multi Active Indicator";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].HeaderText = @"Hash Key";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.DatabaseName].HeaderText = @"Database Name";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.SchemaName].HeaderText = @"Schema Name";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.TableName].HeaderText = @"Table Name";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.ColumnName].HeaderText = @"Column Name";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.DataType].HeaderText = @"Data Type";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.CharacterLength].HeaderText = @"Character Length";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.NumericPrecision].HeaderText = @"Numeric Precision";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.NumericScale].HeaderText = @"Numeric Scale";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.OrdinalPosition].HeaderText = @"Ordinal Position";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator].HeaderText = @"Primary Key Indicator";
+                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.MultiActiveIndicator].HeaderText = @"Multi Active Indicator";
 
-                richTextBoxInformation.AppendText(
-                    $"The file {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()} was loaded.\r\n");
+                richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()} was loaded.\r\n");
 
                 // Resize the grid
                 GridAutoLayoutPhysicalModelMetadata();
@@ -778,26 +737,6 @@ namespace TEAM
             }
         }
 
-
-
-        private void trackBarVersioning_ValueChanged(object sender, EventArgs e)
-        {
-            richTextBoxInformation.Clear();
-            TeamJsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + trackBarVersioning.Value + ".json";
-            GlobalParameters.CurrentVersionId = trackBarVersioning.Value;
-
-            PopulateTableMappingGridWithVersion();
-            PopulateAttributeGridWithVersion();
-            PopulatePhysicalModelGridWithVersion();
-
-            var versionMajorMinor = TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, trackBarVersioning.Value);
-
-            labelVersion.Text = versionMajorMinor.Item2 + "." + versionMajorMinor.Item3;
-
-            ContentCounter();
-        }
-
-
         /// <summary>
         ///   Clicking the 'save' button.
         /// </summary>
@@ -807,533 +746,83 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
 
-            // Check if the current version is the maximum version. At this stage updates on earlier versions are not supported (and cause a NULL reference exception)
-            var highestVersion = GlobalParameters.HighestVersionId;
-            var currentVersion = GlobalParameters.CurrentVersionId;
+            // Create a data table containing the changes, to check if there are changes made to begin with
+            var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
 
-            if (currentVersion < highestVersion)
+            // Check if there are any rows available in the grid view, and if changes have been detected at all
+            if (_dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 || dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
             {
-                richTextBoxInformation.Text +=
-                    "Cannot save the metadata changes because these are applied to an earlier version. Only updates to the latest or newer version are supported in TEAM.";
+                //Commit the save of the metadata, one for each grid
+                try
+                {
+                    SaveTableMappingMetadataJson(dataTableTableMappingChanges);
+                }
+                catch (Exception exception)
+                {
+                    richTextBoxInformation.Text += $"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                }
+
+                try
+                {
+                    SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
+                }
+                catch (Exception exception)
+                {
+                    richTextBoxInformation.Text += $"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                }
+
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
+                {
+                    var dataTablePhysicalModelChanges =
+                        ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+
+                    if (dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null &&
+                        dataTablePhysicalModelChanges.Rows.Count > 0)
+                    {
+                        try
+                        {
+                            SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
+
+                        PopulatePhysicalModelGrid();
+                    }
+                }
+
+
+                //Load the grids from the repository after being updated
+                PopulateDataObjectMappingGrid();
+                PopulateDataItemMappingGrid();
             }
             else
             {
-                // Create a data table containing the changes, to check if there are changes made to begin with
-                var dataTableTableMappingChanges = ((DataTable) _bindingSourceTableMetadata.DataSource).GetChanges();
-                var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
-
-                // Check if there are any rows available in the grid view, and if changes have been detected at all
-                if (
-                    _dataGridViewTableMetadata.RowCount > 0 && dataTableTableMappingChanges != null &&
-                    dataTableTableMappingChanges.Rows.Count > 0 ||
-                    dataGridViewAttributeMetadata.RowCount > 0 && dataTableAttributeMappingChanges != null &&
-                    dataTableAttributeMappingChanges.Rows.Count > 0
-                )
-                {
-                    //Create new version, or retain the old one, depending on selection (version radiobuttons)
-
-                    // Capture the 'old ' current version in case the UI needs updating
-                    var oldVersionId = trackBarVersioning.Value;
-
-                    //Retrieve the current version, or create a new one
-                    int versionId = CreateOrRetrieveVersion();
-
-                    //Commit the save of the metadata, one for each grid
-                    try
-                    {
-                        SaveTableMappingMetadataJson(versionId, dataTableTableMappingChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text +=
-                            "The Data Object Mapping metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
-                            exception;
-                    }
-
-                    try
-                    {
-                        SaveAttributeMappingMetadata(versionId, dataTableAttributeMappingChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text +=
-                            "The Data Item Mapping metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
-                            exception;
-                    }
-
-                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
-                    {
-                        var dataTablePhysicalModelChanges =
-                            ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
-
-                        if (dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null &&
-                            dataTablePhysicalModelChanges.Rows.Count > 0)
-                        {
-                            try
-                            {
-                                SaveModelPhysicalModelMetadata(versionId, dataTablePhysicalModelChanges);
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text +=
-                                    "The Physical Model metadata wasn't saved. There are errors saving the metadata version. The reported error is: " +
-                                    exception;
-                            }
-
-                            PopulatePhysicalModelGridWithVersion();
-                        }
-                    }
-
-
-                    //Load the grids from the repository after being updated
-                    PopulateTableMappingGridWithVersion();
-                    PopulateAttributeGridWithVersion();
-
-
-                    //Refresh the UI to display the newly created version
-                    if (oldVersionId != versionId)
-                    {
-                        var maxVersion =
-                            TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
-
-                        trackBarVersioning.Maximum = maxVersion.Item1;
-                        trackBarVersioning.TickFrequency =
-                            TeamVersionList.GetTotalVersionCount(GlobalParameters.WorkingEnvironment);
-                        trackBarVersioning.Value = maxVersion.Item1;
-                    }
-                }
-                else
-                {
-                    richTextBoxInformation.Text += "There is no metadata to save!";
-                }
+                richTextBoxInformation.Text += "There is no metadata to save!";
             }
         }
 
-        /// <summary>
-        /// Verifies the version checkbox (major or minor) and creates new version instance. If 'no change' is checked this will return the current version Id.
-        /// </summary>
-        /// <returns></returns>
-        private int CreateOrRetrieveVersion()
-        {
-            if (!radiobuttonNoVersionChange.Checked)
-            {
-                //If nothing is checked, just retrieve and return the current version
-                var versionKeyValuePair = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
-                var majorVersion = versionKeyValuePair.Item2;
-                var minorVersion = versionKeyValuePair.Item3;
-
-                //Increase the major version, if required
-                if (radiobuttonMajorRelease.Checked)
-                {
-                    try
-                    {
-                        //Creates a new version
-                        majorVersion++;
-                        minorVersion = 0;
-                        TeamVersionList.AddNewVersionToList(GlobalParameters.WorkingEnvironment, majorVersion, 0);
-                        TeamVersionList.SaveVersionList(GlobalParameters.CorePath +
-                                                           GlobalParameters.VersionFileName +
-                                                           GlobalParameters.JsonExtension);
-                    }
-                    catch (Exception ex)
-                    {
-                        richTextBoxInformation.Text += "An issue occurred when saving a new version: " + ex;
-                    }
-                }
-
-                //Increase the minor version, if required
-                if (radioButtonMinorRelease.Checked)
-                {
-                    try
-                    {
-                        //Creates a new version
-                        minorVersion++;
-                        TeamVersionList.AddNewVersionToList(GlobalParameters.WorkingEnvironment, majorVersion,
-                            minorVersion);
-                        TeamVersionList.SaveVersionList(GlobalParameters.CorePath +
-                                                           GlobalParameters.VersionFileName +
-                                                           GlobalParameters.JsonExtension);
-                    }
-                    catch (Exception ex)
-                    {
-                        richTextBoxInformation.Text += "An issue occurred when saving a new version: " + ex;
-                    }
-                }
-            }
-
-            //Retrieve the current version (again, may have changed).
-            var newVersionKeyValuePair =
-                TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
-
-            //Make sure the correct version is added to the global parameters
-            GlobalParameters.CurrentVersionId = newVersionKeyValuePair.Item1;
-            GlobalParameters.HighestVersionId = newVersionKeyValuePair.Item1;
-            TeamJsonHandling.JsonFileConfiguration.jsonVersionExtension =
-                @"_v" + newVersionKeyValuePair.Item1 + ".json";
-
-            labelVersion.Text = newVersionKeyValuePair.Item2 + "." + newVersionKeyValuePair.Item3;
-
-            return newVersionKeyValuePair.Item1;
-        }
-
-        /// <summary>
-        /// Creates a new snapshot of the Physical Model metadata to a JSON target repository, with the versionId as input parameter.
-        /// This method creates a new version in the repository for the physical model (TEAM_Model.json file).
-        /// </summary>
-        /// <param name="versionId"></param>
-        internal void CreateNewPhysicalModelMetadataVersionJson(int versionId)
-        {
-            // Update the version extension for the file.
-            TeamJsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
-
-            // Create a JArray so segments can be added easily from the data table.
-            var jsonModelMappingFull = new JArray();
-
-            try
-            {
-                foreach (DataGridViewRow row in dataGridViewPhysicalModelMetadata.Rows)
-                {
-                    if (!row.IsNewRow)
-                    {
-                        string databaseName = "";
-                        string schemaName = "";
-                        string tableName = "";
-                        string columnName = "";
-                        string dataType = "";
-                        string maxLength = "0";
-                        string numericPrecision = "0";
-                        string numericScale = "0";
-                        string ordinalPosition = "0";
-                        string primaryKeyIndicator = "";
-                        string multiActiveIndicator = "";
-
-                        if (row.Cells[2].Value != DBNull.Value)
-                        {
-                            databaseName = (string) row.Cells[2].Value;
-                        }
-
-                        if (row.Cells[3].Value != DBNull.Value)
-                        {
-                            schemaName = (string) row.Cells[3].Value;
-                        }
-
-                        if (row.Cells[4].Value != DBNull.Value)
-                        {
-                            tableName = (string) row.Cells[4].Value;
-                        }
-
-                        if (row.Cells[5].Value != DBNull.Value)
-                        {
-                            columnName = (string) row.Cells[5].Value;
-                        }
-
-                        if (row.Cells[6].Value != DBNull.Value)
-                        {
-                            dataType = (string) row.Cells[6].Value;
-                        }
-
-                        if (row.Cells[7].Value != DBNull.Value)
-                        {
-                            maxLength = (string) row.Cells[7].Value;
-                        }
-
-                        if (row.Cells[8].Value != DBNull.Value)
-                        {
-                            numericPrecision = (string) row.Cells[8].Value;
-                        }
-
-                        if (row.Cells[9].Value != DBNull.Value)
-                        {
-                            numericScale = (string) row.Cells[9].Value;
-                        }
-
-                        if (row.Cells[10].Value != DBNull.Value)
-                        {
-                            ordinalPosition = (string) row.Cells[10].Value;
-                        }
-
-                        if (row.Cells[11].Value != DBNull.Value)
-                        {
-                            primaryKeyIndicator = (string) row.Cells[11].Value;
-                        }
-
-                        if (row.Cells[12].Value != DBNull.Value)
-                        {
-                            multiActiveIndicator = (string) row.Cells[12].Value;
-                        }
-
-                        string[] inputHashValue = new string[] {versionId.ToString(), tableName, columnName};
-                        var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
-
-                        JObject newJsonSegment = new JObject(
-                            new JProperty("versionAttributeHash", hashKey),
-                            new JProperty("versionId", versionId),
-                            new JProperty("databaseName", databaseName),
-                            new JProperty("schemaName", schemaName),
-                            new JProperty("tableName", tableName),
-                            new JProperty("columnName", columnName),
-                            new JProperty("dataType", dataType),
-                            new JProperty("characterLength", maxLength),
-                            new JProperty("numericPrecision", numericPrecision),
-                            new JProperty("numericScale", numericScale),
-                            new JProperty("ordinalPosition", ordinalPosition),
-                            new JProperty("primaryKeyIndicator", primaryKeyIndicator),
-                            new JProperty("multiActiveIndicator", multiActiveIndicator)
-                        );
-
-                        jsonModelMappingFull.Add(newJsonSegment);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,
-                    $"A snapshot of the physical model was attempted to be created as a JSON array, but this did not succeed. The message is {ex}."));
-            }
-
-            try
-            {
-                //Generate a unique key using a hash
-                string output = JsonConvert.SerializeObject(jsonModelMappingFull, Formatting.Indented);
-                string outputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                File.WriteAllText(outputFileName, output);
-            }
-            catch (JsonReaderException ex)
-            {
-                richTextBoxInformation.Text +=
-                    "There were issues inserting the new JSON version file for the Physical Model.\r\n" + ex;
-            }
-
-        }
-
-        /// <summary>
-        /// Creates a new snapshot of the Table Mapping metadata for a JSON repository, with the versionId as input parameter. A new file will created for the provided version Id.
-        /// </summary>
-        /// <param name="versionId"></param>
-        internal void CreateNewTableMappingMetadataVersionJson(int versionId)
-        {
-            TeamJsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
-
-            // Create a JArray so segments can be added easily from the data table
-            var jsonTableMappingFull = new JArray();
-
-            foreach (DataGridViewRow row in _dataGridViewTableMetadata.Rows)
-            {
-                if (!row.IsNewRow)
-                {
-                    try
-                    {
-                        var sourceTable = "";
-                        var sourceConnectionKey = "";
-                        var targetTable = "";
-                        var targetConnectionKey = "";
-                        var businessKeyDefinition = "";
-                        var drivingKeyDefinition = "";
-                        var filterCriterion = "";
-                        bool generateIndicator = true;
-
-                        if (row.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value != DBNull.Value)
-                        {
-                            sourceTable = (string) row.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
-                        }
-
-                        // Source Connection
-                        if (row.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value != DBNull.Value)
-                        {
-                            sourceConnectionKey = (string) row.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value;
-                        }
-
-                        if (row.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value != DBNull.Value)
-                        {
-                            targetTable = (string) row.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
-                        }
-
-                        // Target Connection
-                        if (row.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value != DBNull.Value)
-                        {
-                            targetConnectionKey = (string) row.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value;
-                        }
-
-                        if (row.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value != DBNull.Value)
-                        {
-                            businessKeyDefinition = (string) row.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value;
-                        }
-
-                        if (row.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value != DBNull.Value)
-                        {
-                            drivingKeyDefinition = (string) row.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value;
-                        }
-
-                        if (row.Cells[DataObjectMappingGridColumns.FilterCriterion.ToString()].Value != DBNull.Value)
-                        {
-                            filterCriterion = (string) row.Cells[DataObjectMappingGridColumns.FilterCriterion.ToString()].Value;
-                        }
-
-                        if (row.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value != DBNull.Value)
-                        {
-                            generateIndicator = (bool) row.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
-                        }
-
-                        string[] inputHashValue = new string[]
-                        {
-                            versionId.ToString(), sourceTable, targetTable, businessKeyDefinition, drivingKeyDefinition,
-                            filterCriterion
-                        };
-                        var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
-
-                        // Convert it into a JArray so segments can be added easily
-                        JObject newJsonSegment = new JObject(
-                            new JProperty("enabledIndicator", generateIndicator),
-                            new JProperty("tableMappingHash", hashKey),
-                            new JProperty("versionId", versionId),
-                            new JProperty("sourceTable", sourceTable),
-                            new JProperty("sourceConnectionKey", sourceConnectionKey),
-                            new JProperty("targetTable", targetTable),
-                            new JProperty("targetConnectionKey", targetConnectionKey),
-                            new JProperty("businessKeyDefinition", businessKeyDefinition),
-                            new JProperty("drivingKeyDefinition", drivingKeyDefinition),
-                            new JProperty("filterCriteria", filterCriterion)
-                        );
-
-                        jsonTableMappingFull.Add(newJsonSegment);
-                    }
-                    catch
-                    {
-                        // TBD
-                    }
-                }
-            }
-
-            try
-            {
-                //Generate a unique key using a hash
-                string output = JsonConvert.SerializeObject(jsonTableMappingFull, Formatting.Indented);
-                string outputFileName = TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName();
-
-                File.WriteAllText(outputFileName, output);
-            }
-            catch (JsonReaderException ex)
-            {
-                richTextBoxInformation.Text +=
-                    "There were issues inserting the new JSON version file for the Table Mapping.\r\n" + ex;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new snapshot of the Attribute Mapping metadata for a JSON repository, with the versionId as input parameter. A new file will created for the provided version Id.
-        /// </summary>
-        /// <param name="versionId"></param>
-        internal void CreateNewAttributeMappingMetadataVersionJson(int versionId)
-        {
-            TeamJsonHandling.JsonFileConfiguration.jsonVersionExtension = @"_v" + versionId + ".json";
-
-            // Create a JArray so segments can be added easily from the datatable
-            var jsonAttributeMappingFull = new JArray();
-
-            foreach (DataGridViewRow row in dataGridViewAttributeMetadata.Rows)
-            {
-                if (!row.IsNewRow)
-                {
-                    var stagingTable = "";
-                    var stagingColumn = "";
-                    var integrationTable = "";
-                    var integrationColumn = "";
-                    var notes = "";
-
-                    if (row.Cells[2].Value != DBNull.Value)
-                    {
-                        stagingTable = (string) row.Cells[2].Value;
-                    }
-
-                    if (row.Cells[3].Value != DBNull.Value)
-                    {
-                        stagingColumn = (string) row.Cells[3].Value;
-                    }
-
-                    if (row.Cells[4].Value != DBNull.Value)
-                    {
-                        integrationTable = (string) row.Cells[4].Value;
-                    }
-
-                    if (row.Cells[5].Value != DBNull.Value)
-                    {
-                        integrationColumn = (string) row.Cells[5].Value;
-                    }
-
-                    if (row.Cells[6].Value != DBNull.Value)
-                    {
-                        notes = (string) row.Cells[6].Value;
-                    }
-
-
-                    string[] inputHashValue = new string[]
-                        {versionId.ToString(), stagingTable, stagingColumn, integrationTable, integrationColumn, notes};
-                    var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
-
-
-                    JObject newJsonSegment = new JObject(
-                        new JProperty("attributeMappingHash", hashKey),
-                        new JProperty("versionId", versionId),
-                        new JProperty("sourceTable", stagingTable),
-                        new JProperty("sourceAttribute", stagingColumn),
-                        new JProperty("targetTable", integrationTable),
-                        new JProperty("targetAttribute", integrationColumn),
-                        new JProperty("notes", notes)
-                    );
-
-                    jsonAttributeMappingFull.Add(newJsonSegment);
-                }
-            }
-
-            // Execute the statement, if the repository is JSON
-            try
-            {
-                //Generate a unique key using a hash
-                string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
-                string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                File.WriteAllText(outputFileName, output);
-            }
-            catch (JsonReaderException ex)
-            {
-                richTextBoxInformation.Text +=
-                    "There were issues inserting the new JSON version file for the Attribute Mapping.\r\n" + ex;
-            }
-
-        }
-
-        private void SaveTableMappingMetadataJson(int versionId, DataTable dataTableChanges)
+        private void SaveTableMappingMetadataJson(DataTable dataTableChanges)
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFileTableMapping == "true")
             {
-                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" +
-                                                        GlobalParameters.CurrentVersionId + ".json");
+                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonTableMappingFileName + ".json");
                 TeamJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonTableMappingFileName);
                 TeamJsonHandling.JsonFileConfiguration.newFileTableMapping = "false";
             }
-
-            //If no change radio buttons are selected this means either minor or major version is checked, so a full new snapshot will be created of everything.
-            if (!radiobuttonNoVersionChange.Checked)
+            else  //... otherwise an in-place update to the existing metadata is done (insert / update / delete)
             {
-                CreateNewTableMappingMetadataVersionJson(versionId);
-            }
-
-            //... otherwise an in-place update to the existing version is done (insert / update / delete)
-            else
-            {
-                if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0)
-                ) //Double-check if there are any changes made at all
+                if (dataTableChanges != null && dataTableChanges.Rows.Count > 0) // Double-check if there are any changes made at all.
                 {
-                    foreach (DataRow row in dataTableChanges.Rows) //Start looping through the changes
+                    foreach (DataRow row in dataTableChanges.Rows) // Start looping through the changes.
                     {
                         #region Changed rows
-
-                        //Changed rows
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
                             //Grab the attributes into local variables
                             string hashKey = (string) row[DataObjectMappingGridColumns.HashKey.ToString()];
-                            int versionKey = (int) row[DataObjectMappingGridColumns.VersionId.ToString()];
                             var stagingTable = "";
                             var sourceConnectionKey = "";
                             var targetConnectionKey = "";
@@ -1355,8 +844,7 @@ namespace TEAM
 
                             if (row[DataObjectMappingGridColumns.SourceConnection.ToString()] != DBNull.Value)
                             {
-                                sourceConnectionKey =
-                                    (string) row[DataObjectMappingGridColumns.SourceConnection.ToString()];
+                                sourceConnectionKey = (string) row[DataObjectMappingGridColumns.SourceConnection.ToString()];
                             }
 
                             if (row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != DBNull.Value)
@@ -1366,20 +854,17 @@ namespace TEAM
 
                             if (row[DataObjectMappingGridColumns.TargetConnection.ToString()] != DBNull.Value)
                             {
-                                targetConnectionKey =
-                                    (string) row[DataObjectMappingGridColumns.TargetConnection.ToString()];
+                                targetConnectionKey = (string) row[DataObjectMappingGridColumns.TargetConnection.ToString()];
                             }
 
                             if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] != DBNull.Value)
                             {
-                                businessKeyDefinition =
-                                    (string) row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
+                                businessKeyDefinition = (string) row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
                             }
 
                             if (row[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()] != DBNull.Value)
                             {
-                                drivingKeyDefinition =
-                                    (string) row[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()];
+                                drivingKeyDefinition = (string) row[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()];
                             }
 
                             if (row[DataObjectMappingGridColumns.FilterCriterion.ToString()] != DBNull.Value)
@@ -1389,8 +874,7 @@ namespace TEAM
 
                             //Read the file in memory
                             string inputFileName = TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName();
-                            TableMappingJson[] jsonArray =
-                                JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(inputFileName));
+                            TableMappingJson[] jsonArray = JsonConvert.DeserializeObject<TableMappingJson[]>(File.ReadAllText(inputFileName));
 
                             //Retrieves the json segment in the file for the given hash returns value or NULL
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.tableMappingHash == hashKey);
@@ -1513,7 +997,7 @@ namespace TEAM
 
                                 string[] inputHashValue = new string[]
                                 {
-                                    versionId.ToString(), sourceTable, targetTable, businessKeyDefinition,
+                                    sourceTable, targetTable, businessKeyDefinition,
                                     drivingKeyDefinition, filterCriterion
                                 };
                                 var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
@@ -1522,7 +1006,6 @@ namespace TEAM
                                 JObject newJsonSegment = new JObject(
                                     new JProperty("enabledIndicator", generateIndicator),
                                     new JProperty("tableMappingHash", hashKey),
-                                    new JProperty("versionId", versionId),
                                     new JProperty("sourceTable", sourceTable),
                                     new JProperty("sourceConnectionKey", sourceConnectionKey),
                                     new JProperty("targetTable", targetTable),
@@ -1544,8 +1027,7 @@ namespace TEAM
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text +=
-                                    "There were issues inserting the JSON segment / record.\r\n" + ex;
+                                richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
                             }
 
                         }
@@ -1557,10 +1039,7 @@ namespace TEAM
                         //Deleted rows
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
-                            var hashKey = row[DataObjectMappingGridColumns.HashKey.ToString(), DataRowVersion.Original]
-                                .ToString();
-                            var versionKey = row[DataObjectMappingGridColumns.VersionId.ToString(),
-                                DataRowVersion.Original].ToString();
+                            var hashKey = row[DataObjectMappingGridColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
 
                             try
                             {
@@ -1574,8 +1053,7 @@ namespace TEAM
 
                                 if (jsonSegment.tableMappingHash == "")
                                 {
-                                    richTextBoxInformation.Text +=
-                                        "The correct segment in the JSON file was not found.\r\n";
+                                    richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
                                 }
                                 else
                                 {
@@ -1584,14 +1062,13 @@ namespace TEAM
                                 }
 
                                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                string outputFileName =
-                                    TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName();
+                                string outputFileName = TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName();
                                 File.WriteAllText(outputFileName, output);
 
                             }
                             catch (JsonReaderException ex)
                             {
-                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
+                                richTextBoxInformation.Text += $"There were issues applying the JSON update.\r\n\r\nThe reported error is {ex.Message}";
                             }
 
                         }
@@ -1615,379 +1092,346 @@ namespace TEAM
             } // End of constructing the statements for insert / update / delete
         }
 
-        private void SaveModelPhysicalModelMetadata(int versionId, DataTable dataTableChanges)
+        private void SaveModelPhysicalModelMetadata(DataTable dataTableChanges)
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel == "true")
             {
-                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + @"_v" +
-                                                        GlobalParameters.CurrentVersionId + ".json");
+                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + ".json");
                 TeamJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
                 TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel = "false";
             }
 
-            //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
-            if (!radiobuttonNoVersionChange.Checked)
+
+            //Grabbing the generic settings from the main forms
+            if (dataTableChanges != null && dataTableChanges.Rows.Count > 0
+            ) //Check if there are any changes made at all
             {
-                CreateNewPhysicalModelMetadataVersionJson(versionId);
-            }
-            //An in-place update (no change) to the existing version is done
-            else
-            {
-                //Grabbing the generic settings from the main forms
-                if (dataTableChanges != null && dataTableChanges.Rows.Count > 0
-                ) //Check if there are any changes made at all
+                foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes
                 {
-                    foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes
+                    #region Changed rows
+
+                    //Changed rows
+                    if ((row.RowState & DataRowState.Modified) != 0)
                     {
-                        #region Changed rows
+                        //Grab the attributes into local variables
+                        string hashKey = (string) row[PhysicalModelMappingMetadataColumns.HashKey.ToString()];
+                        var databaseName = "";
+                        var schemaName = "";
+                        var tableName = "";
+                        var columnName = "";
+                        var dataType = "";
+                        var characterLength = "";
+                        var numericPrecision = "";
+                        var numericScale = "";
+                        var ordinalPosition = "";
+                        var primaryKeyIndicator = "";
+                        var multiActiveIndicator = "";
 
-                        //Changed rows
-                        if ((row.RowState & DataRowState.Modified) != 0)
+                        if (row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()] != DBNull.Value)
                         {
-                            //Grab the attributes into local variables
-                            string hashKey = (string) row[PhysicalModelMappingMetadataColumns.HashKey.ToString()];
-                            int versionKey = (int) row[PhysicalModelMappingMetadataColumns.VersionId.ToString()];
-                            var databaseName = "";
-                            var schemaName = "";
-                            var tableName = "";
-                            var columnName = "";
-                            var dataType = "";
-                            var characterLength = "";
-                            var numericPrecision = "";
-                            var numericScale = "";
-                            var ordinalPosition = "";
-                            var primaryKeyIndicator = "";
-                            var multiActiveIndicator = "";
-
-                            if (row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()] != DBNull.Value)
-                            {
-                                databaseName =
-                                    (string) row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()] != DBNull.Value)
-                            {
-                                schemaName = (string) row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.TableName.ToString()] != DBNull.Value)
-                            {
-                                tableName = (string) row[PhysicalModelMappingMetadataColumns.TableName.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()] != DBNull.Value)
-                            {
-                                columnName = (string) row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.DataType.ToString()] != DBNull.Value)
-                            {
-                                dataType = (string) row[PhysicalModelMappingMetadataColumns.DataType.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()] != DBNull.Value)
-                            {
-                                characterLength =
-                                    (string) row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()] != DBNull.Value)
-                            {
-                                numericPrecision =
-                                    (string) row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()] != DBNull.Value)
-                            {
-                                numericScale =
-                                    (string) row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()] != DBNull.Value)
-                            {
-                                ordinalPosition =
-                                    (string) row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()] != DBNull.Value)
-                            {
-                                primaryKeyIndicator =
-                                    (string) row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()];
-                            }
-
-                            if (row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()] !=
-                                DBNull.Value)
-                            {
-                                multiActiveIndicator =
-                                    (string) row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()];
-                            }
-
-                            try
-                            {
-                                var inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                                PhysicalModelMetadataJson[] jsonArray =
-                                    JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(
-                                        File.ReadAllText(inputFileName));
-
-                                var jsonHash =
-                                    jsonArray.FirstOrDefault(obj =>
-                                        obj.versionAttributeHash ==
-                                        hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
-
-                                if (jsonHash.versionAttributeHash == "")
-                                {
-                                    richTextBoxInformation.Text +=
-                                        "The correct segment in the JsJSONon file was not found.\r\n";
-                                }
-                                else
-                                {
-                                    // Update the values in the JSON segment
-                                    jsonHash.databaseName = databaseName;
-                                    jsonHash.schemaName = schemaName;
-                                    jsonHash.tableName = tableName;
-                                    jsonHash.columnName = columnName;
-                                    jsonHash.dataType = dataType;
-                                    jsonHash.characterLength = characterLength;
-                                    jsonHash.numericPrecision = numericPrecision;
-                                    jsonHash.numericScale = numericScale;
-                                    jsonHash.ordinalPosition = ordinalPosition;
-                                    jsonHash.primaryKeyIndicator = primaryKeyIndicator;
-                                    jsonHash.multiActiveIndicator = multiActiveIndicator;
-                                }
-
-                                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                string outputFileName =
-                                    TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-
-                                File.WriteAllText(outputFileName, output);
-                            }
-                            catch (JsonReaderException ex)
-                            {
-                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
-                            }
-
+                            databaseName =
+                                (string) row[PhysicalModelMappingMetadataColumns.DatabaseName.ToString()];
                         }
 
-                        #endregion
-
-                        #region Inserted rows
-
-                        // Insert new rows
-                        if ((row.RowState & DataRowState.Added) != 0)
+                        if (row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()] != DBNull.Value)
                         {
-                            string databaseName = "";
-                            string schemaName = "";
-                            string tableName = "";
-                            string columnName = "";
-                            string dataType = "";
-                            string maxLength = "0";
-                            string numericPrecision = "0";
-                            string numericScale = "0";
-                            string ordinalPosition = "0";
-                            string primaryKeyIndicator = "";
-                            string multiActiveIndicator = "";
+                            schemaName = (string) row[PhysicalModelMappingMetadataColumns.SchemaName.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.DatabaseName] != DBNull.Value)
-                            {
-                                databaseName = (string) row[(int) PhysicalModelMappingMetadataColumns.DatabaseName];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.TableName.ToString()] != DBNull.Value)
+                        {
+                            tableName = (string) row[PhysicalModelMappingMetadataColumns.TableName.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.SchemaName] != DBNull.Value)
-                            {
-                                schemaName = (string) row[(int) PhysicalModelMappingMetadataColumns.SchemaName];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()] != DBNull.Value)
+                        {
+                            columnName = (string) row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.TableName] != DBNull.Value)
-                            {
-                                tableName = (string) row[(int) PhysicalModelMappingMetadataColumns.TableName];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.DataType.ToString()] != DBNull.Value)
+                        {
+                            dataType = (string) row[PhysicalModelMappingMetadataColumns.DataType.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.ColumnName] != DBNull.Value)
-                            {
-                                columnName = (string) row[(int) PhysicalModelMappingMetadataColumns.ColumnName];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()] != DBNull.Value)
+                        {
+                            characterLength =
+                                (string) row[PhysicalModelMappingMetadataColumns.CharacterLength.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.DataType] != DBNull.Value)
-                            {
-                                dataType = (string) row[(int) PhysicalModelMappingMetadataColumns.DataType];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()] != DBNull.Value)
+                        {
+                            numericPrecision =
+                                (string) row[PhysicalModelMappingMetadataColumns.NumericPrecision.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.CharacterLength] != DBNull.Value)
-                            {
-                                maxLength = (string) row[(int) PhysicalModelMappingMetadataColumns.CharacterLength];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()] != DBNull.Value)
+                        {
+                            numericScale =
+                                (string) row[PhysicalModelMappingMetadataColumns.NumericScale.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.NumericPrecision] != DBNull.Value)
-                            {
-                                numericPrecision =
-                                    (string) row[(int) PhysicalModelMappingMetadataColumns.NumericPrecision];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()] != DBNull.Value)
+                        {
+                            ordinalPosition =
+                                (string) row[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.NumericScale] != DBNull.Value)
-                            {
-                                numericScale = (string) row[(int) PhysicalModelMappingMetadataColumns.NumericScale];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()] != DBNull.Value)
+                        {
+                            primaryKeyIndicator =
+                                (string) row[PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.OrdinalPosition] != DBNull.Value)
-                            {
-                                ordinalPosition =
-                                    (string) row[(int) PhysicalModelMappingMetadataColumns.OrdinalPosition];
-                            }
+                        if (row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()] !=
+                            DBNull.Value)
+                        {
+                            multiActiveIndicator =
+                                (string) row[PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString()];
+                        }
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator] != DBNull.Value)
-                            {
-                                primaryKeyIndicator =
-                                    (string) row[(int) PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator];
-                            }
+                        try
+                        {
+                            var inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            PhysicalModelMetadataJson[] jsonArray =
+                                JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(
+                                    File.ReadAllText(inputFileName));
 
-                            if (row[(int) PhysicalModelMappingMetadataColumns.MultiActiveIndicator] != DBNull.Value)
-                            {
-                                multiActiveIndicator =
-                                    (string) row[(int) PhysicalModelMappingMetadataColumns.MultiActiveIndicator];
-                            }
+                            var jsonHash =
+                                jsonArray.FirstOrDefault(obj =>
+                                    obj.attributeHash ==
+                                    hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
 
-                            try
-                            {
-                                var jsonPhysicalModelMappingFull = new JArray();
-
-                                // Load the file, if existing information needs to be merged
-                                string inputFileName =
-                                    TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                                PhysicalModelMetadataJson[] jsonArray =
-                                    JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(
-                                        File.ReadAllText(inputFileName));
-
-                                // Convert it into a JArray so segments can be added easily
-                                if (jsonArray != null)
-                                {
-                                    jsonPhysicalModelMappingFull = JArray.FromObject(jsonArray);
-                                }
-                                //Generate a unique key using a hash
-
-                                string[] inputHashValue = new string[] {versionId.ToString(), tableName, columnName};
-                                var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
-
-                                JObject newJsonSegment = new JObject(
-                                    new JProperty("versionAttributeHash", hashKey),
-                                    new JProperty("versionId", versionId),
-                                    new JProperty("databaseName", databaseName),
-                                    new JProperty("schemaName", schemaName),
-                                    new JProperty("tableName", tableName),
-                                    new JProperty("columnName", columnName),
-                                    new JProperty("dataType", dataType),
-                                    new JProperty("characterLength", maxLength),
-                                    new JProperty("numericPrecision", numericPrecision),
-                                    new JProperty("numericScale", numericScale),
-                                    new JProperty("ordinalPosition", ordinalPosition),
-                                    new JProperty("primaryKeyIndicator", primaryKeyIndicator),
-                                    new JProperty("multiActiveIndicator", multiActiveIndicator)
-                                );
-
-                                jsonPhysicalModelMappingFull.Add(newJsonSegment);
-
-                                string output = JsonConvert.SerializeObject(jsonPhysicalModelMappingFull,
-                                    Formatting.Indented);
-                                string outputFileName =
-                                    TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                                File.WriteAllText(outputFileName, output);
-
-                                //Making sure the hash key value is added to the datatable as well
-                                row[(int) PhysicalModelMappingMetadataColumns.HashKey] = hashKey;
-
-                            }
-                            catch (JsonReaderException ex)
+                            if (jsonHash.attributeHash == "")
                             {
                                 richTextBoxInformation.Text +=
-                                    "There were issues inserting the JSON segment / record.\r\n" + ex;
+                                    "The correct segment in the JsJSONon file was not found.\r\n";
+                            }
+                            else
+                            {
+                                // Update the values in the JSON segment
+                                jsonHash.databaseName = databaseName;
+                                jsonHash.schemaName = schemaName;
+                                jsonHash.tableName = tableName;
+                                jsonHash.columnName = columnName;
+                                jsonHash.dataType = dataType;
+                                jsonHash.characterLength = characterLength;
+                                jsonHash.numericPrecision = numericPrecision;
+                                jsonHash.numericScale = numericScale;
+                                jsonHash.ordinalPosition = ordinalPosition;
+                                jsonHash.primaryKeyIndicator = primaryKeyIndicator;
+                                jsonHash.multiActiveIndicator = multiActiveIndicator;
                             }
 
+                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                            string outputFileName =
+                                TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+
+                            File.WriteAllText(outputFileName, output);
                         }
-
-                        #endregion
-
-                        #region Deleted rows
-
-                        //Deleted rows
-                        if ((row.RowState & DataRowState.Deleted) != 0)
+                        catch (JsonReaderException ex)
                         {
-                            var hashKey = row[PhysicalModelMappingMetadataColumns.HashKey.ToString(),
-                                DataRowVersion.Original].ToString();
-                            var versionKey = row[PhysicalModelMappingMetadataColumns.VersionId.ToString(),
-                                DataRowVersion.Original].ToString();
-
-                            try
-                            {
-                                string inputFileName =
-                                    TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                                var jsonArray = JsonConvert
-                                    .DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName))
-                                    .ToList();
-
-                                //Retrieves the json segment in the file for the given hash returns value or NULL
-                                var jsonSegment = jsonArray.FirstOrDefault(obj => obj.versionAttributeHash == hashKey);
-
-                                jsonArray.Remove(jsonSegment);
-
-                                if (jsonSegment.versionAttributeHash == "")
-                                {
-                                    richTextBoxInformation.Text +=
-                                        "The correct segment in the JSON file was not found.\r\n";
-                                }
-                                else
-                                {
-                                    //Remove the segment from the JSON
-                                    jsonArray.Remove(jsonSegment);
-                                }
-
-                                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                string outputFileName =
-                                    TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                                File.WriteAllText(outputFileName, output);
-
-                            }
-                            catch (JsonReaderException ex)
-                            {
-                                richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
-                            }
-
+                            richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
                         }
 
-                        #endregion
-
-                    } // All changes have been processed.
-
-                    #region Statement execution
-
-                    //Committing the changes to the data table
-                    dataTableChanges.AcceptChanges();
-                    ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).AcceptChanges();
-
-                    richTextBoxInformation.AppendText("The (physical) model metadata has been saved.\r\n");
+                    }
 
                     #endregion
-                }
+
+                    #region Inserted rows
+
+                    // Insert new rows
+                    if ((row.RowState & DataRowState.Added) != 0)
+                    {
+                        string databaseName = "";
+                        string schemaName = "";
+                        string tableName = "";
+                        string columnName = "";
+                        string dataType = "";
+                        string maxLength = "0";
+                        string numericPrecision = "0";
+                        string numericScale = "0";
+                        string ordinalPosition = "0";
+                        string primaryKeyIndicator = "";
+                        string multiActiveIndicator = "";
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.DatabaseName] != DBNull.Value)
+                        {
+                            databaseName = (string) row[(int) PhysicalModelMappingMetadataColumns.DatabaseName];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.SchemaName] != DBNull.Value)
+                        {
+                            schemaName = (string) row[(int) PhysicalModelMappingMetadataColumns.SchemaName];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.TableName] != DBNull.Value)
+                        {
+                            tableName = (string) row[(int) PhysicalModelMappingMetadataColumns.TableName];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.ColumnName] != DBNull.Value)
+                        {
+                            columnName = (string) row[(int) PhysicalModelMappingMetadataColumns.ColumnName];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.DataType] != DBNull.Value)
+                        {
+                            dataType = (string) row[(int) PhysicalModelMappingMetadataColumns.DataType];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.CharacterLength] != DBNull.Value)
+                        {
+                            maxLength = (string) row[(int) PhysicalModelMappingMetadataColumns.CharacterLength];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.NumericPrecision] != DBNull.Value)
+                        {
+                            numericPrecision =
+                                (string) row[(int) PhysicalModelMappingMetadataColumns.NumericPrecision];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.NumericScale] != DBNull.Value)
+                        {
+                            numericScale = (string) row[(int) PhysicalModelMappingMetadataColumns.NumericScale];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.OrdinalPosition] != DBNull.Value)
+                        {
+                            ordinalPosition =
+                                (string) row[(int) PhysicalModelMappingMetadataColumns.OrdinalPosition];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator] != DBNull.Value)
+                        {
+                            primaryKeyIndicator =
+                                (string) row[(int) PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator];
+                        }
+
+                        if (row[(int) PhysicalModelMappingMetadataColumns.MultiActiveIndicator] != DBNull.Value)
+                        {
+                            multiActiveIndicator =
+                                (string) row[(int) PhysicalModelMappingMetadataColumns.MultiActiveIndicator];
+                        }
+
+                        try
+                        {
+                            var jsonPhysicalModelMappingFull = new JArray();
+
+                            // Load the file, if existing information needs to be merged
+                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            PhysicalModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName));
+
+                            // Convert it into a JArray so segments can be added easily
+                            if (jsonArray != null)
+                            {
+                                jsonPhysicalModelMappingFull = JArray.FromObject(jsonArray);
+                            }
+                            //Generate a unique key using a hash
+
+                            string[] inputHashValue = new string[] {tableName, columnName};
+                            var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
+
+                            JObject newJsonSegment = new JObject(
+                                new JProperty("attributeHash", hashKey),
+                                new JProperty("databaseName", databaseName),
+                                new JProperty("schemaName", schemaName),
+                                new JProperty("tableName", tableName),
+                                new JProperty("columnName", columnName),
+                                new JProperty("dataType", dataType),
+                                new JProperty("characterLength", maxLength),
+                                new JProperty("numericPrecision", numericPrecision),
+                                new JProperty("numericScale", numericScale),
+                                new JProperty("ordinalPosition", ordinalPosition),
+                                new JProperty("primaryKeyIndicator", primaryKeyIndicator),
+                                new JProperty("multiActiveIndicator", multiActiveIndicator)
+                            );
+
+                            jsonPhysicalModelMappingFull.Add(newJsonSegment);
+
+                            string output = JsonConvert.SerializeObject(jsonPhysicalModelMappingFull,
+                                Formatting.Indented);
+                            string outputFileName =
+                                TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            File.WriteAllText(outputFileName, output);
+
+                            //Making sure the hash key value is added to the datatable as well
+                            row[(int) PhysicalModelMappingMetadataColumns.HashKey] = hashKey;
+
+                        }
+                        catch (JsonReaderException ex)
+                        {
+                            richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
+                        }
+
+                    }
+
+                    #endregion
+
+                    #region Deleted rows
+
+                    //Deleted rows
+                    if ((row.RowState & DataRowState.Deleted) != 0)
+                    {
+                        var hashKey = row[PhysicalModelMappingMetadataColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
+
+                        try
+                        {
+                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName)).ToList();
+
+                            //Retrieves the json segment in the file for the given hash returns value or NULL
+                            var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeHash == hashKey);
+
+                            jsonArray.Remove(jsonSegment);
+
+                            if (jsonSegment.attributeHash == "")
+                            {
+                                richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                            }
+                            else
+                            {
+                                //Remove the segment from the JSON
+                                jsonArray.Remove(jsonSegment);
+                            }
+
+                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            File.WriteAllText(outputFileName, output);
+
+                        }
+                        catch (JsonReaderException ex)
+                        {
+                            richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
+                        }
+                    }
+                    #endregion
+
+                } // All changes have been processed.
+
+                #region Statement execution
+
+                //Committing the changes to the data table
+                dataTableChanges.AcceptChanges();
+                ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).AcceptChanges();
+
+                richTextBoxInformation.AppendText("The (physical) model metadata has been saved.\r\n");
+
+                #endregion
             }
+            
         }
 
-        private void SaveAttributeMappingMetadata(int versionId, DataTable dataTableChanges)
+        private void SaveAttributeMappingMetadata(DataTable dataTableChanges)
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping == "true")
             {
-                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" +
-                                                        GlobalParameters.CurrentVersionId + ".json");
+                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + ".json");
                 TeamJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
                 TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping = "false";
             }
 
-            //If the save version radiobutton is selected it means either minor or major version is checked and a full new snapshot needs to be created first
-            if (!radiobuttonNoVersionChange.Checked)
-            {
-                CreateNewAttributeMappingMetadataVersionJson(versionId);
-            }
-            // An update (no change) to the existing version is done with regular inserts, updates and deletes
-            else
-            {
-                if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0))
+            if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0))
                     //Check if there are any changes made at all
                 {
                     // Loop through the changes captured in the data table
@@ -1999,38 +1443,37 @@ namespace TEAM
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
                             //Grab the attributes into local variables
-                            var hashKey = (string) row[AttributeMappingMetadataColumns.HashKey.ToString()];
-                            var versionKey = row[AttributeMappingMetadataColumns.VersionId.ToString()].ToString();
+                            var hashKey = (string) row[DataItemMappingMetadataColumns.HashKey.ToString()];
                             var stagingTable = "";
                             var stagingColumn = "";
                             var integrationTable = "";
                             var integrationColumn = "";
                             var notes = "";
 
-                            if (row[AttributeMappingMetadataColumns.SourceTable.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingMetadataColumns.SourceTable.ToString()] != DBNull.Value)
                             {
-                                stagingTable = (string) row[AttributeMappingMetadataColumns.SourceTable.ToString()];
+                                stagingTable = (string) row[DataItemMappingMetadataColumns.SourceTable.ToString()];
                             }
 
-                            if (row[AttributeMappingMetadataColumns.SourceColumn.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingMetadataColumns.SourceColumn.ToString()] != DBNull.Value)
                             {
-                                stagingColumn = (string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()];
+                                stagingColumn = (string) row[DataItemMappingMetadataColumns.SourceColumn.ToString()];
                             }
 
-                            if (row[AttributeMappingMetadataColumns.TargetTable.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingMetadataColumns.TargetTable.ToString()] != DBNull.Value)
                             {
-                                integrationTable = (string) row[AttributeMappingMetadataColumns.TargetTable.ToString()];
+                                integrationTable = (string) row[DataItemMappingMetadataColumns.TargetTable.ToString()];
                             }
 
-                            if (row[AttributeMappingMetadataColumns.TargetColumn.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingMetadataColumns.TargetColumn.ToString()] != DBNull.Value)
                             {
                                 integrationColumn =
-                                    (string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()];
+                                    (string) row[DataItemMappingMetadataColumns.TargetColumn.ToString()];
                             }
 
-                            if (row[AttributeMappingMetadataColumns.Notes.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingMetadataColumns.Notes.ToString()] != DBNull.Value)
                             {
-                                notes = (string) row[AttributeMappingMetadataColumns.Notes.ToString()];
+                                notes = (string) row[DataItemMappingMetadataColumns.Notes.ToString()];
                             }
 
                             try
@@ -2083,29 +1526,29 @@ namespace TEAM
                             var targetColumn = "";
                             var notes = "";
 
-                            if (row[(int) AttributeMappingMetadataColumns.SourceTable] != DBNull.Value)
+                            if (row[(int) DataItemMappingMetadataColumns.SourceTable] != DBNull.Value)
                             {
-                                sourceTable = (string) row[(int) AttributeMappingMetadataColumns.SourceTable];
+                                sourceTable = (string) row[(int) DataItemMappingMetadataColumns.SourceTable];
                             }
 
-                            if (row[(int) AttributeMappingMetadataColumns.SourceColumn] != DBNull.Value)
+                            if (row[(int) DataItemMappingMetadataColumns.SourceColumn] != DBNull.Value)
                             {
-                                sourceColumn = (string) row[(int) AttributeMappingMetadataColumns.SourceColumn];
+                                sourceColumn = (string) row[(int) DataItemMappingMetadataColumns.SourceColumn];
                             }
 
-                            if (row[(int) AttributeMappingMetadataColumns.TargetTable] != DBNull.Value)
+                            if (row[(int) DataItemMappingMetadataColumns.TargetTable] != DBNull.Value)
                             {
-                                targetTable = (string) row[(int) AttributeMappingMetadataColumns.TargetTable];
+                                targetTable = (string) row[(int) DataItemMappingMetadataColumns.TargetTable];
                             }
 
-                            if (row[(int) AttributeMappingMetadataColumns.TargetColumn] != DBNull.Value)
+                            if (row[(int) DataItemMappingMetadataColumns.TargetColumn] != DBNull.Value)
                             {
-                                targetColumn = (string) row[(int) AttributeMappingMetadataColumns.TargetColumn];
+                                targetColumn = (string) row[(int) DataItemMappingMetadataColumns.TargetColumn];
                             }
 
-                            if (row[(int) AttributeMappingMetadataColumns.Notes] != DBNull.Value)
+                            if (row[(int) DataItemMappingMetadataColumns.Notes] != DBNull.Value)
                             {
-                                notes = (string) row[(int) AttributeMappingMetadataColumns.Notes];
+                                notes = (string) row[(int) DataItemMappingMetadataColumns.Notes];
                             }
 
                             try
@@ -2125,13 +1568,11 @@ namespace TEAM
                                     jsonAttributeMappingFull = JArray.FromObject(jsonArray);
                                 }
 
-                                string[] inputHashValue = new string[]
-                                    {versionId.ToString(), sourceTable, sourceColumn, targetTable, targetColumn, notes};
+                                string[] inputHashValue = new string[] {sourceTable, sourceColumn, targetTable, targetColumn, notes};
                                 var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                                 JObject newJsonSegment = new JObject(
                                     new JProperty("attributeMappingHash", hashKey),
-                                    new JProperty("versionId", versionId),
                                     new JProperty("sourceTable", sourceTable),
                                     new JProperty("sourceAttribute", sourceColumn),
                                     new JProperty("targetTable", targetTable),
@@ -2141,14 +1582,12 @@ namespace TEAM
 
                                 jsonAttributeMappingFull.Add(newJsonSegment);
 
-                                string output =
-                                    JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
-                                string outputFileName =
-                                    TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+                                string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
+                                string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
                                 File.WriteAllText(outputFileName, output);
 
                                 //Making sure the hash key value is added to the data table as well
-                                row[(int) AttributeMappingMetadataColumns.HashKey] = hashKey;
+                                row[(int) DataItemMappingMetadataColumns.HashKey] = hashKey;
 
                             }
                             catch (JsonReaderException ex)
@@ -2167,10 +1606,7 @@ namespace TEAM
                         // Deletes
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
-                            var hashKey = row[AttributeMappingMetadataColumns.HashKey.ToString(),
-                                DataRowVersion.Original].ToString();
-                            var versionKey = row[AttributeMappingMetadataColumns.VersionId.ToString(),
-                                DataRowVersion.Original].ToString();
+                            var hashKey = row[DataItemMappingMetadataColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
 
                             try
                             {
@@ -2223,7 +1659,7 @@ namespace TEAM
 
                     #endregion
                 }
-            }
+            
 
         }
 
@@ -2282,20 +1718,20 @@ namespace TEAM
                 string targetColumn = "";
                 string mappingNotes = "";
 
-                if (row[AttributeMappingMetadataColumns.SourceTable.ToString()] != DBNull.Value)
-                    sourceTable = (string) row[AttributeMappingMetadataColumns.SourceTable.ToString()];
+                if (row[DataItemMappingMetadataColumns.SourceTable.ToString()] != DBNull.Value)
+                    sourceTable = (string) row[DataItemMappingMetadataColumns.SourceTable.ToString()];
 
-                if (row[AttributeMappingMetadataColumns.SourceColumn.ToString()] != DBNull.Value)
-                    sourceColumn = (string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()];
+                if (row[DataItemMappingMetadataColumns.SourceColumn.ToString()] != DBNull.Value)
+                    sourceColumn = (string) row[DataItemMappingMetadataColumns.SourceColumn.ToString()];
 
-                if (row[AttributeMappingMetadataColumns.TargetTable.ToString()] != DBNull.Value)
-                    targetTable = (string) row[AttributeMappingMetadataColumns.TargetTable.ToString()];
+                if (row[DataItemMappingMetadataColumns.TargetTable.ToString()] != DBNull.Value)
+                    targetTable = (string) row[DataItemMappingMetadataColumns.TargetTable.ToString()];
 
-                if (row[AttributeMappingMetadataColumns.TargetColumn.ToString()] != DBNull.Value)
-                    targetColumn = (string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()];
+                if (row[DataItemMappingMetadataColumns.TargetColumn.ToString()] != DBNull.Value)
+                    targetColumn = (string) row[DataItemMappingMetadataColumns.TargetColumn.ToString()];
 
-                if (row[AttributeMappingMetadataColumns.Notes.ToString()] != DBNull.Value)
-                    mappingNotes = (string) row[AttributeMappingMetadataColumns.Notes.ToString()];
+                if (row[DataItemMappingMetadataColumns.Notes.ToString()] != DBNull.Value)
+                    mappingNotes = (string) row[DataItemMappingMetadataColumns.Notes.ToString()];
 
 
                 // Get the internal Ids for the source and target objects.
@@ -2668,14 +2104,14 @@ namespace TEAM
 
         private void ExecuteSqlCommand(StringBuilder inputString, string connString)
         {
-            using (var connectionVersion = new SqlConnection(connString))
+            using (var connection = new SqlConnection(connString))
             {
-                var commandVersion = new SqlCommand(inputString.ToString(), connectionVersion);
+                var sqlCommand = new SqlCommand(inputString.ToString(), connection);
 
                 try
                 {
-                    connectionVersion.Open();
-                    commandVersion.ExecuteNonQuery();
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
 
                 }
                 catch (Exception)
@@ -2689,7 +2125,7 @@ namespace TEAM
         {
             // Attribute mapping
             var createStatement = new StringBuilder();
-            createStatement.AppendLine("-- Attribute mapping");
+            createStatement.AppendLine("-- Data Item Mapping");
             createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_ATTRIBUTE_MAPPING]', 'U') IS NOT NULL");
             createStatement.AppendLine(" DROP TABLE [TMP_MD_ATTRIBUTE_MAPPING]");
 
@@ -2697,7 +2133,7 @@ namespace TEAM
             createStatement.Clear();
 
             // Table Mapping
-            createStatement.AppendLine("-- Table Mapping");
+            createStatement.AppendLine("--Data Object Mapping");
             createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_TABLE_MAPPING]', 'U') IS NOT NULL");
             createStatement.AppendLine(" DROP TABLE[TMP_MD_TABLE_MAPPING]");
 
@@ -2705,7 +2141,7 @@ namespace TEAM
             createStatement.Clear();
 
             // Physical Model
-            createStatement.AppendLine("-- Version Attribute");
+            createStatement.AppendLine("-- Physical Model");
             createStatement.AppendLine("IF OBJECT_ID('[TMP_MD_VERSION_ATTRIBUTE]', 'U') IS NOT NULL");
             createStatement.AppendLine(" DROP TABLE [TMP_MD_VERSION_ATTRIBUTE]");
 
@@ -2724,14 +2160,12 @@ namespace TEAM
 
             // Check if there are any outstanding saves / commits in the data grid
             var dataTableTableMappingChanges = ((DataTable) _bindingSourceTableMetadata.DataSource).GetChanges();
-            var dataTableAttributeMappingChanges =
-                ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
             DataTable dataTablePhysicalModelChanges = new DataTable();
 
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
-                dataTablePhysicalModelChanges =
-                    ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+                dataTablePhysicalModelChanges = ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
             }
 
             if (
@@ -2784,37 +2218,25 @@ namespace TEAM
             // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
 
             #region Activation
-
-            if (!checkBoxValidation.Checked ||
-                (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0) && activationContinue)
+            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataParameters.ValidationIssues == 0) && activationContinue)
             {
                 // Commence the activation
                 var conn = new SqlConnection
                 {
-                    ConnectionString =
-                        TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
+                    ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
                 };
 
                 richTextBoxInformation.Clear();
 
-                // var versionMajorMinor = GetVersion(trackBarVersioning.Value, conn);
-                var versionMajorMinor =
-                    TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment,
-                        trackBarVersioning.Value);
-
-                var majorVersion = versionMajorMinor.Item2;
-                var minorVersion = versionMajorMinor.Item3;
-                richTextBoxInformation.AppendText("Commencing preparation / activation for version " + majorVersion + "." + minorVersion + ".\r\n");
 
                 // Move data from the grids into temp tables
-                CreateTemporaryWorkerTables(
-                    TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
+                CreateTemporaryWorkerTables(TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
 
                 if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                 {
                     var versionExistenceCheck = new StringBuilder();
 
-                    versionExistenceCheck.AppendLine("SELECT * FROM TMP_MD_VERSION_ATTRIBUTE WHERE VERSION_ID = " + trackBarVersioning.Value);
+                    versionExistenceCheck.AppendLine("SELECT * FROM TMP_MD_VERSION_ATTRIBUTE WHERE VERSION_ID = 0");
 
                     var versionExistenceCheckDataTable = Utility.GetDataTable(ref conn, versionExistenceCheck.ToString());
 
@@ -2854,10 +2276,8 @@ namespace TEAM
             }
             else
             {
-                richTextBoxInformation.AppendText(
-                    "Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and activate the metadata again.\r\n");
+                richTextBoxInformation.AppendText("Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and activate the metadata again.\r\n");
             }
-
             #endregion
         }
 
@@ -2874,25 +2294,6 @@ namespace TEAM
                 backgroundWorkerMetadata.CancelAsync();
                 // Close the AlertForm
                 _alertValidation.Close();
-            }
-        }
-
-        /// <summary>
-        /// Multi-threading for informing the user when version changes (to other forms).
-        /// </summary>
-        /// <returns></returns>
-        delegate int GetVersionFromTrackBarCallBack();
-
-        private int GetVersionFromTrackBar()
-        {
-            if (trackBarVersioning.InvokeRequired)
-            {
-                var d = new GetVersionFromTrackBarCallBack(GetVersionFromTrackBar);
-                return Int32.Parse(Invoke(d).ToString());
-            }
-            else
-            {
-                return trackBarVersioning.Value;
             }
         }
 
@@ -2913,8 +2314,6 @@ namespace TEAM
                 richTextBoxInformation.Text += "The metadata was processed successfully!\r\n";
 
                 #region Save the JSON interface files
-
-                // Saving the interfaces to JSON
                 if (checkBoxSaveInterfaceToJson.Checked)
                 {
                     // Take all the rows from the grid
@@ -2930,7 +2329,6 @@ namespace TEAM
 
                     ManageFormOverallJsonExport();
                 }
-
                 #endregion
             }
 
@@ -3044,23 +2442,11 @@ namespace TEAM
             }
             else
             {
-                // Determine the version.
-                var versionId = GetVersionFromTrackBar();
-
-                var versionMajorMinor =
-                    TeamVersionList.GetMajorMinorForVersionId(GlobalParameters.WorkingEnvironment, versionId);
-                var majorVersion = versionMajorMinor.Item2;
-                var minorVersion = versionMajorMinor.Item3;
-
                 // Get the full dictionary of objects and connections.
                 //var localTableMappingConnectionDictionary = GetTableMappingConnections();
 
                 // Get the dictionary of target data objects and their enabled / disabled flag.
                 var localTableEnabledDictionary = GetEnabledForDataObject();
-
-                // Event reporting - informing the user that the activation process has started.
-                LogMetadataEvent($"Commencing metadata preparation / activation for version {majorVersion}.{minorVersion} at {activationStartDateTime}.",
-                    EventTypes.Information);
 
                 // Event reporting - alerting the user what kind of metadata is prepared.
                 LogMetadataEvent($"The {GlobalParameters.EnvironmentMode} has been selected for activation.",
@@ -3100,13 +2486,13 @@ namespace TEAM
                                         DELETE FROM dbo.[MD_PHYSICAL_MODEL];
                                         ");
 
-                using (var connectionVersion = new SqlConnection(metaDataConnection))
+                using (var connection = new SqlConnection(metaDataConnection))
                 {
-                    var commandVersion = new SqlCommand(deleteStatement.ToString(), connectionVersion);
+                    var commandVersion = new SqlCommand(deleteStatement.ToString(), connection);
 
                     try
                     {
-                        connectionVersion.Open();
+                        connection.Open();
                         commandVersion.ExecuteNonQuery();
 
                         if (worker != null) worker.ReportProgress(2);
@@ -3114,9 +2500,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        LogMetadataEvent(
-                            $"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}, and the message is {ex}.",
-                            EventTypes.Error);
+                        LogMetadataEvent($"An issue has occurred during removal of old metadata. The query that caused the issue is \r\n\r\n {deleteStatement}, and the message is {ex.Message}.", EventTypes.Error);
                     }
                 }
 
@@ -3169,47 +2553,7 @@ namespace TEAM
                 LogMetadataEvent($"Preparation of the repository completed.", EventTypes.Information);
 
                 #endregion
-
-
-                #region Prepare Version Information
-
-                // Prepare Version
-                LogMetadataEvent($"Commencing preparing the version metadata.", EventTypes.Information);
-
-                var versionName = string.Concat(majorVersion, '.', minorVersion);
-
-                using (var connection = new SqlConnection(metaDataConnection))
-                {
-                    LogMetadataEvent("Working on committing version " + versionName + " to the metadata repository.",
-                        EventTypes.Information);
-
-                    var insertVersionStatement = new StringBuilder();
-                    insertVersionStatement.AppendLine("INSERT INTO [MD_MODEL_METADATA]");
-                    insertVersionStatement.AppendLine("([VERSION_NAME],[ACTIVATION_DATETIME])");
-                    insertVersionStatement.AppendLine("VALUES ('" + versionName + "',@Now)");
-
-                    var command = new SqlCommand(insertVersionStatement.ToString(), connection);
-                    command.Parameters.AddWithValue("@Now", DateTime.Now);
-
-                    try
-                    {
-                        connection.Open();
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogMetadataEvent(
-                            $"An issue has occurred during preparation of the version information: \r\n\r\n {ex}.",
-                            EventTypes.Error);
-                    }
-                }
-
-                if (worker != null) worker.ReportProgress(3);
-                LogMetadataEvent($"Preparation of the version details completed.", EventTypes.Information);
-
-                #endregion
-
-
+                
                 #region Physical Model dump - 5%
 
                 // Creating a point-in-time snapshot of the physical model used for export to the interface schemas
@@ -3638,7 +2982,7 @@ namespace TEAM
                                     }
                                     else
                                     {
-                                        businessKey = MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1, dataObjectTuple.Item3, versionId, TeamConfiguration);
+                                        businessKey = MetadataHandling.GetHubTargetBusinessKeyListVirtual(dataObjectTuple.Item1, dataObjectTuple.Item3,  TeamConfiguration);
                                     }
                                 }
                             }
@@ -3660,8 +3004,7 @@ namespace TEAM
                             catch (Exception ex)
                             {
                                 LogMetadataEvent(
-                                    $"An issue has occurred during preparation of the {dataObjectTuple.Item2} metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}",
-                                    EventTypes.Error);
+                                    $"An issue has occurred during preparation of the {dataObjectTuple.Item2} metadata: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{insertStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -4272,9 +3615,9 @@ namespace TEAM
                 foreach (DataGridViewRow row in dataGridViewAttributeMetadata.Rows)
                 {
                     string localAttributeSource =
-                        (string) row.Cells[AttributeMappingMetadataColumns.SourceColumn.ToString()].Value;
+                        (string) row.Cells[DataItemMappingMetadataColumns.SourceColumn.ToString()].Value;
                     string localAttributeTarget =
-                        (string) row.Cells[AttributeMappingMetadataColumns.TargetColumn.ToString()].Value;
+                        (string) row.Cells[DataItemMappingMetadataColumns.TargetColumn.ToString()].Value;
 
                     localAttributeSource = MetadataHandling.QuoteStringValuesForAttributes(localAttributeSource);
                     localAttributeTarget = MetadataHandling.QuoteStringValuesForAttributes(localAttributeTarget);
@@ -4780,21 +4123,16 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        LogMetadataEvent($"An issue has occurred connecting to the database: \r\n\r\n {ex}.",
-                            EventTypes.Error);
+                        LogMetadataEvent($"An issue has occurred connecting to the database: \r\n\r\n {ex}.", EventTypes.Error);
                     }
 
                     foreach (var dataObjectTuple in dataObjectList)
                     {
                         if (dataObjectTuple.Item2 == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship)
                         {
-                            var fullyQualifiedName = MetadataHandling
-                                .GetFullyQualifiedDataObjectName(dataObjectTuple.Item1, dataObjectTuple.Item3)
-                                .FirstOrDefault();
+                            var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectTuple.Item1, dataObjectTuple.Item3).FirstOrDefault();
 
-                            var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key,
-                                fullyQualifiedName.Value, versionId,
-                                TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
+                            var businessKeyList = MetadataHandling.GetLinkTargetBusinessKeyList(fullyQualifiedName.Key, fullyQualifiedName.Value, TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false));
                             string businessKey = string.Join(",", businessKeyList);
 
                             var updateStatement = new StringBuilder();
@@ -4812,9 +4150,7 @@ namespace TEAM
                             }
                             catch (Exception ex)
                             {
-                                LogMetadataEvent(
-                                    $"An issue has occurred during preparation of the Link Business Key: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{updateStatement}",
-                                    EventTypes.Error);
+                                LogMetadataEvent($"An issue has occurred during preparation of the Link Business Key: \r\n\r\n {ex}. \r\nThe query that caused the issue is: \r\n\r\n{updateStatement}", EventTypes.Error);
                             }
                         }
                     }
@@ -4916,7 +4252,7 @@ namespace TEAM
                     EventTypes.Information);
 
                 // Getting the distinct list of row from the data table
-                selectionRows = inputAttributeMetadata.Select("" + AttributeMappingMetadataColumns.TargetTable + " LIKE '%" + stagingPrefix + "%'");
+                selectionRows = inputAttributeMetadata.Select("" + DataItemMappingMetadataColumns.TargetTable + " LIKE '%" + stagingPrefix + "%'");
 
                 if (selectionRows.Length == 0)
                 {
@@ -4927,19 +4263,19 @@ namespace TEAM
                     // Process the unique Staging Area records
                     foreach (var row in selectionRows)
                     {
-                        if (localTableEnabledDictionary.TryGetValue(row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString(), out var enabledValue))
+                        if (localTableEnabledDictionary.TryGetValue(row[DataItemMappingMetadataColumns.TargetTable.ToString()].ToString(), out var enabledValue))
                         {
                             // The key isn't in the dictionary.
 
-                            var fromAttribute = MetadataHandling.QuoteStringValuesForAttributes((string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()]);
-                            var toAttribute = MetadataHandling.QuoteStringValuesForAttributes((string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()]);
+                            var fromAttribute = MetadataHandling.QuoteStringValuesForAttributes((string) row[DataItemMappingMetadataColumns.SourceColumn.ToString()]);
+                            var toAttribute = MetadataHandling.QuoteStringValuesForAttributes((string) row[DataItemMappingMetadataColumns.TargetColumn.ToString()]);
 
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                var localSourceTable = row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString();
-                                var localTargetTable = row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString();
+                                var localSourceTable = row[DataItemMappingMetadataColumns.SourceTable.ToString()].ToString();
+                                var localTargetTable = row[DataItemMappingMetadataColumns.TargetTable.ToString()].ToString();
 
-                                LogMetadataEvent($"Processing the mapping from  {row[AttributeMappingMetadataColumns.SourceTable.ToString()]} - {fromAttribute} to {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} - {toAttribute}.", EventTypes.Information);
+                                LogMetadataEvent($"Processing the mapping from  {row[DataItemMappingMetadataColumns.SourceTable.ToString()]} - {fromAttribute} to {row[DataItemMappingMetadataColumns.TargetTable.ToString()]} - {toAttribute}.", EventTypes.Information);
 
                                 // Get the corresponding Data Object.
                                 var dataObjectRow = inputTableMetadata.Select($"[{DataObjectMappingGridColumns.SourceDataObject}] = '{localSourceTable}' AND [{DataObjectMappingGridColumns.TargetDataObject}] = '{localTargetTable}'").FirstOrDefault();
@@ -4982,7 +4318,7 @@ namespace TEAM
                         else
                         {
 
-                            LogMetadataEvent($"The enabled / disabled state for {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} could not be asserted.", EventTypes.Error);
+                            LogMetadataEvent($"The enabled / disabled state for {row[DataItemMappingMetadataColumns.TargetTable.ToString()]} could not be asserted.", EventTypes.Error);
                         }
                     }
                 }
@@ -5146,7 +4482,7 @@ namespace TEAM
                 LogMetadataEvent("Commencing preparing the Source to Persistent Staging column-to-column mapping metadata based on the manual mappings.", EventTypes.Information);
 
                 // Getting the distinct list of row from the data table
-                selectionRows = inputAttributeMetadata.Select("" + AttributeMappingMetadataColumns.TargetTable + " LIKE '%" + psaPrefix + "%'");
+                selectionRows = inputAttributeMetadata.Select("" + DataItemMappingMetadataColumns.TargetTable + " LIKE '%" + psaPrefix + "%'");
 
                 if (selectionRows.Length == 0)
                 {
@@ -5158,15 +4494,15 @@ namespace TEAM
                     foreach (var row in selectionRows)
                     {
                         // Only process rows whose parent is enabled
-                        if (localTableEnabledDictionary.TryGetValue(row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString(), out var enabledValue) == true)
+                        if (localTableEnabledDictionary.TryGetValue(row[DataItemMappingMetadataColumns.TargetTable.ToString()].ToString(), out var enabledValue) == true)
                         {
 
                             using (var connection = new SqlConnection(metaDataConnection))
                             {
-                                var localSourceTable = row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString();
-                                var localTargetTable = row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString();
+                                var localSourceTable = row[DataItemMappingMetadataColumns.SourceTable.ToString()].ToString();
+                                var localTargetTable = row[DataItemMappingMetadataColumns.TargetTable.ToString()].ToString();
 
-                                LogMetadataEvent($"Processing the mapping from {row[AttributeMappingMetadataColumns.SourceTable.ToString()]} - {(string) row[AttributeMappingMetadataColumns.SourceColumn.ToString()]} to {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} - {(string) row[AttributeMappingMetadataColumns.TargetColumn.ToString()]}.", EventTypes.Information);
+                                LogMetadataEvent($"Processing the mapping from {row[DataItemMappingMetadataColumns.SourceTable.ToString()]} - {(string) row[DataItemMappingMetadataColumns.SourceColumn.ToString()]} to {row[DataItemMappingMetadataColumns.TargetTable.ToString()]} - {(string) row[DataItemMappingMetadataColumns.TargetColumn.ToString()]}.", EventTypes.Information);
 
                                 //var localTableName = MetadataHandling.GetNonQualifiedTableName(row[TableMetadataColumns.TargetTable.ToString()].ToString());
 
@@ -5189,8 +4525,8 @@ namespace TEAM
                                                            $"(" +
                                                            $" '{sourceDataObjectFullyQualified.Key}.{sourceDataObjectFullyQualified.Value}'," +
                                                            $" '{targetDataObjectFullyQualified.Key}.{targetDataObjectFullyQualified.Value}'," +
-                                                           $" '{row[AttributeMappingMetadataColumns.SourceColumn.ToString()]}'," +
-                                                           $" '{row[AttributeMappingMetadataColumns.TargetColumn.ToString()]}', " +
+                                                           $" '{row[DataItemMappingMetadataColumns.SourceColumn.ToString()]}'," +
+                                                           $" '{row[DataItemMappingMetadataColumns.TargetColumn.ToString()]}', " +
                                                            $" 'Manual mapping'" +
                                                            $")");
 
@@ -5212,8 +4548,8 @@ namespace TEAM
                         else
                         {
                             var test = localTableEnabledDictionary;
-                            var test2 = row[AttributeMappingMetadataColumns.TargetTable.ToString()];
-                            LogMetadataEvent($"The enabled / disabled state for {row[AttributeMappingMetadataColumns.TargetTable.ToString()]} could not be asserted.", EventTypes.Error);
+                            var test2 = row[DataItemMappingMetadataColumns.TargetTable.ToString()];
+                            LogMetadataEvent($"The enabled / disabled state for {row[DataItemMappingMetadataColumns.TargetTable.ToString()]} could not be asserted.", EventTypes.Error);
                         }
                     }
                 }
@@ -7192,7 +6528,6 @@ namespace TEAM
                             {
                                 enabledIndicator = singleRow[(int) DataObjectMappingGridColumns.Enabled].ToString(),
                                 tableMappingHash = singleRow[(int) DataObjectMappingGridColumns.HashKey].ToString(),
-                                versionId = singleRow[(int) DataObjectMappingGridColumns.VersionId].ToString(),
                                 sourceTable = singleRow[(int) DataObjectMappingGridColumns.SourceDataObject].ToString(),
                                 sourceConnection = singleRow[(int) DataObjectMappingGridColumns.SourceConnection].ToString(),
                                 targetTable = singleRow[(int) DataObjectMappingGridColumns.TargetDataObject].ToString(),
@@ -7317,9 +6652,7 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                richTextBoxInformation.Text +=
-                    "An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: " +
-                    exception.Message + ".\r\n";
+                richTextBoxInformation.Text += "An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: " + exception.Message + ".\r\n";
             }
 
             // Get everything as local variables to reduce multi-threading issues
@@ -7331,92 +6664,90 @@ namespace TEAM
             var keyIdentifierLocation = TeamConfiguration.KeyNamingLocation;
 
             // Create the attribute selection statement for the array
-            var sqlStatementForAttributeVersion = new StringBuilder();
+            var sqlStatementForDataItems = new StringBuilder();
 
-            sqlStatementForAttributeVersion.AppendLine("SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), " +
-                                                       GlobalParameters.CurrentVersionId +
-                                                       ") + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
-            sqlStatementForAttributeVersion.AppendLine("  " + GlobalParameters.CurrentVersionId + " AS [VERSION_ID],");
-            sqlStatementForAttributeVersion.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS [DATABASE_NAME],");
-            sqlStatementForAttributeVersion.AppendLine("  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [SCHEMA_NAME],");
-            sqlStatementForAttributeVersion.AppendLine("  OBJECT_NAME(main.OBJECT_ID) AS [TABLE_NAME], ");
-            sqlStatementForAttributeVersion.AppendLine("  main.[name] AS [COLUMN_NAME], ");
-            sqlStatementForAttributeVersion.AppendLine("  t.[name] AS [DATA_TYPE], ");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(");
-            sqlStatementForAttributeVersion.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
-            sqlStatementForAttributeVersion.AppendLine("    ELSE main.[max_length]");
-            sqlStatementForAttributeVersion.AppendLine("    END");
-            sqlStatementForAttributeVersion.AppendLine("     ,0) AS VARCHAR(100)) AS [CHARACTER_MAXIMUM_LENGTH],");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [NUMERIC_PRECISION], ");
-            sqlStatementForAttributeVersion.AppendLine("  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS[NUMERIC_SCALE], ");
+            sqlStatementForDataItems.AppendLine("SELECT ");
+            sqlStatementForDataItems.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), 0) + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
+            sqlStatementForDataItems.AppendLine("  0 AS [VERSION_ID],");
+            sqlStatementForDataItems.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS [DATABASE_NAME],");
+            sqlStatementForDataItems.AppendLine("  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [SCHEMA_NAME],");
+            sqlStatementForDataItems.AppendLine("  OBJECT_NAME(main.OBJECT_ID) AS [TABLE_NAME], ");
+            sqlStatementForDataItems.AppendLine("  main.[name] AS [COLUMN_NAME], ");
+            sqlStatementForDataItems.AppendLine("  t.[name] AS [DATA_TYPE], ");
+            sqlStatementForDataItems.AppendLine("  CAST(COALESCE(");
+            sqlStatementForDataItems.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
+            sqlStatementForDataItems.AppendLine("    ELSE main.[max_length]");
+            sqlStatementForDataItems.AppendLine("    END");
+            sqlStatementForDataItems.AppendLine("     ,0) AS VARCHAR(100)) AS [CHARACTER_MAXIMUM_LENGTH],");
+            sqlStatementForDataItems.AppendLine("  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [NUMERIC_PRECISION], ");
+            sqlStatementForDataItems.AppendLine("  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS[NUMERIC_SCALE], ");
 
-            sqlStatementForAttributeVersion.AppendLine("  CAST(main.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION], ");
+            sqlStatementForDataItems.AppendLine("  CAST(main.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION], ");
 
-            sqlStatementForAttributeVersion.AppendLine("  CASE ");
-            sqlStatementForAttributeVersion.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
-            sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
-            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
-            sqlStatementForAttributeVersion.AppendLine("  END AS PRIMARY_KEY_INDICATOR, ");
+            sqlStatementForDataItems.AppendLine("  CASE ");
+            sqlStatementForDataItems.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
+            sqlStatementForDataItems.AppendLine("    THEN 'N' ");
+            sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
+            sqlStatementForDataItems.AppendLine("  END AS PRIMARY_KEY_INDICATOR, ");
 
-            sqlStatementForAttributeVersion.AppendLine("  CASE ");
-            sqlStatementForAttributeVersion.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
-            sqlStatementForAttributeVersion.AppendLine("    THEN 'N' ");
-            sqlStatementForAttributeVersion.AppendLine("    ELSE 'Y' ");
-            sqlStatementForAttributeVersion.AppendLine("  END AS MULTI_ACTIVE_INDICATOR ");
+            sqlStatementForDataItems.AppendLine("  CASE ");
+            sqlStatementForDataItems.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
+            sqlStatementForDataItems.AppendLine("    THEN 'N' ");
+            sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
+            sqlStatementForDataItems.AppendLine("  END AS MULTI_ACTIVE_INDICATOR ");
 
-            sqlStatementForAttributeVersion.AppendLine("FROM [" + databaseName + "].sys.columns main");
-            sqlStatementForAttributeVersion.AppendLine("JOIN sys.types t ON main.user_type_id=t.user_type_id");
-            sqlStatementForAttributeVersion.AppendLine("-- Primary Key");
-            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForAttributeVersion.AppendLine("	SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("	  sc.name AS TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("	  C.name AS COLUMN_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
-            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1 ");
-            sqlStatementForAttributeVersion.AppendLine(") keysub");
-            sqlStatementForAttributeVersion.AppendLine("   ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
+            sqlStatementForDataItems.AppendLine("FROM [" + databaseName + "].sys.columns main");
+            sqlStatementForDataItems.AppendLine("JOIN sys.types t ON main.user_type_id=t.user_type_id");
+            sqlStatementForDataItems.AppendLine("-- Primary Key");
+            sqlStatementForDataItems.AppendLine("LEFT OUTER JOIN (");
+            sqlStatementForDataItems.AppendLine("	SELECT ");
+            sqlStatementForDataItems.AppendLine("	  sc.name AS TABLE_NAME,");
+            sqlStatementForDataItems.AppendLine("	  C.name AS COLUMN_NAME");
+            sqlStatementForDataItems.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
+            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
+            sqlStatementForDataItems.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
+            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
+            sqlStatementForDataItems.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1 ");
+            sqlStatementForDataItems.AppendLine(") keysub");
+            sqlStatementForDataItems.AppendLine("   ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
+            sqlStatementForDataItems.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
 
             //Multi-active
-            sqlStatementForAttributeVersion.AppendLine("-- Multi-Active");
-            sqlStatementForAttributeVersion.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForAttributeVersion.AppendLine("	SELECT ");
-            sqlStatementForAttributeVersion.AppendLine("		sc.name AS TABLE_NAME,");
-            sqlStatementForAttributeVersion.AppendLine("		C.name AS COLUMN_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForAttributeVersion.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForAttributeVersion.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
-            sqlStatementForAttributeVersion.AppendLine("	WHERE is_primary_key=1");
-            sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
+            sqlStatementForDataItems.AppendLine("-- Multi-Active");
+            sqlStatementForDataItems.AppendLine("LEFT OUTER JOIN (");
+            sqlStatementForDataItems.AppendLine("	SELECT ");
+            sqlStatementForDataItems.AppendLine("		sc.name AS TABLE_NAME,");
+            sqlStatementForDataItems.AppendLine("		C.name AS COLUMN_NAME");
+            sqlStatementForDataItems.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
+            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
+            sqlStatementForDataItems.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
+            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
+            sqlStatementForDataItems.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+            sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1");
+            sqlStatementForDataItems.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
 
             if (keyIdentifierLocation == "Prefix")
             {
-                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
+                sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
             }
             else
             {
-                sqlStatementForAttributeVersion.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
+                sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
             }
 
-            sqlStatementForAttributeVersion.AppendLine("	) ma");
-            sqlStatementForAttributeVersion.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
-            sqlStatementForAttributeVersion.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
+            sqlStatementForDataItems.AppendLine("	) ma");
+            sqlStatementForDataItems.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
+            sqlStatementForDataItems.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
 
 
             //sqlStatementForAttributeVersion.AppendLine("WHERE OBJECT_NAME(main.OBJECT_ID) LIKE '" + prefix + "_%'");
-            sqlStatementForAttributeVersion.AppendLine("WHERE 1=1");
+            sqlStatementForDataItems.AppendLine("WHERE 1=1");
 
             // Retrieve (and apply) the list of tables to filter from the Table Mapping datagrid
-            sqlStatementForAttributeVersion.AppendLine("  AND (");
+            sqlStatementForDataItems.AppendLine("  AND (");
 
 
             var filterList = new List<Tuple<string, TeamConnection>>();
@@ -7452,16 +6783,16 @@ namespace TEAM
                 var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
 
                 // Always add the 'regular' mapping.
-                sqlStatementForAttributeVersion.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Value + "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Key + "')");
-                sqlStatementForAttributeVersion.AppendLine("  OR");
+                sqlStatementForDataItems.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Value + "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Key + "')");
+                sqlStatementForDataItems.AppendLine("  OR");
             }
 
-            sqlStatementForAttributeVersion.Remove(sqlStatementForAttributeVersion.Length - 6, 6);
-            sqlStatementForAttributeVersion.AppendLine();
-            sqlStatementForAttributeVersion.AppendLine("  )");
-            sqlStatementForAttributeVersion.AppendLine("ORDER BY main.column_id");
+            sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
+            sqlStatementForDataItems.AppendLine();
+            sqlStatementForDataItems.AppendLine("  )");
+            sqlStatementForDataItems.AppendLine("ORDER BY main.column_id");
 
-            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForAttributeVersion.ToString());
+            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems.ToString());
             conn.Close();
             return reverseEngineerResults;
         }
@@ -7841,18 +7172,18 @@ namespace TEAM
             foreach (DataRow row in localDataItemTable.Rows)
             {
                 // Look for the corresponding Data Object Mapping row.
-                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable, row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString(), row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString());
+                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable, row[DataItemMappingMetadataColumns.SourceTable.ToString()].ToString(), row[DataItemMappingMetadataColumns.TargetTable.ToString()].ToString());
 
                 if (dataObjectRow.Item1) //If the corresponding Data Object is enabled
                 {
                     string objectValidated = "";
-                    var validationObjectSource = row[AttributeMappingMetadataColumns.SourceTable.ToString()].ToString();
+                    var validationObjectSource = row[DataItemMappingMetadataColumns.SourceTable.ToString()].ToString();
                     TeamConnection sourceConnection = dataObjectRow.Item3;
-                    var validationAttributeSource = row[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
+                    var validationAttributeSource = row[DataItemMappingMetadataColumns.SourceColumn.ToString()].ToString();
 
-                    var validationObjectTarget = row[AttributeMappingMetadataColumns.TargetTable.ToString()].ToString();
+                    var validationObjectTarget = row[DataItemMappingMetadataColumns.TargetTable.ToString()].ToString();
                     TeamConnection targetConnection = dataObjectRow.Item5;
-                    var validationAttributeTarget = row[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
+                    var validationAttributeTarget = row[DataItemMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
                     var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString();
 
@@ -8072,10 +7403,7 @@ namespace TEAM
             foreach (DataRow row in localDataTable.Rows)
             {
                 // If enabled and is a Staging Layer object
-                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()] && MetadataHandling
-                    .GetDataObjectType((string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()], "",
-                        TeamConfiguration).In(MetadataHandling.DataObjectTypes.StagingArea,
-                        MetadataHandling.DataObjectTypes.PersistentStagingArea))
+                if ((bool) row[DataObjectMappingGridColumns.Enabled.ToString()] && MetadataHandling.GetDataObjectType((string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()], "", TeamConfiguration).In(MetadataHandling.DataObjectTypes.StagingArea, MetadataHandling.DataObjectTypes.PersistentStagingArea))
                 {
                     if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
                     {
@@ -8126,8 +7454,8 @@ namespace TEAM
 
             foreach (DataRow row in localDataTableAttributeMappings.Rows)
             {
-                var localSource = (string) row[AttributeMappingMetadataColumns.SourceTable.ToString()];
-                var localTarget = (string) row[AttributeMappingMetadataColumns.TargetTable.ToString()];
+                var localSource = (string) row[DataItemMappingMetadataColumns.SourceTable.ToString()];
+                var localTarget = (string) row[DataItemMappingMetadataColumns.TargetTable.ToString()];
 
                 // If the value exists, but is disabled just a warning is sufficient.
                 // If the value does not exist for an enabled mapping or at all, then it's an error.
@@ -8695,7 +8023,7 @@ namespace TEAM
             // Spool the output to disk
             if (checkBoxSaveInterfaceToJson.Checked)
             {
-                TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", dataObjectMappings);
+                FileHandling.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", dataObjectMappings);
                 richTextBoxInformation.AppendText($"The file {GlobalParameters.OutputPath}{targetDataObjectName}.json has been created.");
             }
         }
@@ -8792,7 +8120,7 @@ namespace TEAM
                 List<dynamic> sourceDataItems = new List<dynamic>();
                 List<string> sourceDataItemNames = new List<string>();
 
-                var dataItemRows = localDataItemMappingDataTable.Select($"[{AttributeMappingMetadataColumns.SourceTable}] = '{sourceDataObjectName}' AND [{AttributeMappingMetadataColumns.TargetTable}] = '{dataObjectName}'");
+                var dataItemRows = localDataItemMappingDataTable.Select($"[{DataItemMappingMetadataColumns.SourceTable}] = '{sourceDataObjectName}' AND [{DataItemMappingMetadataColumns.TargetTable}] = '{dataObjectName}'");
                 
                 foreach (DataRow dataItemRow in dataItemRows)
                 {
@@ -8802,8 +8130,8 @@ namespace TEAM
 
                     var targetDataItem = new DataItem();
 
-                    var localSourceDataItemFromGrid = dataItemRow[AttributeMappingMetadataColumns.SourceColumn.ToString()].ToString();
-                    var localTargetDataItemFromGrid = dataItemRow[AttributeMappingMetadataColumns.TargetColumn.ToString()].ToString();
+                    var localSourceDataItemFromGrid = dataItemRow[DataItemMappingMetadataColumns.SourceColumn.ToString()].ToString();
+                    var localTargetDataItemFromGrid = dataItemRow[DataItemMappingMetadataColumns.TargetColumn.ToString()].ToString();
 
                     sourceDataItem.name = localSourceDataItemFromGrid;
                     targetDataItem.name = localTargetDataItemFromGrid;
@@ -9294,7 +8622,7 @@ namespace TEAM
                         // Spool the output to disk.
                         if (checkBoxSaveInterfaceToJson.Checked)
                         {
-                            Event fileSaveEventLog = TeamUtility.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", json);
+                            Event fileSaveEventLog = FileHandling.SaveTextToFile(GlobalParameters.OutputPath + targetDataObjectName + ".json", json);
                             eventLog.Add(fileSaveEventLog);
                             mappingCounter++;
                         }
@@ -9437,7 +8765,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new TeamJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + ".json", GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
@@ -9446,17 +8774,8 @@ namespace TEAM
                             }
                         }
 
-                        // If the information needs to be merged, a global parameter needs to be set.
-                        // This will overwrite existing files for the in-use version.
-                        if (!checkBoxMergeFiles.Checked)
-                        {
-                            TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping = "true";
-                        }
-
-
                         // Load the file, convert it to a DataTable and bind it to the source
-                        List<AttributeMappingJson> jsonArray =
-                            JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
+                        List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
                         // Set the column names in the datatable.
@@ -9612,20 +8931,13 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new TeamJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", FormBase.GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonTableMappingFileName + ".json", FormBase.GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
                             {
                                 richTextBoxInformation.Text = "An issue occurred when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
                             }
-                        }
-
-                        // If the information needs to be merged, a global parameter needs to be set.
-                        // This will overwrite existing files for the in-use version.
-                        if (!checkBoxMergeFiles.Checked)
-                        {
-                            TeamJsonHandling.JsonFileConfiguration.newFileTableMapping = "true";
                         }
 
                         TableMapping.GetMetadata(chosenFile);
@@ -9698,12 +9010,8 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new TeamJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(
-                                    GlobalParameters.JsonModelMetadataFileName + @"_v" +
-                                    GlobalParameters.CurrentVersionId + ".json",
-                                    FormBase.GlobalParameters.ConfigurationPath);
-                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " +
-                                                              targetFileName + ".\r\n\r\n";
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonModelMetadataFileName + ".json", GlobalParameters.ConfigurationPath);
+                                richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
                             }
                             catch (Exception exception)
                             {
@@ -9787,8 +9095,7 @@ namespace TEAM
                         {
                             JObject individualRow = JObject.FromObject(new
                             {
-                                versionAttributeHash = singleRow[0].ToString(),
-                                versionId = singleRow[1].ToString(),
+                                attributeHash = singleRow[0].ToString(),
                                 databaseName = singleRow[2].ToString(),
                                 schemaName = singleRow[3].ToString(),
                                 tableName = singleRow[4].ToString(),
@@ -9921,8 +9228,7 @@ namespace TEAM
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode &&
                 _bindingSourcePhysicalModelMetadata.Count == 0)
             {
-                richTextBoxInformation.Text +=
-                    "There is no physical model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
+                richTextBoxInformation.Text += "There is no physical model metadata available.\r\n ";
             }
             else
             {
@@ -9967,9 +9273,6 @@ namespace TEAM
                 // Iterate across all Data Object Mappings, to see if there are corresponding Data Item Mappings.
                 foreach (DataRow dataObjectRow in localDataObjectDataTable.Rows)
                 {
-                    // Generic
-                    var localVersionId = dataObjectRow[DataObjectMappingGridColumns.VersionId.ToString()].ToString();
-
                     // Source Data Object details
                     var sourceDataObjectName = dataObjectRow[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
                     var sourceConnectionId = dataObjectRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
@@ -10066,10 +9369,10 @@ namespace TEAM
                         var results =
                             from localRow in localDataItemDataTable.AsEnumerable()
                             where
-                                localRow.Field<string>(AttributeMappingMetadataColumns.SourceTable.ToString()) == matchedDataItemMappingFromDatabase.sourceDataObjectName &&
-                                localRow.Field<string>(AttributeMappingMetadataColumns.TargetTable.ToString()) == matchedDataItemMappingFromDatabase.targetDataObjectName &&
-                                localRow.Field<string>(AttributeMappingMetadataColumns.SourceColumn.ToString()) == matchedDataItemMappingFromDatabase.sourceDataItemName &&
-                                localRow.Field<string>(AttributeMappingMetadataColumns.TargetColumn.ToString()) == matchedDataItemMappingFromDatabase.targetDataItemName
+                                localRow.Field<string>(DataItemMappingMetadataColumns.SourceTable.ToString()) == matchedDataItemMappingFromDatabase.sourceDataObjectName &&
+                                localRow.Field<string>(DataItemMappingMetadataColumns.TargetTable.ToString()) == matchedDataItemMappingFromDatabase.targetDataObjectName &&
+                                localRow.Field<string>(DataItemMappingMetadataColumns.SourceColumn.ToString()) == matchedDataItemMappingFromDatabase.sourceDataItemName &&
+                                localRow.Field<string>(DataItemMappingMetadataColumns.TargetColumn.ToString()) == matchedDataItemMappingFromDatabase.targetDataItemName
                             select localRow;
 
                         if (results.FirstOrDefault() == null)
@@ -10079,13 +9382,12 @@ namespace TEAM
 
                             DataRow newRow = localDataItemDataTable.NewRow();
 
-                            newRow[AttributeMappingMetadataColumns.HashKey.ToString()] = Utility.CreateMd5(new string[] {Utility.GetRandomString(100)}, "#");
-                            newRow[AttributeMappingMetadataColumns.VersionId.ToString()] = localVersionId;
-                            newRow[AttributeMappingMetadataColumns.SourceTable.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
-                            newRow[AttributeMappingMetadataColumns.SourceColumn.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
-                            newRow[AttributeMappingMetadataColumns.TargetTable.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
-                            newRow[AttributeMappingMetadataColumns.TargetColumn.ToString()] = matchedDataItemMappingFromDatabase.targetDataItemName;
-                            newRow[AttributeMappingMetadataColumns.Notes.ToString()] = "Automatically matched";
+                            newRow[DataItemMappingMetadataColumns.HashKey.ToString()] = Utility.CreateMd5(new string[] {Utility.GetRandomString(100)}, "#");
+                            newRow[DataItemMappingMetadataColumns.SourceTable.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
+                            newRow[DataItemMappingMetadataColumns.SourceColumn.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
+                            newRow[DataItemMappingMetadataColumns.TargetTable.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
+                            newRow[DataItemMappingMetadataColumns.TargetColumn.ToString()] = matchedDataItemMappingFromDatabase.targetDataItemName;
+                            newRow[DataItemMappingMetadataColumns.Notes.ToString()] = "Automatically matched";
 
                             localDataItemDataTable.Rows.Add(newRow);
                             //localDataItemDataTable.AcceptChanges();
@@ -10126,7 +9428,7 @@ namespace TEAM
                             try
                             {
                                 var backupFile = new TeamJsonHandling();
-                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.WorkingEnvironment+"_"+GlobalParameters.JsonTableMappingFileName + @"_v" + GlobalParameters.CurrentVersionId + ".json", GlobalParameters.ConfigurationPath);
+                                var targetFileName = backupFile.BackupJsonFile(GlobalParameters.WorkingEnvironment+"_"+GlobalParameters.JsonTableMappingFileName + ".json", GlobalParameters.ConfigurationPath);
                                 richTextBoxInformation.Text = $@"A backup of the Data Object Mapping Grid file was created as '{targetFileName}'.";
                             }
                             catch (Exception exception)
@@ -10197,20 +9499,17 @@ namespace TEAM
                                     string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
                                     var sourceConnectionInternalId = GetTeamConnectionByConnectionKey(sourceConnectionString).ConnectionInternalId;
 
-                                    var versionId = GlobalParameters.CurrentVersionId.ToString();
-
                                     var newRow = TableMapping.DataTable.NewRow();
 
                                     string[] hashKey = new string[]
                                     {
-                                        versionId, sourceDataObjectName, targetDataObjectName, businessKeyDefinition,
+                                        sourceDataObjectName, targetDataObjectName, businessKeyDefinition,
                                         drivingKeyDefinition, filterCriterion
                                     };
                                     Utility.CreateMd5(hashKey, Utility.SandingElement);
 
                                     newRow[(int)DataObjectMappingGridColumns.Enabled] = dataObjectMapping.enabled;
                                     newRow[(int)DataObjectMappingGridColumns.HashKey] = hashKey;
-                                    newRow[(int)DataObjectMappingGridColumns.VersionId] = versionId;
                                     newRow[(int)DataObjectMappingGridColumns.SourceDataObject] = sourceDataObjectName;
                                     newRow[(int)DataObjectMappingGridColumns.SourceConnection] = sourceConnectionInternalId;
                                     newRow[(int)DataObjectMappingGridColumns.TargetDataObject] = targetDataObjectName;

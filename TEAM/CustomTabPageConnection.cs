@@ -653,7 +653,7 @@ namespace TEAM
                 try
                 {
                     // Save the updated file to disk.
-                    TeamUtility.CreateFileBackup(_connectionFileName);
+                    FileHandling.CreateFileBackup(_connectionFileName, GlobalParameters.BackupPath);
                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                     File.WriteAllText(_connectionFileName, output);
 
@@ -677,15 +677,15 @@ namespace TEAM
 
         public void TestConnection(object sender, EventArgs e)
         {
-            UpdateRichTextBoxInformation("Validating database connection.\r\n");
+            UpdateRichTextBoxInformation("Validating the database connection.\r\n");
 
             var connectionString = _localConnection.CreateSqlServerConnectionString(false);
 
-            using (var connectionVersion = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(connectionString))
             {
                 try
                 {
-                    connectionVersion.Open();
+                    connection.Open();
                     UpdateRichTextBoxInformation("The database connection could be successfully established.\r\n");
                 }
                 catch (Exception)

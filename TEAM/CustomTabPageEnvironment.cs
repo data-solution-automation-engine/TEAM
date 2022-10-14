@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using TEAM_Library;
+using static TEAM.FormBase;
 
 namespace TEAM
 {
@@ -315,7 +316,7 @@ namespace TEAM
                 }
 
                 // Save the updated file to disk.
-                TeamUtility.CreateFileBackup(_environmentFileName);
+                FileHandling.CreateFileBackup(_environmentFileName, GlobalParameters.BackupPath);
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                 File.WriteAllText(_environmentFileName, output);
 

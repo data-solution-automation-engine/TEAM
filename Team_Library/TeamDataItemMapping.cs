@@ -9,7 +9,6 @@ namespace TEAM_Library
     {
         //JSON representation of the attribute mapping metadata
         public string attributeMappingHash { get; set; }
-        public int versionId { get; set; }
         public string sourceTable { get; set; }
         public string sourceAttribute { get; set; }
         public string targetTable { get; set; }
@@ -19,18 +18,17 @@ namespace TEAM_Library
     /// <summary>
     /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
     /// </summary>
-    public enum AttributeMappingMetadataColumns
+    public enum DataItemMappingMetadataColumns
     {
         HashKey = 0,
-        VersionId = 1,
-        SourceTable = 2,
-        SourceColumn = 3,
-        TargetTable = 4,
-        TargetColumn = 5,
-        Notes = 6
+        SourceTable = 1,
+        SourceColumn = 2,
+        TargetTable = 3,
+        TargetColumn = 4,
+        Notes = 5
     }
 
-    public class TeamAttributeMapping
+    public class TeamDataItemMapping
     {
         public EventLog EventLog { get; set; }
 
@@ -38,7 +36,7 @@ namespace TEAM_Library
 
         public DataTable DataTable { get; set; }
 
-        public TeamAttributeMapping()
+        public TeamDataItemMapping()
         {
             EventLog = new EventLog();
             DataTable = new DataTable();
@@ -50,7 +48,7 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{AttributeMappingMetadataColumns.TargetTable}] ASC, [{AttributeMappingMetadataColumns.TargetColumn}] ASC, [{AttributeMappingMetadataColumns.TargetTable}] ASC, [{AttributeMappingMetadataColumns.SourceTable}] ASC";
+            DataTable.DefaultView.Sort = $"[{DataItemMappingMetadataColumns.TargetTable}] ASC, [{DataItemMappingMetadataColumns.TargetColumn}] ASC, [{DataItemMappingMetadataColumns.TargetTable}] ASC, [{DataItemMappingMetadataColumns.SourceTable}] ASC";
         }
 
         /// <summary>
@@ -58,13 +56,12 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableColumns()
         {
-            DataTable.Columns[(int)AttributeMappingMetadataColumns.HashKey].ColumnName = AttributeMappingMetadataColumns.HashKey.ToString();
-            DataTable.Columns[(int)AttributeMappingMetadataColumns.VersionId].ColumnName = AttributeMappingMetadataColumns.VersionId.ToString();
-            DataTable.Columns[(int)AttributeMappingMetadataColumns.SourceTable].ColumnName = AttributeMappingMetadataColumns.SourceTable.ToString();
-            DataTable.Columns[(int)AttributeMappingMetadataColumns.SourceColumn].ColumnName = AttributeMappingMetadataColumns.SourceColumn.ToString();
-            DataTable.Columns[(int)AttributeMappingMetadataColumns.TargetTable].ColumnName = AttributeMappingMetadataColumns.TargetTable.ToString();
-            DataTable.Columns[(int)AttributeMappingMetadataColumns.TargetColumn].ColumnName = AttributeMappingMetadataColumns.TargetColumn.ToString();
-            DataTable.Columns[(int)AttributeMappingMetadataColumns.Notes].ColumnName = AttributeMappingMetadataColumns.Notes.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.HashKey].ColumnName = DataItemMappingMetadataColumns.HashKey.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.SourceTable].ColumnName = DataItemMappingMetadataColumns.SourceTable.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.SourceColumn].ColumnName = DataItemMappingMetadataColumns.SourceColumn.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.TargetTable].ColumnName = DataItemMappingMetadataColumns.TargetTable.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.TargetColumn].ColumnName = DataItemMappingMetadataColumns.TargetColumn.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.Notes].ColumnName = DataItemMappingMetadataColumns.Notes.ToString();
         }
 
 
@@ -104,10 +101,5 @@ namespace TEAM_Library
                 SetDataTableSorting();
             }
         }
-
-
-
-
-
     }
 }

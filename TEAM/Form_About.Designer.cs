@@ -59,7 +59,6 @@ namespace TEAM
             this.textBox1.TabIndex = 2;
             this.textBox1.Text = "Taxonomy of ETL Automation Metadata";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // linkLabelTeam
             // 

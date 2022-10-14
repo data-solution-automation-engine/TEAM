@@ -26,7 +26,7 @@ namespace TEAM
 
         public string LinkCompletion { get; set; }
         
-        // Modelling
+        // Data Vault Modelling.
         public string BasicDataVaultValidation { get; set; }
 
         /// <summary>

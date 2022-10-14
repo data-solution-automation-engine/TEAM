@@ -53,7 +53,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// /// Run a SQL command against the provided database connection, capture any errors and report feedback to the Sample data screen.
+        /// /// Run a SQL command against the provided database connection, capture any errors and report feedback.
         /// </summary>
         /// <param name="connString"></param>
         /// <param name="createStatement"></param>
@@ -62,25 +62,25 @@ namespace TEAM
         /// <param name="targetForm"></param>
         private static void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, Form_Alert targetForm)
         {
-            using (var connectionVersion = new SqlConnection(connString))
+            using (var connection = new SqlConnection(connString))
             {
-                var commandVersion = new SqlCommand(createStatement, connectionVersion);
+                var sqlCommand = new SqlCommand(createStatement, connection);
 
                 try
                 {
-                    connectionVersion.Open();
-                    commandVersion.ExecuteNonQuery();
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
 
                     worker.ReportProgress(progressCounter);
                     targetForm.SetTextLogging(createStatement);
                 }
                 catch (Exception ex)
                 {
-                    string errorMessage = $"An error has occurred with the following query: \r\n\r\n{createStatement}.\r\n\r\nThe error message is {ex}.";
+                    string errorMessage = $"An error has occurred with the following query: \r\n\r\n{createStatement}.\r\n\r\nThe error message is {ex.Message}.";
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
 
                     targetForm.SetTextLogging(errorMessage+"\r\n\r\n");
-                    targetForm.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
+                    targetForm.SetTextLogging($"This occurred with the following query: {createStatement}.\r\n\r\n");
                 }
             }
         }
@@ -112,7 +112,6 @@ namespace TEAM
             {
                 worker.ReportProgress(0);
 
-
                 // Create the sample data
                 _alertSampleDataCreationInDatabase.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
 
@@ -126,7 +125,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"An issue occurred creating the sample schemas. The error message is: {ex.Message}", "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -309,7 +308,7 @@ namespace TEAM
         {
             if (checkBoxConfigurationSettings.Checked)
             {
-                TeamUtility.CreateFileBackup(GlobalParameters.ConfigurationPath +GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
+                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension, GlobalParameters.BackupPath);
 
                 // Shared values (same for all samples)
                 var stagingAreaPrefix = "STG";
@@ -458,8 +457,9 @@ namespace TEAM
                         // And then process them
                         foreach (KeyValuePair<string, string> file in fileDictionary)
                         {
-                            File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
-                            _alertSampleJsonMetadata.SetTextLogging("Created sample Json file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
+                            File.Copy(file.Key, GlobalParameters.MetadataPath + "\\" + file.Value, true);
+                            _alertSampleJsonMetadata.SetTextLogging($"Created sample Json file '{file.Value}' in {GlobalParameters.MetadataPath}.");
+                            _alertSampleJsonMetadata.SetTextLogging("\r\n"); // Empty line
                         }
                     }
 
@@ -475,7 +475,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"An issue occurred creating the sample metadata. The error message is: {ex.Message}", "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }

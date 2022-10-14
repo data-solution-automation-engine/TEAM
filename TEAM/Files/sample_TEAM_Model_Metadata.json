@@ -1,7 +1,6 @@
 [
   {
-    "versionAttributeHash": "F9B7591A48D754ACFCDF32FBA2D2CE17",
-    "versionId": 0,
+    "attributeHash": "F9B7591A48D754ACFCDF32FBA2D2CE17",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -15,8 +14,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "9B9E18127B76D0A7668D3989A5E33B80",
-    "versionId": 0,
+    "attributeHash": "9B9E18127B76D0A7668D3989A5E33B80",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUST_MEMBERSHIP",
@@ -30,8 +28,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "E9CCE74E0AC6BEB19C02EF4A5408043C",
-    "versionId": 0,
+    "attributeHash": "E9CCE74E0AC6BEB19C02EF4A5408043C",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_OFFER",
@@ -45,8 +42,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "A7DD17F047A076120A45034F65AECD40",
-    "versionId": 0,
+    "attributeHash": "A7DD17F047A076120A45034F65AECD40",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "ESTIMATED_WORTH",
@@ -60,8 +56,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "5494FBC2AE920948C785834AB9FD8BD6",
-    "versionId": 0,
+    "attributeHash": "5494FBC2AE920948C785834AB9FD8BD6",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PERSONALISED_COSTING",
@@ -75,8 +70,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "44AFE9BF4F9E1F1A067208CCF0C1D6FA",
-    "versionId": 0,
+    "attributeHash": "44AFE9BF4F9E1F1A067208CCF0C1D6FA",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "OFFER",
@@ -90,8 +84,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "88FE2854BA752AC472C9498F47F1F991",
-    "versionId": 0,
+    "attributeHash": "88FE2854BA752AC472C9498F47F1F991",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PLAN",
@@ -105,8 +98,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "7C36AE4A588CB2B7BCB489A690D6FFDA",
-    "versionId": 0,
+    "attributeHash": "7C36AE4A588CB2B7BCB489A690D6FFDA",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PLAN",
@@ -120,8 +112,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "81172074084393C8583647FF47E3D814",
-    "versionId": 0,
+    "attributeHash": "81172074084393C8583647FF47E3D814",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "OFFER",
@@ -135,8 +126,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A0B8B2E94BA5F4C07BCEC405077385EE",
-    "versionId": 0,
+    "attributeHash": "A0B8B2E94BA5F4C07BCEC405077385EE",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PERSONALISED_COSTING",
@@ -150,8 +140,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "B3A07CD4B807EC36CDF189FD0B211834",
-    "versionId": 0,
+    "attributeHash": "B3A07CD4B807EC36CDF189FD0B211834",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "ESTIMATED_WORTH",
@@ -165,8 +154,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "03C6EAEB22EE8706BC2EB0433E7733F7",
-    "versionId": 0,
+    "attributeHash": "03C6EAEB22EE8706BC2EB0433E7733F7",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_OFFER",
@@ -180,8 +168,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "54E6622D9D83F79EC76C77DE4F50F54F",
-    "versionId": 0,
+    "attributeHash": "54E6622D9D83F79EC76C77DE4F50F54F",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUST_MEMBERSHIP",
@@ -195,8 +182,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "F4B9841C2F46E8C92D50D67CF3084B4D",
-    "versionId": 0,
+    "attributeHash": "F4B9841C2F46E8C92D50D67CF3084B4D",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -210,8 +196,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7195A487F81D41747677F6D3BCABF647",
-    "versionId": 0,
+    "attributeHash": "7195A487F81D41747677F6D3BCABF647",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -225,8 +210,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EB8C64BA6AFE15E4DFD814DC783F3FA6",
-    "versionId": 0,
+    "attributeHash": "EB8C64BA6AFE15E4DFD814DC783F3FA6",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUST_MEMBERSHIP",
@@ -240,8 +224,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3657FE29DD18AFD0E2C78FF1C9862A15",
-    "versionId": 0,
+    "attributeHash": "3657FE29DD18AFD0E2C78FF1C9862A15",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "ESTIMATED_WORTH",
@@ -255,8 +238,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D1D45AFB25C98863AA5A088F59A5CA6C",
-    "versionId": 0,
+    "attributeHash": "D1D45AFB25C98863AA5A088F59A5CA6C",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PERSONALISED_COSTING",
@@ -270,8 +252,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "48161F7F32510106BE5D58759C348E56",
-    "versionId": 0,
+    "attributeHash": "48161F7F32510106BE5D58759C348E56",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PLAN",
@@ -285,8 +266,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E1D583C94478134DFF35AB66D7DF27BD",
-    "versionId": 0,
+    "attributeHash": "E1D583C94478134DFF35AB66D7DF27BD",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PERSONALISED_COSTING",
@@ -300,8 +280,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "BFB96FEB3A4B3F6E90F9FD86667CC058",
-    "versionId": 0,
+    "attributeHash": "BFB96FEB3A4B3F6E90F9FD86667CC058",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUST_MEMBERSHIP",
@@ -315,8 +294,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A26EBF21CBFA139BF831D13E45B9A0B8",
-    "versionId": 0,
+    "attributeHash": "A26EBF21CBFA139BF831D13E45B9A0B8",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -330,8 +308,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E16B99D760ADC7D0C3B0D464D1787EFB",
-    "versionId": 0,
+    "attributeHash": "E16B99D760ADC7D0C3B0D464D1787EFB",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -345,8 +322,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5671ADA37D72857471B3380F6B029B5C",
-    "versionId": 0,
+    "attributeHash": "5671ADA37D72857471B3380F6B029B5C",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUST_MEMBERSHIP",
@@ -360,8 +336,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1C6F7EA45BFA5A2941CCE40C146B46DE",
-    "versionId": 0,
+    "attributeHash": "1C6F7EA45BFA5A2941CCE40C146B46DE",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "PERSONALISED_COSTING",
@@ -375,8 +350,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D9C333A6AE1C42EAB7C6D7A8388C97F0",
-    "versionId": 0,
+    "attributeHash": "D9C333A6AE1C42EAB7C6D7A8388C97F0",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUST_MEMBERSHIP",
@@ -390,8 +364,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "DEACFA28C5E784F0873B658E675E755E",
-    "versionId": 0,
+    "attributeHash": "DEACFA28C5E784F0873B658E675E755E",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -405,8 +378,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2069F80F262C0258076A59443AA7A585",
-    "versionId": 0,
+    "attributeHash": "2069F80F262C0258076A59443AA7A585",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -420,8 +392,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CF9090A27FFAC8B8FCFC733A6833898F",
-    "versionId": 0,
+    "attributeHash": "CF9090A27FFAC8B8FCFC733A6833898F",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -435,8 +406,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E8F0452EE844A3664F0E9A036FFC95CC",
-    "versionId": 0,
+    "attributeHash": "E8F0452EE844A3664F0E9A036FFC95CC",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -450,8 +420,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "55A7B625752FE7DFADCAD1AC3D7FDD42",
-    "versionId": 0,
+    "attributeHash": "55A7B625752FE7DFADCAD1AC3D7FDD42",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -465,8 +434,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "04EFF35B8FB5515A02B14E002B7D6985",
-    "versionId": 0,
+    "attributeHash": "04EFF35B8FB5515A02B14E002B7D6985",
     "databaseName": "000_Source",
     "schemaName": "dbo",
     "tableName": "CUSTOMER_PERSONAL",
@@ -480,8 +448,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B0C51AE034515448C589E3635709AF95",
-    "versionId": 0,
+    "attributeHash": "B0C51AE034515448C589E3635709AF95",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -495,8 +462,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "61D810C80EC2F04669F5F09A79713958",
-    "versionId": 0,
+    "attributeHash": "61D810C80EC2F04669F5F09A79713958",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -510,8 +476,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "BB2A10F1F887E16B6A7577811272A50C",
-    "versionId": 0,
+    "attributeHash": "BB2A10F1F887E16B6A7577811272A50C",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -525,8 +490,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "8C16DAF649A554DFB5BD579322AB4666",
-    "versionId": 0,
+    "attributeHash": "8C16DAF649A554DFB5BD579322AB4666",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -540,8 +504,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4F5E9A441AD45B150A023D7E70B938C3",
-    "versionId": 0,
+    "attributeHash": "4F5E9A441AD45B150A023D7E70B938C3",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -555,8 +518,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D36D736575A2A50CB4D9C888F993149A",
-    "versionId": 0,
+    "attributeHash": "D36D736575A2A50CB4D9C888F993149A",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -570,8 +532,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4BA8965DE43628848C0F3CB9C78128E5",
-    "versionId": 0,
+    "attributeHash": "4BA8965DE43628848C0F3CB9C78128E5",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -585,8 +546,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2EB0F2C47A4ADB949322CC86328943B8",
-    "versionId": 0,
+    "attributeHash": "2EB0F2C47A4ADB949322CC86328943B8",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -600,8 +560,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EAFE05000DACF485CFB21F10CD988496",
-    "versionId": 0,
+    "attributeHash": "EAFE05000DACF485CFB21F10CD988496",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -615,8 +574,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7A2C20E0BB0F55B2268F69C70431F42E",
-    "versionId": 0,
+    "attributeHash": "7A2C20E0BB0F55B2268F69C70431F42E",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -630,8 +588,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "8BF0DBA829056F5D88BA3AEA0561390B",
-    "versionId": 0,
+    "attributeHash": "8BF0DBA829056F5D88BA3AEA0561390B",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -645,8 +602,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3C1C5FE3A38A346946102866ABCCCB55",
-    "versionId": 0,
+    "attributeHash": "3C1C5FE3A38A346946102866ABCCCB55",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -660,8 +616,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F48BC1AB33706301AEFFE0FA35B32533",
-    "versionId": 0,
+    "attributeHash": "F48BC1AB33706301AEFFE0FA35B32533",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -675,8 +630,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "54AAF675A1BDC95BDA5DCE73651E9D0A",
-    "versionId": 0,
+    "attributeHash": "54AAF675A1BDC95BDA5DCE73651E9D0A",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -690,8 +644,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2DAB0C08207E75EC87A5A74F85F6A67B",
-    "versionId": 0,
+    "attributeHash": "2DAB0C08207E75EC87A5A74F85F6A67B",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -705,8 +658,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4386AECAD5455A47385C6946B50E8FA7",
-    "versionId": 0,
+    "attributeHash": "4386AECAD5455A47385C6946B50E8FA7",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -720,8 +672,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "68362C743253654EB6938E6C3E34EE6D",
-    "versionId": 0,
+    "attributeHash": "68362C743253654EB6938E6C3E34EE6D",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -735,8 +686,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F64E388B6F1C8D93E60741DBFEDF40AE",
-    "versionId": 0,
+    "attributeHash": "F64E388B6F1C8D93E60741DBFEDF40AE",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -750,8 +700,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "0B45B1B7F8B41599192705062012B502",
-    "versionId": 0,
+    "attributeHash": "0B45B1B7F8B41599192705062012B502",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -765,8 +714,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C4ED8EFBC1C154152D8109AD5E28E23F",
-    "versionId": 0,
+    "attributeHash": "C4ED8EFBC1C154152D8109AD5E28E23F",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -780,8 +728,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "0E8FE6EF4924B96F7E191D7453BDE66F",
-    "versionId": 0,
+    "attributeHash": "0E8FE6EF4924B96F7E191D7453BDE66F",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -795,8 +742,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A2ACFCDDDC27AA555BF3A3A9B0E0B865",
-    "versionId": 0,
+    "attributeHash": "A2ACFCDDDC27AA555BF3A3A9B0E0B865",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -810,8 +756,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "72EA9D243B7BC4C76A8384B4696A6FFA",
-    "versionId": 0,
+    "attributeHash": "72EA9D243B7BC4C76A8384B4696A6FFA",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -825,8 +770,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "87542B728B2B27C246F30757905E154A",
-    "versionId": 0,
+    "attributeHash": "87542B728B2B27C246F30757905E154A",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -840,8 +784,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "661D6A02B858684C3B89E5FD12E68AA7",
-    "versionId": 0,
+    "attributeHash": "661D6A02B858684C3B89E5FD12E68AA7",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -855,8 +798,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1AD9AE0D4D26543802F3BB464B5DD0D5",
-    "versionId": 0,
+    "attributeHash": "1AD9AE0D4D26543802F3BB464B5DD0D5",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -870,8 +812,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "447F0DDF0B57A952B9D42A5EEF35C6B8",
-    "versionId": 0,
+    "attributeHash": "447F0DDF0B57A952B9D42A5EEF35C6B8",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -885,8 +826,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "72B3EAFBE7793AA772D1F485FE259D4C",
-    "versionId": 0,
+    "attributeHash": "72B3EAFBE7793AA772D1F485FE259D4C",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -900,8 +840,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4409E90A1B34ECB1B973C94B90E4D668",
-    "versionId": 0,
+    "attributeHash": "4409E90A1B34ECB1B973C94B90E4D668",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -915,8 +854,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F4E5DE6BFF2F9CA7718B9B64F5A86FB8",
-    "versionId": 0,
+    "attributeHash": "F4E5DE6BFF2F9CA7718B9B64F5A86FB8",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -930,8 +868,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2ABB623C3145D96333E67D1A3B3C2612",
-    "versionId": 0,
+    "attributeHash": "2ABB623C3145D96333E67D1A3B3C2612",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -945,8 +882,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6C4CB1F3733C17721A999A539A760FC9",
-    "versionId": 0,
+    "attributeHash": "6C4CB1F3733C17721A999A539A760FC9",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -960,8 +896,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A8C4B175AA556249E84356A3A7672A4E",
-    "versionId": 0,
+    "attributeHash": "A8C4B175AA556249E84356A3A7672A4E",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -975,8 +910,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4DEB7D4B09E3AF30606487D277B943B1",
-    "versionId": 0,
+    "attributeHash": "4DEB7D4B09E3AF30606487D277B943B1",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -990,8 +924,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2664747A69C3E5521CBCF6CBE9D3F5FA",
-    "versionId": 0,
+    "attributeHash": "2664747A69C3E5521CBCF6CBE9D3F5FA",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1005,8 +938,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D44560F0CC60DA56D57ABCBF6719345B",
-    "versionId": 0,
+    "attributeHash": "D44560F0CC60DA56D57ABCBF6719345B",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -1020,8 +952,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D918D9AD1DA0C58D018FD60FFA649238",
-    "versionId": 0,
+    "attributeHash": "D918D9AD1DA0C58D018FD60FFA649238",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -1035,8 +966,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C01D995D9365BD1154153D15F2F75E97",
-    "versionId": 0,
+    "attributeHash": "C01D995D9365BD1154153D15F2F75E97",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1050,8 +980,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6D9B7B5CC10A8C9220D74AED16FFE333",
-    "versionId": 0,
+    "attributeHash": "6D9B7B5CC10A8C9220D74AED16FFE333",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -1065,8 +994,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "01585053133B3D7C05EAB7A6BFBECF0A",
-    "versionId": 0,
+    "attributeHash": "01585053133B3D7C05EAB7A6BFBECF0A",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -1080,8 +1008,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B28084D508329A4FA685431791854210",
-    "versionId": 0,
+    "attributeHash": "B28084D508329A4FA685431791854210",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -1095,8 +1022,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "74002079698F94F45530E3A48F69EC51",
-    "versionId": 0,
+    "attributeHash": "74002079698F94F45530E3A48F69EC51",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -1110,8 +1036,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E63E7FF85649B1A7AADA0C8582F443A2",
-    "versionId": 0,
+    "attributeHash": "E63E7FF85649B1A7AADA0C8582F443A2",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1125,8 +1050,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "969C52569474AD46E9C278B27B9B2DAD",
-    "versionId": 0,
+    "attributeHash": "969C52569474AD46E9C278B27B9B2DAD",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -1140,8 +1064,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C35E325466F5E23620FFC6C26A5619FD",
-    "versionId": 0,
+    "attributeHash": "C35E325466F5E23620FFC6C26A5619FD",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -1155,8 +1078,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7BD8ABFAF7F24C78C476D0969981CAFF",
-    "versionId": 0,
+    "attributeHash": "7BD8ABFAF7F24C78C476D0969981CAFF",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1170,8 +1092,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "62AB8B33071650A220AA5B77D61C4AED",
-    "versionId": 0,
+    "attributeHash": "62AB8B33071650A220AA5B77D61C4AED",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -1185,8 +1106,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4D886C802F1396E56E7D9751257A383D",
-    "versionId": 0,
+    "attributeHash": "4D886C802F1396E56E7D9751257A383D",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1200,8 +1120,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "38DA8941D8D3C55BC34914652C100B8A",
-    "versionId": 0,
+    "attributeHash": "38DA8941D8D3C55BC34914652C100B8A",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1215,8 +1134,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "52F846D24624B63FE19FEAA7EDACE571",
-    "versionId": 0,
+    "attributeHash": "52F846D24624B63FE19FEAA7EDACE571",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -1230,8 +1148,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "92E3E077D433A74BAFFBA2C2DD38DEC4",
-    "versionId": 0,
+    "attributeHash": "92E3E077D433A74BAFFBA2C2DD38DEC4",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1245,8 +1162,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "079F165F3FE18F1CC38E25410643B303",
-    "versionId": 0,
+    "attributeHash": "079F165F3FE18F1CC38E25410643B303",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -1260,8 +1176,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "69D27C9272776C40872E5D12724E488D",
-    "versionId": 0,
+    "attributeHash": "69D27C9272776C40872E5D12724E488D",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -1275,8 +1190,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B5C1D4ED969C30C563F855AF86C6AA79",
-    "versionId": 0,
+    "attributeHash": "B5C1D4ED969C30C563F855AF86C6AA79",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1290,8 +1204,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6842862FDFBD5E1CE56173A4AB1F4446",
-    "versionId": 0,
+    "attributeHash": "6842862FDFBD5E1CE56173A4AB1F4446",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -1305,8 +1218,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "35941B71B639F5F7AE3F407AC9526781",
-    "versionId": 0,
+    "attributeHash": "35941B71B639F5F7AE3F407AC9526781",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -1320,8 +1232,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "9820B40D5C9A4B13D08965F382B96077",
-    "versionId": 0,
+    "attributeHash": "9820B40D5C9A4B13D08965F382B96077",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -1335,8 +1246,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EE00F6AC5D44DB6332F3EF39E43C78E1",
-    "versionId": 0,
+    "attributeHash": "EE00F6AC5D44DB6332F3EF39E43C78E1",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -1350,8 +1260,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "48F0738AE17F95AE12D951EAA60DF855",
-    "versionId": 0,
+    "attributeHash": "48F0738AE17F95AE12D951EAA60DF855",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1365,8 +1274,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "272C0736C8D10B671F86162F8378B8BF",
-    "versionId": 0,
+    "attributeHash": "272C0736C8D10B671F86162F8378B8BF",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -1380,8 +1288,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EA4625FA9026B6B4909A90CBBF78589F",
-    "versionId": 0,
+    "attributeHash": "EA4625FA9026B6B4909A90CBBF78589F",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -1395,8 +1302,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B08E96CB78353FB4F9245E8115A68C28",
-    "versionId": 0,
+    "attributeHash": "B08E96CB78353FB4F9245E8115A68C28",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1410,8 +1316,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E0B4A484F9A8F3F6A87C134022E46565",
-    "versionId": 0,
+    "attributeHash": "E0B4A484F9A8F3F6A87C134022E46565",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -1425,8 +1330,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "BE5184DA498F27AB2743D3CEE8C8991A",
-    "versionId": 0,
+    "attributeHash": "BE5184DA498F27AB2743D3CEE8C8991A",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1440,8 +1344,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6D54FE6E9A6BEE206D5464F78C3FC939",
-    "versionId": 0,
+    "attributeHash": "6D54FE6E9A6BEE206D5464F78C3FC939",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1455,8 +1358,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7CFAA39C9A14FC23A159500132D089DF",
-    "versionId": 0,
+    "attributeHash": "7CFAA39C9A14FC23A159500132D089DF",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_OFFER",
@@ -1470,8 +1372,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C4DC2E98871B90AA04E2E64C81BDBF0F",
-    "versionId": 0,
+    "attributeHash": "C4DC2E98871B90AA04E2E64C81BDBF0F",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1485,8 +1386,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4A5E31169517DF89C99DD92AFBEA1DC7",
-    "versionId": 0,
+    "attributeHash": "4A5E31169517DF89C99DD92AFBEA1DC7",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -1500,8 +1400,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "093AE187BB09E61C8E8372BF3BF5456E",
-    "versionId": 0,
+    "attributeHash": "093AE187BB09E61C8E8372BF3BF5456E",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_OFFER",
@@ -1515,8 +1414,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "58879A7461423A2FD799D6B59EDECD62",
-    "versionId": 0,
+    "attributeHash": "58879A7461423A2FD799D6B59EDECD62",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1530,8 +1428,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "86650A3B56CD53AFE1EB841F4EE33354",
-    "versionId": 0,
+    "attributeHash": "86650A3B56CD53AFE1EB841F4EE33354",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -1545,8 +1442,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6E327E827D6B6DDABE7ECD40986313FC",
-    "versionId": 0,
+    "attributeHash": "6E327E827D6B6DDABE7ECD40986313FC",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_USERMANAGED_SEGMENT",
@@ -1560,8 +1456,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "28D36FB34037C7F89603317355D58EF0",
-    "versionId": 0,
+    "attributeHash": "28D36FB34037C7F89603317355D58EF0",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PLAN",
@@ -1575,8 +1470,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "78868B1D16D1B8011054BB40B191AAB8",
-    "versionId": 0,
+    "attributeHash": "78868B1D16D1B8011054BB40B191AAB8",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1590,8 +1484,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1D1DA8B163D4B85129E2AB1682EB9162",
-    "versionId": 0,
+    "attributeHash": "1D1DA8B163D4B85129E2AB1682EB9162",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_ESTIMATED_WORTH",
@@ -1605,8 +1498,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "8B707C54176AF277E2654E8602A08B07",
-    "versionId": 0,
+    "attributeHash": "8B707C54176AF277E2654E8602A08B07",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1620,8 +1512,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7ABD2520353A4BD769031CA2F2B13531",
-    "versionId": 0,
+    "attributeHash": "7ABD2520353A4BD769031CA2F2B13531",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1635,8 +1526,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2D0980F8943C21FDD5ACAC6A1DB6640D",
-    "versionId": 0,
+    "attributeHash": "2D0980F8943C21FDD5ACAC6A1DB6640D",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1650,8 +1540,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E3A939C1D0D67783A5F18D0A3BD1586B",
-    "versionId": 0,
+    "attributeHash": "E3A939C1D0D67783A5F18D0A3BD1586B",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1665,8 +1554,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "42D4B5142D5E67E1DA4D698DAC6F5D83",
-    "versionId": 0,
+    "attributeHash": "42D4B5142D5E67E1DA4D698DAC6F5D83",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1680,8 +1568,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3F0CD455F2206D5178B4DDBF81B5EDCA",
-    "versionId": 0,
+    "attributeHash": "3F0CD455F2206D5178B4DDBF81B5EDCA",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_PERSONALISED_COSTING",
@@ -1695,8 +1582,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2A4C0C78253A8CAB2522D67099C4AFED",
-    "versionId": 0,
+    "attributeHash": "2A4C0C78253A8CAB2522D67099C4AFED",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1710,8 +1596,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "DE15B6001E7DAF504CDCB2A71E162A30",
-    "versionId": 0,
+    "attributeHash": "DE15B6001E7DAF504CDCB2A71E162A30",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1725,8 +1610,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F97DAB935507C6B2E36ECE9BD4D587B7",
-    "versionId": 0,
+    "attributeHash": "F97DAB935507C6B2E36ECE9BD4D587B7",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUST_MEMBERSHIP",
@@ -1740,8 +1624,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "663585B24D705AAD3957E450126C77B4",
-    "versionId": 0,
+    "attributeHash": "663585B24D705AAD3957E450126C77B4",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1755,8 +1638,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4089A3BDC59FB5D2A7A44E670546CACE",
-    "versionId": 0,
+    "attributeHash": "4089A3BDC59FB5D2A7A44E670546CACE",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1770,8 +1652,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "53D1C1B5875EB2ABBDA03093EA8EA924",
-    "versionId": 0,
+    "attributeHash": "53D1C1B5875EB2ABBDA03093EA8EA924",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1785,8 +1666,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A24954869A5EF272E9A9B5941B8D52F3",
-    "versionId": 0,
+    "attributeHash": "A24954869A5EF272E9A9B5941B8D52F3",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1800,8 +1680,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "BE6010D37D73A5E364821EE8A50489F7",
-    "versionId": 0,
+    "attributeHash": "BE6010D37D73A5E364821EE8A50489F7",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1815,8 +1694,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "481E0E0BF102DF55397F7E0286025DE6",
-    "versionId": 0,
+    "attributeHash": "481E0E0BF102DF55397F7E0286025DE6",
     "databaseName": "100_Staging_Area",
     "schemaName": "dbo",
     "tableName": "STG_PROFILER_CUSTOMER_PERSONAL",
@@ -1830,8 +1708,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "93B76FF7ABC230B89BF7C6332197978E",
-    "versionId": 0,
+    "attributeHash": "93B76FF7ABC230B89BF7C6332197978E",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -1845,8 +1722,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "9580116797A66C259B8CDF2A95CFD6BB",
-    "versionId": 0,
+    "attributeHash": "9580116797A66C259B8CDF2A95CFD6BB",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -1860,8 +1736,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "974997ED730F246B6CD11D6A97EEB56A",
-    "versionId": 0,
+    "attributeHash": "974997ED730F246B6CD11D6A97EEB56A",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -1875,8 +1750,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5B0803276C7E0C27EA2BAC09BC8C9F02",
-    "versionId": 0,
+    "attributeHash": "5B0803276C7E0C27EA2BAC09BC8C9F02",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -1890,8 +1764,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7C7194A9A3ED0975402ED6CB673E8EBE",
-    "versionId": 0,
+    "attributeHash": "7C7194A9A3ED0975402ED6CB673E8EBE",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -1905,8 +1778,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "0F9A52E24691C63120E8AABB2E78BA8E",
-    "versionId": 0,
+    "attributeHash": "0F9A52E24691C63120E8AABB2E78BA8E",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -1920,8 +1792,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E928A14F82EEA163F6F47E2D11CFF5E8",
-    "versionId": 0,
+    "attributeHash": "E928A14F82EEA163F6F47E2D11CFF5E8",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -1935,8 +1806,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D7B4D485A4C5898EF1F4559919EF48CD",
-    "versionId": 0,
+    "attributeHash": "D7B4D485A4C5898EF1F4559919EF48CD",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -1950,8 +1820,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C1D6BF29C14CE2B222C0EDB90C883249",
-    "versionId": 0,
+    "attributeHash": "C1D6BF29C14CE2B222C0EDB90C883249",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -1965,8 +1834,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3179A11E268616E3ACAF17E6A2ACD446",
-    "versionId": 0,
+    "attributeHash": "3179A11E268616E3ACAF17E6A2ACD446",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -1980,8 +1848,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "81FDE9A3C1BA8F3B290EF8F55E65103D",
-    "versionId": 0,
+    "attributeHash": "81FDE9A3C1BA8F3B290EF8F55E65103D",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -1995,8 +1862,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "31B9B052D682C0B03219326A0C89C9DB",
-    "versionId": 0,
+    "attributeHash": "31B9B052D682C0B03219326A0C89C9DB",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2010,8 +1876,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "66A128B6F5A12F41A0A57C12F9670E53",
-    "versionId": 0,
+    "attributeHash": "66A128B6F5A12F41A0A57C12F9670E53",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2025,8 +1890,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B9639AC32A31FD650347FE8DADF2FF30",
-    "versionId": 0,
+    "attributeHash": "B9639AC32A31FD650347FE8DADF2FF30",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2040,8 +1904,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C816B308CA2494367D341F08E3573D12",
-    "versionId": 0,
+    "attributeHash": "C816B308CA2494367D341F08E3573D12",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2055,8 +1918,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3E9AD8454F36DDD5F94F5D569FCC2049",
-    "versionId": 0,
+    "attributeHash": "3E9AD8454F36DDD5F94F5D569FCC2049",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2070,8 +1932,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "ACBE5707377C54F3688BAF3EDDEBBADE",
-    "versionId": 0,
+    "attributeHash": "ACBE5707377C54F3688BAF3EDDEBBADE",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2085,8 +1946,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "FE265E9651C98010BAFE3C585D0C220E",
-    "versionId": 0,
+    "attributeHash": "FE265E9651C98010BAFE3C585D0C220E",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2100,8 +1960,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EFD7BA1B30621CF62D3F92D5AD6B742D",
-    "versionId": 0,
+    "attributeHash": "EFD7BA1B30621CF62D3F92D5AD6B742D",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2115,8 +1974,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "BEC0E0D223915C66A91B34BFC72167A2",
-    "versionId": 0,
+    "attributeHash": "BEC0E0D223915C66A91B34BFC72167A2",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2130,8 +1988,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3951030ACC5C10DBF44336B0F2F83C42",
-    "versionId": 0,
+    "attributeHash": "3951030ACC5C10DBF44336B0F2F83C42",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2145,8 +2002,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "63532CCA67263A3C634051286E2A2D23",
-    "versionId": 0,
+    "attributeHash": "63532CCA67263A3C634051286E2A2D23",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2160,8 +2016,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B542BBC0B9293193EDC5EC922FD9853B",
-    "versionId": 0,
+    "attributeHash": "B542BBC0B9293193EDC5EC922FD9853B",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2175,8 +2030,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "9BA91B19A2D9DF0DA97039F912A7F117",
-    "versionId": 0,
+    "attributeHash": "9BA91B19A2D9DF0DA97039F912A7F117",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -2190,8 +2044,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4A7118F1FDE5F9E7644B9495BBEDCB43",
-    "versionId": 0,
+    "attributeHash": "4A7118F1FDE5F9E7644B9495BBEDCB43",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -2205,8 +2058,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "01883F1F16956B7E5021E38B3EF09D7F",
-    "versionId": 0,
+    "attributeHash": "01883F1F16956B7E5021E38B3EF09D7F",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2220,8 +2072,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4E1D69C1B3ADF4B1426497DD786B46E9",
-    "versionId": 0,
+    "attributeHash": "4E1D69C1B3ADF4B1426497DD786B46E9",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2235,8 +2086,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C1F447C9933048E2702BD7F81AAEA282",
-    "versionId": 0,
+    "attributeHash": "C1F447C9933048E2702BD7F81AAEA282",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2250,8 +2100,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7D5B296D77C1CE011BDE55C7CF448110",
-    "versionId": 0,
+    "attributeHash": "7D5B296D77C1CE011BDE55C7CF448110",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2265,8 +2114,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CCC5FD4EEC142037CBB59FD4A307D59A",
-    "versionId": 0,
+    "attributeHash": "CCC5FD4EEC142037CBB59FD4A307D59A",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2280,8 +2128,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "19EDFDC6788D0BA3EA03E713E2A3E327",
-    "versionId": 0,
+    "attributeHash": "19EDFDC6788D0BA3EA03E713E2A3E327",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2295,8 +2142,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "97D242853B1193FC6B60E88065E15639",
-    "versionId": 0,
+    "attributeHash": "97D242853B1193FC6B60E88065E15639",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2310,8 +2156,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D5EDE3F8DD1810FA28BD2D3E9D625B82",
-    "versionId": 0,
+    "attributeHash": "D5EDE3F8DD1810FA28BD2D3E9D625B82",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2325,8 +2170,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "4A3619F8A1222F4FA7A217A14F02DB69",
-    "versionId": 0,
+    "attributeHash": "4A3619F8A1222F4FA7A217A14F02DB69",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2340,8 +2184,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "8F244BF075DCECB34A4E0D550A777028",
-    "versionId": 0,
+    "attributeHash": "8F244BF075DCECB34A4E0D550A777028",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2355,8 +2198,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "9324F2F07F59DD5D048D45CBEB1C2188",
-    "versionId": 0,
+    "attributeHash": "9324F2F07F59DD5D048D45CBEB1C2188",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2370,8 +2212,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "F6258BF7F9725765A5F89D0F657B1655",
-    "versionId": 0,
+    "attributeHash": "F6258BF7F9725765A5F89D0F657B1655",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2385,8 +2226,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "3DD970EF460B8D2E6FF8EC66BCFF4566",
-    "versionId": 0,
+    "attributeHash": "3DD970EF460B8D2E6FF8EC66BCFF4566",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2400,8 +2240,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "D57DFB0764A5C6474E1948C8FE6AE08C",
-    "versionId": 0,
+    "attributeHash": "D57DFB0764A5C6474E1948C8FE6AE08C",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2415,8 +2254,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "D09A2BDB2755789B19FB920DCC66F8FE",
-    "versionId": 0,
+    "attributeHash": "D09A2BDB2755789B19FB920DCC66F8FE",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -2430,8 +2268,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "16F1D7FE2B7B1297B0E9446F2C2EF048",
-    "versionId": 0,
+    "attributeHash": "16F1D7FE2B7B1297B0E9446F2C2EF048",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -2445,8 +2282,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "46BA53D12D80DAFF4163424BA86C7426",
-    "versionId": 0,
+    "attributeHash": "46BA53D12D80DAFF4163424BA86C7426",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2460,8 +2296,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "738B91D52F4D60FF82EBFBA6E4ECA980",
-    "versionId": 0,
+    "attributeHash": "738B91D52F4D60FF82EBFBA6E4ECA980",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2475,8 +2310,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "160B6E4C7ABF6734B26C51CEF6635EF7",
-    "versionId": 0,
+    "attributeHash": "160B6E4C7ABF6734B26C51CEF6635EF7",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2490,8 +2324,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E6DED28784A0AD8C9B1555E674A2F3B6",
-    "versionId": 0,
+    "attributeHash": "E6DED28784A0AD8C9B1555E674A2F3B6",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2505,8 +2338,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D70D0041F9CAA8FACDC53ADD046D5309",
-    "versionId": 0,
+    "attributeHash": "D70D0041F9CAA8FACDC53ADD046D5309",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2520,8 +2352,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CD67A7EB6D8F15364ACAB0FF0FE106E7",
-    "versionId": 0,
+    "attributeHash": "CD67A7EB6D8F15364ACAB0FF0FE106E7",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2535,8 +2366,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "DBE2F0D7DAFF9F2B473A64CBA9C2C511",
-    "versionId": 0,
+    "attributeHash": "DBE2F0D7DAFF9F2B473A64CBA9C2C511",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2550,8 +2380,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F40A3B58DD33F5BCFC0495D5E0FDCDA1",
-    "versionId": 0,
+    "attributeHash": "F40A3B58DD33F5BCFC0495D5E0FDCDA1",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2565,8 +2394,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5ED3312222FB64931BBD930BC40721ED",
-    "versionId": 0,
+    "attributeHash": "5ED3312222FB64931BBD930BC40721ED",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2580,8 +2408,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "8D63422FCAC296CB35EB86F26682E784",
-    "versionId": 0,
+    "attributeHash": "8D63422FCAC296CB35EB86F26682E784",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2595,8 +2422,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B5A19500E76AEF7565121B4383BCDA2A",
-    "versionId": 0,
+    "attributeHash": "B5A19500E76AEF7565121B4383BCDA2A",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2610,8 +2436,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A3CC03577713A90D67EE3A132C2CA5CA",
-    "versionId": 0,
+    "attributeHash": "A3CC03577713A90D67EE3A132C2CA5CA",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2625,8 +2450,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "AB33A72E843F3E6630B893B3D406C2B9",
-    "versionId": 0,
+    "attributeHash": "AB33A72E843F3E6630B893B3D406C2B9",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2640,8 +2464,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6A39169D9702129C98A3B5CCC8C31860",
-    "versionId": 0,
+    "attributeHash": "6A39169D9702129C98A3B5CCC8C31860",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2655,8 +2478,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "87C56C3CFC6A27ABD9B02A1D86242A5A",
-    "versionId": 0,
+    "attributeHash": "87C56C3CFC6A27ABD9B02A1D86242A5A",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -2670,8 +2492,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "22B2018368F7BB6062C5D1C380417E14",
-    "versionId": 0,
+    "attributeHash": "22B2018368F7BB6062C5D1C380417E14",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -2685,8 +2506,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "FCD32818B421F45F00F5C081E2B9BC8C",
-    "versionId": 0,
+    "attributeHash": "FCD32818B421F45F00F5C081E2B9BC8C",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2700,8 +2520,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "99CCF4C44A78C514840024E806B3A5FE",
-    "versionId": 0,
+    "attributeHash": "99CCF4C44A78C514840024E806B3A5FE",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2715,8 +2534,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "3208672ECF6C1805022D84043C5179C5",
-    "versionId": 0,
+    "attributeHash": "3208672ECF6C1805022D84043C5179C5",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2730,8 +2548,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "DF52F064F6C239ACCBE6BED6656775F4",
-    "versionId": 0,
+    "attributeHash": "DF52F064F6C239ACCBE6BED6656775F4",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2745,8 +2562,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "224EDFEC0EC50BAB120757ACD107C078",
-    "versionId": 0,
+    "attributeHash": "224EDFEC0EC50BAB120757ACD107C078",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2760,8 +2576,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "63F9403E9F30889A32076DE234BC34A9",
-    "versionId": 0,
+    "attributeHash": "63F9403E9F30889A32076DE234BC34A9",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2775,8 +2590,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "381F73C9D7385D9938F7A9D9F80B9CE8",
-    "versionId": 0,
+    "attributeHash": "381F73C9D7385D9938F7A9D9F80B9CE8",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2790,8 +2604,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "FBEA97005BC494132E939174D40C1B23",
-    "versionId": 0,
+    "attributeHash": "FBEA97005BC494132E939174D40C1B23",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2805,8 +2618,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "647300F6778FBD03094B0AA39F47F842",
-    "versionId": 0,
+    "attributeHash": "647300F6778FBD03094B0AA39F47F842",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_OFFER",
@@ -2820,8 +2632,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "CEA46510E1FCC0BDFC5B707DC10735D2",
-    "versionId": 0,
+    "attributeHash": "CEA46510E1FCC0BDFC5B707DC10735D2",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2835,8 +2646,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "35D137604E42C83EC7868597736562A9",
-    "versionId": 0,
+    "attributeHash": "35D137604E42C83EC7868597736562A9",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2850,8 +2660,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "473B8BDF4D9193DFF2428B005A2F8F99",
-    "versionId": 0,
+    "attributeHash": "473B8BDF4D9193DFF2428B005A2F8F99",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_OFFER",
@@ -2865,8 +2674,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E9881905019DE26F77A8A1A92FBA8D0E",
-    "versionId": 0,
+    "attributeHash": "E9881905019DE26F77A8A1A92FBA8D0E",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2880,8 +2688,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "FC1CC0E8CBB65FBF181D7A32390E526C",
-    "versionId": 0,
+    "attributeHash": "FC1CC0E8CBB65FBF181D7A32390E526C",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2895,8 +2702,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "523240D5A6CF52EE9D37DA1867ADD315",
-    "versionId": 0,
+    "attributeHash": "523240D5A6CF52EE9D37DA1867ADD315",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_USERMANAGED_SEGMENT",
@@ -2910,8 +2716,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "BCEAED7D07E64B3A817DB2D10DD39715",
-    "versionId": 0,
+    "attributeHash": "BCEAED7D07E64B3A817DB2D10DD39715",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PLAN",
@@ -2925,8 +2730,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5C7C7AC17682335B7415120510879DD5",
-    "versionId": 0,
+    "attributeHash": "5C7C7AC17682335B7415120510879DD5",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -2940,8 +2744,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "0694E505180D64FF2603E086A69319B9",
-    "versionId": 0,
+    "attributeHash": "0694E505180D64FF2603E086A69319B9",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_ESTIMATED_WORTH",
@@ -2955,8 +2758,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "0164FDBEF3801363F7957D4E6C08F4A2",
-    "versionId": 0,
+    "attributeHash": "0164FDBEF3801363F7957D4E6C08F4A2",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -2970,8 +2772,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "416AA816EC53BF485680D9ED4A6A5888",
-    "versionId": 0,
+    "attributeHash": "416AA816EC53BF485680D9ED4A6A5888",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -2985,8 +2786,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4112BA043CA31AC64313030B7EFD479E",
-    "versionId": 0,
+    "attributeHash": "4112BA043CA31AC64313030B7EFD479E",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -3000,8 +2800,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7E350EA6630D14EE85D1DE27592469AC",
-    "versionId": 0,
+    "attributeHash": "7E350EA6630D14EE85D1DE27592469AC",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3015,8 +2814,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "08C387197FB583707B964BBD202F250B",
-    "versionId": 0,
+    "attributeHash": "08C387197FB583707B964BBD202F250B",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -3030,8 +2828,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "2F064F6315D1234533677BA82AB746FE",
-    "versionId": 0,
+    "attributeHash": "2F064F6315D1234533677BA82AB746FE",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_PERSONALISED_COSTING",
@@ -3045,8 +2842,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "630D3F824F7679E28C7FFEA812AC8C85",
-    "versionId": 0,
+    "attributeHash": "630D3F824F7679E28C7FFEA812AC8C85",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3060,8 +2856,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E9E0B4919A6EA24519E22B2CEB40E6DE",
-    "versionId": 0,
+    "attributeHash": "E9E0B4919A6EA24519E22B2CEB40E6DE",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -3075,8 +2870,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1F7230B55940C65A130463E19F6EC5B3",
-    "versionId": 0,
+    "attributeHash": "1F7230B55940C65A130463E19F6EC5B3",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUST_MEMBERSHIP",
@@ -3090,8 +2884,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1213E2972F1776076FFC4B7D4B6A3B62",
-    "versionId": 0,
+    "attributeHash": "1213E2972F1776076FFC4B7D4B6A3B62",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3105,8 +2898,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F62A1E33D9E5A8F26BFE135037CEAE85",
-    "versionId": 0,
+    "attributeHash": "F62A1E33D9E5A8F26BFE135037CEAE85",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3120,8 +2912,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1AEBDAB7F0808DC6BA56A48FA27B15C9",
-    "versionId": 0,
+    "attributeHash": "1AEBDAB7F0808DC6BA56A48FA27B15C9",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3135,8 +2926,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "76490DF58E6D4D4DA3733ADB83E5593E",
-    "versionId": 0,
+    "attributeHash": "76490DF58E6D4D4DA3733ADB83E5593E",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3150,8 +2940,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "37BBE8B6F50FB68567B0007654CEF7C3",
-    "versionId": 0,
+    "attributeHash": "37BBE8B6F50FB68567B0007654CEF7C3",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3165,8 +2954,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "FA6790283F2F38C3D5BDC3F1ADFE2916",
-    "versionId": 0,
+    "attributeHash": "FA6790283F2F38C3D5BDC3F1ADFE2916",
     "databaseName": "150_Persistent_Staging_Area",
     "schemaName": "dbo",
     "tableName": "PSA_PROFILER_CUSTOMER_PERSONAL",
@@ -3180,8 +2968,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3989B02DB3ED05B35EAB239959F4DE7A",
-    "versionId": 0,
+    "attributeHash": "3989B02DB3ED05B35EAB239959F4DE7A",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_CUSTOMER",
@@ -3195,8 +2982,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "447D9E1E0AC4C872F7E0336137A7CB2A",
-    "versionId": 0,
+    "attributeHash": "447D9E1E0AC4C872F7E0336137A7CB2A",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_INCENTIVE_OFFER",
@@ -3210,8 +2996,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1761D8C628D8A1A638C9EAE74870123E",
-    "versionId": 0,
+    "attributeHash": "1761D8C628D8A1A638C9EAE74870123E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_MEMBERSHIP_PLAN",
@@ -3225,8 +3010,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "FA501A0FF54FF6A91BFBCC4BA269D163",
-    "versionId": 0,
+    "attributeHash": "FA501A0FF54FF6A91BFBCC4BA269D163",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_SEGMENT",
@@ -3240,8 +3024,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3B3A57C0D435B379AEBEB13073BBD424",
-    "versionId": 0,
+    "attributeHash": "3B3A57C0D435B379AEBEB13073BBD424",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_COSTING",
@@ -3255,8 +3038,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7C07FC67B8940CF3890D724287EB1C0C",
-    "versionId": 0,
+    "attributeHash": "7C07FC67B8940CF3890D724287EB1C0C",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_OFFER",
@@ -3270,8 +3052,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "770840D7AFB64EFB3E974B059A17513F",
-    "versionId": 0,
+    "attributeHash": "770840D7AFB64EFB3E974B059A17513F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_MEMBERSHIP",
@@ -3285,8 +3066,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "257F508DE5B8F035F1148091956246A1",
-    "versionId": 0,
+    "attributeHash": "257F508DE5B8F035F1148091956246A1",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_RENEWAL_MEMBERSHIP",
@@ -3300,8 +3080,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "285135A06B5128C67ED716026E7EF132",
-    "versionId": 0,
+    "attributeHash": "285135A06B5128C67ED716026E7EF132",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -3315,8 +3094,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1395FAFB0671118B3E15E53C2E4F637C",
-    "versionId": 0,
+    "attributeHash": "1395FAFB0671118B3E15E53C2E4F637C",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -3330,8 +3108,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6506F8FCAE818577BDF05083B8199F3E",
-    "versionId": 0,
+    "attributeHash": "6506F8FCAE818577BDF05083B8199F3E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -3345,8 +3122,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "284F79DC9D24B4B9171DCDBD0624AA2E",
-    "versionId": 0,
+    "attributeHash": "284F79DC9D24B4B9171DCDBD0624AA2E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -3360,8 +3136,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "996086A4F144B14565E0BCD543183860",
-    "versionId": 0,
+    "attributeHash": "996086A4F144B14565E0BCD543183860",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -3375,8 +3150,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "17BE36223F4B3A6488C43A641F14DC30",
-    "versionId": 0,
+    "attributeHash": "17BE36223F4B3A6488C43A641F14DC30",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -3390,8 +3164,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B696195607EF850678E98BD9E61DA51B",
-    "versionId": 0,
+    "attributeHash": "B696195607EF850678E98BD9E61DA51B",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -3405,8 +3178,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "69172CFF59A4493B8F106FA33F7BD97F",
-    "versionId": 0,
+    "attributeHash": "69172CFF59A4493B8F106FA33F7BD97F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -3420,8 +3192,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A4DF55659BBC4C87307E712EDBB9CA8F",
-    "versionId": 0,
+    "attributeHash": "A4DF55659BBC4C87307E712EDBB9CA8F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_OFFER",
@@ -3435,8 +3206,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "BFE62C254363E8CF1C6807373691E7E7",
-    "versionId": 0,
+    "attributeHash": "BFE62C254363E8CF1C6807373691E7E7",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_OFFER",
@@ -3450,8 +3220,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "DF08089338E30B6CACC10C3BBC6F3F60",
-    "versionId": 0,
+    "attributeHash": "DF08089338E30B6CACC10C3BBC6F3F60",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -3465,8 +3234,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E3CE92B31F30E6E6BA73DC787D6B1DB2",
-    "versionId": 0,
+    "attributeHash": "E3CE92B31F30E6E6BA73DC787D6B1DB2",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -3480,8 +3248,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "F11795780D6F40944BAD1736A4150733",
-    "versionId": 0,
+    "attributeHash": "F11795780D6F40944BAD1736A4150733",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -3495,8 +3262,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7ECC7F198958A1E22A642E30C539B02E",
-    "versionId": 0,
+    "attributeHash": "7ECC7F198958A1E22A642E30C539B02E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -3510,8 +3276,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D994F72CE4435E1605BC44FC82D84829",
-    "versionId": 0,
+    "attributeHash": "D994F72CE4435E1605BC44FC82D84829",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -3525,8 +3290,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CA9ECFB5D2FC7D9743617474D1469EC2",
-    "versionId": 0,
+    "attributeHash": "CA9ECFB5D2FC7D9743617474D1469EC2",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -3540,8 +3304,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "06A0BA24B471C12FBEFDA2CCC518C260",
-    "versionId": 0,
+    "attributeHash": "06A0BA24B471C12FBEFDA2CCC518C260",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -3555,8 +3318,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "FCAD0F3CE9B1676D6170A01AC4D2C624",
-    "versionId": 0,
+    "attributeHash": "FCAD0F3CE9B1676D6170A01AC4D2C624",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -3570,8 +3332,7 @@
     "multiActiveIndicator": "Y"
   },
   {
-    "versionAttributeHash": "76B4B3D136D9D6821AADF92E508DD548",
-    "versionId": 0,
+    "attributeHash": "76B4B3D136D9D6821AADF92E508DD548",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_RENEWAL_MEMBERSHIP",
@@ -3585,8 +3346,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5808C2D007223098026E218E024711F6",
-    "versionId": 0,
+    "attributeHash": "5808C2D007223098026E218E024711F6",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_MEMBERSHIP",
@@ -3600,8 +3360,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6C0327D2CC9CAA536A3D600A05EEE8A8",
-    "versionId": 0,
+    "attributeHash": "6C0327D2CC9CAA536A3D600A05EEE8A8",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_OFFER",
@@ -3615,8 +3374,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F5A8CA9F640A8912637984FA126E9BCD",
-    "versionId": 0,
+    "attributeHash": "F5A8CA9F640A8912637984FA126E9BCD",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_COSTING",
@@ -3630,8 +3388,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "AA1B9AC2BD06829C8A5B8C77CD739FC5",
-    "versionId": 0,
+    "attributeHash": "AA1B9AC2BD06829C8A5B8C77CD739FC5",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_SEGMENT",
@@ -3645,8 +3402,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "37A882F009776D34997034F8D7579012",
-    "versionId": 0,
+    "attributeHash": "37A882F009776D34997034F8D7579012",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_MEMBERSHIP_PLAN",
@@ -3660,8 +3416,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "8355400AD3864C6F1E4074B9514E2FD9",
-    "versionId": 0,
+    "attributeHash": "8355400AD3864C6F1E4074B9514E2FD9",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_INCENTIVE_OFFER",
@@ -3675,8 +3430,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A099C21392D2A7EADDF916851D5BD44B",
-    "versionId": 0,
+    "attributeHash": "A099C21392D2A7EADDF916851D5BD44B",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_CUSTOMER",
@@ -3690,8 +3444,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F61A88ACF1BEF822328877242668DF2E",
-    "versionId": 0,
+    "attributeHash": "F61A88ACF1BEF822328877242668DF2E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_CUSTOMER",
@@ -3705,8 +3458,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "06D19579C2B1D8752A9136CACE3D4567",
-    "versionId": 0,
+    "attributeHash": "06D19579C2B1D8752A9136CACE3D4567",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_INCENTIVE_OFFER",
@@ -3720,8 +3472,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E58241E04EF4B51654990C16936CEDC7",
-    "versionId": 0,
+    "attributeHash": "E58241E04EF4B51654990C16936CEDC7",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_MEMBERSHIP_PLAN",
@@ -3735,8 +3486,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7E84C91BB777ADEDAB159B164F623C76",
-    "versionId": 0,
+    "attributeHash": "7E84C91BB777ADEDAB159B164F623C76",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_SEGMENT",
@@ -3750,8 +3500,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "AF1CD7E209F7F338A386319BF25BB965",
-    "versionId": 0,
+    "attributeHash": "AF1CD7E209F7F338A386319BF25BB965",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_COSTING",
@@ -3765,8 +3514,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EE912FA2031603531E90B3F5045B4B4E",
-    "versionId": 0,
+    "attributeHash": "EE912FA2031603531E90B3F5045B4B4E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_OFFER",
@@ -3780,8 +3528,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7DE4427F2BD969B33BADFCAD0196243A",
-    "versionId": 0,
+    "attributeHash": "7DE4427F2BD969B33BADFCAD0196243A",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_MEMBERSHIP",
@@ -3795,8 +3542,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B0BFFBB0F72A27DA06B846FB5349F530",
-    "versionId": 0,
+    "attributeHash": "B0BFFBB0F72A27DA06B846FB5349F530",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_RENEWAL_MEMBERSHIP",
@@ -3810,8 +3556,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "767E4D72A17A164C889F9246C61DEDB3",
-    "versionId": 0,
+    "attributeHash": "767E4D72A17A164C889F9246C61DEDB3",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -3825,8 +3570,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E3278478866685D5FAF41818A4FFE268",
-    "versionId": 0,
+    "attributeHash": "E3278478866685D5FAF41818A4FFE268",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -3840,8 +3584,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "81A5A7868539D0B8EF5F6111FAB47B56",
-    "versionId": 0,
+    "attributeHash": "81A5A7868539D0B8EF5F6111FAB47B56",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -3855,8 +3598,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D17737A5FDD2FE626C2C2567A2EBA5BE",
-    "versionId": 0,
+    "attributeHash": "D17737A5FDD2FE626C2C2567A2EBA5BE",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -3870,8 +3612,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CF2040279C8C78603077F51233C9EBC4",
-    "versionId": 0,
+    "attributeHash": "CF2040279C8C78603077F51233C9EBC4",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -3885,8 +3626,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "FC23E1BA34633008C86FB1695E3B0DC9",
-    "versionId": 0,
+    "attributeHash": "FC23E1BA34633008C86FB1695E3B0DC9",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -3900,8 +3640,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4A44C19C6B04F02FA002443411E573B4",
-    "versionId": 0,
+    "attributeHash": "4A44C19C6B04F02FA002443411E573B4",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -3915,8 +3654,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "01139C0CBC0E1DDDAC75CBFE3DB07989",
-    "versionId": 0,
+    "attributeHash": "01139C0CBC0E1DDDAC75CBFE3DB07989",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -3930,8 +3668,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3ED7C6B28F1A8BA8A37CBB917A77A1CC",
-    "versionId": 0,
+    "attributeHash": "3ED7C6B28F1A8BA8A37CBB917A77A1CC",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_OFFER",
@@ -3945,8 +3682,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "46D87F118B92CB979D1E71B36F90BB18",
-    "versionId": 0,
+    "attributeHash": "46D87F118B92CB979D1E71B36F90BB18",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_OFFER",
@@ -3960,8 +3696,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "918FD6078B4E2C0C7F514E6E24B45A2C",
-    "versionId": 0,
+    "attributeHash": "918FD6078B4E2C0C7F514E6E24B45A2C",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -3975,8 +3710,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C1F2B9FA9F5085222907BD67DA3102F4",
-    "versionId": 0,
+    "attributeHash": "C1F2B9FA9F5085222907BD67DA3102F4",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -3990,8 +3724,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CBF73BEADE933FBF59E99440EDE0B0B4",
-    "versionId": 0,
+    "attributeHash": "CBF73BEADE933FBF59E99440EDE0B0B4",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -4005,8 +3738,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E1A3593B10374B7661B9511B751B7C0A",
-    "versionId": 0,
+    "attributeHash": "E1A3593B10374B7661B9511B751B7C0A",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -4020,8 +3752,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2DA59EC5A1348A7D91A304BD94559045",
-    "versionId": 0,
+    "attributeHash": "2DA59EC5A1348A7D91A304BD94559045",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -4035,8 +3766,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D4BC5428DD4D4A3E8E5CC230046C4CAE",
-    "versionId": 0,
+    "attributeHash": "D4BC5428DD4D4A3E8E5CC230046C4CAE",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -4050,8 +3780,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7EE535520B512B6A5D0C77F6ED9F396B",
-    "versionId": 0,
+    "attributeHash": "7EE535520B512B6A5D0C77F6ED9F396B",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -4065,8 +3794,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "26889E091409917DE43B7B8EDF474F65",
-    "versionId": 0,
+    "attributeHash": "26889E091409917DE43B7B8EDF474F65",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -4080,8 +3808,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "27F16ABB2B4A5418153F79CE79BC57A3",
-    "versionId": 0,
+    "attributeHash": "27F16ABB2B4A5418153F79CE79BC57A3",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_RENEWAL_MEMBERSHIP",
@@ -4095,8 +3822,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "01CE8701BDD4ACE5638C2C804C73A216",
-    "versionId": 0,
+    "attributeHash": "01CE8701BDD4ACE5638C2C804C73A216",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_MEMBERSHIP",
@@ -4110,8 +3836,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5A25231F95C02B4B0E7AECAD24274DAF",
-    "versionId": 0,
+    "attributeHash": "5A25231F95C02B4B0E7AECAD24274DAF",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_OFFER",
@@ -4125,8 +3850,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "ACBB78C191B69B5D6B3B67263EF98BBE",
-    "versionId": 0,
+    "attributeHash": "ACBB78C191B69B5D6B3B67263EF98BBE",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_COSTING",
@@ -4140,8 +3864,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C9E28FD7F1E41CF471AA29E28B22D295",
-    "versionId": 0,
+    "attributeHash": "C9E28FD7F1E41CF471AA29E28B22D295",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_SEGMENT",
@@ -4155,8 +3878,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3F9D033AE0D6C20478FEC929CF96B731",
-    "versionId": 0,
+    "attributeHash": "3F9D033AE0D6C20478FEC929CF96B731",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_MEMBERSHIP_PLAN",
@@ -4170,8 +3892,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "28CD72DA1C4221CD87BE1D30677C4B42",
-    "versionId": 0,
+    "attributeHash": "28CD72DA1C4221CD87BE1D30677C4B42",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_INCENTIVE_OFFER",
@@ -4185,8 +3906,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "0798942C422C01DCBABEC37C23536B58",
-    "versionId": 0,
+    "attributeHash": "0798942C422C01DCBABEC37C23536B58",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_CUSTOMER",
@@ -4200,8 +3920,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B6D39CEEC2134FE4A47CF2D798EAE81A",
-    "versionId": 0,
+    "attributeHash": "B6D39CEEC2134FE4A47CF2D798EAE81A",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_CUSTOMER",
@@ -4215,8 +3934,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "D689C5CF94DF2A5BA5A128B97E8242AD",
-    "versionId": 0,
+    "attributeHash": "D689C5CF94DF2A5BA5A128B97E8242AD",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_INCENTIVE_OFFER",
@@ -4230,8 +3948,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E49D965024086309EFA5FC93AD477BFB",
-    "versionId": 0,
+    "attributeHash": "E49D965024086309EFA5FC93AD477BFB",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_MEMBERSHIP_PLAN",
@@ -4245,8 +3962,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "ADFBCA8DEF2E13CF275559C367DDBCF0",
-    "versionId": 0,
+    "attributeHash": "ADFBCA8DEF2E13CF275559C367DDBCF0",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_SEGMENT",
@@ -4260,8 +3976,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "8DAEDE3DEC988D465FB686ADC36D2DF2",
-    "versionId": 0,
+    "attributeHash": "8DAEDE3DEC988D465FB686ADC36D2DF2",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_COSTING",
@@ -4275,8 +3990,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "94D1A5C8B88B05D2F03A5F8483807B44",
-    "versionId": 0,
+    "attributeHash": "94D1A5C8B88B05D2F03A5F8483807B44",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_OFFER",
@@ -4290,8 +4004,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A0A8F752ABB4B1915C5C15962ADD87E3",
-    "versionId": 0,
+    "attributeHash": "A0A8F752ABB4B1915C5C15962ADD87E3",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_MEMBERSHIP",
@@ -4305,8 +4018,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "36C48F2EF990D47A37F5F86C0D2D492B",
-    "versionId": 0,
+    "attributeHash": "36C48F2EF990D47A37F5F86C0D2D492B",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_RENEWAL_MEMBERSHIP",
@@ -4320,8 +4032,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E5BBA77F00DA5DC64F63FBDBF798FFF3",
-    "versionId": 0,
+    "attributeHash": "E5BBA77F00DA5DC64F63FBDBF798FFF3",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -4335,8 +4046,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "719FF0F87669C46E0DC38C65882507B8",
-    "versionId": 0,
+    "attributeHash": "719FF0F87669C46E0DC38C65882507B8",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -4350,8 +4060,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "83D78C685B03DFE2EC277C13AB2FE770",
-    "versionId": 0,
+    "attributeHash": "83D78C685B03DFE2EC277C13AB2FE770",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -4365,8 +4074,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E5ACE4697776D1427C039773A407D855",
-    "versionId": 0,
+    "attributeHash": "E5ACE4697776D1427C039773A407D855",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -4380,8 +4088,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F20D826C8F258898B4CB760377BD76F9",
-    "versionId": 0,
+    "attributeHash": "F20D826C8F258898B4CB760377BD76F9",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -4395,8 +4102,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "4BAE9A9C8C62C0BBAADF9D3A76930D3F",
-    "versionId": 0,
+    "attributeHash": "4BAE9A9C8C62C0BBAADF9D3A76930D3F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -4410,8 +4116,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "29C9F1C04239814D4E788B55DD343033",
-    "versionId": 0,
+    "attributeHash": "29C9F1C04239814D4E788B55DD343033",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -4425,8 +4130,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "AF842BC33F34FA38B537DDF4E2D3D0F0",
-    "versionId": 0,
+    "attributeHash": "AF842BC33F34FA38B537DDF4E2D3D0F0",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -4440,8 +4144,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EECA18E0B121F1CF3B8DD10BCBF8BA64",
-    "versionId": 0,
+    "attributeHash": "EECA18E0B121F1CF3B8DD10BCBF8BA64",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_OFFER",
@@ -4455,8 +4158,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C93C69460D72E249A319EF466BDB710C",
-    "versionId": 0,
+    "attributeHash": "C93C69460D72E249A319EF466BDB710C",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_OFFER",
@@ -4470,8 +4172,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F1AEA206FCF5729927726215B4FC689B",
-    "versionId": 0,
+    "attributeHash": "F1AEA206FCF5729927726215B4FC689B",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -4485,8 +4186,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "994BE05A60EA917823064D0A9A3A41AE",
-    "versionId": 0,
+    "attributeHash": "994BE05A60EA917823064D0A9A3A41AE",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -4500,8 +4200,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3B8BD741A0481A12B014F7865DAF84E0",
-    "versionId": 0,
+    "attributeHash": "3B8BD741A0481A12B014F7865DAF84E0",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -4515,8 +4214,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A02CA385CD10C538D632B0CFC87B4779",
-    "versionId": 0,
+    "attributeHash": "A02CA385CD10C538D632B0CFC87B4779",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -4530,8 +4228,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B0101DEC2E9B7549A9D502C7107B75E1",
-    "versionId": 0,
+    "attributeHash": "B0101DEC2E9B7549A9D502C7107B75E1",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -4545,8 +4242,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EB4866E64433AC12CF334E6A014231AF",
-    "versionId": 0,
+    "attributeHash": "EB4866E64433AC12CF334E6A014231AF",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -4560,8 +4256,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1A6C9B5301F2C45BACC34296094084D8",
-    "versionId": 0,
+    "attributeHash": "1A6C9B5301F2C45BACC34296094084D8",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -4575,8 +4270,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "0088AAD4A1D266C1BCABA726D4F98666",
-    "versionId": 0,
+    "attributeHash": "0088AAD4A1D266C1BCABA726D4F98666",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -4590,8 +4284,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "9EA0D0B27A3F083AC2F74F35D45FBECC",
-    "versionId": 0,
+    "attributeHash": "9EA0D0B27A3F083AC2F74F35D45FBECC",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_RENEWAL_MEMBERSHIP",
@@ -4605,8 +4298,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "465D12CCA71750C2ADEC2C181B5C78A6",
-    "versionId": 0,
+    "attributeHash": "465D12CCA71750C2ADEC2C181B5C78A6",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_MEMBERSHIP",
@@ -4620,8 +4312,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A9C0BD1A1F54B2508E1F75CC9E563D62",
-    "versionId": 0,
+    "attributeHash": "A9C0BD1A1F54B2508E1F75CC9E563D62",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_OFFER",
@@ -4635,8 +4326,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1FD4353904BEA34E6192C8ED19D82C2D",
-    "versionId": 0,
+    "attributeHash": "1FD4353904BEA34E6192C8ED19D82C2D",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_COSTING",
@@ -4650,8 +4340,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B3DFC07CB6C80350F0817215B38BEC0C",
-    "versionId": 0,
+    "attributeHash": "B3DFC07CB6C80350F0817215B38BEC0C",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "HUB_MEMBERSHIP_PLAN",
@@ -4665,8 +4354,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "96CEAD3164820714C840663452D07848",
-    "versionId": 0,
+    "attributeHash": "96CEAD3164820714C840663452D07848",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_CUSTOMER_COSTING",
@@ -4680,8 +4368,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C8E6F1241F0770BCB23ABFBC14079A00",
-    "versionId": 0,
+    "attributeHash": "C8E6F1241F0770BCB23ABFBC14079A00",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LNK_MEMBERSHIP",
@@ -4695,8 +4382,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "067646DC68AA0D195E72250255EF261E",
-    "versionId": 0,
+    "attributeHash": "067646DC68AA0D195E72250255EF261E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -4710,8 +4396,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "DE56CB674909A65F53F9054A5DD4BA70",
-    "versionId": 0,
+    "attributeHash": "DE56CB674909A65F53F9054A5DD4BA70",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -4725,8 +4410,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "161CF2F2E93F29190F90B4C67524B7CC",
-    "versionId": 0,
+    "attributeHash": "161CF2F2E93F29190F90B4C67524B7CC",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -4740,8 +4424,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "39BA43E979803918259726DDE502F9FF",
-    "versionId": 0,
+    "attributeHash": "39BA43E979803918259726DDE502F9FF",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -4755,8 +4438,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "88B4A42F15EB83EB03B40FA81694BD3F",
-    "versionId": 0,
+    "attributeHash": "88B4A42F15EB83EB03B40FA81694BD3F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -4770,8 +4452,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B4923466323A2F1EAA4F18D564360A5A",
-    "versionId": 0,
+    "attributeHash": "B4923466323A2F1EAA4F18D564360A5A",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -4785,8 +4466,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E8E5E09C7BF790EF049DBF98232EC8B7",
-    "versionId": 0,
+    "attributeHash": "E8E5E09C7BF790EF049DBF98232EC8B7",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -4800,8 +4480,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "140B3FAF7C6643398A2E8D13E81E88B7",
-    "versionId": 0,
+    "attributeHash": "140B3FAF7C6643398A2E8D13E81E88B7",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -4815,8 +4494,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5B5687F1AE65138B8B8093877A009273",
-    "versionId": 0,
+    "attributeHash": "5B5687F1AE65138B8B8093877A009273",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_OFFER",
@@ -4830,8 +4508,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2DCEE39EF477821440CCEFFAFFC10621",
-    "versionId": 0,
+    "attributeHash": "2DCEE39EF477821440CCEFFAFFC10621",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_SEGMENT",
@@ -4845,8 +4522,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1FE2A23E74D0C7C5788377A128C5D84F",
-    "versionId": 0,
+    "attributeHash": "1FE2A23E74D0C7C5788377A128C5D84F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -4860,8 +4536,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C44CD037DCD00F0540E66090B3F7FA25",
-    "versionId": 0,
+    "attributeHash": "C44CD037DCD00F0540E66090B3F7FA25",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_DETAIL",
@@ -4875,8 +4550,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2E7EEA2A687960982A4A50FCBA496A80",
-    "versionId": 0,
+    "attributeHash": "2E7EEA2A687960982A4A50FCBA496A80",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_INCENTIVE_OFFER",
@@ -4890,8 +4564,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A2F0E8BE410FB5E53BFAB20DAF498DB0",
-    "versionId": 0,
+    "attributeHash": "A2F0E8BE410FB5E53BFAB20DAF498DB0",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -4905,8 +4578,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "34F3ED3310D73A417643E4A767204140",
-    "versionId": 0,
+    "attributeHash": "34F3ED3310D73A417643E4A767204140",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -4920,8 +4592,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "50FD0608BE5B2D3B6F11EBC84F229337",
-    "versionId": 0,
+    "attributeHash": "50FD0608BE5B2D3B6F11EBC84F229337",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -4935,8 +4606,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7054E881487C4190D089F2D7DE908877",
-    "versionId": 0,
+    "attributeHash": "7054E881487C4190D089F2D7DE908877",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -4950,8 +4620,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "9BEF078C648EDC08A0428A1AC90D583F",
-    "versionId": 0,
+    "attributeHash": "9BEF078C648EDC08A0428A1AC90D583F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_CUSTOMER_COSTING",
@@ -4965,8 +4634,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7267A9221310D62984C45CE4EF5953D4",
-    "versionId": 0,
+    "attributeHash": "7267A9221310D62984C45CE4EF5953D4",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -4980,8 +4648,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "78CC9EF4A01EAE6EEDAF4DEB331D7A9E",
-    "versionId": 0,
+    "attributeHash": "78CC9EF4A01EAE6EEDAF4DEB331D7A9E",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -4995,8 +4662,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "29E123F771C7000884A353CC76F8F9B5",
-    "versionId": 0,
+    "attributeHash": "29E123F771C7000884A353CC76F8F9B5",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -5010,8 +4676,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "C253B5ABD570F0DEE21CEF113EEC0167",
-    "versionId": 0,
+    "attributeHash": "C253B5ABD570F0DEE21CEF113EEC0167",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_MEMBERSHIP_PLAN_VALUATION",
@@ -5025,8 +4690,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7657149AC9FA38DA83EA4FBFB2B61A4C",
-    "versionId": 0,
+    "attributeHash": "7657149AC9FA38DA83EA4FBFB2B61A4C",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -5040,8 +4704,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "787C2E8138AEA4B45A200793A6EBD969",
-    "versionId": 0,
+    "attributeHash": "787C2E8138AEA4B45A200793A6EBD969",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "LSAT_MEMBERSHIP",
@@ -5055,8 +4718,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "A435ACAC34EBBC48EC16F975D2BB0B5F",
-    "versionId": 0,
+    "attributeHash": "A435ACAC34EBBC48EC16F975D2BB0B5F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -5070,8 +4732,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "B7B39637B0AF61BAFB30B416C430823F",
-    "versionId": 0,
+    "attributeHash": "B7B39637B0AF61BAFB30B416C430823F",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -5085,8 +4746,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7F02934FABDD329B41E86E9E46551E31",
-    "versionId": 0,
+    "attributeHash": "7F02934FABDD329B41E86E9E46551E31",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -5100,8 +4760,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2377591ED4C487DC8FDD16A01B068852",
-    "versionId": 0,
+    "attributeHash": "2377591ED4C487DC8FDD16A01B068852",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -5115,8 +4774,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CD8C363AC3C05CE2530A9AD57DBE7EF6",
-    "versionId": 0,
+    "attributeHash": "CD8C363AC3C05CE2530A9AD57DBE7EF6",
     "databaseName": "200_Integration_Layer",
     "schemaName": "dbo",
     "tableName": "SAT_CUSTOMER",
@@ -5130,8 +4788,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "8F8F9DDA82E301966F96976258DDDF0F",
-    "versionId": 0,
+    "attributeHash": "8F8F9DDA82E301966F96976258DDDF0F",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5145,8 +4802,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "1624DC8CC81C10EE515B2D2C5A09D762",
-    "versionId": 0,
+    "attributeHash": "1624DC8CC81C10EE515B2D2C5A09D762",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5160,8 +4816,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "BA4BDC24F737162C98B9506673AACB9F",
-    "versionId": 0,
+    "attributeHash": "BA4BDC24F737162C98B9506673AACB9F",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5175,8 +4830,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CB9A6260D80E264485060BE9E52AF3DD",
-    "versionId": 0,
+    "attributeHash": "CB9A6260D80E264485060BE9E52AF3DD",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5190,8 +4844,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "091CA1D6C337408392B80B847C08CA2B",
-    "versionId": 0,
+    "attributeHash": "091CA1D6C337408392B80B847C08CA2B",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5205,8 +4858,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "E338FEA4C413775842A0217CA35D7ADE",
-    "versionId": 0,
+    "attributeHash": "E338FEA4C413775842A0217CA35D7ADE",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5220,8 +4872,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6DB456360E462190431A286CAD45A561",
-    "versionId": 0,
+    "attributeHash": "6DB456360E462190431A286CAD45A561",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5235,8 +4886,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "6FE2BBCF52F11D330C80F6D19CCC5710",
-    "versionId": 0,
+    "attributeHash": "6FE2BBCF52F11D330C80F6D19CCC5710",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5250,8 +4900,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "25E115EEA7A4D89E916E6313A62ED76A",
-    "versionId": 0,
+    "attributeHash": "25E115EEA7A4D89E916E6313A62ED76A",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5265,8 +4914,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "7340614966C5D352A1955D2B504B492D",
-    "versionId": 0,
+    "attributeHash": "7340614966C5D352A1955D2B504B492D",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5280,8 +4928,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "2F12C1DE612BF8AF69B6E4E9687B9946",
-    "versionId": 0,
+    "attributeHash": "2F12C1DE612BF8AF69B6E4E9687B9946",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5295,8 +4942,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "5D67F96729490AA4C846DA867E94A73B",
-    "versionId": 0,
+    "attributeHash": "5D67F96729490AA4C846DA867E94A73B",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5310,8 +4956,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "CC38901835D2B71B3AB64275D1B9D369",
-    "versionId": 0,
+    "attributeHash": "CC38901835D2B71B3AB64275D1B9D369",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5325,8 +4970,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "3656DAC874461070CF9CED4CBBDAEC01",
-    "versionId": 0,
+    "attributeHash": "3656DAC874461070CF9CED4CBBDAEC01",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5340,8 +4984,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "FF197498A5450E0981B4EA32D5B6CBB2",
-    "versionId": 0,
+    "attributeHash": "FF197498A5450E0981B4EA32D5B6CBB2",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5355,8 +4998,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "EAEE1C0152B5DA81DAEAC785B4EDB330",
-    "versionId": 0,
+    "attributeHash": "EAEE1C0152B5DA81DAEAC785B4EDB330",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5370,8 +5012,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F5EDE0F36B8F33FBFBBB60F9FDB2C858",
-    "versionId": 0,
+    "attributeHash": "F5EDE0F36B8F33FBFBBB60F9FDB2C858",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",
@@ -5385,8 +5026,7 @@
     "multiActiveIndicator": "N"
   },
   {
-    "versionAttributeHash": "F022B25C7ECB2F05A307070BBE6C3F60",
-    "versionId": 0,
+    "attributeHash": "F022B25C7ECB2F05A307070BBE6C3F60",
     "databaseName": "300_Presentation_Layer",
     "schemaName": "dbo",
     "tableName": "DIM_CUSTOMER",

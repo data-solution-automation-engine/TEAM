@@ -48,13 +48,6 @@ namespace TEAM
                 Columns.Add(hashKey);
             }
 
-            DataGridViewTextBoxColumn versionId = new DataGridViewTextBoxColumn();
-            versionId.Name = DataObjectMappingGridColumns.VersionId.ToString();
-            versionId.HeaderText = DataObjectMappingGridColumns.VersionId.ToString();
-            versionId.DataPropertyName = DataObjectMappingGridColumns.VersionId.ToString();
-            versionId.Visible = false;
-            Columns.Add(versionId);
-
             DataGridViewTextBoxColumn sourceTable = new DataGridViewTextBoxColumn();
             sourceTable.Name = DataObjectMappingGridColumns.SourceDataObject.ToString();
             sourceTable.HeaderText = @"Source Data Object";

@@ -37,13 +37,6 @@
             this.labelMetadataSave = new System.Windows.Forms.Label();
             this.labelWorkingEnvironmentType = new System.Windows.Forms.Label();
             this.labelMetadataRepository = new System.Windows.Forms.Label();
-            this.groupBoxVersionSelection = new System.Windows.Forms.GroupBox();
-            this.labelActiveVersionDateTime = new System.Windows.Forms.Label();
-            this.labelActivatedMetadataVersionDateTime = new System.Windows.Forms.Label();
-            this.labelActiveVersion = new System.Windows.Forms.Label();
-            this.labelActivatedMetadataVersin = new System.Windows.Forms.Label();
-            this.labelDocumentationVersion = new System.Windows.Forms.Label();
-            this.labelVersion = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +57,6 @@
             this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2.SuspendLayout();
-            this.groupBoxVersionSelection.SuspendLayout();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -78,7 +70,7 @@
             this.groupBox2.Controls.Add(this.labelMetadataSave);
             this.groupBox2.Controls.Add(this.labelWorkingEnvironmentType);
             this.groupBox2.Controls.Add(this.labelMetadataRepository);
-            this.groupBox2.Location = new System.Drawing.Point(12, 577);
+            this.groupBox2.Location = new System.Drawing.Point(12, 684);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(342, 102);
             this.groupBox2.TabIndex = 22;
@@ -138,76 +130,6 @@
             this.labelMetadataRepository.Size = new System.Drawing.Size(114, 13);
             this.labelMetadataRepository.TabIndex = 64;
             this.labelMetadataRepository.Text = "Metadata is saved as :";
-            // 
-            // groupBoxVersionSelection
-            // 
-            this.groupBoxVersionSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBoxVersionSelection.Controls.Add(this.labelActiveVersionDateTime);
-            this.groupBoxVersionSelection.Controls.Add(this.labelActivatedMetadataVersionDateTime);
-            this.groupBoxVersionSelection.Controls.Add(this.labelActiveVersion);
-            this.groupBoxVersionSelection.Controls.Add(this.labelActivatedMetadataVersin);
-            this.groupBoxVersionSelection.Controls.Add(this.labelDocumentationVersion);
-            this.groupBoxVersionSelection.Controls.Add(this.labelVersion);
-            this.groupBoxVersionSelection.Location = new System.Drawing.Point(12, 685);
-            this.groupBoxVersionSelection.Name = "groupBoxVersionSelection";
-            this.groupBoxVersionSelection.Size = new System.Drawing.Size(342, 99);
-            this.groupBoxVersionSelection.TabIndex = 20;
-            this.groupBoxVersionSelection.TabStop = false;
-            this.groupBoxVersionSelection.Text = "Version";
-            // 
-            // labelActiveVersionDateTime
-            // 
-            this.labelActiveVersionDateTime.AutoSize = true;
-            this.labelActiveVersionDateTime.Location = new System.Drawing.Point(192, 59);
-            this.labelActiveVersionDateTime.Name = "labelActiveVersionDateTime";
-            this.labelActiveVersionDateTime.Size = new System.Drawing.Size(27, 13);
-            this.labelActiveVersionDateTime.TabIndex = 23;
-            this.labelActiveVersionDateTime.Text = "N/A";
-            // 
-            // labelActivatedMetadataVersionDateTime
-            // 
-            this.labelActivatedMetadataVersionDateTime.AutoSize = true;
-            this.labelActivatedMetadataVersionDateTime.Location = new System.Drawing.Point(6, 59);
-            this.labelActivatedMetadataVersionDateTime.Name = "labelActivatedMetadataVersionDateTime";
-            this.labelActivatedMetadataVersionDateTime.Size = new System.Drawing.Size(105, 13);
-            this.labelActivatedMetadataVersionDateTime.TabIndex = 22;
-            this.labelActivatedMetadataVersionDateTime.Text = "Activation date/time:";
-            // 
-            // labelActiveVersion
-            // 
-            this.labelActiveVersion.AutoSize = true;
-            this.labelActiveVersion.Location = new System.Drawing.Point(192, 42);
-            this.labelActiveVersion.Name = "labelActiveVersion";
-            this.labelActiveVersion.Size = new System.Drawing.Size(27, 13);
-            this.labelActiveVersion.TabIndex = 21;
-            this.labelActiveVersion.Text = "N/A";
-            // 
-            // labelActivatedMetadataVersin
-            // 
-            this.labelActivatedMetadataVersin.AutoSize = true;
-            this.labelActivatedMetadataVersin.Location = new System.Drawing.Point(6, 42);
-            this.labelActivatedMetadataVersin.Name = "labelActivatedMetadataVersin";
-            this.labelActivatedMetadataVersin.Size = new System.Drawing.Size(139, 13);
-            this.labelActivatedMetadataVersin.TabIndex = 20;
-            this.labelActivatedMetadataVersin.Text = "Activated metadata version:";
-            // 
-            // labelDocumentationVersion
-            // 
-            this.labelDocumentationVersion.AutoSize = true;
-            this.labelDocumentationVersion.Location = new System.Drawing.Point(6, 25);
-            this.labelDocumentationVersion.Name = "labelDocumentationVersion";
-            this.labelDocumentationVersion.Size = new System.Drawing.Size(150, 13);
-            this.labelDocumentationVersion.TabIndex = 19;
-            this.labelDocumentationVersion.Text = "Most recent metadata version:";
-            // 
-            // labelVersion
-            // 
-            this.labelVersion.AutoSize = true;
-            this.labelVersion.Location = new System.Drawing.Point(192, 25);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(27, 13);
-            this.labelVersion.TabIndex = 18;
-            this.labelVersion.Text = "N/A";
             // 
             // richTextBoxInformation
             // 
@@ -391,7 +313,6 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1148, 797);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBoxVersionSelection);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBoxInformation);
             this.Controls.Add(this.menuStripMainMenu);
@@ -405,8 +326,6 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBoxVersionSelection.ResumeLayout(false);
-            this.groupBoxVersionSelection.PerformLayout();
             this.menuStripMainMenu.ResumeLayout(false);
             this.menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -427,19 +346,12 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
-        private System.Windows.Forms.GroupBox groupBoxVersionSelection;
-        private System.Windows.Forms.Label labelDocumentationVersion;
-        private System.Windows.Forms.Label labelVersion;
         internal System.Windows.Forms.RichTextBox richTextBoxInformation;
-        private System.Windows.Forms.Label labelActiveVersion;
-        private System.Windows.Forms.Label labelActivatedMetadataVersin;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label labelMetadataRepository;
         private System.Windows.Forms.Label labelWorkingEnvironmentType;
         private System.Windows.Forms.ToolStripMenuItem patternDefinitionsToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker backgroundWorkerEventLog;
-        private System.Windows.Forms.Label labelActiveVersionDateTime;
-        private System.Windows.Forms.Label labelActivatedMetadataVersionDateTime;
         private System.Windows.Forms.Label labelWorkingEnvironment;
         private System.Windows.Forms.Label labelMetadataSave;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;

@@ -8,7 +8,7 @@ namespace TEAM
     internal class TeamJsonHandling
     {
         /// <summary>
-        ///    Method to create a new dummy Json file in the designated working directory.
+        /// Method to create a new dummy Json file in the designated working directory.
         /// </summary>
         /// <param name="fileType"></param>
         internal static void CreateDummyJsonFile(string fileType)
@@ -22,7 +22,6 @@ namespace TEAM
                 dummyJsonFile = new JObject(
                     new JProperty("enabledIndicator", true),
                     new JProperty("tableMappingHash", "NewHash"),
-                    new JProperty("versionId", 0),
                     new JProperty("sourceTable", "STG_EXAMPLESYSTEM_EXAMPLETABLE"),
                     new JProperty("sourceConnection", null),
                     new JProperty("targetTable", "HUB_EXAMPLE"),
@@ -37,8 +36,7 @@ namespace TEAM
             } else if (fileType == FormBase.GlobalParameters.JsonModelMetadataFileName) // Physical Model
             {
                 dummyJsonFile = new JObject(
-                    new JProperty("versionAttributeHash", "NewHash"),
-                    new JProperty("versionId", 0),
+                    new JProperty("attributeHash", "NewHash"),
                     new JProperty("databaseName", "Sample database"),
                     new JProperty("schemaName", "[dbo]"),
                     new JProperty("tableName", "Sample Table"),
@@ -58,7 +56,6 @@ namespace TEAM
             {
                 dummyJsonFile = new JObject(
                     new JProperty("attributeMappingHash", "NewHash"),
-                    new JProperty("versionId", 0),
                     new JProperty("sourceTable", "SOURCE_TABLE"),
                     new JProperty("sourceAttribute", "EXAMPLE_FROM_ATTRIBUTE"),
                     new JProperty("targetTable", "TARGET_TABLE"),
@@ -86,67 +83,52 @@ namespace TEAM
         internal static class JsonFileConfiguration
         {
             /// <summary>
-            /// Builds and returns the fully qualified name of the table mapping Json file, including the version.
+            /// Builds and returns the fully qualified name of the table mapping Json file.
             /// </summary>
             /// <returns></returns>
             public static string TableMappingJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.MetadataPath +
-                                           FormBase.GlobalParameters.WorkingEnvironment + "_" +
-                                           FormBase.GlobalParameters.JsonTableMappingFileName +
-                                           jsonVersionExtension;
-
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.WorkingEnvironment + "_" + FormBase.GlobalParameters.JsonTableMappingFileName + FormBase.GlobalParameters.JsonExtension;
                 return localJsonFileName;
             }
 
             /// <summary>
-            /// Builds and returns the fully qualified name of the attribute mapping Json file, including the version.
+            /// Builds and returns the fully qualified name of the attribute mapping Json file.
             /// </summary>
             /// <returns></returns>
             public static string AttributeMappingJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.MetadataPath +
-                                           FormBase.GlobalParameters.WorkingEnvironment + "_" +
-                                           FormBase.GlobalParameters.JsonAttributeMappingFileName +
-                                           jsonVersionExtension;
-
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.WorkingEnvironment + "_" + FormBase.GlobalParameters.JsonAttributeMappingFileName + FormBase.GlobalParameters.JsonExtension;
                 return localJsonFileName;
             }
 
             /// <summary>
-            /// Builds and returns the fully qualified name of the physical model Json file, including the version.
+            /// Builds and returns the fully qualified name of the physical model Json file.
             /// </summary>
             /// <returns></returns>
             public static string PhysicalModelJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.MetadataPath +
-                                                       FormBase.GlobalParameters.WorkingEnvironment + "_" +
-                                                       FormBase.GlobalParameters.JsonModelMetadataFileName +
-                                                       jsonVersionExtension;
-
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.WorkingEnvironment + "_" + FormBase.GlobalParameters.JsonModelMetadataFileName + FormBase.GlobalParameters.JsonExtension;
                 return localJsonFileName;
             }
 
             internal static string newFileTableMapping { get; set; }
             internal static string newFileAttributeMapping { get; set; }
             internal static string newFilePhysicalModel { get; set; }
-            internal static string jsonVersionExtension { get; set; }
         }
 
         /// <summary>
-        ///   Create a completely empty file, for the purposes of clearing a version / existing data.
+        /// Create a completely empty file.
         /// </summary>
         /// <param name="fileType"></param>
         internal static void CreatePlaceholderJsonFile(string fileType)
         {
-            var jsonVersionExtension = @"_v" + FormBase.GlobalParameters.CurrentVersionId + ".json";
-
-            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileType + jsonVersionExtension, "");
+            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileType + FormBase.GlobalParameters.JsonExtension, "");
         }
 
 
         /// <summary>
-        ///    Create a backup of a given JSON file.
+        /// Create a backup of a given JSON file.
         /// </summary>
         /// <param name="inputFileName"></param>
         internal string BackupJsonFile(string inputFileName, string inputFilePath)
@@ -163,7 +145,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Clear out (remove) an existing Json file, to facilitate overwriting.
+        /// Clear out (remove) an existing Json file, to facilitate overwriting.
         /// </summary>
         internal static void RemoveExistingJsonFile(string inputFileName)
         {

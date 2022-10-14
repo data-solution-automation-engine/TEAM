@@ -83,17 +83,13 @@ namespace TEAM_Library
                     connectionString.Append(";password=" + localNamedUserPassword);
                 }
 
-                if (localNamedUserPassword != null)
+                if (localNamedUserPassword.Length > 0 && mask)
                 {
-                    if (localNamedUserPassword.Length > 0 && mask == true)
-                    {
-                        outputConnectionString = connectionString.ToString()
-                            .Replace(localNamedUserPassword, "*****");
-                    }
-                    else
-                    {
-                        outputConnectionString = connectionString.ToString();
-                    }
+                    outputConnectionString = connectionString.ToString().Replace(localNamedUserPassword, "*****");
+                }
+                else
+                {
+                    outputConnectionString = connectionString.ToString();
                 }
             }
             else
@@ -244,10 +240,11 @@ namespace TEAM_Library
                     localConnectionDictionary.Clear();
                     TeamConnection[] connectionJson = JsonConvert.DeserializeObject<TeamConnection[]>(File.ReadAllText(connectionFileName));
 
-                    foreach (var connection in connectionJson)
-                    {
-                        localConnectionDictionary.Add(connection.ConnectionInternalId, connection);
-                    }
+                    if (connectionJson != null)
+                        foreach (var connection in connectionJson)
+                        {
+                            localConnectionDictionary.Add(connection.ConnectionInternalId, connection);
+                        }
                 }
 
                 //localEvent = Event.CreateNewEvent(EventTypes.Information, $"The connections file {connectionFileName} was loaded successfully.");

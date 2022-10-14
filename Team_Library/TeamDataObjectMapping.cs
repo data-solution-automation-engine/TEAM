@@ -46,7 +46,6 @@ namespace TEAM_Library
 
             DataTable.Columns.Add(DataObjectMappingGridColumns.Enabled.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.HashKey.ToString());
-            DataTable.Columns.Add(DataObjectMappingGridColumns.VersionId.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObject.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceConnection.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObject.ToString());
@@ -95,10 +94,9 @@ namespace TEAM_Library
                                 }
 
                                 // Add the deserialised file to the list of mappings.
-                                DataObjectMappings dataObjectMappings = new DataObjectMappings();
 
                                 var jsonInput = File.ReadAllText(fileName);
-                                dataObjectMappings = JsonConvert.DeserializeObject<DataObjectMappings>(jsonInput);
+                                var dataObjectMappings = JsonConvert.DeserializeObject<DataObjectMappings>(jsonInput);
 
                                 var localDataObjectMappingsFileCombination = new DataObjectMappingsFileCombination
                                 {
@@ -180,8 +178,6 @@ namespace TEAM_Library
                         string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
                         //var sourceConnectionInternalId = GetTeamConnectionByConnectionKey(sourceConnectionString).ConnectionInternalId;
 
-                        //var versionId = GlobalParameters.CurrentVersionId.ToString();
-
                         var newRow = DataTable.NewRow();
 
                         string[] hashKey = new string[]
@@ -193,7 +189,6 @@ namespace TEAM_Library
 
                         newRow[(int)DataObjectMappingGridColumns.Enabled] = dataObjectMapping.enabled;
                         newRow[(int)DataObjectMappingGridColumns.HashKey] = hashKey;
-                        newRow[(int)DataObjectMappingGridColumns.VersionId] = 0;
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObject] = sourceDataObjectName;
                         //newRow[(int)DataObjectMappingGridColumns.SourceConnection] = sourceConnectionInternalId;
                         newRow[(int)DataObjectMappingGridColumns.SourceConnection] = 1;
@@ -217,7 +212,6 @@ namespace TEAM_Library
         {
             DataTable.Columns[(int)DataObjectMappingGridColumns.Enabled].ColumnName = DataObjectMappingGridColumns.Enabled.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.HashKey].ColumnName = DataObjectMappingGridColumns.HashKey.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.VersionId].ColumnName = DataObjectMappingGridColumns.VersionId.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].ColumnName = DataObjectMappingGridColumns.SourceDataObject.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SourceConnection].ColumnName = DataObjectMappingGridColumns.SourceConnection.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].ColumnName = DataObjectMappingGridColumns.TargetDataObject.ToString();
@@ -238,7 +232,6 @@ namespace TEAM_Library
         //JSON representation of the table mapping metadata
         public bool enabledIndicator { get; set; }
         public string tableMappingHash { get; set; }
-        public int versionId { get; set; }
         public string sourceTable { get; set; }
         public string sourceConnectionKey { get; set; }
         public string targetTable { get; set; }
@@ -255,14 +248,13 @@ namespace TEAM_Library
     {
         Enabled = 0,
         HashKey = 1,
-        VersionId = 2,
-        SourceDataObject = 3,
-        SourceConnection = 4,
-        TargetDataObject = 5,
-        TargetConnection = 6,
-        BusinessKeyDefinition = 7,
-        DrivingKeyDefinition = 8,
-        FilterCriterion = 9
+        SourceDataObject = 2,
+        SourceConnection = 3,
+        TargetDataObject = 4,
+        TargetConnection = 5,
+        BusinessKeyDefinition = 6,
+        DrivingKeyDefinition = 7,
+        FilterCriterion = 8
     }
 
     /// <summary>
@@ -451,7 +443,6 @@ namespace TEAM_Library
         {
             DataTable.Columns[(int)DataObjectMappingGridColumns.Enabled].ColumnName = DataObjectMappingGridColumns.Enabled.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.HashKey].ColumnName = DataObjectMappingGridColumns.HashKey.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.VersionId].ColumnName = DataObjectMappingGridColumns.VersionId.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].ColumnName = DataObjectMappingGridColumns.SourceDataObject.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SourceConnection].ColumnName = DataObjectMappingGridColumns.SourceConnection.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].ColumnName = DataObjectMappingGridColumns.TargetDataObject.ToString();

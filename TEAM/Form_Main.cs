@@ -1,13 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 using System.Threading;
 using System.Drawing;
-using System.Data;
-using System.Globalization;
 using System.IO;
 using TEAM_Library;
 
@@ -30,7 +27,7 @@ namespace TEAM
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
 
-            richTextBoxInformation.AppendText("Initialising the application.\r\n\r\n");
+            richTextBoxInformation.AppendText("Starting the application.\r\n\r\n");
 
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
@@ -175,9 +172,6 @@ namespace TEAM
             }
             #endregion
 
-            //FormBase.EnvironmentVersion.GetEnvironmentVersionsFromFile(Path.GetDirectoryName(configurationFile));
-
-            TeamVersionList.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
 
             // Load the pattern definition file.
             try
@@ -209,7 +203,7 @@ namespace TEAM
 
             //Startup information
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
-            richTextBoxInformation.AppendText($"Welcome to version {versionNumberForTeamApplication}.\r\n\r\n");
+            richTextBoxInformation.AppendText($"Welcome to Team {versionNumberForTeamApplication}.\r\n\r\n");
 
             labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
             labelEnvironmentMode.Text = GlobalParameters.EnvironmentMode.ToString();
@@ -262,9 +256,6 @@ namespace TEAM
 
             try
             {
-
-                DisplayMaxVersion();
-                DisplayCurrentVersionFromRepository(connOmd);
                 openMetadataFormToolStripMenuItem.Enabled = true;
 
                 labelMetadataSave.Text = TeamConfiguration.MetadataRepositoryType.ToString();
@@ -290,53 +281,6 @@ namespace TEAM
         {
             metadataToolStripMenuItem.Enabled = true;
         }
-
-
-
-        internal void DisplayMaxVersion()
-        {
-            var selectedVersion = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
-
-            //var versionMajorMinor = GetVersion(selectedVersion, connOmd);
-            var majorVersion = selectedVersion.Item2;
-            var minorVersion = selectedVersion.Item3;
-
-            labelVersion.Text = majorVersion + "." + minorVersion;
-        }
-
-        /// <summary>
-        /// Retrieves the currently activated version from the repository. This is set after the 'activation' process in 'Manage Metadata' has been completed successfully.
-        /// </summary>
-        /// <param name="connOmd"></param>
-        internal void DisplayCurrentVersionFromRepository(SqlConnection connOmd)
-        {
-            var sqlStatementForCurrentVersion = new StringBuilder();
-            sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME], [ACTIVATION_DATETIME] FROM [MD_MODEL_METADATA]");
-
-            try
-            {
-                var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
-
-                if (versionList != null && versionList.Rows.Count > 0)
-                {
-                    foreach (DataRow versionNameRow in versionList.Rows)
-                    {
-                        var versionName = (string) versionNameRow["VERSION_NAME"];
-                        labelActiveVersion.Text = versionName;
-
-                        var versionDate = (DateTime)versionNameRow["ACTIVATION_DATETIME"];
-                        labelActiveVersionDateTime.Text = versionDate.ToString(CultureInfo.InvariantCulture);
-                    }
-                }
-
-            }
-            catch (Exception)
-            {
-                labelActiveVersion.Text = "There has been an error while attempting to display the active version.";
-            }
-        }
-
-
 
 
         private void CheckKeyword(string word, Color color, int startIndex)
@@ -665,8 +609,6 @@ namespace TEAM
             Application.Exit();
         }
 
-
-
         private void patternDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var t = new Thread(ThreadProcPattern);
@@ -748,8 +690,7 @@ namespace TEAM
 
         private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Process.Start(ExtensionMethod.GetDefaultBrowserPath(),
-                "http://roelantvos.com/blog/team/");
+            Process.Start(Utility.GetDefaultBrowserPath(), "http://roelantvos.com/blog/team/");
         }
 
         private void deployMetadataExamplesToolStripMenuItem_Click(object sender, EventArgs e)
