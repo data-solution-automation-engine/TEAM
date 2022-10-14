@@ -75,10 +75,6 @@ namespace TEAM
 
             ((ISupportInitialize)(_dataGridViewTableMetadata)).EndInit();
 
-
-
-
-
             // Hide the physical model tab if in physical mode
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
             {

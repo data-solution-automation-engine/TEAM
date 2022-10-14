@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -28,7 +27,9 @@ namespace TEAM
             AutoGenerateColumns = false;
             ColumnHeadersVisible = true;
             EditMode = DataGridViewEditMode.EditOnEnter;
+            AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             
+            // Enabled
             if (!Controls.ContainsKey(DataObjectMappingGridColumns.Enabled.ToString()))
             {
                 DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
@@ -38,6 +39,7 @@ namespace TEAM
                 Columns.Add(enabledIndicator);
             }
 
+            // Hashkey
             if (!Controls.ContainsKey(DataObjectMappingGridColumns.HashKey.ToString()))
             {
                 DataGridViewTextBoxColumn hashKey = new DataGridViewTextBoxColumn();
@@ -48,12 +50,14 @@ namespace TEAM
                 Columns.Add(hashKey);
             }
 
+            // Source Data Object
             DataGridViewTextBoxColumn sourceTable = new DataGridViewTextBoxColumn();
             sourceTable.Name = DataObjectMappingGridColumns.SourceDataObject.ToString();
             sourceTable.HeaderText = @"Source Data Object";
             sourceTable.DataPropertyName = DataObjectMappingGridColumns.SourceDataObject.ToString();
             Columns.Add(sourceTable);
 
+            // Source Connection
             DataGridViewComboBoxColumn sourceConnection = new DataGridViewComboBoxColumn();
             sourceConnection.Name = DataObjectMappingGridColumns.SourceConnection.ToString();
             sourceConnection.HeaderText = @"Source Connection";
@@ -98,6 +102,7 @@ namespace TEAM
             filterCriterion.Name = DataObjectMappingGridColumns.FilterCriterion.ToString();
             filterCriterion.HeaderText = @"Filter Criterion";
             filterCriterion.DataPropertyName = DataObjectMappingGridColumns.FilterCriterion.ToString();
+            filterCriterion.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             Columns.Add(filterCriterion);
         }
 
