@@ -5,7 +5,7 @@ using TEAM_Library;
 
 namespace TEAM
 {
-    class CustomDataGridViewAttribute : DataGridView
+    class DataGridViewDataItems : DataGridView
     {
         protected override void OnPaint(PaintEventArgs e)
         {

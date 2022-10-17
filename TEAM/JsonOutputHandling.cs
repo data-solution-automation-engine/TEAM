@@ -164,14 +164,14 @@ namespace TEAM
             return dataObject;
         }
         
-        public static List<DataObject> SetLineageRelatedDataObjectList(DataTable dataObjectMappingDataTable, string targetDataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
+        public static List<DataObject> SetLineageRelatedDataObjectList(DataTable dataObjectMappingDataTable, string TargetDataObject, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
         {
             List<DataObject> dataObjectList = new List<DataObject>();
 
             if (jsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject == "True")
             {
                 // Find the corresponding row in the Data Object Mapping grid
-                DataRow[] dataObjectMappings = dataObjectMappingDataTable.Select("[" + DataObjectMappingGridColumns.SourceDataObject + "] = '" + targetDataObjectName + "'");
+                DataRow[] dataObjectMappings = dataObjectMappingDataTable.Select("[" + DataObjectMappingGridColumns.SourceDataObject + "] = '" + TargetDataObject + "'");
 
                 foreach (DataRow dataObjectMapping in dataObjectMappings)
                 {

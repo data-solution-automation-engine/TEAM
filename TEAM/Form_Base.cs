@@ -40,21 +40,6 @@ namespace TEAM
             return teamConnection;
         }
 
-        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey)
-        {
-            TeamConnection returnTeamConnection = new TeamConnection();
-
-            foreach (var teamConnection in TeamConfiguration.ConnectionDictionary)
-            {
-                if (teamConnection.Value.ConnectionKey == connectionKey)
-                {
-                    returnTeamConnection = teamConnection.Value;
-                }
-            }
-
-            return returnTeamConnection;
-        }
-
         #region Metadata objects in memory
         // In-memory representation of the Table Mapping Metadata.
         public static TeamDataObjectMapping TableMapping { get; set; } = new TeamDataObjectMapping();

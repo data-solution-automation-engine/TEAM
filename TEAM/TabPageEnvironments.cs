@@ -13,7 +13,7 @@ namespace TEAM
     /// <summary>
     /// Derived Custom Connection TabPage inherited from the TabPage class.
     /// </summary>
-    internal class CustomTabPageEnvironment : TabPage
+    internal class TabPageEnvironments : TabPage
     {
         // Startup flag, disabled in constructor. Used to prevent some events from firing twice (creation and value setting).
         internal bool StartUpIndicator = true;
@@ -31,7 +31,7 @@ namespace TEAM
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page, using a TeamWorkingEnvironment as input.
         /// </summary>
-        public CustomTabPageEnvironment(object input)
+        public TabPageEnvironments(object input)
         {
             _localEnvironment = (TeamWorkingEnvironment) input;
 

@@ -296,15 +296,15 @@ namespace TEAM_Library
         /// This method returns the ETL loading 'direction' based on the source and target mapping.
         /// </summary>
         /// <param name="sourceDataObjectName"></param>
-        /// <param name="targetDataObjectName"></param>
+        /// <param name="TargetDataObject"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static string GetDataObjectMappingLoadVector(string sourceDataObjectName, string targetDataObjectName, TeamConfiguration teamConfiguration)
+        public static string GetDataObjectMappingLoadVector(string sourceDataObjectName, string TargetDataObject, TeamConfiguration teamConfiguration)
         {
             // This is used to evaluate the correct connection for the generated ETL processes.
 
             DataObjectTypes evaluatedSource = GetDataObjectType(sourceDataObjectName, "", teamConfiguration);
-            DataObjectTypes evaluatedTarget = GetDataObjectType(targetDataObjectName, "", teamConfiguration);
+            DataObjectTypes evaluatedTarget = GetDataObjectType(TargetDataObject, "", teamConfiguration);
 
             string loadVector = "";
 

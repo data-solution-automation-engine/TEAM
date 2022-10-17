@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    class CustomDataGridViewPhysicalModel : DataGridView 
+    class DataGridViewPhysicalModel : DataGridView 
     {
         protected override void OnPaint(PaintEventArgs e)
         {

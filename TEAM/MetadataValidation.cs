@@ -280,11 +280,11 @@ namespace TEAM
                 {
                     foreach (DataRow dataObjectRow in inputDataTable.Rows)
                     {
-                        var targetDataObjectName = dataObjectRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                        var TargetDataObject = dataObjectRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                         var targetConnectionInternalId = dataObjectRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                        var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
+                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(TargetDataObject, targetConnection).FirstOrDefault();
+                        var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
                         var filterCriterion = dataObjectRow[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
                         var sourceDataObjectName = dataObjectRow[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
@@ -314,11 +314,11 @@ namespace TEAM
                 // Query the dependent information
                 foreach (DataRow row in inputDataTable.Rows)
                 {
-                    var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    var TargetDataObject = row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                     var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                    var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", FormBase.TeamConfiguration);
+                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(TargetDataObject, targetConnection).FirstOrDefault();
+                    var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
 
                     var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
                     var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();

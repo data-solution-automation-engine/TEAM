@@ -98,7 +98,7 @@ namespace TEAM_Library
                 SetDataTableColumns();
 
                 // Set the sort order.
-                SetDataTableSorting();
+                //SetDataTableSorting();
             }
         }
     }

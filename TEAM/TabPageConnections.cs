@@ -14,7 +14,7 @@ namespace TEAM
     /// <summary>
     /// Derived Custom Connection TabPage inherited from the TabPage class.
     /// </summary>
-    internal class CustomTabPageConnection : TabPage
+    internal class TabPageConnections : TabPage
     {
         // Startup flag, disabled in constructor. Used to prevent some events from firing twice (creation and value setting).
         internal bool StartUpIndicator = true;
@@ -57,7 +57,7 @@ namespace TEAM
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page.
         /// </summary>
-        public CustomTabPageConnection(object input)
+        public TabPageConnections(object input)
         {
             _localConnection = (TeamConnection) input;
 

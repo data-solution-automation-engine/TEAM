@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
 using Newtonsoft.Json;
+using DataObject = DataWarehouseAutomation.DataObject;
 
 namespace TEAM_Library
 {
@@ -17,7 +18,7 @@ namespace TEAM_Library
 
     public class TeamDataObjectMappings
     {
-        public List<DataObjectMappingsFileCombination> DataObjectMappingsFileCombinations { get; set; }
+        public SortableBindingList<DataObjectMappingsFileCombination> DataObjectMappingsFileCombinations { get; set; }
 
         public EventLog EventLog { get; set; }
 
@@ -25,7 +26,7 @@ namespace TEAM_Library
 
         public string MetadataPath { get; set; }
 
-        // Default constructor
+        // Default constructor.
         public TeamDataObjectMappings()
         {
             InitializeMainProperties();
@@ -37,22 +38,24 @@ namespace TEAM_Library
             MetadataPath = inputPath;
         }
 
-        // Reusable initialisation of the main properties
+        // Reusable initialisation of the main properties.
         internal void InitializeMainProperties()
         {
             EventLog = new EventLog();
             DataTable = new DataTable();
-            DataObjectMappingsFileCombinations = new List<DataObjectMappingsFileCombination>();
+            DataObjectMappingsFileCombinations = new SortableBindingList<DataObjectMappingsFileCombination>();
 
             DataTable.Columns.Add(DataObjectMappingGridColumns.Enabled.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.HashKey.ToString());
-            DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObject.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceConnection.ToString());
-            DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObject.ToString());
+            DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObject.ToString(), typeof(DataWarehouseAutomation.DataObject));
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetConnection.ToString());
+            DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObject.ToString(), typeof(DataWarehouseAutomation.DataObject));
             DataTable.Columns.Add(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
+            DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
+            DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
         }
 
         /// <summary>
@@ -128,17 +131,17 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Build and deploy a data table using the JSON files that are in memory.
+        /// Build and deploy a data table using the JSON files.
         /// </summary>
-        public void SetDataTable()
+        public void SetDataTable(TeamConfiguration teamConfiguration)
         {
             foreach (var dataObjectMappingFileCombination in DataObjectMappingsFileCombinations)
             {
                 foreach (var dataObjectMapping in dataObjectMappingFileCombination.DataObjectMappings.dataObjectMappings)
                 {
                     // Target Data Object details
-                    string targetDataObjectName = dataObjectMapping.targetDataObject.name;
-                    //string targetConnectionInternalId = GetTeamConnectionByConnectionKey(dataObjectMapping.targetDataObject.dataObjectConnection.dataConnectionString).ConnectionInternalId;
+                    var targetDataObject = dataObjectMapping.targetDataObject;
+                    string targetConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(dataObjectMapping.targetDataObject.dataObjectConnection.dataConnectionString, teamConfiguration).ConnectionInternalId;
                     string filterCriterion = dataObjectMapping.filterCriterion;
                     string drivingKeyDefinition = "";
 
@@ -161,7 +164,7 @@ namespace TEAM_Library
                         {
                             foreach (var dataItem in dataItems)
                             {
-                                // Explictly type-cast the value as string to avoid issues using dynamic type.
+                                // Explicitly type-cast the value as string to avoid issues using dynamic type.
                                 string dataItemName = dataItem.name;
                                 businessKeyComponentList.Add(dataItemName);
                             }
@@ -173,57 +176,57 @@ namespace TEAM_Library
 
                     foreach (var sourceDataObject in dataObjectMapping.sourceDataObjects)
                     {
-                        // Source Data Object details
-                        string sourceDataObjectName = sourceDataObject.name;
+                        var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
+                        DataObject singleSourceDataObject = JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+                        // Source Data Object details.
+
                         string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
-                        //var sourceConnectionInternalId = GetTeamConnectionByConnectionKey(sourceConnectionString).ConnectionInternalId;
+                        var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
 
                         var newRow = DataTable.NewRow();
 
-                        string[] hashKey = new string[]
+                        string[] hashKey =
                         {
-                                        sourceDataObjectName, targetDataObjectName, businessKeyDefinition,
+                                        singleSourceDataObject.name, targetDataObject.name, businessKeyDefinition,
                                         drivingKeyDefinition, filterCriterion
                         };
                         Utility.CreateMd5(hashKey, Utility.SandingElement);
 
                         newRow[(int)DataObjectMappingGridColumns.Enabled] = dataObjectMapping.enabled;
                         newRow[(int)DataObjectMappingGridColumns.HashKey] = hashKey;
-                        newRow[(int)DataObjectMappingGridColumns.SourceDataObject] = sourceDataObjectName;
-                        //newRow[(int)DataObjectMappingGridColumns.SourceConnection] = sourceConnectionInternalId;
-                        newRow[(int)DataObjectMappingGridColumns.SourceConnection] = 1;
-                        newRow[(int)DataObjectMappingGridColumns.TargetDataObject] = targetDataObjectName;
-                        //newRow[(int)DataObjectMappingGridColumns.TargetConnection] = targetConnectionInternalId;
-                        newRow[(int)DataObjectMappingGridColumns.TargetConnection] = 2;
+                        newRow[(int)DataObjectMappingGridColumns.SourceConnection] = sourceConnectionInternalId;
+                        newRow[(int)DataObjectMappingGridColumns.SourceDataObject] = singleSourceDataObject;
+                        newRow[(int)DataObjectMappingGridColumns.TargetConnection] = targetConnectionInternalId;
+                        newRow[(int)DataObjectMappingGridColumns.TargetDataObject] = targetDataObject;
                         newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = businessKeyDefinition;
                         newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = drivingKeyDefinition;
                         newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = filterCriterion;
+                        newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = singleSourceDataObject.name;
+                        newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = targetDataObject.name;
 
                         DataTable.Rows.Add(newRow);
                     }
                 }
             }
 
-            SetDataTableColumns();
-            SetDataTableSorting();
+            SetDataTableColumnNames();
         }
 
-        public void SetDataTableColumns()
+        /// <summary>
+        /// Set the header / column names for each data table column.
+        /// </summary>
+        public void SetDataTableColumnNames()
         {
             DataTable.Columns[(int)DataObjectMappingGridColumns.Enabled].ColumnName = DataObjectMappingGridColumns.Enabled.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.HashKey].ColumnName = DataObjectMappingGridColumns.HashKey.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].ColumnName = DataObjectMappingGridColumns.SourceDataObject.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SourceConnection].ColumnName = DataObjectMappingGridColumns.SourceConnection.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].ColumnName = DataObjectMappingGridColumns.TargetDataObject.ToString();
+            DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].ColumnName = DataObjectMappingGridColumns.SourceDataObject.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.TargetConnection].ColumnName = DataObjectMappingGridColumns.TargetConnection.ToString();
+            DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].ColumnName = DataObjectMappingGridColumns.TargetDataObject.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ColumnName = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].ColumnName = DataObjectMappingGridColumns.FilterCriterion.ToString();
-        }
-
-        public void SetDataTableSorting()
-        {
-            DataTable.DefaultView.Sort = $"[{DataObjectMappingGridColumns.TargetDataObject}] ASC, [{DataObjectMappingGridColumns.SourceDataObject}] ASC, [{DataObjectMappingGridColumns.BusinessKeyDefinition}] ASC";
+            DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
+            DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
         }
     }
 
@@ -248,13 +251,16 @@ namespace TEAM_Library
     {
         Enabled = 0,
         HashKey = 1,
-        SourceDataObject = 2,
-        SourceConnection = 3,
-        TargetDataObject = 4,
-        TargetConnection = 5,
+        SourceConnection = 2,
+        SourceDataObject = 3,
+        TargetConnection = 4,
+        TargetDataObject = 5,
         BusinessKeyDefinition = 6,
         DrivingKeyDefinition = 7,
-        FilterCriterion = 8
+        FilterCriterion = 8,
+        // The below are hidden, for sorting only.
+        SourceDataObjectName = 9,
+        TargetDataObjectName = 10,
     }
 
     /// <summary>
@@ -285,12 +291,12 @@ namespace TEAM_Library
         /// Find the related Data Objects in the same level, based on the business key evaluation.
         /// </summary>
         /// <param name="SourceDataObjectName"></param>
-        /// <param name="TargetDataObjectName"></param>
+        /// <param name="TargetDataObject"></param>
         /// <param name="BusinessKey"></param>
         /// <param name="DataTable"></param>
         /// <param name="businessKeyEvaluationMode"></param>
         /// <returns></returns>
-        public List<DataRow> GetPeerDataRows(string SourceDataObjectName, string SourceDataObjectSchema, string TargetDataObjectName, string TargetDataObjectSchema, string BusinessKey, string FilterCriterion, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
+        public List<DataRow> GetPeerDataRows(string SourceDataObjectName, string SourceDataObjectSchema, string TargetDataObject, string TargetDataObjectSchema, string BusinessKey, string FilterCriterion, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
         {
             // Prepare the return information
             List<DataRow> localDataRows = new List<DataRow>();
@@ -300,11 +306,11 @@ namespace TEAM_Library
             List<string> businessKeyComponents = BusinessKey.Split(',').ToList();
 
             //var localSourceDataObjectName = SourceDataObjectSchema + "." + SourceDataObjectName;
-            //var localTargetDataObjectName = TargetDataObjectSchema + "." + TargetDataObjectName;
+            //var localTargetDataObject = TargetDataObjectSchema + "." + TargetDataObject;
 
             // NOTE: THIS NEEDS TO BE REFACTORED TO USE THE FULLY QUALIFIED NAME BUT THIS REQUIRES THE LOADPATTERNQUERY (e.g. base query) CONCEPT TO BE DEPRECATED
             var localSourceDataObjectName = SourceDataObjectName.Substring(SourceDataObjectName.IndexOf('.') + 1);
-            var localTargetDataObjectName = TargetDataObjectName.Substring(TargetDataObjectName.IndexOf('.') + 1);
+            var localTargetDataObject = TargetDataObject.Substring(TargetDataObject.IndexOf('.') + 1);
 
 
             // Only evaluate a business key component based on its part.
@@ -320,7 +326,7 @@ namespace TEAM_Library
                               localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).IndexOf('.') + 1 ) == localSourceDataObjectName &&
                               localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()) == businessKeyComponent.Trim() &&
                               localRow.Field<string>(DataObjectMappingGridColumns.FilterCriterion.ToString()) == FilterCriterion &&
-                              localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).IndexOf('.') + 1) != localTargetDataObjectName
+                              localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).IndexOf('.') + 1) != localTargetDataObject
                         select localRow;
 
                     foreach (DataRow detailRow in relatedDataObjectRows)
@@ -335,7 +341,7 @@ namespace TEAM_Library
                     //         (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == SourceDataObjectName &&
                     //         (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
                     //         (string)row[TableMappingMetadataColumns.FilterCriterion.ToString()] == FilterCriterion &&
-                    //         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObjectName 
+                    //         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObject 
                     //        // && // Exclude itself
                     //        // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
                     //    )
@@ -354,7 +360,7 @@ namespace TEAM_Library
                          (bool)row[DataObjectMappingGridColumns.Enabled.ToString()] == true && // Only active generated objects
                          (string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()] == SourceDataObjectName &&
                          (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == BusinessKey &&
-                         (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != TargetDataObjectName 
+                         (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != TargetDataObject 
                          //&& // Exclude itself
                         // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
                        )

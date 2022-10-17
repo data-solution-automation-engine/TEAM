@@ -46,14 +46,14 @@ namespace TEAM
             this.tabControlDataMappings = new System.Windows.Forms.TabControl();
             this.tabPageDataObjectMapping = new System.Windows.Forms.TabPage();
             this.tabPageDataItemMapping = new System.Windows.Forms.TabPage();
-            this.dataGridViewAttributeMetadata = new TEAM.CustomDataGridViewAttribute();
+            this.dataGridViewAttributeMetadata = new TEAM.DataGridViewDataItems();
             this.contextMenuStripAttributeMapping = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteThisRowFromTheGridToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPagePhysicalModel = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
             this.button2 = new System.Windows.Forms.Button();
-            this.dataGridViewPhysicalModelMetadata = new TEAM.CustomDataGridViewPhysicalModel();
+            this.dataGridViewPhysicalModelMetadata = new TEAM.DataGridViewPhysicalModel();
             this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteThisRowFromTheGridToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -827,7 +827,7 @@ namespace TEAM
         private System.Windows.Forms.TabControl tabControlDataMappings;
         private System.Windows.Forms.TabPage tabPageDataObjectMapping;
         private System.Windows.Forms.TabPage tabPageDataItemMapping;
-        private CustomDataGridViewAttribute dataGridViewAttributeMetadata;
+        private DataGridViewDataItems dataGridViewAttributeMetadata;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         private System.Windows.Forms.GroupBox groupBoxMetadataCounts;
         private System.Windows.Forms.Label labelHubCount;
@@ -845,7 +845,7 @@ namespace TEAM
         private CustomTimedTextBox textBoxFilterCriterion;
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPagePhysicalModel;
-        private CustomDataGridViewPhysicalModel dataGridViewPhysicalModelMetadata;
+        private DataGridViewPhysicalModel dataGridViewPhysicalModelMetadata;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripTableMapping;
         private System.Windows.Forms.ToolStripMenuItem exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem;

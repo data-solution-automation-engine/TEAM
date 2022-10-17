@@ -32,7 +32,7 @@ namespace TEAM
             {
                 // Adding tabs on the Tab Control
                 var lastIndex = tabControlEnvironments.TabCount - 1;
-                CustomTabPageEnvironment localCustomTabPage = new CustomTabPageEnvironment(environment.Value);
+                TabPageEnvironments localCustomTabPage = new TabPageEnvironments(environment.Value);
                 localCustomTabPage.OnDeleteEnvironment += DeleteEnvironment;
                 localCustomTabPage.OnSaveEnvironment += SaveEnvironment;
                 localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox; 
@@ -81,7 +81,7 @@ namespace TEAM
             {
                 // Adding tabs on the Tab Control
                 var lastIndex = tabControlConnections.TabCount - 1;
-                CustomTabPageConnection localCustomTabPage = new CustomTabPageConnection(connection.Value);
+                TabPageConnections localCustomTabPage = new TabPageConnections(connection.Value);
                 localCustomTabPage.OnDeleteConnection += DeleteConnection;
                 localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                 localCustomTabPage.OnSaveConnection += SaveConnection;
@@ -677,7 +677,7 @@ namespace TEAM
                 if (newTabExists == false)
                 {
                     // Create a new tab page using the connection profile (a TeamConnection class object) as input.
-                    CustomTabPageConnection localCustomTabPage = new CustomTabPageConnection(connectionProfile);
+                    TabPageConnections localCustomTabPage = new TabPageConnections(connectionProfile);
                     localCustomTabPage.OnDeleteConnection += DeleteConnection;
                     localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                     localCustomTabPage.OnSaveConnection += SaveConnection;
@@ -814,7 +814,7 @@ namespace TEAM
 
                 if (newTabExists == false)
                 {
-                    CustomTabPageEnvironment localCustomTabPage = new CustomTabPageEnvironment(workingEnvironment);
+                    TabPageEnvironments localCustomTabPage = new TabPageEnvironments(workingEnvironment);
                     localCustomTabPage.OnDeleteEnvironment += DeleteEnvironment;
                     localCustomTabPage.OnSaveEnvironment += SaveEnvironment;
                     localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;

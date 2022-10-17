@@ -23,7 +23,7 @@ namespace TEAM_Library
         Database,
         File
     }
-
+    
     public class TeamConnection
     {
         public string ConnectionInternalId { get; set; }
@@ -98,6 +98,21 @@ namespace TEAM_Library
             }
 
             return outputConnectionString;
+        }
+
+        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey, TeamConfiguration teamConfiguration)
+        {
+            TeamConnection returnTeamConnection = new TeamConnection();
+
+            foreach (var teamConnection in teamConfiguration.ConnectionDictionary)
+            {
+                if (teamConnection.Value.ConnectionKey == connectionKey)
+                {
+                    returnTeamConnection = teamConnection.Value;
+                }
+            }
+
+            return returnTeamConnection;
         }
     }
 
