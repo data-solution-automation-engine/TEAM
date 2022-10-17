@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using TEAM_Library;
 using DataObject = DataWarehouseAutomation.DataObject;
@@ -18,8 +16,10 @@ namespace TEAM
             BorderStyle = BorderStyle.None;
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             EditMode = DataGridViewEditMode.EditOnEnter;
-            MinimumSize = new Size(965, 515);
-            Size = new Size(1100, 545);
+
+            var mySize = new Size(1100, 540);
+            MinimumSize = mySize;
+            Size = mySize;
 
             AutoGenerateColumns = false;
             ColumnHeadersVisible = true;
@@ -105,6 +105,7 @@ namespace TEAM
             filterCriterion.HeaderText = @"Filter Criterion";
             filterCriterion.DataPropertyName = DataObjectMappingGridColumns.FilterCriterion.ToString();
             filterCriterion.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            filterCriterion.MinimumWidth = 100;
             Columns.Add(filterCriterion);
 
             DataGridViewTextBoxColumn sourceDataObjectName = new DataGridViewTextBoxColumn();

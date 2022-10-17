@@ -39,7 +39,6 @@ namespace TEAM
         {
             InitializeComponent();
         }
-        
         public FormManageMetadata(FormMain parent) : base(parent)
         {
             InitializeComponent();
@@ -70,9 +69,6 @@ namespace TEAM
             _dataGridViewDataObjects.MouseDown += dataGridViewTableMetadata_MouseDown;
             _dataGridViewDataObjects.CellParsing += DataGridViewTableMetadata_CellParsing;
             _dataGridViewDataObjects.ColumnHeaderMouseClick += DataGridViewTableMetadata_ColumnHeaderMouseClick;
-            //_dataGridViewDataObjects.CellEnter += DataGridViewTableMetadata_CellEnter;
-            //_dataGridViewDataObjects.
-
 
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
 
@@ -111,13 +107,13 @@ namespace TEAM
             {
                 var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
 
-                // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
+                // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
                 if (!File.Exists(validationFile))
                 {
                     ValidationSetting.CreateDummyValidationFile(validationFile);
                 }
 
-                // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
+                // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
                 ValidationSetting.LoadValidationFile(validationFile);
 
                 richTextBoxInformation.AppendText($"The configuration file {validationFile} has been loaded.\r\n");
@@ -139,7 +135,7 @@ namespace TEAM
                     JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFile);
                 }
 
-                // Load the validation settings file using the paths retrieved from the application root contents (configuration path)
+                // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
                 JsonExportSetting.LoadJsonConfigurationFile(jsonConfigurationFile, true);
 
                 richTextBoxInformation.AppendText($"The configuration file {jsonConfigurationFile} has been loaded.\r\n");
@@ -161,24 +157,6 @@ namespace TEAM
                     new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
             }
             #endregion
-        }
-
-        private void DataGridViewTableMetadata_CellEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            // Retrieve the full row for the selected cell.
-            DataGridViewRow selectedRow = _dataGridViewDataObjects.Rows[e.RowIndex];
-
-            // Format the name of the data object, for a source data object
-            if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.TargetDataObject.ToString()))
-            {
-                DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
-                DataObject dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.TargetDataObject];
-
-                DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                cell.ValueType = typeof(string);
-                cell.Value = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
-
-            }
         }
 
         /// <summary>
@@ -223,179 +201,207 @@ namespace TEAM
         /// <param name="e"></param>
         private void DataGridViewTableMetadata_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfiguration.PresentationLayerLabels);
-            var transformationLabelArray = Utility.SplitLabelIntoArray(FormBase.TeamConfiguration.TransformationLabels);
+            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
+            var transformationLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.TransformationLabels);
 
             // Retrieve the full row for the selected cell.
             DataGridViewRow selectedRow = _dataGridViewDataObjects.Rows[e.RowIndex];
 
             #region Source Data Objects
             // Format the name of the data object, for a source data object
-            if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.SourceDataObject.ToString()))
+            if (e.ColumnIndex != -1)
             {
-                if (e.Value != null)
+                if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.SourceDataObject.ToString()))
                 {
-                    DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
-                    DataObject dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.SourceDataObject];
-                    e.Value = dataObject.name;
-
-                    DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
-
-                    // Colour coding
-                    //Syntax highlighting for in source data objects.
-                    if (dataObject.name.StartsWith("`"))
+                    if (e.Value != null)
                     {
-                        cell.Style.BackColor = Color.AliceBlue;
+                        DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
 
-                        if (dataObject.name.EndsWith("`"))
+                        DataObject dataObject = new DataObject();
+                        dataObject.name = "MyNewDataObject";
+
+                        if (dataBoundItem!= null && (DataObject) dataBoundItem.Row[(int)DataObjectMappingGridColumns.SourceDataObject] != null)
                         {
-                            cell.Style.ForeColor = Color.DarkBlue;
+                            dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.SourceDataObject];
                         }
-                        else
+
+                        e.Value = dataObject.name;
+
+                        DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                        cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
+
+                        // Colour coding
+                        //Syntax highlighting for in source data objects.
+                        if (dataObject.name.StartsWith("`"))
                         {
-                            // Show issue.
-                            cell.Style.ForeColor = Color.Red;
+                            cell.Style.BackColor = Color.AliceBlue;
+
+                            if (dataObject.name.EndsWith("`"))
+                            {
+                                cell.Style.ForeColor = Color.DarkBlue;
+                            }
+                            else
+                            {
+                                // Show issue.
+                                cell.Style.ForeColor = Color.Red;
+                            }
                         }
+
                     }
-
                 }
             }
             #endregion
 
             #region Target Data Object
-            // Format the name of the data object, for a target data object
-            if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.TargetDataObject.ToString()))
+            if (e.ColumnIndex != -1)
             {
-                if (e.Value != null)
+                // Format the name of the data object, for a target data object
+                if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.TargetDataObject.ToString()))
                 {
-                    // Get the object type and underlying value from the data table.
-                    DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
-                    DataObject dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.TargetDataObject];
-                    e.Value = dataObject.name;
-
-                    // Set the tooltip.
-                    DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
-
-                    var targetConnectionId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                    TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
-                    KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(dataObject.name, targetConnection).FirstOrDefault();
-
-                    // Only the name (e.g. without the schema) should be evaluated.
-                    string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
-
-                    var businessKeySyntax = selectedRow.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value;
-
-                    if (targetDataObjectNonQualifiedName != null && businessKeySyntax != null && selectedRow.IsNewRow == false)
+                    if (e.Value != null)
                     {
-                        // Hub
-                        if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.HubTablePrefixValue)) || (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.HubTablePrefixValue)))
+                        // Get the object type and underlying value from the data table.
+                        DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
+                        DataObject dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.TargetDataObject];
+                        e.Value = dataObject.name;
+
+                        // Set the tooltip.
+                        DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                        cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
+
+                        var targetConnectionId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                        TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(dataObject.name, targetConnection).FirstOrDefault();
+
+                        // Only the name (e.g. without the schema) should be evaluated.
+                        string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
+
+                        var businessKeySyntax = selectedRow.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value;
+
+                        if (targetDataObjectNonQualifiedName != null && businessKeySyntax != null && selectedRow.IsNewRow == false)
                         {
-                            cell.Style.BackColor = Color.CornflowerBlue;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                        }
-                        // Link-Sat
-                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.LsatTablePrefixValue)) || (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.LsatTablePrefixValue)))
-                        {
-                            cell.Style.BackColor = Color.Gold;
-                        }
-                        // Context
-                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.SatTablePrefixValue)) || (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.SatTablePrefixValue)))
-                        {
-                            cell.Style.BackColor = Color.Yellow;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                        }
-                        // Natural Business Relationship
-                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.LinkTablePrefixValue)) || (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.LinkTablePrefixValue))
-                        )
-                        {
-                            cell.Style.BackColor = Color.OrangeRed;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                        }
-                        // PSA
-                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.PsaTablePrefixValue)) || (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.PsaTablePrefixValue)))
-                        {
-                            cell.Style.BackColor = Color.AntiqueWhite;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                        }
-                        // Staging
-                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.StgTablePrefixValue)) || (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.StgTablePrefixValue)))
-                        {
-                            cell.Style.BackColor = Color.WhiteSmoke;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                        }
-                        // Presentation Layer
-                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) || (TeamConfiguration.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
-                        {
-                            cell.Style.BackColor = Color.Aquamarine;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                        }
-                        // Derived objects / transformations
-                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) || (TeamConfiguration.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
-                        {
-                            cell.Style.BackColor = Color.LightGreen;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                            selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
-                        }
-                        else
-                        {
-                            // Catch
+                            // Hub
+                            if (targetDataObjectNonQualifiedName.IsDataVaultHub(TeamConfiguration))
+                            {
+                                cell.Style.BackColor = Color.CornflowerBlue;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            }
+                            // Link-Sat
+                            else if (targetDataObjectNonQualifiedName.IsDataVaultLinkSatellite(TeamConfiguration))
+                            {
+                                cell.Style.BackColor = Color.Gold;
+                            }
+                            // Context
+                            else if (targetDataObjectNonQualifiedName.IsDataVaultSatellite(TeamConfiguration))
+                            {
+                                cell.Style.BackColor = Color.Yellow;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            }
+                            // Natural Business Relationship
+                            else if (targetDataObjectNonQualifiedName.IsDataVaultLink(TeamConfiguration))
+                            {
+                                cell.Style.BackColor = Color.OrangeRed;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            }
+                            // PSA
+                            else if (targetDataObjectNonQualifiedName.IsPsa(TeamConfiguration))
+                            {
+                                cell.Style.BackColor = Color.AntiqueWhite;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            }
+                            // Staging
+                            else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.StgTablePrefixValue)) ||
+                                     (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.StgTablePrefixValue)))
+                            {
+                                cell.Style.BackColor = Color.WhiteSmoke;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            }
+                            // Presentation Layer
+                            else if ((TeamConfiguration.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
+                                     (TeamConfiguration.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
+                            {
+                                cell.Style.BackColor = Color.Aquamarine;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            }
+                            // Derived objects / transformations
+                            else if ((TeamConfiguration.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
+                                     (TeamConfiguration.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
+                            {
+                                cell.Style.BackColor = Color.LightGreen;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
+                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
+                            }
+                            else
+                            {
+                                // Catch
+                            }
                         }
                     }
                 }
             }
             #endregion
 
-
             #region Business Key Definition
-            if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()))
+            if (e.ColumnIndex != -1)
             {
-                if (e.Value != null)
+                if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()))
                 {
-                    //DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
-                    //DataObject dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.SourceDataObject];
-                    //e.Value = dataObject.name;
-
-                    DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    //cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
-
-                    // Colour coding
-                    //Syntax highlighting for code.
-                    if (cell.Value.ToString().Contains("CONCATENATE") || cell.Value.ToString().Contains("COMPOSITE"))
+                    if (e.Value != null)
                     {
-                        cell.Style.ForeColor = Color.DarkBlue;
-                        cell.Style.BackColor = Color.AliceBlue;
-                    }
+                        //DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
+                        //DataObject dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.SourceDataObject];
+                        //e.Value = dataObject.name;
 
+                        DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                        //cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
+
+                        DataGridViewCell targetDataObject = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName];
+
+                        // Colour coding
+                        //Syntax highlighting for code.
+                        if (targetDataObject.Value.ToString().IsDataVaultLinkSatellite(TeamConfiguration) || targetDataObject.Value.ToString().IsDataVaultSatellite(TeamConfiguration))
+                        {
+                            cell.ReadOnly = true;
+                            cell.Style.BackColor = Color.LightGray;
+                            //_dataGridViewDataObjects.ClearSelection();
+                            cell.Style.SelectionBackColor = Color.LightGray;
+                            cell.Style.SelectionForeColor = Color.LightGray;
+                        }
+                        else
+                        {
+                            if (cell.Value.ToString().Contains("CONCATENATE") || cell.Value.ToString().Contains("COMPOSITE"))
+                            {
+                                cell.Style.ForeColor = Color.DarkBlue;
+                                cell.Style.BackColor = Color.AliceBlue;
+                            }
+                        }
+                    }
                 }
             }
             #endregion
 
             if (selectedRow.IsNewRow == false)
             {
-                //// Source data object
-                //var sourceDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
-                //var sourceConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                //TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
-                //var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-                //string sourceDataObjectFullyQualifiedName = $"{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}";
-
-                //// Target data object
-                //var targetDataObjectName = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
-                //var targetConnectionId = selectedRow.DataGridView.Rows[e.RowIndex].Cells[(int) DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                //TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
-                //var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                //string targetDataObjectFullyQualifiedName = $"{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}";
-
-                //var loadVector = "";
-                //MetadataHandling.DataObjectTypes tableType = MetadataHandling.DataObjectTypes.Unknown;
                 DataGridViewCell cell = null;
 
                 //if (e.Value != null)
@@ -430,7 +436,6 @@ namespace TEAM
 
             }
         }
-
         private void DataGridViewTableMetadata_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
         {
             // Retrieve the full row for the selected cell.
@@ -461,19 +466,7 @@ namespace TEAM
             }
             return null;
         }
-
-        //public override object ParseFormattedValue(object formattedValue,
-        //    DataGridViewCellStyle cellStyle,
-        //    TypeConverter formattedValueTypeConverter,
-        //    TypeConverter valueTypeConverter)
-        //{
-        //    if (formattedValue is DataObject)
-        //    {
-        //        return formattedValue;
-        //    }
-        //    return ParseFormattedValue(formattedValue, cellStyle, formattedValueTypeConverter, valueTypeConverter);
-        //}
-
+        
         private void DataGridViewPhysicalModelMetadataKeyDown(object sender, KeyEventArgs e)
         {
             try
@@ -777,10 +770,10 @@ namespace TEAM
             // Disable the auto size again (to enable manual resizing).
             for (var i = 0; i < _dataGridViewDataObjects.Columns.Count - 1; i++)
             {
-                _dataGridViewDataObjects.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                _dataGridViewDataObjects.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 _dataGridViewDataObjects.Columns[i].Width = _dataGridViewDataObjects.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
-            }
 
+            }
         }
 
         private void GridAutoLayoutAttributeMetadata()
@@ -1209,8 +1202,7 @@ namespace TEAM
 
                             if (row[(int) DataObjectMappingGridColumns.DrivingKeyDefinition] != DBNull.Value)
                             {
-                                drivingKeyDefinition =
-                                    (string) row[(int) DataObjectMappingGridColumns.DrivingKeyDefinition];
+                                drivingKeyDefinition = (string) row[(int) DataObjectMappingGridColumns.DrivingKeyDefinition];
                                 //drivingKeyDefinition = drivingKeyDefinition.Replace("'", "''");
                             }
 
@@ -6124,10 +6116,8 @@ namespace TEAM
             }
             catch (FormatException ex)
             {
-                richTextBoxInformation.AppendText(
-                    "An error has been encountered formatting this cell. Please check the Event Log for more details.\r\n");
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"An exception has been encountered: {ex.Message}."));
+                richTextBoxInformation.AppendText("An error has been encountered formatting this cell. Please check the Event Log for more details.\r\n");
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -6137,14 +6127,15 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Validation event on Table Metadata datagridview.
+        /// Validation event on Table Metadata data grid view.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void dataGridViewTableMetadata_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            // Validate the data entry on the Table Mapping datagridview
             var valueLength = e.FormattedValue.ToString().Length;
+
+            DataGridViewCell targetDataObject = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName];
 
             // Source Table (Source)
             if (e.ColumnIndex == (int) DataObjectMappingGridColumns.SourceDataObject)
@@ -6166,20 +6157,22 @@ namespace TEAM
                 if (e.FormattedValue == DBNull.Value || valueLength == 0)
                 {
                     e.Cancel = true;
-                    _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText =
-                        "The Target (Integration Layer) table cannot be empty!";
+                    _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText = "The Target (Integration Layer) table cannot be empty!";
+                    _dataGridViewDataObjects.CancelEdit();
                 }
             }
 
             // Business Key
-            if (e.ColumnIndex == (int) DataObjectMappingGridColumns.BusinessKeyDefinition)
+            if (e.ColumnIndex == (int) DataObjectMappingGridColumns.BusinessKeyDefinition && !targetDataObject.Value.ToString().IsDataVaultLinkSatellite(TeamConfiguration) && !targetDataObject.Value.ToString().IsDataVaultSatellite(TeamConfiguration))
             {
                 _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText = "";
 
                 if (e.FormattedValue == DBNull.Value || valueLength == 0)
                 {
-                    e.Cancel = true;
                     _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText = "The Business Key cannot be empty!";
+                    _dataGridViewDataObjects.CancelEdit();
+                    e.Cancel = true;
+                    _dataGridViewDataObjects.EndEdit();
                 }
             }
 
@@ -6193,8 +6186,7 @@ namespace TEAM
                 if (valueLength > 0 && valueLength < 3)
                 {
                     e.Cancel = true;
-                    _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText =
-                        "The filter criterion cannot only be just one or two characters as it translates into a WHERE clause.";
+                    _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText = "The filter criterion cannot only be just one or two characters as it translates into a WHERE clause.";
                 }
 
                 if (valueLength > 0)
@@ -6203,17 +6195,14 @@ namespace TEAM
                     if (e.FormattedValue.ToString() == "=")
                     {
                         e.Cancel = true;
-                        _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText =
-                            "The filter criterion cannot only be '=' as it translates into a WHERE clause.";
+                        _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText = "The filter criterion cannot only be '=' as it translates into a WHERE clause.";
                     }
 
                     // If there are value in the filter, and the filter contains an equal sign but it's the last then cancel
-                    if (valueLength > 2 &&
-                        (e.FormattedValue.ToString().Contains("=") && !(equalSignIndex < valueLength)))
+                    if (valueLength > 2 && (e.FormattedValue.ToString().Contains("=") && !(equalSignIndex < valueLength)))
                     {
                         e.Cancel = true;
-                        _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText =
-                            "The filter criterion include values either side of the '=' sign as it is expressed as a WHERE clause.";
+                        _dataGridViewDataObjects.Rows[e.RowIndex].ErrorText = "The filter criterion include values either side of the '=' sign as it is expressed as a WHERE clause.";
                     }
                 }
             }
@@ -6720,13 +6709,12 @@ namespace TEAM
             {
                 if (dr.Cells[(int) DataObjectMappingGridColumns.TargetDataObject].Value != null)
                 {
-                    if (!dr.Cells[(int) DataObjectMappingGridColumns.TargetDataObject].Value.ToString()
+                    if (!dr.Cells[(int) DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString()
                         .Contains(textBoxFilterCriterion.Text) && !dr
-                        .Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString()
+                        .Cells[(int) DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString()
                         .Contains(textBoxFilterCriterion.Text))
                     {
-                        CurrencyManager currencyManager1 =
-                            (CurrencyManager) BindingContext[_dataGridViewDataObjects.DataSource];
+                        CurrencyManager currencyManager1 = (CurrencyManager) BindingContext[_dataGridViewDataObjects.DataSource];
                         currencyManager1.SuspendBinding();
                         dr.Visible = false;
                         currencyManager1.ResumeBinding();
@@ -8963,7 +8951,7 @@ namespace TEAM
         private void dataGridViewTableMetadata_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             e.CellStyle.BackColor = Color.Transparent;
-
+            
             if (e.Control is DataGridViewComboBoxEditingControl tb)
             {
                 tb.KeyDown -= DataGridViewTableMetadataKeyDown;
@@ -9773,6 +9761,20 @@ namespace TEAM
                 {
                     richTextBoxInformation.AppendText($"\r\nAn error has been encountered when attempting to add the contents of the file '{chosenFile}' to the Data Object Grid. Please check the Event Log for more details.\r\n");
                     GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
+                }
+            }
+        }
+
+        private void openMetadataDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            {
+                try
+                {
+                    Process.Start(GlobalParameters.MetadataPath);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text = "An error has occurred while attempting to open the metadata directory. The error message is: " + ex;
                 }
             }
         }

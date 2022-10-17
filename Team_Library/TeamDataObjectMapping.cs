@@ -26,12 +26,6 @@ namespace TEAM_Library
 
         public string MetadataPath { get; set; }
 
-        // Default constructor.
-        public TeamDataObjectMappings()
-        {
-            InitializeMainProperties();
-        }
-
         public TeamDataObjectMappings(string inputPath)
         {
             InitializeMainProperties();
@@ -54,6 +48,7 @@ namespace TEAM_Library
             DataTable.Columns.Add(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
+            // For sorting purposes only.
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
         }
@@ -146,32 +141,65 @@ namespace TEAM_Library
                     string drivingKeyDefinition = "";
 
                     #region Business Key Definition
-                    List<string> businessKeyComponentList = new List<string>();
+                    string businessKeyDefinitionString = "";
 
-                    var businessKeyComponent = dataObjectMapping.businessKeys.FirstOrDefault();
+                    int businessKeyCounter = 1;
 
-                    // Skip the Json business key segment if it's a degenerate attribute. This is not part of the business key definition in TEAM but implemented as a data item mapping.
-                    if (businessKeyComponent?.businessKeyClassification != null && businessKeyComponent.businessKeyClassification.FirstOrDefault()?.classification == "DegenerateAttribute")
+                    foreach (var businessKey in dataObjectMapping.businessKeys)
                     {
-                        continue;
-                    }
-
-                    if (businessKeyComponent != null)
-                    {
-                        var businessKeyComponentElementSourceDataItems = businessKeyComponent.businessKeyComponentMapping.Select(dataItemMapping => dataItemMapping.sourceDataItems);
-
-                        foreach (var dataItems in businessKeyComponentElementSourceDataItems)
+                        // For Links, skip the first business key (because it's the full key).
+                        // For LSAT and SAT skip altogether because it will be derived.
+                        if ((businessKeyCounter == 1 && targetDataObject.name.IsDataVaultLink(teamConfiguration))
+                            || targetDataObject.name.IsDataVaultSatellite(teamConfiguration)
+                            || targetDataObject.name.IsDataVaultLinkSatellite(teamConfiguration))
                         {
-                            foreach (var dataItem in dataItems)
-                            {
-                                // Explicitly type-cast the value as string to avoid issues using dynamic type.
-                                string dataItemName = dataItem.name;
-                                businessKeyComponentList.Add(dataItemName);
-                            }
+                            // Do nothing
                         }
-                    }
+                        else
+                        {
+                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                            if (businessKey.businessKeyComponentMapping.Count > 1)
+                            {
+                                businessKeyDefinitionString += "COMPOSITE(";
+                            }
 
-                    string businessKeyDefinition = string.Join(",", businessKeyComponentList);
+                            foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
+                            {
+
+
+                                foreach (var dataItem in dataItemMapping.sourceDataItems)
+                                {
+                                    // Explicitly type-cast the value as string to avoid issues using dynamic type.
+                                    string dataItemName = dataItem.name;
+
+                                    if (dataItemName.Contains("+"))
+                                    {
+                                        businessKeyDefinitionString += $"CONCATENATE({dataItem.name})".Replace("+", ";");
+                                    }
+                                    else
+                                    {
+                                        businessKeyDefinitionString += dataItemName;
+                                    }
+
+                                    businessKeyDefinitionString += ";";
+                                }
+                            }
+
+                            businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(';');
+
+                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                            if (businessKey.businessKeyComponentMapping.Count > 1)
+                                // && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationship" && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationshipContext")
+                            {
+                                businessKeyDefinitionString += ")";
+                            }
+
+                            businessKeyDefinitionString += ",";
+                        }
+
+                        businessKeyCounter++;
+                    }
+                    businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
                     #endregion
 
                     foreach (var sourceDataObject in dataObjectMapping.sourceDataObjects)
@@ -187,7 +215,7 @@ namespace TEAM_Library
 
                         string[] hashKey =
                         {
-                                        singleSourceDataObject.name, targetDataObject.name, businessKeyDefinition,
+                                        singleSourceDataObject.name, targetDataObject.name, businessKeyDefinitionString,
                                         drivingKeyDefinition, filterCriterion
                         };
                         Utility.CreateMd5(hashKey, Utility.SandingElement);
@@ -198,7 +226,7 @@ namespace TEAM_Library
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObject] = singleSourceDataObject;
                         newRow[(int)DataObjectMappingGridColumns.TargetConnection] = targetConnectionInternalId;
                         newRow[(int)DataObjectMappingGridColumns.TargetDataObject] = targetDataObject;
-                        newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = businessKeyDefinition;
+                        newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = businessKeyDefinitionString;
                         newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = drivingKeyDefinition;
                         newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = filterCriterion;
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = singleSourceDataObject.name;

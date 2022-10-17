@@ -19,13 +19,14 @@ namespace TEAM
         }
         public FormManageConfiguration(FormMain parent) : base(parent)
         {
-            this.parentFormMain = parent;
+            parentFormMain = parent;
             InitializeComponent();
 
             //Paths
             textBoxOutputPath.Text = GlobalParameters.OutputPath;
             textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
-            
+            textBoxTeamMetadataPath.Text = GlobalParameters.MetadataPath;
+
             // Adding tab pages to the Environment tabs.
             IntPtr localHandle = tabControlEnvironments.Handle;
             foreach (var environment in TeamEnvironmentCollection.EnvironmentDictionary)
@@ -367,6 +368,7 @@ namespace TEAM
             // Update the paths in memory
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
+            GlobalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
 
             var localEnvironment = (KeyValuePair<TeamWorkingEnvironment, string>) comboBoxEnvironments.SelectedItem;
             GlobalParameters.WorkingEnvironment = localEnvironment.Key.environmentKey;
@@ -380,6 +382,8 @@ namespace TEAM
             // Check if the paths and files are available, just to be sure.
             FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
             FileHandling.InitialisePath(GlobalParameters.OutputPath);
+            FileHandling.InitialisePath(GlobalParameters.MetadataPath);
+
             TeamConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             ValidationSetting.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             JsonExportSetting.CreateDummyJsonConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
@@ -415,6 +419,7 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
             rootPathConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath + "");
             rootPathConfigurationFile.AppendLine("OutputPath|" + GlobalParameters.OutputPath + "");
+            rootPathConfigurationFile.AppendLine("MetadataPath|" + GlobalParameters.MetadataPath + "");
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.WorkingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
@@ -459,6 +464,7 @@ namespace TEAM
             }
 
             GlobalParameters.OutputPath = textBoxOutputPath.Text;
+            GlobalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
 
             TeamConfiguration.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
@@ -864,10 +870,7 @@ namespace TEAM
                 richTextBoxInformation.Text = $"An error has occurred while attempting to open the active configuration file. The error message is: {ex}.";
             }
         }
-
-
-
-
+        
         /// <summary>
         /// Manage the event when the environment selection changes.
         /// </summary>
@@ -946,8 +949,6 @@ namespace TEAM
 
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
-                
-  
             }
         }
 
@@ -989,6 +990,103 @@ namespace TEAM
 
             // Callback to the main form to update the label.
             UpdateEnvironmentMode(GlobalParameters.EnvironmentMode.ToString());
+        }
+
+        private void pictureBoxMetadataPath_Click(object sender, EventArgs e)
+        {
+            var fileBrowserDialog = new FolderBrowserDialog();
+            fileBrowserDialog.SelectedPath = textBoxTeamMetadataPath.Text;
+
+            DialogResult result = fileBrowserDialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fileBrowserDialog.SelectedPath))
+            {
+
+                string finalPath;
+                if (fileBrowserDialog.SelectedPath.EndsWith(@"\"))
+                {
+                    finalPath = fileBrowserDialog.SelectedPath;
+                }
+                else
+                {
+                    finalPath = fileBrowserDialog.SelectedPath + @"\";
+                }
+
+
+                textBoxTeamMetadataPath.Text = finalPath;
+                richTextBoxInformation.Text = $"The metadata path is set to {finalPath}. Don't forget to save!'";
+            }
+        }
+
+        private void pictureBoxOutputPath_Click(object sender, EventArgs e)
+        {
+            var fileBrowserDialog = new FolderBrowserDialog();
+            fileBrowserDialog.SelectedPath = textBoxOutputPath.Text;
+
+            DialogResult result = fileBrowserDialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fileBrowserDialog.SelectedPath))
+            {
+
+                string finalPath;
+                if (fileBrowserDialog.SelectedPath.EndsWith(@"\"))
+                {
+                    finalPath = fileBrowserDialog.SelectedPath;
+                }
+                else
+                {
+                    finalPath = fileBrowserDialog.SelectedPath + @"\";
+                }
+
+
+                textBoxOutputPath.Text = finalPath;
+                richTextBoxInformation.Text = $"The output path is set to {finalPath}. Don't forget to save!'";
+            }
+        }
+
+        private void pictureBoxConfigurationPath_Click(object sender, EventArgs e)
+        {
+            var fileBrowserDialog = new FolderBrowserDialog();
+            fileBrowserDialog.SelectedPath = textBoxConfigurationPath.Text;
+
+            DialogResult result = fileBrowserDialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fileBrowserDialog.SelectedPath))
+            {
+
+                string finalPath;
+                if (fileBrowserDialog.SelectedPath.EndsWith(@"\"))
+                {
+                    finalPath = fileBrowserDialog.SelectedPath;
+                }
+                else
+                {
+                    finalPath = fileBrowserDialog.SelectedPath + @"\";
+                }
+
+
+                textBoxConfigurationPath.Text = finalPath;
+                richTextBoxInformation.Text = $"The configuration path is set to {finalPath}. Don't forget to save!'";
+            }
+        }
+
+        private void openMetadataDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (textBoxTeamMetadataPath.Text != "")
+                {
+                    Process.Start(textBoxTeamMetadataPath.Text);
+                }
+                else
+                {
+                    richTextBoxInformation.Text = @"There is no value given for the Metadata Path. Please enter a valid path name.";
+                }
+            }
+            catch (Exception ex)
+            {
+                richTextBoxInformation.Text = "An error has occurred while attempting to open the metadata directory. The error message is: " + ex.Message;
+            }
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TEAM
@@ -23,6 +19,7 @@ namespace TEAM
             if (m_delayedTextChangedTimer != null)
             {
                 m_delayedTextChangedTimer.Stop();
+
                 if (disposing)
                     m_delayedTextChangedTimer.Dispose();
             }
@@ -34,13 +31,13 @@ namespace TEAM
 
         protected virtual void OnDelayedTextChanged(EventArgs e)
         {
-            if (this.DelayedTextChanged != null)
-                this.DelayedTextChanged(this, e);
+            if (DelayedTextChanged != null)
+                DelayedTextChanged(this, e);
         }
 
         protected override void OnTextChanged(EventArgs e)
         {
-            this.InitializeDelayedTextChangedEvent();
+            InitializeDelayedTextChangedEvent();
             base.OnTextChanged(e);
         }
 
@@ -64,7 +61,7 @@ namespace TEAM
             Timer timer = sender as Timer;
             timer.Stop();
 
-            this.OnDelayedTextChanged(EventArgs.Empty);
+            OnDelayedTextChanged(EventArgs.Empty);
         }
     }
 }

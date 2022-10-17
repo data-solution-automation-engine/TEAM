@@ -38,7 +38,7 @@ namespace TEAM_Library
                         Registry.CurrentUser.OpenSubKey(
                         urlAssociation, false);
                     }
-                    var path = CleanifyBrowserPath(browserKey.GetValue(null) as string);
+                    var path = CleanBrowserPath(browserKey.GetValue(null) as string);
                     browserKey.Close();
                     return path;
                 }
@@ -51,7 +51,7 @@ namespace TEAM_Library
                     // now look up the path of the executable
                     string concreteBrowserKey = browserPathKey.Replace("$BROWSER$", progId);
                     var kp = Registry.ClassesRoot.OpenSubKey(concreteBrowserKey, false);
-                    browserPath = CleanifyBrowserPath(kp.GetValue(null) as string);
+                    browserPath = CleanBrowserPath(kp.GetValue(null) as string);
                     kp.Close();
                     return browserPath;
                 }
@@ -62,7 +62,7 @@ namespace TEAM_Library
             }
         }
 
-        public static string CleanifyBrowserPath(string p)
+        public static string CleanBrowserPath(string p)
         {
             string[] url = p.Split('"');
             string clean = url[1];
@@ -98,14 +98,79 @@ namespace TEAM_Library
         /// <returns></returns>
         public static Boolean IsDataQuery(this string stringValue)
         {
-            bool isDataQuery = false;
-
-            if (stringValue == null || (stringValue.StartsWith("`") && stringValue.EndsWith("`")))
-            {
-                isDataQuery = true;
-            }
+            bool isDataQuery = stringValue == null || (stringValue.StartsWith("`") && stringValue.EndsWith("`"));
 
             return isDataQuery;
+        }
+
+        /// <summary>
+        /// Assert if a given Team Data Object is a Data Vault Hub entity.
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static Boolean IsDataVaultHub(this string dataObjectName, TeamConfiguration teamConfiguration)
+        {
+            bool isDataVaultHub = (teamConfiguration.TableNamingLocation == "Prefix" && dataObjectName.StartsWith(teamConfiguration.HubTablePrefixValue)) ||
+                                  (teamConfiguration.TableNamingLocation == "Suffix" && dataObjectName.EndsWith(teamConfiguration.HubTablePrefixValue));
+
+            return isDataVaultHub;
+        }
+
+        /// <summary>
+        /// Assert if a given Team Data Object is a Data Vault Satellite entity.
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static Boolean IsDataVaultSatellite(this string dataObjectName, TeamConfiguration teamConfiguration)
+        {
+            bool isDataVaultHub = (teamConfiguration.TableNamingLocation == "Prefix" && dataObjectName.StartsWith(teamConfiguration.SatTablePrefixValue)) ||
+                                  (teamConfiguration.TableNamingLocation == "Suffix" && dataObjectName.EndsWith(teamConfiguration.SatTablePrefixValue));
+
+            return isDataVaultHub;
+        }
+
+        /// <summary>
+        /// Assert if a given Team Data Object is a Data Vault Link-Satellite entity.
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static Boolean IsDataVaultLinkSatellite(this string dataObjectName, TeamConfiguration teamConfiguration)
+        {
+            bool isDataVaultHub = (teamConfiguration.TableNamingLocation == "Prefix" && dataObjectName.StartsWith(teamConfiguration.LsatTablePrefixValue)) ||
+                                  (teamConfiguration.TableNamingLocation == "Suffix" && dataObjectName.EndsWith(teamConfiguration.LsatTablePrefixValue));
+
+            return isDataVaultHub;
+        }
+
+        /// <summary>
+        /// Assert if a given Team Data Object is a Data Vault Link entity.
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static Boolean IsDataVaultLink(this string dataObjectName, TeamConfiguration teamConfiguration)
+        {
+            bool isDataVaultHub = (teamConfiguration.TableNamingLocation == "Prefix" && dataObjectName.StartsWith(teamConfiguration.LinkTablePrefixValue)) ||
+                                  (teamConfiguration.TableNamingLocation == "Suffix" && dataObjectName.EndsWith(teamConfiguration.LinkTablePrefixValue));
+
+            return isDataVaultHub;
+        }
+
+        /// <summary>
+        /// Assert if a given Team Data Object is a PSA entity.
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static Boolean IsPsa(this string dataObjectName, TeamConfiguration teamConfiguration)
+        {
+            bool isDataVaultHub = (teamConfiguration.TableNamingLocation == "Prefix" && dataObjectName.StartsWith(teamConfiguration.PsaTablePrefixValue)) ||
+                                  (teamConfiguration.TableNamingLocation == "Suffix" && dataObjectName.EndsWith(teamConfiguration.PsaTablePrefixValue));
+
+            return isDataVaultHub;
         }
 
         /// <summary>
