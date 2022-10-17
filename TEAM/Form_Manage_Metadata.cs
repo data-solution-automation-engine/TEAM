@@ -7031,43 +7031,23 @@ namespace TEAM
         {
             if (e.Button == MouseButtons.Right)
             {
-                var hti = _dataGridViewDataObjects.HitTest(e.X, e.Y);
+                var hitTestInfo = _dataGridViewDataObjects.HitTest(e.X, e.Y);
 
-                // If the column in the selected cell is a Combobox and there are multiple cells selected then c\setup a separate context menu
-                //var currentCell = dataGridViewTableMetadata.Rows[hti.RowIndex].Cells[hti.ColumnIndex];
-                //var currentColumn = dataGridViewTableMetadata.Columns[hti.ColumnIndex];
-
-                //if (currentColumn.GetType() == typeof(DataGridViewComboBoxColumn))
-                //{
-                //    var selectedCellCollection = dataGridViewTableMetadata.SelectedCells;
-
-
-                //    //if (currentCell.Value != DBNull.Value)
-                //    //{
-                //    //    string currentValue = (string) currentCell.Value;
-                //    //}
-                //}
-                //else
-                //{
                 // Normal selection
                 _dataGridViewDataObjects.ClearSelection();
-                _dataGridViewDataObjects.Rows[hti.RowIndex].Selected = true;
-                //}
+
+                if (hitTestInfo.ColumnIndex==-1)
+                {
+                    // Select the full row.
+                    _dataGridViewDataObjects.Rows[hitTestInfo.RowIndex].Selected = true;
+                } 
+                else if (hitTestInfo.ColumnIndex == 1 || hitTestInfo.ColumnIndex == 2)
+                {
+                    _dataGridViewDataObjects.CurrentCell = _dataGridViewDataObjects[hitTestInfo.ColumnIndex, hitTestInfo.RowIndex];
+                }
+
+
             }
-            //if (e.Button == MouseButtons.Left)
-            //{
-            //    var hti = dataGridViewTableMetadata.HitTest(e.X, e.Y);
-            //    var currentCell = dataGridViewTableMetadata.Rows[hti.RowIndex].Cells[hti.ColumnIndex];
-
-            //    if (currentCell.GetType() == typeof(DataGridViewComboBoxCell))
-            //    {
-
-            //       if (currentCell.Value != DBNull.Value)
-            //       {
-            //           string currentValue = (string)currentCell.Value;
-            //        }
-            //    }
-            //}
         }
 
         private void dataGridViewAttributeMetadata_MouseDown(object sender, MouseEventArgs e)
