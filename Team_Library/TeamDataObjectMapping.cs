@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -51,6 +52,7 @@ namespace TEAM_Library
             // For sorting purposes only.
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
+            DataTable.Columns.Add(DataObjectMappingGridColumns.SurrogateKey.ToString());
         }
 
         /// <summary>
@@ -144,69 +146,56 @@ namespace TEAM_Library
                     string businessKeyDefinitionString = "";
                     int businessKeyCounter = 1;
 
-                    //if (targetDataObject.name.IsDataVaultSatellite(teamConfiguration) || targetDataObject.name.IsDataVaultLinkSatellite(teamConfiguration))
-                    //{
-                    //    // For LSAT and SAT skip altogether because it will be derived.
-                    //    businessKeyDefinitionString = "(inherited)";
-                    //}
-                    //else
-                    //{
-
-                        foreach (var businessKey in dataObjectMapping.businessKeys)
+                    foreach (var businessKey in dataObjectMapping.businessKeys)
+                    {
+                        // For Links, skip the first business key (because it's the full key).
+                        if (businessKeyCounter == 1 && targetDataObject.name.IsDataVaultLink(teamConfiguration))
                         {
-                            // For Links, skip the first business key (because it's the full key).
-                            if (businessKeyCounter == 1 && targetDataObject.name.IsDataVaultLink(teamConfiguration))
+                            // Do nothing.
+                        }
+                        else
+                        {
+                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                            if (businessKey.businessKeyComponentMapping.Count > 1)
                             {
-                                // Do nothing.
+                                businessKeyDefinitionString += "COMPOSITE(";
                             }
-                            else
+
+                            foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
                             {
-                                // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
-                                if (businessKey.businessKeyComponentMapping.Count > 1)
+                                foreach (var dataItem in dataItemMapping.sourceDataItems)
                                 {
-                                    businessKeyDefinitionString += "COMPOSITE(";
-                                }
+                                    // Explicitly type-cast the value as string to avoid issues using dynamic type.
+                                    string dataItemName = dataItem.name;
 
-                                foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
-                                {
-
-
-                                    foreach (var dataItem in dataItemMapping.sourceDataItems)
+                                    if (dataItemName.Contains("+"))
                                     {
-                                        // Explicitly type-cast the value as string to avoid issues using dynamic type.
-                                        string dataItemName = dataItem.name;
-
-                                        if (dataItemName.Contains("+"))
-                                        {
-                                            businessKeyDefinitionString += $"CONCATENATE({dataItem.name})".Replace("+", ";");
-                                        }
-                                        else
-                                        {
-                                            businessKeyDefinitionString += dataItemName;
-                                        }
-
-                                        businessKeyDefinitionString += ";";
+                                        businessKeyDefinitionString += $"CONCATENATE({dataItem.name})".Replace("+", ";");
                                     }
+                                    else
+                                    {
+                                        businessKeyDefinitionString += dataItemName;
+                                    }
+
+                                    businessKeyDefinitionString += ";";
                                 }
-
-                                businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(';');
-
-                                // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
-                                if (businessKey.businessKeyComponentMapping.Count > 1)
-                                    // && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationship" && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationshipContext")
-                                {
-                                    businessKeyDefinitionString += ")";
-                                }
-
-                                businessKeyDefinitionString += ",";
                             }
 
-                            businessKeyCounter++;
+                            businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(';');
+
+                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                            if (businessKey.businessKeyComponentMapping.Count > 1)
+                            {
+                                businessKeyDefinitionString += ")";
+                            }
+
+                            businessKeyDefinitionString += ",";
                         }
 
-                        businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
-                    //}
+                        businessKeyCounter++;
+                    }
 
+                    businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
                     #endregion
 
                     foreach (var sourceDataObject in dataObjectMapping.sourceDataObjects)
@@ -225,6 +214,7 @@ namespace TEAM_Library
                                         singleSourceDataObject.name, targetDataObject.name, businessKeyDefinitionString,
                                         drivingKeyDefinition, filterCriterion
                         };
+
                         Utility.CreateMd5(hashKey, Utility.SandingElement);
 
                         newRow[(int)DataObjectMappingGridColumns.Enabled] = dataObjectMapping.enabled;
@@ -238,6 +228,7 @@ namespace TEAM_Library
                         newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = filterCriterion;
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = singleSourceDataObject.name;
                         newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = targetDataObject.name;
+                        newRow[(int)DataObjectMappingGridColumns.SurrogateKey] = dataObjectMapping.businessKeys[0].surrogateKey;
 
                         DataTable.Rows.Add(newRow);
                     }
@@ -245,6 +236,37 @@ namespace TEAM_Library
             }
 
             SetDataTableColumnNames();
+
+            SynchroniseLinkSatelliteBusinessKeyDefinition(teamConfiguration);
+        }
+
+        /// <summary>
+        /// Update the DataTable to ensure the LSAT business key definition matches the LNK one.
+        /// </summary>
+        /// <param name="teamConfiguration"></param>
+        private void SynchroniseLinkSatelliteBusinessKeyDefinition(TeamConfiguration teamConfiguration)
+        {
+            // Workaround to match LSAT keys to LNK keys, because there is no way to reverse-engineer the original TEAM definition based on the JSON structure.
+            // This is because LNK has the original business keys, as well as the LNK key (which can be ignored) to reconstruct the string value.
+            // But, the LSAT only has the LNK key.
+            foreach (DataRow row in DataTable.Rows)
+            {
+                if (row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString().IsDataVaultLinkSatellite(teamConfiguration))
+                {
+                    // For LSATs only, look up the corresponding LNK and re-use that business key.
+                    string surrogateKey = (string)row[(int)DataObjectMappingGridColumns.SurrogateKey];
+
+                    string filterCriterion = DataObjectMappingGridColumns.SourceDataObjectName + " = '" + row[(int)DataObjectMappingGridColumns.SourceDataObjectName] + "' AND " +
+                                             DataObjectMappingGridColumns.SurrogateKey + " = '" + surrogateKey + "' AND " + DataObjectMappingGridColumns.TargetDataObjectName + " <> '" +
+                                             row[(int)DataObjectMappingGridColumns.TargetDataObjectName] + "'";
+
+                    // Should be only one return value.
+                    var dataTableLookup = DataTable.Select(filterCriterion).FirstOrDefault();
+
+                    // Update the LSAT business key.
+                    row[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = dataTableLookup[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ToString();
+                }
+            }
         }
 
         /// <summary>
@@ -262,6 +284,262 @@ namespace TEAM_Library
             DataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
+            DataTable.Columns[(int)DataObjectMappingGridColumns.SurrogateKey].ColumnName = DataObjectMappingGridColumns.SurrogateKey.ToString();
+        }
+
+        public DataRow GetParentDataObjectMapping(DataRow inputRow)
+        {
+            DataRow returnRow = inputRow;
+
+            return returnRow;
+        }
+
+        /// <summary>
+        /// Using the Data Object Mappings, create a list of Subject Areas and their contents.
+        /// </summary>
+        /// <param name="configurationSetting"></param>
+        /// <returns></returns>
+        public List<Tuple<string, string, string>> SubjectAreaList(TeamConfiguration configurationSetting)
+        {
+            var subjectAreaList = new List<Tuple<string, string, string>>();
+
+            foreach (DataRow row in DataTable.Rows)
+            {
+                string sourceObject = (string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
+                string targetObject = (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+
+                var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
+                var targetObjectBusinessKey = (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
+
+                if (targetObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
+                {
+                    string subjectArea = targetObject.Replace(configurationSetting.HubTablePrefixValue + "_", "");
+
+                    // Retrieve the related objects (Context Tables in this case)
+                    var results = from localRow in DataTable.AsEnumerable()
+                                  where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
+                                        localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
+                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
+                                            configurationSetting) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationship &&
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
+                                            configurationSetting) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext
+                                  select localRow;
+
+                    foreach (DataRow detailRow in results)
+                    {
+                        var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+
+                        bool tupleAlreadyExists = subjectAreaList.Any(m => m.Item1 == subjectArea && m.Item2 == targetObject && m.Item3 == targetObjectDetail);
+
+                        if (!tupleAlreadyExists)
+                        {
+                            subjectAreaList.Add(new Tuple<string, string, string>(subjectArea, targetObject, targetObjectDetail));
+                        }
+                    }
+                }
+
+                if (targetObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship)
+                {
+                    string subjectArea = targetObject.Replace(configurationSetting.LinkTablePrefixValue + "_", "");
+
+                    // Retrieve the related objects (relationship context tables in this case)
+                    var results = from localRow in DataTable.AsEnumerable()
+                                  where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
+                                        localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
+                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
+                                            configurationSetting) != MetadataHandling.DataObjectTypes.CoreBusinessConcept // Is a relationship context table.
+                                  select localRow;
+
+                    foreach (DataRow detailRow in results)
+                    {
+                        var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+
+                        bool tupleAlreadyExists = subjectAreaList.Any(m => m.Item1 == subjectArea && m.Item2 == targetObject && m.Item3 == targetObjectDetail);
+
+                        if (!tupleAlreadyExists)
+                        {
+                            subjectAreaList.Add(new Tuple<string, string, string>(subjectArea, targetObject, targetObjectDetail));
+                        }
+
+                    }
+                }
+
+            }
+
+            return subjectAreaList;
+        }
+
+        /// <summary>
+        /// Find the related Data Objects in the same level, based on the business key evaluation.
+        /// </summary>
+        /// <param name="SourceDataObjectName"></param>
+        /// <param name="TargetDataObject"></param>
+        /// <param name="BusinessKey"></param>
+        /// <param name="DataTable"></param>
+        /// <param name="businessKeyEvaluationMode"></param>
+        /// <returns></returns>
+        public List<DataRow> GetPeerDataRows(string SourceDataObjectName, string SourceDataObjectSchema, string TargetDataObject, string TargetDataObjectSchema, string BusinessKey, string FilterCriterion, DataTable DataTable, BusinessKeyEvaluationMode businessKeyEvaluationMode)
+        {
+            // Prepare the return information
+            List<DataRow> localDataRows = new List<DataRow>();
+
+            // First, the Business Key need to be checked. This is to determine how many dependents are expected.
+            // For instance, if a Link has a three-part Business Key then three Hubs will be expected
+            List<string> businessKeyComponents = BusinessKey.Split(',').ToList();
+
+            //var localSourceDataObjectName = SourceDataObjectSchema + "." + SourceDataObjectName;
+            //var localTargetDataObject = TargetDataObjectSchema + "." + TargetDataObject;
+
+            // NOTE: THIS NEEDS TO BE REFACTORED TO USE THE FULLY QUALIFIED NAME BUT THIS REQUIRES THE LOADPATTERNQUERY (e.g. base query) CONCEPT TO BE DEPRECATED
+            var localSourceDataObjectName = SourceDataObjectName.Substring(SourceDataObjectName.IndexOf('.') + 1);
+            var localTargetDataObject = TargetDataObject.Substring(TargetDataObject.IndexOf('.') + 1);
+
+
+            // Only evaluate a business key component based on its part.
+            // E.g. a single business key such as CustomerID will be looked up in the rest of the mappings.
+            // E.g. a Composite business key such as for a Link (customerID, OfferID) will be evaluated on each component to find any Hubs, Sats etc.
+            if (businessKeyEvaluationMode == BusinessKeyEvaluationMode.Partial)
+            {
+                foreach (string businessKeyComponent in businessKeyComponents)
+                {
+                    var relatedDataObjectRows = from localRow in DataTable.AsEnumerable()
+                                                where
+                                                      localRow.Field<bool>(DataObjectMappingGridColumns.Enabled.ToString()) == true &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).IndexOf('.') + 1) == localSourceDataObjectName &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()) == businessKeyComponent.Trim() &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.FilterCriterion.ToString()) == FilterCriterion &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).IndexOf('.') + 1) != localTargetDataObject
+                                                select localRow;
+
+                    foreach (DataRow detailRow in relatedDataObjectRows)
+                    {
+                        localDataRows.Add(detailRow);
+                    }
+
+                    //foreach (DataRow row in DataTable.Rows)
+                    //{
+                    //    if (
+                    //         (bool)row[TableMappingMetadataColumns.Enabled.ToString()] == true && // Only active generated objects
+                    //         (string)row[TableMappingMetadataColumns.SourceTable.ToString()] == SourceDataObjectName &&
+                    //         (string)row[TableMappingMetadataColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
+                    //         (string)row[TableMappingMetadataColumns.FilterCriterion.ToString()] == FilterCriterion &&
+                    //         (string)row[TableMappingMetadataColumns.TargetTable.ToString()] != TargetDataObject 
+                    //        // && // Exclude itself
+                    //        // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                    //    )
+                    //    {
+                    //        localDataRows.Add(row);
+                    //    }
+                    //}
+                }
+            }
+            else // In the case of an LSAT, only join on the Link using the full business key
+            {
+                // Query the dependent information
+                foreach (DataRow row in DataTable.Rows)
+                {
+                    if (
+                         (bool)row[DataObjectMappingGridColumns.Enabled.ToString()] == true && // Only active generated objects
+                         (string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()] == SourceDataObjectName &&
+                         (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == BusinessKey &&
+                         (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != TargetDataObject
+                       //&& // Exclude itself
+                       // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                       )
+                    {
+                        localDataRows.Add(row);
+                    }
+                }
+            }
+
+            // return the result
+            return localDataRows;
+        }
+
+        public List<TeamConnection> GetConnectionList(Dictionary<string, TeamConnection> connectionDictionary)
+        {
+            // Create the group nodes (systems)
+            var connectionList = new List<TeamConnection>();
+
+            var sourceConnectionList = DataTable.AsEnumerable().Select(r => r.Field<string>(DataObjectMappingGridColumns.SourceConnection.ToString())).ToList();
+            var targetConnectionList = DataTable.AsEnumerable().Select(r => r.Field<string>(DataObjectMappingGridColumns.TargetConnection.ToString())).ToList();
+
+            foreach (string connection in sourceConnectionList)
+            {
+                var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
+
+                if (!connectionList.Contains(connectionProfile))
+                {
+                    connectionList.Add(connectionProfile);
+                }
+            }
+
+            foreach (string connection in targetConnectionList)
+            {
+                var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
+
+                if (!connectionList.Contains(connectionProfile))
+                {
+                    connectionList.Add(connectionProfile);
+                }
+            }
+
+            return connectionList;
+        }
+
+        public List<Tuple<string, string>> BusinessConceptRelationshipList(TeamConfiguration configurationSetting)
+        {
+            DataView sourceContainerView = new DataView((DataTable)DataTable);
+            DataTable distinctValues = sourceContainerView.ToTable(true, DataObjectMappingGridColumns.SourceDataObject.ToString());
+            var businessConceptRelationshipList = new List<Tuple<string, string>>();
+
+            foreach (DataRow sourceContainerRow in distinctValues.Rows)
+            {
+                string sourceContainer = (string)sourceContainerRow[DataObjectMappingGridColumns.SourceDataObject.ToString()];
+
+                foreach (DataRow row in DataTable.Rows)
+                {
+                    string sourceObject = (string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
+
+                    if (sourceContainer == sourceObject)
+                    {
+                        //var sourceObject = (string) row[TableMappingMetadataColumns.SourceTable.ToString()];
+                        var targetObject = (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+
+                        //var sourceObjectType = MetadataHandling.GetTableType(sourceObject, "", TeamConfigurationSettings);
+                        var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
+                        var targetObjectBusinessKey =
+                            (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
+
+                        if (targetObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
+                        {
+                            // Retrieve the related objects to a CBC.
+                            var cbcResults = from localRow in DataTable.AsEnumerable()
+                                             where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) ==
+                                                   sourceObject && // Is in the same source cluster
+                                                   localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString())
+                                                       .Contains(targetObjectBusinessKey) && // Contains a part of the business key
+                                                   localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()) !=
+                                                   targetObject && // Is not itself
+                                                   MetadataHandling.GetDataObjectType(
+                                                       localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
+                                                       configurationSetting) ==
+                                                   MetadataHandling.DataObjectTypes.NaturalBusinessRelationship // Is a NBR.
+                                             select localRow;
+
+                            foreach (DataRow detailRow in cbcResults)
+                            {
+                                var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+                                businessConceptRelationshipList.Add(new Tuple<string, string>(targetObject, targetObjectDetail));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return businessConceptRelationshipList;
         }
     }
 
@@ -296,6 +574,13 @@ namespace TEAM_Library
         // The below are hidden, for sorting only.
         SourceDataObjectName = 9,
         TargetDataObjectName = 10,
+        SurrogateKey = 11
+    }
+
+    public enum BusinessKeyEvaluationMode
+    {
+        Full, // The full business key is evaluated.
+        Partial // The business is broken into components and evaluated separately.
     }
 
     /// <summary>
@@ -356,13 +641,13 @@ namespace TEAM_Library
                 foreach (string businessKeyComponent in businessKeyComponents)
                 {
                     var relatedDataObjectRows = from localRow in DataTable.AsEnumerable()
-                        where 
-                              localRow.Field<bool>(DataObjectMappingGridColumns.Enabled.ToString()) == true &&
-                              localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).IndexOf('.') + 1 ) == localSourceDataObjectName &&
-                              localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()) == businessKeyComponent.Trim() &&
-                              localRow.Field<string>(DataObjectMappingGridColumns.FilterCriterion.ToString()) == FilterCriterion &&
-                              localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).IndexOf('.') + 1) != localTargetDataObject
-                        select localRow;
+                                                where
+                                                      localRow.Field<bool>(DataObjectMappingGridColumns.Enabled.ToString()) == true &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()).IndexOf('.') + 1) == localSourceDataObjectName &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()) == businessKeyComponent.Trim() &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.FilterCriterion.ToString()) == FilterCriterion &&
+                                                      localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).Substring(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()).IndexOf('.') + 1) != localTargetDataObject
+                                                select localRow;
 
                     foreach (DataRow detailRow in relatedDataObjectRows)
                     {
@@ -395,9 +680,9 @@ namespace TEAM_Library
                          (bool)row[DataObjectMappingGridColumns.Enabled.ToString()] == true && // Only active generated objects
                          (string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()] == SourceDataObjectName &&
                          (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == BusinessKey &&
-                         (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != TargetDataObject 
-                         //&& // Exclude itself
-                        // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
+                         (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()] != TargetDataObject
+                       //&& // Exclude itself
+                       // row[TableMappingMetadataColumns.TargetTable.ToString()].ToString().StartsWith(tableInclusionFilterCriterion)
                        )
                     {
                         localDataRows.Add(row);
@@ -580,7 +865,7 @@ namespace TEAM_Library
                     var results = from localRow in DataTable.AsEnumerable()
                                   where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
-                                                                                                                                                                  //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
+                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
                                         MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
                                             configurationSetting) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationship &&
                                         MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
@@ -608,7 +893,7 @@ namespace TEAM_Library
                     var results = from localRow in DataTable.AsEnumerable()
                                   where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
-                                                                                                                                                                  //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
+                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
                                         MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
                                             configurationSetting) != MetadataHandling.DataObjectTypes.CoreBusinessConcept // Is a relationship context table.
                                   select localRow;
