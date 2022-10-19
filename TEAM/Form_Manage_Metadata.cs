@@ -311,13 +311,7 @@ namespace TEAM
 
                     }
                 }
-            } 
-            //else if (selectedRow.IsNewRow)
-            //{
-            //    DataObject dataObject = new DataObject();
-            //    dataObject.name = "MyNewDataObject";
-            //    e.Value = dataObject.name;
-            //}
+            }
             #endregion
 
             #region Target Data Object
@@ -328,17 +322,7 @@ namespace TEAM
                 {
                     if (e.Value != null)
                     {
-                        // Get the object type and underlying value from the data table.
-                        //DataRowView dataBoundItem = (DataRowView)selectedRow.DataBoundItem;
-
-                        //DataObject dataObject = new DataObject();
-                        //dataObject.name = "MyNewDataObject";
-
-                        //if (dataBoundItem != null && !dataBoundItem.IsNew && (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.TargetDataObject] != null)
-                        //{
-                        //    dataObject = (DataObject)dataBoundItem.Row[(int)DataObjectMappingGridColumns.TargetDataObject];
-                        //}
-
+                        // Current cell
                         DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
                         // Set the tooltip.
@@ -371,10 +355,6 @@ namespace TEAM
                             if (targetDataObjectNonQualifiedName.IsDataVaultHub(TeamConfiguration))
                             {
                                 cell.Style.BackColor = Color.CornflowerBlue;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                             }
                             // Link-Sat
                             else if (targetDataObjectNonQualifiedName.IsDataVaultLinkSatellite(TeamConfiguration))
@@ -385,58 +365,34 @@ namespace TEAM
                             else if (targetDataObjectNonQualifiedName.IsDataVaultSatellite(TeamConfiguration))
                             {
                                 cell.Style.BackColor = Color.Yellow;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                             }
                             // Natural Business Relationship
                             else if (targetDataObjectNonQualifiedName.IsDataVaultLink(TeamConfiguration))
                             {
                                 cell.Style.BackColor = Color.OrangeRed;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                             }
                             // PSA
                             else if (targetDataObjectNonQualifiedName.IsPsa(TeamConfiguration))
                             {
                                 cell.Style.BackColor = Color.AntiqueWhite;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                             }
                             // Staging
                             else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.StgTablePrefixValue)) ||
-                                     (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(FormBase.TeamConfiguration.StgTablePrefixValue)))
+                                     (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(TeamConfiguration.StgTablePrefixValue)))
                             {
                                 cell.Style.BackColor = Color.WhiteSmoke;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                             }
                             // Presentation Layer
                             else if ((TeamConfiguration.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
                                      (TeamConfiguration.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
                             {
                                 cell.Style.BackColor = Color.Aquamarine;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                             }
                             // Derived objects / transformations
                             else if ((TeamConfiguration.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
                                      (TeamConfiguration.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
                             {
                                 cell.Style.BackColor = Color.LightGreen;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ReadOnly = true;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionForeColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.SelectionBackColor = Color.LightGray;
-                                selectedRow.Cells[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Style.BackColor = Color.LightGray;
                             }
                             else
                             {
@@ -457,28 +413,43 @@ namespace TEAM
                     {
                         DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
-                        DataGridViewCell targetDataObject = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName];
-
-                        //Syntax highlighting for code.
-                        //if (targetDataObject.Value.ToString().IsDataVaultLinkSatellite(TeamConfiguration) || targetDataObject.Value.ToString().IsDataVaultSatellite(TeamConfiguration))
-                        //{
-                        //    cell.ReadOnly = true;
-                        //    cell.Style.BackColor = Color.LightGray;
-                        //    cell.Style.SelectionBackColor = Color.LightGray;
-                        //    cell.Style.SelectionForeColor = Color.Black;
-                        //}
-                        //else
-                        //{
-                            if (cell.Value.ToString().Contains("CONCATENATE") || cell.Value.ToString().Contains("COMPOSITE"))
-                            {
-                                cell.Style.ForeColor = Color.DarkBlue;
-                                cell.Style.BackColor = Color.AliceBlue;
-                            }
-                        //}
+                        if (cell.Value.ToString().Contains("CONCATENATE") || cell.Value.ToString().Contains("COMPOSITE"))
+                        {
+                            cell.Style.ForeColor = Color.DarkBlue;
+                            cell.Style.BackColor = Color.AliceBlue;
+                        }
                     }
                 }
             }
             #endregion
+
+            #region Driving Key Definition
+            if (e.ColumnIndex != -1)
+            {
+                if (_dataGridViewDataObjects.Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString())
+                    && !_dataGridViewDataObjects.Rows[e.RowIndex].IsNewRow)
+                {
+                    DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    string targetDataObjectName = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString();
+
+                    if (targetDataObjectName.IsDataVaultLinkSatellite(TeamConfiguration))
+                    {
+                        cell.ReadOnly = false;
+                        cell.Style.SelectionForeColor = Color.Empty;
+                        cell.Style.SelectionBackColor = Color.Empty;
+                        cell.Style.BackColor = Color.Empty;
+                    }
+                    else
+                    {
+                        cell.ReadOnly = true;
+                        cell.Style.SelectionForeColor = Color.LightGray;
+                        cell.Style.SelectionBackColor = Color.LightGray;
+                        cell.Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
+            #endregion
+
         }
         #endregion
 
