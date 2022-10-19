@@ -160,7 +160,6 @@ namespace TEAM
             {
                 // Load the configuration file.
                 TeamConfiguration.LoadTeamConfigurationFile(configurationFile);
-                GlobalParameters.EnvironmentMode = TeamConfiguration.EnvironmentMode;
                 // Retrieve the events into the main event log.
                 GlobalParameters.TeamEventLog.MergeEventLog(TeamConfiguration.ConfigurationSettingsEventLog);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
@@ -204,9 +203,6 @@ namespace TEAM
             //Startup information
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
             richTextBoxInformation.AppendText($"Welcome to Team {versionNumberForTeamApplication}.\r\n\r\n");
-
-            labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
-            labelEnvironmentMode.Text = GlobalParameters.EnvironmentMode.ToString();
         }
 
         public sealed override string Text
@@ -308,7 +304,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the output directory. The error message is: "+ex;
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the output directory. The error message is: {ex.Message}.";
             }
         }
 
@@ -380,21 +376,6 @@ namespace TEAM
             LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
         }
 
-        private void UpdateEnvironmentModeLabel(object sender, MyStringEventArgs e)
-        {
-            var localEnvironmentModeText = e.Value;
-
-
-            if (labelEnvironmentMode.InvokeRequired)
-            {
-                labelEnvironmentMode.BeginInvoke((MethodInvoker)delegate { labelEnvironmentMode.Text = localEnvironmentModeText; });
-            }
-            else
-            {
-                labelEnvironmentMode.Text = localEnvironmentModeText;
-            }
-        }
-
         private void ClosePatternForm(object sender, FormClosedEventArgs e)
         {
             _myPatternForm = null;
@@ -441,7 +422,6 @@ namespace TEAM
             {
                 _myConfigurationForm = new FormManageConfiguration(this);
                 _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
-                _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                 Application.Run(_myConfigurationForm);
             }
             else
@@ -452,7 +432,6 @@ namespace TEAM
                     _myConfigurationForm.Invoke((MethodInvoker)delegate { _myConfigurationForm.Close(); });
                     _myConfigurationForm.FormClosed += CloseConfigurationForm;
                     _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
-                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
 
                     _myConfigurationForm = new FormManageConfiguration(this);
                     Application.Run(_myConfigurationForm);
@@ -462,7 +441,6 @@ namespace TEAM
                     // No invoke required - same thread
                     _myConfigurationForm.FormClosed += CloseConfigurationForm; 
                     _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
-                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                     _myConfigurationForm = new FormManageConfiguration(this);
 
                     Application.Run(_myConfigurationForm);
@@ -503,7 +481,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Cannot close the form that is open. The reported reason is: " + ex);
+                        MessageBox.Show($@"Cannot close the form that is open. The reported reason is: {ex.Message}");
                     }
                 }
             }
@@ -549,7 +527,7 @@ namespace TEAM
         {
             if (_myAboutForm == null)
             {
-                _myAboutForm = new FormAbout(this);
+                _myAboutForm = new FormAbout();
                 _myAboutForm.Show();
 
                 Application.Run();
@@ -563,7 +541,7 @@ namespace TEAM
                     _myAboutForm.Invoke((MethodInvoker)delegate { _myAboutForm.Close(); });
                     _myAboutForm.FormClosed += CloseAboutForm;
 
-                    _myAboutForm = new FormAbout(this);
+                    _myAboutForm = new FormAbout();
                     _myAboutForm.Show();
                     Application.Run();
                 }
@@ -572,7 +550,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myAboutForm.FormClosed += CloseAboutForm;
 
-                    _myAboutForm = new FormAbout(this);
+                    _myAboutForm = new FormAbout();
                     _myAboutForm.Show();
                     Application.Run();
                 }
@@ -641,7 +619,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred displaying the event log. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($@"An issue occurred displaying the event log. The error message is: {ex.Message}", @"An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 backgroundWorkerEventLog.ReportProgress(100);
@@ -676,7 +654,7 @@ namespace TEAM
             {
                 // create a new instance of the alert form
                 _alertEventLog = new Form_Alert();
-                _alertEventLog.Text = "Event Log";
+                _alertEventLog.Text = @"Event Log";
                 _alertEventLog.ShowLogButton(false);
                 _alertEventLog.ShowCancelButton(false);
                 _alertEventLog.ShowProgressBar(false);

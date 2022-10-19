@@ -107,6 +107,12 @@
     <Compile Include="DataGridViewDataObjects.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Form_Edit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Edit.Designer.cs">
+      <DependentUpon>Form_Edit.cs</DependentUpon>
+    </Compile>
     <Compile Include="JsonExportSetting.cs" />
     <Compile Include="TeamLoadPatternHandling.cs" />
     <Compile Include="TabPageEnvironments.cs">
@@ -198,6 +204,10 @@
     <Compile Include="ValidationSetting.cs" />
     <EmbeddedResource Include="Form_About.resx">
       <DependentUpon>Form_About.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Edit.resx">
+      <DependentUpon>Form_Edit.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Alert.resx">

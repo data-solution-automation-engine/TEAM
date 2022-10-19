@@ -41,7 +41,7 @@ namespace TEAM
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.Location = new System.Drawing.Point(168, 226);
+            this.buttonClose.Location = new System.Drawing.Point(93, 224);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(109, 40);
             this.buttonClose.TabIndex = 1;
@@ -63,7 +63,7 @@ namespace TEAM
             // linkLabelTeam
             // 
             this.linkLabelTeam.AutoSize = true;
-            this.linkLabelTeam.Location = new System.Drawing.Point(12, 213);
+            this.linkLabelTeam.Location = new System.Drawing.Point(12, 204);
             this.linkLabelTeam.Name = "linkLabelTeam";
             this.linkLabelTeam.Size = new System.Drawing.Size(115, 13);
             this.linkLabelTeam.TabIndex = 7;
@@ -74,7 +74,7 @@ namespace TEAM
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(12, 200);
+            this.linkLabel1.Location = new System.Drawing.Point(12, 191);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(190, 13);
             this.linkLabel1.TabIndex = 21;

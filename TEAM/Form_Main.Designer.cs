@@ -31,8 +31,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.labelEnvironmentMode = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.labelWorkingEnvironment = new System.Windows.Forms.Label();
             this.labelMetadataSave = new System.Windows.Forms.Label();
             this.labelWorkingEnvironmentType = new System.Windows.Forms.Label();
@@ -64,36 +62,16 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.labelEnvironmentMode);
-            this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.labelWorkingEnvironment);
             this.groupBox2.Controls.Add(this.labelMetadataSave);
             this.groupBox2.Controls.Add(this.labelWorkingEnvironmentType);
             this.groupBox2.Controls.Add(this.labelMetadataRepository);
-            this.groupBox2.Location = new System.Drawing.Point(12, 684);
+            this.groupBox2.Location = new System.Drawing.Point(12, 715);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(342, 102);
+            this.groupBox2.Size = new System.Drawing.Size(342, 71);
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Environment";
-            // 
-            // labelEnvironmentMode
-            // 
-            this.labelEnvironmentMode.AutoSize = true;
-            this.labelEnvironmentMode.Location = new System.Drawing.Point(193, 57);
-            this.labelEnvironmentMode.Name = "labelEnvironmentMode";
-            this.labelEnvironmentMode.Size = new System.Drawing.Size(27, 13);
-            this.labelEnvironmentMode.TabIndex = 69;
-            this.labelEnvironmentMode.Text = "N/A";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 57);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(168, 13);
-            this.label2.TabIndex = 68;
-            this.label2.Text = "The environment is configured for:";
             // 
             // labelWorkingEnvironment
             // 
@@ -359,8 +337,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem deployMetadataExamplesToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.Label labelEnvironmentMode;
-        private System.Windows.Forms.Label label2;
     }
 }
 

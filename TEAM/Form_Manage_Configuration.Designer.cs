@@ -39,6 +39,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openRootPathFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openActiveConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -130,17 +132,12 @@
             this.tabPageEnvironments = new System.Windows.Forms.TabPage();
             this.tabControlEnvironments = new System.Windows.Forms.TabControl();
             this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
-            this.groupBoxEnvironmentBehaviour = new System.Windows.Forms.GroupBox();
-            this.radioButtonPhysicalMode = new System.Windows.Forms.RadioButton();
-            this.radioButtonVirtualMode = new System.Windows.Forms.RadioButton();
             this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
             this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
             this.toolTipConfigurationSettings = new System.Windows.Forms.ToolTip(this.components);
-            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
@@ -161,7 +158,6 @@
             this.tabPageEnvironments.SuspendLayout();
             this.tabControlEnvironments.SuspendLayout();
             this.tabPageEnvironmentMain.SuspendLayout();
-            this.groupBoxEnvironmentBehaviour.SuspendLayout();
             this.tabControlDefaultDetails.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -247,6 +243,19 @@
             this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            // 
+            // openMetadataDirectoryToolStripMenuItem
+            // 
+            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
+            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
+            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(268, 6);
             // 
             // openRootPathFileToolStripMenuItem
             // 
@@ -1197,7 +1206,6 @@
             // 
             // tabPageEnvironmentMain
             // 
-            this.tabPageEnvironmentMain.Controls.Add(this.groupBoxEnvironmentBehaviour);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
             this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
@@ -1209,42 +1217,6 @@
             this.tabPageEnvironmentMain.Text = "Overview of working environments";
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
             this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
-            // 
-            // groupBoxEnvironmentBehaviour
-            // 
-            this.groupBoxEnvironmentBehaviour.Controls.Add(this.radioButtonPhysicalMode);
-            this.groupBoxEnvironmentBehaviour.Controls.Add(this.radioButtonVirtualMode);
-            this.groupBoxEnvironmentBehaviour.Location = new System.Drawing.Point(417, 82);
-            this.groupBoxEnvironmentBehaviour.Name = "groupBoxEnvironmentBehaviour";
-            this.groupBoxEnvironmentBehaviour.Size = new System.Drawing.Size(143, 70);
-            this.groupBoxEnvironmentBehaviour.TabIndex = 76;
-            this.groupBoxEnvironmentBehaviour.TabStop = false;
-            this.groupBoxEnvironmentBehaviour.Text = "Environment Mode";
-            this.toolTipConfigurationSettings.SetToolTip(this.groupBoxEnvironmentBehaviour, resources.GetString("groupBoxEnvironmentBehaviour.ToolTip"));
-            // 
-            // radioButtonPhysicalMode
-            // 
-            this.radioButtonPhysicalMode.AutoSize = true;
-            this.radioButtonPhysicalMode.Checked = true;
-            this.radioButtonPhysicalMode.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonPhysicalMode.Name = "radioButtonPhysicalMode";
-            this.radioButtonPhysicalMode.Size = new System.Drawing.Size(94, 17);
-            this.radioButtonPhysicalMode.TabIndex = 6;
-            this.radioButtonPhysicalMode.TabStop = true;
-            this.radioButtonPhysicalMode.Text = "Physical Mode";
-            this.radioButtonPhysicalMode.UseVisualStyleBackColor = true;
-            this.radioButtonPhysicalMode.CheckedChanged += new System.EventHandler(this.radioButtonPhysicalMode_CheckedChanged);
-            // 
-            // radioButtonVirtualMode
-            // 
-            this.radioButtonVirtualMode.AutoSize = true;
-            this.radioButtonVirtualMode.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonVirtualMode.Name = "radioButtonVirtualMode";
-            this.radioButtonVirtualMode.Size = new System.Drawing.Size(84, 17);
-            this.radioButtonVirtualMode.TabIndex = 5;
-            this.radioButtonVirtualMode.Text = "Virtual Mode";
-            this.radioButtonVirtualMode.UseVisualStyleBackColor = true;
-            this.radioButtonVirtualMode.CheckedChanged += new System.EventHandler(this.radioButtonVirtualMode_CheckedChanged);
             // 
             // richTextBox4
             // 
@@ -1310,19 +1282,6 @@
             this.toolTipConfigurationSettings.InitialDelay = 300;
             this.toolTipConfigurationSettings.ReshowDelay = 100;
             // 
-            // openMetadataDirectoryToolStripMenuItem
-            // 
-            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
-            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
-            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(268, 6);
-            // 
             // FormManageConfiguration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1369,8 +1328,6 @@
             this.tabPageEnvironments.ResumeLayout(false);
             this.tabControlEnvironments.ResumeLayout(false);
             this.tabPageEnvironmentMain.ResumeLayout(false);
-            this.groupBoxEnvironmentBehaviour.ResumeLayout(false);
-            this.groupBoxEnvironmentBehaviour.PerformLayout();
             this.tabControlDefaultDetails.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1478,9 +1435,6 @@
         internal System.Windows.Forms.TextBox textBoxTransformationLabels;
         private System.Windows.Forms.GroupBox groupBoxDataObjectIdentification;
         private System.Windows.Forms.GroupBox groupBoxPrefixSuffix;
-        private System.Windows.Forms.GroupBox groupBoxEnvironmentBehaviour;
-        private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
-        private System.Windows.Forms.RadioButton radioButtonVirtualMode;
         private System.Windows.Forms.PictureBox pictureBox4;
         internal System.Windows.Forms.TextBox textBoxTeamMetadataPath;
         private System.Windows.Forms.Label label2;

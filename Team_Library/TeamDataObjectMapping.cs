@@ -42,9 +42,9 @@ namespace TEAM_Library
             DataTable.Columns.Add(DataObjectMappingGridColumns.Enabled.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.HashKey.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceConnection.ToString());
-            DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObject.ToString(), typeof(DataWarehouseAutomation.DataObject));
+            DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObject.ToString(), typeof(DataObject));
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetConnection.ToString());
-            DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObject.ToString(), typeof(DataWarehouseAutomation.DataObject));
+            DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObject.ToString(), typeof(DataObject));
             DataTable.Columns.Add(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
@@ -142,64 +142,71 @@ namespace TEAM_Library
 
                     #region Business Key Definition
                     string businessKeyDefinitionString = "";
-
                     int businessKeyCounter = 1;
 
-                    foreach (var businessKey in dataObjectMapping.businessKeys)
-                    {
-                        // For Links, skip the first business key (because it's the full key).
-                        // For LSAT and SAT skip altogether because it will be derived.
-                        if ((businessKeyCounter == 1 && targetDataObject.name.IsDataVaultLink(teamConfiguration))
-                            || targetDataObject.name.IsDataVaultSatellite(teamConfiguration)
-                            || targetDataObject.name.IsDataVaultLinkSatellite(teamConfiguration))
+                    //if (targetDataObject.name.IsDataVaultSatellite(teamConfiguration) || targetDataObject.name.IsDataVaultLinkSatellite(teamConfiguration))
+                    //{
+                    //    // For LSAT and SAT skip altogether because it will be derived.
+                    //    businessKeyDefinitionString = "(inherited)";
+                    //}
+                    //else
+                    //{
+
+                        foreach (var businessKey in dataObjectMapping.businessKeys)
                         {
-                            // Do nothing
-                        }
-                        else
-                        {
-                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
-                            if (businessKey.businessKeyComponentMapping.Count > 1)
+                            // For Links, skip the first business key (because it's the full key).
+                            if (businessKeyCounter == 1 && targetDataObject.name.IsDataVaultLink(teamConfiguration))
                             {
-                                businessKeyDefinitionString += "COMPOSITE(";
+                                // Do nothing.
                             }
-
-                            foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
+                            else
                             {
-
-
-                                foreach (var dataItem in dataItemMapping.sourceDataItems)
+                                // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                                if (businessKey.businessKeyComponentMapping.Count > 1)
                                 {
-                                    // Explicitly type-cast the value as string to avoid issues using dynamic type.
-                                    string dataItemName = dataItem.name;
-
-                                    if (dataItemName.Contains("+"))
-                                    {
-                                        businessKeyDefinitionString += $"CONCATENATE({dataItem.name})".Replace("+", ";");
-                                    }
-                                    else
-                                    {
-                                        businessKeyDefinitionString += dataItemName;
-                                    }
-
-                                    businessKeyDefinitionString += ";";
+                                    businessKeyDefinitionString += "COMPOSITE(";
                                 }
+
+                                foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
+                                {
+
+
+                                    foreach (var dataItem in dataItemMapping.sourceDataItems)
+                                    {
+                                        // Explicitly type-cast the value as string to avoid issues using dynamic type.
+                                        string dataItemName = dataItem.name;
+
+                                        if (dataItemName.Contains("+"))
+                                        {
+                                            businessKeyDefinitionString += $"CONCATENATE({dataItem.name})".Replace("+", ";");
+                                        }
+                                        else
+                                        {
+                                            businessKeyDefinitionString += dataItemName;
+                                        }
+
+                                        businessKeyDefinitionString += ";";
+                                    }
+                                }
+
+                                businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(';');
+
+                                // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                                if (businessKey.businessKeyComponentMapping.Count > 1)
+                                    // && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationship" && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationshipContext")
+                                {
+                                    businessKeyDefinitionString += ")";
+                                }
+
+                                businessKeyDefinitionString += ",";
                             }
 
-                            businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(';');
-
-                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
-                            if (businessKey.businessKeyComponentMapping.Count > 1)
-                                // && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationship" && targetDataObject.dataObjectClassifications[0].classification != "NaturalBusinessRelationshipContext")
-                            {
-                                businessKeyDefinitionString += ")";
-                            }
-
-                            businessKeyDefinitionString += ",";
+                            businessKeyCounter++;
                         }
 
-                        businessKeyCounter++;
-                    }
-                    businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
+                        businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
+                    //}
+
                     #endregion
 
                     foreach (var sourceDataObject in dataObjectMapping.sourceDataObjects)

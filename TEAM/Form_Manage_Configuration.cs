@@ -158,17 +158,6 @@ namespace TEAM
                     comboBoxMetadataConnection.SelectedIndex = comboBoxMetadataConnection.FindStringExact(metadataKey.ConnectionKey);
                 }
 
-                Enum.TryParse(configList["EnvironmentMode"], out EnvironmentModes environmentMode);
-                if (environmentMode == EnvironmentModes.PhysicalMode)
-                {
-                    radioButtonPhysicalMode.Checked = true;
-                }
-                if (environmentMode == EnvironmentModes.VirtualMode)
-                {
-                    radioButtonVirtualMode.Checked = true;
-                }
-
-
                 //DWH settings
                 textBoxHubTablePrefix.Text = configList["HubTablePrefix"];
                 textBoxSatPrefix.Text = configList["SatTablePrefix"];
@@ -443,17 +432,6 @@ namespace TEAM
         /// </summary>
         private void UpdateConfigurationInMemory()
         {
-
-            if (radioButtonPhysicalMode.Checked)
-            {
-                TeamConfiguration.EnvironmentMode = EnvironmentModes.PhysicalMode;
-            }
-
-            if (radioButtonVirtualMode.Checked)
-            {
-                TeamConfiguration.EnvironmentMode = EnvironmentModes.VirtualMode;
-            }
-            
             if (comboBoxMetadataConnection.SelectedItem!=null)
             {
                 // Get the object in the Combobox into a Key Value Pair (object / id)
@@ -950,46 +928,6 @@ namespace TEAM
                 // Report back to the event log.
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
             }
-        }
-
-        private void radioButtonPhysicalMode_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateEnvironmentMode(sender, e);
-        }
-
-        private void radioButtonVirtualMode_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateEnvironmentMode(sender, e);
-        }
-
-        private void UpdateEnvironmentMode(object sender, EventArgs e)
-        {
-            if (!_formLoading)
-            {
-                var localSender = (RadioButton) sender;
-
-                if (localSender == radioButtonPhysicalMode && radioButtonPhysicalMode.Checked)
-                {
-                    if (radioButtonPhysicalMode.Checked)
-                    {
-                        GlobalParameters.EnvironmentMode = EnvironmentModes.PhysicalMode;
-                        richTextBoxInformation.AppendText(
-                            $"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}.");
-                    }
-                }
-
-                if (sender == radioButtonVirtualMode && radioButtonVirtualMode.Checked)
-                {
-                    if (radioButtonVirtualMode.Checked)
-                    {
-                        GlobalParameters.EnvironmentMode = EnvironmentModes.VirtualMode;
-                        richTextBoxInformation.AppendText($"\r\nThe processing mode for {GlobalParameters.WorkingEnvironment} has been updated to {GlobalParameters.EnvironmentMode}.");
-                    }
-                }
-            }
-
-            // Callback to the main form to update the label.
-            UpdateEnvironmentMode(GlobalParameters.EnvironmentMode.ToString());
         }
 
         private void pictureBoxMetadataPath_Click(object sender, EventArgs e)

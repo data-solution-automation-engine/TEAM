@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -8,11 +6,8 @@ namespace TEAM
 {
     public partial class FormAbout : FormBase
     {
-        private readonly FormMain _myParent;
-
-        public FormAbout(FormMain parent)
+        public FormAbout()
         {
-            _myParent = parent;
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
         }
