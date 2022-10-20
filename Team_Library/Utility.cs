@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
 
