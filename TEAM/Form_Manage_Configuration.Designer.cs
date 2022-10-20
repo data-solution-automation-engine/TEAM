@@ -125,19 +125,19 @@
             this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
             this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
-            this.richTextBoxMetadataConnection = new System.Windows.Forms.RichTextBox();
             this.comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
             this.richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
             this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
             this.tabPageEnvironments = new System.Windows.Forms.TabPage();
             this.tabControlEnvironments = new System.Windows.Forms.TabControl();
             this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
-            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
             this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
             this.toolTipConfigurationSettings = new System.Windows.Forms.ToolTip(this.components);
+            this.labelEnvironmentKey = new System.Windows.Forms.Label();
+            this.labelMetadataConnectionKey = new System.Windows.Forms.Label();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
@@ -1127,7 +1127,7 @@
             // 
             // tabPageConnectionMain
             // 
-            this.tabPageConnectionMain.Controls.Add(this.richTextBoxMetadataConnection);
+            this.tabPageConnectionMain.Controls.Add(this.labelMetadataConnectionKey);
             this.tabPageConnectionMain.Controls.Add(this.comboBoxMetadataConnection);
             this.tabPageConnectionMain.Controls.Add(this.richTextBoxConnectionMain);
             this.tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
@@ -1139,33 +1139,22 @@
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageConnectionMain, resources.GetString("tabPageConnectionMain.ToolTip"));
             this.tabPageConnectionMain.UseVisualStyleBackColor = true;
             // 
-            // richTextBoxMetadataConnection
-            // 
-            this.richTextBoxMetadataConnection.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBoxMetadataConnection.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxMetadataConnection.Location = new System.Drawing.Point(6, 73);
-            this.richTextBoxMetadataConnection.Name = "richTextBoxMetadataConnection";
-            this.richTextBoxMetadataConnection.ReadOnly = true;
-            this.richTextBoxMetadataConnection.Size = new System.Drawing.Size(133, 22);
-            this.richTextBoxMetadataConnection.TabIndex = 77;
-            this.richTextBoxMetadataConnection.TabStop = false;
-            this.richTextBoxMetadataConnection.Text = "Metadata connection key:";
-            // 
             // comboBoxMetadataConnection
             // 
             this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMetadataConnection.FormattingEnabled = true;
-            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(145, 70);
+            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(140, 82);
             this.comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
             this.comboBoxMetadataConnection.Size = new System.Drawing.Size(292, 21);
             this.comboBoxMetadataConnection.TabIndex = 76;
             // 
             // richTextBoxConnectionMain
             // 
+            this.richTextBoxConnectionMain.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
             this.richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
-            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(487, 61);
+            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(1094, 61);
             this.richTextBoxConnectionMain.TabIndex = 73;
             this.richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
             // 
@@ -1206,7 +1195,7 @@
             // 
             // tabPageEnvironmentMain
             // 
-            this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
+            this.tabPageEnvironmentMain.Controls.Add(this.labelEnvironmentKey);
             this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
             this.tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
@@ -1218,23 +1207,11 @@
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
             this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
             // 
-            // richTextBox4
-            // 
-            this.richTextBox4.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox4.Location = new System.Drawing.Point(6, 91);
-            this.richTextBox4.Name = "richTextBox4";
-            this.richTextBox4.ReadOnly = true;
-            this.richTextBox4.Size = new System.Drawing.Size(86, 22);
-            this.richTextBox4.TabIndex = 75;
-            this.richTextBox4.TabStop = false;
-            this.richTextBox4.Text = "Environment key:";
-            // 
             // comboBoxEnvironments
             // 
             this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxEnvironments.FormattingEnabled = true;
-            this.comboBoxEnvironments.Location = new System.Drawing.Point(98, 88);
+            this.comboBoxEnvironments.Location = new System.Drawing.Point(140, 82);
             this.comboBoxEnvironments.Name = "comboBoxEnvironments";
             this.comboBoxEnvironments.Size = new System.Drawing.Size(302, 21);
             this.comboBoxEnvironments.TabIndex = 1;
@@ -1242,10 +1219,11 @@
             // 
             // richTextBoxEnvironmentsInformation
             // 
+            this.richTextBoxEnvironmentsInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
             this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
-            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(463, 70);
+            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(1094, 70);
             this.richTextBoxEnvironmentsInformation.TabIndex = 73;
             this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
             // 
@@ -1281,6 +1259,24 @@
             this.toolTipConfigurationSettings.AutoPopDelay = 3000;
             this.toolTipConfigurationSettings.InitialDelay = 300;
             this.toolTipConfigurationSettings.ReshowDelay = 100;
+            // 
+            // labelEnvironmentKey
+            // 
+            this.labelEnvironmentKey.AutoSize = true;
+            this.labelEnvironmentKey.Location = new System.Drawing.Point(3, 85);
+            this.labelEnvironmentKey.Name = "labelEnvironmentKey";
+            this.labelEnvironmentKey.Size = new System.Drawing.Size(89, 13);
+            this.labelEnvironmentKey.TabIndex = 76;
+            this.labelEnvironmentKey.Text = "Environment key:";
+            // 
+            // labelMetadataConnectionKey
+            // 
+            this.labelMetadataConnectionKey.AutoSize = true;
+            this.labelMetadataConnectionKey.Location = new System.Drawing.Point(3, 85);
+            this.labelMetadataConnectionKey.Name = "labelMetadataConnectionKey";
+            this.labelMetadataConnectionKey.Size = new System.Drawing.Size(131, 13);
+            this.labelMetadataConnectionKey.TabIndex = 78;
+            this.labelMetadataConnectionKey.Text = "Metadata connection key:";
             // 
             // FormManageConfiguration
             // 
@@ -1325,9 +1321,11 @@
             this.tabPageConnections.ResumeLayout(false);
             this.tabControlConnections.ResumeLayout(false);
             this.tabPageConnectionMain.ResumeLayout(false);
+            this.tabPageConnectionMain.PerformLayout();
             this.tabPageEnvironments.ResumeLayout(false);
             this.tabControlEnvironments.ResumeLayout(false);
             this.tabPageEnvironmentMain.ResumeLayout(false);
+            this.tabPageEnvironmentMain.PerformLayout();
             this.tabControlDefaultDetails.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1416,14 +1414,12 @@
         private System.Windows.Forms.TabPage tabPageConnections;
         private System.Windows.Forms.TabControl tabControlConnections;
         private System.Windows.Forms.TabPage tabPageConnectionMain;
-        private System.Windows.Forms.RichTextBox richTextBoxMetadataConnection;
         private System.Windows.Forms.ComboBox comboBoxMetadataConnection;
         private System.Windows.Forms.RichTextBox richTextBoxConnectionMain;
         private System.Windows.Forms.TabPage tabPageConnectionNewTab;
         private System.Windows.Forms.TabPage tabPageEnvironments;
         private System.Windows.Forms.TabControl tabControlEnvironments;
         private System.Windows.Forms.TabPage tabPageEnvironmentMain;
-        private System.Windows.Forms.RichTextBox richTextBox4;
         private System.Windows.Forms.ComboBox comboBoxEnvironments;
         private System.Windows.Forms.RichTextBox richTextBoxEnvironmentsInformation;
         private System.Windows.Forms.TabPage tabPageEnvironmentNewTab;
@@ -1442,6 +1438,8 @@
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.ToolStripMenuItem openMetadataDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.Label labelMetadataConnectionKey;
+        private System.Windows.Forms.Label labelEnvironmentKey;
     }
 }
 

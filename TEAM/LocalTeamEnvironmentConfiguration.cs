@@ -164,9 +164,6 @@ namespace TEAM
                 FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
                 FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
                 FormBase.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
-
-
-
             }
             catch (Exception)
             {

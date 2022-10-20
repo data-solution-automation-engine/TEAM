@@ -41,20 +41,18 @@ namespace TEAM
             }
 
             #region Load the root path configuration settings (user defined paths and working environment)
-
             // Load the root file, to be able to locate the (customisable) configuration file.
             // This file contains the configuration directory, the output directory and the working environment.
             string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
             try
             {
                 LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The core configuration file {rootPathFileName} has been loaded."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
+                labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment;
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
             }
 
             // Environments file
@@ -62,15 +60,12 @@ namespace TEAM
             try
             {
                 TeamEnvironmentCollection.LoadTeamEnvironmentCollection(environmentFile);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The environment file {environmentFile} has been loaded."));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment file {environmentFile} has been loaded."));
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
             }
-
             #endregion
 
             #region Check if user configured paths exists (now that they have been loaded from the root file), and create dummy Configuration and Validation files if necessary
@@ -97,8 +92,7 @@ namespace TEAM
             }
 
             // Create a dummy configuration file if it does not exist.
-            var configurationFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var configurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -118,8 +112,7 @@ namespace TEAM
             }
 
             // Create a default validation file if the file does not exist as expected.
-            var validationFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var validationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -132,8 +125,7 @@ namespace TEAM
             }
 
             // Create a default json configuration file if the file does not exist as expected.
-            var jsonConfigurationFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var jsonConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -147,15 +139,13 @@ namespace TEAM
             #endregion
 
             // Load the connections file for the respective environment.
-            var connectionFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.JsonExtension}";
+            var connectionFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.JsonExtension}";
 
             TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
             #region Load configuration file
             // Load the available configuration file into memory.
-            var configurationFile =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var configurationFile = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
             try
             {
                 // Load the configuration file.
@@ -278,7 +268,6 @@ namespace TEAM
             metadataToolStripMenuItem.Enabled = true;
         }
 
-
         private void CheckKeyword(string word, Color color, int startIndex)
         {
             if (richTextBoxInformation.Text.Contains(word))
@@ -313,8 +302,6 @@ namespace TEAM
             Application.Exit();
         }
 
-
-
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (metadataToolStripMenuItem.Enabled == false)
@@ -324,14 +311,12 @@ namespace TEAM
             t.Start();
         }
 
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var t = new Thread(ThreadProcAbout);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }
-
 
         #region From Close Delegates
         private void CloseMetadataForm(object sender, FormClosedEventArgs e)
@@ -666,7 +651,7 @@ namespace TEAM
             }
         }
 
-        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start(Utility.GetDefaultBrowserPath(), "http://roelantvos.com/blog/team/");
         }
@@ -676,6 +661,20 @@ namespace TEAM
             var t = new Thread(ThreadProcRepository);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
+        }
+
+        private void openMetadataDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            {
+                try
+                {
+                    Process.Start(GlobalParameters.MetadataPath);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text = $@"An error has occurred while attempting to open the metadata directory. The error message is: {ex.Message}.";
+                }
+            }
         }
     }
 }
