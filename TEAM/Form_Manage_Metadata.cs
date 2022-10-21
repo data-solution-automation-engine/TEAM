@@ -6306,8 +6306,7 @@ namespace TEAM
                     row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 TeamConnection localConnectionTarget = GetTeamConnectionByConnectionId(localInternalConnectionIdTarget);
 
-                var localTupleSource = new Tuple<string, TeamConnection>(
-                    (string) row[DataObjectMappingGridColumns.SourceDataObject.ToString()], localConnectionSource);
+                var localTupleSource = new Tuple<string, TeamConnection>((string) row[DataObjectMappingGridColumns.SourceDataObject.ToString()], localConnectionSource);
 
                 var localTupleTarget = new Tuple<string, TeamConnection>(
                     (string) row[DataObjectMappingGridColumns.TargetDataObject.ToString()], localConnectionTarget);
@@ -6341,44 +6340,64 @@ namespace TEAM
             conn.Close();
             return reverseEngineerResults;
         }
-        #region ContextMenu
-
-        private void physicalModelGrid_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                var hti = _dataGridViewPhysicalModel.HitTest(e.X, e.Y);
-                _dataGridViewPhysicalModel.ClearSelection();
-                _dataGridViewPhysicalModel.Rows[hti.RowIndex].Selected = true;
-            }
-        }
-        #endregion
 
         private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
         {
-            ApplyDataGridViewFiltering();
+            ApplyDataGridViewFiltering(textBoxFilterCriterion.Text);
         }
 
-        private void ApplyDataGridViewFiltering()
+        private void ApplyDataGridViewFiltering(string filterCriterion)
         {
-            foreach (DataGridViewRow dr in _dataGridViewDataObjects.Rows)
+            foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
             {
-                dr.Visible = true;
+                row.Visible = true;
+
+                if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
+                {
+                    if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) && !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
+                    {
+                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
+                        currencyManager.SuspendBinding();
+                        row.Visible = false;
+                        currencyManager.ResumeBinding();
+                    }
+                }
             }
 
-            foreach (DataGridViewRow dr in _dataGridViewDataObjects.Rows)
+            foreach (DataGridViewRow row in _dataGridViewDataItems.Rows)
             {
-                if (dr.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
+                row.Visible = true;
+
+                if (row.Cells[(int)DataItemMappingMetadataColumns.TargetTable].Value != null)
                 {
-                    if (!dr.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString()
-                            .Contains(Text) && !dr
-                            .Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString()
-                            .Contains(Text))
+                    if (!row.Cells[(int)DataItemMappingMetadataColumns.SourceTable].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)DataItemMappingMetadataColumns.SourceColumn].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)DataItemMappingMetadataColumns.TargetTable].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)DataItemMappingMetadataColumns.TargetColumn].Value.ToString().Contains(filterCriterion))
                     {
-                        CurrencyManager currencyManager1 = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
-                        currencyManager1.SuspendBinding();
-                        dr.Visible = false;
-                        currencyManager1.ResumeBinding();
+                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
+                        currencyManager.SuspendBinding();
+                        row.Visible = false;
+                        currencyManager.ResumeBinding();
+                    }
+                }
+            }
+
+            foreach (DataGridViewRow row in _dataGridViewPhysicalModel.Rows)
+            {
+                row.Visible = true;
+
+                if (row.Cells[(int)PhysicalModelMappingMetadataColumns.TableName].Value != null)
+                {
+                    if (!row.Cells[(int)PhysicalModelMappingMetadataColumns.DatabaseName].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.TableName].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.SchemaName].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.ColumnName].Value.ToString().Contains(filterCriterion))
+                    {
+                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewPhysicalModel.DataSource];
+                        currencyManager.SuspendBinding();
+                        row.Visible = false;
+                        currencyManager.ResumeBinding();
                     }
                 }
             }
@@ -8983,5 +9002,6 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
+
     }
 }

@@ -80,11 +80,13 @@ namespace TEAM
             this.toolTipMetadata = new System.Windows.Forms.ToolTip(this.components);
             this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
+            this.groupBoxPhysicalModel = new System.Windows.Forms.GroupBox();
+            this.labelConnections = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBoxMetadataCounts.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.MetadataGenerationGroupBox.SuspendLayout();
             this.menuStripMetadata.SuspendLayout();
+            this.groupBoxPhysicalModel.SuspendLayout();
             this.SuspendLayout();
             // 
             // backgroundWorkerMetadata
@@ -213,23 +215,18 @@ namespace TEAM
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
-            this.groupBox4.Controls.Add(this.button2);
-            this.groupBox4.Location = new System.Drawing.Point(966, 6);
+            this.groupBox4.Location = new System.Drawing.Point(0, 0);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(134, 533);
-            this.groupBox4.TabIndex = 27;
+            this.groupBox4.Size = new System.Drawing.Size(200, 100);
+            this.groupBox4.TabIndex = 0;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Target area";
             // 
             // checkedListBoxReverseEngineeringAreas
             // 
             this.checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
             this.checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
-            this.checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(8, 76);
+            this.checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(8, 85);
             this.checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
             this.checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(120, 420);
             this.checkedListBoxReverseEngineeringAreas.TabIndex = 0;
@@ -237,11 +234,11 @@ namespace TEAM
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(8, 24);
+            this.button2.Location = new System.Drawing.Point(5, 19);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 40);
             this.button2.TabIndex = 20;
-            this.button2.Text = "Reverse Engineer Model";
+            this.button2.Text = "Reverse Engineer";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.ReverseEngineerMetadataButtonClick);
             // 
@@ -269,7 +266,7 @@ namespace TEAM
             this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(140, 161);
             this.MetadataGenerationGroupBox.TabIndex = 3;
             this.MetadataGenerationGroupBox.TabStop = false;
-            this.MetadataGenerationGroupBox.Text = "Activation / Processing";
+            this.MetadataGenerationGroupBox.Text = "Processing";
             // 
             // checkBoxValidation
             // 
@@ -453,7 +450,7 @@ namespace TEAM
             // 
             this.manageValidationRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageValidationRulesToolStripMenuItem.Name = "manageValidationRulesToolStripMenuItem";
-            this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
+            this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.manageValidationRulesToolStripMenuItem.Text = "Manage Validation Rules";
             this.manageValidationRulesToolStripMenuItem.Click += new System.EventHandler(this.manageValidationRulesToolStripMenuItem_Click);
             // 
@@ -462,7 +459,7 @@ namespace TEAM
             this.validateMetadataToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
             this.validateMetadataToolStripMenuItem.Name = "validateMetadataToolStripMenuItem";
             this.validateMetadataToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
+            this.validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.validateMetadataToolStripMenuItem.Text = "&Validate Metadata";
             this.validateMetadataToolStripMenuItem.Click += new System.EventHandler(this.validateMetadataToolStripMenuItem_Click);
             // 
@@ -523,11 +520,35 @@ namespace TEAM
             this.backgroundWorkerEventLog.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerEventLog_ProgressChanged);
             this.backgroundWorkerEventLog.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerEventLog_RunWorkerCompleted);
             // 
+            // groupBoxPhysicalModel
+            // 
+            this.groupBoxPhysicalModel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxPhysicalModel.Controls.Add(this.labelConnections);
+            this.groupBoxPhysicalModel.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
+            this.groupBoxPhysicalModel.Controls.Add(this.button2);
+            this.groupBoxPhysicalModel.Location = new System.Drawing.Point(1386, 216);
+            this.groupBoxPhysicalModel.Name = "groupBoxPhysicalModel";
+            this.groupBoxPhysicalModel.Size = new System.Drawing.Size(138, 517);
+            this.groupBoxPhysicalModel.TabIndex = 1;
+            this.groupBoxPhysicalModel.TabStop = false;
+            this.groupBoxPhysicalModel.Text = "Physical Model";
+            // 
+            // labelConnections
+            // 
+            this.labelConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelConnections.AutoSize = true;
+            this.labelConnections.Location = new System.Drawing.Point(6, 64);
+            this.labelConnections.Name = "labelConnections";
+            this.labelConnections.Size = new System.Drawing.Size(66, 13);
+            this.labelConnections.TabIndex = 24;
+            this.labelConnections.Text = "Connections";
+            // 
             // FormManageMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1534, 836);
+            this.Controls.Add(this.groupBoxPhysicalModel);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBoxMetadataCounts);
             this.Controls.Add(this.tabControlDataMappings);
@@ -548,11 +569,12 @@ namespace TEAM
             this.groupBox2.PerformLayout();
             this.groupBoxMetadataCounts.ResumeLayout(false);
             this.groupBoxMetadataCounts.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
             this.MetadataGenerationGroupBox.ResumeLayout(false);
             this.MetadataGenerationGroupBox.PerformLayout();
             this.menuStripMetadata.ResumeLayout(false);
             this.menuStripMetadata.PerformLayout();
+            this.groupBoxPhysicalModel.ResumeLayout(false);
+            this.groupBoxPhysicalModel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -620,6 +642,7 @@ namespace TEAM
 
 
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-
+        private System.Windows.Forms.GroupBox groupBoxPhysicalModel;
+        private System.Windows.Forms.Label labelConnections;
     }
 }
