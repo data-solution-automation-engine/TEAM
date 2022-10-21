@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using TEAM_Library;
 using static TEAM.FormBase;
@@ -9,15 +8,19 @@ namespace TEAM
 {
     internal sealed class DataGridViewDataItems : DataGridView
     {
-        private ContextMenuStrip contextMenuStripAttributeMapping;
-        private ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem;
+        private readonly ContextMenuStrip contextMenuStrip;
 
         public DataGridViewDataItems()
         {
             #region Basic properties
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             BorderStyle = BorderStyle.None;
-            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
+            // Disable resizing for performance, will be enabled after binding.
+            RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+
             EditMode = DataGridViewEditMode.EditOnEnter;
 
             var mySize = new Size(1100, 540);
@@ -26,7 +29,7 @@ namespace TEAM
 
             AutoGenerateColumns = false;
             ColumnHeadersVisible = true;
-            AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
 
             // Define grid view control.
             Name = "dataGridViewDataItem";
@@ -35,8 +38,8 @@ namespace TEAM
             #endregion
 
             #region Event Handlers
-            KeyDown += DataGridViewDataItems_KeyDown;
-            MouseDown += DataGridViewDataItems_MouseDown;
+            KeyDown += DataGridView_KeyDown;
+            MouseDown += DataGridView_MouseDown;
             #endregion
 
             #region Columns
@@ -56,7 +59,7 @@ namespace TEAM
             {
                 DataGridViewTextBoxColumn sourceTable = new DataGridViewTextBoxColumn();
                 sourceTable.Name = DataItemMappingMetadataColumns.SourceTable.ToString();
-                sourceTable.HeaderText = DataItemMappingMetadataColumns.SourceTable.ToString();
+                sourceTable.HeaderText = @"Source Data Object";
                 sourceTable.DataPropertyName = DataItemMappingMetadataColumns.SourceTable.ToString();
                 sourceTable.Visible = true;
                 Columns.Add(sourceTable);
@@ -67,7 +70,7 @@ namespace TEAM
             {
                 DataGridViewTextBoxColumn sourceColumn = new DataGridViewTextBoxColumn();
                 sourceColumn.Name = DataItemMappingMetadataColumns.SourceColumn.ToString();
-                sourceColumn.HeaderText = DataItemMappingMetadataColumns.SourceColumn.ToString();
+                sourceColumn.HeaderText = @"Source Data Item";
                 sourceColumn.DataPropertyName = DataItemMappingMetadataColumns.SourceColumn.ToString();
                 sourceColumn.Visible = true;
                 Columns.Add(sourceColumn);
@@ -78,7 +81,7 @@ namespace TEAM
             {
                 DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
                 targetTable.Name = DataItemMappingMetadataColumns.TargetTable.ToString();
-                targetTable.HeaderText = DataItemMappingMetadataColumns.TargetTable.ToString();
+                targetTable.HeaderText = @"Target Data Object";
                 targetTable.DataPropertyName = DataItemMappingMetadataColumns.TargetTable.ToString();
                 targetTable.Visible = true;
                 Columns.Add(targetTable);
@@ -100,7 +103,7 @@ namespace TEAM
             {
                 DataGridViewTextBoxColumn notes = new DataGridViewTextBoxColumn();
                 notes.Name = DataItemMappingMetadataColumns.Notes.ToString();
-                notes.HeaderText = DataItemMappingMetadataColumns.Notes.ToString();
+                notes.HeaderText = @"Target Data Item";
                 notes.DataPropertyName = DataItemMappingMetadataColumns.Notes.ToString();
                 notes.Visible = false;
                 Columns.Add(notes);
@@ -108,25 +111,25 @@ namespace TEAM
             #endregion
 
             #region Context menu
-            contextMenuStripAttributeMapping = new ContextMenuStrip();
-            contextMenuStripAttributeMapping.SuspendLayout();
+            contextMenuStrip = new ContextMenuStrip();
+            contextMenuStrip.SuspendLayout();
 
             // Delete row menu item
-            deleteThisRowFromTheGridToolStripMenuItem = new ToolStripMenuItem();
-            deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
-            deleteThisRowFromTheGridToolStripMenuItem.Size = new Size(225, 22);
-            deleteThisRowFromTheGridToolStripMenuItem.Text = @"Delete this row from the grid";
-            deleteThisRowFromTheGridToolStripMenuItem.Click += DeleteThisRowFromTableDataGridToolStripMenuItem_Click;
+            var deleteRow = new ToolStripMenuItem();
+            deleteRow.Name = "deleteThisRowFromTheGridToolStripMenuItem";
+            deleteRow.Size = new Size(225, 22);
+            deleteRow.Text = @"Delete this row from the grid";
+            deleteRow.Click += DeleteRowFromGridToolStripMenuItem_Click;
 
-            contextMenuStripAttributeMapping.ImageScalingSize = new Size(24, 24);
-            contextMenuStripAttributeMapping.Items.AddRange(new ToolStripItem[] {
-                deleteThisRowFromTheGridToolStripMenuItem
+            contextMenuStrip.ImageScalingSize = new Size(24, 24);
+            contextMenuStrip.Items.AddRange(new ToolStripItem[] {
+                deleteRow
             });
 
-            contextMenuStripAttributeMapping.Name = "contextMenuStripDataItemMapping";
-            contextMenuStripAttributeMapping.Size = new Size(340, 48);
+            contextMenuStrip.Name = "contextMenuStripDataItemMapping";
+            contextMenuStrip.Size = new Size(340, 48);
 
-            contextMenuStripAttributeMapping.ResumeLayout(false);
+            contextMenuStrip.ResumeLayout(false);
             #endregion
         }
 
@@ -135,7 +138,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeleteThisRowFromTableDataGridToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DeleteRowFromGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var selectedRows = SelectedRows;
 
@@ -153,7 +156,7 @@ namespace TEAM
             }
         }
 
-        private void DataGridViewDataItems_MouseDown(object sender, MouseEventArgs e)
+        private void DataGridView_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
@@ -170,7 +173,7 @@ namespace TEAM
                 //{
                     // Select the full row when the default column is right-clicked.
                     Rows[hitTestInfo.RowIndex].Selected = true;
-                    ContextMenuStrip = contextMenuStripAttributeMapping;
+                    ContextMenuStrip = contextMenuStrip;
                 //}
                 //else
                 //{
@@ -195,7 +198,7 @@ namespace TEAM
             }
         }
 
-        private void PasteClipboardAttributeMetadata()
+        private void PasteClipboard()
         {
             try
             {
@@ -267,7 +270,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DataGridViewDataItems_KeyDown(object sender, KeyEventArgs e)
+        private void DataGridView_KeyDown(object sender, KeyEventArgs e)
         {
             try
             {
@@ -276,103 +279,14 @@ namespace TEAM
                     switch (e.KeyCode)
                     {
                         case Keys.V:
-                            PasteClipboardAttributeMetadata();
+                            PasteClipboard();
                             break;
                     }
                 }
             }
             catch (Exception)
             {
-                MessageBox.Show("Pasting into the data grid has failed", "Copy/Paste", MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-            }
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            ColourGridViewAttribute();
-        }
-
-        private void ColourGridViewAttribute()
-        {
-            var counter = 0;
-
-            var hubIdentifier = "";
-            var satIdentifier = "";
-            var lnkIdentifier = "";
-            var lsatIdentifier = "";
-            var stgIdentifier = "";
-            var psaIdentifier = "";
-            var dimIdentifier = "";
-            var factIdentifier = "";
-
-            if (FormBase.TeamConfiguration.TableNamingLocation == "Prefix")
-            {
-                hubIdentifier = FormBase.TeamConfiguration.HubTablePrefixValue;
-                satIdentifier = FormBase.TeamConfiguration.SatTablePrefixValue ;
-                lnkIdentifier = FormBase.TeamConfiguration.LinkTablePrefixValue ;
-                lsatIdentifier = FormBase.TeamConfiguration.LsatTablePrefixValue;
-                stgIdentifier = FormBase.TeamConfiguration.StgTablePrefixValue ;
-                psaIdentifier = FormBase.TeamConfiguration.PsaTablePrefixValue ;
-                dimIdentifier = "DIM_";
-                factIdentifier = "FACT_";
-            }
-            else
-            {
-                hubIdentifier = FormBase.TeamConfiguration.HubTablePrefixValue;
-                satIdentifier =FormBase.TeamConfiguration.SatTablePrefixValue;
-                lnkIdentifier =  FormBase.TeamConfiguration.LinkTablePrefixValue;
-                lsatIdentifier = FormBase.TeamConfiguration.LsatTablePrefixValue;
-                stgIdentifier = FormBase.TeamConfiguration.StgTablePrefixValue;
-                psaIdentifier = FormBase.TeamConfiguration.PsaTablePrefixValue;
-                dimIdentifier = "_DIM";
-                factIdentifier = "_FACT";
-            }
-
-            foreach (DataGridViewRow row in Rows)
-            {
-                var integrationTable = row.Cells[(int)DataItemMappingMetadataColumns.TargetTable].Value;
-
-                if (integrationTable != null && row.IsNewRow == false)
-                {
-                    // Backcolour for Integration Layer tables
-                    if (Regex.Matches(integrationTable.ToString(), hubIdentifier).Count>0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.CornflowerBlue;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), lsatIdentifier).Count > 0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Gold;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), satIdentifier).Count > 0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Yellow;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), lnkIdentifier).Count > 0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.OrangeRed;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), psaIdentifier).Count > 0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.AntiqueWhite;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), stgIdentifier).Count > 0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.WhiteSmoke;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), dimIdentifier).Count > 0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.Aqua;
-                    }
-                    else if (Regex.Matches(integrationTable.ToString(), factIdentifier).Count > 0)
-                    {
-                        this[(int)DataItemMappingMetadataColumns.TargetTable, counter].Style.BackColor = Color.MediumAquamarine;
-                    }
-                }
-
-                counter++;
+                MessageBox.Show(@"Pasting into the data grid has failed", @"Copy/Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

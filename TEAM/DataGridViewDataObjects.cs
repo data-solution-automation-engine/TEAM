@@ -14,17 +14,12 @@ namespace TEAM
 {
     internal sealed class DataGridViewDataObjects : DataGridView
     {
-        private TeamConfiguration TeamConfiguration { get; set; }
+        private TeamConfiguration TeamConfiguration { get; }
 
         private Form_Edit _modifyJson;
 
-        private ContextMenuStrip contextMenuStripDataObjectMappingFullRow;
-        private ContextMenuStrip contextMenuStripDataObjectMappingSingleCell;
-
-        private ToolStripMenuItem exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem;
-        private ToolStripMenuItem deleteThisRowFromTheGridToolStripMenuItem;
-
-        private ToolStripMenuItem toolStripMenuItemModifyJson;
+        private readonly ContextMenuStrip contextMenuStripDataObjectMappingFullRow;
+        private readonly ContextMenuStrip contextMenuStripDataObjectMappingSingleCell;
 
         /// <summary>
         /// The definition of the Data Grid View for table mappings (DataObject mappings).
@@ -36,7 +31,12 @@ namespace TEAM
             #region Basic properties
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             BorderStyle = BorderStyle.None;
-            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
+            // Disable resizing for performance, will be enabled after binding.
+            RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+
             EditMode = DataGridViewEditMode.EditOnEnter;
 
             var mySize = new Size(1100, 540);
@@ -45,7 +45,7 @@ namespace TEAM
 
             AutoGenerateColumns = false;
             ColumnHeadersVisible = true;
-            AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
 
             Name = "dataGridViewTableMetadata";
             Location = new Point(2, 3);
@@ -53,12 +53,11 @@ namespace TEAM
             #endregion
 
             #region Event handlers
-            // Event handlers
             CellValidating += DataGridViewDataObjects_CellValidating;
             CellFormatting += DataGridViewDataObjects_CellFormatting;
             CellParsing += DataGridViewDataObjects_CellParsing;
             EditingControlShowing += DataGridViewDataObjects_EditingControlShowing;
-            KeyDown += DataGridViewDataObjectsKeyDown;
+            KeyDown += DataGridViewKeyDown;
             MouseDown += DataGridViewDataObjects_MouseDown;
             ColumnHeaderMouseClick += DataGridViewDataObjects_ColumnHeaderMouseClick;
             CellEnter += DataGridViewDataObjects_CellEnter;
@@ -171,14 +170,14 @@ namespace TEAM
             contextMenuStripDataObjectMappingFullRow.SuspendLayout();
 
             // Export as JSON menu item
-            exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem = new ToolStripMenuItem();
-            exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
-            exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Size = new Size(339, 22);
-            exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Text = @"Export this row as Source-to-Target interface JSON";
-            exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem.Click += ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click;
+            var exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem = new ToolStripMenuItem();
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Size = new Size(339, 22);
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Text = @"Export this row as Source-to-Target interface JSON";
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Click += ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click;
 
             // Delete row menu item
-            deleteThisRowFromTheGridToolStripMenuItem = new ToolStripMenuItem();
+            var deleteThisRowFromTheGridToolStripMenuItem = new ToolStripMenuItem();
             deleteThisRowFromTheGridToolStripMenuItem.Name = "deleteThisRowFromTheGridToolStripMenuItem";
             deleteThisRowFromTheGridToolStripMenuItem.Size = new Size(225, 22);
             deleteThisRowFromTheGridToolStripMenuItem.Text = @"Delete this row from the grid";
@@ -186,7 +185,7 @@ namespace TEAM
 
             contextMenuStripDataObjectMappingFullRow.ImageScalingSize = new Size(24, 24);
             contextMenuStripDataObjectMappingFullRow.Items.AddRange(new ToolStripItem[] {
-                exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem,
+                exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
                 deleteThisRowFromTheGridToolStripMenuItem
              });
 
@@ -199,7 +198,7 @@ namespace TEAM
             contextMenuStripDataObjectMappingSingleCell.SuspendLayout();
 
             // Modify JSON menu item
-            toolStripMenuItemModifyJson = new ToolStripMenuItem();
+            var toolStripMenuItemModifyJson = new ToolStripMenuItem();
             toolStripMenuItemModifyJson.Name = "toolStripMenuItemModifyJson";
             toolStripMenuItemModifyJson.Size = new Size(143, 22);
             toolStripMenuItemModifyJson.Text = @"Modify JSON";
@@ -303,13 +302,13 @@ namespace TEAM
             e.CurrentCell.Value = dataObject;
 
             // Also update the hidden name columns for sorting, filtering and validation.
-            if (e.CurrentCell.ColumnIndex == (int)DataObjectMappingGridColumns.SourceDataObject)
+            if (e.CurrentCell.ColumnIndex == (int)DataObjectMappingGridColumns.SourceDataObject && dataObject != null)
             {
                 DataGridViewCell updateCell = this[(int)DataObjectMappingGridColumns.SourceDataObjectName, CurrentCell.RowIndex];
                 updateCell.Value = dataObject.name;
             }
 
-            if (e.CurrentCell.ColumnIndex == (int)DataObjectMappingGridColumns.TargetDataObject)
+            if (e.CurrentCell.ColumnIndex == (int)DataObjectMappingGridColumns.TargetDataObject && dataObject != null)
             {
                 DataGridViewCell updateCell = this[(int)DataObjectMappingGridColumns.TargetDataObjectName, CurrentCell.RowIndex];
                 updateCell.Value = dataObject.name;
@@ -366,9 +365,6 @@ namespace TEAM
             var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
 
             var targetDataObjectName = generationMetadataRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
-            var targetConnectionInternalId = generationMetadataRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-            var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-            var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
             var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
 
             if (tableType != MetadataHandling.DataObjectTypes.Presentation)
@@ -515,7 +511,7 @@ namespace TEAM
             }
         }
 
-        private void DataGridViewDataObjectsKeyDown(object sender, KeyEventArgs e)
+        private void DataGridViewKeyDown(object sender, KeyEventArgs e)
         {
             // Only works when not in edit mode.
             try
@@ -550,8 +546,8 @@ namespace TEAM
 
             if (e.Control is DataGridViewComboBoxEditingControl tb)
             {
-                tb.KeyDown -= DataGridViewDataObjectsKeyDown;
-                tb.KeyDown += DataGridViewDataObjectsKeyDown;
+                tb.KeyDown -= DataGridViewKeyDown;
+                tb.KeyDown += DataGridViewKeyDown;
             }
         }
 

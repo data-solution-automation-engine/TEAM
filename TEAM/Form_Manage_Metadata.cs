@@ -28,24 +28,26 @@ namespace TEAM
         private Form_Alert _generatedJsonInterface;
         private Form_Alert _alertEventLog;
 
-
-        /// <summary>
-        /// Set the Grid Views.
-        /// </summary>
+        // Create the Tab Pages.
         private TabPage tabPageDataObjectMapping;
         private TabPage tabPageDataItemMapping;
+        private TabPage tabPagePhysicalModel;
+
+        // Create the grid views.
         private DataGridViewDataObjects _dataGridViewDataObjects;
         private DataGridViewDataItems _dataGridViewDataItems;
+        private DataGridViewPhysicalModel _dataGridViewPhysicalModel;
 
-        // Getting the Data Table to bind to something.
-        private BindingSource _bindingSourceTableMetadata = new BindingSource();
-        private BindingSource _bindingSourceAttributeMetadata = new BindingSource();
-        private BindingSource _bindingSourcePhysicalModelMetadata = new BindingSource();
+        // Preparing the Data Table to bind to something.
+        private BindingSource _bindingSourceDataObjectMappings = new BindingSource();
+        private BindingSource _bindingSourceDataItemMappings = new BindingSource();
+        private BindingSource _bindingSourcePhysicalModel = new BindingSource();
 
         public FormManageMetadata()
         {
             InitializeComponent();
         }
+
         public FormManageMetadata(FormMain parent) : base(parent)
         {
             // Standard call to get the designer controls in place.
@@ -54,6 +56,7 @@ namespace TEAM
             // Add the Data Object grid view to the tab.
             SetDataObjectGridView();
             SetDataItemGridView();
+            SetPhysicalModelGridView();
 
             // Default setting and start setting of counters etc.
             MetadataValidations.ValidationIssues = 0;
@@ -142,6 +145,33 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewDataItems)).EndInit();
         }
 
+        /// <summary>
+        /// Definition of the physical model grid view.
+        /// </summary>
+        private void SetPhysicalModelGridView()
+        {
+            _dataGridViewPhysicalModel = new DataGridViewPhysicalModel();
+            ((ISupportInitialize)(_dataGridViewPhysicalModel)).BeginInit();
+
+            // Add tab page.
+            tabPagePhysicalModel = new TabPage();
+            tabPagePhysicalModel.SuspendLayout();
+            tabControlDataMappings.Controls.Add(tabPagePhysicalModel);
+
+            // Add grid view to tab page.
+            tabPagePhysicalModel.Controls.Add(_dataGridViewPhysicalModel);
+            tabPagePhysicalModel.Location = new Point(4, 22);
+            tabPagePhysicalModel.Name = "tabPagePhysical";
+            tabPagePhysicalModel.Padding = new Padding(3);
+            tabPagePhysicalModel.Size = new Size(1106, 545);
+            tabPagePhysicalModel.TabIndex = 3;
+            tabPagePhysicalModel.Text = @"Physical Model Snapshot";
+            tabPagePhysicalModel.UseVisualStyleBackColor = true;
+
+            tabPagePhysicalModel.ResumeLayout(false);
+            ((ISupportInitialize)(_dataGridViewPhysicalModel)).EndInit();
+        }
+
         private void AssertValidationDetails()
         {
             // Make sure the validation information is available for this form.
@@ -194,96 +224,6 @@ namespace TEAM
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
                 checkedListBoxReverseEngineeringAreas.Items.Add(new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey));
-            }
-        }
-
-        private void DataGridViewPhysicalModelMetadataKeyDown(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                if (e.Modifiers == Keys.Control)
-                {
-                    switch (e.KeyCode)
-                    {
-                        case Keys.V:
-                            PasteClipboardPhysicalModelMetadata();
-                            break;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                MessageBox.Show(@"Pasting into the data grid has failed.", @"Copy/Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        private void PasteClipboardPhysicalModelMetadata()
-        {
-            try
-            {
-                string s = Clipboard.GetText();
-                string[] lines = s.Split('\n');
-
-                int iRow = dataGridViewPhysicalModelMetadata.CurrentCell.RowIndex;
-                int iCol = dataGridViewPhysicalModelMetadata.CurrentCell.ColumnIndex;
-                DataGridViewCell oCell;
-                if (iRow + lines.Length > dataGridViewPhysicalModelMetadata.Rows.Count - 1)
-                {
-                    bool bFlag = false;
-                    foreach (string sEmpty in lines)
-                    {
-                        if (sEmpty == "")
-                        {
-                            bFlag = true;
-                        }
-                    }
-
-                    int iNewRows = iRow + lines.Length - dataGridViewPhysicalModelMetadata.Rows.Count;
-                    if (iNewRows > 0)
-                    {
-                        if (bFlag)
-                            dataGridViewPhysicalModelMetadata.Rows.Add(iNewRows);
-                        else
-                            dataGridViewPhysicalModelMetadata.Rows.Add(iNewRows + 1);
-                    }
-                    else
-                        dataGridViewPhysicalModelMetadata.Rows.Add(iNewRows + 1);
-                }
-
-                foreach (string line in lines)
-                {
-                    if (iRow < dataGridViewPhysicalModelMetadata.RowCount && line.Length > 0)
-                    {
-                        string[] sCells = line.Split('\t');
-                        for (int i = 0; i < sCells.GetLength(0); ++i)
-                        {
-                            if (iCol + i < dataGridViewPhysicalModelMetadata.ColumnCount)
-                            {
-                                oCell = dataGridViewPhysicalModelMetadata[iCol + i, iRow];
-                                oCell.Value = Convert.ChangeType(sCells[i].Replace("\r", ""), oCell.ValueType);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-
-                        iRow++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                //Clipboard.Clear();
-            }
-            catch (FormatException ex)
-            {
-                richTextBoxInformation.AppendText(
-                    "There is an issue formatting this cell.Please check the Event Log for more details.\r\n");
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -348,10 +288,13 @@ namespace TEAM
             teamDataObjectMappings.DataTable.AcceptChanges();
 
             // Bind the data source.
-            _bindingSourceTableMetadata.DataSource = teamDataObjectMappings.DataTable;
+            _bindingSourceDataObjectMappings.DataSource = teamDataObjectMappings.DataTable;
 
             // Assign the data grid view to the data source.
-            _dataGridViewDataObjects.DataSource = _bindingSourceTableMetadata;
+            _dataGridViewDataObjects.DataSource = _bindingSourceDataObjectMappings;
+
+            _dataGridViewDataObjects.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            _dataGridViewDataObjects.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
 
             //richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.TableMappingJsonFileName()} was loaded.\r\n");
 
@@ -382,10 +325,13 @@ namespace TEAM
             //AttributeMapping.SetDataTableColumns();
             //AttributeMapping.SetDataTableSorting();
 
-            _bindingSourceAttributeMetadata.DataSource = AttributeMapping.DataTable;
+            _bindingSourceDataItemMappings.DataSource = AttributeMapping.DataTable;
 
             // Set the column header names.
-            _dataGridViewDataItems.DataSource = _bindingSourceAttributeMetadata;
+            _dataGridViewDataItems.DataSource = _bindingSourceDataItemMappings;
+
+            _dataGridViewDataItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            _dataGridViewDataItems.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
 
             //richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()} was loaded.\r\n");
 
@@ -400,12 +346,12 @@ namespace TEAM
         {
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
-                //Check if the file exists, otherwise create a dummy / empty file   
-                if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()))
-                {
-                    richTextBoxInformation.AppendText($"No JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
-                    TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
-                }
+                ////Check if the file exists, otherwise create a dummy / empty file   
+                //if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()))
+                //{
+                //    richTextBoxInformation.AppendText($"No JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
+                //    TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                //}
 
                 // Load the file into memory (data table and json list)
                 PhysicalModel.GetMetadata(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName());
@@ -414,34 +360,24 @@ namespace TEAM
                 PhysicalModel.DataTable.AcceptChanges();
 
                 // Order by Source Table, Integration_Area table, Business Key Attribute.
-                PhysicalModel.SetDataTableColumns();
-                PhysicalModel.SetDataTableSorting();
+                //PhysicalModel.SetDataTableColumns();
+                //PhysicalModel.SetDataTableSorting();
 
-                _bindingSourcePhysicalModelMetadata.DataSource = PhysicalModel.DataTable;
+                _dataGridViewPhysicalModel.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+
+                _bindingSourcePhysicalModel.DataSource = PhysicalModel.DataTable;
 
                 // Data Grid View - set the column header names etc. for the data grid view.
-                dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
+                _dataGridViewPhysicalModel.DataSource = _bindingSourcePhysicalModel;
+                
+                _dataGridViewPhysicalModel.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+                _dataGridViewPhysicalModel.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
 
-                dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].Visible = false;
-
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].HeaderText = @"Hash Key";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.DatabaseName].HeaderText = @"Database Name";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.SchemaName].HeaderText = @"Schema Name";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.TableName].HeaderText = @"Table Name";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.ColumnName].HeaderText = @"Column Name";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.DataType].HeaderText = @"Data Type";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.CharacterLength].HeaderText = @"Character Length";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.NumericPrecision].HeaderText = @"Numeric Precision";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.NumericScale].HeaderText = @"Numeric Scale";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.OrdinalPosition].HeaderText = @"Ordinal Position";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator].HeaderText = @"Primary Key Indicator";
-                dataGridViewPhysicalModelMetadata.Columns[(int)PhysicalModelMappingMetadataColumns.MultiActiveIndicator].HeaderText = @"Multi Active Indicator";
-
-                richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()} was loaded.\r\n");
+                //richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()} was loaded.\r\n");
 
                 // Resize the grid
-                GridAutoLayoutPhysicalModelMetadata();
+                //GridAutoLayoutPhysicalModelMetadata();
+                GridAutoLayout(_dataGridViewPhysicalModel);
             }
         }
 
@@ -472,9 +408,7 @@ namespace TEAM
         {
             GridAutoLayout(_dataGridViewDataObjects);
             GridAutoLayout(_dataGridViewDataItems);
-
-            //GridAutoLayoutAttributeMetadata();
-            //GridAutoLayoutPhysicalModelMetadata();
+            GridAutoLayout(_dataGridViewPhysicalModel);
         }
 
         private void GridAutoLayout(DataGridView dataGridView)
@@ -487,36 +421,6 @@ namespace TEAM
             {
                 dataGridView.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dataGridView.Columns[i].Width = dataGridView.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
-            }
-        }
-
-        //private void GridAutoLayoutAttributeMetadata()
-        //{
-        //    _dataGridViewDataItems.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-        //    //dataGridViewLoadPatternCollection.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-        //    _dataGridViewDataItems.Columns[_dataGridViewDataItems.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-
-        //    // Disable the auto size again (to enable manual resizing).
-        //    for (var i = 0; i < _dataGridViewDataItems.Columns.Count - 1; i++)
-        //    {
-        //        _dataGridViewDataItems.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-        //        _dataGridViewDataItems.Columns[i].Width = _dataGridViewDataItems.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
-        //    }
-        //}
-
-        private void GridAutoLayoutPhysicalModelMetadata()
-        {
-            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
-            {
-                dataGridViewPhysicalModelMetadata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                dataGridViewPhysicalModelMetadata.Columns[dataGridViewPhysicalModelMetadata.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-
-                // Disable the auto size again (to enable manual resizing).
-                for (var i = 0; i < dataGridViewPhysicalModelMetadata.Columns.Count - 1; i++)
-                {
-                    dataGridViewPhysicalModelMetadata.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                    dataGridViewPhysicalModelMetadata.Columns[i].Width = dataGridViewPhysicalModelMetadata.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
-                }
             }
         }
 
@@ -533,12 +437,11 @@ namespace TEAM
             var lnkSet = new HashSet<string>();
             var lsatSet = new HashSet<string>();
 
-            var inputTableMapping = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var inputTableMapping = (DataTable)_bindingSourceDataObjectMappings.DataSource;
 
             foreach (DataRow row in inputTableMapping.Rows)
             {
                 var targetDataObject = row[(string) DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
-                string targetSourceConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 var targetDataObjectType = MetadataHandling.GetDataObjectType(targetDataObject, "", TeamConfiguration);
 
                 if (gridViewRows != counter + 1 && targetDataObject.Length > 3)
@@ -688,8 +591,8 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             // Create a data table containing the changes, to check if there are changes made to begin with
-            var dataTableTableMappingChanges = ((DataTable)_bindingSourceTableMetadata.DataSource).GetChanges();
-            var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceAttributeMetadata.DataSource).GetChanges();
+            var dataTableTableMappingChanges = ((DataTable)_bindingSourceDataObjectMappings.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable)_bindingSourceDataItemMappings.DataSource).GetChanges();
 
             // Check if there are any rows available in the grid view, and if changes have been detected at all
             if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 || _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
@@ -716,9 +619,9 @@ namespace TEAM
                 if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                 {
                     var dataTablePhysicalModelChanges =
-                        ((DataTable)_bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+                        ((DataTable)_bindingSourcePhysicalModel.DataSource).GetChanges();
 
-                    if (dataGridViewPhysicalModelMetadata.RowCount > 0 && dataTablePhysicalModelChanges != null &&
+                    if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null &&
                         dataTablePhysicalModelChanges.Rows.Count > 0)
                     {
                         try
@@ -1027,7 +930,7 @@ namespace TEAM
                     // Committing the changes to the data table - making sure new changes can be picked up
                     // AcceptChanges will clear all New, Deleted and/or Modified settings
                     dataTableChanges.AcceptChanges();
-                    ((DataTable) _bindingSourceTableMetadata.DataSource).AcceptChanges();
+                    ((DataTable) _bindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
                     #endregion
 
@@ -1356,7 +1259,7 @@ namespace TEAM
 
                 //Committing the changes to the data table
                 dataTableChanges.AcceptChanges();
-                ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).AcceptChanges();
+                ((DataTable) _bindingSourcePhysicalModel.DataSource).AcceptChanges();
 
                 richTextBoxInformation.AppendText("The (physical) model metadata has been saved.\r\n");
 
@@ -1596,7 +1499,7 @@ namespace TEAM
 
                     //Committing the changes to the data table
                     dataTableChanges.AcceptChanges();
-                    ((DataTable) _bindingSourceAttributeMetadata.DataSource).AcceptChanges();
+                    ((DataTable) _bindingSourceDataItemMappings.DataSource).AcceptChanges();
 
                     richTextBoxInformation.AppendText($"The Attribute Mapping metadata has been saved.\r\n");
 
@@ -1609,8 +1512,8 @@ namespace TEAM
 
         private void CreateTemporaryWorkerTables(string connString)
         {
-            var inputTableMapping = (DataTable) _bindingSourceTableMetadata.DataSource;
-            var inputAttributeMapping = (DataTable) _bindingSourceAttributeMetadata.DataSource;
+            var inputTableMapping = (DataTable) _bindingSourceDataObjectMappings.DataSource;
+            var inputAttributeMapping = (DataTable) _bindingSourceDataItemMappings.DataSource;
 
             #region Attribute Mapping
 
@@ -1845,7 +1748,7 @@ namespace TEAM
 
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
-                var inputPhysicalModel = (DataTable) _bindingSourcePhysicalModelMetadata.DataSource;
+                var inputPhysicalModel = (DataTable) _bindingSourcePhysicalModel.DataSource;
                 // Physical Model
                 createStatement.AppendLine();
                 createStatement.AppendLine("-- Version Attribute");
@@ -2098,13 +2001,13 @@ namespace TEAM
             bool activationContinue = true;
 
             // Check if there are any outstanding saves / commits in the data grid
-            var dataTableTableMappingChanges = ((DataTable) _bindingSourceTableMetadata.DataSource).GetChanges();
-            var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
+            var dataTableTableMappingChanges = ((DataTable) _bindingSourceDataObjectMappings.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceDataItemMappings.DataSource).GetChanges();
             DataTable dataTablePhysicalModelChanges = new DataTable();
 
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
             {
-                dataTablePhysicalModelChanges = ((DataTable) _bindingSourcePhysicalModelMetadata.DataSource).GetChanges();
+                dataTablePhysicalModelChanges = ((DataTable) _bindingSourcePhysicalModel.DataSource).GetChanges();
             }
 
             if (
@@ -2125,7 +2028,7 @@ namespace TEAM
             // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
             if (checkBoxValidation.Checked && activationContinue)
             {
-                if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && _bindingSourcePhysicalModelMetadata.Count == 0)
+                if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && _bindingSourcePhysicalModel.Count == 0)
                 {
                     richTextBoxInformation.Text += "There is no model metadata available, so the metadata can only be validated with the 'Ignore Version' enabled.\r\n ";
                 }
@@ -2190,9 +2093,9 @@ namespace TEAM
                         _alert.ShowCancelButton(false);
                         _alert.Show();
                         // Start the asynchronous operation.
-                        _bindingSourcePhysicalModelMetadata.SuspendBinding();
+                        _bindingSourcePhysicalModel.SuspendBinding();
                         backgroundWorkerMetadata.RunWorkerAsync();
-                        _bindingSourcePhysicalModelMetadata.ResumeBinding();
+                        _bindingSourcePhysicalModel.ResumeBinding();
                     }
                     else
                     {
@@ -2309,8 +2212,8 @@ namespace TEAM
 
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var inputTableMetadata = (DataTable) _bindingSourceTableMetadata.DataSource;
-            var inputAttributeMetadata = (DataTable) _bindingSourceAttributeMetadata.DataSource;
+            var inputTableMetadata = (DataTable) _bindingSourceDataObjectMappings.DataSource;
+            var inputAttributeMetadata = (DataTable) _bindingSourceDataItemMappings.DataSource;
 
             DataRow[] selectionRows;
 
@@ -3576,8 +3479,7 @@ namespace TEAM
                 // Check if there are any attributes found, otherwise insert into the repository.
                 if (attributeList == null || attributeList.Count == 0)
                 {
-                    LogMetadataEvent($"No attributes were found in the metadata, did you reverse-engineer the model?",
-                        EventTypes.Warning);
+                    LogMetadataEvent($"No attributes were found in the metadata, did you reverse-engineer the model?", EventTypes.Warning);
                 }
                 else
                 {
@@ -3713,8 +3615,7 @@ namespace TEAM
 
                 if (listKeys.Rows.Count == 0)
                 {
-                    LogMetadataEvent("No attributes were found in the metadata, did you reverse-engineer the model?",
-                        EventTypes.Warning);
+                    LogMetadataEvent("No attributes were found in the metadata, did you reverse-engineer the model?", EventTypes.Warning);
                 }
                 else
                 {
@@ -3815,8 +3716,7 @@ namespace TEAM
 
                 if (listKeyParts.Rows.Count == 0)
                 {
-                    LogMetadataEvent("No attributes were found in the metadata, did you reverse-engineer the model?",
-                        EventTypes.Information);
+                    LogMetadataEvent("No attributes were found in the metadata, did you reverse-engineer the model?", EventTypes.Information);
                 }
                 else
                 {
@@ -6159,7 +6059,7 @@ namespace TEAM
                     {
                         var chosenFile = theDialog.FileName;
 
-                        DataTable gridDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+                        DataTable gridDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
 
                         // Make sure the output is sorted
                         TableMapping.SetDataTableSorting();
@@ -6252,27 +6152,27 @@ namespace TEAM
                 "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
             // Display the results on the datagrid
-            _bindingSourcePhysicalModelMetadata.DataSource = distinctTable;
+            _bindingSourcePhysicalModel.DataSource = distinctTable;
 
             // Set the column header names.
-            dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
-            dataGridViewPhysicalModelMetadata.ColumnHeadersVisible = true;
-            dataGridViewPhysicalModelMetadata.Columns[0].Visible = false;
-            dataGridViewPhysicalModelMetadata.Columns[1].Visible = false;
+            _dataGridViewPhysicalModel.DataSource = _bindingSourcePhysicalModel;
+            _dataGridViewPhysicalModel.ColumnHeadersVisible = true;
+            _dataGridViewPhysicalModel.Columns[0].Visible = false;
+            _dataGridViewPhysicalModel.Columns[1].Visible = false;
 
-            dataGridViewPhysicalModelMetadata.Columns[0].HeaderText = "Hash Key"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[1].HeaderText = "Version ID"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[2].HeaderText = "Database Name"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[3].HeaderText = "Schema Name"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[4].HeaderText = "Table Name"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[5].HeaderText = "Column Name"; //Key column
-            dataGridViewPhysicalModelMetadata.Columns[6].HeaderText = "Data Type";
-            dataGridViewPhysicalModelMetadata.Columns[7].HeaderText = "Length";
-            dataGridViewPhysicalModelMetadata.Columns[8].HeaderText = "Precision";
-            dataGridViewPhysicalModelMetadata.Columns[9].HeaderText = "Scale";
-            dataGridViewPhysicalModelMetadata.Columns[10].HeaderText = "Position";
-            dataGridViewPhysicalModelMetadata.Columns[11].HeaderText = "Primary Key";
-            dataGridViewPhysicalModelMetadata.Columns[12].HeaderText = "Multi-Active";
+            _dataGridViewPhysicalModel.Columns[0].HeaderText = "Hash Key"; //Key column
+            _dataGridViewPhysicalModel.Columns[1].HeaderText = "Version ID"; //Key column
+            _dataGridViewPhysicalModel.Columns[2].HeaderText = "Database Name"; //Key column
+            _dataGridViewPhysicalModel.Columns[3].HeaderText = "Schema Name"; //Key column
+            _dataGridViewPhysicalModel.Columns[4].HeaderText = "Table Name"; //Key column
+            _dataGridViewPhysicalModel.Columns[5].HeaderText = "Column Name"; //Key column
+            _dataGridViewPhysicalModel.Columns[6].HeaderText = "Data Type";
+            _dataGridViewPhysicalModel.Columns[7].HeaderText = "Length";
+            _dataGridViewPhysicalModel.Columns[8].HeaderText = "Precision";
+            _dataGridViewPhysicalModel.Columns[9].HeaderText = "Scale";
+            _dataGridViewPhysicalModel.Columns[10].HeaderText = "Position";
+            _dataGridViewPhysicalModel.Columns[11].HeaderText = "Primary Key";
+            _dataGridViewPhysicalModel.Columns[12].HeaderText = "Multi-Active";
 
             foreach (DataRow row in completeDataTable.Rows) //Flag as new row so it's detected by the save button
             {
@@ -6280,7 +6180,7 @@ namespace TEAM
             }
 
             // Resize the grid
-            GridAutoLayoutPhysicalModelMetadata();
+            GridAutoLayout(_dataGridViewPhysicalModel);
         }
 
 
@@ -6396,7 +6296,7 @@ namespace TEAM
 
 
             var filterList = new List<Tuple<string, TeamConnection>>();
-            foreach (DataRow row in ((DataTable) _bindingSourceTableMetadata.DataSource).Rows)
+            foreach (DataRow row in ((DataTable) _bindingSourceDataObjectMappings.DataSource).Rows)
             {
                 string localInternalConnectionIdSource =
                     row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
@@ -6447,9 +6347,9 @@ namespace TEAM
         {
             if (e.Button == MouseButtons.Right)
             {
-                var hti = dataGridViewPhysicalModelMetadata.HitTest(e.X, e.Y);
-                dataGridViewPhysicalModelMetadata.ClearSelection();
-                dataGridViewPhysicalModelMetadata.Rows[hti.RowIndex].Selected = true;
+                var hti = _dataGridViewPhysicalModel.HitTest(e.X, e.Y);
+                _dataGridViewPhysicalModel.ClearSelection();
+                _dataGridViewPhysicalModel.Rows[hti.RowIndex].Selected = true;
             }
         }
         #endregion
@@ -6494,7 +6394,7 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            DataTable dataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
+            DataTable dataTable = (DataTable)_bindingSourceDataObjectMappings.DataSource;
 
             // Handling multi-threading
             if (worker != null && worker.CancellationPending)
@@ -6576,7 +6476,7 @@ namespace TEAM
         /// </summary>
         private void ValidateSchemaConfiguration()
         {
-            var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+            var localDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
 
             // Informing the user.
             _alertValidation.SetTextLogging($"--> Commencing the validation to check if connection settings align with schemas entered in the Data Object mapping grid.\r\n");
@@ -6637,7 +6537,7 @@ namespace TEAM
             var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
 
             // Creating a list of unique Link business key combinations from the data grid / data table
-            var localDataTableTableMappings = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var localDataTableTableMappings = (DataTable)_bindingSourceDataObjectMappings.DataSource;
             var objectList = new List<Tuple<string, string, string, string>>(); // Source, Target, Business Key, Target Connection
 
             foreach (DataRow row in localDataTableTableMappings.Rows)
@@ -6720,8 +6620,8 @@ namespace TEAM
 
             var resultList = new Dictionary<string, string>();
 
-            var localDataItemTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
-            var localDataObjectTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+            var localDataItemTable = (DataTable) _bindingSourceDataItemMappings.DataSource;
+            var localDataObjectTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
 
             foreach (DataRow row in localDataItemTable.Rows)
             {
@@ -6780,14 +6680,14 @@ namespace TEAM
                     {
                         objectValidated = "";
 
-                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) _bindingSourcePhysicalModel.DataSource);
                         // Add negative results to dictionary
                         if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
                         {
                             resultList.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
                         }
 
-                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectTarget, validationAttributeTarget, targetConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectTarget, validationAttributeTarget, targetConnection, (DataTable) _bindingSourcePhysicalModel.DataSource);
 
                         // Add negative results to dictionary
                         if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeTarget))
@@ -6904,14 +6804,14 @@ namespace TEAM
 
                         //if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                         //{
-                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectSource, sourceConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectSource, sourceConnection, (DataTable) _bindingSourcePhysicalModel.DataSource);
 
                             if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
                             {
                                 resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
                             }
 
-                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectTarget, targetConnection, (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectTarget, targetConnection, (DataTable) _bindingSourcePhysicalModel.DataSource);
 
                             if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
                             {
@@ -6953,7 +6853,7 @@ namespace TEAM
                 $"--> Commencing the validation to see if any hard-coded fields are not correctly set in enabled mappings.\r\n");
 
             int issueCounter = 0;
-            var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+            var localDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
                 // If enabled and is a Staging Layer object
@@ -6982,8 +6882,8 @@ namespace TEAM
             _alertValidation.SetTextLogging($"--> Commencing the validation to see if all data item (attribute) mappings exist as data object (table) mapping also (if enabled in the grid).\r\n");
             int issueCounter = 0;
 
-            var localDataTableTableMappings = (DataTable) _bindingSourceTableMetadata.DataSource;
-            var localDataTableAttributeMappings = (DataTable) _bindingSourceAttributeMetadata.DataSource;
+            var localDataTableTableMappings = (DataTable) _bindingSourceDataObjectMappings.DataSource;
+            var localDataTableAttributeMappings = (DataTable) _bindingSourceDataItemMappings.DataSource;
 
             // Create a list of all sources and targets for the Data Object mappings
             List<Tuple<string,string>> sourceDataObjectListTableMapping = new List<Tuple<string, string>>();
@@ -7063,7 +6963,7 @@ namespace TEAM
             var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
 
             // Creating a list of unique Link business key combinations from the data grid / data table
-            var localDataTableTableMappings = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var localDataTableTableMappings = (DataTable)_bindingSourceDataObjectMappings.DataSource;
             var objectList = new List<Tuple<string, string, string, string>>();
             
             foreach (DataRow row in localDataTableTableMappings.Rows)
@@ -7102,8 +7002,8 @@ namespace TEAM
             {
                 // The validation check returns a Dictionary
                 var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject,
-                    (DataTable) _bindingSourceTableMetadata.DataSource,
-                    (DataTable) _bindingSourcePhysicalModelMetadata.DataSource, GlobalParameters.EnvironmentMode);
+                    (DataTable) _bindingSourceDataObjectMappings.DataSource,
+                    (DataTable) _bindingSourcePhysicalModel.DataSource, GlobalParameters.EnvironmentMode);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7145,7 +7045,7 @@ namespace TEAM
 
             List<Tuple<string,string,bool>> masterResultList = new List<Tuple<string, string, bool>>();
             
-            var localDataTable = (DataTable)_bindingSourceTableMetadata.DataSource;
+            var localDataTable = (DataTable)_bindingSourceDataObjectMappings.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
                 if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
@@ -7222,7 +7122,7 @@ namespace TEAM
             // Creating a list of tables which are dependent on other tables being present
             var objectList = new List<Tuple<string, string, string, string>>(); // Source Name, Target Name, Business Key, FilterCriterion
 
-            var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+            var localDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
             
             foreach (DataRow row in localDataTable.Rows)
             {
@@ -7266,7 +7166,7 @@ namespace TEAM
             foreach (var validationObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(validationObject, (DataTable) _bindingSourceTableMetadata.DataSource);
+                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(validationObject, (DataTable) _bindingSourceDataObjectMappings.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)
@@ -7313,7 +7213,7 @@ namespace TEAM
             _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n");
 
 
-            var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+            var localDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
                 if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True") // If row is enabled
@@ -7353,7 +7253,7 @@ namespace TEAM
                         {
                             objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(
                                 validationObject, businessKeyDefinition, validationConnection,
-                                (DataTable) _bindingSourcePhysicalModelMetadata.DataSource);
+                                (DataTable) _bindingSourcePhysicalModel.DataSource);
                         }
                     }
                     else
@@ -7439,16 +7339,16 @@ namespace TEAM
 
         private void deleteThisRowFromTheGridToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            Int32 rowToDelete = dataGridViewPhysicalModelMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
-            dataGridViewPhysicalModelMetadata.Rows.RemoveAt(rowToDelete);
+            Int32 rowToDelete = _dataGridViewPhysicalModel.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            _dataGridViewPhysicalModel.Rows.RemoveAt(rowToDelete);
         }
 
         private void displayTableScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Retrieve the index of the selected row
-            Int32 selectedRow = dataGridViewPhysicalModelMetadata.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            Int32 selectedRow = _dataGridViewPhysicalModel.Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
-            DataTable gridDataTable = (DataTable) _bindingSourcePhysicalModelMetadata.DataSource;
+            DataTable gridDataTable = (DataTable) _bindingSourcePhysicalModel.DataSource;
             DataTable dt2 = gridDataTable.Clone();
             dt2.Columns[PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString()].DataType =
                 Type.GetType("System.Int32");
@@ -7467,11 +7367,11 @@ namespace TEAM
             // Retrieve all rows relative to the selected row (e.g. all attributes for the table)
             IEnumerable<DataRow> rows = dt2.DefaultView.ToTable().AsEnumerable().Where(r =>
                 r.Field<string>(PhysicalModelMappingMetadataColumns.TableName.ToString()) ==
-                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value.ToString()
+                _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value.ToString()
                 && r.Field<string>(PhysicalModelMappingMetadataColumns.SchemaName.ToString()) ==
-                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[3].Value.ToString()
+                _dataGridViewPhysicalModel.Rows[selectedRow].Cells[3].Value.ToString()
                 && r.Field<string>(PhysicalModelMappingMetadataColumns.DatabaseName.ToString()) ==
-                dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[2].Value.ToString()
+                _dataGridViewPhysicalModel.Rows[selectedRow].Cells[2].Value.ToString()
             );
 
             // Create a form and display the results
@@ -7482,12 +7382,12 @@ namespace TEAM
             _generatedScripts.Canceled += buttonCancel_Click;
             _generatedScripts.Show();
 
-            results.AppendLine("IF OBJECT_ID('[" + dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value +
+            results.AppendLine("IF OBJECT_ID('[" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value +
                                "]', 'U') IS NOT NULL");
             results.AppendLine(
-                "DROP TABLE [" + dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value + "]");
+                "DROP TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]");
             results.AppendLine();
-            results.AppendLine("CREATE TABLE [" + dataGridViewPhysicalModelMetadata.Rows[selectedRow].Cells[4].Value +
+            results.AppendLine("CREATE TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value +
                                "]");
             results.AppendLine("(");
 
@@ -7528,7 +7428,7 @@ namespace TEAM
             List<DataRow> generationMetadataList = new List<DataRow>();
 
             // Exclude presentation layer for now, working on a new approach for this.
-            var localDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+            var localDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
                 bool enabled = (bool) row[DataObjectMappingGridColumns.Enabled.ToString()];
@@ -7594,8 +7494,8 @@ namespace TEAM
             };
 
             var physicalModelDataTable = MetadataHandling.GetPhysicalModelDataTable(metadataConnection);
-            var localDataObjectMappingDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
-            var localDataItemMappingDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
+            var localDataObjectMappingDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
+            var localDataItemMappingDataTable = (DataTable) _bindingSourceDataItemMappings.DataSource;
 
             var mappingRows = localDataObjectMappingDataTable.Select($"[{DataObjectMappingGridColumns.TargetDataObject}] = '{dataObjectName}'");
 
@@ -7887,7 +7787,7 @@ namespace TEAM
                             }
 
                             // Add upstream related Data Objects (assuming this is set in the json export settings).
-                            relatedDataObjects.AddRange(JsonOutputHandling.SetLineageRelatedDataObjectList((DataTable)_bindingSourceTableMetadata.DataSource, targetDataObjectName, JsonExportSetting, TeamConfiguration));
+                            relatedDataObjects.AddRange(JsonOutputHandling.SetLineageRelatedDataObjectList((DataTable)_bindingSourceDataObjectMappings.DataSource, targetDataObjectName, JsonExportSetting, TeamConfiguration));
 
                             // Add the metadata connection as related data object (assuming this is set in the json export settings).
                             var metaDataObject = JsonOutputHandling.CreateMetadataDataObject(TeamConfiguration.MetadataConnection, JsonExportSetting, TeamConfiguration);
@@ -8295,7 +8195,7 @@ namespace TEAM
                         dataSet.ReadXml(chosenFile);
 
                         _dataGridViewDataItems.DataSource = dataSet.Tables[0];
-                        _bindingSourceAttributeMetadata.DataSource = _dataGridViewDataItems.DataSource;
+                        _bindingSourceDataItemMappings.DataSource = _dataGridViewDataItems.DataSource;
                     }
                     else if (fileExtension == ".json")
                     {
@@ -8324,17 +8224,17 @@ namespace TEAM
                         //SetTeamDataTableProperties.SetAttributeDatTableSorting(dt);
 
                         // Clear out the existing data from the grid
-                        _bindingSourceAttributeMetadata.DataSource = null;
-                        _bindingSourceAttributeMetadata.Clear();
+                        _bindingSourceDataItemMappings.DataSource = null;
+                        _bindingSourceDataItemMappings.Clear();
                         _dataGridViewDataItems.DataSource = null;
 
                         // Bind the datatable to the gridview
-                        _bindingSourceAttributeMetadata.DataSource = dt;
+                        _bindingSourceDataItemMappings.DataSource = dt;
 
                         if (jsonArray != null)
                         {
                             // Set the column header names.
-                            _dataGridViewDataItems.DataSource = _bindingSourceAttributeMetadata;
+                            _dataGridViewDataItems.DataSource = _bindingSourceDataItemMappings;
                             _dataGridViewDataItems.ColumnHeadersVisible = true;
                             _dataGridViewDataItems.Columns[0].Visible = false;
                             _dataGridViewDataItems.Columns[1].Visible = false;
@@ -8381,7 +8281,7 @@ namespace TEAM
                     {
                         var chosenFile = theDialog.FileName;
 
-                        DataTable gridDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
+                        DataTable gridDataTable = (DataTable) _bindingSourceDataItemMappings.DataSource;
 
                         // Make sure the output is sorted
                         gridDataTable.DefaultView.Sort = "[SOURCE_TABLE] ASC, [SOURCE_COLUMN] ASC, [TARGET_TABLE] ASC, [TARGET_COLUMN] ASC";
@@ -8455,7 +8355,7 @@ namespace TEAM
                         dataSet.ReadXml(chosenFile);
 
                         _dataGridViewDataObjects.DataSource = dataSet.Tables[0];
-                        _bindingSourceTableMetadata.DataSource = _dataGridViewDataObjects.DataSource;
+                        _bindingSourceDataObjectMappings.DataSource = _dataGridViewDataObjects.DataSource;
 
                     }
                     else if (fileExtension == ".json" || fileExtension == ".JSON")
@@ -8484,16 +8384,16 @@ namespace TEAM
                         TableMapping.SetDataTableSorting();
 
                         // Clear out the existing data from the grid
-                        _bindingSourceTableMetadata.DataSource = null;
-                        _bindingSourceTableMetadata.Clear();
+                        _bindingSourceDataObjectMappings.DataSource = null;
+                        _bindingSourceDataObjectMappings.Clear();
 
                         _dataGridViewDataObjects.DataSource = null;
 
                         // Bind the datatable to the gridview
-                        _bindingSourceTableMetadata.DataSource = TableMapping.DataTable;
+                        _bindingSourceDataObjectMappings.DataSource = TableMapping.DataTable;
 
                         // Set the column header names
-                        _dataGridViewDataObjects.DataSource = _bindingSourceTableMetadata;
+                        _dataGridViewDataObjects.DataSource = _bindingSourceDataObjectMappings;
                     }
 
                     GridAutoLayout(_dataGridViewDataObjects);
@@ -8533,8 +8433,8 @@ namespace TEAM
                     {
                         dataSet.ReadXml(chosenFile);
 
-                        dataGridViewPhysicalModelMetadata.DataSource = dataSet.Tables[0];
-                        _bindingSourcePhysicalModelMetadata.DataSource = dataGridViewPhysicalModelMetadata.DataSource;
+                        _dataGridViewPhysicalModel.DataSource = dataSet.Tables[0];
+                        _bindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
 
                     }
                     else if (fileExtension == ".json")
@@ -8572,19 +8472,19 @@ namespace TEAM
                         PhysicalModel.SetDataTableSorting();
 
                         // Clear out the existing data from the grid
-                        _bindingSourcePhysicalModelMetadata.DataSource = null;
-                        _bindingSourcePhysicalModelMetadata.Clear();
+                        _bindingSourcePhysicalModel.DataSource = null;
+                        _bindingSourcePhysicalModel.Clear();
 
-                        dataGridViewPhysicalModelMetadata.DataSource = null;
+                        _dataGridViewPhysicalModel.DataSource = null;
 
                         // Bind the data table to the grid view
-                        _bindingSourcePhysicalModelMetadata.DataSource = PhysicalModel.DataTable;
+                        _bindingSourcePhysicalModel.DataSource = PhysicalModel.DataTable;
 
                         // Set the column header names
-                        dataGridViewPhysicalModelMetadata.DataSource = _bindingSourcePhysicalModelMetadata;
+                        _dataGridViewPhysicalModel.DataSource = _bindingSourcePhysicalModel;
                     }
 
-                    GridAutoLayoutPhysicalModelMetadata();
+                    GridAutoLayout(_dataGridViewPhysicalModel);
                     ContentCounter();
 
                     richTextBoxInformation.AppendText("The file " + chosenFile + " was loaded.\r\n");
@@ -8694,7 +8594,7 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode &&
-                _bindingSourcePhysicalModelMetadata.Count == 0)
+                _bindingSourcePhysicalModel.Count == 0)
             {
                 richTextBoxInformation.Text += "There is no physical model metadata available.\r\n ";
             }
@@ -8722,7 +8622,7 @@ namespace TEAM
         {
             tabControlDataMappings.SelectedTab = tabPageDataItemMapping;
             
-            var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceAttributeMetadata.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable) _bindingSourceDataItemMappings.DataSource).GetChanges();
             if (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
             {
                 string localMessage = "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the automap.";
@@ -8733,10 +8633,10 @@ namespace TEAM
             else
             {
                 // Get a stable version of the Data Objects from the grid.
-                DataTable localDataObjectDataTable = (DataTable) _bindingSourceTableMetadata.DataSource;
+                DataTable localDataObjectDataTable = (DataTable) _bindingSourceDataObjectMappings.DataSource;
 
                 //dataTableChanges.AcceptChanges();
-                ((DataTable) _bindingSourceAttributeMetadata.DataSource).AcceptChanges();
+                ((DataTable) _bindingSourceDataItemMappings.DataSource).AcceptChanges();
 
                 // Iterate across all Data Object Mappings, to see if there are corresponding Data Item Mappings.
                 foreach (DataRow dataObjectRow in localDataObjectDataTable.Rows)
@@ -8829,7 +8729,7 @@ namespace TEAM
                     }
 
                     // Now, for each item in the matched list check if there is a corresponding Data Item Mapping in the grid already.
-                    DataTable localDataItemDataTable = (DataTable) _bindingSourceAttributeMetadata.DataSource;
+                    DataTable localDataItemDataTable = (DataTable) _bindingSourceDataItemMappings.DataSource;
 
                     foreach (var matchedDataItemMappingFromDatabase in localDataItemMappings)
                     {
@@ -9037,7 +8937,7 @@ namespace TEAM
                     {
                         var chosenFile = theDialog.FileName;
 
-                        DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModelMetadata.DataSource;
+                        DataTable gridDataTable = (DataTable)_bindingSourcePhysicalModel.DataSource;
 
                         gridDataTable.DefaultView.Sort = "[DATABASE_NAME], [SCHEMA_NAME], [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
