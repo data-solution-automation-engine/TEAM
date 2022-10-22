@@ -3,15 +3,15 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public class CustomTimedTextBox: TextBox
+    public class TimedTextBox: TextBox
     {
         private Timer m_delayedTextChangedTimer;
 
         public event EventHandler DelayedTextChanged;
 
-        public CustomTimedTextBox() : base()
+        public TimedTextBox()
         {
-            this.DelayedTextChangedTimeout = 1000; //  seconds
+            DelayedTextChangedTimeout = 1000; // seconds
         }
 
         protected override void Dispose(bool disposing)
@@ -46,11 +46,11 @@ namespace TEAM
             if (m_delayedTextChangedTimer != null)
                 m_delayedTextChangedTimer.Stop();
 
-            if (m_delayedTextChangedTimer == null || m_delayedTextChangedTimer.Interval != this.DelayedTextChangedTimeout)
+            if (m_delayedTextChangedTimer == null || m_delayedTextChangedTimer.Interval != DelayedTextChangedTimeout)
             {
                 m_delayedTextChangedTimer = new Timer();
-                m_delayedTextChangedTimer.Tick += new EventHandler(HandleDelayedTextChangedTimerTick);
-                m_delayedTextChangedTimer.Interval = this.DelayedTextChangedTimeout;
+                m_delayedTextChangedTimer.Tick += HandleDelayedTextChangedTimerTick;
+                m_delayedTextChangedTimer.Interval = DelayedTextChangedTimeout;
             }
 
             m_delayedTextChangedTimer.Start();
@@ -59,7 +59,7 @@ namespace TEAM
         private void HandleDelayedTextChangedTimerTick(object sender, EventArgs e)
         {
             Timer timer = sender as Timer;
-            timer.Stop();
+            if (timer != null) timer.Stop();
 
             OnDelayedTextChanged(EventArgs.Empty);
         }

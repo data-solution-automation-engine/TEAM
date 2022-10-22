@@ -11,8 +11,38 @@ namespace TEAM_Library
     /// </summary>
     public class DataObjectMappingsFileCombination
     {
+        /// <summary>
+        /// The file name is based on the target data object, a file contains one or more data object mappings.
+        /// </summary>
         public string FileName { get; set; }
         public DataObjectMappings DataObjectMappings { get; set; }
+
+        /// <summary>
+        /// Get only the file name from the full path.
+        /// </summary>
+        /// <returns></returns>
+        public string GetFileName()
+        {
+            return Path.GetFileName(FileName);
+        }
+
+        /// <summary>
+        /// Get only the path for the file.
+        /// </summary>
+        /// <returns></returns>
+        public string GetPath()
+        {
+            return Path.GetDirectoryName(FileName);
+        }
+
+        /// <summary>
+        /// Return the file name without the path or extension, which is the name of the target data object.
+        /// </summary>
+        /// <returns></returns>
+        public string GetTargetDataObjectName()
+        {
+            return Path.GetFileNameWithoutExtension(FileName);
+        }
     }
 
     /// <summary>
@@ -57,7 +87,9 @@ namespace TEAM_Library
                     "Development_TEAM_Table_Mapping.json",
                     "Development_TEAM_Attribute_Mapping.json",
                     "Development_TEAM_Physical_Model_v0.json",
-                    "Development_TEAM_Physical_Model.json"
+                    "Development_TEAM_Physical_Model.json",
+                    "Development_TEAM_Model_Metadata_v0.json",
+                    "Development_TEAM_Model_Metadata.json",
                 };
 
                 if (jsonFiles.Length > 0)

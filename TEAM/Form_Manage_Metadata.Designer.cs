@@ -34,7 +34,7 @@ namespace TEAM
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageMetadata));
             this.backgroundWorkerMetadata = new System.ComponentModel.BackgroundWorker();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBoxFilterCriterion = new TEAM.CustomTimedTextBox();
+            this.textBoxFilterCriterion = new TEAM.TimedTextBox();
             this.labelResult = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
             this.buttonSaveMetadataChanges = new System.Windows.Forms.Button();
@@ -161,7 +161,7 @@ namespace TEAM
             this.groupBoxMetadataCounts.Controls.Add(this.labelHubCount);
             this.groupBoxMetadataCounts.Location = new System.Drawing.Point(1383, 739);
             this.groupBoxMetadataCounts.Name = "groupBoxMetadataCounts";
-            this.groupBoxMetadataCounts.Size = new System.Drawing.Size(141, 85);
+            this.groupBoxMetadataCounts.Size = new System.Drawing.Size(140, 85);
             this.groupBoxMetadataCounts.TabIndex = 16;
             this.groupBoxMetadataCounts.TabStop = false;
             this.groupBoxMetadataCounts.Text = "This metadata contains:";
@@ -234,7 +234,7 @@ namespace TEAM
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(5, 19);
+            this.button2.Location = new System.Drawing.Point(7, 19);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 40);
             this.button2.TabIndex = 20;
@@ -526,9 +526,9 @@ namespace TEAM
             this.groupBoxPhysicalModel.Controls.Add(this.labelConnections);
             this.groupBoxPhysicalModel.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
             this.groupBoxPhysicalModel.Controls.Add(this.button2);
-            this.groupBoxPhysicalModel.Location = new System.Drawing.Point(1386, 216);
+            this.groupBoxPhysicalModel.Location = new System.Drawing.Point(1383, 216);
             this.groupBoxPhysicalModel.Name = "groupBoxPhysicalModel";
-            this.groupBoxPhysicalModel.Size = new System.Drawing.Size(138, 517);
+            this.groupBoxPhysicalModel.Size = new System.Drawing.Size(140, 517);
             this.groupBoxPhysicalModel.TabIndex = 1;
             this.groupBoxPhysicalModel.TabStop = false;
             this.groupBoxPhysicalModel.Text = "Physical Model";
@@ -537,7 +537,7 @@ namespace TEAM
             // 
             this.labelConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelConnections.AutoSize = true;
-            this.labelConnections.Location = new System.Drawing.Point(6, 64);
+            this.labelConnections.Location = new System.Drawing.Point(8, 64);
             this.labelConnections.Name = "labelConnections";
             this.labelConnections.Size = new System.Drawing.Size(66, 13);
             this.labelConnections.TabIndex = 24;
@@ -607,7 +607,7 @@ namespace TEAM
         private System.ComponentModel.BackgroundWorker backgroundWorkerMetadata;
         private System.Windows.Forms.ToolStripMenuItem saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
-        private CustomTimedTextBox textBoxFilterCriterion;
+        private TimedTextBox textBoxFilterCriterion;
         private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
 
 

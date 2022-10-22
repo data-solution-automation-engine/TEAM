@@ -129,7 +129,7 @@
     <Compile Include="DataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CustomTimedTextBox.cs">
+    <Compile Include="TimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="LocalTeamEnvironmentConfiguration.cs" />
