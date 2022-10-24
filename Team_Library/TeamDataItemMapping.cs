@@ -21,9 +21,9 @@ namespace TEAM_Library
     public enum DataItemMappingMetadataColumns
     {
         HashKey = 0,
-        SourceTable = 1,
+        SourceDataObject = 1,
         SourceColumn = 2,
-        TargetTable = 3,
+        TargetDataObject = 3,
         TargetColumn = 4,
         Notes = 5
     }
@@ -48,7 +48,7 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{DataItemMappingMetadataColumns.TargetTable}] ASC, [{DataItemMappingMetadataColumns.TargetColumn}] ASC, [{DataItemMappingMetadataColumns.TargetTable}] ASC, [{DataItemMappingMetadataColumns.SourceTable}] ASC";
+            DataTable.DefaultView.Sort = $"[{DataItemMappingMetadataColumns.TargetDataObject}] ASC, [{DataItemMappingMetadataColumns.TargetColumn}] ASC, [{DataItemMappingMetadataColumns.TargetDataObject}] ASC, [{DataItemMappingMetadataColumns.SourceDataObject}] ASC";
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace TEAM_Library
         public void SetDataTableColumns()
         {
             DataTable.Columns[(int)DataItemMappingMetadataColumns.HashKey].ColumnName = DataItemMappingMetadataColumns.HashKey.ToString();
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.SourceTable].ColumnName = DataItemMappingMetadataColumns.SourceTable.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.SourceDataObject].ColumnName = DataItemMappingMetadataColumns.SourceDataObject.ToString();
             DataTable.Columns[(int)DataItemMappingMetadataColumns.SourceColumn].ColumnName = DataItemMappingMetadataColumns.SourceColumn.ToString();
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.TargetTable].ColumnName = DataItemMappingMetadataColumns.TargetTable.ToString();
+            DataTable.Columns[(int)DataItemMappingMetadataColumns.TargetDataObject].ColumnName = DataItemMappingMetadataColumns.TargetDataObject.ToString();
             DataTable.Columns[(int)DataItemMappingMetadataColumns.TargetColumn].ColumnName = DataItemMappingMetadataColumns.TargetColumn.ToString();
             DataTable.Columns[(int)DataItemMappingMetadataColumns.Notes].ColumnName = DataItemMappingMetadataColumns.Notes.ToString();
         }

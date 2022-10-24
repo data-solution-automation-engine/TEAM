@@ -55,12 +55,12 @@ namespace TEAM
             }
 
             // Source Data Object
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.SourceTable.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.SourceDataObject.ToString()))
             {
                 DataGridViewTextBoxColumn sourceTable = new DataGridViewTextBoxColumn();
-                sourceTable.Name = DataItemMappingMetadataColumns.SourceTable.ToString();
+                sourceTable.Name = DataItemMappingMetadataColumns.SourceDataObject.ToString();
                 sourceTable.HeaderText = @"Source Data Object";
-                sourceTable.DataPropertyName = DataItemMappingMetadataColumns.SourceTable.ToString();
+                sourceTable.DataPropertyName = DataItemMappingMetadataColumns.SourceDataObject.ToString();
                 sourceTable.Visible = true;
                 Columns.Add(sourceTable);
             }
@@ -77,12 +77,12 @@ namespace TEAM
             }
 
             // Target Data Object
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.TargetTable.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.TargetDataObject.ToString()))
             {
                 DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
-                targetTable.Name = DataItemMappingMetadataColumns.TargetTable.ToString();
+                targetTable.Name = DataItemMappingMetadataColumns.TargetDataObject.ToString();
                 targetTable.HeaderText = @"Target Data Object";
-                targetTable.DataPropertyName = DataItemMappingMetadataColumns.TargetTable.ToString();
+                targetTable.DataPropertyName = DataItemMappingMetadataColumns.TargetDataObject.ToString();
                 targetTable.Visible = true;
                 Columns.Add(targetTable);
             }

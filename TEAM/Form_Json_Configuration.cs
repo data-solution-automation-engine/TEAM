@@ -38,9 +38,6 @@ namespace TEAM
             {
                 // Do nothing
             }
-
-
-
         }
 
         /// <summary>
@@ -68,7 +65,7 @@ namespace TEAM
             EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.GenerateDataObjectDataItems, ref issueCounter);
 
             // GenerateDataObjectConnection
-            switch (JsonExportSetting.GenerateDataObjectConnection)
+            switch (JsonExportSetting.AddDataObjectConnection)
             {
                 case "True":
                     checkBoxSourceConnectionKey.Checked = true;
@@ -97,10 +94,10 @@ namespace TEAM
 
             #region Data Items
             // GenerateDataItemTypes
-            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.GenerateDataItemDataTypes, ref issueCounter);
+            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.AddDataItemDataTypes, ref issueCounter);
 
             // GenerateParentDataObject
-            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.GenerateParentDataObject, ref issueCounter);
+            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.AddParentDataObject, ref issueCounter);
             #endregion
 
             #region Related Data Objects
@@ -108,7 +105,7 @@ namespace TEAM
             EvaluateJsonExportCheckbox(checkBoxAddMetadataConnection, JsonExportSetting.AddMetadataAsRelatedDataObject, ref issueCounter);
 
             // Add upstream connections as objects
-            EvaluateJsonExportCheckbox(checkBoxNextUpDataObjects, JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject, ref issueCounter);
+            EvaluateJsonExportCheckbox(checkBoxNextUpDataObjects, JsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject, ref issueCounter);
             #endregion
 
             // Report back the the user
@@ -169,7 +166,7 @@ namespace TEAM
             {
                 // GenerateDataObjectConnection
                 var stringSourceConnection = checkBoxSourceConnectionKey.Checked ? "True" : "False";
-                JsonExportSetting.GenerateDataObjectConnection = stringSourceConnection;
+                JsonExportSetting.AddDataObjectConnection = stringSourceConnection;
 
                 // GenerateDataObjectDataItems
                 var stringDataObjectDataItems = checkBoxDataObjectDataItems.Checked ? "True" : "False";
@@ -189,11 +186,11 @@ namespace TEAM
 
                 // GenerateDataItemDataTypes
                 var stringSourceDataTypes = checkBoxDataItemDataType.Checked ? "True" : "False";
-                JsonExportSetting.GenerateDataItemDataTypes = stringSourceDataTypes;
+                JsonExportSetting.AddDataItemDataTypes = stringSourceDataTypes;
 
                 // GenerateParentDataObject
                 var stringAddParentDataObject = checkBoxDataItemAddParentDataObject.Checked ? "True" : "False";
-                JsonExportSetting.GenerateParentDataObject = stringAddParentDataObject;
+                JsonExportSetting.AddParentDataObject = stringAddParentDataObject;
 
                 // AddMetadataAsRelatedDataObject
                 var stringAddMetadataConnection = checkBoxAddMetadataConnection.Checked ? "True" : "False";
@@ -201,7 +198,7 @@ namespace TEAM
 
                 // AddUpstreamDataObjectsAsRelatedDataObject
                 var stringAddNextUpObjects = checkBoxNextUpDataObjects.Checked ? "True" : "False";
-                JsonExportSetting.AddUpstreamDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
+                JsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
 
                 // Write to disk
                 JsonExportSetting.SaveJsonConfigurationFile();

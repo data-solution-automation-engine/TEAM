@@ -66,6 +66,11 @@ namespace TEAM
         /// </summary>
         public static ValidationSetting ValidationSetting { get; set; } = new ValidationSetting();
 
+        // Create the grid views.
+        internal static DataGridViewDataObjects _dataGridViewDataObjects;
+        internal static DataGridViewDataItems _dataGridViewDataItems;
+        internal static DataGridViewPhysicalModel _dataGridViewPhysicalModel;
+
         /// <summary>
         /// These parameters are used as global constants throughout the application.
         /// </summary>

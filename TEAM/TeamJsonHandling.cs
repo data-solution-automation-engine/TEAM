@@ -109,8 +109,7 @@ namespace TEAM
             public static string PhysicalModelJsonFileName()
             {
                 string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.WorkingEnvironment + "_" + FormBase.GlobalParameters.JsonModelMetadataFileName + FormBase.GlobalParameters.JsonExtension;
-                return localJsonFileName;
-            }
+                return localJsonFileName; }
 
             internal static string newFileTableMapping { get; set; }
             internal static string newFileAttributeMapping { get; set; }

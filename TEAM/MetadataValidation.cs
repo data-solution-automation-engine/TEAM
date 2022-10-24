@@ -171,20 +171,20 @@ namespace TEAM
 
             var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
 
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].ColumnName = PhysicalModelMappingMetadataColumns.HashKey.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.DatabaseName].ColumnName = PhysicalModelMappingMetadataColumns.DatabaseName.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.SchemaName].ColumnName = PhysicalModelMappingMetadataColumns.SchemaName.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.TableName].ColumnName = PhysicalModelMappingMetadataColumns.TableName.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.ColumnName].ColumnName = PhysicalModelMappingMetadataColumns.ColumnName.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.DataType].ColumnName = PhysicalModelMappingMetadataColumns.DataType.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.CharacterLength].ColumnName = PhysicalModelMappingMetadataColumns.CharacterLength.ToString(); 
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.NumericPrecision].ColumnName = PhysicalModelMappingMetadataColumns.NumericPrecision.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.NumericScale].ColumnName = PhysicalModelMappingMetadataColumns.NumericScale.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.OrdinalPosition].ColumnName = PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator].ColumnName = PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString();
-            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.MultiActiveIndicator].ColumnName = PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].ColumnName = PhysicalModelMappingMetadataColumns.Row_Checksum.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Database_Name].ColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Schema_Name].ColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Table_Name].ColumnName = PhysicalModelMappingMetadataColumns.Table_Name.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Column_Name].ColumnName = PhysicalModelMappingMetadataColumns.Column_Name.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Data_Type].ColumnName = PhysicalModelMappingMetadataColumns.Data_Type.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Character_Length].ColumnName = PhysicalModelMappingMetadataColumns.Character_Length.ToString(); 
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].ColumnName = PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].ColumnName = PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].ColumnName = PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].ColumnName = PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString();
+            inputDataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Multi_Active_Indicator].ColumnName = PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString();
 
-            DataRow[] foundRows = inputDataTable.Select("" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value+ "' AND " + PhysicalModelMappingMetadataColumns.SchemaName + " = '" + objectDetails.Key+"'");
+            DataRow[] foundRows = inputDataTable.Select("" + PhysicalModelMappingMetadataColumns.Table_Name + " = '" + objectDetails.Value+ "' AND " + PhysicalModelMappingMetadataColumns.Schema_Name + " = '" + objectDetails.Key+"'");
 
             if (foundRows.Length > 0)
             {
@@ -211,7 +211,7 @@ namespace TEAM
             {
                 var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
 
-                string filterCriterion = PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.SchemaName + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.ColumnName + " = '" + validationAttribute + "'";
+                string filterCriterion = PhysicalModelMappingMetadataColumns.Table_Name + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.Schema_Name + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.Column_Name + " = '" + validationAttribute + "'";
 
                 DataRow[] foundRows = inputDataTable.Select(filterCriterion);
 
@@ -476,9 +476,9 @@ namespace TEAM
                     // Select only the business keys in a link table. 
                     // Excluding all non-business key attributes
                     workingTable = physicalModelDataTable
-                        .Select($"{PhysicalModelMappingMetadataColumns.TableName} LIKE '%{FormBase.TeamConfiguration.LinkTablePrefixValue}%' " +
-                                $"AND {PhysicalModelMappingMetadataColumns.TableName} = '{validationObject.Item2}' " +
-                                $"AND {PhysicalModelMappingMetadataColumns.OrdinalPosition} > 4", $"{PhysicalModelMappingMetadataColumns.OrdinalPosition} ASC").CopyToDataTable();
+                        .Select($"{PhysicalModelMappingMetadataColumns.Table_Name} LIKE '%{FormBase.TeamConfiguration.LinkTablePrefixValue}%' " +
+                                $"AND {PhysicalModelMappingMetadataColumns.Table_Name} = '{validationObject.Item2}' " +
+                                $"AND {PhysicalModelMappingMetadataColumns.Ordinal_Position} > 4", $"{PhysicalModelMappingMetadataColumns.Ordinal_Position} ASC").CopyToDataTable();
                 }
                 catch (Exception ex)
                 {
@@ -489,7 +489,7 @@ namespace TEAM
                 {
                     foreach (DataRow row in workingTable.Rows)
                     {
-                        var linkHubSurrogateKeyName = row[PhysicalModelMappingMetadataColumns.ColumnName.ToString()].ToString();
+                        var linkHubSurrogateKeyName = row[PhysicalModelMappingMetadataColumns.Column_Name.ToString()].ToString();
 
                         if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)
                         ) // Exclude degenerate attributes from the order
@@ -674,7 +674,7 @@ namespace TEAM
 
                         bool returnExistenceEvaluation = false;
 
-                        DataRow[] foundAuthors = inputDataTable.Select($"" + PhysicalModelMappingMetadataColumns.TableName + " = '" + objectDetails.Value + "' AND "+ PhysicalModelMappingMetadataColumns.SchemaName + " = '"+objectDetails.Key+ "' AND " + PhysicalModelMappingMetadataColumns.ColumnName + " = '" + businessKeyPart.Trim() + "'");
+                        DataRow[] foundAuthors = inputDataTable.Select($"" + PhysicalModelMappingMetadataColumns.Table_Name + " = '" + objectDetails.Value + "' AND "+ PhysicalModelMappingMetadataColumns.Schema_Name + " = '"+objectDetails.Key+ "' AND " + PhysicalModelMappingMetadataColumns.Column_Name + " = '" + businessKeyPart.Trim() + "'");
                         if (foundAuthors.Length != 0)
                         {
                             returnExistenceEvaluation = true;

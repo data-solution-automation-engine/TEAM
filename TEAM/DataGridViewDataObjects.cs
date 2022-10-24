@@ -6,15 +6,18 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using DataWarehouseAutomation;
 using TEAM_Library;
 using static TEAM.FormBase;
 using DataObject = DataWarehouseAutomation.DataObject;
+using Event = TEAM_Library.Event;
 
 namespace TEAM
 {
     internal sealed class DataGridViewDataObjects : DataGridView
     {
         private TeamConfiguration TeamConfiguration { get; }
+        private JsonExportSetting JsonExportSetting { get; }
 
         private Form_Edit _modifyJson;
 
@@ -24,9 +27,10 @@ namespace TEAM
         /// <summary>
         /// The definition of the Data Grid View for table mappings (DataObject mappings).
         /// </summary>
-        public DataGridViewDataObjects(TeamConfiguration teamConfiguration)
+        public DataGridViewDataObjects(TeamConfiguration teamConfiguration, JsonExportSetting jsonExportSetting)
         {
             TeamConfiguration = teamConfiguration;
+            JsonExportSetting = jsonExportSetting;
 
             #region Basic properties
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -63,6 +67,7 @@ namespace TEAM
             CellEnter += DataGridViewDataObjects_CellEnter;
             DefaultValuesNeeded += DataGridViewDataObjectMapping_DefaultValuesNeeded;
             Sorted += TextBoxFilterCriterion_OnDelayedTextChanged;
+            CellValueChanged += OnCheckBoxValueChanged;
             #endregion
 
             #region Columns
@@ -98,7 +103,7 @@ namespace TEAM
             sourceConnection.ValueMember = "ConnectionId";
             sourceConnection.ValueType = typeof(string);
             Columns.Add(sourceConnection);
-
+            
             // Source Data Object.
             DataGridViewTextBoxColumn sourceDataObject = new DataGridViewTextBoxColumn();
             sourceDataObject.Name = DataObjectMappingGridColumns.SourceDataObject.ToString();
@@ -149,6 +154,7 @@ namespace TEAM
             filterCriterion.MinimumWidth = 100;
             Columns.Add(filterCriterion);
 
+            // Filtering and back-end management only.
             DataGridViewTextBoxColumn sourceDataObjectName = new DataGridViewTextBoxColumn();
             sourceDataObjectName.Name = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
             sourceDataObjectName.HeaderText = @"Source Data Object Name";
@@ -162,6 +168,13 @@ namespace TEAM
             targetDataObjectName.DataPropertyName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
             targetDataObjectName.Visible = false;
             Columns.Add(targetDataObjectName);
+
+            DataGridViewTextBoxColumn previousTargetDataObjectName = new DataGridViewTextBoxColumn();
+            previousTargetDataObjectName.Name = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
+            previousTargetDataObjectName.HeaderText = @"Target Data Object Name";
+            previousTargetDataObjectName.DataPropertyName = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
+            previousTargetDataObjectName.Visible = false;
+            Columns.Add(previousTargetDataObjectName);
             #endregion
 
             #region Context menu
@@ -169,12 +182,19 @@ namespace TEAM
             contextMenuStripDataObjectMappingFullRow = new ContextMenuStrip();
             contextMenuStripDataObjectMappingFullRow.SuspendLayout();
 
-            // Export as JSON menu item
+            // Export as DataObjectMappings JSON (collection) menu item
             var exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem = new ToolStripMenuItem();
             exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
             exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Size = new Size(339, 22);
-            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Text = @"Export this row as Source-to-Target interface JSON";
-            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Click += ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click;
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Text = @"Display this row as Data Object Mapping Collection";
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Click += DisplayThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click;
+
+            // Export as single DataObjectMappings JSON menu item
+            var exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem = new ToolStripMenuItem();
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Name = "exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem";
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Size = new Size(339, 22);
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Text = @"Display this row as single Data Object Mapping";
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Click += DisplayThisRowAsJSONSingleDataObjectMappingToolStripMenuItem_Click;
 
             // Delete row menu item
             var deleteThisRowFromTheGridToolStripMenuItem = new ToolStripMenuItem();
@@ -185,6 +205,7 @@ namespace TEAM
 
             contextMenuStripDataObjectMappingFullRow.ImageScalingSize = new Size(24, 24);
             contextMenuStripDataObjectMappingFullRow.Items.AddRange(new ToolStripItem[] {
+                exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem,
                 exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
                 deleteThisRowFromTheGridToolStripMenuItem
              });
@@ -212,6 +233,36 @@ namespace TEAM
             contextMenuStripDataObjectMappingSingleCell.ResumeLayout(false);
             #endregion
         }
+
+        private void OnCheckBoxValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            var selectedColumn = Columns[e.ColumnIndex];
+            var selectedRow = Rows[e.RowIndex];
+
+            if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.SourceConnection))
+            {
+                // The connection.
+                var sourceConnectionInternalId = selectedRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+
+                // The data object, to be updated
+                var dataObject = (DataObject)selectedRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
+
+                JsonOutputHandling.SetDataObjectConnection(dataObject, sourceConnection, JsonExportSetting);
+            }
+            else if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.TargetConnection))
+            {
+                // The connection.
+                var targetConnectionInternalId = selectedRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
+                var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
+
+                // The data object, to be updated
+                var dataObject = (DataObject)selectedRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
+
+                JsonOutputHandling.SetDataObjectConnection(dataObject, targetConnection, JsonExportSetting);
+            }
+        }
+
         /// <summary>
         /// Default row values for Data Object Mapping data grid.
         /// </summary>
@@ -355,28 +406,34 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void ExportThisRowAsSourceToTargetInterfaceJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        public void DisplayThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //richTextBoxInformation.Clear();
-
-            // Check if any cells were clicked / selected.
-            Int32 selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+            int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
             var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
+            var targetDataObjectName = generationMetadataRow[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
 
-            var targetDataObjectName = generationMetadataRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
-            var tableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
+            var dataObjectMappings = GetDataObjectMappings(targetDataObjectName);
 
-            if (tableType != MetadataHandling.DataObjectTypes.Presentation)
-            {
-                List<DataRow> generationMetadataList = new List<DataRow>();
-                generationMetadataList.Add(generationMetadataRow);
-                //GenerateJsonFromPattern(generationMetadataList, JsonExportSetting);
-            }
-            else
-            {
-                //ManageFormJsonInteraction(targetDataObjectName, JsonExportSetting);
-            }
+            string output = JsonConvert.SerializeObject(dataObjectMappings, Formatting.Indented);
+
+            FormManageMetadata.ManageFormJsonInteraction(output);
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DisplayThisRowAsJSONSingleDataObjectMappingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var selectedRow = _dataGridViewDataObjects.SelectedRows[0];
+
+            var dataObjectMapping = GetDataObjectMapping(selectedRow);
+
+            string output = JsonConvert.SerializeObject(dataObjectMapping, Formatting.Indented);
+
+            FormManageMetadata.ManageFormJsonInteraction(output);
         }
 
         /// <summary>
@@ -396,7 +453,7 @@ namespace TEAM
                 }
                 else
                 {
-                    Int32 rowToDelete = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+                    int rowToDelete = Rows.GetFirstRow(DataGridViewElementStates.Selected);
                     Rows.RemoveAt(rowToDelete);
                 }
             }
@@ -443,8 +500,6 @@ namespace TEAM
                 }
             }
         }
-
-
 
         private void PasteClipboardDataObjects()
         {
@@ -828,7 +883,6 @@ namespace TEAM
                 }
             }
             #endregion
-
         }
 
         private void DataGridViewDataObjects_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
@@ -865,6 +919,7 @@ namespace TEAM
 
                     if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.TargetDataObject))
                     {
+                        // Update the hidden string target object name for filtering purposes.
                         Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value = dataObject.name;
                     }
 
@@ -874,7 +929,6 @@ namespace TEAM
                 {
                     e.ParsingApplied = false;
                 }
-
             }
         }
 
@@ -899,6 +953,208 @@ namespace TEAM
                     formatting.FormattingApplied = false;
                 }
             }
+        }
+
+        /// <summary>
+        /// Return the collection of data object mappings relative to the selected (target) data object.
+        /// </summary>
+        /// <param name="targetDataObjectName"></param>
+        /// <returns></returns>
+        internal List<DataObjectMapping> GetDataObjectMappings(string targetDataObjectName)
+        {
+            List<DataObjectMapping> dataObjectMappings = new List<DataObjectMapping>();
+
+            foreach (DataGridViewRow row in Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    if (row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]?.Value.ToString() == targetDataObjectName)
+                    {
+                        var dataObjectMapping = GetDataObjectMapping(row);
+                        dataObjectMappings.Add(dataObjectMapping);
+                    }
+                }
+            }
+
+            return dataObjectMappings;
+        }
+
+        /// <summary>
+        /// Construct a Data Object Mapping from the available metadata.
+        /// </summary>
+        /// <param name="dataObjectMappingGridViewRow"></param>
+        /// <returns></returns>
+        private DataObjectMapping GetDataObjectMapping(DataGridViewRow dataObjectMappingGridViewRow)
+        {
+            var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
+
+            DataObjectMapping dataObjectMapping = new DataObjectMapping
+            {
+                mappingName = targetDataObjectName
+            };
+
+            #region Enabled
+
+            var enabledIntermediate = "False";
+
+            if (dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value != DBNull.Value)
+            {
+                enabledIntermediate = (string)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
+            }
+
+            bool enabled = false;
+            if (enabledIntermediate == "True")
+            {
+                enabled = true;
+            }
+
+            dataObjectMapping.enabled = enabled;
+
+            #endregion
+
+            #region Target Data Object
+
+            string targetConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
+            var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
+
+            var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
+            dataObjectMapping.targetDataObject = targetDataObject;
+
+            #endregion
+
+            #region Mapping Level Classification
+
+            var mappingClassifications = JsonOutputHandling.AddMappingClassifications(targetDataObjectName, TeamConfiguration);
+            dataObjectMapping.mappingClassifications = mappingClassifications;
+
+            #endregion
+
+            #region Business Key
+
+            List<BusinessKey> businessKeys = new List<BusinessKey>();
+            BusinessKey businessKey = new BusinessKey();
+
+            var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
+            var businessKeyDataItemMappings = JsonOutputHandling.GetBusinessKeyComponentDataItemMappings(businessKeyDefinition, businessKeyDefinition);
+            businessKey.businessKeyComponentMapping = businessKeyDataItemMappings;
+
+            // Derive the surrogate key using conventions.
+            var targetDataObjectSurrogateKey = MetadataHandling.GetSurrogateKey(targetDataObjectName, targetConnection, TeamConfiguration);
+            businessKey.surrogateKey = targetDataObjectSurrogateKey;
+
+            businessKeys.Add(businessKey);
+            dataObjectMapping.businessKeys = businessKeys;
+
+            #endregion
+
+            #region Source Data Objects
+
+            //DataObject sourceDataObject = new DataObject();
+            dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
+
+            List<dynamic> sourceDataObjects = new List<dynamic>();
+            //var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, JsonExportSetting, TeamConfiguration);
+            sourceDataObjects.Add(sourceDataObject);
+            dataObjectMapping.sourceDataObjects = sourceDataObjects;
+
+            #endregion
+
+            #region Related Data Objects
+
+            var relatedDataObjects = JsonOutputHandling.AddRelatedDataObjects(targetDataObjectName, this, JsonExportSetting, TeamConfiguration);
+            if (relatedDataObjects != null && relatedDataObjects.Count > 0)
+            {
+                dataObjectMapping.relatedDataObjects = relatedDataObjects;
+            }
+
+            #endregion
+
+            #region Data Item Mappings
+
+            // Add the data item mappings
+            List<DataItemMapping> dataItemMappings = new List<DataItemMapping>();
+
+            foreach (DataGridViewRow dataItemMappingRow in _dataGridViewDataItems.Rows)
+            {
+                if (!dataItemMappingRow.IsNewRow)
+                {
+                    var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.SourceDataObject.ToString()].Value.ToString();
+                    var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.TargetDataObject.ToString()].Value.ToString();
+
+                    if (localSourceDataObject == sourceDataObject.name &&
+                        localTargetDataObject == targetDataObject.name)
+                    {
+                        var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.SourceColumn.ToString()].Value.ToString();
+                        var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.TargetColumn.ToString()].Value.ToString();
+
+                        List<string> sourceDataItemNames = new List<string>();
+                        List<string> targetDataItemNames = new List<string>();
+
+                        // Creating a single source-to-target Data Item mapping.
+                        List<dynamic> sourceDataItems = new List<dynamic>();
+                        var sourceDataItem = new DataItem();
+                        var targetDataItem = new DataItem();
+
+                        sourceDataItem.name = localSourceDataItem;
+                        targetDataItem.name = localTargetDataItem;
+
+                        #region Add data types for Data Items
+
+                        // Adding the data types for the source data items.
+                        if (!sourceDataItemNames.Contains(sourceDataItem.name) && JsonExportSetting.IsAddDataItemDataTypes())
+                        {
+                            var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                            var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+
+                            sourceDataItemNames.Add(sourceDataItem.name);
+                            JsonOutputHandling.GetFullSourceDataItemPresentation(sourceDataItem, sourceDataObject.name, sourceConnection, _dataGridViewPhysicalModel, dataItemMappingRow, JsonExportSetting, "Source");
+                            sourceDataItems.Add(sourceDataItem);
+                        }
+
+                        // Adding the data types for the target data items.
+                        if (!targetDataItemNames.Contains(targetDataItem.name) && JsonExportSetting.IsAddDataItemDataTypes())
+                        {
+                            targetDataItemNames.Add(targetDataItem.name);
+                            JsonOutputHandling.GetFullSourceDataItemPresentation(targetDataItem, targetDataObjectName, targetConnection, _dataGridViewPhysicalModel, dataItemMappingRow, JsonExportSetting, "Target");
+                        }
+
+                        #endregion
+
+                        // Add parent Data Object to the Data Item.
+                        JsonOutputHandling.AddParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
+                        JsonOutputHandling.AddParentDataObjectToDataItem(targetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
+
+                        // Populate the list of source Data Items.
+                        sourceDataItems.Add(sourceDataItem);
+
+                        // Create a Data Item Mapping.
+                        DataItemMapping dataItemMapping = new DataItemMapping
+                        {
+                            sourceDataItems = sourceDataItems,
+                            targetDataItem = targetDataItem
+                        };
+
+                        // Add the Data Items Mapping to the list of mappings.
+                        dataItemMappings.Add(dataItemMapping);
+                    }
+                }
+            }
+
+            if (dataItemMappings.Count > 0)
+            {
+                dataObjectMapping.dataItemMappings = dataItemMappings;
+            }
+            #endregion
+
+            #region Filter Criterion
+
+            var filterCriterion = dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString();
+
+            dataObjectMapping.filterCriterion = filterCriterion;
+
+            #endregion
+
+            return dataObjectMapping;
         }
     }
 }

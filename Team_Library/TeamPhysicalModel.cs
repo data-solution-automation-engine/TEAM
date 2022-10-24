@@ -28,18 +28,18 @@ namespace TEAM_Library
     /// </summary>
     public enum PhysicalModelMappingMetadataColumns
     {
-        HashKey = 0,
-        DatabaseName = 1,
-        SchemaName = 2,
-        TableName = 3,
-        ColumnName = 4,
-        DataType = 5,
-        CharacterLength = 6,
-        NumericPrecision = 7,
-        NumericScale = 8,
-        OrdinalPosition = 9,
-        PrimaryKeyIndicator = 10,
-        MultiActiveIndicator = 11
+        Row_Checksum = 0,
+        Database_Name = 1,
+        Schema_Name = 2,
+        Table_Name = 3,
+        Column_Name = 4,
+        Data_Type = 5,
+        Character_Length = 6,
+        Numeric_Precision = 7,
+        Numeric_Scale = 8,
+        Ordinal_Position = 9,
+        Primary_Key_Indicator = 10,
+        Multi_Active_Indicator = 11
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.DatabaseName}] ASC, [{PhysicalModelMappingMetadataColumns.SchemaName}] ASC, [{PhysicalModelMappingMetadataColumns.TableName}] ASC, [{PhysicalModelMappingMetadataColumns.OrdinalPosition}] ASC";
+            DataTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.Database_Name}] ASC, [{PhysicalModelMappingMetadataColumns.Schema_Name}] ASC, [{PhysicalModelMappingMetadataColumns.Table_Name}] ASC, [{PhysicalModelMappingMetadataColumns.Ordinal_Position}] ASC";
         }
 
         /// <summary>
@@ -73,18 +73,18 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableColumns()
         {
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.HashKey].ColumnName = PhysicalModelMappingMetadataColumns.HashKey.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.DatabaseName].ColumnName = PhysicalModelMappingMetadataColumns.DatabaseName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.SchemaName].ColumnName = PhysicalModelMappingMetadataColumns.SchemaName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.TableName].ColumnName = PhysicalModelMappingMetadataColumns.TableName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.ColumnName].ColumnName = PhysicalModelMappingMetadataColumns.ColumnName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.DataType].ColumnName = PhysicalModelMappingMetadataColumns.DataType.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.CharacterLength].ColumnName = PhysicalModelMappingMetadataColumns.CharacterLength.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.NumericPrecision].ColumnName = PhysicalModelMappingMetadataColumns.NumericPrecision.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.NumericScale].ColumnName = PhysicalModelMappingMetadataColumns.NumericScale.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.OrdinalPosition].ColumnName = PhysicalModelMappingMetadataColumns.OrdinalPosition.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator].ColumnName = PhysicalModelMappingMetadataColumns.PrimaryKeyIndicator.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.MultiActiveIndicator].ColumnName = PhysicalModelMappingMetadataColumns.MultiActiveIndicator.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].ColumnName = PhysicalModelMappingMetadataColumns.Row_Checksum.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Database_Name].ColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Schema_Name].ColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Table_Name].ColumnName = PhysicalModelMappingMetadataColumns.Table_Name.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Column_Name].ColumnName = PhysicalModelMappingMetadataColumns.Column_Name.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Data_Type].ColumnName = PhysicalModelMappingMetadataColumns.Data_Type.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Character_Length].ColumnName = PhysicalModelMappingMetadataColumns.Character_Length.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].ColumnName = PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].ColumnName = PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].ColumnName = PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].ColumnName = PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Multi_Active_Indicator].ColumnName = PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString();
         }
 
         /// <summary>

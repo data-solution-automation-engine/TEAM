@@ -39,6 +39,8 @@
             this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,8 +56,6 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.groupBox2.SuspendLayout();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -70,7 +70,7 @@
             this.groupBox2.Controls.Add(this.labelMetadataRepository);
             this.groupBox2.Location = new System.Drawing.Point(12, 715);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(342, 71);
+            this.groupBox2.Size = new System.Drawing.Size(252, 71);
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Environment";
@@ -78,7 +78,7 @@
             // labelWorkingEnvironment
             // 
             this.labelWorkingEnvironment.AutoSize = true;
-            this.labelWorkingEnvironment.Location = new System.Drawing.Point(193, 40);
+            this.labelWorkingEnvironment.Location = new System.Drawing.Point(144, 40);
             this.labelWorkingEnvironment.Name = "labelWorkingEnvironment";
             this.labelWorkingEnvironment.Size = new System.Drawing.Size(27, 13);
             this.labelWorkingEnvironment.TabIndex = 67;
@@ -87,7 +87,7 @@
             // labelMetadataSave
             // 
             this.labelMetadataSave.AutoSize = true;
-            this.labelMetadataSave.Location = new System.Drawing.Point(193, 23);
+            this.labelMetadataSave.Location = new System.Drawing.Point(144, 23);
             this.labelMetadataSave.Name = "labelMetadataSave";
             this.labelMetadataSave.Size = new System.Drawing.Size(27, 13);
             this.labelMetadataSave.TabIndex = 66;
@@ -157,6 +157,19 @@
             this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
             this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            // 
+            // openMetadataDirectoryToolStripMenuItem
+            // 
+            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
+            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
+            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(235, 6);
             // 
             // exitToolStripMenuItem
             // 
@@ -286,19 +299,6 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
-            // 
-            // openMetadataDirectoryToolStripMenuItem
-            // 
-            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
-            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
-            this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
-            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(235, 6);
             // 
             // FormMain
             // 

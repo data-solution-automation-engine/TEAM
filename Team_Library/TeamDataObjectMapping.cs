@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using DataWarehouseAutomation;
 using Newtonsoft.Json;
 using DataObject = DataWarehouseAutomation.DataObject;
 
@@ -37,6 +38,7 @@ namespace TEAM_Library
             // For sorting purposes only.
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
+            DataTable.Columns.Add(DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.SurrogateKey.ToString());
         }
 
@@ -141,6 +143,7 @@ namespace TEAM_Library
                         newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = filterCriterion;
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = singleSourceDataObject.name;
                         newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = targetDataObject.name;
+                        newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = targetDataObject.name;
                         newRow[(int)DataObjectMappingGridColumns.SurrogateKey] = dataObjectMapping.businessKeys[0].surrogateKey;
 
                         DataTable.Rows.Add(newRow);
@@ -197,6 +200,7 @@ namespace TEAM_Library
             DataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
+            DataTable.Columns[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName].ColumnName = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
             DataTable.Columns[(int)DataObjectMappingGridColumns.SurrogateKey].ColumnName = DataObjectMappingGridColumns.SurrogateKey.ToString();
         }
 
@@ -484,10 +488,11 @@ namespace TEAM_Library
         BusinessKeyDefinition = 6,
         DrivingKeyDefinition = 7,
         FilterCriterion = 8,
-        // The below are hidden, for sorting only.
+        // The below are hidden, for sorting and back-end management only.
         SourceDataObjectName = 9,
         TargetDataObjectName = 10,
-        SurrogateKey = 11
+        PreviousTargetDataObjectName = 11,
+        SurrogateKey = 12
     }
 
     public enum BusinessKeyEvaluationMode
