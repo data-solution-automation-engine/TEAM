@@ -282,6 +282,10 @@ namespace TEAM
                 {
                     foreach (DataRow dataObjectRow in inputDataTable.Rows)
                     {
+                        // Skip deleted rows
+                        if (dataObjectRow.RowState == DataRowState.Deleted)
+                            continue;
+
                         var TargetDataObject = dataObjectRow[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
                         var targetConnectionInternalId = dataObjectRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                         var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);

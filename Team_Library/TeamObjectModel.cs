@@ -23,12 +23,12 @@ namespace TEAM
     /// </summary>
     public class GenerationSpecificMetadata
     {
-        public string selectedDataObject { get; set; }
+        public DataObject targetDataObject { get; set; }
         public DateTime generationDateTime { get; } = DateTime.Now;
 
-        public GenerationSpecificMetadata(string dataObjectName)
+        public GenerationSpecificMetadata(DataObject dataObject)
         {
-            selectedDataObject = dataObjectName;
+            targetDataObject = dataObject;
         }
     }
 

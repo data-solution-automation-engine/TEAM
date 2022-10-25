@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using DataWarehouseAutomation;
 using Newtonsoft.Json;
 using DataObject = DataWarehouseAutomation.DataObject;
 
@@ -53,7 +51,14 @@ namespace TEAM_Library
                 {
                     // Target Data Object details
                     var targetDataObject = dataObjectMapping.targetDataObject;
-                    string targetConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(dataObjectMapping.targetDataObject.dataObjectConnection.dataConnectionString, teamConfiguration).ConnectionInternalId;
+
+                    string targetConnectionInternalId = teamConfiguration.MetadataConnection.ConnectionInternalId;
+
+                    if (dataObjectMapping.targetDataObject.dataObjectConnection != null)
+                    {
+                        targetConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(dataObjectMapping.targetDataObject.dataObjectConnection.dataConnectionString, teamConfiguration).ConnectionInternalId;
+                    }
+
                     string filterCriterion = dataObjectMapping.filterCriterion;
                     string drivingKeyDefinition = "";
 
@@ -75,6 +80,9 @@ namespace TEAM_Library
                             {
                                 businessKeyDefinitionString += "COMPOSITE(";
                             }
+
+                            if (businessKey.businessKeyClassification != null && businessKey.businessKeyClassification[0].classification.Contains("DegenerateAttribute"))
+                                continue;
 
                             foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
                             {
@@ -117,17 +125,21 @@ namespace TEAM_Library
                     {
                         var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
                         DataObject singleSourceDataObject = JsonConvert.DeserializeObject<DataObject>(intermediateJson);
-                        // Source Data Object details.
 
-                        string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
-                        var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
+                        // Source Data Object details.
+                        string sourceConnectionInternalId = teamConfiguration.MetadataConnection.ConnectionInternalId;
+
+                        if (sourceDataObject.dataObjectConnection != null)
+                        {
+                            string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
+                            sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
+                        }
 
                         var newRow = DataTable.NewRow();
 
                         string[] hashKey =
                         {
-                                        singleSourceDataObject.name, targetDataObject.name, businessKeyDefinitionString,
-                                        drivingKeyDefinition, filterCriterion
+                            singleSourceDataObject.name, targetDataObject.name, businessKeyDefinitionString, drivingKeyDefinition, filterCriterion
                         };
 
                         Utility.CreateMd5(hashKey, Utility.SandingElement);
@@ -151,7 +163,7 @@ namespace TEAM_Library
                 }
             }
 
-            SetDataTableColumnNames();
+            SetDataTableColumnNames(DataTable);
 
             SynchroniseLinkSatelliteBusinessKeyDefinition(teamConfiguration);
         }
@@ -188,20 +200,20 @@ namespace TEAM_Library
         /// <summary>
         /// Set the header / column names for each data table column.
         /// </summary>
-        public void SetDataTableColumnNames()
+        public static void SetDataTableColumnNames(DataTable dataTable)
         {
-            DataTable.Columns[(int)DataObjectMappingGridColumns.Enabled].ColumnName = DataObjectMappingGridColumns.Enabled.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.HashKey].ColumnName = DataObjectMappingGridColumns.HashKey.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.SourceConnection].ColumnName = DataObjectMappingGridColumns.SourceConnection.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].ColumnName = DataObjectMappingGridColumns.SourceDataObject.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.TargetConnection].ColumnName = DataObjectMappingGridColumns.TargetConnection.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].ColumnName = DataObjectMappingGridColumns.TargetDataObject.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ColumnName = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName].ColumnName = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
-            DataTable.Columns[(int)DataObjectMappingGridColumns.SurrogateKey].ColumnName = DataObjectMappingGridColumns.SurrogateKey.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.Enabled].ColumnName = DataObjectMappingGridColumns.Enabled.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.HashKey].ColumnName = DataObjectMappingGridColumns.HashKey.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.SourceConnection].ColumnName = DataObjectMappingGridColumns.SourceConnection.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].ColumnName = DataObjectMappingGridColumns.SourceDataObject.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.TargetConnection].ColumnName = DataObjectMappingGridColumns.TargetConnection.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].ColumnName = DataObjectMappingGridColumns.TargetDataObject.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ColumnName = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName].ColumnName = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
+            dataTable.Columns[(int)DataObjectMappingGridColumns.SurrogateKey].ColumnName = DataObjectMappingGridColumns.SurrogateKey.ToString();
         }
 
         public DataRow GetParentDataObjectMapping(DataRow inputRow)
@@ -472,8 +484,15 @@ namespace TEAM_Library
         public string businessKeyDefinition { get; set; }
         public string drivingKeyDefinition { get; set; }
         public string filterCriteria { get; set; }
-    }
 
+        public List<TableMappingJson> JsonList { get; set; }
+
+        public void GetMetadata(string fileName)
+        {
+
+        }
+    }
+    
     /// <summary>
     /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
     /// </summary>
@@ -645,43 +664,7 @@ namespace TEAM_Library
 
 
 
-        /// <summary>
-        /// Creates a TeamMappingDataTable object (Json List and DataTable) from a Table Mapping Json file.
-        /// </summary>
-        /// <returns></returns>
-        public void GetMetadata(string fileName)
-        {
-            EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving Table Mapping metadata from {fileName}."));
 
-            // Check if the file exists
-            if (!File.Exists(fileName))
-            {
-                EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "No Json Table Mapping file was found."));
-            }
-            else
-            {
-                EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reading file {fileName}"));
-
-                // Load the file, convert it to a DataTable and bind it to the source
-                List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(fileName));
-
-                // Commit to the object
-                JsonList = jsonArray;
-                var dataTable = Utility.ConvertToDataTable(jsonArray);
-
-                //Make sure the changes are seen as committed, so that changes can be detected later on.
-                dataTable.AcceptChanges();
-
-                // Commit it to the object itself
-                DataTable = dataTable;
-
-                // Set the column names.
-                SetDataTableColumns();
-
-                // Set the sort order.
-                SetDataTableSorting();
-            }
-        }
 
         public void SetDataTableColumns()
         {

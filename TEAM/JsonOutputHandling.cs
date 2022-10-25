@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using DataWarehouseAutomation;
 using Microsoft.Data.SqlClient;
 using TEAM_Library;
+using static TEAM.FormBase;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
 
@@ -227,6 +228,10 @@ namespace TEAM
 
                 }
             }
+        }
+        public static string GetMetadataFilePath(this string fileName)
+        {
+            return GlobalParameters.MetadataPath + fileName + ".json";
         }
 
         public static List<DataObject> GetLineageRelatedDataObjectList(string targetDataObject, DataGridView dataObjectDataGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
