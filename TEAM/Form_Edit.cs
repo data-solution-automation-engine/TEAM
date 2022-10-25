@@ -24,16 +24,6 @@ namespace TEAM
 
             EditedDataObject = (DataWarehouseAutomation.DataObject)dataBoundItem.Row[cell.ColumnIndex];
 
-
-            // Set the tooltip.
-            //DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
-            //cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
-
-
-            // Set the tooltip.
-            //DataGridViewCell cell = _dataGridViewDataObjects.Rows[e.RowIndex].Cells[e.ColumnIndex];
-            //cell.ToolTipText = JsonConvert.SerializeObject(dataObject, Formatting.Indented);
-
             richTextBoxFormContent.Text = JsonConvert.SerializeObject(EditedDataObject, Formatting.Indented);
         }
         

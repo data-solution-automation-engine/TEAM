@@ -41,9 +41,6 @@ namespace TEAM
         }
 
         #region Metadata objects in memory
-        // In-memory representation of the Table Mapping Metadata.
-        public static TeamDataObjectMapping TableMapping { get; set; } = new TeamDataObjectMapping();
-
         // In-memory representation of the Physical Model Metadata.
         public static TeamPhysicalModel PhysicalModel { get; set; } = new TeamPhysicalModel();
 

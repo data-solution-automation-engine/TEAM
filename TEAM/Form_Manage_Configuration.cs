@@ -297,7 +297,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the output directory. The error message is: "+ex;
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the output directory. The error message is: {ex.Message}";
             }
         }
 
@@ -330,7 +330,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"Error: Could not read file from disk. Original error: {ex.Message}", @"An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -381,7 +381,7 @@ namespace TEAM
             try
             {
                 FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
-                richTextBoxInformation.Text = $"A backup of the current configuration was made at {DateTime.Now} in {textBoxConfigurationPath.Text}.\r\n";
+                richTextBoxInformation.Text = $@"A backup of the current configuration was made at {DateTime.Now} in {textBoxConfigurationPath.Text}.";
             }
             catch (Exception)
             {
@@ -557,13 +557,12 @@ namespace TEAM
                 }
                 else
                 {
-                    richTextBoxInformation.Text =
-                        "There is no value given for the Configuration Path. Please enter a valid path name.";
+                    richTextBoxInformation.Text = @"There is no value given for the Configuration Path. Please enter a valid path name.";
                 }
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: {ex.Message}";
             }
         }
 
@@ -826,7 +825,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the root path file. The error message is: " + ex;
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the root path file. The error message is: {ex.Message}";
             }
         }
 
@@ -845,7 +844,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = $"An error has occurred while attempting to open the active configuration file. The error message is: {ex}.";
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the active configuration file. The error message is: {ex.Message}";
             }
         }
         
@@ -952,7 +951,7 @@ namespace TEAM
 
 
                 textBoxTeamMetadataPath.Text = finalPath;
-                richTextBoxInformation.Text = $"The metadata path is set to {finalPath}. Don't forget to save!'";
+                richTextBoxInformation.Text = $@"The metadata path is set to {finalPath}. Don't forget to save!'";
             }
         }
 
@@ -978,7 +977,7 @@ namespace TEAM
 
 
                 textBoxOutputPath.Text = finalPath;
-                richTextBoxInformation.Text = $"The output path is set to {finalPath}. Don't forget to save!'";
+                richTextBoxInformation.Text = $@"The output path is set to {finalPath}. Don't forget to save!'";
             }
         }
 
@@ -1004,7 +1003,7 @@ namespace TEAM
 
 
                 textBoxConfigurationPath.Text = finalPath;
-                richTextBoxInformation.Text = $"The configuration path is set to {finalPath}. Don't forget to save!'";
+                richTextBoxInformation.Text = $@"The configuration path is set to {finalPath}. Don't forget to save!'";
             }
         }
 
@@ -1023,7 +1022,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the metadata directory. The error message is: " + ex.Message;
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the metadata directory. The error message is: {ex.Message}";
             }
         }
     }

@@ -10,7 +10,7 @@ namespace TEAM
         private readonly FormManageMetadata _myParent;
 
         public FormJsonConfiguration(FormManageMetadata parent)
-        {            
+        {
             _myParent = parent;
             InitializeComponent();
 
@@ -222,19 +222,6 @@ namespace TEAM
                 richTextBoxJsonExportInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: '{ex.Message}'.";
             }
         }
-
-        private void OpenOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs args)
-        {
-            try
-            {
-                Process.Start(GlobalParameters.OutputPath);
-            }
-            catch (Exception ex)
-            {
-                richTextBoxJsonExportInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: '{ex.Message}'.";
-            }
-        }
-
         private void ExitToolStripMenuItem_Click(object sender, EventArgs args)
         {
             Close();
