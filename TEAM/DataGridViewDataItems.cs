@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using TEAM_Library;
 using static TEAM.FormBase;
@@ -8,10 +11,14 @@ namespace TEAM
 {
     internal sealed class DataGridViewDataItems : DataGridView
     {
+        private TeamConfiguration TeamConfiguration { get; }
+
         private readonly ContextMenuStrip contextMenuStrip;
 
-        public DataGridViewDataItems()
+        public DataGridViewDataItems(TeamConfiguration teamConfiguration)
         {
+            TeamConfiguration = teamConfiguration;
+
             #region Basic properties
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             BorderStyle = BorderStyle.None;
@@ -21,7 +28,7 @@ namespace TEAM
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
 
-            EditMode = DataGridViewEditMode.EditOnEnter;
+            EditMode = DataGridViewEditMode.EditOnKeystroke;
 
             var mySize = new Size(1100, 540);
             MinimumSize = mySize;
@@ -40,71 +47,72 @@ namespace TEAM
             #region Event Handlers
             KeyDown += DataGridView_KeyDown;
             MouseDown += DataGridView_MouseDown;
+            CellFormatting += DataGridViewDataItems_CellFormatting;
             #endregion
 
             #region Columns
             // Hashkey
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.HashKey.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.HashKey.ToString()))
             {
                 DataGridViewTextBoxColumn hashKey = new DataGridViewTextBoxColumn();
-                hashKey.Name = DataItemMappingMetadataColumns.HashKey.ToString();
-                hashKey.HeaderText = DataItemMappingMetadataColumns.HashKey.ToString();
-                hashKey.DataPropertyName = DataItemMappingMetadataColumns.HashKey.ToString();
+                hashKey.Name = DataItemMappingGridColumns.HashKey.ToString();
+                hashKey.HeaderText = DataItemMappingGridColumns.HashKey.ToString();
+                hashKey.DataPropertyName = DataItemMappingGridColumns.HashKey.ToString();
                 hashKey.Visible = false;
                 Columns.Add(hashKey);
             }
 
             // Source Data Object
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.SourceDataObject.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.SourceDataObject.ToString()))
             {
                 DataGridViewTextBoxColumn sourceTable = new DataGridViewTextBoxColumn();
-                sourceTable.Name = DataItemMappingMetadataColumns.SourceDataObject.ToString();
+                sourceTable.Name = DataItemMappingGridColumns.SourceDataObject.ToString();
                 sourceTable.HeaderText = @"Source Data Object";
-                sourceTable.DataPropertyName = DataItemMappingMetadataColumns.SourceDataObject.ToString();
+                sourceTable.DataPropertyName = DataItemMappingGridColumns.SourceDataObject.ToString();
                 sourceTable.Visible = true;
                 Columns.Add(sourceTable);
             }
 
             // Source Column
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.SourceColumn.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.SourceColumn.ToString()))
             {
                 DataGridViewTextBoxColumn sourceColumn = new DataGridViewTextBoxColumn();
-                sourceColumn.Name = DataItemMappingMetadataColumns.SourceColumn.ToString();
+                sourceColumn.Name = DataItemMappingGridColumns.SourceColumn.ToString();
                 sourceColumn.HeaderText = @"Source Data Item";
-                sourceColumn.DataPropertyName = DataItemMappingMetadataColumns.SourceColumn.ToString();
+                sourceColumn.DataPropertyName = DataItemMappingGridColumns.SourceColumn.ToString();
                 sourceColumn.Visible = true;
                 Columns.Add(sourceColumn);
             }
 
             // Target Data Object
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.TargetDataObject.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.TargetDataObject.ToString()))
             {
                 DataGridViewTextBoxColumn targetTable = new DataGridViewTextBoxColumn();
-                targetTable.Name = DataItemMappingMetadataColumns.TargetDataObject.ToString();
+                targetTable.Name = DataItemMappingGridColumns.TargetDataObject.ToString();
                 targetTable.HeaderText = @"Target Data Object";
-                targetTable.DataPropertyName = DataItemMappingMetadataColumns.TargetDataObject.ToString();
+                targetTable.DataPropertyName = DataItemMappingGridColumns.TargetDataObject.ToString();
                 targetTable.Visible = true;
                 Columns.Add(targetTable);
             }
 
             // Target Column
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.TargetColumn.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.TargetColumn.ToString()))
             {
                 DataGridViewTextBoxColumn targetColumn = new DataGridViewTextBoxColumn();
-                targetColumn.Name = DataItemMappingMetadataColumns.TargetColumn.ToString();
-                targetColumn.HeaderText = DataItemMappingMetadataColumns.TargetColumn.ToString();
-                targetColumn.DataPropertyName = DataItemMappingMetadataColumns.TargetColumn.ToString();
+                targetColumn.Name = DataItemMappingGridColumns.TargetColumn.ToString();
+                targetColumn.HeaderText = DataItemMappingGridColumns.TargetColumn.ToString();
+                targetColumn.DataPropertyName = DataItemMappingGridColumns.TargetColumn.ToString();
                 targetColumn.Visible = true;
                 Columns.Add(targetColumn);
             }
 
             // Notes
-            if (!Controls.ContainsKey(DataItemMappingMetadataColumns.Notes.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.Notes.ToString()))
             {
                 DataGridViewTextBoxColumn notes = new DataGridViewTextBoxColumn();
-                notes.Name = DataItemMappingMetadataColumns.Notes.ToString();
+                notes.Name = DataItemMappingGridColumns.Notes.ToString();
                 notes.HeaderText = @"Target Data Item";
-                notes.DataPropertyName = DataItemMappingMetadataColumns.Notes.ToString();
+                notes.DataPropertyName = DataItemMappingGridColumns.Notes.ToString();
                 notes.Visible = false;
                 Columns.Add(notes);
             }
@@ -130,6 +138,133 @@ namespace TEAM
             contextMenuStrip.Size = new Size(340, 48);
 
             contextMenuStrip.ResumeLayout(false);
+            #endregion
+        }
+
+        /// <summary>
+        /// Manages the colour coding / formatting for the data item grid view.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DataGridViewDataItems_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.ColumnIndex == -1)
+                return;
+
+            // Retrieve the full row for the selected cell.
+            DataGridViewRow selectedRow = Rows[e.RowIndex];
+            DataGridViewColumn selectedColumn = Columns[e.ColumnIndex];
+
+            if (selectedColumn.Index == (int)DataItemMappingGridColumns.HashKey ||
+                selectedColumn.Index == (int)DataItemMappingGridColumns.Notes
+                )
+                return;
+
+            #region Source Data Objects
+
+            // Format the name of the data object, for a source data object
+            if (Columns[e.ColumnIndex].Name.Equals(DataItemMappingGridColumns.SourceDataObject.ToString()))
+            {
+                if (e.Value != null)
+                {
+                    DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                    string dataObjectName = e.Value.ToString();
+
+                    // Colour coding / syntax highlighting for in source data objects.
+                    if (dataObjectName.StartsWith("`"))
+                    {
+                        cell.Style.BackColor = Color.AliceBlue;
+
+                        if (dataObjectName.EndsWith("`"))
+                        {
+                            cell.Style.ForeColor = Color.DarkBlue;
+                        }
+                        else
+                        {
+                            // Show issue.
+                            cell.Style.ForeColor = Color.Red;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Target Data Object
+            // Format the name of the data object, for a target data object
+            if (Columns[e.ColumnIndex].Name.Equals(DataItemMappingGridColumns.TargetDataObject.ToString()))
+            {
+                if (e.Value != null)
+                {
+                    // Current cell
+                    DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                    string dataObjectName = e.Value.ToString();
+
+                    var targetConnectionId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                    TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                    KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, targetConnection).FirstOrDefault();
+
+                    // Only the name (e.g. without the schema) should be evaluated.
+                    string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
+
+                    if (targetDataObjectNonQualifiedName != null  && selectedRow.IsNewRow == false)
+                    {
+                        var presentationLayerLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
+                        var transformationLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.TransformationLabels);
+
+                        // Hub
+                        if (targetDataObjectNonQualifiedName.IsDataVaultHub(TeamConfiguration))
+                        {
+                            cell.Style.BackColor = Color.CornflowerBlue;
+                        }
+                        // Link-Sat
+                        else if (targetDataObjectNonQualifiedName.IsDataVaultLinkSatellite(TeamConfiguration))
+                        {
+                            cell.Style.BackColor = Color.Gold;
+                        }
+                        // Context
+                        else if (targetDataObjectNonQualifiedName.IsDataVaultSatellite(TeamConfiguration))
+                        {
+                            cell.Style.BackColor = Color.Yellow;
+                        }
+                        // Natural Business Relationship
+                        else if (targetDataObjectNonQualifiedName.IsDataVaultLink(TeamConfiguration))
+                        {
+                            cell.Style.BackColor = Color.OrangeRed;
+                        }
+                        // PSA
+                        else if (targetDataObjectNonQualifiedName.IsPsa(TeamConfiguration))
+                        {
+                            cell.Style.BackColor = Color.AntiqueWhite;
+                        }
+                        // Staging
+                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.StgTablePrefixValue)) ||
+                                 (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(TeamConfiguration.StgTablePrefixValue)))
+                        {
+                            cell.Style.BackColor = Color.WhiteSmoke;
+                        }
+                        // Presentation Layer
+                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
+                                 (TeamConfiguration.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
+                        {
+                            cell.Style.BackColor = Color.Aquamarine;
+                        }
+                        // Derived objects / transformations
+                        else if ((TeamConfiguration.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
+                                 (TeamConfiguration.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
+                        {
+                            cell.Style.BackColor = Color.LightGreen;
+                        }
+                        else
+                        {
+                            // Catch
+                        }
+                    }
+                }
+            }
+
             #endregion
         }
 

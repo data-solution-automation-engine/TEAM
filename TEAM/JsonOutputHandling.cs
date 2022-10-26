@@ -149,11 +149,11 @@ namespace TEAM
                 var columnNameFilter = "";
                 if (sourceOrTarget == "Source")
                 {
-                    columnNameFilter = MetadataHandling.QuoteStringValuesForAttributes(row.Cells[DataItemMappingMetadataColumns.SourceDataObject.ToString()].Value.ToString());
+                    columnNameFilter = MetadataHandling.QuoteStringValuesForAttributes(row.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString());
                 }
                 else if (sourceOrTarget == "Target")
                 {
-                    columnNameFilter = MetadataHandling.QuoteStringValuesForAttributes(row.Cells[DataItemMappingMetadataColumns.TargetDataObject.ToString()].Value.ToString());
+                    columnNameFilter = MetadataHandling.QuoteStringValuesForAttributes(row.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString());
                 }
 
                 //foreach (DataGridViewRow row in physicalModelGridView.Rows)

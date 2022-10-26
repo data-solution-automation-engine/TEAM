@@ -18,7 +18,7 @@ namespace TEAM_Library
     /// <summary>
     /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
     /// </summary>
-    public enum DataItemMappingMetadataColumns
+    public enum DataItemMappingGridColumns
     {
         HashKey = 0,
         SourceDataObject = 1,
@@ -48,7 +48,7 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{DataItemMappingMetadataColumns.TargetDataObject}] ASC, [{DataItemMappingMetadataColumns.TargetColumn}] ASC, [{DataItemMappingMetadataColumns.TargetDataObject}] ASC, [{DataItemMappingMetadataColumns.SourceDataObject}] ASC";
+            DataTable.DefaultView.Sort = $"[{DataItemMappingGridColumns.TargetDataObject}] ASC, [{DataItemMappingGridColumns.TargetColumn}] ASC, [{DataItemMappingGridColumns.TargetDataObject}] ASC, [{DataItemMappingGridColumns.SourceDataObject}] ASC";
         }
 
         /// <summary>
@@ -56,12 +56,12 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableColumns()
         {
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.HashKey].ColumnName = DataItemMappingMetadataColumns.HashKey.ToString();
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.SourceDataObject].ColumnName = DataItemMappingMetadataColumns.SourceDataObject.ToString();
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.SourceColumn].ColumnName = DataItemMappingMetadataColumns.SourceColumn.ToString();
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.TargetDataObject].ColumnName = DataItemMappingMetadataColumns.TargetDataObject.ToString();
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.TargetColumn].ColumnName = DataItemMappingMetadataColumns.TargetColumn.ToString();
-            DataTable.Columns[(int)DataItemMappingMetadataColumns.Notes].ColumnName = DataItemMappingMetadataColumns.Notes.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.HashKey].ColumnName = DataItemMappingGridColumns.HashKey.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.SourceDataObject].ColumnName = DataItemMappingGridColumns.SourceDataObject.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.SourceColumn].ColumnName = DataItemMappingGridColumns.SourceColumn.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.TargetDataObject].ColumnName = DataItemMappingGridColumns.TargetDataObject.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.TargetColumn].ColumnName = DataItemMappingGridColumns.TargetColumn.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.Notes].ColumnName = DataItemMappingGridColumns.Notes.ToString();
         }
 
 

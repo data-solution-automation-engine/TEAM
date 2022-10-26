@@ -50,7 +50,6 @@ namespace TEAM
             AutoGenerateColumns = false;
             ColumnHeadersVisible = true;
 
-
             Name = "dataGridViewTableMetadata";
             Location = new Point(2, 3);
             TabIndex = 1;
@@ -708,7 +707,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Sets the ToolTip text for cells in the Data Object grid view (hover over).
+        /// Manages the colour coding and sets the ToolTip text for cells in the Data Object grid view (hover over).
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1116,14 +1115,14 @@ namespace TEAM
             {
                 if (!dataItemMappingRow.IsNewRow)
                 {
-                    var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.SourceDataObject.ToString()].Value.ToString();
-                    var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.TargetDataObject.ToString()].Value.ToString();
+                    var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
+                    var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
 
                     if (localSourceDataObject == sourceDataObject.name &&
                         localTargetDataObject == targetDataObject.name)
                     {
-                        var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.SourceColumn.ToString()].Value.ToString();
-                        var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingMetadataColumns.TargetColumn.ToString()].Value.ToString();
+                        var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceColumn.ToString()].Value.ToString();
+                        var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetColumn.ToString()].Value.ToString();
 
                         List<string> sourceDataItemNames = new List<string>();
                         List<string> targetDataItemNames = new List<string>();

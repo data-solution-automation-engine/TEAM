@@ -22,7 +22,7 @@ namespace TEAM
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
 
-            EditMode = DataGridViewEditMode.EditOnEnter;
+            EditMode = DataGridViewEditMode.EditOnKeystroke;
 
             var mySize = new Size(1100, 540);
             MinimumSize = mySize;

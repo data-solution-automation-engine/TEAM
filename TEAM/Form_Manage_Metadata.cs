@@ -121,7 +121,7 @@ namespace TEAM
         /// </summary>
         private void SetDataItemGridView()
         {
-            _dataGridViewDataItems = new DataGridViewDataItems();
+            _dataGridViewDataItems = new DataGridViewDataItems(TeamConfiguration);
             ((ISupportInitialize)(_dataGridViewDataItems)).BeginInit();
 
             // Add tab page.
@@ -1134,36 +1134,36 @@ namespace TEAM
                         if ((row.RowState & DataRowState.Modified) != 0)
                         {
                             //Grab the attributes into local variables
-                            var hashKey = (string) row[DataItemMappingMetadataColumns.HashKey.ToString()];
+                            var hashKey = (string) row[DataItemMappingGridColumns.HashKey.ToString()];
                             var stagingTable = "";
                             var stagingColumn = "";
                             var integrationTable = "";
                             var integrationColumn = "";
                             var notes = "";
 
-                            if (row[DataItemMappingMetadataColumns.SourceDataObject.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingGridColumns.SourceDataObject.ToString()] != DBNull.Value)
                             {
-                                stagingTable = (string) row[DataItemMappingMetadataColumns.SourceDataObject.ToString()];
+                                stagingTable = (string) row[DataItemMappingGridColumns.SourceDataObject.ToString()];
                             }
 
-                            if (row[DataItemMappingMetadataColumns.SourceColumn.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingGridColumns.SourceColumn.ToString()] != DBNull.Value)
                             {
-                                stagingColumn = (string) row[DataItemMappingMetadataColumns.SourceColumn.ToString()];
+                                stagingColumn = (string) row[DataItemMappingGridColumns.SourceColumn.ToString()];
                             }
 
-                            if (row[DataItemMappingMetadataColumns.TargetDataObject.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingGridColumns.TargetDataObject.ToString()] != DBNull.Value)
                             {
-                                integrationTable = (string) row[DataItemMappingMetadataColumns.TargetDataObject.ToString()];
+                                integrationTable = (string) row[DataItemMappingGridColumns.TargetDataObject.ToString()];
                             }
 
-                            if (row[DataItemMappingMetadataColumns.TargetColumn.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingGridColumns.TargetColumn.ToString()] != DBNull.Value)
                             {
-                                integrationColumn = (string) row[DataItemMappingMetadataColumns.TargetColumn.ToString()];
+                                integrationColumn = (string) row[DataItemMappingGridColumns.TargetColumn.ToString()];
                             }
 
-                            if (row[DataItemMappingMetadataColumns.Notes.ToString()] != DBNull.Value)
+                            if (row[DataItemMappingGridColumns.Notes.ToString()] != DBNull.Value)
                             {
-                                notes = (string) row[DataItemMappingMetadataColumns.Notes.ToString()];
+                                notes = (string) row[DataItemMappingGridColumns.Notes.ToString()];
                             }
 
                             try
@@ -1210,29 +1210,29 @@ namespace TEAM
                             var targetColumn = "";
                             var notes = "";
 
-                            if (row[(int) DataItemMappingMetadataColumns.SourceDataObject] != DBNull.Value)
+                            if (row[(int) DataItemMappingGridColumns.SourceDataObject] != DBNull.Value)
                             {
-                                sourceTable = (string) row[(int) DataItemMappingMetadataColumns.SourceDataObject];
+                                sourceTable = (string) row[(int) DataItemMappingGridColumns.SourceDataObject];
                             }
 
-                            if (row[(int) DataItemMappingMetadataColumns.SourceColumn] != DBNull.Value)
+                            if (row[(int) DataItemMappingGridColumns.SourceColumn] != DBNull.Value)
                             {
-                                sourceColumn = (string) row[(int) DataItemMappingMetadataColumns.SourceColumn];
+                                sourceColumn = (string) row[(int) DataItemMappingGridColumns.SourceColumn];
                             }
 
-                            if (row[(int) DataItemMappingMetadataColumns.TargetDataObject] != DBNull.Value)
+                            if (row[(int) DataItemMappingGridColumns.TargetDataObject] != DBNull.Value)
                             {
-                                targetTable = (string) row[(int) DataItemMappingMetadataColumns.TargetDataObject];
+                                targetTable = (string) row[(int) DataItemMappingGridColumns.TargetDataObject];
                             }
 
-                            if (row[(int) DataItemMappingMetadataColumns.TargetColumn] != DBNull.Value)
+                            if (row[(int) DataItemMappingGridColumns.TargetColumn] != DBNull.Value)
                             {
-                                targetColumn = (string) row[(int) DataItemMappingMetadataColumns.TargetColumn];
+                                targetColumn = (string) row[(int) DataItemMappingGridColumns.TargetColumn];
                             }
 
-                            if (row[(int) DataItemMappingMetadataColumns.Notes] != DBNull.Value)
+                            if (row[(int) DataItemMappingGridColumns.Notes] != DBNull.Value)
                             {
-                                notes = (string) row[(int) DataItemMappingMetadataColumns.Notes];
+                                notes = (string) row[(int) DataItemMappingGridColumns.Notes];
                             }
 
                             try
@@ -1268,7 +1268,7 @@ namespace TEAM
                                 File.WriteAllText(outputFileName, output);
 
                                 //Making sure the hash key value is added to the data table as well
-                                row[(int) DataItemMappingMetadataColumns.HashKey] = hashKey;
+                                row[(int) DataItemMappingGridColumns.HashKey] = hashKey;
 
                             }
                             catch (JsonReaderException ex)
@@ -1283,7 +1283,7 @@ namespace TEAM
                         // Deletes
                         if ((row.RowState & DataRowState.Deleted) != 0)
                         {
-                            var hashKey = row[DataItemMappingMetadataColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
+                            var hashKey = row[DataItemMappingGridColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
 
                             try
                             {
@@ -2335,12 +2335,12 @@ namespace TEAM
             {
                 row.Visible = true;
 
-                if (row.Cells[(int)DataItemMappingMetadataColumns.TargetDataObject].Value != null)
+                if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
                 {
-                    if (!row.Cells[(int)DataItemMappingMetadataColumns.SourceDataObject].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingMetadataColumns.SourceColumn].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingMetadataColumns.TargetDataObject].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingMetadataColumns.TargetColumn].Value.ToString().Contains(filterCriterion))
+                    if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)DataItemMappingGridColumns.SourceColumn].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion) &&
+                        !row.Cells[(int)DataItemMappingGridColumns.TargetColumn].Value.ToString().Contains(filterCriterion))
                     {
                         CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
                         currencyManager.SuspendBinding();
@@ -2618,18 +2618,18 @@ namespace TEAM
             foreach (DataRow row in localDataItemTable.Rows)
             {
                 // Look for the corresponding Data Object Mapping row.
-                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable, row[DataItemMappingMetadataColumns.SourceDataObject.ToString()].ToString(), row[DataItemMappingMetadataColumns.TargetDataObject.ToString()].ToString());
+                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable, row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString(), row[DataItemMappingGridColumns.TargetDataObject.ToString()].ToString());
 
                 if (dataObjectRow.Item1 == "True") //If the corresponding Data Object is enabled
                 {
                     string objectValidated = "";
-                    var validationObjectSource = row[DataItemMappingMetadataColumns.SourceDataObject.ToString()].ToString();
+                    var validationObjectSource = row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString();
                     TeamConnection sourceConnection = dataObjectRow.Item3;
-                    var validationAttributeSource = row[DataItemMappingMetadataColumns.SourceColumn.ToString()].ToString();
+                    var validationAttributeSource = row[DataItemMappingGridColumns.SourceColumn.ToString()].ToString();
 
-                    var validationObjectTarget = row[DataItemMappingMetadataColumns.TargetDataObject.ToString()].ToString();
+                    var validationObjectTarget = row[DataItemMappingGridColumns.TargetDataObject.ToString()].ToString();
                     TeamConnection targetConnection = dataObjectRow.Item5;
-                    var validationAttributeTarget = row[DataItemMappingMetadataColumns.TargetColumn.ToString()].ToString();
+                    var validationAttributeTarget = row[DataItemMappingGridColumns.TargetColumn.ToString()].ToString();
 
                     var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString();
 
@@ -2886,8 +2886,8 @@ namespace TEAM
 
             foreach (DataRow row in localDataTableAttributeMappings.Rows)
             {
-                var localSource = (string) row[DataItemMappingMetadataColumns.SourceDataObject.ToString()];
-                var localTarget = (string) row[DataItemMappingMetadataColumns.TargetDataObject.ToString()];
+                var localSource = (string) row[DataItemMappingGridColumns.SourceDataObject.ToString()];
+                var localTarget = (string) row[DataItemMappingGridColumns.TargetDataObject.ToString()];
 
                 // If the value exists, but is disabled just a warning is sufficient.
                 // If the value does not exist for an enabled mapping or at all, then it's an error.
@@ -4366,10 +4366,10 @@ namespace TEAM
                         var results =
                             from localRow in localDataItemDataTable.AsEnumerable()
                             where
-                                localRow.Field<string>(DataItemMappingMetadataColumns.SourceDataObject.ToString()) == matchedDataItemMappingFromDatabase.sourceDataObjectName &&
-                                localRow.Field<string>(DataItemMappingMetadataColumns.TargetDataObject.ToString()) == matchedDataItemMappingFromDatabase.targetDataObjectName &&
-                                localRow.Field<string>(DataItemMappingMetadataColumns.SourceColumn.ToString()) == matchedDataItemMappingFromDatabase.sourceDataItemName &&
-                                localRow.Field<string>(DataItemMappingMetadataColumns.TargetColumn.ToString()) == matchedDataItemMappingFromDatabase.targetDataItemName
+                                localRow.Field<string>(DataItemMappingGridColumns.SourceDataObject.ToString()) == matchedDataItemMappingFromDatabase.sourceDataObjectName &&
+                                localRow.Field<string>(DataItemMappingGridColumns.TargetDataObject.ToString()) == matchedDataItemMappingFromDatabase.targetDataObjectName &&
+                                localRow.Field<string>(DataItemMappingGridColumns.SourceColumn.ToString()) == matchedDataItemMappingFromDatabase.sourceDataItemName &&
+                                localRow.Field<string>(DataItemMappingGridColumns.TargetColumn.ToString()) == matchedDataItemMappingFromDatabase.targetDataItemName
                             select localRow;
 
                         if (results.FirstOrDefault() == null)
@@ -4379,12 +4379,12 @@ namespace TEAM
 
                             DataRow newRow = localDataItemDataTable.NewRow();
 
-                            newRow[DataItemMappingMetadataColumns.HashKey.ToString()] = Utility.CreateMd5(new string[] {Utility.GetRandomString(100)}, "#");
-                            newRow[DataItemMappingMetadataColumns.SourceDataObject.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
-                            newRow[DataItemMappingMetadataColumns.SourceColumn.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
-                            newRow[DataItemMappingMetadataColumns.TargetDataObject.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
-                            newRow[DataItemMappingMetadataColumns.TargetColumn.ToString()] = matchedDataItemMappingFromDatabase.targetDataItemName;
-                            newRow[DataItemMappingMetadataColumns.Notes.ToString()] = "Automatically matched";
+                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new string[] {Utility.GetRandomString(100)}, "#");
+                            newRow[DataItemMappingGridColumns.SourceDataObject.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
+                            newRow[DataItemMappingGridColumns.SourceColumn.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
+                            newRow[DataItemMappingGridColumns.TargetDataObject.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
+                            newRow[DataItemMappingGridColumns.TargetColumn.ToString()] = matchedDataItemMappingFromDatabase.targetDataItemName;
+                            newRow[DataItemMappingGridColumns.Notes.ToString()] = "Automatically matched";
 
                             localDataItemDataTable.Rows.Add(newRow);
                             //localDataItemDataTable.AcceptChanges();
