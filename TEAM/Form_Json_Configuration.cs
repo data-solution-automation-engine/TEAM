@@ -59,10 +59,10 @@ namespace TEAM
 
             #region Data Objects
             // GenerateTypeAsClassification
-            EvaluateJsonExportCheckbox(checkBoxAddType, JsonExportSetting.GenerateTypeAsClassification, ref issueCounter);
+            EvaluateJsonExportCheckbox(checkBoxAddType, JsonExportSetting.AddTypeAsClassification, ref issueCounter);
 
             // GenerateDataObjectDataItems
-            EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.GenerateDataObjectDataItems, ref issueCounter);
+            EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.AddDataObjectDataItems, ref issueCounter);
 
             // GenerateDataObjectConnection
             switch (JsonExportSetting.AddDataObjectConnection)
@@ -71,10 +71,10 @@ namespace TEAM
                     checkBoxSourceConnectionKey.Checked = true;
 
                     // GenerateDatabaseAsExtension
-                    EvaluateJsonExportCheckbox(checkBoxDatabaseExtension, JsonExportSetting.GenerateDatabaseAsExtension, ref issueCounter);
+                    EvaluateJsonExportCheckbox(checkBoxDatabaseExtension, JsonExportSetting.AddDatabaseAsExtension, ref issueCounter);
 
                     // GenerateSchemaAsExtension
-                    EvaluateJsonExportCheckbox(checkBoxSchemaExtension, JsonExportSetting.GenerateSchemaAsExtension, ref issueCounter);
+                    EvaluateJsonExportCheckbox(checkBoxSchemaExtension, JsonExportSetting.AddSchemaAsExtension, ref issueCounter);
 
                     break;
                 case "False":
@@ -170,19 +170,19 @@ namespace TEAM
 
                 // GenerateDataObjectDataItems
                 var stringDataObjectDataItems = checkBoxDataObjectDataItems.Checked ? "True" : "False";
-                JsonExportSetting.GenerateDataObjectDataItems = stringDataObjectDataItems;
+                JsonExportSetting.AddDataObjectDataItems = stringDataObjectDataItems;
 
                 // GenerateDatabaseAsExtension
                 var stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
-                JsonExportSetting.GenerateDatabaseAsExtension = stringDatabaseExtension;
+                JsonExportSetting.AddDatabaseAsExtension = stringDatabaseExtension;
 
                 // GenerateSchemaAsExtension
                 var stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
-                JsonExportSetting.GenerateSchemaAsExtension = stringSchemaExtension;
+                JsonExportSetting.AddSchemaAsExtension = stringSchemaExtension;
 
                 // GenerateTypeAsClassification
                 var stringTypeClassification = checkBoxAddType.Checked ? "True" : "False";
-                JsonExportSetting.GenerateTypeAsClassification = stringTypeClassification;
+                JsonExportSetting.AddTypeAsClassification = stringTypeClassification;
 
                 // GenerateDataItemDataTypes
                 var stringSourceDataTypes = checkBoxDataItemDataType.Checked ? "True" : "False";

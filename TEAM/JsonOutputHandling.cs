@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
@@ -39,10 +38,17 @@ namespace TEAM
             localDataObject = SetDataObjectSchemaExtension(localDataObject, teamConnection, jsonExportSetting);
 
             // Add classifications.
-            localDataObject = SetDataObjectTypeClassification(localDataObject, jsonExportSetting);
+            if (dataObjectName == "Metadata")
+            {
+                localDataObject = SetDataObjectTypeClassification(localDataObject, jsonExportSetting, "Metadata");
+            }
+            else
+            {
+                localDataObject = SetDataObjectTypeClassification(localDataObject, jsonExportSetting);
+            }
 
             // Only add if setting is enabled.
-            if (jsonExportSetting.GenerateDataObjectDataItems == "True")
+            if (jsonExportSetting.AddDataObjectDataItems == "True")
             {
                 var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
 
@@ -72,6 +78,7 @@ namespace TEAM
                     dataItems.Add(dataItem);
                 }
 
+
                 localDataObject.dataItems = dataItems;
             }
 
@@ -84,7 +91,7 @@ namespace TEAM
         /// <param name="dataObjectName"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        internal static List<Classification> AddMappingClassifications(string dataObjectName, TeamConfiguration teamConfiguration)
+        internal static List<Classification> AddMappingClassifications(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
         {
             var tableType = MetadataHandling.GetDataObjectType(dataObjectName, "", teamConfiguration);
 
@@ -103,7 +110,8 @@ namespace TEAM
         {
             List<DataObject> relatedDataObjects = new List<DataObject>();
 
-            #region Add metadata connection as related data object.
+            #region Add metadata connection as related data object
+
             // Add the metadata connection as related data object (assuming this is set in the json export settings).
             if (jsonExportSetting.IsAddMetadataAsRelatedDataObject())
             {
@@ -229,6 +237,12 @@ namespace TEAM
                 }
             }
         }
+       
+        /// <summary>
+        /// Extension method to infer the target path for a given string value (should be a target data object name).
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static string GetMetadataFilePath(this string fileName)
         {
             return GlobalParameters.MetadataPath + fileName + ".json";
@@ -295,7 +309,7 @@ namespace TEAM
         /// <param name="dataItem"></param>
         /// <param name="dataObject"></param>
         /// <param name="jsonExportSetting"></param>
-        internal static void AddParentDataObjectToDataItem(DataItem dataItem, DataObject dataObject, JsonExportSetting jsonExportSetting)
+        internal static void SetParentDataObjectToDataItem(DataItem dataItem, DataObject dataObject, JsonExportSetting jsonExportSetting)
         {
             if (jsonExportSetting.IsAddParentDataObject())
             {
@@ -349,7 +363,7 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject SetDataObjectDatabaseExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            if (jsonExportSetting.GenerateDatabaseAsExtension == "True" && jsonExportSetting.AddDataObjectConnection == "True" && dataObject.dataObjectConnection != null)
+            if (jsonExportSetting.IsAddDatabaseAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataObject.dataObjectConnection != null)
             {
                 List<Extension> extensions = new List<Extension>();
                 
@@ -384,7 +398,7 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject SetDataObjectSchemaExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            if (jsonExportSetting.GenerateSchemaAsExtension == "True" && jsonExportSetting.AddDataObjectConnection == "True" && dataObject.dataObjectConnection != null)
+            if (jsonExportSetting.AddSchemaAsExtension == "True" && jsonExportSetting.AddDataObjectConnection == "True" && dataObject.dataObjectConnection != null)
             {
                 List<Extension> extensions = new List<Extension>();
 
@@ -409,33 +423,85 @@ namespace TEAM
 
             return dataObject;
         }
-        
+
         /// <summary>
         /// Updates an input DataObject with a classification based on its type, evaluated by its name against defined conventions.
         /// </summary>
         /// <param name="dataObject"></param>
         /// <param name="jsonExportSetting"></param>
+        /// <param name="classificationOverrideValue"></param>
         /// <returns></returns>
-        public static DataObject SetDataObjectTypeClassification(DataObject dataObject, JsonExportSetting jsonExportSetting)
+        public static DataObject SetDataObjectTypeClassification(DataObject dataObject, JsonExportSetting jsonExportSetting, string classificationOverrideValue=null)
         {
-            if (jsonExportSetting.GenerateTypeAsClassification == "True")
+            var dataObjectType = "";
+
+            if (classificationOverrideValue != null)
+            {
+                dataObjectType = classificationOverrideValue;
+            }
+            else
+            {
+                dataObjectType = MetadataHandling.GetDataObjectType(dataObject.name, "", FormBase.TeamConfiguration).ToString();
+            }
+
+            if (!jsonExportSetting.IsAddTypeAsClassification())
+            {
+                // Remove an existing classification, if indeed existing.
+                // If no classifications exists, do nothing. Otherwise check if one needs removal.
+                if (dataObject.dataObjectClassifications != null)
+                {
+                    List<Classification> localClassifications = new List<Classification>();
+
+                    foreach (var classification in dataObject.dataObjectClassifications)
+                    {
+                        if (classification.classification != dataObjectType)
+                        {
+                            localClassifications.Add(classification);
+                        }
+                    }
+
+                    // If there's any left, re-add them. Otherwise set to empty.
+                    if (localClassifications.Count > 0)
+                    {
+                        dataObject.dataObjectClassifications = localClassifications;
+                    }
+                    else
+                    {
+                        dataObject.dataObjectClassifications = null;
+                    }
+
+                }
+            }
+            else
             {
                 List<Classification> localClassifications = new List<Classification>();
+
+                // Copy any existing classifications already in place, if any.
+                if (dataObject.dataObjectClassifications != null)
+                {
+                    localClassifications = dataObject.dataObjectClassifications;
+                }
+
                 Classification localClassification = new Classification();
-                
-                var tableType = MetadataHandling.GetDataObjectType(dataObject.name, "", FormBase.TeamConfiguration);
-                localClassification.classification = tableType.ToString();
 
-                localClassifications.Add(localClassification);
+                localClassification.classification = dataObjectType;
 
-                if (dataObject.dataObjectClassifications is null)
+                // Check if this particular classification already exists before adding.
+                bool classificationExists = false;
+                foreach (var classification in localClassifications)
                 {
-                    dataObject.dataObjectClassifications = localClassifications;
+                    if (classification.classification == dataObjectType)
+                    {
+                        classificationExists = true;
+                    }
                 }
-                else
+
+                if (classificationExists == false)
                 {
-                    dataObject.dataObjectClassifications.AddRange(localClassifications);
+                    localClassifications.Add(localClassification);
                 }
+
+                dataObject.dataObjectClassifications = localClassifications;
             }
 
             return dataObject;
@@ -444,7 +510,6 @@ namespace TEAM
         /// <summary>
         /// Creates the special-type metadata Data Object;
         /// </summary>
-        /// <param name="metaDataConnection"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
@@ -455,12 +520,6 @@ namespace TEAM
             if (jsonExportSetting.AddMetadataAsRelatedDataObject == "True")
             {
                 localDataObject = CreateDataObject("Metadata", teamConfiguration.MetadataConnection, jsonExportSetting, teamConfiguration);
-
-                // Override classification
-                if (jsonExportSetting.GenerateTypeAsClassification == "True")
-                {
-                    localDataObject.dataObjectClassifications[0].classification = "Metadata";
-                }
             }
 
             return localDataObject;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 using DataWarehouseAutomation;
 using DataObject = DataWarehouseAutomation.DataObject;
@@ -152,7 +151,7 @@ namespace TEAM_Library
             
             // Initialise the return value
             string surrogateKey = "";
-            string newTableName = fullyQualifiedName.Value;
+            string newDataObjectName = fullyQualifiedName.Value;
             string keyLocation = teamConfiguration.DwhKeyIdentifier;
 
             string[] prefixSuffixArray = {
@@ -162,16 +161,16 @@ namespace TEAM_Library
                 teamConfiguration.LsatTablePrefixValue
             };
 
-            if (newTableName != "Not applicable")
+            if (newDataObjectName != "Not applicable")
             {
                 // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
                 if (teamConfiguration.TableNamingLocation == "Prefix")
                 {
                     foreach (string prefixValue in prefixSuffixArray)
                     {
-                        if (newTableName.StartsWith(prefixValue))
+                        if (newDataObjectName.StartsWith(prefixValue))
                         {
-                            newTableName = newTableName.Replace(prefixValue, "");
+                            newDataObjectName = newDataObjectName.Replace(prefixValue, "");
                         }
                     }
                 }
@@ -179,24 +178,24 @@ namespace TEAM_Library
                 {
                     foreach (string suffixValue in prefixSuffixArray)
                     {
-                        if (newTableName.EndsWith(suffixValue))
+                        if (newDataObjectName.EndsWith(suffixValue))
                         {
-                            newTableName = newTableName.Replace(suffixValue, "");
+                            newDataObjectName = newDataObjectName.Replace(suffixValue, "");
                         }
                     }
                 }
 
-
                 // Define the surrogate key using the table name and key prefix/suffix settings.
                 if (teamConfiguration.KeyNamingLocation == "Prefix")
                 {
-                    surrogateKey = keyLocation + newTableName;
+                    surrogateKey = keyLocation + newDataObjectName;
                 }
                 else
                 {
-                    surrogateKey = newTableName + keyLocation;
+                    surrogateKey = newDataObjectName + keyLocation;
                 }
             }
+
             return surrogateKey;
         }
         

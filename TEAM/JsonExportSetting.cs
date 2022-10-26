@@ -14,10 +14,10 @@ namespace TEAM
     {
         // Data Objects
         public string AddDataObjectConnection { get; set; }
-        public string GenerateDatabaseAsExtension { get; set; }
-        public string GenerateSchemaAsExtension { get; set; }
-        public string GenerateTypeAsClassification { get; set; }
-        public string GenerateDataObjectDataItems { get; set; }
+        public string AddDatabaseAsExtension { get; set; }
+        public string AddSchemaAsExtension { get; set; }
+        public string AddTypeAsClassification { get; set; }
+        public string AddDataObjectDataItems { get; set; }
 
         // Data Items
         public string AddDataItemDataTypes { get; set; }
@@ -27,62 +27,65 @@ namespace TEAM
         public string AddMetadataAsRelatedDataObject { get; set; }
         public string AddRelatedDataObjectsAsRelatedDataObject { get; set; }
 
-        public bool IsAddParentDataObject()
+        public bool IsAddDataObjectConnection()
         {
-            bool returnValue = false;
+            bool returnValue = AddDataObjectConnection == "True";
 
-            if (AddParentDataObject == "True")
-            {
-                returnValue = true;
-            }
+            return returnValue;
+        }
+
+        public bool IsAddDatabaseAsExtension()
+        {
+            bool returnValue = AddDatabaseAsExtension == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddSchemaAsExtension()
+        {
+            bool returnValue = AddSchemaAsExtension == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddTypeAsClassification()
+        {
+            bool returnValue = AddTypeAsClassification == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddDataObjectDataItems()
+        {
+            bool returnValue = AddDataObjectDataItems == "True";
 
             return returnValue;
         }
 
         public bool IsAddDataItemDataTypes()
         {
-            bool returnValue = false;
-
-            if (AddDataItemDataTypes == "True")
-            {
-                returnValue = true;
-            }
+            bool returnValue = AddDataItemDataTypes == "True";
 
             return returnValue;
         }
 
-        public bool IsAddDataObjectConnection()
+        public bool IsAddParentDataObject()
         {
-            bool returnValue = false;
-
-            if (AddDataObjectConnection == "True")
-            {
-                returnValue = true;
-            }
+            bool returnValue = AddParentDataObject == "True";
 
             return returnValue;
         }
 
         public bool IsAddMetadataAsRelatedDataObject()
         {
-            bool returnValue = false;
-
-            if (AddMetadataAsRelatedDataObject == "True")
-            {
-                returnValue = true;
-            }
+            bool returnValue = AddMetadataAsRelatedDataObject == "True";
 
             return returnValue;
         }
 
         public bool IsAddRelatedDataObjectsAsRelatedDataObject()
         {
-            bool returnValue = false;
-
-            if (AddRelatedDataObjectsAsRelatedDataObject == "True")
-            {
-                returnValue = true;
-            }
+            bool returnValue = AddRelatedDataObjectsAsRelatedDataObject == "True";
 
             return returnValue;
         }
@@ -113,10 +116,10 @@ namespace TEAM
                 fileStream.Close();
 
                 AddDataObjectConnection = configList["GenerateDataObjectConnection"];
-                GenerateDataObjectDataItems = configList["GenerateDataObjectDataItems"];
-                GenerateDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
-                GenerateSchemaAsExtension = configList["GenerateSchemaAsExtension"];
-                GenerateTypeAsClassification = configList["GenerateTypeAsClassification"];
+                AddDataObjectDataItems = configList["GenerateDataObjectDataItems"];
+                AddDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
+                AddSchemaAsExtension = configList["GenerateSchemaAsExtension"];
+                AddTypeAsClassification = configList["GenerateTypeAsClassification"];
 
                 AddDataItemDataTypes = configList["GenerateDataItemDataTypes"];
                 AddParentDataObject = configList["GenerateParentDataObject"];
@@ -146,10 +149,10 @@ namespace TEAM
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
                 validationFile.AppendLine("GenerateDataObjectConnection|" + AddDataObjectConnection + "");
-                validationFile.AppendLine("GenerateDataObjectDataItems|" + GenerateDataObjectDataItems + "");
-                validationFile.AppendLine("GenerateDatabaseAsExtension|" + GenerateDatabaseAsExtension + "");
-                validationFile.AppendLine("GenerateSchemaAsExtension|" + GenerateSchemaAsExtension + "");
-                validationFile.AppendLine("GenerateTypeAsClassification|" + GenerateTypeAsClassification + "");
+                validationFile.AppendLine("GenerateDataObjectDataItems|" + AddDataObjectDataItems + "");
+                validationFile.AppendLine("GenerateDatabaseAsExtension|" + AddDatabaseAsExtension + "");
+                validationFile.AppendLine("GenerateSchemaAsExtension|" + AddSchemaAsExtension + "");
+                validationFile.AppendLine("GenerateTypeAsClassification|" + AddTypeAsClassification + "");
 
                 validationFile.AppendLine("GenerateDataItemDataTypes|" + AddDataItemDataTypes + "");
                 validationFile.AppendLine("GenerateParentDataObject|" + AddParentDataObject + "");

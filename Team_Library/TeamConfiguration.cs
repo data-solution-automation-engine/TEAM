@@ -97,7 +97,6 @@ namespace TEAM_Library
         public MetadataRepositoryStorageType MetadataRepositoryType { get; } = MetadataRepositoryStorageType.Json;
         public EnvironmentModes EnvironmentMode { get; set; } 
 
-
         public TeamConfiguration()
         {
             ConnectionDictionary = new Dictionary<string, TeamConnection>();

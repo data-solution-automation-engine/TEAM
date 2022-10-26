@@ -35,9 +35,11 @@ namespace TEAM
             Name = "dataGridPhysicalModel";
             Location = new Point(2, 3);
             TabIndex = 3;
+
             #endregion
 
             #region Columns
+
             // Hash Key
             if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Row_Checksum.ToString()))
             {
@@ -172,8 +174,10 @@ namespace TEAM
             #endregion
 
             #region Event Handlers
+
             KeyDown += DataGridView_KeyDown;
             MouseDown += DataGridView_MouseDown;
+
             #endregion
 
             #region Context menu

@@ -9,10 +9,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using TEAM_Library;
+using static TEAM.DataGridViewDataObjects;
 using DataObject = DataWarehouseAutomation.DataObject;
 using EventLog = TEAM_Library.EventLog;
 using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
@@ -97,6 +99,8 @@ namespace TEAM
             _dataGridViewDataObjects = new DataGridViewDataObjects(TeamConfiguration, JsonExportSetting);
             ((ISupportInitialize)(_dataGridViewDataObjects)).BeginInit();
 
+            _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
+
             // Add tab page.
             tabPageDataObjectMapping = new TabPage();
             tabPageDataObjectMapping.SuspendLayout();
@@ -111,9 +115,14 @@ namespace TEAM
             tabPageDataObjectMapping.TabIndex = 0;
             tabPageDataObjectMapping.Text = @"Data Object (Table) Mappings";
             tabPageDataObjectMapping.UseVisualStyleBackColor = true;
-
+            
             tabPageDataObjectMapping.ResumeLayout(false);
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
+        }
+
+        private void InformOnDataObjectsResult(object sender, ParseEventArgs e)
+        {
+            richTextBoxInformation.Text = e.Text;
         }
 
         /// <summary>
@@ -651,18 +660,18 @@ namespace TEAM
                         var previousDataObjectName = (string)row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()];
 
                         // Figure out the current / new file name based on the available data (post-change).
-                        var newDataObjectName = (string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
+                        var newDataObject = (DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
 
                         // If there is no change in the file name / target data object name, the change must be made in an existing file.
                         // If there is a change, the values must be written to a new or other file and an existing segment must be removed.
 
-                        if (previousDataObjectName == newDataObjectName)
+                        if (previousDataObjectName == newDataObject.name)
                         {
                             // A file already exists, and must only be updated.
                             try
                             {
                                 // A new file is created and/or an existing one updated to remove a segment.
-                                WriteDataObjectMappingsToFile(newDataObjectName);
+                                WriteDataObjectMappingsToFile(newDataObject);
                             }
                             catch (JsonReaderException ex)
                             {
@@ -674,7 +683,7 @@ namespace TEAM
                             try
                             {
                                 // Write the new file.
-                                WriteDataObjectMappingsToFile(newDataObjectName);
+                                WriteDataObjectMappingsToFile(newDataObject);
 
                                 // Update the old file, and/or delete if there are no segments left
                                 WriteDataObjectMappingsToFile(previousDataObjectName);
@@ -694,12 +703,12 @@ namespace TEAM
                     if ((row.RowState & DataRowState.Added) != 0)
                     {
                         // Figure out the current / new file name based on the available data (post-change).
-                        var newDataObjectName = (string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
+                        var newDataObject = (DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
 
                         try
                         {
                             // A new file is created and/or an existing one updated to remove a segment.
-                            WriteDataObjectMappingsToFile(newDataObjectName);
+                            WriteDataObjectMappingsToFile(newDataObject);
                         }
                         catch (JsonReaderException ex)
                         {
@@ -715,12 +724,12 @@ namespace TEAM
                     if ((row.RowState & DataRowState.Deleted) != 0)
                     {
                         // Figure out the current / new file name based on the available data (post-change).
-                        var newDataObjectName = (string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString(), DataRowVersion.Original];
+                        var newDataObject = (DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString(), DataRowVersion.Original];
 
                         try
                         {
                             // A new file is created and/or an existing one updated to remove a segment.
-                            WriteDataObjectMappingsToFile(newDataObjectName);
+                            WriteDataObjectMappingsToFile(newDataObject);
                         }
                         catch (JsonReaderException ex)
                         {
@@ -733,45 +742,63 @@ namespace TEAM
             }
         }
 
+
+
         /// <summary>
         /// Convenience method to wrap the creation of the data object mappings and addition of VDW specific context as well as writing to disk in one call.
         /// </summary>
-        /// <param name="targetDataObjectName"></param>
-        private void WriteDataObjectMappingsToFile(string targetDataObjectName)
+        /// <param name="targetDataObject"></param>
+        internal void WriteDataObjectMappingsToFile(DataObject targetDataObject)
         {
-            var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObjectName);
+            var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObject);
 
             if (dataObjectMappings.Count > 0)
             {
-                // TODO Get the target update from the grid based on the name, get the data items, and pass it further
-                var localDataObject = new DataObject();
-
-                var vdwDataObjectMappingList = GetVdwDataObjectMappingList(localDataObject, dataObjectMappings);
+                var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(targetDataObjectName.GetMetadataFilePath(), output);
+                File.WriteAllText(targetDataObject.name.GetMetadataFilePath(), output);
 
-                #region Statement execution
-
-                // Execute the statement. If the source is JSON this is done in separate calls for now
-
-                // Committing the changes to the data table - making sure new changes can be picked up
-                // AcceptChanges will clear all New, Deleted and/or Modified settings
-                //dataTableChanges.AcceptChanges();
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
-                #endregion
-
-                richTextBoxInformation.Text += $"The Data Object Mapping for '{targetDataObjectName}' has been saved.\r\n";
+                ThreadHelperClass.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
             }
             else
             {
-                var fileToDelete = targetDataObjectName.GetMetadataFilePath();
+                var fileToDelete = targetDataObject.name.GetMetadataFilePath();
                 File.Delete(fileToDelete);
             }
         }
 
-        private static VDW_DataObjectMappingList GetVdwDataObjectMappingList(DataObject targetDataObject, List<DataObjectMapping> dataObjectMappings)
+        /// <summary>
+        /// Override to be able to accept string name values for the data object.
+        /// </summary>
+        /// <param name="targetDataObjectName"></param>
+        internal void WriteDataObjectMappingsToFile(string targetDataObjectName)
+        {
+            var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObjectName);
+
+            var targetDataObject = dataObjectMappings[0].targetDataObject;
+
+            if (dataObjectMappings.Count > 0)
+            {
+                var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
+
+                string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
+                File.WriteAllText(targetDataObject.name.GetMetadataFilePath(), output);
+
+                ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
+
+                richTextBoxInformation.Text += $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n";
+            }
+            else
+            {
+                var fileToDelete = targetDataObject.name.GetMetadataFilePath();
+                File.Delete(fileToDelete);
+            }
+        }
+
+        internal static VDW_DataObjectMappingList GetVdwDataObjectMappingList(DataObject targetDataObject, List<DataObjectMapping> dataObjectMappings)
         {
             // Create an instance of the non-generic information i.e. VDW specific. For example the generation date/time.
             GenerationSpecificMetadata vdwMetadata = new GenerationSpecificMetadata(targetDataObject);
@@ -1543,31 +1570,11 @@ namespace TEAM
 
                         try
                         {
-                            // A new file is created and/or an existing one updated to remove a segment
-                            var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObjectName);
-
-                            // Create an instance of the non-generic information i.e. VDW specific. For example the generation date/time.
-
                             var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
 
+                            WriteDataObjectMappingsToFile(targetDataObject);
 
-                            GenerationSpecificMetadata vdwMetadata = new GenerationSpecificMetadata(targetDataObject);
-                            MetadataConfiguration metadataConfiguration = new MetadataConfiguration(TeamConfiguration);
-
-                            VDW_DataObjectMappingList sourceTargetMappingList = new VDW_DataObjectMappingList
-                            {
-                                dataObjectMappings = dataObjectMappings,
-                                generationSpecificMetadata = vdwMetadata,
-                                metadataConfiguration = metadataConfiguration
-                            };
-
-                            string output = JsonConvert.SerializeObject(sourceTargetMappingList, Formatting.Indented);
-
-                            // Write the updated JSON file to disk. NOTE - DOES NOT ALWAYS WORK WHEN FILE IS OPEN IN NOTEPAD AND DOES NOT RAISE EXCEPTION
-                            string filePath = GlobalParameters.MetadataPath + targetDataObjectName + ".json";
-                            File.WriteAllText(filePath, output);
-
-                            LogMetadataEvent($"  --> Saved as '{filePath}'.", EventTypes.Information);
+                            LogMetadataEvent($"  --> Saved as '{targetDataObject.name.GetMetadataFilePath()}'.", EventTypes.Information);
 
                             targetNameList.Add(targetDataObjectName);
                         }
@@ -3729,10 +3736,10 @@ namespace TEAM
 
                                     sourceDataItem.name = (string) dataItemRow["SOURCE_ATTRIBUTE_NAME"];
                                     sourceDataItem.isHardCodedValue = sourceDataItem.name.StartsWith("'") && sourceDataItem.name.EndsWith("'");
-                                    JsonOutputHandling.AddParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
+                                    JsonOutputHandling.SetParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
 
                                     targetDataItem.name = (string) dataItemRow["TARGET_ATTRIBUTE_NAME"];
-                                    JsonOutputHandling.AddParentDataObjectToDataItem(targetDataItem, targetDataObject, JsonExportSetting);
+                                    JsonOutputHandling.SetParentDataObjectToDataItem(targetDataItem, targetDataObject, JsonExportSetting);
 
                                     bool localJsonExportAddDataObjectToDataItem = false;
                                     if (JsonExportSetting.AddParentDataObject == "True")
@@ -4108,12 +4115,12 @@ namespace TEAM
                     #region Generate the JSON files
                     foreach (DataRow row in localDataTable.Rows)
                     {
-                        var newDataObjectName = (string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
+                        var newDataObject = (DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
 
                         try
                         {
                             // A new file is created and/or an existing one updated to remove a segment.
-                            WriteDataObjectMappingsToFile(newDataObjectName);
+                            WriteDataObjectMappingsToFile(newDataObject);
                         }
                         catch (JsonReaderException ex)
                         {
