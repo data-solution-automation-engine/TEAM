@@ -192,7 +192,7 @@ namespace TEAM
 
             //Startup information
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
-            richTextBoxInformation.AppendText($"Welcome to Team {versionNumberForTeamApplication}.\r\n\r\n");
+            richTextBoxInformation.AppendText($"Welcome to TEAM {versionNumberForTeamApplication}.\r\n\r\n");
         }
 
         public sealed override string Text

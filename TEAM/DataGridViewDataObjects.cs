@@ -1150,11 +1150,16 @@ namespace TEAM
 
             // Manage extensions
             JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(targetDataObject, targetConnection, JsonExportSetting);
+            JsonOutputHandling.SetDataObjectConnectionSchemaExtension(targetDataObject, targetConnection, JsonExportSetting);
+
+            // Manage connections
+            JsonOutputHandling.SetDataObjectConnection(targetDataObject, targetConnection, JsonExportSetting);
+
             #endregion
 
             #region Mapping Level Classification
 
-            var mappingClassifications = JsonOutputHandling.AddMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration);
+            var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration);
             dataObjectMapping.mappingClassifications = mappingClassifications;
 
             #endregion
@@ -1183,7 +1188,6 @@ namespace TEAM
             dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
             List<dynamic> sourceDataObjects = new List<dynamic>();
-            //var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, JsonExportSetting, TeamConfiguration);
 
             // Manage classifications
             JsonOutputHandling.SetDataObjectTypeClassification(sourceDataObject, JsonExportSetting);
@@ -1191,7 +1195,12 @@ namespace TEAM
             // Manage extensions
             var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
             var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+
             JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(sourceDataObject, sourceConnection, JsonExportSetting);
+            JsonOutputHandling.SetDataObjectConnectionSchemaExtension(sourceDataObject, sourceConnection, JsonExportSetting);
+
+            // Manage connections
+            JsonOutputHandling.SetDataObjectConnection(sourceDataObject, sourceConnection, JsonExportSetting);
 
             sourceDataObjects.Add(sourceDataObject);
             dataObjectMapping.sourceDataObjects = sourceDataObjects;
@@ -1200,7 +1209,7 @@ namespace TEAM
 
             #region Related Data Objects
 
-            var relatedDataObjects = JsonOutputHandling.AddRelatedDataObjects(targetDataObjectName, this, JsonExportSetting, TeamConfiguration);
+            var relatedDataObjects = JsonOutputHandling.SetRelatedDataObjects(targetDataObjectName, this, JsonExportSetting, TeamConfiguration);
             if (relatedDataObjects != null && relatedDataObjects.Count > 0)
             {
                 dataObjectMapping.relatedDataObjects = relatedDataObjects;

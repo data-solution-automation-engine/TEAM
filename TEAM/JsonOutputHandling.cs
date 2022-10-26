@@ -29,36 +29,39 @@ namespace TEAM
         public static DataObject CreateDataObject(string dataObjectName, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string sourceOrTarget = "Source")
         {
             // Initialise the object and set the name.
-            DataObject localDataObject = new DataObject {name = dataObjectName};
+            DataObject dataObject = new DataObject {name = dataObjectName};
             
             // Add Connection to Data Object, if allowed.
-            localDataObject = SetDataObjectConnection(localDataObject, teamConnection, jsonExportSetting);
+            dataObject = SetDataObjectConnection(dataObject, teamConnection, jsonExportSetting);
             
             // Connection information as extensions. Only allowed if a Connection is added to the Data Object.
-            localDataObject = SetDataObjectConnectionDatabaseExtension(localDataObject, teamConnection, jsonExportSetting);
-            localDataObject = SetDataObjectConnectionSchemaExtension(localDataObject, teamConnection, jsonExportSetting);
+            dataObject = SetDataObjectConnectionDatabaseExtension(dataObject, teamConnection, jsonExportSetting);
+            dataObject = SetDataObjectConnectionSchemaExtension(dataObject, teamConnection, jsonExportSetting);
 
             // Add classifications.
             if (dataObjectName == "Metadata")
             {
-                localDataObject = SetDataObjectTypeClassification(localDataObject, jsonExportSetting, "Metadata");
+                dataObject = SetDataObjectTypeClassification(dataObject, jsonExportSetting, "Metadata");
             }
             else
             {
-                localDataObject = SetDataObjectTypeClassification(localDataObject, jsonExportSetting);
+                dataObject = SetDataObjectTypeClassification(dataObject, jsonExportSetting);
             }
+
+            // Manage connections
+            SetDataObjectConnection(dataObject, teamConfiguration.MetadataConnection, jsonExportSetting);
 
             // Only add if setting is enabled.
             if (jsonExportSetting.AddDataObjectDataItems == "True")
             {
-                var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
+                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
 
                 SqlConnection metadataConnection = new SqlConnection
                 {
                     ConnectionString = teamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
                 };
 
-                var physicalModelDataTable = MetadataHandling.GetPhysicalModelDataTable(metadataConnection);
+                var physicalModelDataTable = GetPhysicalModelDataTable(metadataConnection);
 
                 DataRow[] dataItemRows = physicalModelDataTable.Select("[TABLE_NAME] = '" + fullyQualifiedName.Value + "' " + "AND [SCHEMA_NAME] = '" + fullyQualifiedName.Key + "' " + "AND [DATABASE_NAME] = '" + teamConnection.DatabaseServer.DatabaseName + "'");
 
@@ -73,28 +76,28 @@ namespace TEAM
                     // Only add Data Type details if the setting is enabled.
                     if (sourceOrTarget == "Source" && jsonExportSetting.AddDataItemDataTypes == "True" || sourceOrTarget == "Target" && jsonExportSetting.AddDataItemDataTypes == "True")
                     {
-                        MetadataHandling.PrepareDataItemDataType(dataItem, dataItemRow);
+                        PrepareDataItemDataType(dataItem, dataItemRow);
                     }
 
                     dataItems.Add(dataItem);
                 }
 
-
-                localDataObject.dataItems = dataItems;
+                dataObject.dataItems = dataItems;
             }
 
-            return localDataObject;
+            return dataObject;
         }
 
         /// <summary>
         /// Add a classification at data object mapping level, derived from the target data object.
         /// </summary>
         /// <param name="dataObjectName"></param>
+        /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        internal static List<Classification> AddMappingClassifications(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
+        internal static List<Classification> SetMappingClassifications(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
         {
-            var tableType = MetadataHandling.GetDataObjectType(dataObjectName, "", teamConfiguration);
+            var tableType = GetDataObjectType(dataObjectName, "", teamConfiguration);
 
             List<Classification> dataObjectsMappingClassifications = new List<Classification>();
             var dataObjectMappingClassification = new Classification
@@ -107,7 +110,7 @@ namespace TEAM
             return dataObjectsMappingClassifications;
         }
 
-        internal static List<DataObject> AddRelatedDataObjects(string dataObjectName, DataGridView dataObjectMappingGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
+        internal static List<DataObject> SetRelatedDataObjects(string dataObjectName, DataGridView dataObjectMappingGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
         {
             List<DataObject> relatedDataObjects = new List<DataObject>();
 
@@ -254,7 +257,7 @@ namespace TEAM
                     var localDataObjectName = row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
                     var localDataObjectConnectionInternalId = row.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
 
-                    TeamConnection localConnection = FormBase.GetTeamConnectionByConnectionId(localDataObjectConnectionInternalId);
+                    TeamConnection localConnection = GetTeamConnectionByConnectionId(localDataObjectConnectionInternalId);
 
                     // Set the name and further settings.
                     dataObjectList.Add(CreateDataObject(localDataObjectName, localConnection, jsonExportSetting, teamConfiguration));
@@ -287,7 +290,6 @@ namespace TEAM
 
             return dataObjectList;
         }
-
 
         /// <summary>
         /// Adds the parent Data Object as a property to the Data Item. This is sometimes needed to produce fully qualified names to the Data Items in a Data Item Mapping.
@@ -330,19 +332,27 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject SetDataObjectConnection(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            if (jsonExportSetting.IsAddDataObjectConnection())
+            // Remove an existing connection, if existing.
+            if (!jsonExportSetting.IsAddDataObjectConnection())
             {
-                // Add dataObjectConnection, including connection string (to Data Object).
-                var localDataConnection = new DataConnection {dataConnectionString = teamConnection.ConnectionKey};
+                if (dataObject.dataObjectConnection != null)
+                {
+                    dataObject.dataObjectConnection = null;
+                }
+            }
+            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
+            else if (jsonExportSetting.IsAddDataObjectConnection())
+            {
+                var dataObjectConnection = new DataConnection {dataConnectionString = teamConnection.ConnectionKey};
 
-                dataObject.dataObjectConnection = localDataConnection;
+                dataObject.dataObjectConnection = dataObjectConnection;
             }
 
             return dataObject;
         }
 
         /// <summary>
-        /// Updates an input DataObject with a Database and Schema extension (two key/value pairs) based on its connection properties (TeamConnection object).
+        /// Updates a DataObject Connection with a Database extension (key/value pair) based on its connection properties (TeamConnection object).
         /// </summary>
         /// <param name="dataObject"></param>
         /// <param name="teamConnection"></param>
@@ -417,7 +427,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Updates an input DataObject with a Database and Schema extension (two key/value pairs) based on its connection properties (TeamConnection object).
+        /// Updates a DataObject Connection with a Schema extension (key/value pair) based on its connection properties (TeamConnection object).
         /// </summary>
         /// <param name="dataObject"></param>
         /// <param name="teamConnection"></param>
@@ -425,27 +435,67 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject SetDataObjectConnectionSchemaExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            if (jsonExportSetting.AddSchemaAsExtension == "True" && jsonExportSetting.AddDataObjectConnection == "True" && dataObject.dataObjectConnection != null)
+            // Remove an existing classification, if indeed existing.
+            // If no classifications exists, do nothing. Otherwise check if one needs removal.
+            if (!jsonExportSetting.IsAddSchemaAsExtension())
             {
-                List<Extension> extensions = new List<Extension>();
-
-                var extension = new Extension
+                if (dataObject.dataObjectConnection.extensions != null)
                 {
-                    key = "schema",
-                    value = teamConnection.DatabaseServer.SchemaName,
-                    description = "schema name"
-                };
+                    List<Extension> localExtensions = new List<Extension>();
 
-                extensions.Add(extension);
+                    foreach (var extension in dataObject.dataObjectConnection.extensions)
+                    {
+                        if (extension.key != "schema")
+                        {
+                            localExtensions.Add(extension);
+                        }
+                    }
 
-                if (dataObject.dataObjectConnection.extensions is null)
-                {
-                    dataObject.dataObjectConnection.extensions = extensions;
+                    // If there's any left, re-add them. Otherwise set to empty.
+                    if (localExtensions.Count > 0)
+                    {
+                        dataObject.dataObjectConnection.extensions = localExtensions;
+                    }
+                    else
+                    {
+                        dataObject.dataObjectConnection.extensions = null;
+                    }
                 }
-                else
+            }
+            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
+            else if (jsonExportSetting.IsAddSchemaAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataObject.dataObjectConnection != null)
+            {
+                List<Extension> localExtensions = new List<Extension>();
+
+                // Copy any existing classifications already in place, if any.
+                if (dataObject.dataObjectConnection.extensions != null)
                 {
-                    dataObject.dataObjectConnection.extensions.AddRange(extensions);
+                    localExtensions = dataObject.dataObjectConnection.extensions;
                 }
+
+                // Check if this particular classification already exists before adding.
+                bool extensionExists = false;
+                foreach (var extension in localExtensions)
+                {
+                    if (extension.key == "schema")
+                    {
+                        extensionExists = true;
+                    }
+                }
+
+                if (extensionExists == false)
+                {
+                    var localExtension = new Extension
+                    {
+                        key = "schema",
+                        value = teamConnection.DatabaseServer.SchemaName,
+                        description = "schema name"
+                    };
+
+                    localExtensions.Add(localExtension);
+                }
+
+                dataObject.dataObjectConnection.extensions = localExtensions;
             }
 
             return dataObject;
@@ -460,7 +510,7 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject SetDataObjectTypeClassification(DataObject dataObject, JsonExportSetting jsonExportSetting, string classificationOverrideValue=null)
         {
-            var dataObjectType = "";
+            string dataObjectType;
 
             if (classificationOverrideValue != null)
             {
@@ -468,7 +518,7 @@ namespace TEAM
             }
             else
             {
-                dataObjectType = MetadataHandling.GetDataObjectType(dataObject.name, "", FormBase.TeamConfiguration).ToString();
+                dataObjectType = GetDataObjectType(dataObject.name, "", FormBase.TeamConfiguration).ToString();
             }
 
             if (!jsonExportSetting.IsAddTypeAsClassification())
@@ -541,14 +591,20 @@ namespace TEAM
         /// <returns></returns>
         public static DataObject GetMetadataDataObject(TeamConfiguration teamConfiguration, JsonExportSetting jsonExportSetting)
         {
-            DataObject localDataObject = new DataObject();
+            DataObject dataObject = new DataObject();
 
             if (jsonExportSetting.AddMetadataAsRelatedDataObject == "True")
             {
-                localDataObject = CreateDataObject("Metadata", teamConfiguration.MetadataConnection, jsonExportSetting, teamConfiguration);
+                dataObject = CreateDataObject("Metadata", teamConfiguration.MetadataConnection, jsonExportSetting, teamConfiguration);
             }
 
-            return localDataObject;
+            SetDataObjectConnectionDatabaseExtension(dataObject, teamConfiguration.MetadataConnection, jsonExportSetting);
+            SetDataObjectConnectionSchemaExtension(dataObject, teamConfiguration.MetadataConnection, jsonExportSetting);
+
+            // Manage connections
+            SetDataObjectConnection(dataObject, teamConfiguration.MetadataConnection, jsonExportSetting);
+
+            return dataObject;
         }
         
         /// <summary>
