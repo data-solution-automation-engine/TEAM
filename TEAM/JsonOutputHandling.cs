@@ -6,6 +6,7 @@ using DataWarehouseAutomation;
 using Microsoft.Data.SqlClient;
 using TEAM_Library;
 using static TEAM.FormBase;
+using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
 
@@ -34,8 +35,8 @@ namespace TEAM
             localDataObject = SetDataObjectConnection(localDataObject, teamConnection, jsonExportSetting);
             
             // Connection information as extensions. Only allowed if a Connection is added to the Data Object.
-            localDataObject = SetDataObjectDatabaseExtension(localDataObject, teamConnection, jsonExportSetting);
-            localDataObject = SetDataObjectSchemaExtension(localDataObject, teamConnection, jsonExportSetting);
+            localDataObject = SetDataObjectConnectionDatabaseExtension(localDataObject, teamConnection, jsonExportSetting);
+            localDataObject = SetDataObjectConnectionSchemaExtension(localDataObject, teamConnection, jsonExportSetting);
 
             // Add classifications.
             if (dataObjectName == "Metadata")
@@ -127,20 +128,6 @@ namespace TEAM
             #region Add related data object(s)
             if (jsonExportSetting.IsAddRelatedDataObjectsAsRelatedDataObject())
             {
-                //var dependentRows = TableMapping.GetPeerDataRows((string)row["SOURCE_NAME"], (string)row["SOURCE_SCHEMA_NAME"], (string)row["TARGET_NAME"], (string)row["TARGET_SCHEMA_NAME"],
-                //    (string)row["SOURCE_BUSINESS_KEY_DEFINITION"], (string)row["FILTER_CRITERIA"], TableMapping.DataTable, TeamDataObjectMapping.BusinessKeyEvaluationMode.Partial);
-
-                //foreach (var dependentRow in dependentRows)
-                //{
-                //    var localRelatedDataObjectName = dependentRow[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
-                //    var localRelatedDataObjectConnectionId = dependentRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                //    var localRelatedDataObjectConnection = GetTeamConnectionByConnectionId(localRelatedDataObjectConnectionId);
-                //    var relatedDataObject = CreateDataObject(localRelatedDataObjectName, localRelatedDataObjectConnection, JsonExportSetting, TeamConfiguration);
-
-                //    relatedDataObjects.Add(relatedDataObject);
-                //}
-
-                // Add upstream related Data Objects (assuming this is set in the json export settings).
                 relatedDataObjects.AddRange(GetLineageRelatedDataObjectList(dataObjectName, dataObjectMappingGrid, jsonExportSetting, teamConfiguration));
             }
             #endregion
@@ -361,29 +348,69 @@ namespace TEAM
         /// <param name="teamConnection"></param>
         /// <param name="jsonExportSetting"></param>
         /// <returns></returns>
-        public static DataObject SetDataObjectDatabaseExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
+        public static DataObject SetDataObjectConnectionDatabaseExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            if (jsonExportSetting.IsAddDatabaseAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataObject.dataObjectConnection != null)
+            // Remove an existing classification, if indeed existing.
+            // If no classifications exists, do nothing. Otherwise check if one needs removal.
+            if (!jsonExportSetting.IsAddDatabaseAsExtension())
             {
-                List<Extension> extensions = new List<Extension>();
+                if (dataObject.dataObjectConnection.extensions != null)
+                {
+                    List<Extension> localExtensions = new List<Extension>();
+
+                    foreach (var extension in dataObject.dataObjectConnection.extensions)
+                    {
+                        if (extension.key != "database")
+                        {
+                            localExtensions.Add(extension);
+                        }
+                    }
+
+                    // If there's any left, re-add them. Otherwise set to empty.
+                    if (localExtensions.Count > 0)
+                    {
+                        dataObject.dataObjectConnection.extensions = localExtensions;
+                    }
+                    else
+                    {
+                        dataObject.dataObjectConnection.extensions = null;
+                    }
+                }
+            }
+            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
+            else if (jsonExportSetting.IsAddDatabaseAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataObject.dataObjectConnection != null)
+            {
+                List<Extension> localExtensions = new List<Extension>();
                 
-                var extension = new Extension
+                // Copy any existing classifications already in place, if any.
+                if (dataObject.dataObjectConnection.extensions != null)
                 {
-                    key = "database",
-                    value = teamConnection.DatabaseServer.DatabaseName,
-                    description = "database name"
-                };
-
-                extensions.Add(extension);
-
-                if (dataObject.dataObjectConnection.extensions is null)
-                {
-                    dataObject.dataObjectConnection.extensions = extensions;
+                    localExtensions = dataObject.dataObjectConnection.extensions;
                 }
-                else
+
+                // Check if this particular classification already exists before adding.
+                bool extensionExists = false;
+                foreach (var extension  in localExtensions)
                 {
-                    dataObject.dataObjectConnection.extensions.AddRange(extensions);
+                    if (extension.key == "database")
+                    {
+                        extensionExists = true;
+                    }
                 }
+
+                if (extensionExists == false)
+                {
+                    var localExtension = new Extension
+                    {
+                        key = "database",
+                        value = teamConnection.DatabaseServer.DatabaseName,
+                        description = "database name"
+                    };
+
+                    localExtensions.Add(localExtension);
+                }
+
+                dataObject.dataObjectConnection.extensions = localExtensions;
             }
 
             return dataObject;
@@ -396,7 +423,7 @@ namespace TEAM
         /// <param name="teamConnection"></param>
         /// <param name="jsonExportSetting"></param>
         /// <returns></returns>
-        public static DataObject SetDataObjectSchemaExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
+        public static DataObject SetDataObjectConnectionSchemaExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
             if (jsonExportSetting.AddSchemaAsExtension == "True" && jsonExportSetting.AddDataObjectConnection == "True" && dataObject.dataObjectConnection != null)
             {
@@ -469,7 +496,6 @@ namespace TEAM
                     {
                         dataObject.dataObjectClassifications = null;
                     }
-
                 }
             }
             else

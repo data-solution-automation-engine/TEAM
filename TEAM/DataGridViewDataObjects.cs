@@ -1148,6 +1148,8 @@ namespace TEAM
             // Manage classifications
             JsonOutputHandling.SetDataObjectTypeClassification(targetDataObject, JsonExportSetting);
 
+            // Manage extensions
+            JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(targetDataObject, targetConnection, JsonExportSetting);
             #endregion
 
             #region Mapping Level Classification
@@ -1182,6 +1184,15 @@ namespace TEAM
 
             List<dynamic> sourceDataObjects = new List<dynamic>();
             //var sourceDataObject = JsonOutputHandling.CreateDataObject(sourceFullyQualifiedName.Value, sourceConnection, JsonExportSetting, TeamConfiguration);
+
+            // Manage classifications
+            JsonOutputHandling.SetDataObjectTypeClassification(sourceDataObject, JsonExportSetting);
+
+            // Manage extensions
+            var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+            var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+            JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(sourceDataObject, sourceConnection, JsonExportSetting);
+
             sourceDataObjects.Add(sourceDataObject);
             dataObjectMapping.sourceDataObjects = sourceDataObjects;
 
@@ -1231,11 +1242,11 @@ namespace TEAM
                         // Adding the data types for the source data items.
                         if (!sourceDataItemNames.Contains(sourceDataItem.name) && JsonExportSetting.IsAddDataItemDataTypes())
                         {
-                            var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                            var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+                            var localSourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                            var localSourceConnection = GetTeamConnectionByConnectionId(localSourceConnectionInternalId);
 
                             sourceDataItemNames.Add(sourceDataItem.name);
-                            JsonOutputHandling.GetFullSourceDataItemPresentation(sourceDataItem, sourceDataObject.name, sourceConnection, _dataGridViewPhysicalModel, dataItemMappingRow, JsonExportSetting, "Source");
+                            JsonOutputHandling.GetFullSourceDataItemPresentation(sourceDataItem, sourceDataObject.name, localSourceConnection, _dataGridViewPhysicalModel, dataItemMappingRow, JsonExportSetting, "Source");
                             sourceDataItems.Add(sourceDataItem);
                         }
 

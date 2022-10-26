@@ -22,7 +22,7 @@ namespace TEAM
 
             // Set the version of the build for everything
             const string versionNumberForTeamApplication = "v1.6.5";
-            Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}.";
+            Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}";
 
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
