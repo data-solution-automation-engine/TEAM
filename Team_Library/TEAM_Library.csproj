@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DataWarehouseAutomation" Version="1.2.0" />
+    <PackageReference Include="DataWarehouseAutomation" Version="1.2.2" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.0" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.44091.28" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />

@@ -1148,12 +1148,15 @@ namespace TEAM
             // Manage classifications
             JsonOutputHandling.SetDataObjectTypeClassification(targetDataObject, JsonExportSetting);
 
-            // Manage extensions
+            // Manage connections
+            JsonOutputHandling.SetDataObjectConnection(targetDataObject, targetConnection, JsonExportSetting);
+
+            // Manage connection extensions
             JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(targetDataObject, targetConnection, JsonExportSetting);
             JsonOutputHandling.SetDataObjectConnectionSchemaExtension(targetDataObject, targetConnection, JsonExportSetting);
 
-            // Manage connections
-            JsonOutputHandling.SetDataObjectConnection(targetDataObject, targetConnection, JsonExportSetting);
+            // Data items
+            JsonOutputHandling.SetDataObjectDataItems(targetDataObject, targetConnection, TeamConfiguration, JsonExportSetting);
 
             #endregion
 
@@ -1161,24 +1164,6 @@ namespace TEAM
 
             var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration);
             dataObjectMapping.mappingClassifications = mappingClassifications;
-
-            #endregion
-
-            #region Business Key
-
-            List<BusinessKey> businessKeys = new List<BusinessKey>();
-            BusinessKey businessKey = new BusinessKey();
-
-            var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
-            var businessKeyDataItemMappings = JsonOutputHandling.GetBusinessKeyComponentDataItemMappings(businessKeyDefinition, businessKeyDefinition);
-            businessKey.businessKeyComponentMapping = businessKeyDataItemMappings;
-
-            // Derive the surrogate key using conventions.
-            var targetDataObjectSurrogateKey = MetadataHandling.GetSurrogateKey(targetDataObjectName, targetConnection, TeamConfiguration);
-            businessKey.surrogateKey = targetDataObjectSurrogateKey;
-
-            businessKeys.Add(businessKey);
-            dataObjectMapping.businessKeys = businessKeys;
 
             #endregion
 
@@ -1192,15 +1177,18 @@ namespace TEAM
             // Manage classifications
             JsonOutputHandling.SetDataObjectTypeClassification(sourceDataObject, JsonExportSetting);
 
-            // Manage extensions
+            // Manage connections
             var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
             var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
 
+            JsonOutputHandling.SetDataObjectConnection(sourceDataObject, sourceConnection, JsonExportSetting);
+
+            // Manage connection extensions
             JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(sourceDataObject, sourceConnection, JsonExportSetting);
             JsonOutputHandling.SetDataObjectConnectionSchemaExtension(sourceDataObject, sourceConnection, JsonExportSetting);
 
-            // Manage connections
-            JsonOutputHandling.SetDataObjectConnection(sourceDataObject, sourceConnection, JsonExportSetting);
+            // Data items
+            JsonOutputHandling.SetDataObjectDataItems(sourceDataObject, targetConnection, TeamConfiguration, JsonExportSetting);
 
             sourceDataObjects.Add(sourceDataObject);
             dataObjectMapping.sourceDataObjects = sourceDataObjects;
@@ -1229,14 +1217,10 @@ namespace TEAM
                     var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
                     var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
 
-                    if (localSourceDataObject == sourceDataObject.name &&
-                        localTargetDataObject == targetDataObject.name)
+                    if (localSourceDataObject == sourceDataObject.name && localTargetDataObject == targetDataObject.name)
                     {
                         var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceColumn.ToString()].Value.ToString();
                         var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetColumn.ToString()].Value.ToString();
-
-                        List<string> sourceDataItemNames = new List<string>();
-                        List<string> targetDataItemNames = new List<string>();
 
                         // Creating a single source-to-target Data Item mapping.
                         List<dynamic> sourceDataItems = new List<dynamic>();
@@ -1246,27 +1230,14 @@ namespace TEAM
                         sourceDataItem.name = localSourceDataItem;
                         targetDataItem.name = localTargetDataItem;
 
-                        #region Add data types for Data Items
+                        // Add data types to Data Item that are part of a data item mapping
+                        var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                        var sourceDataItemConnection = GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId);
+                        JsonOutputHandling.SetDataItemMappingDataType(sourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting);
 
-                        // Adding the data types for the source data items.
-                        if (!sourceDataItemNames.Contains(sourceDataItem.name) && JsonExportSetting.IsAddDataItemDataTypes())
-                        {
-                            var localSourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                            var localSourceConnection = GetTeamConnectionByConnectionId(localSourceConnectionInternalId);
-
-                            sourceDataItemNames.Add(sourceDataItem.name);
-                            JsonOutputHandling.GetFullSourceDataItemPresentation(sourceDataItem, sourceDataObject.name, localSourceConnection, _dataGridViewPhysicalModel, dataItemMappingRow, JsonExportSetting, "Source");
-                            sourceDataItems.Add(sourceDataItem);
-                        }
-
-                        // Adding the data types for the target data items.
-                        if (!targetDataItemNames.Contains(targetDataItem.name) && JsonExportSetting.IsAddDataItemDataTypes())
-                        {
-                            targetDataItemNames.Add(targetDataItem.name);
-                            JsonOutputHandling.GetFullSourceDataItemPresentation(targetDataItem, targetDataObjectName, targetConnection, _dataGridViewPhysicalModel, dataItemMappingRow, JsonExportSetting, "Target");
-                        }
-
-                        #endregion
+                        var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
+                        var targetDataItemConnection = GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId);
+                        JsonOutputHandling.SetDataItemMappingDataType(targetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting);
 
                         // Add parent Data Object to the Data Item.
                         JsonOutputHandling.SetParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
@@ -1299,6 +1270,13 @@ namespace TEAM
             var filterCriterion = dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString();
 
             dataObjectMapping.filterCriterion = filterCriterion;
+
+            #endregion
+
+            #region Business Key
+
+            var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
+            JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, targetConnection, TeamConfiguration);
 
             #endregion
 

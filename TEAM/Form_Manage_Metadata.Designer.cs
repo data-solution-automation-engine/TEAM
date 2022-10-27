@@ -70,7 +70,6 @@ namespace TEAM
             this.validateMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jsonExportConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageJsonExportRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipMetadata = new System.Windows.Forms.ToolTip(this.components);
@@ -330,7 +329,7 @@ namespace TEAM
             this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
             this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
             this.openMetadataDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
             this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
             // 
@@ -338,20 +337,20 @@ namespace TEAM
             // 
             this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
             this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
             this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(355, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(347, 6);
             // 
             // saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem
             // 
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Name = "saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem";
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Text = "&Save as Directional Graph Markup Language (DGML)";
             this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Click += new System.EventHandler(this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem_Click);
             // 
@@ -359,7 +358,7 @@ namespace TEAM
             // 
             this.closeToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             this.closeToolStripMenuItem.Text = "&Close Window";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -433,8 +432,7 @@ namespace TEAM
             // jsonExportConfigurationToolStripMenuItem
             // 
             this.jsonExportConfigurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.manageJsonExportRulesToolStripMenuItem,
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem});
+            this.manageJsonExportRulesToolStripMenuItem});
             this.jsonExportConfigurationToolStripMenuItem.Name = "jsonExportConfigurationToolStripMenuItem";
             this.jsonExportConfigurationToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.jsonExportConfigurationToolStripMenuItem.Text = "&JSON";
@@ -443,18 +441,9 @@ namespace TEAM
             // 
             this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
-            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(297, 22);
+            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 30);
             this.manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON Export Rules";
             this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
-            // 
-            // generateJsonInterfaceFilesOnlyToolStripMenuItem
-            // 
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Name = "generateJsonInterfaceFilesOnlyToolStripMenuItem";
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Size = new System.Drawing.Size(297, 22);
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Text = "&Generate JSON Interface Files Only";
-            this.generateJsonInterfaceFilesOnlyToolStripMenuItem.Click += new System.EventHandler(this.generateJsonInterfaceFilesOnlyToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -598,7 +587,6 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem displayEventLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem validateMetadataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem generateJsonInterfaceFilesOnlyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem automapDataItemsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openMetadataDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;

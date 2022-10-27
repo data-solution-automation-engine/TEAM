@@ -386,7 +386,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DataWarehouseAutomation">
-      <Version>1.2.0</Version>
+      <Version>1.2.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Data.SqlClient">
       <Version>2.1.0</Version>

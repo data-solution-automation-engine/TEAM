@@ -94,6 +94,7 @@ namespace TEAM
         /// Retrieve the JSON export settings from disk and store them in the application (memory).
         /// </summary>
         /// <param name="fileName"></param>
+        /// <param name="applyChecks"></param>
         internal void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
         {
             try

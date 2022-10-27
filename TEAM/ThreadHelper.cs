@@ -2,7 +2,7 @@
 
 namespace TEAM
 {
-    public static class ThreadHelperClass
+    public static class ThreadHelper
     {
         delegate void SetTextCallback(Form form, Control control, string text);
 
