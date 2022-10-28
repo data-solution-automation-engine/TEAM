@@ -94,7 +94,7 @@ namespace TEAM
 
             #region Data Items
             // GenerateDataItemTypes
-            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.AddDataItemDataTypes, ref issueCounter);
+            EvaluateJsonExportCheckbox(checkBoxDataItemDataType, JsonExportSetting.AddDataItemDataTypes, ref issueCounter);
 
             // GenerateParentDataObject
             EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.AddParentDataObject, ref issueCounter);

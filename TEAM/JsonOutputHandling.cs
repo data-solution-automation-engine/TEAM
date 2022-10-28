@@ -397,7 +397,7 @@ namespace TEAM
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
             if (!jsonExportSetting.IsAddDatabaseAsExtension())
             {
-                if (dataObject.dataObjectConnection.extensions != null)
+                if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
                 {
                     List<Extension> localExtensions = new List<Extension>();
 
@@ -472,7 +472,7 @@ namespace TEAM
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
             if (!jsonExportSetting.IsAddSchemaAsExtension())
             {
-                if (dataObject.dataObjectConnection.extensions != null)
+                if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
                 {
                     List<Extension> localExtensions = new List<Extension>();
 
@@ -864,7 +864,7 @@ namespace TEAM
                     var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
 
                     // Add if it's not a standard element.
-                    if (!column.IsExcludedDataItem(lookupDataObject, businessKeyDefinition, teamConnection, teamConfiguration))
+                    if (!column.IsExcludedBusinessKeyDataItem(lookupDataObject, businessKeyDefinition, teamConnection, teamConfiguration))
                     {
                         targetBusinessKeyComponents.Add(column);
                     }
@@ -946,7 +946,7 @@ namespace TEAM
             return businessKeyComponentList;
         }
 
-        public static bool IsExcludedDataItem(this string dataItemName, DataObject dataObject, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
+        public static bool IsExcludedBusinessKeyDataItem(this string dataItemName, DataObject dataObject, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             bool returnValue = false;
 
@@ -1005,6 +1005,63 @@ namespace TEAM
 
             return returnValue;
         }
+
+        public static bool IsIncludedDataItem(this string dataItemName, DataObject dataObject, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
+        {
+            bool returnValue = true;
+
+            var dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration);
+            var surrogateKey = GetSurrogateKey(dataObject.name, teamConnection, teamConfiguration);
+            var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition);
+
+            if (dataItemName == teamConfiguration.LoadDateTimeAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.AlternativeLoadDateTimeAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.RecordSourceAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.AlternativeRecordSourceAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.RowIdAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.EtlProcessAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.RecordChecksumAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.ChangeDataCaptureAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.LogicalDeleteAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.EventDateTimeAttribute)
+            {
+                returnValue = false;
+            }
+            else if (!new[] { DataObjectTypes.StagingArea, DataObjectTypes.PersistentStagingArea }.Contains(dataObjectType) && dataItemName == surrogateKey) 
+            {
+                returnValue = false;
+            }
+
+            return returnValue;
+        }
+
 
         /// <summary>
         /// Extension method to infer the target path for a given string value (should be a target data object name).

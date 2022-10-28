@@ -20,6 +20,7 @@ namespace TEAM
             TeamConfiguration = teamConfiguration;
 
             #region Basic properties
+
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             BorderStyle = BorderStyle.None;
 
@@ -37,17 +38,19 @@ namespace TEAM
             AutoGenerateColumns = false;
             ColumnHeadersVisible = true;
 
-
             // Define grid view control.
             Name = "dataGridViewDataItem";
             Location = new Point(2, 3);
             TabIndex = 3;
+
             #endregion
 
             #region Event Handlers
+
             KeyDown += DataGridView_KeyDown;
             MouseDown += DataGridView_MouseDown;
             CellFormatting += DataGridViewDataItems_CellFormatting;
+
             #endregion
 
             #region Columns
