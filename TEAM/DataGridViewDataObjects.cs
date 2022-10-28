@@ -1276,7 +1276,8 @@ namespace TEAM
             #region Business Key
 
             var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
-            JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, targetConnection, TeamConfiguration);
+            var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
+            JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, targetConnection, TeamConfiguration);
 
             #endregion
 
