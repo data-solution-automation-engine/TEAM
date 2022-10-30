@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using DataWarehouseAutomation;
 using TEAM_Library;
 using static TEAM.FormBase;
+using static TEAM.JsonOutputHandling;
 using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
@@ -229,9 +230,15 @@ namespace TEAM
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        internal static List<Classification> SetMappingClassifications(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
+        internal static List<Classification> SetMappingClassifications(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string drivingKeyValue)
         {
             var tableType = GetDataObjectType(dataObjectName, "", teamConfiguration);
+
+            // Override for driving key.
+            if (drivingKeyValue != null || string.IsNullOrEmpty(drivingKeyValue))
+            {
+                tableType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
+            }
 
             List<Classification> dataObjectsMappingClassifications = new List<Classification>();
             var dataObjectMappingClassification = new Classification
@@ -649,7 +656,7 @@ namespace TEAM
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        internal static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
+        internal static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, string drivingKeyValue)
         {
             // The list of business keys that will be saved against the data object mapping.
             List<BusinessKey> businessKeys = new List<BusinessKey>();
@@ -664,23 +671,20 @@ namespace TEAM
                 // Evaluate the data item mappings that belong to the business key component mapping.
                 List<DataItemMapping> businessKeyComponentMapping = new List<DataItemMapping>();
 
-                //Sort both the lists so that they line up.
-                //businessKeyComponentList.sourceComponentList.Sort();
-                //businessKeyComponentList.targetComponentList.Sort();
-
                 int iterations = businessKeyComponentList.sourceComponentList.Count;
 
                 for (int i = 0; i < iterations; i++)
                 {
-                    var businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.targetComponentList[i]);
+                    var businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.targetComponentList[i], drivingKeyValue);
                     businessKeyComponentMapping.Add(businessKeyDataItemMapping);
                 }
 
                 businessKey.businessKeyComponentMapping = businessKeyComponentMapping;
 
                 // Evaluate the surrogate key that comes with the business key component mapping.
-                var targetDataObjectSurrogateKey = GetSurrogateKey(businessKeyComponentList.originalTargetDataObject, teamConnection, teamConfiguration);
-                businessKey.surrogateKey = targetDataObjectSurrogateKey;
+
+                //var targetDataObjectSurrogateKey = GetSurrogateKey(businessKeyComponentList.originalTargetDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
+                businessKey.surrogateKey = businessKeyComponentList.surrogateKey;
 
                 businessKeys.Add(businessKey);
             }
@@ -695,6 +699,8 @@ namespace TEAM
             internal string originalTargetDataObject { get; set; }
             internal List<string> sourceComponentList { get; set; }
             internal List<string> targetComponentList { get; set; }
+            internal int ordinal { get; set; }
+            internal string surrogateKey { get; set; }
         }
 
         /// <summary>
@@ -706,7 +712,7 @@ namespace TEAM
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static List<BusinessKeyComponentList> GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
+        public static List<BusinessKeyComponentList>  GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             List<BusinessKeyComponentList> businessKeyComponents = new List<BusinessKeyComponentList>();
 
@@ -714,6 +720,8 @@ namespace TEAM
             // For the relationship itself the complete business key is evaluated.
             // For the individual components, individual business keys must be evaluated.
             // Each of these are business key components (e.g. a 2-way Link has 3 components, a Hub as 1 component)
+
+            int ordinal = 1;
 
             var mappingType = dataObjectMapping.mappingClassifications[0].classification;
 
@@ -730,6 +738,12 @@ namespace TEAM
                 // Get the target column(s) for the business key, based on the target data object (the Link in this case).
                 var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration);
                 tempComponent.targetComponentList = tempTargetComponentList;
+
+                tempComponent.ordinal = ordinal;
+
+                // Link surrogate key
+                var surrogateKey = GetSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
+                tempComponent.surrogateKey = surrogateKey;
 
                 // Add individual key parts (the individual keys) as well.
                 var tempList = businessKeyDefinition.Split(',').ToList();
@@ -754,6 +768,8 @@ namespace TEAM
 
                     if (dataObjectGridViewRow != null)
                     {
+                        ordinal++;
+
                         var originalTargetDataObjectName = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString();
                         var originalSourceDataObjectName = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString();
 
@@ -761,6 +777,35 @@ namespace TEAM
                         // Get the target column(s) for the business key, based on the target data object.
                         var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, componentElement, originalSourceDataObjectName, teamConnection, teamConfiguration);
                         individualTempComponent.targetComponentList = individualTempTargetComponentList;
+                        individualTempComponent.ordinal = ordinal;
+
+                        // Hub surrogate keys, needs to manage SAl and HAL
+                        // This can ONLY be derived from the physical model. To be improved.
+                        var physicalModelDataGridViewRowList = _dataGridViewPhysicalModel.Rows
+                            .Cast<DataGridViewRow>()
+                            .Where(r => !r.IsNewRow)
+                            .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(tempComponent.originalTargetDataObject))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(tempComponent.surrogateKey))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.LoadDateTimeAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.EtlProcessAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.RecordSourceAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(tempComponent.surrogateKey))
+                            .ToList();
+
+                        // The physical key order must now be established.
+                        int counter = 2;
+                        foreach (var physicalModelRow in physicalModelDataGridViewRowList)
+                        {
+                            if (ordinal == counter)
+                            {
+                                individualTempComponent.surrogateKey = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
+
+                            }
+                            counter++;
+                        }
+
+                        //var individualSurrogateKey = GetSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
+                        //tempComponent.surrogateKey = individualSurrogateKey;
                     }
                     else
                     {
@@ -786,6 +831,11 @@ namespace TEAM
                 var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
+                tempComponent.ordinal = ordinal;
+
+                var surrogateKey = GetSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
+                tempComponent.surrogateKey = surrogateKey;
+
                 businessKeyComponents.Add(tempComponent);
             }
 
@@ -804,7 +854,7 @@ namespace TEAM
 
             var dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration);
             
-            if (new[] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey }.Contains(dataObjectType))
+            if (new[] { DataObjectTypes.Context }.Contains(dataObjectType))
             {
                 // Find the parent. This is the data object with the same key definition, but is not a context type entity.
                 var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
@@ -812,6 +862,7 @@ namespace TEAM
                     .Where(r => !r.IsNewRow)
                     .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
                     .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                    .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.name))
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey);
@@ -822,12 +873,9 @@ namespace TEAM
                     lookupDataObjects.Add((DataObject)row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value);
                 }
             }
-            else if (new[] { DataObjectTypes.NaturalBusinessRelationship }.Contains(dataObjectType))
+            else if (new[] { DataObjectTypes.NaturalBusinessRelationship, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey }.Contains(dataObjectType))
             {
                 // Find the Hubs. This is the data object with the same *partial* key definition, but is not a context type entity.
-
-                //var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition);
-
                 var businessKeyComponentElements = businessKeyDefinition.Split(',').ToList();
 
                 foreach (string businessKeyComponentElement in businessKeyComponentElements)
@@ -837,6 +885,7 @@ namespace TEAM
                         .Where(r => !r.IsNewRow)
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponentElement))
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                        .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.name))
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) == DataObjectTypes.CoreBusinessConcept)
                         .FirstOrDefault();
 
@@ -864,7 +913,9 @@ namespace TEAM
                     var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
 
                     // Add if it's not a standard element.
-                    if (!column.IsExcludedBusinessKeyDataItem(lookupDataObject, businessKeyDefinition, teamConnection, teamConfiguration))
+                    var surrogateKey = GetSurrogateKey(lookupDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
+
+                    if (!column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration))
                     {
                         targetBusinessKeyComponents.Add(column);
                     }
@@ -874,7 +925,7 @@ namespace TEAM
             return targetBusinessKeyComponents;
         }
 
-        public static DataItemMapping GetBusinessKeyComponentDataItemMapping(string sourceBusinessKeyDefinition, string targetBusinessKeyDefinition)
+        public static DataItemMapping GetBusinessKeyComponentDataItemMapping(string sourceBusinessKeyDefinition, string targetBusinessKeyDefinition, string drivingKeyValue = "")
         {
             DataItemMapping dataItemMapping = new DataItemMapping();
 
@@ -889,6 +940,17 @@ namespace TEAM
 
             sourceColumn.name = sourceBusinessKeyDefinition;
             sourceColumn.isHardCodedValue = sourceBusinessKeyDefinition.StartsWith("'") && sourceBusinessKeyDefinition.EndsWith("'");
+
+            // Driving Key
+            if (sourceBusinessKeyDefinition == drivingKeyValue)
+            {
+                List<Classification> classificationList = new List<Classification>();
+                Classification classification = new Classification();
+                classification.classification = "DrivingKey";
+                classification.notes = "The attribute that triggers (drives) the closing of a relationship.";
+                classificationList.Add(classification);
+                sourceColumn.dataItemClassification = classificationList;
+            }
 
             sourceColumns.Add(sourceColumn);
 
@@ -946,12 +1008,104 @@ namespace TEAM
             return businessKeyComponentList;
         }
 
-        public static bool IsExcludedBusinessKeyDataItem(this string dataItemName, DataObject dataObject, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
+        public static string GetParentDataObject(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration)
+        {
+            string returnValue = "";
+
+            var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
+                .Cast<DataGridViewRow>()
+                .Where(r => !r.IsNewRow)
+                .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
+                .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.Context)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                .FirstOrDefault();
+
+            if (dataObjectGridViewRow != null)
+            {
+                returnValue = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString();
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Return the Surrogate Key for a given table using the TEAM settings (i.e. prefix/suffix settings etc.).
+        /// </summary>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns>surrogateKey</returns>
+        public static string GetSurrogateKey(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
+        {
+            // Get the type
+            var dataObjectType = GetDataObjectType(targetDataObjectName, "", teamConfiguration);
+
+            // If a Sat or Lsat, replace with parent Hub or Link.
+            if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
+            {
+                targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration);
+            }
+
+            // Get the fully qualified name
+            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(targetDataObjectName, teamConnection).FirstOrDefault();
+
+            // Initialise the return value
+            string surrogateKey = "";
+            string newDataObjectName = fullyQualifiedName.Value;
+            string keyLocation = teamConfiguration.DwhKeyIdentifier;
+
+            string[] prefixSuffixArray = {
+                teamConfiguration.HubTablePrefixValue,
+                teamConfiguration.SatTablePrefixValue,
+                teamConfiguration.LinkTablePrefixValue,
+                teamConfiguration.LsatTablePrefixValue
+            };
+
+            if (newDataObjectName != "Not applicable")
+            {
+                // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
+                if (teamConfiguration.TableNamingLocation == "Prefix")
+                {
+                    foreach (string prefixValue in prefixSuffixArray)
+                    {
+                        if (newDataObjectName.StartsWith(prefixValue))
+                        {
+                            newDataObjectName = newDataObjectName.Replace(prefixValue, "");
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (string suffixValue in prefixSuffixArray)
+                    {
+                        if (newDataObjectName.EndsWith(suffixValue))
+                        {
+                            newDataObjectName = newDataObjectName.Replace(suffixValue, "");
+                        }
+                    }
+                }
+
+                // Define the surrogate key using the table name and key prefix/suffix settings.
+                if (teamConfiguration.KeyNamingLocation == "Prefix")
+                {
+                    surrogateKey = keyLocation + newDataObjectName;
+                }
+                else
+                {
+                    surrogateKey = newDataObjectName + keyLocation;
+                }
+            }
+
+            return surrogateKey;
+        }
+
+        public static bool IsExcludedBusinessKeyDataItem(this string dataItemName, DataObjectTypes dataObjectType, string surrogateKey, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             bool returnValue = false;
-
-            var dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration);
-            var surrogateKey = GetSurrogateKey(dataObject.name, teamConnection, teamConfiguration);
+            
             var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition);
 
             if (dataItemName == surrogateKey)
@@ -1006,13 +1160,9 @@ namespace TEAM
             return returnValue;
         }
 
-        public static bool IsIncludedDataItem(this string dataItemName, DataObject dataObject, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
+        public static bool IsIncludedDataItem(this string dataItemName, DataObjectTypes dataObjectType, string surrogateKey, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             bool returnValue = true;
-
-            var dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration);
-            var surrogateKey = GetSurrogateKey(dataObject.name, teamConnection, teamConfiguration);
-            var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition);
 
             if (dataItemName == teamConfiguration.LoadDateTimeAttribute)
             {
@@ -1061,7 +1211,6 @@ namespace TEAM
 
             return returnValue;
         }
-
 
         /// <summary>
         /// Extension method to infer the target path for a given string value (should be a target data object name).

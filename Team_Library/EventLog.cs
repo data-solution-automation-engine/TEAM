@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace TEAM_Library
 {
@@ -59,6 +60,21 @@ namespace TEAM_Library
                 this.Add(Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n"));
             }
         }
+
+        public int ReportErrors(EventLog eventLog)
+        {
+            int returnValue = 0;
+
+            foreach (var localEvent in eventLog)
+            {
+                if (localEvent.eventType == EventTypes.Error)
+                {
+                    returnValue++;
+                }
+            }
+                
+            return returnValue;
+        }
     }
 
     /// <summary>
@@ -81,6 +97,8 @@ namespace TEAM_Library
         /// </summary>
         public int eventCode { get; set; }
 
+        public EventTypes eventType { get; set; }
+
         /// <summary>
         /// Free-format description for an event.
         /// </summary>
@@ -102,6 +120,7 @@ namespace TEAM_Library
             var localEvent = new Event
             {
                 eventCode = (int)eventType,
+                eventType = eventType,
                 eventTime = DateTime.Now,
                 eventDescription = eventDescription
             };
@@ -121,6 +140,7 @@ namespace TEAM_Library
             var localEvent = new Event
             {
                 eventCode = (int)eventType,
+                eventType = eventType,
                 eventTime = eventDateTime,
                 eventDescription = eventDescription
             };

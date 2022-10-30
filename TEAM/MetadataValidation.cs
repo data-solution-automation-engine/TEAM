@@ -394,9 +394,8 @@ namespace TEAM
         /// <param name="validationObject"></param>
         /// <param name="inputDataTable"></param>
         /// <param name="physicalModelDataTable"></param>
-        /// <param name="evaluationMode"></param>
         /// <returns></returns>
-        internal static Dictionary<string,bool> ValidateLinkKeyOrder(Tuple<string,string,string, string> validationObject, DataTable inputDataTable, DataTable physicalModelDataTable, EnvironmentModes evaluationMode)
+        internal static Dictionary<string, bool> ValidateLinkKeyOrder(Tuple<string, string, string, string> validationObject, DataTable inputDataTable, DataTable physicalModelDataTable)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to query the individual Hub information
@@ -413,7 +412,9 @@ namespace TEAM
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = inputDataTable.Select(DataObjectMappingGridColumns.SourceDataObject+" = '" + validationObject.Item1+ "' AND "+DataObjectMappingGridColumns.BusinessKeyDefinition+" = '"+ hubBusinessKey.Replace("'", "''").Trim()+ "' AND "+DataObjectMappingGridColumns.TargetDataObject+" NOT LIKE '" + FormBase.TeamConfiguration.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = inputDataTable.Select(DataObjectMappingGridColumns.SourceDataObject + " = '" + validationObject.Item1 + "' AND " +
+                                                                DataObjectMappingGridColumns.BusinessKeyDefinition + " = '" + hubBusinessKey.Replace("'", "''").Trim() + "' AND " +
+                                                                DataObjectMappingGridColumns.TargetDataObject + " NOT LIKE '" + FormBase.TeamConfiguration.SatTablePrefixValue + "_%'");
 
                 try
                 {
@@ -421,8 +422,17 @@ namespace TEAM
                     string hubTableName = selectionRows[0][DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                     string hubTableConnectionId = selectionRows[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var hubTableConnection = GetTeamConnectionByConnectionId(hubTableConnectionId);
-                    
-                    string hubSurrogateKeyName = MetadataHandling.GetSurrogateKey(hubTableName, hubTableConnection, FormBase.TeamConfiguration);
+
+
+                    //var newValidationObject = new Tuple<string, string, string, string>
+                    //(
+                    //    row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString(),
+                    //    row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString(),
+                    //    businessKey,
+                    //    connectionValue
+                    //);
+
+                    string hubSurrogateKeyName = JsonOutputHandling.GetSurrogateKey(validationObject.Item2, validationObject.Item1 ,validationObject.Item3, hubTableConnection, FormBase.TeamConfiguration);
 
                     // Add to the dictionary that contains the keys in order.
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -436,71 +446,36 @@ namespace TEAM
             // Derive the Hub surrogate key name, as this can be compared against the Link
             var linkKeyOrder = new Dictionary<int, string>();
 
-            if (evaluationMode == EnvironmentModes.PhysicalMode)
+
+            int linkHubSurrogateKeyPosition = 1;
+
+            var workingTable = new DataTable();
+
+            try
             {
-                var connTarget = new SqlConnection { ConnectionString = validationObject.Item4 };
-                var connDatabase = connTarget.Database;
+                // Select only the business keys in a link table. 
+                // Excluding all non-business key attributes
+                workingTable = physicalModelDataTable
+                    .Select($"{PhysicalModelMappingMetadataColumns.Table_Name} LIKE '%{FormBase.TeamConfiguration.LinkTablePrefixValue}%' " +
+                            $"AND {PhysicalModelMappingMetadataColumns.Table_Name} = '{validationObject.Item2}' " +
+                            $"AND {PhysicalModelMappingMetadataColumns.Ordinal_Position} > 4", $"{PhysicalModelMappingMetadataColumns.Ordinal_Position} ASC").CopyToDataTable();
+            }
+            catch (Exception ex)
+            {
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred during validation of the metadata. The errors is {ex}."));
+            }
 
-                var sqlStatementForLink = new StringBuilder();
-                sqlStatementForLink.AppendLine("SELECT");
-                sqlStatementForLink.AppendLine("   OBJECT_NAME([object_id]) AS [TABLE_NAME]");
-                sqlStatementForLink.AppendLine("  ,[name] AS [COLUMN_NAME]");
-                sqlStatementForLink.AppendLine("  ,[column_id] AS [ORDINAL_POSITION]");
-                sqlStatementForLink.AppendLine("  ,ROW_NUMBER() OVER(PARTITION BY object_id ORDER BY column_id) AS [HUB_KEY_POSITION]");
-                sqlStatementForLink.AppendLine("FROM [" + connDatabase + "].sys.columns");
-                sqlStatementForLink.AppendLine("    WHERE OBJECT_NAME([object_id]) LIKE '" +FormBase.TeamConfiguration.LinkTablePrefixValue + "_%'");
-                sqlStatementForLink.AppendLine("AND OBJECTPROPERTY([object_id], 'IsTable') = 1");
-                sqlStatementForLink.AppendLine("AND column_id > 4");
-                sqlStatementForLink.AppendLine("AND OBJECT_NAME([object_id]) = '" + validationObject.Item2 + "'");
-
-                // The hubKeyOrder contains the order of the keys in the Hub, now we need to do the same for the (target) Link so we can compare.
-                connTarget.Open();
-                var linkList = Utility.GetDataTable(ref connTarget, sqlStatementForLink.ToString());
-                connTarget.Close();
-
-                foreach (DataRow row in linkList.Rows)
+            if (workingTable.Rows.Count > 0)
+            {
+                foreach (DataRow row in workingTable.Rows)
                 {
-                    var linkHubSurrogateKeyName = row["COLUMN_NAME"].ToString();
-                    int linkHubSurrogateKeyPosition = Convert.ToInt32(row["HUB_KEY_POSITION"]);
+                    var linkHubSurrogateKeyName = row[PhysicalModelMappingMetadataColumns.Column_Name.ToString()].ToString();
 
-                    if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)) // Exclude degenerate attributes from the order
+                    if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)
+                       ) // Exclude degenerate attributes from the order
                     {
                         linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
-                    }
-                }
-            }
-            else // virtual
-            {
-                int linkHubSurrogateKeyPosition = 1;
-
-                var workingTable = new DataTable();
-
-                try
-                {
-                    // Select only the business keys in a link table. 
-                    // Excluding all non-business key attributes
-                    workingTable = physicalModelDataTable
-                        .Select($"{PhysicalModelMappingMetadataColumns.Table_Name} LIKE '%{FormBase.TeamConfiguration.LinkTablePrefixValue}%' " +
-                                $"AND {PhysicalModelMappingMetadataColumns.Table_Name} = '{validationObject.Item2}' " +
-                                $"AND {PhysicalModelMappingMetadataColumns.Ordinal_Position} > 4", $"{PhysicalModelMappingMetadataColumns.Ordinal_Position} ASC").CopyToDataTable();
-                }
-                catch (Exception ex)
-                {
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred during validation of the metadata. The errors is {ex}."));
-                }
-
-                if (workingTable.Rows.Count > 0)
-                {
-                    foreach (DataRow row in workingTable.Rows)
-                    {
-                        var linkHubSurrogateKeyName = row[PhysicalModelMappingMetadataColumns.Column_Name.ToString()].ToString();
-
-                        if (linkHubSurrogateKeyName.Contains(FormBase.TeamConfiguration.DwhKeyIdentifier)
-                        ) // Exclude degenerate attributes from the order
-                        {
-                            linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
-                            linkHubSurrogateKeyPosition++;
-                        }
+                        linkHubSurrogateKeyPosition++;
                     }
                 }
             }
@@ -544,8 +519,8 @@ namespace TEAM
             }
 
             // return the result of the test;
-            Dictionary<string,bool> result = new Dictionary<string, bool>();
-            result.Add(validationObject.Item2,equal);
+            Dictionary<string, bool> result = new Dictionary<string, bool>();
+            result.Add(validationObject.Item2, equal);
             return result;
         }
 

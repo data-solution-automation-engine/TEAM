@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using DataWarehouseAutomation;
 using Newtonsoft.Json;
 using DataObject = DataWarehouseAutomation.DataObject;
 
@@ -49,7 +50,8 @@ namespace TEAM_Library
             {
                 foreach (var dataObjectMapping in dataObjectMappingFileCombination.DataObjectMappings.dataObjectMappings)
                 {
-                    // Target Data Object details
+                    #region region Target Data Object
+
                     var targetDataObject = dataObjectMapping.targetDataObject;
 
                     string targetConnectionInternalId = teamConfiguration.MetadataConnection.ConnectionInternalId;
@@ -59,10 +61,13 @@ namespace TEAM_Library
                         targetConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(dataObjectMapping.targetDataObject.dataObjectConnection.dataConnectionString, teamConfiguration).ConnectionInternalId;
                     }
 
+                    #endregion
+
                     string filterCriterion = dataObjectMapping.filterCriterion;
                     string drivingKeyDefinition = "";
 
                     #region Business Key Definition
+
                     string businessKeyDefinitionString = "";
                     int businessKeyCounter = 1;
 
@@ -101,6 +106,21 @@ namespace TEAM_Library
                                     }
 
                                     businessKeyDefinitionString += ";";
+
+                                    // Evaluate if a Driving Key needs to be set.
+                                    if (dataItem.dataItemClassification != null)
+                                    {
+                                        // It must be a DataItem so it can be safely cast.
+                                        DataItem tempDataItem = dataItem.ToObject<DataItem>();
+
+                                        List<Classification> classifications = tempDataItem.dataItemClassification;
+
+                                        if (classifications[0].classification == "DrivingKey")
+                                        {
+                                            drivingKeyDefinition = dataItemName;
+                                        }
+                                    }
+                                    
                                 }
                             }
 
@@ -119,6 +139,7 @@ namespace TEAM_Library
                     }
 
                     businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
+
                     #endregion
 
                     foreach (var sourceDataObject in dataObjectMapping.sourceDataObjects)
@@ -377,6 +398,7 @@ namespace TEAM_Library
             return businessConceptRelationshipList;
         }
     }
+
     public class TableMappingJson
     {
         //JSON representation of the table mapping metadata
@@ -417,11 +439,5 @@ namespace TEAM_Library
         TargetDataObjectName = 10,
         PreviousTargetDataObjectName = 11,
         SurrogateKey = 12
-    }
-
-    public enum BusinessKeyEvaluationMode
-    {
-        Full, // The full business key is evaluated.
-        Partial // The business is broken into components and evaluated separately.
     }
 }

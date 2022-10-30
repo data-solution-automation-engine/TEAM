@@ -285,18 +285,6 @@ namespace TEAM
             }
         }
 
-        private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(GlobalParameters.OutputPath);
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the output directory. The error message is: {ex.Message}.";
-            }
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();

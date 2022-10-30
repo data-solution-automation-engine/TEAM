@@ -203,11 +203,24 @@ namespace TEAM
                     // Current cell
                     DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
 
-                    string dataObjectName = e.Value.ToString();
+                    string targetdataObjectName = e.Value.ToString();
+                    string sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
 
-                    var targetConnectionId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                    // Check what the 'parent' is in the data object mapping, for further evaluation. Return if nothing is found (this should be picked up by validation later on).
+                    var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
+                        .Cast<DataGridViewRow>()
+                        .Where(r => !r.IsNewRow)
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetdataObjectName))
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                        .FirstOrDefault();
+
+
+                    var targetConnectionId = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                     TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
-                    KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, targetConnection).FirstOrDefault();
+
+     
+
+                    KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetdataObjectName, targetConnection).FirstOrDefault();
 
                     // Only the name (e.g. without the schema) should be evaluated.
                     string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;

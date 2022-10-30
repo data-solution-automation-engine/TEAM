@@ -46,6 +46,10 @@ namespace TEAM
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="parent"></param>
         public FormManageMetadata(FormMain parent) : base(parent)
         {
             // Standard call to get the designer controls in place.
@@ -86,6 +90,12 @@ namespace TEAM
 
             // Ensure that the count of object types is updated based on whatever is in the data grid.
             ContentCounter();
+
+            var errorsFound = GlobalParameters.TeamEventLog.ReportErrors(GlobalParameters.TeamEventLog);
+            if (errorsFound > 0)
+            {
+                richTextBoxInformation.AppendText($"Errors have been found in the event log. Please check.\r\n");
+            }
         }
 
         /// <summary>
@@ -2989,9 +2999,7 @@ namespace TEAM
             foreach (var sourceObject in objectList)
             {
                 // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject,
-                    (DataTable) BindingSourceDataObjectMappings.DataSource,
-                    (DataTable) BindingSourcePhysicalModel.DataSource, GlobalParameters.EnvironmentMode);
+                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject, (DataTable) BindingSourceDataObjectMappings.DataSource, (DataTable) BindingSourcePhysicalModel.DataSource);
 
                 // Looping through the dictionary
                 foreach (var pair in sourceObjectValidated)

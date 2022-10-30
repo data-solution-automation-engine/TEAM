@@ -1162,8 +1162,17 @@ namespace TEAM
 
             #region Mapping Level Classification
 
-            var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration);
-            dataObjectMapping.mappingClassifications = mappingClassifications;
+            try
+            {
+                var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
+
+                var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration, drivingKeyValue);
+                dataObjectMapping.mappingClassifications = mappingClassifications;
+            }
+            catch
+            {
+                //
+            }
 
             #endregion
 
@@ -1273,66 +1282,79 @@ namespace TEAM
 
             foreach (var row in physicalModelDataGridViewRows)
             {
-                var autoMappedTargetDataItemName = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
-
-                // If already exists as a target mapping it can be ignored.
-                if (targetDataItemNames.Contains(autoMappedTargetDataItemName))
-                    continue;
-
-                // If there is no source data item to be found in the physical model, it can be ignored.
-                var physicalModelSourceDataItemLookup = _dataGridViewPhysicalModel.Rows
-                    .Cast<DataGridViewRow>()
-                    .Where(r => !r.IsNewRow)
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(sourceDataObject.name))
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(autoMappedTargetDataItemName))
-                    .FirstOrDefault();
-
-                if (physicalModelSourceDataItemLookup == null)
-                    continue;
-
-                // If the data item is not on an exception list, it can also be ignored.
-                var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
-
-                var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
-                var targetDataItemConnection = GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId);
-
-                if (!autoMappedTargetDataItemName.IsIncludedDataItem(targetDataObject, businessKeyDefinition, targetDataItemConnection, TeamConfiguration))
-                    continue;
-
-                // Otherwise, create a data item for both source and target, and add it.
-                List<dynamic> sourceDataItems = new List<dynamic>();
-                var autoMappedSourceDataItem = new DataItem();
-                sourceDataItems.Add(autoMappedSourceDataItem);
-
-                var autoMappedTargetDataItem = new DataItem();
-
-                // One to one mapping.
-                autoMappedSourceDataItem.name = autoMappedTargetDataItemName;
-                autoMappedTargetDataItem.name = autoMappedTargetDataItemName;
-
-                // Add data types to Data Item that are part of a data item mapping.
-                var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                var sourceDataItemConnection = GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId);
-                JsonOutputHandling.SetDataItemMappingDataType(autoMappedSourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting);
-
-                JsonOutputHandling.SetDataItemMappingDataType(autoMappedTargetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting);
-
-                // Add parent Data Object to the Data Item.
-                JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedSourceDataItem, sourceDataObject, JsonExportSetting);
-                JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
-
-                // Create a Data Item Mapping.
-                DataItemMapping dataItemMapping = new DataItemMapping
+                try
                 {
-                    sourceDataItems = sourceDataItems,
-                    targetDataItem = autoMappedTargetDataItem
-                };
+                    var autoMappedTargetDataItemName = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
 
-                // Add to a list that is more easily searched.
-                targetDataItemNames.Add(autoMappedTargetDataItem.name);
+                    // If already exists as a target mapping it can be ignored.
+                    if (targetDataItemNames.Contains(autoMappedTargetDataItemName))
+                        continue;
 
-                // Add the Data Items Mapping to the list of mappings.
-                dataItemMappings.Add(dataItemMapping);
+                    // If there is no source data item to be found in the physical model, it can be ignored.
+                    var physicalModelSourceDataItemLookup = _dataGridViewPhysicalModel.Rows
+                        .Cast<DataGridViewRow>()
+                        .Where(r => !r.IsNewRow)
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(sourceDataObject.name))
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(autoMappedTargetDataItemName))
+                        .FirstOrDefault();
+
+                    if (physicalModelSourceDataItemLookup == null)
+                        continue;
+
+                    // If the data item is not on an exception list, it can also be ignored.
+                    var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
+                    var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
+
+                    var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
+                    var targetDataItemConnection = GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId);
+
+
+                    var dataObjectType = MetadataHandling.GetDataObjectType(targetDataObject.name, "", FormBase.TeamConfiguration);
+                    var surrogateKey = JsonOutputHandling.GetSurrogateKey(targetDataObject.name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration);
+
+                    if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
+                        continue;
+
+                    // Otherwise, create a data item for both source and target, and add it.
+                    List<dynamic> sourceDataItems = new List<dynamic>();
+                    var autoMappedSourceDataItem = new DataItem();
+                    sourceDataItems.Add(autoMappedSourceDataItem);
+
+                    var autoMappedTargetDataItem = new DataItem();
+
+                    // One to one mapping.
+                    autoMappedSourceDataItem.name = autoMappedTargetDataItemName;
+                    autoMappedTargetDataItem.name = autoMappedTargetDataItemName;
+
+                    // Add data types to Data Item that are part of a data item mapping.
+                    var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                    var sourceDataItemConnection = GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId);
+                    JsonOutputHandling.SetDataItemMappingDataType(autoMappedSourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting);
+
+                    JsonOutputHandling.SetDataItemMappingDataType(autoMappedTargetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting);
+
+                    // Add parent Data Object to the Data Item.
+                    JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedSourceDataItem, sourceDataObject, JsonExportSetting);
+                    JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
+
+                    // Create a Data Item Mapping.
+                    DataItemMapping dataItemMapping = new DataItemMapping
+                    {
+                        sourceDataItems = sourceDataItems,
+                        targetDataItem = autoMappedTargetDataItem
+                    };
+
+                    // Add to a list that is more easily searched.
+                    targetDataItemNames.Add(autoMappedTargetDataItem.name);
+
+                    // Add the Data Items Mapping to the list of mappings.
+                    dataItemMappings.Add(dataItemMapping);
+
+                }
+                catch (Exception exception)
+                {
+                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {exception.Message}."));
+                }
             }
 
             // Add the data item mappings to the data object mapping.
@@ -1357,7 +1379,8 @@ namespace TEAM
             {
                 var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
                 var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
-                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, targetConnection, TeamConfiguration);
+                var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
+                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, targetConnection, TeamConfiguration, drivingKeyValue);
             }
             catch
             {
