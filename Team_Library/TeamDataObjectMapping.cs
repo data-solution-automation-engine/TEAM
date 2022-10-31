@@ -71,74 +71,77 @@ namespace TEAM_Library
                     string businessKeyDefinitionString = "";
                     int businessKeyCounter = 1;
 
-                    foreach (var businessKey in dataObjectMapping.businessKeys)
+                    if (dataObjectMapping.businessKeys != null)
                     {
-                        // For Links, skip the first business key (because it's the full key).
-                        if (businessKeyCounter == 1 && targetDataObject.name.IsDataVaultLink(teamConfiguration))
+                        foreach (var businessKey in dataObjectMapping.businessKeys)
                         {
-                            // Do nothing.
-                        }
-                        else
-                        {
-                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
-                            if (businessKey.businessKeyComponentMapping.Count > 1)
+                            // For Links, skip the first business key (because it's the full key).
+                            if (businessKeyCounter == 1 && targetDataObject.name.IsDataVaultLink(teamConfiguration))
                             {
-                                businessKeyDefinitionString += "COMPOSITE(";
+                                // Do nothing.
                             }
-
-                            if (businessKey.businessKeyClassification != null && businessKey.businessKeyClassification[0].classification.Contains("DegenerateAttribute"))
-                                continue;
-
-                            foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
+                            else
                             {
-                                foreach (var dataItem in dataItemMapping.sourceDataItems)
+                                // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                                if (businessKey.businessKeyComponentMapping.Count > 1)
                                 {
-                                    // Explicitly type-cast the value as string to avoid issues using dynamic type.
-                                    string dataItemName = dataItem.name;
-
-                                    if (dataItemName.Contains("+"))
-                                    {
-                                        businessKeyDefinitionString += $"CONCATENATE({dataItem.name})".Replace("+", ";");
-                                    }
-                                    else
-                                    {
-                                        businessKeyDefinitionString += dataItemName;
-                                    }
-
-                                    businessKeyDefinitionString += ";";
-
-                                    // Evaluate if a Driving Key needs to be set.
-                                    if (dataItem.dataItemClassification != null)
-                                    {
-                                        // It must be a DataItem so it can be safely cast.
-                                        DataItem tempDataItem = dataItem.ToObject<DataItem>();
-
-                                        List<Classification> classifications = tempDataItem.dataItemClassification;
-
-                                        if (classifications[0].classification == "DrivingKey")
-                                        {
-                                            drivingKeyDefinition = dataItemName;
-                                        }
-                                    }
-                                    
+                                    businessKeyDefinitionString += "COMPOSITE(";
                                 }
+
+                                if (businessKey.businessKeyClassification != null && businessKey.businessKeyClassification[0].classification.Contains("DegenerateAttribute"))
+                                    continue;
+
+                                foreach (var dataItemMapping in businessKey.businessKeyComponentMapping)
+                                {
+                                    foreach (var dataItem in dataItemMapping.sourceDataItems)
+                                    {
+                                        // Explicitly type-cast the value as string to avoid issues using dynamic type.
+                                        string dataItemName = dataItem.name;
+
+                                        if (dataItemName.Contains("+"))
+                                        {
+                                            businessKeyDefinitionString += $"CONCATENATE({dataItem.name})".Replace("+", ";");
+                                        }
+                                        else
+                                        {
+                                            businessKeyDefinitionString += dataItemName;
+                                        }
+
+                                        businessKeyDefinitionString += ";";
+
+                                        // Evaluate if a Driving Key needs to be set.
+                                        if (dataItem.dataItemClassification != null)
+                                        {
+                                            // It must be a DataItem so it can be safely cast.
+                                            DataItem tempDataItem = dataItem.ToObject<DataItem>();
+
+                                            List<Classification> classifications = tempDataItem.dataItemClassification;
+
+                                            if (classifications[0].classification == "DrivingKey")
+                                            {
+                                                drivingKeyDefinition = dataItemName;
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(';');
+
+                                // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
+                                if (businessKey.businessKeyComponentMapping.Count > 1)
+                                {
+                                    businessKeyDefinitionString += ")";
+                                }
+
+                                businessKeyDefinitionString += ",";
                             }
 
-                            businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(';');
-
-                            // If there is more than 1 data item mapping / business key component mapping then COMPOSITE ;
-                            if (businessKey.businessKeyComponentMapping.Count > 1)
-                            {
-                                businessKeyDefinitionString += ")";
-                            }
-
-                            businessKeyDefinitionString += ",";
+                            businessKeyCounter++;
                         }
 
-                        businessKeyCounter++;
+                        businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
                     }
-
-                    businessKeyDefinitionString = businessKeyDefinitionString.TrimEnd(',');
 
                     #endregion
 
@@ -163,6 +166,14 @@ namespace TEAM_Library
                             singleSourceDataObject.name, targetDataObject.name, businessKeyDefinitionString, drivingKeyDefinition, filterCriterion
                         };
 
+
+                        string surrogateKey = "";
+
+                        if (dataObjectMapping.businessKeys != null)
+                        {
+                            surrogateKey = dataObjectMapping.businessKeys[0].surrogateKey;
+                        }
+
                         Utility.CreateMd5(hashKey, Utility.SandingElement);
 
                         newRow[(int)DataObjectMappingGridColumns.Enabled] = dataObjectMapping.enabled;
@@ -177,7 +188,7 @@ namespace TEAM_Library
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = singleSourceDataObject.name;
                         newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = targetDataObject.name;
                         newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = targetDataObject.name;
-                        newRow[(int)DataObjectMappingGridColumns.SurrogateKey] = dataObjectMapping.businessKeys[0].surrogateKey;
+                        newRow[(int)DataObjectMappingGridColumns.SurrogateKey] = surrogateKey;
 
                         DataTable.Rows.Add(newRow);
                     }

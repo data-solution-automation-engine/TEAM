@@ -1230,32 +1230,54 @@ namespace TEAM
 
                     if (localSourceDataObject == sourceDataObject.name && localTargetDataObject == targetDataObject.name)
                     {
-                        var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceColumn.ToString()].Value.ToString();
-                        var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetColumn.ToString()].Value.ToString();
-
+                        var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataItem.ToString()].Value.ToString();
+                        var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataItem.ToString()].Value.ToString();
+                        
                         // Creating a single source-to-target Data Item mapping.
                         List<dynamic> sourceDataItems = new List<dynamic>();
-                        var sourceDataItem = new DataItem();
-                        var targetDataItem = new DataItem();
 
-                        sourceDataItem.name = localSourceDataItem;
+                        #region Target Data Item
+
+                        var targetDataItem = new DataItem();
                         targetDataItem.name = localTargetDataItem;
 
                         // Add data types to Data Item that are part of a data item mapping.
-                        var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                        var sourceDataItemConnection = GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId);
-                        JsonOutputHandling.SetDataItemMappingDataType(sourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting);
-
                         var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
                         var targetDataItemConnection = GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId);
                         JsonOutputHandling.SetDataItemMappingDataType(targetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting);
 
                         // Add parent Data Object to the Data Item.
-                        JsonOutputHandling.SetParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
                         JsonOutputHandling.SetParentDataObjectToDataItem(targetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
 
-                        // Populate the list of source Data Items.
-                        sourceDataItems.Add(sourceDataItem);
+                        #endregion
+
+                        #region Source Data Item or Query
+
+                        if (localSourceDataItem.IsDataQuery())
+                        {
+                            var sourceDataItem = new DataQuery();
+                            sourceDataItem.dataQueryCode = localSourceDataItem.Replace("`","");
+
+                            sourceDataItems.Add(sourceDataItem);
+                        }
+                        else
+                        {
+                            var sourceDataItem = new DataItem();
+                            sourceDataItem.name = localSourceDataItem;
+
+                            // Add data types to Data Item that are part of a data item mapping.
+                            var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                            var sourceDataItemConnection = GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId);
+                            JsonOutputHandling.SetDataItemMappingDataType(sourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting);
+
+                            // Add parent Data Object to the Data Item.
+                            JsonOutputHandling.SetParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
+
+                            // Populate the list of source Data Items.
+                            sourceDataItems.Add(sourceDataItem);
+                        }
+
+                        #endregion
 
                         // Create a Data Item Mapping.
                         DataItemMapping dataItemMapping = new DataItemMapping

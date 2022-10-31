@@ -77,12 +77,12 @@ namespace TEAM
             }
 
             // Source Column
-            if (!Controls.ContainsKey(DataItemMappingGridColumns.SourceColumn.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.SourceDataItem.ToString()))
             {
                 DataGridViewTextBoxColumn sourceColumn = new DataGridViewTextBoxColumn();
-                sourceColumn.Name = DataItemMappingGridColumns.SourceColumn.ToString();
+                sourceColumn.Name = DataItemMappingGridColumns.SourceDataItem.ToString();
                 sourceColumn.HeaderText = @"Source Data Item";
-                sourceColumn.DataPropertyName = DataItemMappingGridColumns.SourceColumn.ToString();
+                sourceColumn.DataPropertyName = DataItemMappingGridColumns.SourceDataItem.ToString();
                 sourceColumn.Visible = true;
                 Columns.Add(sourceColumn);
             }
@@ -99,12 +99,12 @@ namespace TEAM
             }
 
             // Target Column
-            if (!Controls.ContainsKey(DataItemMappingGridColumns.TargetColumn.ToString()))
+            if (!Controls.ContainsKey(DataItemMappingGridColumns.TargetDataItem.ToString()))
             {
                 DataGridViewTextBoxColumn targetColumn = new DataGridViewTextBoxColumn();
-                targetColumn.Name = DataItemMappingGridColumns.TargetColumn.ToString();
-                targetColumn.HeaderText = DataItemMappingGridColumns.TargetColumn.ToString();
-                targetColumn.DataPropertyName = DataItemMappingGridColumns.TargetColumn.ToString();
+                targetColumn.Name = DataItemMappingGridColumns.TargetDataItem.ToString();
+                targetColumn.HeaderText = DataItemMappingGridColumns.TargetDataItem.ToString();
+                targetColumn.DataPropertyName = DataItemMappingGridColumns.TargetDataItem.ToString();
                 targetColumn.Visible = true;
                 Columns.Add(targetColumn);
             }
@@ -188,6 +188,65 @@ namespace TEAM
                             // Show issue.
                             cell.Style.ForeColor = Color.Red;
                         }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Source Data Items
+
+            // Format the name of the data object, for a source data object
+            if (Columns[e.ColumnIndex].Name.Equals(DataItemMappingGridColumns.SourceDataItem.ToString()))
+            {
+                if (e.Value != null)
+                {
+                    DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                    string dataObjectName = e.Value.ToString();
+
+                    // Colour coding / syntax highlighting for in source data objects.
+                    if (dataObjectName.StartsWith("`"))
+                    {
+                        cell.Style.BackColor = Color.AliceBlue;
+
+                        if (dataObjectName.EndsWith("`"))
+                        {
+                            cell.Style.ForeColor = Color.DarkBlue;
+                        }
+                        else
+                        {
+                            // Show issue.
+                            cell.Style.ForeColor = Color.Red;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+
+            #region Target Data Items
+
+            // Format the name of the data object, for a source data object
+            if (Columns[e.ColumnIndex].Name.Equals(DataItemMappingGridColumns.TargetDataItem.ToString()))
+            {
+                if (e.Value != null)
+                {
+                    DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                    string dataObjectName = e.Value.ToString();
+
+                    // Colour coding / syntax highlighting for in source data objects.
+                    if (dataObjectName.StartsWith("`") || dataObjectName.EndsWith("`"))
+                    {
+                        // Show issue - you can't have a derived target data item.
+                        cell.Style.ForeColor = Color.Red;
+                    }
+                    // Colour coding / syntax highlighting for in source data objects.
+                    else
+                    {
+                        cell.Style.ForeColor = Color.Black;
                     }
                 }
             }

@@ -22,9 +22,9 @@ namespace TEAM_Library
     {
         HashKey = 0,
         SourceDataObject = 1,
-        SourceColumn = 2,
+        SourceDataItem = 2,
         TargetDataObject = 3,
-        TargetColumn = 4,
+        TargetDataItem = 4,
         Notes = 5
     }
 
@@ -48,7 +48,7 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{DataItemMappingGridColumns.TargetDataObject}] ASC, [{DataItemMappingGridColumns.TargetColumn}] ASC, [{DataItemMappingGridColumns.TargetDataObject}] ASC, [{DataItemMappingGridColumns.SourceDataObject}] ASC";
+            DataTable.DefaultView.Sort = $"[{DataItemMappingGridColumns.TargetDataObject}] ASC, [{DataItemMappingGridColumns.TargetDataItem}] ASC, [{DataItemMappingGridColumns.TargetDataObject}] ASC, [{DataItemMappingGridColumns.SourceDataObject}] ASC";
         }
 
         /// <summary>
@@ -58,9 +58,9 @@ namespace TEAM_Library
         {
             DataTable.Columns[(int)DataItemMappingGridColumns.HashKey].ColumnName = DataItemMappingGridColumns.HashKey.ToString();
             DataTable.Columns[(int)DataItemMappingGridColumns.SourceDataObject].ColumnName = DataItemMappingGridColumns.SourceDataObject.ToString();
-            DataTable.Columns[(int)DataItemMappingGridColumns.SourceColumn].ColumnName = DataItemMappingGridColumns.SourceColumn.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.SourceDataItem].ColumnName = DataItemMappingGridColumns.SourceDataItem.ToString();
             DataTable.Columns[(int)DataItemMappingGridColumns.TargetDataObject].ColumnName = DataItemMappingGridColumns.TargetDataObject.ToString();
-            DataTable.Columns[(int)DataItemMappingGridColumns.TargetColumn].ColumnName = DataItemMappingGridColumns.TargetColumn.ToString();
+            DataTable.Columns[(int)DataItemMappingGridColumns.TargetDataItem].ColumnName = DataItemMappingGridColumns.TargetDataItem.ToString();
             DataTable.Columns[(int)DataItemMappingGridColumns.Notes].ColumnName = DataItemMappingGridColumns.Notes.ToString();
         }
 
