@@ -148,7 +148,5 @@ namespace TEAM_Library
                 EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"There were issues accessing the directory {MetadataPath}. It does not seem to exist."));
             }
         }
-
-
     }
 }

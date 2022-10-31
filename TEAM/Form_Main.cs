@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
-using Microsoft.Data.SqlClient;
 using System.Threading;
 using System.Drawing;
 using System.IO;
@@ -27,8 +26,6 @@ namespace TEAM
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
             GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
 
-            richTextBoxInformation.AppendText("Starting the application.\r\n\r\n");
-
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
             try
@@ -41,9 +38,11 @@ namespace TEAM
             }
 
             #region Load the root path configuration settings (user defined paths and working environment)
+
             // Load the root file, to be able to locate the (customisable) configuration file.
             // This file contains the configuration directory, the output directory and the working environment.
             string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
+
             try
             {
                 LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
@@ -69,6 +68,7 @@ namespace TEAM
             #endregion
 
             #region Check if user configured paths exists (now that they have been loaded from the root file), and create dummy Configuration and Validation files if necessary
+
             // Configuration Path
             try
             {
@@ -144,6 +144,7 @@ namespace TEAM
             TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
             #region Load configuration file
+
             // Load the available configuration file into memory.
             var configurationFile = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
             try
@@ -160,7 +161,6 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
             }
             #endregion
-
 
             // Load the pattern definition file.
             try
@@ -188,7 +188,7 @@ namespace TEAM
                 richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
             }
 
-            TestConnections();
+            openMetadataFormToolStripMenuItem.Enabled = true;
 
             //Startup information
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
@@ -199,73 +199,6 @@ namespace TEAM
         {
             get { return base.Text; }
             set { base.Text = value; }
-        }
-
-        public void TestConnections()
-        {
-            if (RevalidateFlag == false)
-                return;
-
-            RevalidateFlag = false;
-
-            richTextBoxInformation.AppendText("Validating database connections.\r\n");
-
-            // There is no metadata object available (set)
-            if (TeamConfiguration.MetadataConnection is null)
-            {
-                DisableMenu();
-                return;
-            }
-
-            var connOmd = new SqlConnection { ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false) };
-
-            if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
-                try
-                {
-                    connOmd.Open();
-                }
-                catch
-                {
-                    richTextBoxInformation.AppendText("There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-                    DisableMenu();
-                    return;
-                }
-            else
-            {
-                richTextBoxInformation.AppendText("Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
-                DisableMenu();
-                return;
-            }
-
-            EnableMenu();
-            richTextBoxInformation.AppendText("Database connections have been successfully validated.\r\n");
-
-            try
-            {
-                openMetadataFormToolStripMenuItem.Enabled = true;
-
-                labelMetadataSave.Text = TeamConfiguration.MetadataRepositoryType.ToString();
-            }
-            catch
-            {
-                richTextBoxInformation.AppendText("There was an issue while reading Metadata Database. The Database is missing tables.\r\n");
-                openMetadataFormToolStripMenuItem.Enabled = false;
-                RevalidateFlag = true;
-            }
-            finally
-            {
-                connOmd.Close();
-                connOmd.Dispose();
-            }
-        }
-
-        public void DisableMenu()
-        {
-            metadataToolStripMenuItem.Enabled = false;
-        }
-        public void EnableMenu()
-        {
-            metadataToolStripMenuItem.Enabled = true;
         }
 
         private void CheckKeyword(string word, Color color, int startIndex)
@@ -349,44 +282,10 @@ namespace TEAM
             LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
         }
 
-        private void ClosePatternForm(object sender, FormClosedEventArgs e)
-        {
-            _myPatternForm = null;
-        }
         #endregion
 
         #region Form Threads
-        private FormManagePattern _myPatternForm;
-        [STAThread]
-        public void ThreadProcPattern()
-        {
-            if (_myPatternForm == null)
-            {
-                _myPatternForm = new FormManagePattern(this);
-                Application.Run(_myPatternForm);
-            }
-            else
-            {
-                if (_myPatternForm.InvokeRequired)
-                {
-                    // Thread Error
-                    _myPatternForm.Invoke((MethodInvoker)delegate { _myPatternForm.Close(); });
-                    _myPatternForm.FormClosed += ClosePatternForm;
-
-                    _myPatternForm = new FormManagePattern(this);
-                    Application.Run(_myPatternForm);
-                }
-                else
-                {
-                    // No invoke required - same thread
-                    _myPatternForm.FormClosed += ClosePatternForm;
-                    _myPatternForm = new FormManagePattern(this);
-
-                    Application.Run(_myPatternForm);
-                }
-            }
-        }
-
+        
         private FormManageConfiguration _myConfigurationForm;
         [STAThread]
         public void ThreadProcConfiguration()
@@ -549,22 +448,10 @@ namespace TEAM
         {
             ActiveControl = null;
         }
-
-        private void FormMain_Activated(object sender, EventArgs e)
-        {
-            TestConnections();
-        }
-
+        
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
-        }
-
-        private void patternDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcPattern);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
         }
 
         private void backgroundWorkerEventLog_DoWork(object sender, DoWorkEventArgs e)

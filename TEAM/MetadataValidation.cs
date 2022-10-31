@@ -44,120 +44,10 @@ namespace TEAM
                     break;
             }
 
-            // Now check if the attribute exists in the table
-            foreach (string validationAttribute in validationAttributeList)
-            {
-                var fullyQualifiedValidationObject = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
-                var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
-                var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
-
-                if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
-                {
-                    var conn = new SqlConnection
-                        {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
-                    conn.Open();
-
-                    // Execute the check
-                    var cmd = new SqlCommand(
-                        "SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE " +
-                        "[TABLE_NAME] = '" + localTable + "' AND " +
-                        "[TABLE_SCHEMA] = '" + localSchema + "' AND " +
-                        "[COLUMN_NAME] = '" + validationAttribute + "')) THEN 1 ELSE 0 END", conn);
-
-                    var exists = (int) cmd.ExecuteScalar() == 1;
-
-                    returnList.Add(new Tuple<string, string, bool>(localSchema + '.'+localTable, validationAttribute, exists));
-
-                    conn.Close();
-                }
-            }
-
             // return the result of the test;
             return returnList;
         }
         
-        
-        /// <summary>
-        /// This method ensures that a table object exists in the physical model against the catalog.
-        /// </summary>
-        /// <param name="fullyQualifiedValidationObject"></param>
-        /// <param name="teamConnection"></param>
-        /// <returns></returns>
-        internal static string ValidateObjectExistencePhysical (KeyValuePair<string, string> fullyQualifiedValidationObject, TeamConnection teamConnection)
-        {
-            var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
-            var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
-
-            // If the value is a Data Query, the validation can be skipped immediately.
-            if (localTable.IsDataQuery())
-            {
-                return "true";
-            }
-
-            var conn = new SqlConnection {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
-            conn.Open();
-
-            // Execute the check
-            var cmd = new SqlCommand(
-                "SELECT CASE WHEN EXISTS ((SELECT * " +
-                "FROM sys.objects a " +
-                "JOIN sys.schemas b on a.schema_id = b.schema_id " +
-                "WHERE a.[name] = '" + localTable + "' and b.[name]= '"+ localSchema + "')) THEN 1 ELSE 0 END", conn);
-
-            var exists = (int) cmd.ExecuteScalar() == 1;
-            string returnExistenceEvaluation = exists.ToString();
-
-            conn.Close();
-
-            // return the result of the test;
-            return returnExistenceEvaluation;
-        }
-
-        /// <summary>
-        /// This method ensures that an attribute object exists in the physical model against the catalog.
-        /// </summary>
-        /// <param name="validationObject"></param>
-        /// <param name="validationAttribute"></param>
-        /// <param name="teamConnection"></param>
-        /// <returns></returns>
-        internal static string ValidateAttributeExistencePhysical(string validationObject, string validationAttribute, TeamConnection teamConnection)
-        {
-            var returnExistenceEvaluation = "False";
-            
-            // Temporary fix to allow 'transformations', in this case hard-coded NULL values to be loaded.
-            if (validationAttribute != "NULL")
-            {
-                var fullyQualifiedValidationObject = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
-                var localTable = fullyQualifiedValidationObject.Value.Replace("[", "").Replace("]", "");
-                var localSchema = fullyQualifiedValidationObject.Key.Replace("[", "").Replace("]", "");
-
-                var conn = new SqlConnection {ConnectionString = teamConnection.CreateSqlServerConnectionString(false)};
-                conn.Open();
-
-                // Execute the check
-                var cmd = new SqlCommand(
-                    "SELECT CASE WHEN EXISTS ((SELECT * FROM INFORMATION_SCHEMA.COLUMNS " +
-                    "WHERE " +
-                    "[TABLE_NAME] = '" + localTable + "' AND " +
-                    "[TABLE_SCHEMA] = '" + localSchema + "' AND " +
-                    "[COLUMN_NAME] = '" + validationAttribute + "')) THEN 1 ELSE 0 END", conn);
-
-                var exists = (int) cmd.ExecuteScalar() == 1;
-                returnExistenceEvaluation = exists.ToString();
-
-                conn.Close();
-            }
-            else
-            {
-                // Set True if NULL
-                returnExistenceEvaluation = "True";
-            }
-
-            // return the result of the test;
-            return returnExistenceEvaluation;
-        }
-
         /// <summary>
         /// Check if an object / table exists in the metadata.
         /// </summary>
@@ -165,7 +55,7 @@ namespace TEAM
         /// <param name="teamConnection"></param>
         /// <param name="inputDataTable"></param>
         /// <returns></returns>
-        internal static string ValidateObjectExistenceVirtual (string validationObject, TeamConnection teamConnection, DataTable inputDataTable)
+        internal static string ValidateObjectExistence (string validationObject, TeamConnection teamConnection, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
 
@@ -203,7 +93,7 @@ namespace TEAM
         /// <param name="teamConnection"></param>
         /// <param name="inputDataTable"></param>
         /// <returns></returns>
-        internal static string ValidateAttributeExistenceVirtual(string validationObject, string validationAttribute, TeamConnection teamConnection, DataTable inputDataTable)
+        internal static string ValidateAttributeExistence(string validationObject, string validationAttribute, TeamConnection teamConnection, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
 
@@ -250,8 +140,6 @@ namespace TEAM
             var tableClassification = "";
 
             var inputTargetTableType = MetadataHandling.GetDataObjectType(validationObject.Item2, "", FormBase.TeamConfiguration);
-            
-
 
             if (inputTargetTableType == MetadataHandling.DataObjectTypes.Context) // If the table is a Satellite, only the Hub is required
             {

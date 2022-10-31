@@ -89,9 +89,7 @@ namespace TEAM
         {
             if (backgroundWorkerSampleData.IsBusy != true)
             {
-                // create a new instance of the alert form
                 _alertSampleDataCreationInDatabase = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
                 _alertSampleDataCreationInDatabase.Show();
                 _alertSampleDataCreationInDatabase.ShowLogButton(false);
 
@@ -110,22 +108,25 @@ namespace TEAM
             }
             else
             {
-                worker.ReportProgress(0);
-
-                // Create the sample data
-                _alertSampleDataCreationInDatabase.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
-
-                try
+                if (worker != null)
                 {
-                    GenerateDatabaseSample(worker);
-                    
-                    _alertSampleDataCreationInDatabase.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
-                    SetStandardConfigurationSettings();
-                    worker.ReportProgress(100);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"An issue occurred creating the sample schemas. The error message is: {ex.Message}", "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    worker.ReportProgress(0);
+
+                    // Create the sample data
+                    _alertSampleDataCreationInDatabase.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
+
+                    try
+                    {
+                        GenerateDatabaseSample(worker);
+
+                        _alertSampleDataCreationInDatabase.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
+                        SetStandardConfigurationSettings();
+                        worker.ReportProgress(100);
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show($@"An issue occurred creating the sample schemas. The error message is: {exception.Message}", @"An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
             }
         }
@@ -153,9 +154,6 @@ namespace TEAM
             });
 
             var localSourceConnectionString = localSourceConnectionObject.Key.CreateSqlServerConnectionString(false);
-            var localSourceDatabaseName = localSourceConnectionObject.Key.DatabaseServer.DatabaseName;
-
-
             comboBoxStagingConnection.Invoke((MethodInvoker)delegate
             {
                 localStagingConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxStagingConnection.SelectedItem;
@@ -237,8 +235,7 @@ namespace TEAM
 
             }
             #endregion
-
-
+            
             // Execute the SQL statements
             int counter = 0;
             foreach (var individualSQlCommand in commandDictionary)
@@ -288,9 +285,7 @@ namespace TEAM
             {
                 using (StreamReader sr = new StreamReader(filePath))
                 {
-                    var sqlCommands = sr.ReadToEnd()
-                        .Split(new string[] {Environment.NewLine + Environment.NewLine},
-                            StringSplitOptions.RemoveEmptyEntries);
+                    var sqlCommands = sr.ReadToEnd().Split(new[] {Environment.NewLine + Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var command in sqlCommands)
                     {
@@ -341,8 +336,6 @@ namespace TEAM
                 string alternativeHubLoadDateTimeFunction;
                 string alternativeSatelliteLoadDateTimeFunction;
 
-
-
                 keyIdentifier = "_SK";
 
                 sourceRowId = "SOURCE_ROW_ID";
@@ -364,9 +357,6 @@ namespace TEAM
                 alternativeRecordSourceFunction = "False";
                 alternativeHubLoadDateTimeFunction = "False";
                 alternativeSatelliteLoadDateTimeFunction = "False";
-
-
-                TeamConfiguration.EnvironmentMode = EnvironmentModes.PhysicalMode;
 
                 TeamConfiguration.StgTablePrefixValue = stagingAreaPrefix;
                 TeamConfiguration.PsaTablePrefixValue = persistentStagingAreaPrefix;
@@ -438,29 +428,27 @@ namespace TEAM
 
                 try
                 {
-                    if (TeamConfiguration.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+                    Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
+
+                    // First, figure out which files to process
+                    foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
                     {
-                        Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
+                        var fileName = Path.GetFileName(filePath);
 
-                        // First, figure out which files to process
-                        foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
+                        if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
                         {
-                            var fileName = Path.GetFileName(filePath);
-
-                            if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
-                            {
-                                fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment + "_");
-                                fileDictionary.Add(filePath, fileName);
-                            }
+                            fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment + "_");
                         }
 
-                        // And then process them
-                        foreach (KeyValuePair<string, string> file in fileDictionary)
-                        {
-                            File.Copy(file.Key, GlobalParameters.MetadataPath + "\\" + file.Value, true);
-                            _alertSampleJsonMetadata.SetTextLogging($"Created sample Json file '{file.Value}' in {GlobalParameters.MetadataPath}.");
-                            _alertSampleJsonMetadata.SetTextLogging("\r\n"); // Empty line
-                        }
+                        fileDictionary.Add(filePath, fileName);
+                    }
+
+                    // And then process them
+                    foreach (KeyValuePair<string, string> file in fileDictionary)
+                    {
+                        File.Copy(file.Key, GlobalParameters.MetadataPath + "\\" + file.Value, true);
+                        _alertSampleJsonMetadata.SetTextLogging($"Created sample Json file '{file.Value}' in {GlobalParameters.MetadataPath}.");
+                        _alertSampleJsonMetadata.SetTextLogging("\r\n"); // Empty line
                     }
 
                     _alertSampleJsonMetadata.SetTextLogging("\r\nThis metadata will populate the data grids in the 'metadata mapping' screen, but not create any data structures in a database.");

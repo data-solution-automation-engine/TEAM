@@ -214,8 +214,6 @@ namespace TEAM
                 configurationFile.AppendLine("AlternativeHubLDTSFunction|" +FormBase.TeamConfiguration.EnableAlternativeLoadDateTimeAttribute +"");
                 configurationFile.AppendLine("AlternativeSatelliteLDTSFunction|" +FormBase.TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute +"");
                 configurationFile.AppendLine("PSAKeyLocation|" + FormBase.TeamConfiguration.PsaKeyLocation + "");
-                configurationFile.AppendLine("MetadataRepositoryType|" +FormBase.TeamConfiguration.MetadataRepositoryType +"");
-                configurationFile.AppendLine("EnvironmentMode|" + FormBase.TeamConfiguration.EnvironmentMode + "");
 
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");

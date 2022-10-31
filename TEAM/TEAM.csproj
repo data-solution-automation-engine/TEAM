@@ -152,12 +152,6 @@
     <Compile Include="Form_Alert.Designer.cs">
       <DependentUpon>Form_Alert.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form_Manage_Pattern_Definitions.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Manage_Pattern_Definitions.Designer.cs">
-      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
-    </Compile>
     <Compile Include="Form_Manage_Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -220,10 +214,6 @@
       <DependentUpon>Form_Base.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form_Manage_Pattern_Definitions.resx">
-      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Configuration.resx">
       <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -263,12 +253,108 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Core\TEAM_environments.json" />
+    <Content Include="Files\DIM_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\HUB_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\HUB_INCENTIVE_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\HUB_MEMBERSHIP_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\HUB_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_CUSTOMER_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_RENEWAL_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LSAT_CUSTOMER_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LSAT_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LSAT_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_CUSTOMER_PERSONAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_CUST_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_ESTIMATED_WORTH.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_PERSONALISED_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_USERMANAGED_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_CUSTOMER_ADDITIONAL_DETAILS.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_INCENTIVE_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_MEMBERSHIP_PLAN_DETAIL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_MEMBERSHIP_PLAN_VALUATION.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_CUSTOMER_PERSONAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_CUST_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_ESTIMATED_WORTH.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_PERSONALISED_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Libraries\Microsoft.Data.SqlClient.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x64.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x86.dll" />
-    <Content Include="LoadPatterns\loadPatternDefinition.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Files\sample_TEAM_Table_Mapping.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -300,9 +386,6 @@
   <ItemGroup>
     <None Include="Resources\log-file.png" />
     <Content Include="Resources\Ravos-logo-small.ico" />
-    <Content Include="Scripts\generateRepository.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\generateSampleIntegrationSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

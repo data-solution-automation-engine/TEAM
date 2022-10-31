@@ -108,9 +108,6 @@ namespace TEAM
 
             // File paths
             public static List<LoadPatternDefinition> PatternDefinitionList { get; set; }
-
-            // Environment mode
-            public static EnvironmentModes EnvironmentMode => EnvironmentModes.VirtualMode;
         }
     }
 }

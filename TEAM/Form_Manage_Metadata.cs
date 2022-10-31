@@ -351,41 +351,24 @@ namespace TEAM
         /// </summary>
         private void PopulatePhysicalModelGrid()
         {
-            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
-            {
-                ////Check if the file exists, otherwise create a dummy / empty file   
-                //if (!File.Exists(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()))
-                //{
-                //    richTextBoxInformation.AppendText($"No JSON file was found, so a new empty one was created: {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()}.\r\n");
-                //    TeamJsonHandling.CreateDummyJsonFile(GlobalParameters.JsonModelMetadataFileName);
-                //}
+            // Load the file into memory (data table and json list)
+            PhysicalModel.GetMetadata(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName());
 
-                // Load the file into memory (data table and json list)
-                PhysicalModel.GetMetadata(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName());
+            //Make sure the changes are seen as committed, so that changes can be detected later on.
+            PhysicalModel.DataTable.AcceptChanges();
 
-                //Make sure the changes are seen as committed, so that changes can be detected later on.
-                PhysicalModel.DataTable.AcceptChanges();
+            _dataGridViewPhysicalModel.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
 
-                // Order by Source Table, Integration_Area table, Business Key Attribute.
-                //PhysicalModel.SetDataTableColumns();
-                //PhysicalModel.SetDataTableSorting();
+            BindingSourcePhysicalModel.DataSource = PhysicalModel.DataTable;
 
-                _dataGridViewPhysicalModel.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+            // Data Grid View - set the column header names etc. for the data grid view.
+            _dataGridViewPhysicalModel.DataSource = BindingSourcePhysicalModel;
 
-                BindingSourcePhysicalModel.DataSource = PhysicalModel.DataTable;
+            _dataGridViewPhysicalModel.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            _dataGridViewPhysicalModel.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
 
-                // Data Grid View - set the column header names etc. for the data grid view.
-                _dataGridViewPhysicalModel.DataSource = BindingSourcePhysicalModel;
-                
-                _dataGridViewPhysicalModel.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-                _dataGridViewPhysicalModel.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
-
-                //richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName()} was loaded.\r\n");
-
-                // Resize the grid
-                //GridAutoLayoutPhysicalModelMetadata();
-                GridAutoLayout(_dataGridViewPhysicalModel);
-            }
+            // Resize the grid
+            GridAutoLayout(_dataGridViewPhysicalModel);
         }
 
         private DialogResult STAShowDialog(FileDialog dialog)
@@ -2648,63 +2631,22 @@ namespace TEAM
 
                     var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString();
 
-                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode && sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    if (sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
                     {
-                        // Check the source
-                        try
-                        {
-                            objectValidated = MetadataValidation.ValidateAttributeExistencePhysical(validationObjectSource, validationAttributeSource, sourceConnection);
-
-                            // Add negative results to dictionary
-                            if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
-                            {
-                                resultList.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _alertValidation.SetTextLogging($"An issue was encountered running the validation check. The message is:\r\n\r\n{ex}.\r\n");
-                        }
-
-                        // Check the target
-                        try
-                        {
-                            objectValidated = MetadataValidation.ValidateAttributeExistencePhysical(validationObjectTarget, validationAttributeTarget, targetConnection);
-
-                            // Add negative results to dictionary
-                            if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeTarget))
-                            {
-                                resultList.Add(validationAttributeTarget, validationObjectTarget); // Add objects that did not pass the test
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _alertValidation.SetTextLogging($"An issue was encountered running the validation check. The message is:\r\n\r\n{ex}.\r\n");
-                        }
-
-                    }
-                    else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode && sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
-                    {
-                        objectValidated = "";
-
-                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
+                        objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
                         // Add negative results to dictionary
                         if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
                         {
                             resultList.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
                         }
 
-                        objectValidated = MetadataValidation.ValidateAttributeExistenceVirtual(validationObjectTarget, validationAttributeTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
+                        objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectTarget, validationAttributeTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
 
                         // Add negative results to dictionary
                         if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeTarget))
                         {
                             resultList.Add(validationAttributeTarget, validationObjectTarget); // Add objects that did not pass the test
                         }
-                    }
-                    else
-                    {
-                        objectValidated = "     The validation approach (physical/virtual) could not be asserted.";
                     }
                 }
             }
@@ -2733,7 +2675,7 @@ namespace TEAM
         private void ValidateObjectExistence(DataTable dataTable)
         {
             // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the defined Data Objects exists in the model in '{GlobalParameters.EnvironmentMode}' mode.\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the defined Data Objects exists in the model.\r\n");
 
             var resultList = new Dictionary<string, string>();
 
@@ -2790,14 +2732,14 @@ namespace TEAM
 
                         //if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
                         //{
-                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
+                            objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
 
                             if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
                             {
                                 resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
                             }
 
-                            objectValidated = MetadataValidation.ValidateObjectExistenceVirtual(validationObjectTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
+                            objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
 
                             if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
                             {
@@ -2825,7 +2767,7 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model using {GlobalParameters.EnvironmentMode} mode.\r\n\r\n");
+                _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model.\r\n\r\n");
             }
 
         }
@@ -3234,45 +3176,10 @@ namespace TEAM
                     TeamConnection validationConnection = GetTeamConnectionByConnectionId(validationConnectionId);
                     string businessKeyDefinition = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString();
 
-
-                    if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode &&
-                        MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration)
-                            .ToString() !=
-                        MetadataHandling.DataObjectTypes.Source.ToString()
-                    ) // No need to evaluate the operational system (real sources)
+                    // Exclude a lookup to the source
+                    if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
                     {
-                        try
-                        {
-                            objectValidated =
-                                MetadataValidation.ValidateSourceBusinessKeyExistencePhysical(validationObject,
-                                    businessKeyDefinition, validationConnection);
-                        }
-                        catch
-                        {
-                            _alertValidation.SetTextLogging(
-                                "     An issue occurred connecting to the database while looking up physical model references.\r\n");
-                        }
-                    }
-                    else if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
-                    {
-                        // Exclude a lookup to the source
-                        if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration)
-                            .ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
-                        {
-                            objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(
-                                validationObject, businessKeyDefinition, validationConnection,
-                                (DataTable) BindingSourcePhysicalModel.DataSource);
-                        }
-                    }
-                    else
-                    {
-                        if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration)
-                                .ToString() !=
-                            MetadataHandling.DataObjectTypes.Source.ToString())
-                        {
-                            _alertValidation.SetTextLogging(
-                                "     The validation approach (physical/virtual) could not be asserted.\r\n");
-                        }
+                        objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, businessKeyDefinition, validationConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
                     }
 
                     // Add negative results to dictionary
@@ -3762,22 +3669,21 @@ namespace TEAM
         {
             richTextBoxInformation.Clear();
 
-            if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode &&
-                BindingSourcePhysicalModel.Count == 0)
+            if (BindingSourcePhysicalModel.Count == 0)
             {
                 richTextBoxInformation.Text += "There is no physical model metadata available.\r\n ";
             }
             else
             {
                 if (backgroundWorkerValidationOnly.IsBusy) return;
-                // create a new instance of the alert form
+
                 _alertValidation = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
+
                 _alertValidation.Canceled += buttonCancel_Click;
                 _alertValidation.Show();
                 _alertValidation.ShowLogButton(false);
                 _alertValidation.ShowCancelButton(false);
-                // Start the asynchronous operation.
+
                 backgroundWorkerValidationOnly.RunWorkerAsync();
             }
         }

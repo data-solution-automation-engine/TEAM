@@ -1,0 +1,294 @@
+{
+  "metadataConfiguration": {
+    "changeDataCaptureAttribute": "CDC_OPERATION",
+    "recordSourceAttribute": "RECORD_SOURCE",
+    "loadDateTimeAttribute": "LOAD_DATETIME",
+    "expiryDateTimeAttribute": "LOAD_END_DATETIME",
+    "eventDateTimeAttribute": "EVENT_DATETIME",
+    "recordChecksumAttribute": "HASH_FULL_RECORD",
+    "etlProcessAttribute": "MODULE_INSTANCE_ID",
+    "sourceRowIdAttribute": "SOURCE_ROW_ID"
+  },
+  "generationSpecificMetadata": {
+    "selectedDataObject": "PSA_PROFILER_PERSONALISED_COSTING",
+    "generationDateTime": "2022-10-14T10:56:23.630393+10:00"
+  },
+  "dataObjectMappings": [
+    {
+      "mappingName": "PSA_PROFILER_PERSONALISED_COSTING",
+      "mappingClassifications": [
+        {
+          "id": 2,
+          "classification": "PersistentStagingArea",
+          "notes": "The Persistent Staging Area (PSA) is the foundation of the Virtual Enterprise Data Warehouse (EDW). The ETL effectively compares and loads the delta into the PSA tables that correspond to the Staging Area counterparts. Because of this the logic is generated as 'SELECT INSERT' to load new data delta into this area."
+        }
+      ],
+      "sourceDataObjects": [
+        {
+          "name": "STG_PROFILER_PERSONALISED_COSTING",
+          "dataObjectConnection": {
+            "dataConnectionString": "Staging",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "StagingArea"
+            }
+          ]
+        }
+      ],
+      "targetDataObject": {
+        "name": "PSA_PROFILER_PERSONALISED_COSTING",
+        "dataObjectConnection": {
+          "dataConnectionString": "PSA",
+          "extensions": [
+            {
+              "key": "database",
+              "value": "VirtualDWH",
+              "description": "database name"
+            },
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
+          ]
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "PersistentStagingArea"
+          }
+        ]
+      },
+      "relatedDataObjects": [
+        {
+          "name": "HUB_CUSTOMER",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
+        },
+        {
+          "name": "HUB_MEMBERSHIP_PLAN",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
+        },
+        {
+          "name": "HUB_SEGMENT",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
+        },
+        {
+          "name": "LNK_CUSTOMER_COSTING",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "NaturalBusinessRelationship"
+            }
+          ]
+        },
+        {
+          "name": "LSAT_CUSTOMER_COSTING",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "NaturalBusinessRelationshipContext"
+            }
+          ]
+        }
+      ],
+      "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "Date_effective"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Date_effective"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Member"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Member"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Monthly_Cost"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Monthly_Cost"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Plan_Code"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Plan_Code"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Segment"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Segment"
+          }
+        }
+      ],
+      "businessKeys": [
+        {
+          "businessKeyComponentMapping": [
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Member"
+                }
+              ],
+              "targetDataItem": {
+                "name": "Member"
+              }
+            },
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Segment"
+                }
+              ],
+              "targetDataItem": {
+                "name": "Segment"
+              }
+            },
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Plan_Code"
+                }
+              ],
+              "targetDataItem": {
+                "name": "Plan_Code"
+              }
+            },
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Date_effective"
+                }
+              ],
+              "targetDataItem": {
+                "name": "Date_effective"
+              }
+            }
+          ],
+          "surrogateKey": "Not applicable"
+        }
+      ],
+      "filterCriterion": "",
+      "enabled": true
+    }
+  ]
+}
