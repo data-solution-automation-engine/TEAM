@@ -62,9 +62,9 @@
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox2.Controls.Add(this.labelWorkingEnvironment);
             this.groupBox2.Controls.Add(this.labelWorkingEnvironmentType);
-            this.groupBox2.Location = new System.Drawing.Point(12, 741);
+            this.groupBox2.Location = new System.Drawing.Point(12, 737);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(252, 45);
+            this.groupBox2.Size = new System.Drawing.Size(252, 49);
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Environment";
@@ -72,7 +72,7 @@
             // labelWorkingEnvironment
             // 
             this.labelWorkingEnvironment.AutoSize = true;
-            this.labelWorkingEnvironment.Location = new System.Drawing.Point(152, 20);
+            this.labelWorkingEnvironment.Location = new System.Drawing.Point(141, 21);
             this.labelWorkingEnvironment.Name = "labelWorkingEnvironment";
             this.labelWorkingEnvironment.Size = new System.Drawing.Size(27, 13);
             this.labelWorkingEnvironment.TabIndex = 67;
@@ -81,7 +81,7 @@
             // labelWorkingEnvironmentType
             // 
             this.labelWorkingEnvironmentType.AutoSize = true;
-            this.labelWorkingEnvironmentType.Location = new System.Drawing.Point(6, 20);
+            this.labelWorkingEnvironmentType.Location = new System.Drawing.Point(6, 21);
             this.labelWorkingEnvironmentType.Name = "labelWorkingEnvironmentType";
             this.labelWorkingEnvironmentType.Size = new System.Drawing.Size(140, 13);
             this.labelWorkingEnvironmentType.TabIndex = 65;
@@ -275,7 +275,7 @@
             this.MinimumSize = new System.Drawing.Size(1164, 835);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TEAM - Taxonomy for ETL Automation Metadata ";
+            this.Text = "Taxonomy for ETL Automation Metadata ";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
