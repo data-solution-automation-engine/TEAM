@@ -391,6 +391,27 @@ namespace TEAM
             return dataObject;
         }
 
+        public static DataQuery SetDataQueryConnection(DataQuery dataQuery, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
+        {
+            // Remove an existing connection, if existing.
+            if (!jsonExportSetting.IsAddDataObjectConnection())
+            {
+                if (dataQuery.dataQueryConnection != null)
+                {
+                    dataQuery.dataQueryConnection = null;
+                }
+            }
+            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
+            else if (jsonExportSetting.IsAddDataObjectConnection())
+            {
+                var dataObjectConnection = new DataConnection { dataConnectionString = teamConnection.ConnectionKey };
+
+                dataQuery.dataQueryConnection = dataObjectConnection;
+            }
+
+            return dataQuery;
+        }
+
         /// <summary>
         /// Updates a DataObject Connection with a Database extension (key/value pair) based on its connection properties (TeamConnection object).
         /// </summary>
@@ -466,6 +487,75 @@ namespace TEAM
             return dataObject;
         }
 
+        public static DataQuery SetDataQueryConnectionDatabaseExtension(DataQuery dataQuery, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
+        {
+            // Remove an existing classification, if indeed existing.
+            // If no classifications exists, do nothing. Otherwise check if one needs removal.
+            if (!jsonExportSetting.IsAddDatabaseAsExtension())
+            {
+                if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
+                {
+                    List<Extension> localExtensions = new List<Extension>();
+
+                    foreach (var extension in dataQuery.dataQueryConnection.extensions)
+                    {
+                        if (extension.key != "database")
+                        {
+                            localExtensions.Add(extension);
+                        }
+                    }
+
+                    // If there's any left, re-add them. Otherwise set to empty.
+                    if (localExtensions.Count > 0)
+                    {
+                        dataQuery.dataQueryConnection.extensions = localExtensions;
+                    }
+                    else
+                    {
+                        dataQuery.dataQueryConnection.extensions = null;
+                    }
+                }
+            }
+            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
+            else if (jsonExportSetting.IsAddDatabaseAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataQuery.dataQueryConnection != null)
+            {
+                List<Extension> localExtensions = new List<Extension>();
+
+                // Copy any existing classifications already in place, if any.
+                if (dataQuery.dataQueryConnection.extensions != null)
+                {
+                    localExtensions = dataQuery.dataQueryConnection.extensions;
+                }
+
+                // Check if this particular classification already exists before adding.
+                bool extensionExists = false;
+                foreach (var extension in localExtensions)
+                {
+                    if (extension.key == "database")
+                    {
+                        extensionExists = true;
+                    }
+                }
+
+                if (extensionExists == false)
+                {
+                    var localExtension = new Extension
+                    {
+                        key = "database",
+                        value = teamConnection.DatabaseServer.DatabaseName,
+                        description = "database name"
+                    };
+
+                    localExtensions.Add(localExtension);
+                }
+
+                dataQuery.dataQueryConnection.extensions = localExtensions;
+            }
+
+            return dataQuery;
+        }
+
+
         /// <summary>
         /// Updates a DataObject Connection with a Schema extension (key/value pair) based on its connection properties (TeamConnection object).
         /// </summary>
@@ -540,6 +630,75 @@ namespace TEAM
 
             return dataObject;
         }
+
+        public static DataQuery SetDataQueryConnectionSchemaExtension(DataQuery dataQuery, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
+        {
+            // Remove an existing classification, if indeed existing.
+            // If no classifications exists, do nothing. Otherwise check if one needs removal.
+            if (!jsonExportSetting.IsAddSchemaAsExtension())
+            {
+                if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
+                {
+                    List<Extension> localExtensions = new List<Extension>();
+
+                    foreach (var extension in dataQuery.dataQueryConnection.extensions)
+                    {
+                        if (extension.key != "schema")
+                        {
+                            localExtensions.Add(extension);
+                        }
+                    }
+
+                    // If there's any left, re-add them. Otherwise set to empty.
+                    if (localExtensions.Count > 0)
+                    {
+                        dataQuery.dataQueryConnection.extensions = localExtensions;
+                    }
+                    else
+                    {
+                        dataQuery.dataQueryConnection.extensions = null;
+                    }
+                }
+            }
+            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
+            else if (jsonExportSetting.IsAddSchemaAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataQuery.dataQueryConnection != null)
+            {
+                List<Extension> localExtensions = new List<Extension>();
+
+                // Copy any existing classifications already in place, if any.
+                if (dataQuery.dataQueryConnection.extensions != null)
+                {
+                    localExtensions = dataQuery.dataQueryConnection.extensions;
+                }
+
+                // Check if this particular classification already exists before adding.
+                bool extensionExists = false;
+                foreach (var extension in localExtensions)
+                {
+                    if (extension.key == "schema")
+                    {
+                        extensionExists = true;
+                    }
+                }
+
+                if (extensionExists == false)
+                {
+                    var localExtension = new Extension
+                    {
+                        key = "schema",
+                        value = teamConnection.DatabaseServer.SchemaName,
+                        description = "schema name"
+                    };
+
+                    localExtensions.Add(localExtension);
+                }
+
+                dataQuery.dataQueryConnection.extensions = localExtensions;
+            }
+
+            return dataQuery;
+        }
+
 
         /// <summary>
         /// Updates an input DataObject with a classification based on its type, evaluated by its name against defined conventions.

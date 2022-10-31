@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using DataWarehouseAutomation;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using DataObject = DataWarehouseAutomation.DataObject;
 
 namespace TEAM_Library
@@ -122,7 +123,6 @@ namespace TEAM_Library
                                                 drivingKeyDefinition = dataItemName;
                                             }
                                         }
-
                                     }
                                 }
 
@@ -145,18 +145,41 @@ namespace TEAM_Library
 
                     #endregion
 
+
                     foreach (var sourceDataObject in dataObjectMapping.sourceDataObjects)
                     {
-                        var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
-                        DataObject singleSourceDataObject = JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+                        // The new data object.
+                        DataObject singleSourceDataObject = new DataObject();
 
-                        // Source Data Object details.
+                        // Default connection, to be updated later.
                         string sourceConnectionInternalId = teamConfiguration.MetadataConnection.ConnectionInternalId;
 
-                        if (sourceDataObject.dataObjectConnection != null)
+                        var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
+                        
+                        // Workaround, if the source is a data query it will be cast as data object because the data table does not support dynamic types.
+                        if (JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
                         {
-                            string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
-                            sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
+                            DataQuery tempDataItem = JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+
+                            singleSourceDataObject.name = "`"+tempDataItem.dataQueryCode+"`";
+
+                            if (tempDataItem.dataQueryConnection != null)
+                            {
+                                singleSourceDataObject.dataObjectConnection = tempDataItem.dataQueryConnection;
+
+                                string sourceConnectionString = tempDataItem.dataQueryConnection.dataConnectionString;
+                                sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
+                            }
+                        }
+                        else
+                        {
+                            singleSourceDataObject = JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+
+                            if (sourceDataObject.dataObjectConnection != null)
+                            {
+                                string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
+                                sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
+                            }
                         }
 
                         var newRow = DataTable.NewRow();
@@ -165,7 +188,6 @@ namespace TEAM_Library
                         {
                             singleSourceDataObject.name, targetDataObject.name, businessKeyDefinitionString, drivingKeyDefinition, filterCriterion
                         };
-
 
                         string surrogateKey = "";
 
