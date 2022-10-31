@@ -38,7 +38,6 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openRootPathFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,13 +49,10 @@
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.textBoxTeamMetadataPath = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
-            this.textBoxOutputPath = new System.Windows.Forms.TextBox();
             this.label45 = new System.Windows.Forms.Label();
-            this.OutputPathLabel = new System.Windows.Forms.Label();
             this.tabPagePrefixesSuffixex = new System.Windows.Forms.TabPage();
             this.groupBoxDataObjectIdentification = new System.Windows.Forms.GroupBox();
             this.labelPresentationLayerLabels = new System.Windows.Forms.Label();
@@ -125,24 +121,23 @@
             this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
             this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
+            this.labelMetadataConnectionKey = new System.Windows.Forms.Label();
             this.comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
             this.richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
             this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
             this.tabPageEnvironments = new System.Windows.Forms.TabPage();
             this.tabControlEnvironments = new System.Windows.Forms.TabControl();
             this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
+            this.labelEnvironmentKey = new System.Windows.Forms.Label();
             this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
             this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
             this.toolTipConfigurationSettings = new System.Windows.Forms.ToolTip(this.components);
-            this.labelEnvironmentKey = new System.Windows.Forms.Label();
-            this.labelMetadataConnectionKey = new System.Windows.Forms.Label();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.tabPagePrefixesSuffixex.SuspendLayout();
             this.groupBoxDataObjectIdentification.SuspendLayout();
@@ -192,7 +187,6 @@
             this.toolStripMenuItem2,
             this.toolStripSeparator2,
             this.openConfigurationDirectoryToolStripMenuItem,
-            this.openOutputDirectoryToolStripMenuItem,
             this.openMetadataDirectoryToolStripMenuItem,
             this.toolStripSeparator3,
             this.openRootPathFileToolStripMenuItem,
@@ -234,15 +228,6 @@
             this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
             this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
-            // 
-            // openOutputDirectoryToolStripMenuItem
-            // 
-            this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
-            this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
             // 
             // openMetadataDirectoryToolStripMenuItem
             // 
@@ -302,13 +287,10 @@
             this.tabPagePaths.Controls.Add(this.pictureBox4);
             this.tabPagePaths.Controls.Add(this.textBoxTeamMetadataPath);
             this.tabPagePaths.Controls.Add(this.label2);
-            this.tabPagePaths.Controls.Add(this.pictureBox2);
             this.tabPagePaths.Controls.Add(this.pictureBox3);
             this.tabPagePaths.Controls.Add(this.label1);
             this.tabPagePaths.Controls.Add(this.textBoxConfigurationPath);
-            this.tabPagePaths.Controls.Add(this.textBoxOutputPath);
             this.tabPagePaths.Controls.Add(this.label45);
-            this.tabPagePaths.Controls.Add(this.OutputPathLabel);
             this.tabPagePaths.Location = new System.Drawing.Point(4, 22);
             this.tabPagePaths.Name = "tabPagePaths";
             this.tabPagePaths.Size = new System.Drawing.Size(1120, 621);
@@ -319,7 +301,7 @@
             // pictureBox4
             // 
             this.pictureBox4.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.pictureBox4.Location = new System.Drawing.Point(1094, 82);
+            this.pictureBox4.Location = new System.Drawing.Point(1094, 56);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(19, 20);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -330,7 +312,7 @@
             // textBoxTeamMetadataPath
             // 
             this.textBoxTeamMetadataPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxTeamMetadataPath.Location = new System.Drawing.Point(110, 82);
+            this.textBoxTeamMetadataPath.Location = new System.Drawing.Point(110, 56);
             this.textBoxTeamMetadataPath.Multiline = true;
             this.textBoxTeamMetadataPath.Name = "textBoxTeamMetadataPath";
             this.textBoxTeamMetadataPath.Size = new System.Drawing.Size(978, 20);
@@ -342,22 +324,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 85);
+            this.label2.Location = new System.Drawing.Point(9, 59);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 99;
             this.label2.Text = "Metadata path";
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.pictureBox2.Location = new System.Drawing.Point(1094, 56);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(19, 20);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 97;
-            this.pictureBox2.TabStop = false;
-            this.pictureBox2.Click += new System.EventHandler(this.pictureBoxOutputPath_Click);
             // 
             // pictureBox3
             // 
@@ -389,18 +360,6 @@
             this.textBoxConfigurationPath.TabIndex = 41;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxConfigurationPath, resources.GetString("textBoxConfigurationPath.ToolTip"));
             // 
-            // textBoxOutputPath
-            // 
-            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxOutputPath.Location = new System.Drawing.Point(110, 56);
-            this.textBoxOutputPath.Multiline = true;
-            this.textBoxOutputPath.Name = "textBoxOutputPath";
-            this.textBoxOutputPath.Size = new System.Drawing.Size(978, 20);
-            this.textBoxOutputPath.TabIndex = 40;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxOutputPath, "The output path is where TEAM saves any output generated by the application.\r\nFor" +
-        " example, where the Json metadata files are placed after succesfull validation a" +
-        "nd activation.");
-            // 
             // label45
             // 
             this.label45.AutoSize = true;
@@ -409,15 +368,6 @@
             this.label45.Size = new System.Drawing.Size(289, 13);
             this.label45.TabIndex = 72;
             this.label45.Text = "Paths and connections used for debugging and automation.\r\n";
-            // 
-            // OutputPathLabel
-            // 
-            this.OutputPathLabel.AutoSize = true;
-            this.OutputPathLabel.Location = new System.Drawing.Point(9, 59);
-            this.OutputPathLabel.Name = "OutputPathLabel";
-            this.OutputPathLabel.Size = new System.Drawing.Size(63, 13);
-            this.OutputPathLabel.TabIndex = 65;
-            this.OutputPathLabel.Text = "Output path";
             // 
             // tabPagePrefixesSuffixex
             // 
@@ -1139,6 +1089,15 @@
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageConnectionMain, resources.GetString("tabPageConnectionMain.ToolTip"));
             this.tabPageConnectionMain.UseVisualStyleBackColor = true;
             // 
+            // labelMetadataConnectionKey
+            // 
+            this.labelMetadataConnectionKey.AutoSize = true;
+            this.labelMetadataConnectionKey.Location = new System.Drawing.Point(3, 85);
+            this.labelMetadataConnectionKey.Name = "labelMetadataConnectionKey";
+            this.labelMetadataConnectionKey.Size = new System.Drawing.Size(131, 13);
+            this.labelMetadataConnectionKey.TabIndex = 78;
+            this.labelMetadataConnectionKey.Text = "Metadata connection key:";
+            // 
             // comboBoxMetadataConnection
             // 
             this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1207,6 +1166,15 @@
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
             this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
             // 
+            // labelEnvironmentKey
+            // 
+            this.labelEnvironmentKey.AutoSize = true;
+            this.labelEnvironmentKey.Location = new System.Drawing.Point(3, 85);
+            this.labelEnvironmentKey.Name = "labelEnvironmentKey";
+            this.labelEnvironmentKey.Size = new System.Drawing.Size(89, 13);
+            this.labelEnvironmentKey.TabIndex = 76;
+            this.labelEnvironmentKey.Text = "Environment key:";
+            // 
             // comboBoxEnvironments
             // 
             this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1260,24 +1228,6 @@
             this.toolTipConfigurationSettings.InitialDelay = 300;
             this.toolTipConfigurationSettings.ReshowDelay = 100;
             // 
-            // labelEnvironmentKey
-            // 
-            this.labelEnvironmentKey.AutoSize = true;
-            this.labelEnvironmentKey.Location = new System.Drawing.Point(3, 85);
-            this.labelEnvironmentKey.Name = "labelEnvironmentKey";
-            this.labelEnvironmentKey.Size = new System.Drawing.Size(89, 13);
-            this.labelEnvironmentKey.TabIndex = 76;
-            this.labelEnvironmentKey.Text = "Environment key:";
-            // 
-            // labelMetadataConnectionKey
-            // 
-            this.labelMetadataConnectionKey.AutoSize = true;
-            this.labelMetadataConnectionKey.Location = new System.Drawing.Point(3, 85);
-            this.labelMetadataConnectionKey.Name = "labelMetadataConnectionKey";
-            this.labelMetadataConnectionKey.Size = new System.Drawing.Size(131, 13);
-            this.labelMetadataConnectionKey.TabIndex = 78;
-            this.labelMetadataConnectionKey.Text = "Metadata connection key:";
-            // 
             // FormManageConfiguration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1302,7 +1252,6 @@
             this.tabPagePaths.ResumeLayout(false);
             this.tabPagePaths.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.tabPagePrefixesSuffixex.ResumeLayout(false);
             this.groupBoxDataObjectIdentification.ResumeLayout(false);
@@ -1336,7 +1285,6 @@
         private System.Windows.Forms.MenuStrip menuStripMainMenu;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
@@ -1349,9 +1297,7 @@
         private System.Windows.Forms.TabPage tabPagePaths;
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.TextBox textBoxConfigurationPath;
-        internal System.Windows.Forms.TextBox textBoxOutputPath;
         private System.Windows.Forms.Label label45;
-        private System.Windows.Forms.Label OutputPathLabel;
         private System.Windows.Forms.TabPage tabPagePrefixesSuffixex;
         internal System.Windows.Forms.GroupBox groupBox8;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyPK;
@@ -1434,7 +1380,6 @@
         private System.Windows.Forms.PictureBox pictureBox4;
         internal System.Windows.Forms.TextBox textBoxTeamMetadataPath;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.ToolStripMenuItem openMetadataDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;

@@ -78,7 +78,6 @@ namespace TEAM
             // TEAM core path parameters
             public static string RootPath { get; } = Application.StartupPath + @"\";
             public static string ConfigurationPath { get; set; } = RootPath + @"Configuration\";
-            public static string OutputPath { get; set; } = RootPath + @"Output\";
             public static string MetadataPath { get; set; } = RootPath + @"Metadata\";
             public static string CorePath { get; } = RootPath + @"Core\";
 

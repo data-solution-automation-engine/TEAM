@@ -23,7 +23,6 @@ namespace TEAM
             InitializeComponent();
 
             //Paths
-            textBoxOutputPath.Text = GlobalParameters.OutputPath;
             textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
             textBoxTeamMetadataPath.Text = GlobalParameters.MetadataPath;
 
@@ -276,32 +275,6 @@ namespace TEAM
             }
         }
 
-
-        /// <summary>
-        ///    Open the Windows Explorer (directory) using the value available as Output Directory
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (textBoxOutputPath.Text != "")
-                {
-                    Process.Start(textBoxOutputPath.Text);
-                }
-                else
-                {
-                    richTextBoxInformation.Text = @"There is no value given for the Output Path. Please enter a valid path name.";
-                }
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the output directory. The error message is: {ex.Message}";
-            }
-        }
-
-
         /// <summary>
         ///    Select a configuration file from disk, apply this to memory and display the values on the form
         /// </summary>
@@ -355,7 +328,6 @@ namespace TEAM
         {
             #region root path file
             // Update the paths in memory
-            GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
             GlobalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
 
@@ -370,7 +342,6 @@ namespace TEAM
             // Make sure the new paths as updated are available upon save for backup etc.
             // Check if the paths and files are available, just to be sure.
             FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
-            FileHandling.InitialisePath(GlobalParameters.OutputPath);
             FileHandling.InitialisePath(GlobalParameters.MetadataPath);
 
             TeamConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
@@ -407,7 +378,6 @@ namespace TEAM
             rootPathConfigurationFile.AppendLine("/* TEAM File Path Settings */");
             rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
             rootPathConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath + "");
-            rootPathConfigurationFile.AppendLine("OutputPath|" + GlobalParameters.OutputPath + "");
             rootPathConfigurationFile.AppendLine("MetadataPath|" + GlobalParameters.MetadataPath + "");
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.WorkingEnvironment + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
@@ -441,7 +411,6 @@ namespace TEAM
                 TeamConfiguration.MetadataConnection = TeamConfiguration.ConnectionDictionary[localConnectionKeyValuePair.Key.ConnectionInternalId];
             }
 
-            GlobalParameters.OutputPath = textBoxOutputPath.Text;
             GlobalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
 
@@ -952,32 +921,6 @@ namespace TEAM
 
                 textBoxTeamMetadataPath.Text = finalPath;
                 richTextBoxInformation.Text = $@"The metadata path is set to {finalPath}. Don't forget to save!'";
-            }
-        }
-
-        private void pictureBoxOutputPath_Click(object sender, EventArgs e)
-        {
-            var fileBrowserDialog = new FolderBrowserDialog();
-            fileBrowserDialog.SelectedPath = textBoxOutputPath.Text;
-
-            DialogResult result = fileBrowserDialog.ShowDialog();
-
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fileBrowserDialog.SelectedPath))
-            {
-
-                string finalPath;
-                if (fileBrowserDialog.SelectedPath.EndsWith(@"\"))
-                {
-                    finalPath = fileBrowserDialog.SelectedPath;
-                }
-                else
-                {
-                    finalPath = fileBrowserDialog.SelectedPath + @"\";
-                }
-
-
-                textBoxOutputPath.Text = finalPath;
-                richTextBoxInformation.Text = $@"The output path is set to {finalPath}. Don't forget to save!'";
             }
         }
 

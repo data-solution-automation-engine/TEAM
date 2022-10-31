@@ -45,7 +45,7 @@ namespace TEAM
 
             try
             {
-                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
+                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.MetadataPath);
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
                 labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment;
             }
@@ -80,11 +80,11 @@ namespace TEAM
                 GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
             }
 
-            // Output Path
+            // Metadata Path
             try
             {
-                FileHandling.InitialisePath(GlobalParameters.OutputPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined output path {GlobalParameters.OutputPath} is available."));
+                FileHandling.InitialisePath(GlobalParameters.MetadataPath);
+                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined output path {GlobalParameters.MetadataPath} is available."));
             }
             catch
             {

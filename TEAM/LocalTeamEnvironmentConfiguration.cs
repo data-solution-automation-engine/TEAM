@@ -18,7 +18,6 @@ namespace TEAM
         internal static void InitialiseEnvironmentPaths()
         {
             CreateConfigurationPath();
-            CreateOutputPath();
             CreateBackupPath();
             CreateCorePath();
             CreateMetadataPath();
@@ -39,24 +38,6 @@ namespace TEAM
             catch
             {
                 FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
-        }
-
-        /// <summary>
-        /// Create a 'Output' directory, if not existing yet.
-        /// </summary>
-        internal static void CreateOutputPath()
-        {
-            try
-            {
-                FileHandling.InitialisePath(FormBase.GlobalParameters.OutputPath);
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The TEAM directory {FormBase.GlobalParameters.OutputPath} is available."));
-            }
-            catch
-            {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
             }
         }
 
@@ -113,7 +94,7 @@ namespace TEAM
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
         /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
         /// </summary
-        public static void LoadRootPathFile(string fileName, string configurationPath, string outputPath)
+        public static void LoadRootPathFile(string fileName, string configurationPath, string metadataPath)
         {
             // Create root path file, with dummy values if it doesn't exist already
             try
@@ -124,7 +105,7 @@ namespace TEAM
 
                     initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
                     initialConfigurationFile.AppendLine("ConfigurationPath|" + configurationPath);
-                    initialConfigurationFile.AppendLine("OutputPath|" + outputPath);
+                    initialConfigurationFile.AppendLine("MetadataPath|" + metadataPath);
                     initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
                     initialConfigurationFile.AppendLine("/* End of file */");
 
@@ -162,7 +143,7 @@ namespace TEAM
 
                 // These variables are used as global variables throughout the application
                 FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
-                FormBase.GlobalParameters.OutputPath = configList["OutputPath"];
+                FormBase.GlobalParameters.MetadataPath = configList["MetadataPath"];
                 FormBase.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
             }
             catch (Exception)
