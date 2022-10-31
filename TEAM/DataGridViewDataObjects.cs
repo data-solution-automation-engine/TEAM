@@ -1275,8 +1275,36 @@ namespace TEAM
 
                             #region Target Data Item
 
-                            var targetDataItem = new DataItem();
-                            targetDataItem.name = localTargetDataItem;
+                            var targetDataItem = new DataItem
+                            {
+                                name = localTargetDataItem
+                            };
+
+                            #region Multi-Active Key
+
+                            // If the source data item is part of the key, a MAK classification can be added.
+                            // This is done using a lookup against the physical model.
+
+                            var physicalModelGridViewRow = _dataGridViewPhysicalModel.Rows
+                                .Cast<DataGridViewRow>()
+                                .Where(r => !r.IsNewRow)
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(localTargetDataItem))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(localTargetDataObject))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].Value.ToString().Equals("Y"))
+                                .FirstOrDefault();
+
+                            if (physicalModelGridViewRow != null)
+                            {
+                                List<Classification> classificationList = new List<Classification>();
+                                Classification classification = new Classification();
+                                classification.classification = "MultiActiveKey";
+                                classification.notes = "The attribute that supports granularity shift in describing context.";
+                                classificationList.Add(classification);
+                                targetDataItem.dataItemClassification = classificationList;
+                            }
+
+
+                            #endregion
 
                             // Add data types to Data Item that are part of a data item mapping.
                             var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();

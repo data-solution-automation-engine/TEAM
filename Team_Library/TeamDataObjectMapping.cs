@@ -144,8 +144,7 @@ namespace TEAM_Library
                     }
 
                     #endregion
-
-
+                    
                     foreach (var sourceDataObject in dataObjectMapping.sourceDataObjects)
                     {
                         // The new data object.

@@ -1100,6 +1100,8 @@ namespace TEAM
             sourceColumn.name = sourceBusinessKeyDefinition;
             sourceColumn.isHardCodedValue = sourceBusinessKeyDefinition.StartsWith("'") && sourceBusinessKeyDefinition.EndsWith("'");
 
+            #region Driving Key
+
             // Driving Key
             if (sourceBusinessKeyDefinition == drivingKeyValue)
             {
@@ -1110,6 +1112,8 @@ namespace TEAM
                 classificationList.Add(classification);
                 sourceColumn.dataItemClassification = classificationList;
             }
+
+            #endregion
 
             sourceColumns.Add(sourceColumn);
 
