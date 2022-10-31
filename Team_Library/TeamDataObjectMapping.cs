@@ -260,7 +260,7 @@ namespace TEAM_Library
 
                     // Retrieve the related objects (Context Tables in this case)
                     var results = from localRow in DataTable.AsEnumerable()
-                        where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
+                        where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObjectName.ToString()) == sourceObject && // Is in the same source cluster
                               localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
                               MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObjectName.ToString()), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationship &&
                               MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObjectName.ToString()), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext
