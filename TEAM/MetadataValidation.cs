@@ -350,7 +350,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred during validation of the metadata. The errors is {ex}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred during validation of the metadata. The errors is {ex}."));
             }
 
             if (workingTable.Rows.Count > 0)

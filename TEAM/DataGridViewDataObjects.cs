@@ -643,7 +643,7 @@ namespace TEAM
             }
             catch (FormatException ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -1353,7 +1353,7 @@ namespace TEAM
                 }
                 catch (Exception exception)
                 {
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {exception.Message}."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {exception.Message}."));
                 }
             }
 

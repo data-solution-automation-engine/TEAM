@@ -213,11 +213,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
             }
             else
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
             }
         }
     }

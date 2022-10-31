@@ -240,38 +240,35 @@ namespace TEAM_Library
         /// <summary>
         /// Using the Data Object Mappings, create a list of Subject Areas and their contents.
         /// </summary>
-        /// <param name="configurationSetting"></param>
+        /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public List<Tuple<string, string, string>> SubjectAreaList(TeamConfiguration configurationSetting)
+        public List<Tuple<string, string, string>> SubjectAreaList(TeamConfiguration teamConfiguration)
         {
             var subjectAreaList = new List<Tuple<string, string, string>>();
 
             foreach (DataRow row in DataTable.Rows)
             {
-                string sourceObject = (string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
-                string targetObject = (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+                string sourceObject = (string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()];
+                string targetObject = (string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
 
-                var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
+                var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", teamConfiguration);
                 var targetObjectBusinessKey = (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
 
                 if (targetObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
                 {
-                    string subjectArea = targetObject.Replace(configurationSetting.HubTablePrefixValue + "_", "");
+                    string subjectArea = targetObject.Replace(teamConfiguration.HubTablePrefixValue + "_", "");
 
                     // Retrieve the related objects (Context Tables in this case)
                     var results = from localRow in DataTable.AsEnumerable()
-                                  where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
-                                        localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
-                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
-                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
-                                            configurationSetting) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationship &&
-                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
-                                            configurationSetting) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext
-                                  select localRow;
+                        where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
+                              localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
+                              MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObjectName.ToString()), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationship &&
+                              MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObjectName.ToString()), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext
+                        select localRow;
 
                     foreach (DataRow detailRow in results)
                     {
-                        var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+                        var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
 
                         bool tupleAlreadyExists = subjectAreaList.Any(m => m.Item1 == subjectArea && m.Item2 == targetObject && m.Item3 == targetObjectDetail);
 
@@ -284,20 +281,18 @@ namespace TEAM_Library
 
                 if (targetObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship)
                 {
-                    string subjectArea = targetObject.Replace(configurationSetting.LinkTablePrefixValue + "_", "");
+                    string subjectArea = targetObject.Replace(teamConfiguration.LinkTablePrefixValue + "_", "");
 
                     // Retrieve the related objects (relationship context tables in this case)
                     var results = from localRow in DataTable.AsEnumerable()
-                                  where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) == sourceObject && // Is in the same source cluster
+                                  where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObjectName.ToString()) == sourceObject && // Is in the same source cluster
                                         localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
-                                                                                                                                                                   //localRow.Field<string>(TableMappingMetadataColumns.TargetTable.ToString()) != targetObject && // Is not itself
-                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
-                                            configurationSetting) != MetadataHandling.DataObjectTypes.CoreBusinessConcept // Is a relationship context table.
+                                        MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObjectName.ToString()), "", teamConfiguration) != MetadataHandling.DataObjectTypes.CoreBusinessConcept // Is a relationship context table.
                                   select localRow;
 
                     foreach (DataRow detailRow in results)
                     {
-                        var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+                        var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
 
                         bool tupleAlreadyExists = subjectAreaList.Any(m => m.Item1 == subjectArea && m.Item2 == targetObject && m.Item3 == targetObjectDetail);
 
@@ -305,10 +300,8 @@ namespace TEAM_Library
                         {
                             subjectAreaList.Add(new Tuple<string, string, string>(subjectArea, targetObject, targetObjectDetail));
                         }
-
                     }
                 }
-
             }
 
             return subjectAreaList;
@@ -348,46 +341,38 @@ namespace TEAM_Library
         public List<Tuple<string, string>> BusinessConceptRelationshipList(TeamConfiguration configurationSetting)
         {
             DataView sourceContainerView = new DataView((DataTable)DataTable);
-            DataTable distinctValues = sourceContainerView.ToTable(true, DataObjectMappingGridColumns.SourceDataObject.ToString());
+            DataTable distinctValues = sourceContainerView.ToTable(true, DataObjectMappingGridColumns.SourceDataObjectName.ToString());
             var businessConceptRelationshipList = new List<Tuple<string, string>>();
 
             foreach (DataRow sourceContainerRow in distinctValues.Rows)
             {
-                string sourceContainer = (string)sourceContainerRow[DataObjectMappingGridColumns.SourceDataObject.ToString()];
+                string sourceContainer = (string)sourceContainerRow[DataObjectMappingGridColumns.SourceDataObjectName.ToString()];
 
                 foreach (DataRow row in DataTable.Rows)
                 {
-                    string sourceObject = (string)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
+                    string sourceObject = (string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()];
 
                     if (sourceContainer == sourceObject)
                     {
                         //var sourceObject = (string) row[TableMappingMetadataColumns.SourceTable.ToString()];
-                        var targetObject = (string)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+                        var targetObject = (string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
 
-                        //var sourceObjectType = MetadataHandling.GetTableType(sourceObject, "", TeamConfigurationSettings);
                         var targetObjectType = MetadataHandling.GetDataObjectType(targetObject, "", configurationSetting);
-                        var targetObjectBusinessKey =
-                            (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
+                        var targetObjectBusinessKey = (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()];
 
                         if (targetObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
                         {
                             // Retrieve the related objects to a CBC.
                             var cbcResults = from localRow in DataTable.AsEnumerable()
-                                             where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObject.ToString()) ==
-                                                   sourceObject && // Is in the same source cluster
-                                                   localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString())
-                                                       .Contains(targetObjectBusinessKey) && // Contains a part of the business key
-                                                   localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()) !=
-                                                   targetObject && // Is not itself
-                                                   MetadataHandling.GetDataObjectType(
-                                                       localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObject.ToString()), "",
-                                                       configurationSetting) ==
-                                                   MetadataHandling.DataObjectTypes.NaturalBusinessRelationship // Is a NBR.
+                                             where localRow.Field<string>(DataObjectMappingGridColumns.SourceDataObjectName.ToString()) == sourceObject && // Is in the same source cluster
+                                                   localRow.Field<string>(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()).Contains(targetObjectBusinessKey) && // Contains a part of the business key
+                                                   localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObjectName.ToString()) != targetObject && // Is not itself
+                                                   MetadataHandling.GetDataObjectType(localRow.Field<string>(DataObjectMappingGridColumns.TargetDataObjectName.ToString()), "", configurationSetting) == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship // Is a NBR.
                                              select localRow;
 
                             foreach (DataRow detailRow in cbcResults)
                             {
-                                var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
+                                var targetObjectDetail = (string)detailRow[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
                                 businessConceptRelationshipList.Add(new Tuple<string, string>(targetObject, targetObjectDetail));
                             }
                         }
@@ -413,11 +398,6 @@ namespace TEAM_Library
         public string filterCriteria { get; set; }
 
         public List<TableMappingJson> JsonList { get; set; }
-
-        public void GetMetadata(string fileName)
-        {
-
-        }
     }
     
     /// <summary>

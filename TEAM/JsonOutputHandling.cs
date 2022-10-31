@@ -235,7 +235,7 @@ namespace TEAM
             var tableType = GetDataObjectType(dataObjectName, "", teamConfiguration);
 
             // Override for driving key.
-            if (drivingKeyValue != null || string.IsNullOrEmpty(drivingKeyValue))
+            if (drivingKeyValue != null && !string.IsNullOrEmpty(drivingKeyValue))
             {
                 tableType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
             }

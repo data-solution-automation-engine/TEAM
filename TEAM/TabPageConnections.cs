@@ -662,7 +662,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
                 }
 
                 // The name of the tab page is passed back to the original control (the tab control).

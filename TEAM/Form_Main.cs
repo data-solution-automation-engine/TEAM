@@ -23,8 +23,8 @@ namespace TEAM
             const string versionNumberForTeamApplication = "v1.6.5";
             Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}";
 
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
 
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
@@ -34,7 +34,7 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{exception.Message}"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{exception.Message}"));
             }
 
             #region Load the root path configuration settings (user defined paths and working environment)
@@ -46,12 +46,12 @@ namespace TEAM
             try
             {
                 LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.MetadataPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
                 labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment;
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
             }
 
             // Environments file
@@ -59,37 +59,20 @@ namespace TEAM
             try
             {
                 TeamEnvironmentCollection.LoadTeamEnvironmentCollection(environmentFile);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment file {environmentFile} has been loaded."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment file {environmentFile} has been loaded."));
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
             }
             #endregion
 
             #region Check if user configured paths exists (now that they have been loaded from the root file), and create dummy Configuration and Validation files if necessary
 
             // Configuration Path
-            try
-            {
-                FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined configuration path {GlobalParameters.ConfigurationPath} is available."));
-            }
-            catch
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
-
+            FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
             // Metadata Path
-            try
-            {
-                FileHandling.InitialisePath(GlobalParameters.MetadataPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined output path {GlobalParameters.MetadataPath} is available."));
-            }
-            catch
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
+            FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
             // Create a dummy configuration file if it does not exist.
             var configurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
@@ -99,16 +82,16 @@ namespace TEAM
                 if (!File.Exists(configurationFileName))
                 {
                     TeamConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
                 }
                 else
                 {
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {configurationFileName} was detected."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {configurationFileName} was detected."));
                 }
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {configurationFileName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {configurationFileName}."));
             }
 
             // Create a default validation file if the file does not exist as expected.
@@ -121,7 +104,7 @@ namespace TEAM
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
             }
 
             // Create a default json configuration file if the file does not exist as expected.
@@ -134,7 +117,7 @@ namespace TEAM
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {jsonConfigurationFileName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {jsonConfigurationFileName}."));
             }
             #endregion
 
@@ -152,13 +135,13 @@ namespace TEAM
                 // Load the configuration file.
                 TeamConfiguration.LoadTeamConfigurationFile(configurationFile);
                 // Retrieve the events into the main event log.
-                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfiguration.ConfigurationSettingsEventLog);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
+                TeamEventLog.MergeEventLog(TeamConfiguration.ConfigurationSettingsEventLog);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
 
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
             }
             #endregion
 
@@ -166,16 +149,16 @@ namespace TEAM
             try
             {
                 GlobalParameters.PatternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, "The pattern definition file was loaded successfully."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, "The pattern definition file was loaded successfully."));
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
             }
 
             // Report the events (including errors) back to the user
             int errorCounter = 0;
-            foreach (Event individualEvent in GlobalParameters.TeamEventLog)
+            foreach (Event individualEvent in TeamEventLog)
             {
                 if (individualEvent.eventCode == (int) EventTypes.Error)
                 {
@@ -458,7 +441,7 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var localEventLog = GlobalParameters.TeamEventLog;
+            var localEventLog = TeamEventLog;
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -468,7 +451,6 @@ namespace TEAM
             else
             {
                 backgroundWorkerEventLog.ReportProgress(0);
-                _alertEventLog.SetTextLogging("Event Log.\r\n\r\n");
 
                 try
                 {

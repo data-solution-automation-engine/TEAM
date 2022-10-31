@@ -144,11 +144,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file was created for {fileName}."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file was created for {fileName}."));
             }
             else
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {fileName} was detected."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {fileName} was detected."));
             }
         }
     }

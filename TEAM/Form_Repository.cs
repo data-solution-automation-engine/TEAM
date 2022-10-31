@@ -77,7 +77,7 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     string errorMessage = $"An error has occurred with the following query: \r\n\r\n{createStatement}.\r\n\r\nThe error message is {ex.Message}.";
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
 
                     targetForm.SetTextLogging(errorMessage+"\r\n\r\n");
                     targetForm.SetTextLogging($"This occurred with the following query: {createStatement}.\r\n\r\n");
@@ -295,7 +295,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
             }
         }
 

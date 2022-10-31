@@ -1,12 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Microsoft.SqlServer.Management.Smo;
 
 namespace TEAM_Library
 {
+    public enum TeamPathTypes
+    {
+        [Display(Name = "Input Path")]
+        InputPath,
+        [Display(Name = "Output Path")]
+        OutputPath,
+        [Display(Name = "Metadata Path")]
+        MetadataPath,
+        [Display(Name = "Configuration Path")]
+        ConfigurationPath,
+        [Display(Name = "Core Path")]
+        CorePath,
+        [Display(Name = "Backup Path")]
+        BackupPath
+    }
     /// <summary>
     /// The FileHandling class concerns the basic IO operations required to create directories and configuration files (without any specific content).
     /// </summary>
@@ -72,29 +87,32 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Check if the path exists and create it if necessary. Returns an Event.
+        /// Check if the path exists and create it if necessary.
         /// </summary>
         /// <param name="inputPath"></param>
-        public static Event InitialisePath(string inputPath)
+        public static void InitialisePath(string inputPath, TeamPathTypes pathType, EventLog eventLog)
         {
-            Event localEvent = new Event();
-
-            // Create the configuration directory if it does not exist yet
+            bool isError = false;
+            // Create the configuration directory if it does not exist yet.
             try
             {
                 if (!Directory.Exists(inputPath))
                 {
                     Directory.CreateDirectory(inputPath);
-                    localEvent = Event.CreateNewEvent(EventTypes.Information, $"Created a new directory '{inputPath}'.");
-
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Created a new directory '{inputPath}'."));
                 }
             }
             catch (Exception ex)
             {
-                localEvent = Event.CreateNewEvent(EventTypes.Error, $"Error creation directory '{inputPath}' the message is {ex.Message}.\r\n");
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Error creation directory '{inputPath}' the message is {ex.Message}.\r\n"));
+                isError = true;
             }
 
-            return localEvent;
+            if (isError == false)
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"'{pathType}' set as '{inputPath}'."));
+            }
         }
 
         /// <summary>

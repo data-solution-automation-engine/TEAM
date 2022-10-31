@@ -34,7 +34,7 @@ namespace TEAM
             if (!TeamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
             {
                 // The key isn't in the dictionary.
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
             }
 
             return teamConnection;
@@ -68,13 +68,13 @@ namespace TEAM
         internal static DataGridViewDataItems _dataGridViewDataItems;
         internal static DataGridViewPhysicalModel _dataGridViewPhysicalModel;
 
+        internal static EventLog TeamEventLog { get; set; } = new EventLog();
+
         /// <summary>
         /// These parameters are used as global constants throughout the application.
         /// </summary>
         internal static class GlobalParameters
         {
-            internal static EventLog TeamEventLog { get; set; } = new EventLog();
-
             // TEAM core path parameters
             public static string RootPath { get; } = Application.StartupPath + @"\";
             public static string ConfigurationPath { get; set; } = RootPath + @"Configuration\";

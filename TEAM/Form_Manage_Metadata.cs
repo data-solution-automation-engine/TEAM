@@ -84,14 +84,14 @@ namespace TEAM
             // Inform the user
             string userFeedback = $"The metadata has been loaded.";
             richTextBoxInformation.AppendText($"{userFeedback}\r\n");
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
 
             AssertValidationDetails();
 
             // Ensure that the count of object types is updated based on whatever is in the data grid.
             ContentCounter();
 
-            var errorsFound = GlobalParameters.TeamEventLog.ReportErrors(GlobalParameters.TeamEventLog);
+            var errorsFound = TeamEventLog.ReportErrors(TeamEventLog);
             if (errorsFound > 0)
             {
                 richTextBoxInformation.AppendText($"Errors have been found in the event log. Please check.\r\n");
@@ -207,7 +207,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"A validation file could not be loaded, so default (all) validation will be used. The exception message is {ex.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"A validation file could not be loaded, so default (all) validation will be used. The exception message is {ex.Message}."));
             }
 
             // Make sure the json configuration information is available for this form.
@@ -228,7 +228,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The JSON export configuration file could not be loaded, so default (all) validation will be used. The exception message is {ex.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The JSON export configuration file could not be loaded, so default (all) validation will be used. The exception message is {ex.Message}."));
             }
 
             checkedListBoxReverseEngineeringAreas.CheckOnClick = true;
@@ -1375,13 +1375,13 @@ namespace TEAM
             if (DataObjectMappings is null || DataObjectMappings.Length == 0)
             {
                 // There is no matching row found in the Data Object Mapping grid. Validation should pick this up!
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, no matching Data Object mapping was found."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, no matching Data Object mapping was found."));
 
             }
             else if (DataObjectMappings.Length > 1)
             {
                 // There are too many entries! There should be only a single mapping from source to target
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found."));
             }
             else
             {
@@ -1406,7 +1406,6 @@ namespace TEAM
         }
 
         # region Background worker
-
         private void ButtonActivate_Click(object sender, EventArgs e)
         {
             richTextBoxInformation.Clear();
@@ -1429,7 +1428,7 @@ namespace TEAM
                 string localMessage = "You have unsaved edits, please save your work before running the end-to-end update.";
                 MessageBox.Show(localMessage);
                 richTextBoxInformation.AppendText(localMessage);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
                 activationContinue = false;
             }
 
@@ -1470,6 +1469,7 @@ namespace TEAM
             // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
 
             #region Activation
+
             if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataValidations.ValidationIssues == 0) && activationContinue)
             {
                 if (backgroundWorkerMetadata.IsBusy) return;
@@ -1486,6 +1486,7 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText("Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and parse the metadata again.\r\n");
             }
+
             #endregion
         }
 
@@ -1518,8 +1519,18 @@ namespace TEAM
             }
             else
             {
+                // Reload the data grids.
+                // Get the JSON files and load these into memory.
+                TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
+                TeamDataObjectMappingFileCombinations.GetMetadata();
+
+                //Load the grids from the repository after being updated.This resets everything.
+                PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                PopulateDataItemMappingGrid();
+                PopulatePhysicalModelGrid();
+
                 labelResult.Text = @"Done!";
-                richTextBoxInformation.Text += "The metadata was processed successfully!\r\n";
+                richTextBoxInformation.Text = "The metadata was processed successfully!\r\n";
             }
         }
 
@@ -1586,7 +1597,7 @@ namespace TEAM
         
         private void LogMetadataEvent(string eventMessage, EventTypes eventType)
         {
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(eventType, eventMessage));
+            TeamEventLog.Add(Event.CreateNewEvent(eventType, eventMessage));
             _alert.SetTextLogging("\r\n" + eventMessage);
         }
 
@@ -1811,7 +1822,7 @@ namespace TEAM
                     }
                     catch (Exception)
                     {
-                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForSubjectAreas}."));
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForSubjectAreas}."));
                         errorCounter++;
                     }
 
@@ -1862,7 +1873,7 @@ namespace TEAM
                     }
                     catch
                     {
-                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForHubCategories}."));
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForHubCategories}."));
                         errorCounter++;
                     }
 
@@ -1895,7 +1906,7 @@ namespace TEAM
                     }
                     catch
                     {
-                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForRelationships}."));
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForRelationships}."));
                         errorCounter++;
                     }
 
@@ -1934,7 +1945,7 @@ namespace TEAM
                     }
                     catch (Exception)
                     {
-                        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForLinkCategories}."));
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForLinkCategories}."));
                         errorCounter++;
                     }
 
@@ -2726,7 +2737,7 @@ namespace TEAM
                         //    }
                         //    catch (Exception ex)
                         //    {
-                        //        GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,$"An issue occurred connecting to the database: \r\n\r\n {ex}."));
+                        //        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,$"An issue occurred connecting to the database: \r\n\r\n {ex}."));
                         //    }
                         //}
 
@@ -2748,7 +2759,7 @@ namespace TEAM
                         //}
                         //else
                         //{
-                        //    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,$"The validation approach (physical/virtual) could not be asserted."));
+                        //    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,$"The validation approach (physical/virtual) could not be asserted."));
                         //}
                     }
                 }
@@ -3439,7 +3450,7 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     richTextBoxInformation.AppendText("An error has been encountered. Please check the Event Log for more details.\r\n");
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex}."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex}."));
                 }
             }
         }
@@ -3571,7 +3582,7 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     richTextBoxInformation.AppendText($"An error has been encountered when attempting to save the file to disk. The reported error is: {ex.Message}\r\n");
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}"));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}"));
                 }
             }
         }
@@ -3587,7 +3598,7 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var localEventLog = GlobalParameters.TeamEventLog;
+            var localEventLog = TeamEventLog;
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -3698,7 +3709,7 @@ namespace TEAM
                 string localMessage = "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the automap.";
                 MessageBox.Show(localMessage);
                 richTextBoxInformation.AppendText(localMessage);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
             }
             else
             {

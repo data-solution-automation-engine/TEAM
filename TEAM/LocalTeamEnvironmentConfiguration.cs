@@ -17,83 +17,16 @@ namespace TEAM
         /// </summary>
         internal static void InitialiseEnvironmentPaths()
         {
-            CreateConfigurationPath();
-            CreateBackupPath();
-            CreateCorePath();
-            CreateMetadataPath();
+            FileHandling.InitialisePath(FormBase.GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.GlobalParameters.BackupPath, TeamPathTypes.BackupPath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.GlobalParameters.CorePath, TeamPathTypes.CorePath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, FormBase.TeamEventLog);
         }
-
-        #region Standard directories
-        /// <summary>
-        /// Create a 'Configuration' directory, if not existing yet.
-        /// </summary>
-        internal static void CreateConfigurationPath()
-        {
-            try
-            {
-                FileHandling.InitialisePath(FormBase.GlobalParameters.ConfigurationPath);
-
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.ConfigurationPath} is available."));
-            }
-            catch
-            {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
-        }
-
-        /// <summary>
-        /// Create a 'Metadata' directory, if not existing yet.
-        /// </summary>
-        internal static void CreateMetadataPath()
-        {
-            try
-            {
-                FileHandling.InitialisePath(FormBase.GlobalParameters.MetadataPath);
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.MetadataPath} is available."));
-            }
-            catch
-            {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
-        }
-        
-        /// <summary>
-        /// Create a 'Core' directory, if not existing yet.
-        /// </summary>
-        internal static void CreateCorePath()
-        {
-            try
-            {
-                FileHandling.InitialisePath(FormBase.GlobalParameters.CorePath);
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.CorePath} is available."));
-            }
-            catch
-            {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
-        }
-
-        /// <summary>
-        /// Create a 'Backup' directory, if not existing yet.
-        /// </summary>
-        internal static void CreateBackupPath()
-        {
-            try
-            {
-                FileHandling.InitialisePath(FormBase.GlobalParameters.BackupPath);
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM directory {FormBase.GlobalParameters.BackupPath} is available."));
-            }
-            catch
-            {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
-        }
-        #endregion
 
         /// <summary>
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
         /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
-        /// </summary
+        /// </summary 
         public static void LoadRootPathFile(string fileName, string configurationPath, string metadataPath)
         {
             // Create root path file, with dummy values if it doesn't exist already

@@ -61,7 +61,7 @@ namespace TEAM
 
             if (TeamConfiguration.MetadataConnection is null)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No metadata connection is set."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No metadata connection is set."));
             }
             else
             {
@@ -341,8 +341,8 @@ namespace TEAM
 
             // Make sure the new paths as updated are available upon save for backup etc.
             // Check if the paths and files are available, just to be sure.
-            FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
-            FileHandling.InitialisePath(GlobalParameters.MetadataPath);
+            FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+            FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
             TeamConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
             ValidationSetting.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
@@ -392,7 +392,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {GlobalParameters.CorePath +GlobalParameters.PathFileName + GlobalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {GlobalParameters.CorePath +GlobalParameters.PathFileName + GlobalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
             }
         }
 
@@ -636,7 +636,7 @@ namespace TEAM
                     tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
                     tabControlConnections.SelectedIndex = lastIndex;
 
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new connection was created."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new connection was created."));
                 }
                 else
                 {
@@ -886,7 +886,7 @@ namespace TEAM
 
                     if (TeamConfiguration.MetadataConnection is null)
                 {
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"No metadata connection is set."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"No metadata connection is set."));
                 }
                 else
                 {
@@ -894,7 +894,7 @@ namespace TEAM
                 }
 
                 // Report back to the event log.
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment was changed to {localEnvironment.environmentName}."));
             }
         }
 
