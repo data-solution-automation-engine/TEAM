@@ -2418,7 +2418,7 @@ namespace TEAM
 
                 if (ValidationSetting.DataItemExistence == "True")
                 {
-                    ValidateAttributeExistence();
+                    ValidateDataItemExistence();
                 }
                 worker?.ReportProgress(30);
 
@@ -2614,10 +2614,10 @@ namespace TEAM
         /// <summary>
         /// This method runs a check against the Attribute Mappings DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
         /// </summary>
-        private void ValidateAttributeExistence()
+        private void ValidateDataItemExistence()
         {
             // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the attributes in the metadata exists in the model.\r\n");
+            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the data items (columns) in the metadata exists in the model.\r\n");
 
             var resultList = new Dictionary<string, string>();
 
@@ -2631,7 +2631,6 @@ namespace TEAM
 
                 if (dataObjectRow.Item1 == "True") //If the corresponding Data Object is enabled
                 {
-                    string objectValidated = "";
                     var validationObjectSource = row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString();
                     TeamConnection sourceConnection = dataObjectRow.Item3;
                     var validationAttributeSource = row[DataItemMappingGridColumns.SourceDataItem.ToString()].ToString();
@@ -2642,9 +2641,11 @@ namespace TEAM
 
                     var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString();
 
-                    if (sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString()) // No need to evaluate the operational system (real sources)
+                    // No need to evaluate the operational system (real sources), or if the source is a data query (logic).
+                    if (sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString() && !validationAttributeSource.IsDataQuery()) 
                     {
-                        objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
+                        var objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
+
                         // Add negative results to dictionary
                         if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
                         {

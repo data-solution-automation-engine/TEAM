@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -50,6 +49,7 @@ namespace TEAM
             KeyDown += DataGridView_KeyDown;
             MouseDown += DataGridView_MouseDown;
             CellFormatting += DataGridViewDataItems_CellFormatting;
+            Sorted += DataGridViewDataItems_Sorted;
 
             #endregion
 
@@ -145,6 +145,57 @@ namespace TEAM
         }
 
         /// <summary>
+        /// Work-around for known bug related to data grid view losing colour coding after sorting.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DataGridViewDataItems_Sorted(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
+                        if (Columns[cell.ColumnIndex].Name.Equals(DataItemMappingGridColumns.SourceDataItem.ToString()))
+                        {
+                            PaintDataItemCell(cell);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cell formatting / colour coding for data item cells.
+        /// </summary>
+        /// <param name="cell"></param>
+        private static void PaintDataItemCell(DataGridViewCell cell)
+        {
+            string dataItemName = cell.Value.ToString();
+
+            if (dataItemName.StartsWith("`"))
+            {
+                cell.Style.BackColor = Color.AliceBlue;
+
+                if (dataItemName.EndsWith("`"))
+                {
+                    cell.Style.ForeColor = Color.DarkBlue;
+                }
+                else
+                {
+                    // Show issue.
+                    cell.Style.ForeColor = Color.Red;
+                }
+            }
+            else
+            {
+                cell.Style.BackColor = Color.White;
+                cell.Style.ForeColor = Color.Black;
+            }
+        }
+
+        /// <summary>
         /// Manages the colour coding / formatting for the data item grid view.
         /// </summary>
         /// <param name="sender"></param>
@@ -158,9 +209,7 @@ namespace TEAM
             DataGridViewRow selectedRow = Rows[e.RowIndex];
             DataGridViewColumn selectedColumn = Columns[e.ColumnIndex];
 
-            if (selectedColumn.Index == (int)DataItemMappingGridColumns.HashKey ||
-                selectedColumn.Index == (int)DataItemMappingGridColumns.Notes
-                )
+            if (selectedColumn.Index == (int)DataItemMappingGridColumns.HashKey || selectedColumn.Index == (int)DataItemMappingGridColumns.Notes)
                 return;
 
             #region Source Data Objects
@@ -202,24 +251,7 @@ namespace TEAM
                 if (e.Value != null)
                 {
                     DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
-
-                    string dataObjectName = e.Value.ToString();
-
-                    // Colour coding / syntax highlighting for in source data objects.
-                    if (dataObjectName.StartsWith("`"))
-                    {
-                        cell.Style.BackColor = Color.AliceBlue;
-
-                        if (dataObjectName.EndsWith("`"))
-                        {
-                            cell.Style.ForeColor = Color.DarkBlue;
-                        }
-                        else
-                        {
-                            // Show issue.
-                            cell.Style.ForeColor = Color.Red;
-                        }
-                    }
+                    PaintDataItemCell(cell);
                 }
             }
 

@@ -109,14 +109,14 @@ namespace TEAM
             sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             sourceConnection.DisplayMember = "ConnectionKey";
             sourceConnection.ValueMember = "ConnectionId";
-            sourceConnection.ValueType = typeof(string);
+            //sourceConnection.ValueType = typeof(string);
             Columns.Add(sourceConnection);
             
             // Source Data Object.
             DataGridViewTextBoxColumn sourceDataObject = new DataGridViewTextBoxColumn();
             sourceDataObject.Name = DataObjectMappingGridColumns.SourceDataObject.ToString();
             sourceDataObject.DataPropertyName = DataObjectMappingGridColumns.SourceDataObject.ToString();
-            sourceDataObject.ValueType = typeof(DataObject);
+            //sourceDataObject.ValueType = typeof(dynamic);
             sourceDataObject.HeaderText = @"Source Data Object";
             sourceDataObject.SortMode = DataGridViewColumnSortMode.Programmatic;
             Columns.Add(sourceDataObject);
@@ -130,14 +130,14 @@ namespace TEAM
             targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             targetConnection.DisplayMember = "ConnectionKey";
             targetConnection.ValueMember = "ConnectionId";
-            targetConnection.ValueType = typeof(string);
+            //targetConnection.ValueType = typeof(string);
             Columns.Add(targetConnection);
 
             // Target Data Object.
             DataGridViewTextBoxColumn targetDataObject = new DataGridViewTextBoxColumn();
             targetDataObject.Name = DataObjectMappingGridColumns.TargetDataObject.ToString();
             targetDataObject.DataPropertyName = DataObjectMappingGridColumns.TargetDataObject.ToString();
-            targetDataObject.ValueType = typeof(DataObject);
+            //targetDataObject.ValueType = typeof(DataObject);
             targetDataObject.HeaderText = @"Target Data Object";
             targetDataObject.SortMode = DataGridViewColumnSortMode.Programmatic;
             Columns.Add(targetDataObject);
@@ -794,9 +794,6 @@ namespace TEAM
                 )
                 return;
 
-            //if (selectedRow.IsNewRow)
-            //    return;
-
             #region Source Data Objects
             // Format the name of the data object, for a source data object
             if (Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.SourceDataObject.ToString()))
@@ -835,6 +832,11 @@ namespace TEAM
                             // Show issue.
                             cell.Style.ForeColor = Color.Red;
                         }
+                    }
+                    else
+                    {
+                        cell.Style.ForeColor = Color.Black;
+                        cell.Style.BackColor = Color.White;
                     }
                 }
             }
