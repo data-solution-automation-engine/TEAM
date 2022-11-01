@@ -156,19 +156,12 @@ namespace TEAM
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
             }
 
-            // Report the events (including errors) back to the user
-            int errorCounter = 0;
-            foreach (Event individualEvent in TeamEventLog)
-            {
-                if (individualEvent.eventCode == (int) EventTypes.Error)
-                {
-                    errorCounter++;
-                }
-            }
+            // Notify the user of any errors that were detected.
+            var errors = TeamEventLog.ReportErrors();
 
-            if (errorCounter > 0)
+            if (errors > 0)
             {
-                richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
+                richTextBoxInformation.AppendText($"{errors} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
             }
 
             openMetadataFormToolStripMenuItem.Enabled = true;

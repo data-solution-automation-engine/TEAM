@@ -832,6 +832,20 @@ namespace TEAM
 
                 int iterations = businessKeyComponentList.sourceComponentList.Count;
 
+                // Exception handling. Source and Target component lists must match.
+                if (businessKeyComponentList.sourceComponentList.Count > businessKeyComponentList.targetComponentList.Count)
+                {
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The source business key has more components than the target business key. This is for {sourceDataObjectName} with definition {businessKeyDefinition}. A default value was substituted."));
+
+                    int diff = businessKeyComponentList.sourceComponentList.Count - businessKeyComponentList.targetComponentList.Count;
+
+                    for (int i = 0; i < diff; i++)
+                    {
+                        businessKeyComponentList.targetComponentList.Add("Placeholder");
+                    }
+
+                }
+
                 for (int i = 0; i < iterations; i++)
                 {
                     var businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.targetComponentList[i], drivingKeyValue);
@@ -1066,6 +1080,13 @@ namespace TEAM
 
                 // Sorting separately for debugging purposes. Issues were found in string to int conversion when sorting on ordinal position.
                 var orderedList = physicalModelDataGridViewRow.OrderBy(row => Int32.Parse(row.Cells[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].Value.ToString()));
+
+                if (!orderedList.Any())
+                {
+                    // There are no matching target values. This should not happen and should be caught by the validator. 
+                    // But just in case...
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was no matching target business key component found for {dataObject.name} with business key definition {businessKeyDefinition} in the physical model."));
+                }
 
                 foreach (var row in orderedList)
                 {

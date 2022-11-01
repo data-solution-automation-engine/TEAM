@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Microsoft.SqlServer.Management.Smo;
 
 namespace TEAM_Library
 {
@@ -11,6 +10,8 @@ namespace TEAM_Library
     /// </summary>
     public class EventLog : List<Event>
     {
+        internal int errorReportedHighWaterMark { get; set; } = 0;
+
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -53,27 +54,38 @@ namespace TEAM_Library
                     outfile.Close();
                 }
                 
-                this.Add(Event.CreateNewEvent(EventTypes.Information, "The file was successfully saved to disk.\r\n"));
+                Add(Event.CreateNewEvent(EventTypes.Information, "The file was successfully saved to disk.\r\n"));
             }
             catch (Exception ex)
             {
-                this.Add(Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n"));
+                Add(Event.CreateNewEvent(EventTypes.Error, "There was an issue saving the output to disk. The message is: " + ex + ".\r\n"));
             }
         }
 
-        public int ReportErrors(EventLog eventLog)
+        public int ReportErrors()
         {
-            int returnValue = 0;
+            // Report the events (including errors) back to the user
+            int errorCounter = 0;
+            int highWaterMarkCounter = errorReportedHighWaterMark;
+            int eventCounter = 1;
 
-            foreach (var localEvent in eventLog)
+            foreach (Event individualEvent in this)
             {
-                if (localEvent.eventType == EventTypes.Error)
+                if (eventCounter > highWaterMarkCounter)
                 {
-                    returnValue++;
+                    if (individualEvent.eventCode == (int)EventTypes.Error)
+                    {
+                        errorCounter++;
+                    }
                 }
+
+                eventCounter++;
             }
-                
-            return returnValue;
+
+            // Errors have been reported up to this point, to prevent re-reporting.
+            errorReportedHighWaterMark = eventCounter;
+
+            return errorCounter;
         }
     }
 

@@ -91,10 +91,12 @@ namespace TEAM
             // Ensure that the count of object types is updated based on whatever is in the data grid.
             ContentCounter();
 
-            var errorsFound = TeamEventLog.ReportErrors(TeamEventLog);
-            if (errorsFound > 0)
+            // Notify the user of any errors that were detected.
+            var errors = TeamEventLog.ReportErrors();
+
+            if (errors > 0)
             {
-                richTextBoxInformation.AppendText($"Errors have been found in the event log. Please check.\r\n");
+                richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
             }
         }
 
@@ -3502,6 +3504,7 @@ namespace TEAM
                     TeamDataObjectMappings.SetDataTableColumnNames(localDataTable);
 
                     if (jsonArray != null)
+                    {
                         foreach (TableMappingJson tableMappingJson in jsonArray)
                         {
                             var localSourceDataObject = new DataObject
@@ -3532,6 +3535,7 @@ namespace TEAM
 
                             localDataTable.Rows.Add(newRow);
                         }
+                    }
 
                     //Make sure the changes are seen as committed, so that changes can be detected later on.
                     localDataTable.AcceptChanges();
@@ -3578,6 +3582,15 @@ namespace TEAM
 
                     //Load the grids from the repository after being updated.This resets everything.
                     PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+
+                    // Notify the user of any errors that were detected.
+                    var errors = TeamEventLog.ReportErrors();
+
+                    if (errors > 0)
+                    {
+                        richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                    }
+
                     #endregion
                 }
                 catch (Exception ex)

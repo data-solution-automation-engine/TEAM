@@ -1477,7 +1477,7 @@ namespace TEAM
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
                 JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, targetConnection, TeamConfiguration, drivingKeyValue);
             }
-            catch
+            catch (Exception ex)
             {
                 // Catch TBD
             }
