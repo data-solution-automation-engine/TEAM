@@ -77,6 +77,7 @@ namespace TEAM
             this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
             this.groupBoxPhysicalModel = new System.Windows.Forms.GroupBox();
             this.labelConnections = new System.Windows.Forms.Label();
+            this.generatePhysicalModelGridQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBoxMetadataCounts.SuspendLayout();
             this.MetadataGenerationGroupBox.SuspendLayout();
@@ -368,7 +369,8 @@ namespace TEAM
             this.openMetadataFileToolStripMenuItem,
             this.openAttributeMappingFileToolStripMenuItem,
             this.toolStripSeparator1,
-            this.automapDataItemsToolStripMenuItem});
+            this.automapDataItemsToolStripMenuItem,
+            this.generatePhysicalModelGridQueryToolStripMenuItem});
             this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
             this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.businessKeyMetadataToolStripMenuItem.Text = "Metadata";
@@ -377,7 +379,7 @@ namespace TEAM
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
             this.openMetadataFileToolStripMenuItem.Text = "Import Data Object Mapping Grid File";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
             // 
@@ -385,21 +387,21 @@ namespace TEAM
             // 
             this.openAttributeMappingFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
-            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
             this.openAttributeMappingFileToolStripMenuItem.Text = "Import Data Item Mapping Grid File";
             this.openAttributeMappingFileToolStripMenuItem.Click += new System.EventHandler(this.openAttributeMappingFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(269, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(277, 6);
             // 
             // automapDataItemsToolStripMenuItem
             // 
             this.automapDataItemsToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
             this.automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
             this.automapDataItemsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
             this.automapDataItemsToolStripMenuItem.Text = "Automap Data Items";
             this.automapDataItemsToolStripMenuItem.Click += new System.EventHandler(this.AutoMapDataItemsToolStripMenuItem_Click);
             // 
@@ -441,7 +443,7 @@ namespace TEAM
             // 
             this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
             this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
-            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 30);
+            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON Export Rules";
             this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
             // 
@@ -498,6 +500,12 @@ namespace TEAM
             this.labelConnections.Size = new System.Drawing.Size(66, 13);
             this.labelConnections.TabIndex = 24;
             this.labelConnections.Text = "Connections";
+            // 
+            // generatePhysicalModelGridQueryToolStripMenuItem
+            // 
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Name = "generatePhysicalModelGridQueryToolStripMenuItem";
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Text = "Generate Physical Model Grid Query";
             // 
             // FormManageMetadata
             // 
@@ -595,5 +603,6 @@ namespace TEAM
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.GroupBox groupBoxPhysicalModel;
         private System.Windows.Forms.Label labelConnections;
+        private System.Windows.Forms.ToolStripMenuItem generatePhysicalModelGridQueryToolStripMenuItem;
     }
 }

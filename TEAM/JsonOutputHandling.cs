@@ -383,7 +383,24 @@ namespace TEAM
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
             else if (jsonExportSetting.IsAddDataObjectConnection())
             {
-                var dataObjectConnection = new DataConnection {dataConnectionString = teamConnection.ConnectionKey};
+                // Store the extensions that may be there, if any.
+                var tempExtensions = new List<Extension>();
+
+                if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
+                {
+                    tempExtensions = dataObject.dataObjectConnection.extensions;
+                }
+
+                var dataObjectConnection = new DataConnection
+                {
+                    dataConnectionString = teamConnection.ConnectionKey
+                };
+
+                // Re-add extensions, if available.
+                if (tempExtensions != null)
+                {
+                    dataObjectConnection.extensions = tempExtensions;
+                }
 
                 dataObject.dataObjectConnection = dataObjectConnection;
             }
@@ -920,6 +937,7 @@ namespace TEAM
 
                 // Add individual key parts (the individual keys) as well.
                 var tempList = businessKeyDefinition.Split(',').ToList();
+
                 foreach (string componentElement in tempList)
                 {
                     var individualTempComponent = new BusinessKeyComponentList();
@@ -935,7 +953,7 @@ namespace TEAM
                     var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
                         .Cast<DataGridViewRow>()
                         .Where(r => !r.IsNewRow)
-                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(componentElement))
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(componentElement.Trim()))
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
                         .FirstOrDefault();
 
@@ -1056,7 +1074,7 @@ namespace TEAM
                     var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
                         .Cast<DataGridViewRow>()
                         .Where(r => !r.IsNewRow)
-                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponentElement))
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponentElement.Trim()))
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
                         .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.name))
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) == DataObjectTypes.CoreBusinessConcept)

@@ -6,9 +6,11 @@ using Newtonsoft.Json;
 
 namespace TEAM_Library
 {
+    /// <summary>
+    /// JSON representation of the physical model metadata.
+    /// </summary>
     public class PhysicalModelMetadataJson
     {
-        //JSON representation of the physical model metadata
         public string attributeHash { get; set; }
         public string databaseName { get; set; }
         public string schemaName { get; set; }
@@ -24,7 +26,7 @@ namespace TEAM_Library
     }
 
     /// <summary>
-    /// Enumerator to hold the column index for the columns (headers) in the Physical Model Metadata data grid view.
+    /// Enum to hold the column index for the columns (headers) in the Physical Model Metadata data grid view.
     /// </summary>
     public enum PhysicalModelMappingMetadataColumns
     {
@@ -43,7 +45,7 @@ namespace TEAM_Library
     }
 
     /// <summary>
-    /// The metadata collection object containing all dataObject to dataObject (source-to-target) mappings.
+    /// The metadata collection containing the physical model snapshot.
     /// </summary>
     public class TeamPhysicalModel
     {
@@ -123,11 +125,8 @@ namespace TEAM_Library
                 SetDataTableSorting();
             }
         }
-    }
 
-    public class AttributeSelection
-    {
-        public StringBuilder CreatePhysicalModelSet(string databaseName, string filterObjects)
+        public static string PhysicalModelQuery(string databaseName, string filterObjects)
         {
             var returnValue = new StringBuilder();
 
@@ -189,7 +188,7 @@ namespace TEAM_Library
 
             returnValue.AppendLine(") sub");
 
-            return returnValue;
+            return returnValue.ToString();
         }
     }
 }
