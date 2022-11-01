@@ -13,10 +13,6 @@ namespace TEAM
         private bool _formLoading = true;
         private FormMain parentFormMain;
 
-        public FormManageConfiguration()
-        {
-            InitializeComponent();
-        }
         public FormManageConfiguration(FormMain parent) : base(parent)
         {
             parentFormMain = parent;
@@ -105,34 +101,21 @@ namespace TEAM
             OnUpdateEnvironment(this, new MyWorkingEnvironmentEventArgs(environment));
         }
 
-
-
-        /// <summary>
-        /// Delegate event handler from the 'main' form to pass back information when the environment mode is updated.
-        /// </summary>
-        public event EventHandler<MyStringEventArgs> OnUpdateEnvironmentMode = delegate { };
-
-        public void UpdateEnvironmentMode(string text)
-        {
-            OnUpdateEnvironmentMode(this, new MyStringEventArgs(text));
-        }
-
-
         /// <summary>
         /// This method will load an existing configuration file and display the values on the form, or create a new dummy one if not available.
         /// </summary>
-        /// <param name="chosenFile"></param>
-        private void LocalInitialiseConnections(string chosenFile)
+        /// <param name="connectionFile"></param>
+        private void LocalInitialiseConnections(string connectionFile)
         {
             // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
-            if (!File.Exists(chosenFile))
+            if (!File.Exists(connectionFile))
             {
-                TeamConfiguration.CreateDummyEnvironmentConfigurationFile(chosenFile);
+                TeamConfiguration.CreateDummyEnvironmentConfigurationFile(connectionFile);
             }
 
             // Open the configuration file
             var configList = new Dictionary<string, string>();
-            var fs = new FileStream(chosenFile, FileMode.Open, FileAccess.Read);
+            var fs = new FileStream(connectionFile, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
 
             try
@@ -220,7 +203,6 @@ namespace TEAM
                     myConfigurationCheckBox = checkBoxAlternativeSatLDTS;
                     myConfigurationCheckBox.Checked = true;
                 }
-                
 
                 //Radiobutton setting for prefix / suffix 
                 RadioButton myTableRadioButton;
@@ -267,7 +249,7 @@ namespace TEAM
                 // Also commit the values to memory
                 UpdateConfigurationInMemory();
 
-                richTextBoxInformation.AppendText(@"The file " + chosenFile + " was uploaded successfully.\r\n");
+                richTextBoxInformation.AppendText(@"The file " + connectionFile + " was uploaded successfully.\r\n");
             }
             catch (Exception ex)
             {
@@ -306,8 +288,7 @@ namespace TEAM
                 MessageBox.Show($@"Error: Could not read file from disk. Original error: {ex.Message}", @"An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
+        
         /// <summary>
         ///    Close the Configuration Settings Form
         /// </summary>
@@ -317,7 +298,6 @@ namespace TEAM
         {
             Close();
         }
-
 
         /// <summary>
         /// Commit the changes to memory, save the configuration settings to disk and create a backup.
@@ -395,7 +375,6 @@ namespace TEAM
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {GlobalParameters.CorePath +GlobalParameters.PathFileName + GlobalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
             }
         }
-
 
         /// <summary>
         ///    Retrieve the information from the Configuration Settings from and commit these to memory
@@ -510,7 +489,6 @@ namespace TEAM
 
         }
 
-
         /// <summary>
         ///    Open the Windows Explorer (directory) using the value available as Configuration Directory
         /// </summary>
@@ -608,10 +586,6 @@ namespace TEAM
 
                 connectionProfile.DatabaseServer = connectionDatabase;
                 connectionProfile.FileConnection = connectionFile;
-
-
-                //localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
-                //localCustomTabPage.OnClearMainText += (ClearMainInformationTextBox);
 
                 bool newTabExists = false;
                 foreach (TabPage customTabPage in tabControlConnections.TabPages)

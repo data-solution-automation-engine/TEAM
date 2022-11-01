@@ -12,7 +12,8 @@ namespace TEAM_Library
     public enum ServerAuthenticationTypes
     {
         NamedUser,
-        SSPI
+        SSPI,
+        MFA
     }
 
     /// <summary>
@@ -56,40 +57,35 @@ namespace TEAM_Library
             {
                 var localDatabaseConnection = DatabaseServer;
 
-                var localServerName = localDatabaseConnection.ServerName ?? "<>";
-                var localPortNumber = localDatabaseConnection.PortNumber ?? "<>";
-                var localDatabaseName = localDatabaseConnection.DatabaseName ?? "<>";
-                var localNamedUserName = localDatabaseConnection.NamedUserName ?? "<>";
-                var localNamedUserPassword = localDatabaseConnection.NamedUserPassword ?? "<>";
+                outputConnectionString += $"Server={localDatabaseConnection.ServerName}";
 
-                var connectionString = new StringBuilder();
-
-                connectionString.Append("Server=" + localServerName);
-
-                if (localPortNumber != "<>" && localPortNumber != "")
+                if (!string.IsNullOrEmpty(localDatabaseConnection.PortNumber))
                 {
-                    connectionString.Append("," + localPortNumber);
+                    outputConnectionString += ("," + localDatabaseConnection.PortNumber);
                 }
 
-                connectionString.Append(";Initial Catalog=" + localDatabaseName);
 
                 if (DatabaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
                 {
-                    connectionString.Append(";Integrated Security=SSPI");
+                    outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
+                    outputConnectionString += ";Integrated Security=SSPI";
                 }
                 else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
                 {
-                    connectionString.Append(";user id=" + localNamedUserName);
-                    connectionString.Append(";password=" + localNamedUserPassword);
+                    outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
+                    outputConnectionString += ";user id=" + localDatabaseConnection.NamedUserName;
+                    outputConnectionString += ";password=" + localDatabaseConnection.NamedUserPassword;
+                }
+                else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.MFA)
+                {
+                    outputConnectionString += ";Authentication=Active Directory Interactive;";
+                    outputConnectionString += ";user id=" + localDatabaseConnection.MultiFactorAuthenticationUser;
+                    outputConnectionString += ";Database=" + localDatabaseConnection.DatabaseName;
                 }
 
-                if (localNamedUserPassword.Length > 0 && mask)
+                if (localDatabaseConnection.NamedUserPassword.Length > 0 && mask)
                 {
-                    outputConnectionString = connectionString.ToString().Replace(localNamedUserPassword, "*****");
-                }
-                else
-                {
-                    outputConnectionString = connectionString.ToString();
+                    outputConnectionString = outputConnectionString.Replace(localDatabaseConnection.NamedUserPassword, "*****");
                 }
             }
             else
@@ -136,31 +132,25 @@ namespace TEAM_Library
         public string NamedUserName { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string NamedUserPassword { get; set; }
-        public bool IntegratedSecuritySelectionEvaluation()
+
+        public string MultiFactorAuthenticationUser { get; set; }
+
+        public bool IsSSPI()
         {
-            bool returnValue;
-            if (authenticationType == ServerAuthenticationTypes.SSPI)
-            {
-                returnValue = true;
-            }
-            else
-            {
-                returnValue = false;
-            }
+            var returnValue = authenticationType == ServerAuthenticationTypes.SSPI;
 
             return returnValue;
         }
-        public bool NamedUserSecuritySelectionEvaluation()
+        public bool IsNamedUser()
         {
-            bool returnValue;
-            if (authenticationType == ServerAuthenticationTypes.NamedUser)
-            {
-                returnValue = true;
-            }
-            else
-            {
-                returnValue = false;
-            }
+            var returnValue = authenticationType == ServerAuthenticationTypes.NamedUser;
+
+            return returnValue;
+        }
+
+        public bool IsMfa()
+        {
+            var returnValue = authenticationType == ServerAuthenticationTypes.MFA;
 
             return returnValue;
         }
