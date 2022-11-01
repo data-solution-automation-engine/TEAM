@@ -27,6 +27,7 @@ namespace TEAM
         private Form_Alert _generatedScripts;
         private static Form_Alert _generatedJsonInterface;
         private Form_Alert _alertEventLog;
+        private Form_Alert _physicalModelQuery;
 
         // Create the Tab Pages.
         private TabPage tabPageDataObjectMapping;
@@ -92,7 +93,7 @@ namespace TEAM
             ContentCounter();
 
             // Notify the user of any errors that were detected.
-            var errors = TeamEventLog.ReportErrors();
+            var errors = TeamEventLog.ReportErrors(TeamEventLog);
 
             if (errors > 0)
             {
@@ -261,6 +262,10 @@ namespace TEAM
         {
             // Parse the JSON files into a data table that supports the grid view.
             var teamDataObjectMappings = new TeamDataObjectMappings(teamDataObjectMappingsFileCombinations);
+
+            // Merge events
+            TeamEventLog.AddRange(teamDataObjectMappingsFileCombinations.EventLog);
+
             teamDataObjectMappings.SetDataTable(TeamConfiguration);
 
             #region Assert combo box values
@@ -770,8 +775,6 @@ namespace TEAM
         internal void WriteDataObjectMappingsToFile(string targetDataObjectName)
         {
             var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObjectName);
-
-
 
             if (dataObjectMappings.Count > 0)
             {
@@ -2176,6 +2179,15 @@ namespace TEAM
                 richTextBoxInformation.Text += $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.";
             }
 
+            var sqlStatementForDataItems = SqlStatementForDataItems(databaseName);
+
+            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems.ToString());
+            conn.Close();
+            return reverseEngineerResults;
+        }
+
+        private string SqlStatementForDataItems(string databaseName, bool isJson = false)
+        {
             // Get everything as local variables to reduce multi-threading issues
             var effectiveDateTimeAttribute =
                 TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
@@ -2188,35 +2200,62 @@ namespace TEAM
             // Create the attribute selection statement for the array
             var sqlStatementForDataItems = new StringBuilder();
 
+            string hashColumnName = PhysicalModelMappingMetadataColumns.Row_Checksum.ToString();
+            string databaseColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
+            string schemaColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
+            string tableColumnName = PhysicalModelMappingMetadataColumns.Table_Name.ToString();
+            string columnColumnName = PhysicalModelMappingMetadataColumns.Column_Name.ToString();
+            string dataTypeColumnName = PhysicalModelMappingMetadataColumns.Data_Type.ToString();
+            string characterLengthColumnName = PhysicalModelMappingMetadataColumns.Character_Length.ToString();
+            string numericPrecisionColumnName = PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString();
+            string numericScaleColumnName = PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString();
+            string ordinalPositionColumnName = PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString();
+            string primaryKeyColumnName = PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString();
+            string multiActiveKeyColumnName = PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString();
+
+            if (isJson)
+            {
+                hashColumnName = "attributeHash";
+                databaseColumnName = "databaseName";
+                schemaColumnName = "schemaName";
+                tableColumnName = "tableName";
+                columnColumnName = "columnName";
+                dataTypeColumnName = "dataType";
+                characterLengthColumnName = "characterLength";
+                numericPrecisionColumnName = "numericPrecision";
+                numericScaleColumnName = "numericScale";
+                ordinalPositionColumnName = "ordinalPosition";
+                primaryKeyColumnName = "primaryKeyIndicator";
+                multiActiveKeyColumnName = "multiActiveIndicator";
+            }
+
+
             sqlStatementForDataItems.AppendLine("SELECT ");
-            sqlStatementForDataItems.AppendLine("  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), 0) + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS ROW_CHECKSUM,");
-            //sqlStatementForDataItems.AppendLine("  0 AS [VERSION_ID],");
-            sqlStatementForDataItems.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS [DATABASE_NAME],");
-            sqlStatementForDataItems.AppendLine("  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [SCHEMA_NAME],");
-            sqlStatementForDataItems.AppendLine("  OBJECT_NAME(main.OBJECT_ID) AS [TABLE_NAME], ");
-            sqlStatementForDataItems.AppendLine("  main.[name] AS [COLUMN_NAME], ");
-            sqlStatementForDataItems.AppendLine("  t.[name] AS [DATA_TYPE], ");
+
+            sqlStatementForDataItems.AppendLine($"  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), 0) + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS {hashColumnName},");
+            sqlStatementForDataItems.AppendLine($"  DB_NAME(DB_ID('{databaseName}')) AS [{databaseColumnName}],");
+            sqlStatementForDataItems.AppendLine($"  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [{schemaColumnName}],");
+            sqlStatementForDataItems.AppendLine($"  OBJECT_NAME(main.OBJECT_ID) AS [{tableColumnName}], ");
+            sqlStatementForDataItems.AppendLine($"  main.[name] AS [{columnColumnName}], ");
+            sqlStatementForDataItems.AppendLine($"  t.[name] AS [{dataTypeColumnName}], ");
             sqlStatementForDataItems.AppendLine("  CAST(COALESCE(");
             sqlStatementForDataItems.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
             sqlStatementForDataItems.AppendLine("    ELSE main.[max_length]");
             sqlStatementForDataItems.AppendLine("    END");
-            sqlStatementForDataItems.AppendLine("     ,0) AS VARCHAR(100)) AS [CHARACTER_MAXIMUM_LENGTH],");
-            sqlStatementForDataItems.AppendLine("  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [NUMERIC_PRECISION], ");
-            sqlStatementForDataItems.AppendLine("  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS[NUMERIC_SCALE], ");
-
-            sqlStatementForDataItems.AppendLine("  CAST(main.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION], ");
-
+            sqlStatementForDataItems.AppendLine($"     ,0) AS VARCHAR(100)) AS [{characterLengthColumnName}],");
+            sqlStatementForDataItems.AppendLine($"  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [{numericPrecisionColumnName}], ");
+            sqlStatementForDataItems.AppendLine($"  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS [{numericScaleColumnName}], ");
+            sqlStatementForDataItems.AppendLine($"  CAST(main.[column_id] AS VARCHAR(100)) AS [{ordinalPositionColumnName}], ");
             sqlStatementForDataItems.AppendLine("  CASE ");
             sqlStatementForDataItems.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
             sqlStatementForDataItems.AppendLine("    THEN 'N' ");
             sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
-            sqlStatementForDataItems.AppendLine("  END AS PRIMARY_KEY_INDICATOR, ");
-
+            sqlStatementForDataItems.AppendLine($"  END AS {primaryKeyColumnName}, ");
             sqlStatementForDataItems.AppendLine("  CASE ");
             sqlStatementForDataItems.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
             sqlStatementForDataItems.AppendLine("    THEN 'N' ");
             sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
-            sqlStatementForDataItems.AppendLine("  END AS MULTI_ACTIVE_INDICATOR ");
+            sqlStatementForDataItems.AppendLine($"  END AS {multiActiveKeyColumnName} ");
 
             sqlStatementForDataItems.AppendLine("FROM [" + databaseName + "].sys.columns main");
             sqlStatementForDataItems.AppendLine("JOIN sys.types t ON main.user_type_id=t.user_type_id");
@@ -2263,18 +2302,13 @@ namespace TEAM
             sqlStatementForDataItems.AppendLine("	) ma");
             sqlStatementForDataItems.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
             sqlStatementForDataItems.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
-
-
-            //sqlStatementForAttributeVersion.AppendLine("WHERE OBJECT_NAME(main.OBJECT_ID) LIKE '" + prefix + "_%'");
             sqlStatementForDataItems.AppendLine("WHERE 1=1");
 
-            // Retrieve (and apply) the list of tables to filter from the Table Mapping datagrid
             sqlStatementForDataItems.AppendLine("  AND (");
-
 
             var filterList = new List<Tuple<string, TeamConnection>>();
 
-            foreach (DataRow row in ((DataTable) BindingSourceDataObjectMappings.DataSource).Rows)
+            foreach (DataRow row in ((DataTable)BindingSourceDataObjectMappings.DataSource).Rows)
             {
                 // Skip deleted rows.
                 if (row.RowState == DataRowState.Deleted)
@@ -2286,9 +2320,9 @@ namespace TEAM
                 string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 TeamConnection localConnectionTarget = GetTeamConnectionByConnectionId(localInternalConnectionIdTarget);
 
-                var localTupleSource = new Tuple<string, TeamConnection>((string) row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
+                var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
 
-                var localTupleTarget = new Tuple<string, TeamConnection>((string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget);
+                var localTupleTarget = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget);
 
                 if (!filterList.Contains(localTupleSource))
                 {
@@ -2315,9 +2349,12 @@ namespace TEAM
             sqlStatementForDataItems.AppendLine("  )");
             sqlStatementForDataItems.AppendLine("ORDER BY main.column_id");
 
-            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems.ToString());
-            conn.Close();
-            return reverseEngineerResults;
+            if (isJson)
+            {
+                sqlStatementForDataItems.AppendLine("FOR JSON PATH");
+            }
+
+            return sqlStatementForDataItems.ToString();
         }
 
         private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
@@ -3585,7 +3622,7 @@ namespace TEAM
                     PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
 
                     // Notify the user of any errors that were detected.
-                    var errors = TeamEventLog.ReportErrors();
+                    var errors = TeamEventLog.ReportErrors(TeamEventLog);
 
                     if (errors > 0)
                     {
@@ -3628,8 +3665,7 @@ namespace TEAM
                 {
                     foreach (var individualEvent in localEventLog)
                     {
-                        _alertEventLog.SetTextLogging(
-                            $"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
+                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
                     }
                 }
                 catch (Exception ex)
@@ -3869,6 +3905,31 @@ namespace TEAM
                 {
                     richTextBoxInformation.Text = $@"An error has occurred while attempting to open the metadata directory. The error message is: {ex.Message}.";
                 }
+            }
+        }
+
+        private void generatePhysicalModelGridQueryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _physicalModelQuery = new Form_Alert();
+            _physicalModelQuery.SetFormName("Generating a physical model grid query");
+            _physicalModelQuery.ShowLogButton(false);
+            _physicalModelQuery.ShowCancelButton(false);
+            _physicalModelQuery.ShowProgressBar(false);
+            _physicalModelQuery.ShowProgressLabel(false);
+            _physicalModelQuery.Canceled += buttonCancel_Click;
+            _physicalModelQuery.Show();
+
+            List<string> resultQueryList = new List<string>();
+
+            foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
+            {
+                var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
+                resultQueryList.Add(SqlStatementForDataItems(localConnectionObject.Key.DatabaseServer.DatabaseName, true));
+            }
+
+            foreach (var query in resultQueryList)
+            {
+                _physicalModelQuery.SetTextLogging(query);
             }
         }
     }

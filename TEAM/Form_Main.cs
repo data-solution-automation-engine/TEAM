@@ -157,7 +157,7 @@ namespace TEAM
             }
 
             // Notify the user of any errors that were detected.
-            var errors = TeamEventLog.ReportErrors();
+            var errors = TeamEventLog.ReportErrors(TeamEventLog);
 
             if (errors > 0)
             {

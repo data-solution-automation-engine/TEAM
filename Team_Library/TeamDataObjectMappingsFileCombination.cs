@@ -118,16 +118,31 @@ namespace TEAM_Library
                                 // Add the deserialised file to the list of mappings.
 
                                 var jsonInput = File.ReadAllText(fileName);
-                                var dataObjectMappings = JsonConvert.DeserializeObject<DataObjectMappings>(jsonInput);
 
-                                var localDataObjectMappingsFileCombination = new DataObjectMappingsFileCombination
+                                try
                                 {
-                                    FileName = fileName,
-                                    DataObjectMappings = dataObjectMappings
-                                };
+                                    var dataObjectMappings = JsonConvert.DeserializeObject<DataObjectMappings>(jsonInput);
 
-                                DataObjectMappingsFileCombinations.Add(localDataObjectMappingsFileCombination);
-                                EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The file {fileName} was successfully loaded."));
+                                    if (dataObjectMappings == null || dataObjectMappings.dataObjectMappings.Count == 0)
+                                    {
+                                        EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The file {fileName} could not be loaded."));
+                                    }
+                                    else
+                                    {
+                                        var localDataObjectMappingsFileCombination = new DataObjectMappingsFileCombination
+                                        {
+                                            FileName = fileName,
+                                            DataObjectMappings = dataObjectMappings
+                                        };
+
+                                        DataObjectMappingsFileCombinations.Add(localDataObjectMappingsFileCombination);
+                                        EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The file {fileName} was successfully loaded."));
+                                    }
+                                }
+                                catch
+                                {
+                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file {fileName} could not be loaded."));
+                                }
                             }
                             catch
                             {

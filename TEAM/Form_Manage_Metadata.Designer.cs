@@ -65,6 +65,7 @@ namespace TEAM
             this.openAttributeMappingFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.automapDataItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generatePhysicalModelGridQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageValidationRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.validateMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +78,6 @@ namespace TEAM
             this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
             this.groupBoxPhysicalModel = new System.Windows.Forms.GroupBox();
             this.labelConnections = new System.Windows.Forms.Label();
-            this.generatePhysicalModelGridQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2.SuspendLayout();
             this.groupBoxMetadataCounts.SuspendLayout();
             this.MetadataGenerationGroupBox.SuspendLayout();
@@ -379,7 +379,7 @@ namespace TEAM
             // 
             this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
+            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
             this.openMetadataFileToolStripMenuItem.Text = "Import Data Object Mapping Grid File";
             this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
             // 
@@ -387,23 +387,32 @@ namespace TEAM
             // 
             this.openAttributeMappingFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
             this.openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
-            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
+            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
             this.openAttributeMappingFileToolStripMenuItem.Text = "Import Data Item Mapping Grid File";
             this.openAttributeMappingFileToolStripMenuItem.Click += new System.EventHandler(this.openAttributeMappingFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(277, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(311, 6);
             // 
             // automapDataItemsToolStripMenuItem
             // 
             this.automapDataItemsToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
             this.automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
             this.automapDataItemsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
+            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
             this.automapDataItemsToolStripMenuItem.Text = "Automap Data Items";
             this.automapDataItemsToolStripMenuItem.Click += new System.EventHandler(this.AutoMapDataItemsToolStripMenuItem_Click);
+            // 
+            // generatePhysicalModelGridQueryToolStripMenuItem
+            // 
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Name = "generatePhysicalModelGridQueryToolStripMenuItem";
+            this.generatePhysicalModelGridQueryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Text = "&Generate Physical Model Grid Query";
+            this.generatePhysicalModelGridQueryToolStripMenuItem.Click += new System.EventHandler(this.generatePhysicalModelGridQueryToolStripMenuItem_Click);
             // 
             // validationToolStripMenuItem
             // 
@@ -500,12 +509,6 @@ namespace TEAM
             this.labelConnections.Size = new System.Drawing.Size(66, 13);
             this.labelConnections.TabIndex = 24;
             this.labelConnections.Text = "Connections";
-            // 
-            // generatePhysicalModelGridQueryToolStripMenuItem
-            // 
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Name = "generatePhysicalModelGridQueryToolStripMenuItem";
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(280, 30);
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Text = "Generate Physical Model Grid Query";
             // 
             // FormManageMetadata
             // 
