@@ -3755,9 +3755,10 @@ namespace TEAM
             tabControlDataMappings.SelectedTab = tabPageDataItemMapping;
             
             var dataTableAttributeMappingChanges = ((DataTable) BindingSourceDataItemMappings.DataSource).GetChanges();
+
             if (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
             {
-                string localMessage = "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the automap.";
+                string localMessage = "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the auto map.";
                 MessageBox.Show(localMessage);
                 richTextBoxInformation.AppendText(localMessage);
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
@@ -3767,10 +3768,18 @@ namespace TEAM
                 // Iterate across all Data Object Mappings, to see if there are corresponding Data Item Mappings.
                 foreach (DataGridViewRow dataObjectRow in _dataGridViewDataObjects.Rows)
                 {
+                    // Cancel if the row is a new row.
+                    if (dataObjectRow.IsNewRow)
+                    {
+                        return;
+                    }
+
                     // Source Data Object details
                     DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
+
                     var sourceConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
                     TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+
                     var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.name, sourceConnection).FirstOrDefault();
 
                     // Get the source details from the database
@@ -3787,18 +3796,19 @@ namespace TEAM
                         return;
                     }
 
-
                     // Target Data Object details
                     DataObject targetDataObject = (DataObject)dataObjectRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
+
                     var targetConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                     TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+
                     var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.name, targetConnection).FirstOrDefault();
 
                     // Get the target details from the database
                     string tableFilterObjectsTarget = $"OBJECT_ID(N'[{targetConnection.DatabaseServer.DatabaseName}].{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}')";
 
                     var localTargetSqlConnection = new SqlConnection {ConnectionString = targetConnection.CreateSqlServerConnectionString(false)};
-                    var localTargetQuery = TeamPhysicalModel.PhysicalModelQuery(targetConnection.DatabaseServer.DatabaseName, tableFilterObjectsTarget).ToString();
+                    var localTargetQuery = TeamPhysicalModel.PhysicalModelQuery(targetConnection.DatabaseServer.DatabaseName, tableFilterObjectsTarget);
 
                     DataTable localTargetDatabaseDataTable = Utility.GetDataTable(ref localTargetSqlConnection, localTargetQuery);
 
@@ -3809,6 +3819,7 @@ namespace TEAM
                     }
 
                     List<TeamDataItemMappingRow> localDataItemMappings = new List<TeamDataItemMappingRow>();
+
                     // For each source Data Object, check if there is a matching target
                     foreach (DataRow sourceDataObjectRow in localSourceDatabaseDataTable.Rows)
                     {
@@ -3819,7 +3830,7 @@ namespace TEAM
 
                         if (results.FirstOrDefault() != null)
                         {
-                            // There is a match and it's not a standard attribute
+                            // There is a match and it's not a standard attribute.
 
                             string[] exclusionAttribute =
                             {
@@ -3835,7 +3846,7 @@ namespace TEAM
                                 TeamConfiguration.EtlProcessAttribute,
                                 TeamConfiguration.EtlProcessUpdateAttribute,
                                 TeamConfiguration.CurrentRowAttribute,
-                                TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
+                                TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute,
                             };
 
                             if (!exclusionAttribute.Contains(sourceDataObjectRow["COLUMN_NAME"].ToString()))
@@ -3885,10 +3896,7 @@ namespace TEAM
                             newRow[DataItemMappingGridColumns.Notes.ToString()] = "Automatically matched";
 
                             localDataItemDataTable.Rows.Add(newRow);
-                            //localDataItemDataTable.AcceptChanges();
                         }
-
-
                     }
                 }
             }
