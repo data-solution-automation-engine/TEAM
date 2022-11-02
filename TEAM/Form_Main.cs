@@ -145,17 +145,6 @@ namespace TEAM
             }
             #endregion
 
-            // Load the pattern definition file.
-            try
-            {
-                GlobalParameters.PatternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, "The pattern definition file was loaded successfully."));
-            }
-            catch
-            {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
-            }
-
             // Notify the user of any errors that were detected.
             var errors = TeamEventLog.ReportErrors(TeamEventLog);
 

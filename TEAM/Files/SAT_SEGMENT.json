@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "SAT_SEGMENT",
-    "generationDateTime": "2022-10-14T10:56:23.516732+10:00"
+    "selectedDataObject": {
+      "name": "SAT_SEGMENT",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.179443+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "SAT_SEGMENT",
       "mappingClassifications": [
         {
-          "id": 5,
-          "classification": "Context",
-          "notes": "The Satellite type entities capture (historical / time-variant) context about the Business Keys in the Hub entities. A Satellite is typically sourced from a single Staging Area table."
+          "classification": "Context"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,38 +74,8 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "Context"
-          }
-        ]
-      },
-      "relatedDataObjects": [
-        {
-          "name": "HUB_SEGMENT",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
         }
-      ],
+      },
       "dataItemMappings": [
         {
           "sourceDataItems": [
@@ -114,7 +94,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Demographic_Segment_Code+'TEST'"
+                  "name": "Demographic_Segment_Code+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

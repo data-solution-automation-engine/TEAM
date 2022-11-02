@@ -303,7 +303,7 @@ namespace TEAM
         {
             if (checkBoxConfigurationSettings.Checked)
             {
-                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension, GlobalParameters.BackupPath);
+                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
 
                 // Shared values (same for all samples)
                 var stagingAreaPrefix = "STG";
@@ -463,7 +463,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"An issue occurred creating the sample metadata. The error message is: {ex.Message}", "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($@"An issue occurred creating the sample metadata. The error message is: {ex.Message}", @"An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }

@@ -132,11 +132,7 @@ namespace TEAM
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
 
-                using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                     FormBase.GlobalParameters.ConfigFileName + '_' +
-                                     FormBase.GlobalParameters.WorkingEnvironment +
-                                     FormBase.GlobalParameters.FileExtension))
+                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension)) 
                 {
                     outfile.Write(configurationFile.ToString());
                     outfile.Flush();
@@ -145,8 +141,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show(@"An error occurred saving the Configuration File. The error message is " + ex,
-                    @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"An error occurred saving the Configuration File. The error message is {ex.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -102,11 +102,6 @@ namespace TEAM
             public static string JsonConnectionFileName { get; } = "TEAM_connections";
             public static string JsonEnvironmentFileName { get; } = "TEAM_environments";
             public static string JsonExtension { get;  } = ".json";
-
-            public static string LoadPatternDefinitionFile { get; } = "loadPatternDefinition.json";
-
-            // File paths
-            public static List<LoadPatternDefinition> PatternDefinitionList { get; set; }
         }
     }
 }

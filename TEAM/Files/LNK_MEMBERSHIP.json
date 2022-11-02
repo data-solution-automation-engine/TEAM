@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "LNK_MEMBERSHIP",
-    "generationDateTime": "2022-10-14T10:56:22.5728107+10:00"
+    "selectedDataObject": {
+      "name": "LNK_MEMBERSHIP",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.0553594+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "LNK_MEMBERSHIP",
       "mappingClassifications": [
         {
-          "id": 4,
-          "classification": "NaturalBusinessRelationship",
-          "notes": "The Link type entities record the relationships between the Business Entities (Hubs). Similar to Hubs they are subject to potentially being populated from multiple Staging Area tables. The Link views therefore present an integrated view of all relationships across these tables."
+          "classification": "NaturalBusinessRelationship"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,59 +74,18 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "NaturalBusinessRelationship"
-          }
-        ]
+        }
       },
-      "relatedDataObjects": [
+      "dataItemMappings": [
         {
-          "name": "HUB_CUSTOMER",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
+          "sourceDataItems": [
             {
-              "classification": "CoreBusinessConcept"
+              "name": "Status"
             }
-          ]
-        },
-        {
-          "name": "HUB_MEMBERSHIP_PLAN",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
+          ],
+          "targetDataItem": {
+            "name": "SALES_CHANNEL"
+          }
         }
       ],
       "businessKeys": [
@@ -125,7 +94,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -135,7 +105,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Plan_Code"
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -161,7 +132,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -176,7 +148,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Plan_Code"
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -196,27 +169,6 @@
             }
           ],
           "surrogateKey": "MEMBERSHIP_PLAN_SK"
-        },
-        {
-          "businessKeyComponentMapping": [
-            {
-              "sourceDataItems": [
-                {
-                  "name": "Status"
-                }
-              ],
-              "targetDataItem": {
-                "name": "SALES_CHANNEL"
-              }
-            }
-          ],
-          "surrogateKey": "SALES_CHANNEL",
-          "businessKeyClassification": [
-            {
-              "classification": "DegenerateAttribute",
-              "notes": "Non Core Business Concept attribute, though part of the Relationship Key."
-            }
-          ]
         }
       ],
       "filterCriterion": "",

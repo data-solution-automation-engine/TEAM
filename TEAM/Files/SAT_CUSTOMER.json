@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "SAT_CUSTOMER",
-    "generationDateTime": "2022-10-14T10:56:22.8781427+10:00"
+    "selectedDataObject": {
+      "name": "SAT_CUSTOMER",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.1405968+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "SAT_CUSTOMER",
       "mappingClassifications": [
         {
-          "id": 5,
-          "classification": "Context",
-          "notes": "The Satellite type entities capture (historical / time-variant) context about the Business Keys in the Hub entities. A Satellite is typically sourced from a single Staging Area table."
+          "classification": "Context"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,60 +74,9 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "Context"
-          }
-        ]
+        }
       },
       "relatedDataObjects": [
-        {
-          "name": "HUB_CUSTOMER",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
-        },
-        {
-          "name": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Context"
-            }
-          ]
-        },
         {
           "name": "DIM_CUSTOMER",
           "dataObjectConnection": {
@@ -125,7 +84,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "300_Presentation_Layer",
                 "description": "database name"
               },
               {
@@ -134,12 +93,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Presentation"
-            }
-          ]
+          }
         }
       ],
       "dataItemMappings": [
@@ -230,7 +184,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "STG_PROFILER_PLAN",
-    "generationDateTime": "2022-10-14T10:56:22.2513673+10:00"
+    "selectedDataObject": {
+      "name": "STG_PROFILER_PLAN",
+      "dataObjectConnection": {
+        "dataConnectionString": "Staging",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.238969+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "STG_PROFILER_PLAN",
       "mappingClassifications": [
         {
-          "id": 1,
-          "classification": "StagingArea",
-          "notes": "The mappings from source to the landing (staging) area."
+          "classification": "StagingArea"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Source"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,12 +74,7 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "StagingArea"
-          }
-        ]
+        }
       },
       "relatedDataObjects": [
         {
@@ -79,7 +84,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "150_Persistent_Staging_Area",
                 "description": "database name"
               },
               {
@@ -88,15 +93,20 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "Renewal_Plan_Code"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Renewal_Plan_Code"
+          }
+        },
         {
           "sourceDataItems": [
             {
@@ -116,16 +126,6 @@
           "targetDataItem": {
             "name": "Plan_Desc"
           }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Renewal_Plan_Code"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Renewal_Plan_Code"
-          }
         }
       ],
       "businessKeys": [
@@ -134,7 +134,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Plan_Code"
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -142,7 +143,7 @@
               }
             }
           ],
-          "surrogateKey": "Not applicable"
+          "surrogateKey": "STG_PROFILER_PLAN_SK"
         }
       ],
       "filterCriterion": "",

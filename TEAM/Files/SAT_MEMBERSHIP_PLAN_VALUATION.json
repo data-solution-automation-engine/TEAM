@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "SAT_MEMBERSHIP_PLAN_VALUATION",
-    "generationDateTime": "2022-10-14T10:56:22.9995428+10:00"
+    "selectedDataObject": {
+      "name": "SAT_MEMBERSHIP_PLAN_VALUATION",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.1715752+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "SAT_MEMBERSHIP_PLAN_VALUATION",
       "mappingClassifications": [
         {
-          "id": 5,
-          "classification": "Context",
-          "notes": "The Satellite type entities capture (historical / time-variant) context about the Business Keys in the Hub entities. A Satellite is typically sourced from a single Staging Area table."
+          "classification": "Context"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,39 +74,25 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "Context"
-          }
-        ]
+        }
       },
-      "relatedDataObjects": [
+      "dataItemMappings": [
         {
-          "name": "HUB_MEMBERSHIP_PLAN",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
+          "sourceDataItems": [
+            {
+              "name": "Date_effective"
+            }
+          ],
+          "targetDataItem": {
+            "name": "PLAN_VALUATION_DATE",
+            "dataItemClassification": [
               {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
+                "classification": "MultiActiveKey",
+                "notes": "The attribute that supports granularity shift in describing context."
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
-        }
-      ],
-      "dataItemMappings": [
+          }
+        },
         {
           "sourceDataItems": [
             {
@@ -106,16 +102,6 @@
           "targetDataItem": {
             "name": "PLAN_VALUATION_AMOUNT"
           }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Date_effective"
-            }
-          ],
-          "targetDataItem": {
-            "name": "PLAN_VALUATION_DATE"
-          }
         }
       ],
       "businessKeys": [
@@ -124,7 +110,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Plan_Code"
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

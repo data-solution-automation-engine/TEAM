@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "LNK_CUSTOMER_COSTING",
-    "generationDateTime": "2022-10-14T10:56:23.2614414+10:00"
+    "selectedDataObject": {
+      "name": "LNK_CUSTOMER_COSTING",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.0417831+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "LNK_CUSTOMER_COSTING",
       "mappingClassifications": [
         {
-          "id": 4,
-          "classification": "NaturalBusinessRelationship",
-          "notes": "The Link type entities record the relationships between the Business Entities (Hubs). Similar to Hubs they are subject to potentially being populated from multiple Staging Area tables. The Link views therefore present an integrated view of all relationships across these tables."
+          "classification": "NaturalBusinessRelationship"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,91 +74,16 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "NaturalBusinessRelationship"
-          }
-        ]
-      },
-      "relatedDataObjects": [
-        {
-          "name": "HUB_MEMBERSHIP_PLAN",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
-        },
-        {
-          "name": "HUB_CUSTOMER",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
-        },
-        {
-          "name": "HUB_SEGMENT",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
         }
-      ],
+      },
       "businessKeys": [
         {
           "businessKeyComponentMapping": [
             {
               "sourceDataItems": [
                 {
-                  "name": "Plan_Code"
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -169,7 +104,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Member"
+                  "name": "Member",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -179,7 +115,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Segment+'TEST'"
+                  "name": "Segment+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -194,7 +131,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Plan_Code"
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -220,7 +158,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Member"
+                  "name": "Member",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -235,7 +174,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Segment+'TEST'"
+                  "name": "Segment+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "STG_PROFILER_CUSTOMER_PERSONAL",
-    "generationDateTime": "2022-10-14T10:56:22.1588241+10:00"
+    "selectedDataObject": {
+      "name": "STG_PROFILER_CUSTOMER_PERSONAL",
+      "dataObjectConnection": {
+        "dataConnectionString": "Staging",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.1952758+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "STG_PROFILER_CUSTOMER_PERSONAL",
       "mappingClassifications": [
         {
-          "id": 1,
-          "classification": "StagingArea",
-          "notes": "The mappings from source to the landing (staging) area."
+          "classification": "StagingArea"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Source"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,12 +74,7 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "StagingArea"
-          }
-        ]
+        }
       },
       "relatedDataObjects": [
         {
@@ -79,7 +84,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "150_Persistent_Staging_Area",
                 "description": "database name"
               },
               {
@@ -88,103 +93,18 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "dataItemMappings": [
         {
           "sourceDataItems": [
             {
-              "name": "Contact_Number"
+              "name": "Surname"
             }
           ],
           "targetDataItem": {
-            "name": "Contact_Number"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Country"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Country"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "CustomerID"
-            }
-          ],
-          "targetDataItem": {
-            "name": "CustomerID"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "DOB"
-            }
-          ],
-          "targetDataItem": {
-            "name": "DOB"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Gender"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Gender"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Given"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Given"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Postcode"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Postcode"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Referee_Offer_Made"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Referee_Offer_Made"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "State"
-            }
-          ],
-          "targetDataItem": {
-            "name": "State"
+            "name": "Surname"
           }
         },
         {
@@ -200,11 +120,91 @@
         {
           "sourceDataItems": [
             {
-              "name": "Surname"
+              "name": "State"
             }
           ],
           "targetDataItem": {
-            "name": "Surname"
+            "name": "State"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Postcode"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Postcode"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Country"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Country"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Gender"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Gender"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "DOB"
+            }
+          ],
+          "targetDataItem": {
+            "name": "DOB"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Contact_Number"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Contact_Number"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Referee_Offer_Made"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Referee_Offer_Made"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "CustomerID"
+            }
+          ],
+          "targetDataItem": {
+            "name": "CustomerID"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Given"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Given"
           }
         }
       ],
@@ -214,7 +214,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -222,7 +223,7 @@
               }
             }
           ],
-          "surrogateKey": "Not applicable"
+          "surrogateKey": "STG_PROFILER_CUSTOMER_PERSONAL_SK"
         }
       ],
       "filterCriterion": "",

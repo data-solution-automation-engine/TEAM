@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "HUB_SEGMENT",
-    "generationDateTime": "2022-10-14T10:56:23.4997455+10:00"
+    "selectedDataObject": {
+      "name": "HUB_SEGMENT",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.0351685+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "HUB_SEGMENT",
       "mappingClassifications": [
         {
-          "id": 3,
-          "classification": "CoreBusinessConcept",
-          "notes": "The source-to-target mappings for a Hub entity type. The Hub entities define the business concept and integration point for the model. In the Virtual Data Warehouse, the generated views combine the metadata from the various source to target mappings to create a single integrated Hub query."
+          "classification": "CoreBusinessConcept"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,12 +74,7 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "CoreBusinessConcept"
-          }
-        ]
+        }
       },
       "businessKeys": [
         {
@@ -77,7 +82,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Segment+'TEST'"
+                  "name": "Segment+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -95,9 +101,7 @@
       "mappingName": "HUB_SEGMENT",
       "mappingClassifications": [
         {
-          "id": 3,
-          "classification": "CoreBusinessConcept",
-          "notes": "The source-to-target mappings for a Hub entity type. The Hub entities define the business concept and integration point for the model. In the Virtual Data Warehouse, the generated views combine the metadata from the various source to target mappings to create a single integrated Hub query."
+          "classification": "CoreBusinessConcept"
         }
       ],
       "sourceDataObjects": [
@@ -117,12 +121,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -141,45 +140,16 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "CoreBusinessConcept"
-          }
-        ]
-      },
-      "relatedDataObjects": [
-        {
-          "name": "SAT_SEGMENT",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Context"
-            }
-          ]
         }
-      ],
+      },
       "businessKeys": [
         {
           "businessKeyComponentMapping": [
             {
               "sourceDataItems": [
                 {
-                  "name": "Demographic_Segment_Code+'TEST'"
+                  "name": "Demographic_Segment_Code+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

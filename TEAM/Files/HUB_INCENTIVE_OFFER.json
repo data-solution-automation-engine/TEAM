@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "HUB_INCENTIVE_OFFER",
-    "generationDateTime": "2022-10-14T10:56:23.0396514+10:00"
+    "selectedDataObject": {
+      "name": "HUB_INCENTIVE_OFFER",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.019916+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "HUB_INCENTIVE_OFFER",
       "mappingClassifications": [
         {
-          "id": 3,
-          "classification": "CoreBusinessConcept",
-          "notes": "The source-to-target mappings for a Hub entity type. The Hub entities define the business concept and integration point for the model. In the Virtual Data Warehouse, the generated views combine the metadata from the various source to target mappings to create a single integrated Hub query."
+          "classification": "CoreBusinessConcept"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,12 +74,7 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "CoreBusinessConcept"
-          }
-        ]
+        }
       },
       "businessKeys": [
         {
@@ -77,7 +82,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "OfferID"
+                  "name": "OfferID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -95,9 +101,7 @@
       "mappingName": "HUB_INCENTIVE_OFFER",
       "mappingClassifications": [
         {
-          "id": 3,
-          "classification": "CoreBusinessConcept",
-          "notes": "The source-to-target mappings for a Hub entity type. The Hub entities define the business concept and integration point for the model. In the Virtual Data Warehouse, the generated views combine the metadata from the various source to target mappings to create a single integrated Hub query."
+          "classification": "CoreBusinessConcept"
         }
       ],
       "sourceDataObjects": [
@@ -117,12 +121,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -141,45 +140,16 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "CoreBusinessConcept"
-          }
-        ]
-      },
-      "relatedDataObjects": [
-        {
-          "name": "SAT_INCENTIVE_OFFER",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Context"
-            }
-          ]
         }
-      ],
+      },
       "businessKeys": [
         {
           "businessKeyComponentMapping": [
             {
               "sourceDataItems": [
                 {
-                  "name": "OfferID"
+                  "name": "OfferID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

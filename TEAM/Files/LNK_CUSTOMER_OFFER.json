@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "LNK_CUSTOMER_OFFER",
-    "generationDateTime": "2022-10-14T10:56:22.7281241+10:00"
+    "selectedDataObject": {
+      "name": "LNK_CUSTOMER_OFFER",
+      "dataObjectConnection": {
+        "dataConnectionString": "Integration",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.0486444+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "LNK_CUSTOMER_OFFER",
       "mappingClassifications": [
         {
-          "id": 4,
-          "classification": "NaturalBusinessRelationship",
-          "notes": "The Link type entities record the relationships between the Business Entities (Hubs). Similar to Hubs they are subject to potentially being populated from multiple Staging Area tables. The Link views therefore present an integrated view of all relationships across these tables."
+          "classification": "NaturalBusinessRelationship"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "PersistentStagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,68 +74,16 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "NaturalBusinessRelationship"
-          }
-        ]
-      },
-      "relatedDataObjects": [
-        {
-          "name": "HUB_CUSTOMER",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
-        },
-        {
-          "name": "HUB_INCENTIVE_OFFER",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "VirtualDWH",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
         }
-      ],
+      },
       "businessKeys": [
         {
           "businessKeyComponentMapping": [
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -135,7 +93,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "OfferID"
+                  "name": "OfferID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -150,7 +109,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -165,7 +125,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "OfferID"
+                  "name": "OfferID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

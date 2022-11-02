@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "PSA_PROFILER_CUST_MEMBERSHIP",
-    "generationDateTime": "2022-10-14T10:56:23.5474566+10:00"
+    "selectedDataObject": {
+      "name": "PSA_PROFILER_CUST_MEMBERSHIP",
+      "dataObjectConnection": {
+        "dataConnectionString": "PSA",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.095836+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "PSA_PROFILER_CUST_MEMBERSHIP",
       "mappingClassifications": [
         {
-          "id": 2,
-          "classification": "PersistentStagingArea",
-          "notes": "The Persistent Staging Area (PSA) is the foundation of the Virtual Enterprise Data Warehouse (EDW). The ETL effectively compares and loads the delta into the PSA tables that correspond to the Staging Area counterparts. Because of this the logic is generated as 'SELECT INSERT' to load new data delta into this area."
+          "classification": "PersistentStagingArea"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "StagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,12 +74,7 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "PersistentStagingArea"
-          }
-        ]
+        }
       },
       "relatedDataObjects": [
         {
@@ -79,7 +84,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -88,12 +93,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
+          }
         },
         {
           "name": "HUB_MEMBERSHIP_PLAN",
@@ -102,7 +102,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -111,12 +111,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
+          }
         },
         {
           "name": "LNK_MEMBERSHIP",
@@ -125,7 +120,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -134,12 +129,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "NaturalBusinessRelationship"
-            }
-          ]
+          }
         },
         {
           "name": "LSAT_MEMBERSHIP",
@@ -148,7 +138,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -157,15 +147,40 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "NaturalBusinessRelationshipContext"
-            }
-          ]
+          }
         }
       ],
       "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "Start_Date"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Start_Date"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "End_Date"
+            }
+          ],
+          "targetDataItem": {
+            "name": "End_Date"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Status"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Status"
+          }
+        },
         {
           "sourceDataItems": [
             {
@@ -189,41 +204,11 @@
         {
           "sourceDataItems": [
             {
-              "name": "End_Date"
-            }
-          ],
-          "targetDataItem": {
-            "name": "End_Date"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
               "name": "Plan_Code"
             }
           ],
           "targetDataItem": {
             "name": "Plan_Code"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Start_Date"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Start_Date"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Status"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Status"
           }
         }
       ],
@@ -233,7 +218,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -243,7 +229,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "Plan_Code"
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -251,7 +238,7 @@
               }
             }
           ],
-          "surrogateKey": "Not applicable"
+          "surrogateKey": "PSA_PROFILER_CUST_MEMBERSHIP_SK"
         }
       ],
       "filterCriterion": "",

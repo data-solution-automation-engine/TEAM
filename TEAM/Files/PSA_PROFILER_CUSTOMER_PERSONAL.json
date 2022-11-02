@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "PSA_PROFILER_CUSTOMER_PERSONAL",
-    "generationDateTime": "2022-10-14T10:56:23.5803293+10:00"
+    "selectedDataObject": {
+      "name": "PSA_PROFILER_CUSTOMER_PERSONAL",
+      "dataObjectConnection": {
+        "dataConnectionString": "PSA",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.0898391+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "PSA_PROFILER_CUSTOMER_PERSONAL",
       "mappingClassifications": [
         {
-          "id": 2,
-          "classification": "PersistentStagingArea",
-          "notes": "The Persistent Staging Area (PSA) is the foundation of the Virtual Enterprise Data Warehouse (EDW). The ETL effectively compares and loads the delta into the PSA tables that correspond to the Staging Area counterparts. Because of this the logic is generated as 'SELECT INSERT' to load new data delta into this area."
+          "classification": "PersistentStagingArea"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "StagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,12 +74,7 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "PersistentStagingArea"
-          }
-        ]
+        }
       },
       "relatedDataObjects": [
         {
@@ -79,7 +84,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -88,12 +93,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
+          }
         },
         {
           "name": "SAT_CUSTOMER",
@@ -102,7 +102,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -111,12 +111,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Context"
-            }
-          ]
+          }
         },
         {
           "name": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
@@ -125,7 +120,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -134,103 +129,18 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Context"
-            }
-          ]
+          }
         }
       ],
       "dataItemMappings": [
         {
           "sourceDataItems": [
             {
-              "name": "Contact_Number"
+              "name": "Surname"
             }
           ],
           "targetDataItem": {
-            "name": "Contact_Number"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Country"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Country"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "CustomerID"
-            }
-          ],
-          "targetDataItem": {
-            "name": "CustomerID"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "DOB"
-            }
-          ],
-          "targetDataItem": {
-            "name": "DOB"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Gender"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Gender"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Given"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Given"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Postcode"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Postcode"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "Referee_Offer_Made"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Referee_Offer_Made"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "State"
-            }
-          ],
-          "targetDataItem": {
-            "name": "State"
+            "name": "Surname"
           }
         },
         {
@@ -246,11 +156,91 @@
         {
           "sourceDataItems": [
             {
-              "name": "Surname"
+              "name": "State"
             }
           ],
           "targetDataItem": {
-            "name": "Surname"
+            "name": "State"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Postcode"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Postcode"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Country"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Country"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Gender"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Gender"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "DOB"
+            }
+          ],
+          "targetDataItem": {
+            "name": "DOB"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Contact_Number"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Contact_Number"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Referee_Offer_Made"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Referee_Offer_Made"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "CustomerID"
+            }
+          ],
+          "targetDataItem": {
+            "name": "CustomerID"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Given"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Given"
           }
         }
       ],
@@ -260,7 +250,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID"
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -268,7 +259,7 @@
               }
             }
           ],
-          "surrogateKey": "Not applicable"
+          "surrogateKey": "PSA_PROFILER_CUSTOMER_PERSONAL_SK"
         }
       ],
       "filterCriterion": "",

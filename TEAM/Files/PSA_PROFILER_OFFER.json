@@ -10,17 +10,32 @@
     "sourceRowIdAttribute": "SOURCE_ROW_ID"
   },
   "generationSpecificMetadata": {
-    "selectedDataObject": "PSA_PROFILER_OFFER",
-    "generationDateTime": "2022-10-14T10:56:23.6141821+10:00"
+    "selectedDataObject": {
+      "name": "PSA_PROFILER_OFFER",
+      "dataObjectConnection": {
+        "dataConnectionString": "PSA",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.1113542+10:00"
   },
   "dataObjectMappings": [
     {
       "mappingName": "PSA_PROFILER_OFFER",
       "mappingClassifications": [
         {
-          "id": 2,
-          "classification": "PersistentStagingArea",
-          "notes": "The Persistent Staging Area (PSA) is the foundation of the Virtual Enterprise Data Warehouse (EDW). The ETL effectively compares and loads the delta into the PSA tables that correspond to the Staging Area counterparts. Because of this the logic is generated as 'SELECT INSERT' to load new data delta into this area."
+          "classification": "PersistentStagingArea"
         }
       ],
       "sourceDataObjects": [
@@ -40,12 +55,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "StagingArea"
-            }
-          ]
+          }
         }
       ],
       "targetDataObject": {
@@ -64,12 +74,7 @@
               "description": "schema name"
             }
           ]
-        },
-        "dataObjectClassifications": [
-          {
-            "classification": "PersistentStagingArea"
-          }
-        ]
+        }
       },
       "relatedDataObjects": [
         {
@@ -79,7 +84,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -88,12 +93,7 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
+          }
         },
         {
           "name": "SAT_INCENTIVE_OFFER",
@@ -102,7 +102,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -111,25 +111,10 @@
                 "description": "schema name"
               }
             ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "Context"
-            }
-          ]
+          }
         }
       ],
       "dataItemMappings": [
-        {
-          "sourceDataItems": [
-            {
-              "name": "Offer_Long_Description"
-            }
-          ],
-          "targetDataItem": {
-            "name": "Offer_Long_Description"
-          }
-        },
         {
           "sourceDataItems": [
             {
@@ -139,6 +124,16 @@
           "targetDataItem": {
             "name": "OfferID"
           }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Offer_Long_Description"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Offer_Long_Description"
+          }
         }
       ],
       "businessKeys": [
@@ -147,7 +142,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "OfferID"
+                  "name": "OfferID",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -155,7 +151,7 @@
               }
             }
           ],
-          "surrogateKey": "Not applicable"
+          "surrogateKey": "PSA_PROFILER_OFFER_SK"
         }
       ],
       "filterCriterion": "",

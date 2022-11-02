@@ -115,7 +115,6 @@
     </Compile>
     <Compile Include="JsonExportSetting.cs" />
     <Compile Include="MetadataValidations.cs" />
-    <Compile Include="TeamLoadPatternHandling.cs" />
     <Compile Include="TabPageEnvironments.cs">
       <SubType>Component</SubType>
     </Compile>
