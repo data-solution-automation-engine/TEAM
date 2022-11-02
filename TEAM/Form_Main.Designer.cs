@@ -31,29 +31,18 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.labelEnvironmentMode = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.labelWorkingEnvironment = new System.Windows.Forms.Label();
-            this.labelMetadataSave = new System.Windows.Forms.Label();
             this.labelWorkingEnvironmentType = new System.Windows.Forms.Label();
-            this.labelMetadataRepository = new System.Windows.Forms.Label();
-            this.groupBoxVersionSelection = new System.Windows.Forms.GroupBox();
-            this.labelActiveVersionDateTime = new System.Windows.Forms.Label();
-            this.labelActivatedMetadataVersionDateTime = new System.Windows.Forms.Label();
-            this.labelActiveVersion = new System.Windows.Forms.Label();
-            this.labelActivatedMetadataVersin = new System.Windows.Forms.Label();
-            this.labelDocumentationVersion = new System.Windows.Forms.Label();
-            this.labelVersion = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.patternDefinitionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.deployMetadataExamplesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +53,6 @@
             this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2.SuspendLayout();
-            this.groupBoxVersionSelection.SuspendLayout();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -72,142 +60,32 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.labelEnvironmentMode);
-            this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.labelWorkingEnvironment);
-            this.groupBox2.Controls.Add(this.labelMetadataSave);
             this.groupBox2.Controls.Add(this.labelWorkingEnvironmentType);
-            this.groupBox2.Controls.Add(this.labelMetadataRepository);
-            this.groupBox2.Location = new System.Drawing.Point(12, 577);
+            this.groupBox2.Location = new System.Drawing.Point(12, 737);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(342, 102);
+            this.groupBox2.Size = new System.Drawing.Size(252, 49);
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Environment";
             // 
-            // labelEnvironmentMode
-            // 
-            this.labelEnvironmentMode.AutoSize = true;
-            this.labelEnvironmentMode.Location = new System.Drawing.Point(193, 57);
-            this.labelEnvironmentMode.Name = "labelEnvironmentMode";
-            this.labelEnvironmentMode.Size = new System.Drawing.Size(27, 13);
-            this.labelEnvironmentMode.TabIndex = 69;
-            this.labelEnvironmentMode.Text = "N/A";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 57);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(168, 13);
-            this.label2.TabIndex = 68;
-            this.label2.Text = "The environment is configured for:";
-            // 
             // labelWorkingEnvironment
             // 
             this.labelWorkingEnvironment.AutoSize = true;
-            this.labelWorkingEnvironment.Location = new System.Drawing.Point(193, 40);
+            this.labelWorkingEnvironment.Location = new System.Drawing.Point(141, 21);
             this.labelWorkingEnvironment.Name = "labelWorkingEnvironment";
             this.labelWorkingEnvironment.Size = new System.Drawing.Size(27, 13);
             this.labelWorkingEnvironment.TabIndex = 67;
             this.labelWorkingEnvironment.Text = "N/A";
             // 
-            // labelMetadataSave
-            // 
-            this.labelMetadataSave.AutoSize = true;
-            this.labelMetadataSave.Location = new System.Drawing.Point(193, 23);
-            this.labelMetadataSave.Name = "labelMetadataSave";
-            this.labelMetadataSave.Size = new System.Drawing.Size(27, 13);
-            this.labelMetadataSave.TabIndex = 66;
-            this.labelMetadataSave.Text = "N/A";
-            // 
             // labelWorkingEnvironmentType
             // 
             this.labelWorkingEnvironmentType.AutoSize = true;
-            this.labelWorkingEnvironmentType.Location = new System.Drawing.Point(6, 40);
+            this.labelWorkingEnvironmentType.Location = new System.Drawing.Point(6, 21);
             this.labelWorkingEnvironmentType.Name = "labelWorkingEnvironmentType";
             this.labelWorkingEnvironmentType.Size = new System.Drawing.Size(140, 13);
             this.labelWorkingEnvironmentType.TabIndex = 65;
             this.labelWorkingEnvironmentType.Text = "The working environment is:";
-            // 
-            // labelMetadataRepository
-            // 
-            this.labelMetadataRepository.AutoSize = true;
-            this.labelMetadataRepository.Location = new System.Drawing.Point(6, 23);
-            this.labelMetadataRepository.Name = "labelMetadataRepository";
-            this.labelMetadataRepository.Size = new System.Drawing.Size(114, 13);
-            this.labelMetadataRepository.TabIndex = 64;
-            this.labelMetadataRepository.Text = "Metadata is saved as :";
-            // 
-            // groupBoxVersionSelection
-            // 
-            this.groupBoxVersionSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBoxVersionSelection.Controls.Add(this.labelActiveVersionDateTime);
-            this.groupBoxVersionSelection.Controls.Add(this.labelActivatedMetadataVersionDateTime);
-            this.groupBoxVersionSelection.Controls.Add(this.labelActiveVersion);
-            this.groupBoxVersionSelection.Controls.Add(this.labelActivatedMetadataVersin);
-            this.groupBoxVersionSelection.Controls.Add(this.labelDocumentationVersion);
-            this.groupBoxVersionSelection.Controls.Add(this.labelVersion);
-            this.groupBoxVersionSelection.Location = new System.Drawing.Point(12, 685);
-            this.groupBoxVersionSelection.Name = "groupBoxVersionSelection";
-            this.groupBoxVersionSelection.Size = new System.Drawing.Size(342, 99);
-            this.groupBoxVersionSelection.TabIndex = 20;
-            this.groupBoxVersionSelection.TabStop = false;
-            this.groupBoxVersionSelection.Text = "Version";
-            // 
-            // labelActiveVersionDateTime
-            // 
-            this.labelActiveVersionDateTime.AutoSize = true;
-            this.labelActiveVersionDateTime.Location = new System.Drawing.Point(192, 59);
-            this.labelActiveVersionDateTime.Name = "labelActiveVersionDateTime";
-            this.labelActiveVersionDateTime.Size = new System.Drawing.Size(27, 13);
-            this.labelActiveVersionDateTime.TabIndex = 23;
-            this.labelActiveVersionDateTime.Text = "N/A";
-            // 
-            // labelActivatedMetadataVersionDateTime
-            // 
-            this.labelActivatedMetadataVersionDateTime.AutoSize = true;
-            this.labelActivatedMetadataVersionDateTime.Location = new System.Drawing.Point(6, 59);
-            this.labelActivatedMetadataVersionDateTime.Name = "labelActivatedMetadataVersionDateTime";
-            this.labelActivatedMetadataVersionDateTime.Size = new System.Drawing.Size(105, 13);
-            this.labelActivatedMetadataVersionDateTime.TabIndex = 22;
-            this.labelActivatedMetadataVersionDateTime.Text = "Activation date/time:";
-            // 
-            // labelActiveVersion
-            // 
-            this.labelActiveVersion.AutoSize = true;
-            this.labelActiveVersion.Location = new System.Drawing.Point(192, 42);
-            this.labelActiveVersion.Name = "labelActiveVersion";
-            this.labelActiveVersion.Size = new System.Drawing.Size(27, 13);
-            this.labelActiveVersion.TabIndex = 21;
-            this.labelActiveVersion.Text = "N/A";
-            // 
-            // labelActivatedMetadataVersin
-            // 
-            this.labelActivatedMetadataVersin.AutoSize = true;
-            this.labelActivatedMetadataVersin.Location = new System.Drawing.Point(6, 42);
-            this.labelActivatedMetadataVersin.Name = "labelActivatedMetadataVersin";
-            this.labelActivatedMetadataVersin.Size = new System.Drawing.Size(139, 13);
-            this.labelActivatedMetadataVersin.TabIndex = 20;
-            this.labelActivatedMetadataVersin.Text = "Activated metadata version:";
-            // 
-            // labelDocumentationVersion
-            // 
-            this.labelDocumentationVersion.AutoSize = true;
-            this.labelDocumentationVersion.Location = new System.Drawing.Point(6, 25);
-            this.labelDocumentationVersion.Name = "labelDocumentationVersion";
-            this.labelDocumentationVersion.Size = new System.Drawing.Size(150, 13);
-            this.labelDocumentationVersion.TabIndex = 19;
-            this.labelDocumentationVersion.Text = "Most recent metadata version:";
-            // 
-            // labelVersion
-            // 
-            this.labelVersion.AutoSize = true;
-            this.labelVersion.Location = new System.Drawing.Point(192, 25);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(27, 13);
-            this.labelVersion.TabIndex = 18;
-            this.labelVersion.Text = "N/A";
             // 
             // richTextBoxInformation
             // 
@@ -239,28 +117,34 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openOutputDirectoryToolStripMenuItem,
+            this.openMetadataDirectoryToolStripMenuItem,
+            this.toolStripSeparator3,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
-            // openOutputDirectoryToolStripMenuItem
+            // openMetadataDirectoryToolStripMenuItem
             // 
-            this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
-            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output Directory";
-            this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
+            this.openMetadataDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.openMetadataDirectoryToolStripMenuItem.Text = "&Open Metadata Directory";
+            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(247, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
-            this.exitToolStripMenuItem.Text = "Exit Application";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.exitToolStripMenuItem.Text = "E&xit Application";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // metadataToolStripMenuItem
@@ -268,8 +152,8 @@
             this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMetadataFormToolStripMenuItem});
             this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
-            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(120, 20);
-            this.metadataToolStripMenuItem.Text = "&Metadata Mapping";
+            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
+            this.metadataToolStripMenuItem.Text = "Design &Metadata";
             // 
             // openMetadataFormToolStripMenuItem
             // 
@@ -284,7 +168,6 @@
             // 
             this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generalSettingsToolStripMenuItem,
-            this.patternDefinitionsToolStripMenuItem,
             this.toolStripSeparator2,
             this.deployMetadataExamplesToolStripMenuItem});
             this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
@@ -296,31 +179,22 @@
             this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
             this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
             this.generalSettingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.generalSettingsToolStripMenuItem.Text = "General &Settings";
+            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.generalSettingsToolStripMenuItem.Text = "&Settings";
             this.generalSettingsToolStripMenuItem.Click += new System.EventHandler(this.generalSettingsToolStripMenuItem_Click);
-            // 
-            // patternDefinitionsToolStripMenuItem
-            // 
-            this.patternDefinitionsToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
-            this.patternDefinitionsToolStripMenuItem.Name = "patternDefinitionsToolStripMenuItem";
-            this.patternDefinitionsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.patternDefinitionsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.patternDefinitionsToolStripMenuItem.Text = "Pattern Definitions";
-            this.patternDefinitionsToolStripMenuItem.Click += new System.EventHandler(this.patternDefinitionsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(210, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(203, 6);
             // 
             // deployMetadataExamplesToolStripMenuItem
             // 
             this.deployMetadataExamplesToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
             this.deployMetadataExamplesToolStripMenuItem.Name = "deployMetadataExamplesToolStripMenuItem";
-            this.deployMetadataExamplesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.deployMetadataExamplesToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.deployMetadataExamplesToolStripMenuItem.Text = "Deploy Examples";
+            this.deployMetadataExamplesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.deployMetadataExamplesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.deployMetadataExamplesToolStripMenuItem.Text = "&Deploy Examples";
             this.deployMetadataExamplesToolStripMenuItem.Click += new System.EventHandler(this.deployMetadataExamplesToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -338,30 +212,32 @@
             // 
             this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
             this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
-            this.helpToolStripMenuItem1.Text = "Help";
-            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem1_Click);
+            this.helpToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(207, 22);
+            this.helpToolStripMenuItem1.Text = "&Help";
+            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // displayEventLogToolStripMenuItem
             // 
             this.displayEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.log_file;
             this.displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
-            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.displayEventLogToolStripMenuItem.Text = "Display Event Log";
+            this.displayEventLogToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.displayEventLogToolStripMenuItem.Text = "Display &Event Log";
             this.displayEventLogToolStripMenuItem.Click += new System.EventHandler(this.displayEventLogToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(164, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(204, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Image = global::TEAM.Properties.Resources.RavosLogo;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.ToolTipText = "Information about Virtual Enterprise Data Warehouse";
+            this.aboutToolStripMenuItem.ToolTipText = "Information about TEAM";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // backgroundWorkerEventLog
@@ -391,7 +267,6 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1148, 797);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBoxVersionSelection);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBoxInformation);
             this.Controls.Add(this.menuStripMainMenu);
@@ -400,13 +275,10 @@
             this.MinimumSize = new System.Drawing.Size(1164, 835);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TEAM - Taxonomy for ETL Automation Metadata ";
-            this.Activated += new System.EventHandler(this.FormMain_Activated);
+            this.Text = "Taxonomy for ETL Automation Metadata ";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBoxVersionSelection.ResumeLayout(false);
-            this.groupBoxVersionSelection.PerformLayout();
             this.menuStripMainMenu.ResumeLayout(false);
             this.menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -418,7 +290,6 @@
         #endregion
         private System.Windows.Forms.MenuStrip menuStripMainMenu;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem metadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openMetadataFormToolStripMenuItem;
@@ -427,28 +298,18 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
-        private System.Windows.Forms.GroupBox groupBoxVersionSelection;
-        private System.Windows.Forms.Label labelDocumentationVersion;
-        private System.Windows.Forms.Label labelVersion;
         internal System.Windows.Forms.RichTextBox richTextBoxInformation;
-        private System.Windows.Forms.Label labelActiveVersion;
-        private System.Windows.Forms.Label labelActivatedMetadataVersin;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label labelMetadataRepository;
         private System.Windows.Forms.Label labelWorkingEnvironmentType;
-        private System.Windows.Forms.ToolStripMenuItem patternDefinitionsToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker backgroundWorkerEventLog;
-        private System.Windows.Forms.Label labelActiveVersionDateTime;
-        private System.Windows.Forms.Label labelActivatedMetadataVersionDateTime;
         private System.Windows.Forms.Label labelWorkingEnvironment;
-        private System.Windows.Forms.Label labelMetadataSave;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem displayEventLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem deployMetadataExamplesToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.Label labelEnvironmentMode;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ToolStripMenuItem openMetadataDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        internal System.Windows.Forms.ToolStripMenuItem deployMetadataExamplesToolStripMenuItem;
     }
 }
 

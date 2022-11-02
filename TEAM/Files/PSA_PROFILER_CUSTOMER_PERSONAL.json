@@ -1,0 +1,269 @@
+{
+  "metadataConfiguration": {
+    "changeDataCaptureAttribute": "CDC_OPERATION",
+    "recordSourceAttribute": "RECORD_SOURCE",
+    "loadDateTimeAttribute": "LOAD_DATETIME",
+    "expiryDateTimeAttribute": "LOAD_END_DATETIME",
+    "eventDateTimeAttribute": "EVENT_DATETIME",
+    "recordChecksumAttribute": "HASH_FULL_RECORD",
+    "etlProcessAttribute": "MODULE_INSTANCE_ID",
+    "sourceRowIdAttribute": "SOURCE_ROW_ID"
+  },
+  "generationSpecificMetadata": {
+    "selectedDataObject": {
+      "name": "PSA_PROFILER_CUSTOMER_PERSONAL",
+      "dataObjectConnection": {
+        "dataConnectionString": "PSA",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.0898391+10:00"
+  },
+  "dataObjectMappings": [
+    {
+      "mappingName": "PSA_PROFILER_CUSTOMER_PERSONAL",
+      "mappingClassifications": [
+        {
+          "classification": "PersistentStagingArea"
+        }
+      ],
+      "sourceDataObjects": [
+        {
+          "name": "STG_PROFILER_CUSTOMER_PERSONAL",
+          "dataObjectConnection": {
+            "dataConnectionString": "Staging",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        }
+      ],
+      "targetDataObject": {
+        "name": "PSA_PROFILER_CUSTOMER_PERSONAL",
+        "dataObjectConnection": {
+          "dataConnectionString": "PSA",
+          "extensions": [
+            {
+              "key": "database",
+              "value": "VirtualDWH",
+              "description": "database name"
+            },
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
+          ]
+        }
+      },
+      "relatedDataObjects": [
+        {
+          "name": "HUB_CUSTOMER",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "SAT_CUSTOMER",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        }
+      ],
+      "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "Surname"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Surname"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Suburb"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Suburb"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "State"
+            }
+          ],
+          "targetDataItem": {
+            "name": "State"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Postcode"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Postcode"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Country"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Country"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Gender"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Gender"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "DOB"
+            }
+          ],
+          "targetDataItem": {
+            "name": "DOB"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Contact_Number"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Contact_Number"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Referee_Offer_Made"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Referee_Offer_Made"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "CustomerID"
+            }
+          ],
+          "targetDataItem": {
+            "name": "CustomerID"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Given"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Given"
+          }
+        }
+      ],
+      "businessKeys": [
+        {
+          "businessKeyComponentMapping": [
+            {
+              "sourceDataItems": [
+                {
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "CustomerID"
+              }
+            }
+          ],
+          "surrogateKey": "PSA_PROFILER_CUSTOMER_PERSONAL_SK"
+        }
+      ],
+      "filterCriterion": "",
+      "enabled": true
+    }
+  ]
+}

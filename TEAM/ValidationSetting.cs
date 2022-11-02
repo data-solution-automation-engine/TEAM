@@ -26,7 +26,7 @@ namespace TEAM
 
         public string LinkCompletion { get; set; }
         
-        // Modelling
+        // Data Vault Modelling.
         public string BasicDataVaultValidation { get; set; }
 
         /// <summary>
@@ -95,10 +95,7 @@ namespace TEAM
                 validationFile.AppendLine("/* End of file */");
 
                 using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath +
-                                     FormBase.GlobalParameters.ValidationFileName + '_' +
-                                     FormBase.GlobalParameters.WorkingEnvironment +
-                                     FormBase.GlobalParameters.FileExtension))
+                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();
@@ -144,11 +141,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file was created for {fileName}."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file was created for {fileName}."));
             }
             else
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {fileName} was detected."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {fileName} was detected."));
             }
         }
     }

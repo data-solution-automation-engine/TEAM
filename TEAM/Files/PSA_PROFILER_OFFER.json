@@ -1,0 +1,161 @@
+{
+  "metadataConfiguration": {
+    "changeDataCaptureAttribute": "CDC_OPERATION",
+    "recordSourceAttribute": "RECORD_SOURCE",
+    "loadDateTimeAttribute": "LOAD_DATETIME",
+    "expiryDateTimeAttribute": "LOAD_END_DATETIME",
+    "eventDateTimeAttribute": "EVENT_DATETIME",
+    "recordChecksumAttribute": "HASH_FULL_RECORD",
+    "etlProcessAttribute": "MODULE_INSTANCE_ID",
+    "sourceRowIdAttribute": "SOURCE_ROW_ID"
+  },
+  "generationSpecificMetadata": {
+    "selectedDataObject": {
+      "name": "PSA_PROFILER_OFFER",
+      "dataObjectConnection": {
+        "dataConnectionString": "PSA",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.1113542+10:00"
+  },
+  "dataObjectMappings": [
+    {
+      "mappingName": "PSA_PROFILER_OFFER",
+      "mappingClassifications": [
+        {
+          "classification": "PersistentStagingArea"
+        }
+      ],
+      "sourceDataObjects": [
+        {
+          "name": "STG_PROFILER_OFFER",
+          "dataObjectConnection": {
+            "dataConnectionString": "Staging",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "VirtualDWH",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        }
+      ],
+      "targetDataObject": {
+        "name": "PSA_PROFILER_OFFER",
+        "dataObjectConnection": {
+          "dataConnectionString": "PSA",
+          "extensions": [
+            {
+              "key": "database",
+              "value": "VirtualDWH",
+              "description": "database name"
+            },
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
+          ]
+        }
+      },
+      "relatedDataObjects": [
+        {
+          "name": "HUB_INCENTIVE_OFFER",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "SAT_INCENTIVE_OFFER",
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        }
+      ],
+      "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "OfferID"
+            }
+          ],
+          "targetDataItem": {
+            "name": "OfferID"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Offer_Long_Description"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Offer_Long_Description"
+          }
+        }
+      ],
+      "businessKeys": [
+        {
+          "businessKeyComponentMapping": [
+            {
+              "sourceDataItems": [
+                {
+                  "name": "OfferID",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "OfferID"
+              }
+            }
+          ],
+          "surrogateKey": "PSA_PROFILER_OFFER_SK"
+        }
+      ],
+      "filterCriterion": "",
+      "enabled": true
+    }
+  ]
+}

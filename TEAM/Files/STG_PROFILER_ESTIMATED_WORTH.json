@@ -1,0 +1,164 @@
+{
+  "metadataConfiguration": {
+    "changeDataCaptureAttribute": "CDC_OPERATION",
+    "recordSourceAttribute": "RECORD_SOURCE",
+    "loadDateTimeAttribute": "LOAD_DATETIME",
+    "expiryDateTimeAttribute": "LOAD_END_DATETIME",
+    "eventDateTimeAttribute": "EVENT_DATETIME",
+    "recordChecksumAttribute": "HASH_FULL_RECORD",
+    "etlProcessAttribute": "MODULE_INSTANCE_ID",
+    "sourceRowIdAttribute": "SOURCE_ROW_ID"
+  },
+  "generationSpecificMetadata": {
+    "selectedDataObject": {
+      "name": "STG_PROFILER_ESTIMATED_WORTH",
+      "dataObjectConnection": {
+        "dataConnectionString": "Staging",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "VirtualDWH",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      }
+    },
+    "generationDateTime": "2022-11-02T11:23:08.2123987+10:00"
+  },
+  "dataObjectMappings": [
+    {
+      "mappingName": "STG_PROFILER_ESTIMATED_WORTH",
+      "mappingClassifications": [
+        {
+          "classification": "StagingArea"
+        }
+      ],
+      "sourceDataObjects": [
+        {
+          "name": "ESTIMATED_WORTH",
+          "dataObjectConnection": {
+            "dataConnectionString": "Source",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "000_Source",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        }
+      ],
+      "targetDataObject": {
+        "name": "STG_PROFILER_ESTIMATED_WORTH",
+        "dataObjectConnection": {
+          "dataConnectionString": "Staging",
+          "extensions": [
+            {
+              "key": "database",
+              "value": "VirtualDWH",
+              "description": "database name"
+            },
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
+          ]
+        }
+      },
+      "relatedDataObjects": [
+        {
+          "name": "PSA_PROFILER_ESTIMATED_WORTH",
+          "dataObjectConnection": {
+            "dataConnectionString": "PSA",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "150_Persistent_Staging_Area",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          }
+        }
+      ],
+      "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "Value_Amount"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Value_Amount"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Plan_Code"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Plan_Code"
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "Date_effective"
+            }
+          ],
+          "targetDataItem": {
+            "name": "Date_effective"
+          }
+        }
+      ],
+      "businessKeys": [
+        {
+          "businessKeyComponentMapping": [
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Plan_Code",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "Plan_Code"
+              }
+            },
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Date_effective",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "Date_effective"
+              }
+            }
+          ],
+          "surrogateKey": "STG_PROFILER_ESTIMATED_WORTH_SK"
+        }
+      ],
+      "filterCriterion": "",
+      "enabled": true
+    }
+  ]
+}

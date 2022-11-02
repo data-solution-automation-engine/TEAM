@@ -34,7 +34,7 @@
     <PublisherName>Roelant Vos</PublisherName>
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.6.1.%2a</ApplicationVersion>
+    <ApplicationVersion>1.6.5.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -93,10 +93,6 @@
     <StartupObject>TEAM.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DataWarehouseAutomation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\DataWarehouseAutomation.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -108,30 +104,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form_PIT.cs">
+    <Compile Include="DataGridViewDataObjects.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Form_Edit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form_PIT.Designer.cs">
-      <DependentUpon>Form_PIT.cs</DependentUpon>
+    <Compile Include="Form_Edit.Designer.cs">
+      <DependentUpon>Form_Edit.cs</DependentUpon>
     </Compile>
     <Compile Include="JsonExportSetting.cs" />
-    <Compile Include="TeamLoadPatternHandling.cs" />
-    <Compile Include="TeamUtility.cs" />
-    <Compile Include="TeamObjectModel.cs" />
-    <Compile Include="CustomTabPageEnvironment.cs">
+    <Compile Include="TabPageEnvironments.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CustomTabPageConnection.cs">
+    <Compile Include="TabPageConnections.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CustomDataGridViewAttribute.cs">
+    <Compile Include="DataGridViewDataItems.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TeamJsonHandling.cs" />
-    <Compile Include="CustomDataGridViewPhysicalModel.cs">
+    <Compile Include="DataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CustomTimedTextBox.cs">
+    <Compile Include="ThreadHelper.cs" />
+    <Compile Include="TimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="LocalTeamEnvironmentConfiguration.cs" />
@@ -152,12 +149,6 @@
     </Compile>
     <Compile Include="Form_Alert.Designer.cs">
       <DependentUpon>Form_Alert.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Manage_Pattern_Definitions.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Manage_Pattern_Definitions.Designer.cs">
-      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_Manage_Configuration.cs">
       <SubType>Form</SubType>
@@ -199,9 +190,6 @@
     <Compile Include="JsonOutputHandling.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CustomDataGridViewTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -210,33 +198,38 @@
     <Compile Include="ValidationSetting.cs" />
     <EmbeddedResource Include="Form_About.resx">
       <DependentUpon>Form_About.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Edit.resx">
+      <DependentUpon>Form_Edit.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Alert.resx">
       <DependentUpon>Form_Alert.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Base.resx">
       <DependentUpon>Form_Base.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Manage_Pattern_Definitions.resx">
-      <DependentUpon>Form_Manage_Pattern_Definitions.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Configuration.resx">
       <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Main.resx">
       <DependentUpon>Form_Main.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Manage_Metadata.resx">
       <DependentUpon>Form_Manage_Metadata.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_PIT.resx">
-      <DependentUpon>Form_PIT.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Repository.resx">
       <DependentUpon>Form_Repository.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Json_Configuration.resx">
       <DependentUpon>Form_Json_Configuration.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Validation.resx">
       <DependentUpon>Form_Validation.cs</DependentUpon>
@@ -251,26 +244,122 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Content Include="Files\sample_TEAM_Attribute_Mapping_v0.json">
+    <Content Include="Files\sample_TEAM_Attribute_Mapping.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\sample_TEAM_Model_Metadata_v0.json">
+    <Content Include="Files\sample_TEAM_Model_Metadata.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Core\TEAM_environments.json" />
-    <None Include="Libraries\DataWarehouseAutomation.dll">
+    <Content Include="Files\DIM_CUSTOMER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="Files\HUB_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\HUB_INCENTIVE_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\HUB_MEMBERSHIP_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\HUB_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_CUSTOMER_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LNK_RENEWAL_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LSAT_CUSTOMER_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LSAT_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\LSAT_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_CUSTOMER_PERSONAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_CUST_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_ESTIMATED_WORTH.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_PERSONALISED_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_USERMANAGED_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_CUSTOMER_ADDITIONAL_DETAILS.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_INCENTIVE_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_MEMBERSHIP_PLAN_DETAIL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_MEMBERSHIP_PLAN_VALUATION.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\SAT_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_CUSTOMER_PERSONAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_CUST_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_ESTIMATED_WORTH.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_PERSONALISED_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\STG_PROFILER_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Libraries\Microsoft.Data.SqlClient.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x64.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x86.dll" />
-    <Content Include="LoadPatterns\loadPatternDefinition.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\sample_TEAM_Table_Mapping_v0.json">
+    <Content Include="Files\sample_TEAM_Table_Mapping.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\app.manifest" />
+    <Content Include="Schema\interfaceDataWarehouseAutomationMetadata.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -295,9 +384,6 @@
   <ItemGroup>
     <None Include="Resources\log-file.png" />
     <Content Include="Resources\Ravos-logo-small.ico" />
-    <Content Include="Scripts\generateRepository.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\generateSampleIntegrationSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -342,16 +428,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <PublishFile Include="Microsoft.SqlServer.Diagnostics.STrace">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
     <PublishFile Include="Microsoft.SqlServer.SqlClrProvider">
       <Visible>False</Visible>
       <Group>
@@ -390,6 +466,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DataWarehouseAutomation">
+      <Version>1.2.3</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Data.SqlClient">
       <Version>2.1.0</Version>
     </PackageReference>

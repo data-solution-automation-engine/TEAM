@@ -17,7 +17,7 @@ namespace TEAM
             // Make sure the validation information is available in this form.
             try
             {
-                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
@@ -171,7 +171,7 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+            var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
 
             try
             {
@@ -257,18 +257,6 @@ namespace TEAM
             try
             {
                 Process.Start(GlobalParameters.ConfigurationPath);
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
-            }
-        }
-
-        private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(GlobalParameters.OutputPath);
             }
             catch (Exception ex)
             {

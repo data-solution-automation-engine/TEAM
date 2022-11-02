@@ -1,13 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Windows.Forms;
-using Microsoft.Data.SqlClient;
 using System.Threading;
 using System.Drawing;
-using System.Data;
-using System.Globalization;
 using System.IO;
 using TEAM_Library;
 
@@ -25,12 +21,10 @@ namespace TEAM
 
             // Set the version of the build for everything
             const string versionNumberForTeamApplication = "v1.6.5";
-            Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}.";
+            Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}";
 
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
-            GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
-
-            richTextBoxInformation.AppendText("Initialising the application.\r\n\r\n");
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
 
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
@@ -40,89 +34,88 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{exception.Message}"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered while creating the standard TEAM paths: \r\n\r\n{exception.Message}"));
             }
 
             #region Load the root path configuration settings (user defined paths and working environment)
 
-            // Load the root file, to be able to locate the (customisable) configuration file.
+            // Load the root file, to be able to locate the other configuration files.
             // This file contains the configuration directory, the output directory and the working environment.
             string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
-            try
-            {
-                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.OutputPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The core configuration file {rootPathFileName} has been loaded."));
-            }
-            catch
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
-            }
 
-            // Environments file
-            string environmentFile = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
             try
             {
-                TeamEnvironmentCollection.LoadTeamEnvironmentCollection(environmentFile);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                    $"The environment file {environmentFile} has been loaded."));
+                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.CorePath);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
+                labelWorkingEnvironment.Text = GlobalParameters.ActiveEnvironmentKey;
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                    $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
             }
 
             #endregion
 
-            #region Check if user configured paths exists (now that they have been loaded from the root file), and create dummy Configuration and Validation files if necessary
-            // Configuration Path
+            #region Environment file
+
+            // Environments file
+            string environmentFile = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
+
             try
             {
-                FileHandling.InitialisePath(GlobalParameters.ConfigurationPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined configuration path {GlobalParameters.ConfigurationPath} is available."));
+                TeamEnvironmentCollection.LoadTeamEnvironmentCollection(environmentFile);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment file {environmentFile} has been loaded."));
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
             }
 
-            // Output Path
-            try
-            {
-                FileHandling.InitialisePath(GlobalParameters.OutputPath);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user defined output path {GlobalParameters.OutputPath} is available."));
-            }
-            catch
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-            }
+            // Set the paths of the active environment
+            var activeEnvironment = TeamEnvironmentCollection.GetEnvironmentById(GlobalParameters.ActiveEnvironmentInternalId);
+            GlobalParameters.ActiveEnvironmentKey = activeEnvironment.environmentKey;
+            GlobalParameters.ConfigurationPath = activeEnvironment.configurationPath;
+            GlobalParameters.MetadataPath = activeEnvironment.metadataPath;
+
+            #endregion
+
+            #region Check if user configured paths exists (now that they have been loaded from the root file)
+
+            // Configuration Path
+            FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+            // Metadata Path
+            FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
+
+            #endregion
+
+            #region Team configuration file
 
             // Create a dummy configuration file if it does not exist.
-            var configurationFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var teamConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
 
             try
             {
-                if (!File.Exists(configurationFileName))
+                if (!File.Exists(teamConfigurationFileName))
                 {
-                    TeamConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
+                    TeamConfiguration.CreateDummyTeamConfigurationFile(teamConfigurationFileName); 
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {teamConfigurationFileName} was created."));
                 }
                 else
                 {
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {configurationFileName} was detected."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {teamConfigurationFileName} was detected."));
                 }
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {configurationFileName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {teamConfigurationFileName}."));
             }
 
+            #endregion
+
+            #region Validation file
+
             // Create a default validation file if the file does not exist as expected.
-            var validationFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var validationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -131,12 +124,14 @@ namespace TEAM
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
             }
 
+            #endregion
+
+            #region JSON export configuration file
             // Create a default json configuration file if the file does not exist as expected.
-            var jsonConfigurationFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var jsonConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -145,74 +140,52 @@ namespace TEAM
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {jsonConfigurationFileName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {jsonConfigurationFileName}."));
             }
+
             #endregion
 
+            #region Connection file
+
             // Load the connections file for the respective environment.
-            var connectionFileName =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.JsonExtension}";
+            var connectionFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.JsonExtension}";
 
             TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
+            #endregion
+
             #region Load configuration file
+
             // Load the available configuration file into memory.
-            var configurationFile =
-                $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var configurationFile = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
             try
             {
                 // Load the configuration file.
                 TeamConfiguration.LoadTeamConfigurationFile(configurationFile);
-                GlobalParameters.EnvironmentMode = TeamConfiguration.EnvironmentMode;
                 // Retrieve the events into the main event log.
-                GlobalParameters.TeamEventLog.MergeEventLog(TeamConfiguration.ConfigurationSettingsEventLog);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
+                TeamEventLog.MergeEventLog(TeamConfiguration.ConfigurationSettingsEventLog);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The user configuration settings ({configurationFile}) have been loaded."));
 
             }
             catch
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
             }
             #endregion
 
-            //FormBase.EnvironmentVersion.GetEnvironmentVersionsFromFile(Path.GetDirectoryName(configurationFile));
+            // Notify the user of any errors that were detected.
+            var errors = TeamEventLog.ReportErrors(TeamEventLog);
 
-            TeamVersionList.LoadVersionList(GlobalParameters.CorePath+GlobalParameters.VersionFileName+GlobalParameters.JsonExtension);
-
-            // Load the pattern definition file.
-            try
+            if (errors > 0)
             {
-                GlobalParameters.PatternDefinitionList = LoadPatternDefinition.DeserializeLoadPatternDefinition(GlobalParameters.LoadPatternPath + GlobalParameters.LoadPatternDefinitionFile);
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, "The pattern definition file was loaded successfully."));
-            }
-            catch
-            {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, "An issue was encountered loading the pattern definition file."));
+                richTextBoxInformation.AppendText($"{errors} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
             }
 
-            // Report the events (including errors) back to the user
-            int errorCounter = 0;
-            foreach (Event individualEvent in GlobalParameters.TeamEventLog)
-            {
-                if (individualEvent.eventCode == (int) EventTypes.Error)
-                {
-                    errorCounter++;
-                }
-            }
-
-            if (errorCounter > 0)
-            {
-                richTextBoxInformation.AppendText($"{errorCounter} error(s) have been found at startup. Please check the Event Log in the menu.\r\n\r\n");
-            }
-
-            TestConnections();
+            openMetadataFormToolStripMenuItem.Enabled = true;
 
             //Startup information
             richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
-            richTextBoxInformation.AppendText($"Welcome to version {versionNumberForTeamApplication}.\r\n\r\n");
-
-            labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment; //+"("+GlobalParameters.WorkingEnvironmentInternalId+")";
-            labelEnvironmentMode.Text = GlobalParameters.EnvironmentMode.ToString();
+            richTextBoxInformation.AppendText($"Welcome to TEAM {versionNumberForTeamApplication}.\r\n\r\n");
         }
 
         public sealed override string Text
@@ -220,127 +193,6 @@ namespace TEAM
             get { return base.Text; }
             set { base.Text = value; }
         }
-
-        public void TestConnections()
-        {
-            if (RevalidateFlag == false)
-                return;
-            RevalidateFlag = false;
-            //MessageBox.Show("Validating Connections");
-
-            richTextBoxInformation.AppendText("Validating database connections.\r\n");
-
-            // There is no metadata object available (set)
-            if (TeamConfiguration.MetadataConnection is null)
-            {
-                DisableMenu();
-                return;
-            }
-
-            var connOmd = new SqlConnection { ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false) };
-
-            if (connOmd.ConnectionString != "Server=<>;Initial Catalog=<Metadata>;user id=sa; password=<>")
-                try
-                {
-                    connOmd.Open();
-                }
-                catch
-                {
-                    richTextBoxInformation.AppendText(
-                        "There was an issue establishing a database connection to the Metadata Repository Database. Can you verify the connection information in the 'configuration' menu option? \r\n");
-                    DisableMenu();
-                    return;
-                }
-            else
-            {
-                richTextBoxInformation.AppendText(
-                    "Metadata Repository Connection wasn't defined yet. Please set the connection information in the 'configuration' menu option? \r\n");
-                DisableMenu();
-                return;
-            }
-
-            EnableMenu();
-            richTextBoxInformation.AppendText("Database connections have been successfully validated.\r\n");
-
-            try
-            {
-
-                DisplayMaxVersion();
-                DisplayCurrentVersionFromRepository(connOmd);
-                openMetadataFormToolStripMenuItem.Enabled = true;
-
-                labelMetadataSave.Text = TeamConfiguration.MetadataRepositoryType.ToString();
-            }
-            catch
-            {
-                richTextBoxInformation.AppendText(
-                    "There was an issue while reading Metadata Database. The Database is missing tables.\r\n");
-                openMetadataFormToolStripMenuItem.Enabled = false;
-                RevalidateFlag = true;
-            }
-            finally
-            {
-                connOmd.Close();
-                connOmd.Dispose();
-            }
-        }
-
-        public void DisableMenu()
-        {
-            metadataToolStripMenuItem.Enabled = false;
-        }
-        public void EnableMenu()
-        {
-            metadataToolStripMenuItem.Enabled = true;
-        }
-
-
-
-        internal void DisplayMaxVersion()
-        {
-            var selectedVersion = TeamVersionList.GetMaxVersionForEnvironment(GlobalParameters.WorkingEnvironment);
-
-            //var versionMajorMinor = GetVersion(selectedVersion, connOmd);
-            var majorVersion = selectedVersion.Item2;
-            var minorVersion = selectedVersion.Item3;
-
-            labelVersion.Text = majorVersion + "." + minorVersion;
-        }
-
-        /// <summary>
-        /// Retrieves the currently activated version from the repository. This is set after the 'activation' process in 'Manage Metadata' has been completed successfully.
-        /// </summary>
-        /// <param name="connOmd"></param>
-        internal void DisplayCurrentVersionFromRepository(SqlConnection connOmd)
-        {
-            var sqlStatementForCurrentVersion = new StringBuilder();
-            sqlStatementForCurrentVersion.AppendLine("SELECT [VERSION_NAME], [ACTIVATION_DATETIME] FROM [MD_MODEL_METADATA]");
-
-            try
-            {
-                var versionList = Utility.GetDataTable(ref connOmd, sqlStatementForCurrentVersion.ToString());
-
-                if (versionList != null && versionList.Rows.Count > 0)
-                {
-                    foreach (DataRow versionNameRow in versionList.Rows)
-                    {
-                        var versionName = (string) versionNameRow["VERSION_NAME"];
-                        labelActiveVersion.Text = versionName;
-
-                        var versionDate = (DateTime)versionNameRow["ACTIVATION_DATETIME"];
-                        labelActiveVersionDateTime.Text = versionDate.ToString(CultureInfo.InvariantCulture);
-                    }
-                }
-
-            }
-            catch (Exception)
-            {
-                labelActiveVersion.Text = "There has been an error while attempting to display the active version.";
-            }
-        }
-
-
-
 
         private void CheckKeyword(string word, Color color, int startIndex)
         {
@@ -359,24 +211,10 @@ namespace TEAM
             }
         }
 
-        private void openOutputDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(GlobalParameters.OutputPath);
-            }
-            catch (Exception ex)
-            {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the output directory. The error message is: "+ex;
-            }
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
-
-
 
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -387,14 +225,12 @@ namespace TEAM
             t.Start();
         }
 
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var t = new Thread(ThreadProcAbout);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }
-
 
         #region From Close Delegates
         private void CloseMetadataForm(object sender, FormClosedEventArgs e)
@@ -439,59 +275,10 @@ namespace TEAM
             LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
         }
 
-        private void UpdateEnvironmentModeLabel(object sender, MyStringEventArgs e)
-        {
-            var localEnvironmentModeText = e.Value;
-
-
-            if (labelEnvironmentMode.InvokeRequired)
-            {
-                labelEnvironmentMode.BeginInvoke((MethodInvoker)delegate { labelEnvironmentMode.Text = localEnvironmentModeText; });
-            }
-            else
-            {
-                labelEnvironmentMode.Text = localEnvironmentModeText;
-            }
-        }
-
-        private void ClosePatternForm(object sender, FormClosedEventArgs e)
-        {
-            _myPatternForm = null;
-        }
         #endregion
 
         #region Form Threads
-        private FormManagePattern _myPatternForm;
-        [STAThread]
-        public void ThreadProcPattern()
-        {
-            if (_myPatternForm == null)
-            {
-                _myPatternForm = new FormManagePattern(this);
-                Application.Run(_myPatternForm);
-            }
-            else
-            {
-                if (_myPatternForm.InvokeRequired)
-                {
-                    // Thread Error
-                    _myPatternForm.Invoke((MethodInvoker)delegate { _myPatternForm.Close(); });
-                    _myPatternForm.FormClosed += ClosePatternForm;
-
-                    _myPatternForm = new FormManagePattern(this);
-                    Application.Run(_myPatternForm);
-                }
-                else
-                {
-                    // No invoke required - same thread
-                    _myPatternForm.FormClosed += ClosePatternForm;
-                    _myPatternForm = new FormManagePattern(this);
-
-                    Application.Run(_myPatternForm);
-                }
-            }
-        }
-
+        
         private FormManageConfiguration _myConfigurationForm;
         [STAThread]
         public void ThreadProcConfiguration()
@@ -500,7 +287,6 @@ namespace TEAM
             {
                 _myConfigurationForm = new FormManageConfiguration(this);
                 _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
-                _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                 Application.Run(_myConfigurationForm);
             }
             else
@@ -511,7 +297,6 @@ namespace TEAM
                     _myConfigurationForm.Invoke((MethodInvoker)delegate { _myConfigurationForm.Close(); });
                     _myConfigurationForm.FormClosed += CloseConfigurationForm;
                     _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
-                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
 
                     _myConfigurationForm = new FormManageConfiguration(this);
                     Application.Run(_myConfigurationForm);
@@ -521,7 +306,6 @@ namespace TEAM
                     // No invoke required - same thread
                     _myConfigurationForm.FormClosed += CloseConfigurationForm; 
                     _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
-                    _myConfigurationForm.OnUpdateEnvironmentMode += UpdateEnvironmentModeLabel;
                     _myConfigurationForm = new FormManageConfiguration(this);
 
                     Application.Run(_myConfigurationForm);
@@ -562,7 +346,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Cannot close the form that is open. The reported reason is: " + ex);
+                        MessageBox.Show($@"Cannot close the form that is open. The reported reason is: {ex.Message}");
                     }
                 }
             }
@@ -608,7 +392,7 @@ namespace TEAM
         {
             if (_myAboutForm == null)
             {
-                _myAboutForm = new FormAbout(this);
+                _myAboutForm = new FormAbout();
                 _myAboutForm.Show();
 
                 Application.Run();
@@ -622,7 +406,7 @@ namespace TEAM
                     _myAboutForm.Invoke((MethodInvoker)delegate { _myAboutForm.Close(); });
                     _myAboutForm.FormClosed += CloseAboutForm;
 
-                    _myAboutForm = new FormAbout(this);
+                    _myAboutForm = new FormAbout();
                     _myAboutForm.Show();
                     Application.Run();
                 }
@@ -631,7 +415,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myAboutForm.FormClosed += CloseAboutForm;
 
-                    _myAboutForm = new FormAbout(this);
+                    _myAboutForm = new FormAbout();
                     _myAboutForm.Show();
                     Application.Run();
                 }
@@ -657,31 +441,17 @@ namespace TEAM
         {
             ActiveControl = null;
         }
-
-        private void FormMain_Activated(object sender, EventArgs e)
-        {
-            TestConnections();
-        }
-
+        
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
-        }
-
-
-
-        private void patternDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var t = new Thread(ThreadProcPattern);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
         }
 
         private void backgroundWorkerEventLog_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            var localEventLog = GlobalParameters.TeamEventLog;
+            var localEventLog = TeamEventLog;
 
             // Handle multi-threading
             if (worker != null && worker.CancellationPending)
@@ -691,7 +461,6 @@ namespace TEAM
             else
             {
                 backgroundWorkerEventLog.ReportProgress(0);
-                _alertEventLog.SetTextLogging("Event Log.\r\n\r\n");
 
                 try
                 {
@@ -702,7 +471,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred displaying the event log. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($@"An issue occurred displaying the event log. The error message is: {ex.Message}", @"An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 backgroundWorkerEventLog.ReportProgress(100);
@@ -737,7 +506,7 @@ namespace TEAM
             {
                 // create a new instance of the alert form
                 _alertEventLog = new Form_Alert();
-                _alertEventLog.Text = "Event Log";
+                _alertEventLog.Text = @"Event Log";
                 _alertEventLog.ShowLogButton(false);
                 _alertEventLog.ShowCancelButton(false);
                 _alertEventLog.ShowProgressBar(false);
@@ -749,10 +518,9 @@ namespace TEAM
             }
         }
 
-        private void helpToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(ExtensionMethod.GetDefaultBrowserPath(),
-                "http://roelantvos.com/blog/team/");
+            Process.Start(Utility.GetDefaultBrowserPath(), "http://roelantvos.com/blog/team/");
         }
 
         private void deployMetadataExamplesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -760,6 +528,20 @@ namespace TEAM
             var t = new Thread(ThreadProcRepository);
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
+        }
+
+        private void openMetadataDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            {
+                try
+                {
+                    Process.Start(GlobalParameters.MetadataPath);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text = $@"An error has occurred while attempting to open the metadata directory. The error message is: {ex.Message}.";
+                }
+            }
         }
     }
 }

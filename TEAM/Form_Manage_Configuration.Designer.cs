@@ -38,18 +38,21 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openOutputDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openRootPathFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openActiveConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPagePaths = new System.Windows.Forms.TabPage();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.textBoxTeamMetadataPath = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
-            this.textBoxOutputPath = new System.Windows.Forms.TextBox();
             this.label45 = new System.Windows.Forms.Label();
-            this.OutputPathLabel = new System.Windows.Forms.Label();
             this.tabPagePrefixesSuffixex = new System.Windows.Forms.TabPage();
             this.groupBoxDataObjectIdentification = new System.Windows.Forms.GroupBox();
             this.labelPresentationLayerLabels = new System.Windows.Forms.Label();
@@ -118,17 +121,14 @@
             this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
             this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
-            this.richTextBoxMetadataConnection = new System.Windows.Forms.RichTextBox();
+            this.labelMetadataConnectionKey = new System.Windows.Forms.Label();
             this.comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
             this.richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
             this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
             this.tabPageEnvironments = new System.Windows.Forms.TabPage();
             this.tabControlEnvironments = new System.Windows.Forms.TabControl();
             this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
-            this.groupBoxEnvironmentBehaviour = new System.Windows.Forms.GroupBox();
-            this.radioButtonPhysicalMode = new System.Windows.Forms.RadioButton();
-            this.radioButtonVirtualMode = new System.Windows.Forms.RadioButton();
-            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
+            this.labelEnvironmentKey = new System.Windows.Forms.Label();
             this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
             this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
@@ -137,6 +137,8 @@
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.tabPagePrefixesSuffixex.SuspendLayout();
             this.groupBoxDataObjectIdentification.SuspendLayout();
             this.groupBoxPrefixSuffix.SuspendLayout();
@@ -151,7 +153,6 @@
             this.tabPageEnvironments.SuspendLayout();
             this.tabControlEnvironments.SuspendLayout();
             this.tabPageEnvironmentMain.SuspendLayout();
-            this.groupBoxEnvironmentBehaviour.SuspendLayout();
             this.tabControlDefaultDetails.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -186,7 +187,8 @@
             this.toolStripMenuItem2,
             this.toolStripSeparator2,
             this.openConfigurationDirectoryToolStripMenuItem,
-            this.openOutputDirectoryToolStripMenuItem,
+            this.openMetadataDirectoryToolStripMenuItem,
+            this.toolStripSeparator3,
             this.openRootPathFileToolStripMenuItem,
             this.openActiveConfigurationFileToolStripMenuItem,
             this.toolStripSeparator1,
@@ -227,14 +229,18 @@
             this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
             this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
             // 
-            // openOutputDirectoryToolStripMenuItem
+            // openMetadataDirectoryToolStripMenuItem
             // 
-            this.openOutputDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openOutputDirectoryToolStripMenuItem.Name = "openOutputDirectoryToolStripMenuItem";
-            this.openOutputDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.openOutputDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openOutputDirectoryToolStripMenuItem.Text = "Open Output &Directory";
-            this.openOutputDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openOutputDirectoryToolStripMenuItem_Click);
+            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
+            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
+            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(268, 6);
             // 
             // openRootPathFileToolStripMenuItem
             // 
@@ -278,11 +284,13 @@
             // 
             // tabPagePaths
             // 
+            this.tabPagePaths.Controls.Add(this.pictureBox4);
+            this.tabPagePaths.Controls.Add(this.textBoxTeamMetadataPath);
+            this.tabPagePaths.Controls.Add(this.label2);
+            this.tabPagePaths.Controls.Add(this.pictureBox3);
             this.tabPagePaths.Controls.Add(this.label1);
             this.tabPagePaths.Controls.Add(this.textBoxConfigurationPath);
-            this.tabPagePaths.Controls.Add(this.textBoxOutputPath);
             this.tabPagePaths.Controls.Add(this.label45);
-            this.tabPagePaths.Controls.Add(this.OutputPathLabel);
             this.tabPagePaths.Location = new System.Drawing.Point(4, 22);
             this.tabPagePaths.Name = "tabPagePaths";
             this.tabPagePaths.Size = new System.Drawing.Size(1120, 621);
@@ -290,10 +298,53 @@
             this.tabPagePaths.Text = "Paths";
             this.tabPagePaths.UseVisualStyleBackColor = true;
             // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.pictureBox4.Location = new System.Drawing.Point(1094, 56);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(19, 20);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox4.TabIndex = 100;
+            this.pictureBox4.TabStop = false;
+            this.pictureBox4.Click += new System.EventHandler(this.pictureBoxMetadataPath_Click);
+            // 
+            // textBoxTeamMetadataPath
+            // 
+            this.textBoxTeamMetadataPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.textBoxTeamMetadataPath.Location = new System.Drawing.Point(110, 56);
+            this.textBoxTeamMetadataPath.Multiline = true;
+            this.textBoxTeamMetadataPath.Name = "textBoxTeamMetadataPath";
+            this.textBoxTeamMetadataPath.Size = new System.Drawing.Size(978, 20);
+            this.textBoxTeamMetadataPath.TabIndex = 98;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxTeamMetadataPath, "The output path is where TEAM saves any output generated by the application.\r\nFor" +
+        " example, where the Json metadata files are placed after succesfull validation a" +
+        "nd activation.");
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 59);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(76, 13);
+            this.label2.TabIndex = 99;
+            this.label2.Text = "Metadata path";
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
+            this.pictureBox3.Location = new System.Drawing.Point(1094, 30);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(19, 20);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox3.TabIndex = 96;
+            this.pictureBox3.TabStop = false;
+            this.pictureBox3.Click += new System.EventHandler(this.pictureBoxConfigurationPath_Click);
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 12);
+            this.label1.Location = new System.Drawing.Point(9, 33);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(93, 13);
             this.label1.TabIndex = 74;
@@ -301,27 +352,13 @@
             // 
             // textBoxConfigurationPath
             // 
-            this.textBoxConfigurationPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxConfigurationPath.Location = new System.Drawing.Point(12, 30);
+            this.textBoxConfigurationPath.Location = new System.Drawing.Point(110, 30);
             this.textBoxConfigurationPath.Multiline = true;
             this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
-            this.textBoxConfigurationPath.Size = new System.Drawing.Size(1094, 27);
+            this.textBoxConfigurationPath.Size = new System.Drawing.Size(978, 20);
             this.textBoxConfigurationPath.TabIndex = 41;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxConfigurationPath, resources.GetString("textBoxConfigurationPath.ToolTip"));
-            // 
-            // textBoxOutputPath
-            // 
-            this.textBoxOutputPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxOutputPath.Location = new System.Drawing.Point(12, 84);
-            this.textBoxOutputPath.Multiline = true;
-            this.textBoxOutputPath.Name = "textBoxOutputPath";
-            this.textBoxOutputPath.Size = new System.Drawing.Size(1094, 27);
-            this.textBoxOutputPath.TabIndex = 40;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxOutputPath, "The output path is where TEAM saves any output generated by the application.\r\nFor" +
-        " example, where the Json metadata files are placed after succesfull validation a" +
-        "nd activation.");
             // 
             // label45
             // 
@@ -331,15 +368,6 @@
             this.label45.Size = new System.Drawing.Size(289, 13);
             this.label45.TabIndex = 72;
             this.label45.Text = "Paths and connections used for debugging and automation.\r\n";
-            // 
-            // OutputPathLabel
-            // 
-            this.OutputPathLabel.AutoSize = true;
-            this.OutputPathLabel.Location = new System.Drawing.Point(9, 66);
-            this.OutputPathLabel.Name = "OutputPathLabel";
-            this.OutputPathLabel.Size = new System.Drawing.Size(63, 13);
-            this.OutputPathLabel.TabIndex = 65;
-            this.OutputPathLabel.Text = "Output path";
             // 
             // tabPagePrefixesSuffixex
             // 
@@ -1049,7 +1077,7 @@
             // 
             // tabPageConnectionMain
             // 
-            this.tabPageConnectionMain.Controls.Add(this.richTextBoxMetadataConnection);
+            this.tabPageConnectionMain.Controls.Add(this.labelMetadataConnectionKey);
             this.tabPageConnectionMain.Controls.Add(this.comboBoxMetadataConnection);
             this.tabPageConnectionMain.Controls.Add(this.richTextBoxConnectionMain);
             this.tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
@@ -1061,33 +1089,31 @@
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageConnectionMain, resources.GetString("tabPageConnectionMain.ToolTip"));
             this.tabPageConnectionMain.UseVisualStyleBackColor = true;
             // 
-            // richTextBoxMetadataConnection
+            // labelMetadataConnectionKey
             // 
-            this.richTextBoxMetadataConnection.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBoxMetadataConnection.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxMetadataConnection.Location = new System.Drawing.Point(6, 73);
-            this.richTextBoxMetadataConnection.Name = "richTextBoxMetadataConnection";
-            this.richTextBoxMetadataConnection.ReadOnly = true;
-            this.richTextBoxMetadataConnection.Size = new System.Drawing.Size(133, 22);
-            this.richTextBoxMetadataConnection.TabIndex = 77;
-            this.richTextBoxMetadataConnection.TabStop = false;
-            this.richTextBoxMetadataConnection.Text = "Metadata connection key:";
+            this.labelMetadataConnectionKey.AutoSize = true;
+            this.labelMetadataConnectionKey.Location = new System.Drawing.Point(3, 85);
+            this.labelMetadataConnectionKey.Name = "labelMetadataConnectionKey";
+            this.labelMetadataConnectionKey.Size = new System.Drawing.Size(131, 13);
+            this.labelMetadataConnectionKey.TabIndex = 78;
+            this.labelMetadataConnectionKey.Text = "Metadata connection key:";
             // 
             // comboBoxMetadataConnection
             // 
             this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMetadataConnection.FormattingEnabled = true;
-            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(145, 70);
+            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(140, 82);
             this.comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
             this.comboBoxMetadataConnection.Size = new System.Drawing.Size(292, 21);
             this.comboBoxMetadataConnection.TabIndex = 76;
             // 
             // richTextBoxConnectionMain
             // 
+            this.richTextBoxConnectionMain.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
             this.richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
-            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(487, 61);
+            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(1094, 61);
             this.richTextBoxConnectionMain.TabIndex = 73;
             this.richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
             // 
@@ -1128,8 +1154,7 @@
             // 
             // tabPageEnvironmentMain
             // 
-            this.tabPageEnvironmentMain.Controls.Add(this.groupBoxEnvironmentBehaviour);
-            this.tabPageEnvironmentMain.Controls.Add(this.richTextBox4);
+            this.tabPageEnvironmentMain.Controls.Add(this.labelEnvironmentKey);
             this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
             this.tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
@@ -1141,59 +1166,20 @@
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
             this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
             // 
-            // groupBoxEnvironmentBehaviour
+            // labelEnvironmentKey
             // 
-            this.groupBoxEnvironmentBehaviour.Controls.Add(this.radioButtonPhysicalMode);
-            this.groupBoxEnvironmentBehaviour.Controls.Add(this.radioButtonVirtualMode);
-            this.groupBoxEnvironmentBehaviour.Location = new System.Drawing.Point(417, 82);
-            this.groupBoxEnvironmentBehaviour.Name = "groupBoxEnvironmentBehaviour";
-            this.groupBoxEnvironmentBehaviour.Size = new System.Drawing.Size(143, 70);
-            this.groupBoxEnvironmentBehaviour.TabIndex = 76;
-            this.groupBoxEnvironmentBehaviour.TabStop = false;
-            this.groupBoxEnvironmentBehaviour.Text = "Environment Mode";
-            this.toolTipConfigurationSettings.SetToolTip(this.groupBoxEnvironmentBehaviour, resources.GetString("groupBoxEnvironmentBehaviour.ToolTip"));
-            // 
-            // radioButtonPhysicalMode
-            // 
-            this.radioButtonPhysicalMode.AutoSize = true;
-            this.radioButtonPhysicalMode.Checked = true;
-            this.radioButtonPhysicalMode.Location = new System.Drawing.Point(6, 42);
-            this.radioButtonPhysicalMode.Name = "radioButtonPhysicalMode";
-            this.radioButtonPhysicalMode.Size = new System.Drawing.Size(94, 17);
-            this.radioButtonPhysicalMode.TabIndex = 6;
-            this.radioButtonPhysicalMode.TabStop = true;
-            this.radioButtonPhysicalMode.Text = "Physical Mode";
-            this.radioButtonPhysicalMode.UseVisualStyleBackColor = true;
-            this.radioButtonPhysicalMode.CheckedChanged += new System.EventHandler(this.radioButtonPhysicalMode_CheckedChanged);
-            // 
-            // radioButtonVirtualMode
-            // 
-            this.radioButtonVirtualMode.AutoSize = true;
-            this.radioButtonVirtualMode.Location = new System.Drawing.Point(6, 19);
-            this.radioButtonVirtualMode.Name = "radioButtonVirtualMode";
-            this.radioButtonVirtualMode.Size = new System.Drawing.Size(84, 17);
-            this.radioButtonVirtualMode.TabIndex = 5;
-            this.radioButtonVirtualMode.Text = "Virtual Mode";
-            this.radioButtonVirtualMode.UseVisualStyleBackColor = true;
-            this.radioButtonVirtualMode.CheckedChanged += new System.EventHandler(this.radioButtonVirtualMode_CheckedChanged);
-            // 
-            // richTextBox4
-            // 
-            this.richTextBox4.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox4.Location = new System.Drawing.Point(6, 91);
-            this.richTextBox4.Name = "richTextBox4";
-            this.richTextBox4.ReadOnly = true;
-            this.richTextBox4.Size = new System.Drawing.Size(86, 22);
-            this.richTextBox4.TabIndex = 75;
-            this.richTextBox4.TabStop = false;
-            this.richTextBox4.Text = "Environment key:";
+            this.labelEnvironmentKey.AutoSize = true;
+            this.labelEnvironmentKey.Location = new System.Drawing.Point(3, 85);
+            this.labelEnvironmentKey.Name = "labelEnvironmentKey";
+            this.labelEnvironmentKey.Size = new System.Drawing.Size(89, 13);
+            this.labelEnvironmentKey.TabIndex = 76;
+            this.labelEnvironmentKey.Text = "Environment key:";
             // 
             // comboBoxEnvironments
             // 
             this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxEnvironments.FormattingEnabled = true;
-            this.comboBoxEnvironments.Location = new System.Drawing.Point(98, 88);
+            this.comboBoxEnvironments.Location = new System.Drawing.Point(140, 82);
             this.comboBoxEnvironments.Name = "comboBoxEnvironments";
             this.comboBoxEnvironments.Size = new System.Drawing.Size(302, 21);
             this.comboBoxEnvironments.TabIndex = 1;
@@ -1201,10 +1187,11 @@
             // 
             // richTextBoxEnvironmentsInformation
             // 
+            this.richTextBoxEnvironmentsInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
             this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
-            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(463, 70);
+            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(1094, 70);
             this.richTextBoxEnvironmentsInformation.TabIndex = 73;
             this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
             // 
@@ -1264,6 +1251,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPagePaths.ResumeLayout(false);
             this.tabPagePaths.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.tabPagePrefixesSuffixex.ResumeLayout(false);
             this.groupBoxDataObjectIdentification.ResumeLayout(false);
             this.groupBoxDataObjectIdentification.PerformLayout();
@@ -1281,11 +1270,11 @@
             this.tabPageConnections.ResumeLayout(false);
             this.tabControlConnections.ResumeLayout(false);
             this.tabPageConnectionMain.ResumeLayout(false);
+            this.tabPageConnectionMain.PerformLayout();
             this.tabPageEnvironments.ResumeLayout(false);
             this.tabControlEnvironments.ResumeLayout(false);
             this.tabPageEnvironmentMain.ResumeLayout(false);
-            this.groupBoxEnvironmentBehaviour.ResumeLayout(false);
-            this.groupBoxEnvironmentBehaviour.PerformLayout();
+            this.tabPageEnvironmentMain.PerformLayout();
             this.tabControlDefaultDetails.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1296,7 +1285,6 @@
         private System.Windows.Forms.MenuStrip menuStripMainMenu;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openConfigurationFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openOutputDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
@@ -1309,9 +1297,7 @@
         private System.Windows.Forms.TabPage tabPagePaths;
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.TextBox textBoxConfigurationPath;
-        internal System.Windows.Forms.TextBox textBoxOutputPath;
         private System.Windows.Forms.Label label45;
-        private System.Windows.Forms.Label OutputPathLabel;
         private System.Windows.Forms.TabPage tabPagePrefixesSuffixex;
         internal System.Windows.Forms.GroupBox groupBox8;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyPK;
@@ -1374,14 +1360,12 @@
         private System.Windows.Forms.TabPage tabPageConnections;
         private System.Windows.Forms.TabControl tabControlConnections;
         private System.Windows.Forms.TabPage tabPageConnectionMain;
-        private System.Windows.Forms.RichTextBox richTextBoxMetadataConnection;
         private System.Windows.Forms.ComboBox comboBoxMetadataConnection;
         private System.Windows.Forms.RichTextBox richTextBoxConnectionMain;
         private System.Windows.Forms.TabPage tabPageConnectionNewTab;
         private System.Windows.Forms.TabPage tabPageEnvironments;
         private System.Windows.Forms.TabControl tabControlEnvironments;
         private System.Windows.Forms.TabPage tabPageEnvironmentMain;
-        private System.Windows.Forms.RichTextBox richTextBox4;
         private System.Windows.Forms.ComboBox comboBoxEnvironments;
         private System.Windows.Forms.RichTextBox richTextBoxEnvironmentsInformation;
         private System.Windows.Forms.TabPage tabPageEnvironmentNewTab;
@@ -1393,9 +1377,14 @@
         internal System.Windows.Forms.TextBox textBoxTransformationLabels;
         private System.Windows.Forms.GroupBox groupBoxDataObjectIdentification;
         private System.Windows.Forms.GroupBox groupBoxPrefixSuffix;
-        private System.Windows.Forms.GroupBox groupBoxEnvironmentBehaviour;
-        private System.Windows.Forms.RadioButton radioButtonPhysicalMode;
-        private System.Windows.Forms.RadioButton radioButtonVirtualMode;
+        private System.Windows.Forms.PictureBox pictureBox4;
+        internal System.Windows.Forms.TextBox textBoxTeamMetadataPath;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.ToolStripMenuItem openMetadataDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.Label labelMetadataConnectionKey;
+        private System.Windows.Forms.Label labelEnvironmentKey;
     }
 }
 

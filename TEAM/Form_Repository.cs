@@ -53,7 +53,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// /// Run a SQL command against the provided database connection, capture any errors and report feedback to the Sample data screen.
+        /// /// Run a SQL command against the provided database connection, capture any errors and report feedback.
         /// </summary>
         /// <param name="connString"></param>
         /// <param name="createStatement"></param>
@@ -62,25 +62,25 @@ namespace TEAM
         /// <param name="targetForm"></param>
         private static void RunSqlCommandSampleDataForm(string connString, string createStatement, BackgroundWorker worker, int progressCounter, Form_Alert targetForm)
         {
-            using (var connectionVersion = new SqlConnection(connString))
+            using (var connection = new SqlConnection(connString))
             {
-                var commandVersion = new SqlCommand(createStatement, connectionVersion);
+                var sqlCommand = new SqlCommand(createStatement, connection);
 
                 try
                 {
-                    connectionVersion.Open();
-                    commandVersion.ExecuteNonQuery();
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
 
                     worker.ReportProgress(progressCounter);
                     targetForm.SetTextLogging(createStatement);
                 }
                 catch (Exception ex)
                 {
-                    string errorMessage = $"An error has occurred with the following query: \r\n\r\n{createStatement}.\r\n\r\nThe error message is {ex}.";
-                    GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
+                    string errorMessage = $"An error has occurred with the following query: \r\n\r\n{createStatement}.\r\n\r\nThe error message is {ex.Message}.";
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
 
                     targetForm.SetTextLogging(errorMessage+"\r\n\r\n");
-                    targetForm.SetTextLogging("This occurred with the following query: " + createStatement + "\r\n\r\n");
+                    targetForm.SetTextLogging($"This occurred with the following query: {createStatement}.\r\n\r\n");
                 }
             }
         }
@@ -89,9 +89,7 @@ namespace TEAM
         {
             if (backgroundWorkerSampleData.IsBusy != true)
             {
-                // create a new instance of the alert form
                 _alertSampleDataCreationInDatabase = new Form_Alert();
-                // event handler for the Cancel button in AlertForm
                 _alertSampleDataCreationInDatabase.Show();
                 _alertSampleDataCreationInDatabase.ShowLogButton(false);
 
@@ -110,23 +108,25 @@ namespace TEAM
             }
             else
             {
-                worker.ReportProgress(0);
-
-
-                // Create the sample data
-                _alertSampleDataCreationInDatabase.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
-
-                try
+                if (worker != null)
                 {
-                    GenerateDatabaseSample(worker);
-                    
-                    _alertSampleDataCreationInDatabase.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
-                    SetStandardConfigurationSettings();
-                    worker.ReportProgress(100);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("An issue occurred creating the sample schemas. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    worker.ReportProgress(0);
+
+                    // Create the sample data
+                    _alertSampleDataCreationInDatabase.SetTextLogging("Commencing sample data set creation.\r\n\r\n");
+
+                    try
+                    {
+                        GenerateDatabaseSample(worker);
+
+                        _alertSampleDataCreationInDatabase.SetTextLogging("\r\n\r\nThe configurations (configuration screen) have also been reset to the TEAM defaults to match the sample source-target mapping metadata.");
+                        SetStandardConfigurationSettings();
+                        worker.ReportProgress(100);
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show($@"An issue occurred creating the sample schemas. The error message is: {exception.Message}", @"An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
             }
         }
@@ -154,9 +154,6 @@ namespace TEAM
             });
 
             var localSourceConnectionString = localSourceConnectionObject.Key.CreateSqlServerConnectionString(false);
-            var localSourceDatabaseName = localSourceConnectionObject.Key.DatabaseServer.DatabaseName;
-
-
             comboBoxStagingConnection.Invoke((MethodInvoker)delegate
             {
                 localStagingConnectionObject = (KeyValuePair<TeamConnection, string>)comboBoxStagingConnection.SelectedItem;
@@ -238,8 +235,7 @@ namespace TEAM
 
             }
             #endregion
-
-
+            
             // Execute the SQL statements
             int counter = 0;
             foreach (var individualSQlCommand in commandDictionary)
@@ -289,9 +285,7 @@ namespace TEAM
             {
                 using (StreamReader sr = new StreamReader(filePath))
                 {
-                    var sqlCommands = sr.ReadToEnd()
-                        .Split(new string[] {Environment.NewLine + Environment.NewLine},
-                            StringSplitOptions.RemoveEmptyEntries);
+                    var sqlCommands = sr.ReadToEnd().Split(new[] {Environment.NewLine + Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var command in sqlCommands)
                     {
@@ -301,7 +295,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred: {ex}"));
             }
         }
 
@@ -309,7 +303,7 @@ namespace TEAM
         {
             if (checkBoxConfigurationSettings.Checked)
             {
-                TeamUtility.CreateFileBackup(GlobalParameters.ConfigurationPath +GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension);
+                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
 
                 // Shared values (same for all samples)
                 var stagingAreaPrefix = "STG";
@@ -321,53 +315,27 @@ namespace TEAM
                 var linkSatTablePrefix = "LSAT_";
                 string psaKeyLocation = "PrimaryKey";
 
-                string keyIdentifier;
-                string sourceRowId;
-                string eventDateTime;
-                string loadDateTime;
-                string expiryDateTime;
-                string changeDataIndicator;
-                string recordSource;
-                string etlProcessId;
-                string etlUpdateProcessId;
-                string logicalDeleteAttribute;
-                string tableNamingLocation;
-                string keyNamingLocation;
-                string recordChecksum;
-                string currentRecordIndicator;
-                string alternativeRecordSource;
-                string alternativeHubLoadDateTime;
-                string alternativeSatelliteLoadDateTime;
-                string alternativeRecordSourceFunction;
-                string alternativeHubLoadDateTimeFunction;
-                string alternativeSatelliteLoadDateTimeFunction;
+                var keyIdentifier = "_SK";
 
-
-
-                keyIdentifier = "_SK";
-
-                sourceRowId = "SOURCE_ROW_ID";
-                eventDateTime = "EVENT_DATETIME";
-                loadDateTime = "LOAD_DATETIME";
-                expiryDateTime = "LOAD_END_DATETIME";
-                changeDataIndicator = "CDC_OPERATION";
-                recordSource = "RECORD_SOURCE";
-                etlProcessId = "MODULE_INSTANCE_ID";
-                etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
-                logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
-                tableNamingLocation = "Prefix";
-                keyNamingLocation = "Suffix";
-                recordChecksum = "HASH_FULL_RECORD";
-                currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
-                alternativeRecordSource = "N/A";
-                alternativeHubLoadDateTime = "N/A";
-                alternativeSatelliteLoadDateTime = "N/A";
-                alternativeRecordSourceFunction = "False";
-                alternativeHubLoadDateTimeFunction = "False";
-                alternativeSatelliteLoadDateTimeFunction = "False";
-
-
-                TeamConfiguration.EnvironmentMode = EnvironmentModes.PhysicalMode;
+                var sourceRowId = "SOURCE_ROW_ID";
+                var eventDateTime = "EVENT_DATETIME";
+                var loadDateTime = "LOAD_DATETIME";
+                var expiryDateTime = "LOAD_END_DATETIME";
+                var changeDataIndicator = "CDC_OPERATION";
+                var recordSource = "RECORD_SOURCE";
+                var etlProcessId = "MODULE_INSTANCE_ID";
+                var etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
+                var logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
+                var tableNamingLocation = "Prefix";
+                var keyNamingLocation = "Suffix";
+                var recordChecksum = "HASH_FULL_RECORD";
+                var currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
+                var alternativeRecordSource = "N/A";
+                var alternativeHubLoadDateTime = "N/A";
+                var alternativeSatelliteLoadDateTime = "N/A";
+                var alternativeRecordSourceFunction = "False";
+                var alternativeHubLoadDateTimeFunction = "False";
+                var alternativeSatelliteLoadDateTimeFunction = "False";
 
                 TeamConfiguration.StgTablePrefixValue = stagingAreaPrefix;
                 TeamConfiguration.PsaTablePrefixValue = persistentStagingAreaPrefix;
@@ -399,7 +367,7 @@ namespace TEAM
                 TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
                 TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
 
-                LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
+                LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
             }
         }
          
@@ -439,28 +407,27 @@ namespace TEAM
 
                 try
                 {
-                    if (TeamConfiguration.MetadataRepositoryType == MetadataRepositoryStorageType.Json)
+                    Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
+
+                    // First, figure out which files to process
+                    foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
                     {
-                        Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
+                        var fileName = Path.GetFileName(filePath);
 
-                        // First, figure out which files to process
-                        foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
+                        if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
                         {
-                            var fileName = Path.GetFileName(filePath);
-
-                            if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
-                            {
-                                fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment + "_");
-                                fileDictionary.Add(filePath, fileName);
-                            }
+                            fileName = fileName.Replace("sample_", GlobalParameters.ActiveEnvironmentKey + "_");
                         }
 
-                        // And then process them
-                        foreach (KeyValuePair<string, string> file in fileDictionary)
-                        {
-                            File.Copy(file.Key, GlobalParameters.ConfigurationPath + "\\" + file.Value, true);
-                            _alertSampleJsonMetadata.SetTextLogging("Created sample Json file " + file.Value + " in " + GlobalParameters.ConfigurationPath + "\r\n");
-                        }
+                        fileDictionary.Add(filePath, fileName);
+                    }
+
+                    // And then process them
+                    foreach (KeyValuePair<string, string> file in fileDictionary)
+                    {
+                        File.Copy(file.Key, GlobalParameters.MetadataPath + "\\" + file.Value, true);
+                        _alertSampleJsonMetadata.SetTextLogging($"Created sample Json file '{file.Value}' in {GlobalParameters.MetadataPath}.");
+                        _alertSampleJsonMetadata.SetTextLogging("\r\n"); // Empty line
                     }
 
                     _alertSampleJsonMetadata.SetTextLogging("\r\nThis metadata will populate the data grids in the 'metadata mapping' screen, but not create any data structures in a database.");
@@ -475,7 +442,7 @@ namespace TEAM
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An issue occurred creating the sample metadata. The error message is: " + ex, "An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($@"An issue occurred creating the sample metadata. The error message is: {ex.Message}", @"An issue has occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }

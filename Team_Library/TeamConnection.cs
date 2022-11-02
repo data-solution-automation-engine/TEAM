@@ -12,7 +12,8 @@ namespace TEAM_Library
     public enum ServerAuthenticationTypes
     {
         NamedUser,
-        SSPI
+        SSPI,
+        MFA
     }
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace TEAM_Library
         Database,
         File
     }
-
+    
     public class TeamConnection
     {
         public string ConnectionInternalId { get; set; }
@@ -42,7 +43,6 @@ namespace TEAM_Library
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TeamFileConnection FileConnection { get; set; }
 
-
         /// <summary>
         /// Generate a SQL Server connection string from available information.
         /// </summary>
@@ -57,44 +57,35 @@ namespace TEAM_Library
             {
                 var localDatabaseConnection = DatabaseServer;
 
-                var localServerName = localDatabaseConnection.ServerName ?? "<>";
-                var localPortNumber = localDatabaseConnection.PortNumber ?? "<>";
-                var localDatabaseName = localDatabaseConnection.DatabaseName ?? "<>";
-                var localNamedUserName = localDatabaseConnection.NamedUserName ?? "<>";
-                var localNamedUserPassword = localDatabaseConnection.NamedUserPassword ?? "<>";
+                outputConnectionString += $"Server={localDatabaseConnection.ServerName}";
 
-                var connectionString = new StringBuilder();
-
-                connectionString.Append("Server=" + localServerName);
-
-                if (localPortNumber != "<>" && localPortNumber != "")
+                if (!string.IsNullOrEmpty(localDatabaseConnection.PortNumber))
                 {
-                    connectionString.Append("," + localPortNumber);
+                    outputConnectionString += ("," + localDatabaseConnection.PortNumber);
                 }
 
-                connectionString.Append(";Initial Catalog=" + localDatabaseName);
 
                 if (DatabaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
                 {
-                    connectionString.Append(";Integrated Security=SSPI");
+                    outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
+                    outputConnectionString += ";Integrated Security=SSPI";
                 }
                 else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
                 {
-                    connectionString.Append(";user id=" + localNamedUserName);
-                    connectionString.Append(";password=" + localNamedUserPassword);
+                    outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
+                    outputConnectionString += ";user id=" + localDatabaseConnection.NamedUserName;
+                    outputConnectionString += ";password=" + localDatabaseConnection.NamedUserPassword;
+                }
+                else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.MFA)
+                {
+                    outputConnectionString += ";Authentication=Active Directory Interactive;";
+                    outputConnectionString += ";user id=" + localDatabaseConnection.MultiFactorAuthenticationUser;
+                    outputConnectionString += ";Database=" + localDatabaseConnection.DatabaseName;
                 }
 
-                if (localNamedUserPassword != null)
+                if (localDatabaseConnection.NamedUserPassword.Length > 0 && mask)
                 {
-                    if (localNamedUserPassword.Length > 0 && mask == true)
-                    {
-                        outputConnectionString = connectionString.ToString()
-                            .Replace(localNamedUserPassword, "*****");
-                    }
-                    else
-                    {
-                        outputConnectionString = connectionString.ToString();
-                    }
+                    outputConnectionString = outputConnectionString.Replace(localDatabaseConnection.NamedUserPassword, "*****");
                 }
             }
             else
@@ -103,6 +94,21 @@ namespace TEAM_Library
             }
 
             return outputConnectionString;
+        }
+
+        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey, TeamConfiguration teamConfiguration)
+        {
+            TeamConnection returnTeamConnection = new TeamConnection();
+
+            foreach (var teamConnection in teamConfiguration.ConnectionDictionary)
+            {
+                if (teamConnection.Value.ConnectionKey == connectionKey)
+                {
+                    returnTeamConnection = teamConnection.Value;
+                }
+            }
+
+            return returnTeamConnection;
         }
     }
 
@@ -126,31 +132,25 @@ namespace TEAM_Library
         public string NamedUserName { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string NamedUserPassword { get; set; }
-        public bool IntegratedSecuritySelectionEvaluation()
+
+        public string MultiFactorAuthenticationUser { get; set; }
+
+        public bool IsSSPI()
         {
-            bool returnValue;
-            if (authenticationType == ServerAuthenticationTypes.SSPI)
-            {
-                returnValue = true;
-            }
-            else
-            {
-                returnValue = false;
-            }
+            var returnValue = authenticationType == ServerAuthenticationTypes.SSPI;
 
             return returnValue;
         }
-        public bool NamedUserSecuritySelectionEvaluation()
+        public bool IsNamedUser()
         {
-            bool returnValue;
-            if (authenticationType == ServerAuthenticationTypes.NamedUser)
-            {
-                returnValue = true;
-            }
-            else
-            {
-                returnValue = false;
-            }
+            var returnValue = authenticationType == ServerAuthenticationTypes.NamedUser;
+
+            return returnValue;
+        }
+
+        public bool IsMfa()
+        {
+            var returnValue = authenticationType == ServerAuthenticationTypes.MFA;
 
             return returnValue;
         }
@@ -245,10 +245,11 @@ namespace TEAM_Library
                     localConnectionDictionary.Clear();
                     TeamConnection[] connectionJson = JsonConvert.DeserializeObject<TeamConnection[]>(File.ReadAllText(connectionFileName));
 
-                    foreach (var connection in connectionJson)
-                    {
-                        localConnectionDictionary.Add(connection.ConnectionInternalId, connection);
-                    }
+                    if (connectionJson != null)
+                        foreach (var connection in connectionJson)
+                        {
+                            localConnectionDictionary.Add(connection.ConnectionInternalId, connection);
+                        }
                 }
 
                 //localEvent = Event.CreateNewEvent(EventTypes.Information, $"The connections file {connectionFileName} was loaded successfully.");

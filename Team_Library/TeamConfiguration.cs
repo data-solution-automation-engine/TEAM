@@ -1,25 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
 namespace TEAM_Library
 {
-    /// <summary>
-    /// Allowed repository types for the metadata repository.
-    /// </summary>
-    public enum MetadataRepositoryStorageType
-    {
-        Json
-    }
-
-    public enum EnvironmentModes
-    {
-        PhysicalMode,
-        VirtualMode
-    }
-
 
     /// <summary>
     /// These settings are driven by the TEAM application.
@@ -94,9 +79,6 @@ namespace TEAM_Library
         public string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }
         public string EnableAlternativeRecordSourceAttribute { get; set; }
         public string EnableAlternativeLoadDateTimeAttribute { get; set; }
-        public MetadataRepositoryStorageType MetadataRepositoryType { get; } = MetadataRepositoryStorageType.Json;
-        public EnvironmentModes EnvironmentMode { get; set; } 
-
 
         public TeamConfiguration()
         {
@@ -153,8 +135,7 @@ namespace TEAM_Library
                     "AlternativeRecordSourceFunction",
                     "AlternativeHubLDTSFunction",
                     "AlternativeSatelliteLDTSFunction",
-                    "AlternativeSatelliteLDTS",
-                    "EnvironmentMode"
+                    "AlternativeSatelliteLDTS"
                 };
 
                 foreach (string configuration in configurationArray)
@@ -163,10 +144,6 @@ namespace TEAM_Library
                     {
                         switch (configuration)
                         {
-                            case "EnvironmentMode":
-                                Enum.TryParse(configList[configuration], out EnvironmentModes localEnvironmentMode);
-                                EnvironmentMode = localEnvironmentMode;
-                                break;
                             case "StagingAreaPrefix":
                                 StgTablePrefixValue = configList[configuration];
                                 break;
@@ -307,10 +284,10 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Method to create a new configuration file with default values at the default location.
+        /// Method to create a new TEAM configuration file with default values at the default location.
         /// Checks if the file already exists. If it does, nothing will happen.
         /// </summary>
-        public void CreateDummyEnvironmentConfigurationFile(string fileName)
+        public void CreateDummyTeamConfigurationFile(string fileName)
         {
             if (!File.Exists(fileName))
             {

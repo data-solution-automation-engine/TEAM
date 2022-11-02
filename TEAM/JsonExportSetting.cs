@@ -13,24 +13,88 @@ namespace TEAM
     public class JsonExportSetting
     {
         // Data Objects
-        public string GenerateDataObjectConnection { get; set; }
-        public string GenerateDatabaseAsExtension { get; set; }
-        public string GenerateSchemaAsExtension { get; set; }
-        public string GenerateTypeAsClassification { get; set; }
-        public string GenerateDataObjectDataItems { get; set; }
+        public string AddDataObjectConnection { get; set; }
+        public string AddDatabaseAsExtension { get; set; }
+        public string AddSchemaAsExtension { get; set; }
+        public string AddTypeAsClassification { get; set; }
+        public string AddDataObjectDataItems { get; set; }
 
         // Data Items
-        public string GenerateDataItemDataTypes { get; set; }
-        public string GenerateParentDataObject { get; set; }
+        public string AddDataItemDataTypes { get; set; }
+        public string AddParentDataObject { get; set; }
 
         // Related Data Objects
         public string AddMetadataAsRelatedDataObject { get; set; }
-        public string AddUpstreamDataObjectsAsRelatedDataObject { get; set; }
+        public string AddRelatedDataObjectsAsRelatedDataObject { get; set; }
+
+        public bool IsAddDataObjectConnection()
+        {
+            bool returnValue = AddDataObjectConnection == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddDatabaseAsExtension()
+        {
+            bool returnValue = AddDatabaseAsExtension == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddSchemaAsExtension()
+        {
+            bool returnValue = AddSchemaAsExtension == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddTypeAsClassification()
+        {
+            bool returnValue = AddTypeAsClassification == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddDataObjectDataItems()
+        {
+            bool returnValue = AddDataObjectDataItems == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddDataItemDataTypes()
+        {
+            bool returnValue = AddDataItemDataTypes == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddParentDataObject()
+        {
+            bool returnValue = AddParentDataObject == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddMetadataAsRelatedDataObject()
+        {
+            bool returnValue = AddMetadataAsRelatedDataObject == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddRelatedDataObjectsAsRelatedDataObject()
+        {
+            bool returnValue = AddRelatedDataObjectsAsRelatedDataObject == "True";
+
+            return returnValue;
+        }
 
         /// <summary>
         /// Retrieve the JSON export settings from disk and store them in the application (memory).
         /// </summary>
         /// <param name="fileName"></param>
+        /// <param name="applyChecks"></param>
         internal void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
         {
             try
@@ -52,17 +116,17 @@ namespace TEAM
                 streamReader.Close();
                 fileStream.Close();
 
-                GenerateDataObjectConnection = configList["GenerateDataObjectConnection"];
-                GenerateDataObjectDataItems = configList["GenerateDataObjectDataItems"];
-                GenerateDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
-                GenerateSchemaAsExtension = configList["GenerateSchemaAsExtension"];
-                GenerateTypeAsClassification = configList["GenerateTypeAsClassification"];
+                AddDataObjectConnection = configList["GenerateDataObjectConnection"];
+                AddDataObjectDataItems = configList["GenerateDataObjectDataItems"];
+                AddDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
+                AddSchemaAsExtension = configList["GenerateSchemaAsExtension"];
+                AddTypeAsClassification = configList["GenerateTypeAsClassification"];
 
-                GenerateDataItemDataTypes = configList["GenerateDataItemDataTypes"];
-                GenerateParentDataObject = configList["GenerateParentDataObject"];
+                AddDataItemDataTypes = configList["GenerateDataItemDataTypes"];
+                AddParentDataObject = configList["GenerateParentDataObject"];
 
                 AddMetadataAsRelatedDataObject = configList["AddMetadataAsRelatedDataObject"];
-                AddUpstreamDataObjectsAsRelatedDataObject = configList["AddUpstreamDataObjectsAsRelatedDataObject"];
+                AddRelatedDataObjectsAsRelatedDataObject = configList["AddUpstreamDataObjectsAsRelatedDataObject"];
             }
             catch (Exception exception)
             {
@@ -85,24 +149,22 @@ namespace TEAM
                 validationFile.AppendLine("/* TEAM JSON Export Configuration Settings */");
                 validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                validationFile.AppendLine("GenerateDataObjectConnection|" + GenerateDataObjectConnection + "");
-                validationFile.AppendLine("GenerateDataObjectDataItems|" + GenerateDataObjectDataItems + "");
-                validationFile.AppendLine("GenerateDatabaseAsExtension|" + GenerateDatabaseAsExtension + "");
-                validationFile.AppendLine("GenerateSchemaAsExtension|" + GenerateSchemaAsExtension + "");
-                validationFile.AppendLine("GenerateTypeAsClassification|" + GenerateTypeAsClassification + "");
+                validationFile.AppendLine("GenerateDataObjectConnection|" + AddDataObjectConnection + "");
+                validationFile.AppendLine("GenerateDataObjectDataItems|" + AddDataObjectDataItems + "");
+                validationFile.AppendLine("GenerateDatabaseAsExtension|" + AddDatabaseAsExtension + "");
+                validationFile.AppendLine("GenerateSchemaAsExtension|" + AddSchemaAsExtension + "");
+                validationFile.AppendLine("GenerateTypeAsClassification|" + AddTypeAsClassification + "");
 
-                validationFile.AppendLine("GenerateDataItemDataTypes|" + GenerateDataItemDataTypes + "");
-                validationFile.AppendLine("GenerateParentDataObject|" + GenerateParentDataObject + "");
+                validationFile.AppendLine("GenerateDataItemDataTypes|" + AddDataItemDataTypes + "");
+                validationFile.AppendLine("GenerateParentDataObject|" + AddParentDataObject + "");
 
                 validationFile.AppendLine("AddMetadataAsRelatedDataObject|" +AddMetadataAsRelatedDataObject + "");
-                validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|" + AddUpstreamDataObjectsAsRelatedDataObject + "");
+                validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|" + AddRelatedDataObjectsAsRelatedDataObject + "");
 
                 // Closing off
                 validationFile.AppendLine("/* End of file */");
 
-                using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' + FormBase.GlobalParameters.WorkingEnvironment +
-                                     FormBase.GlobalParameters.FileExtension))
+                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();
@@ -149,11 +211,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
             }
             else
             {
-                FormBase.GlobalParameters.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
             }
         }
     }
