@@ -47,7 +47,6 @@ namespace TEAM
             {
                 LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.CorePath);
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
-                labelWorkingEnvironment.Text = GlobalParameters.ActiveEnvironmentKey;
             }
             catch
             {
@@ -76,6 +75,8 @@ namespace TEAM
             GlobalParameters.ActiveEnvironmentKey = activeEnvironment.environmentKey;
             GlobalParameters.ConfigurationPath = activeEnvironment.configurationPath;
             GlobalParameters.MetadataPath = activeEnvironment.metadataPath;
+
+            labelWorkingEnvironment.Text = GlobalParameters.ActiveEnvironmentKey;
 
             #endregion
 
@@ -422,7 +423,6 @@ namespace TEAM
             }
         }
         #endregion
-
 
         private void richTextBoxInformation_TextChanged(object sender, EventArgs e)
         {
