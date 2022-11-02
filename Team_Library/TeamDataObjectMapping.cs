@@ -229,6 +229,7 @@ namespace TEAM_Library
             // Workaround to match LSAT keys to LNK keys, because there is no way to reverse-engineer the original TEAM definition based on the JSON structure.
             // This is because LNK has the original business keys, as well as the LNK key (which can be ignored) to reconstruct the string value.
             // But, the LSAT only has the LNK key.
+
             foreach (DataRow row in DataTable.Rows)
             {
                 if (row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString().IsDataVaultLinkSatellite(teamConfiguration))
@@ -243,8 +244,15 @@ namespace TEAM_Library
                     // Should be only one return value.
                     var dataTableLookup = DataTable.Select(filterCriterion).FirstOrDefault();
 
-                    // Update the LSAT business key.
-                    row[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = dataTableLookup[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ToString();
+                    // Update the LSAT business key, if available
+                    if (dataTableLookup != null && dataTableLookup[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ToString() != null)
+                    {
+                        row[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = dataTableLookup[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ToString();
+                    }
+                    else
+                    {
+                        row[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = "Placeholder";
+                    }
                 }
             }
         }
