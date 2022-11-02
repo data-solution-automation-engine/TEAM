@@ -19,7 +19,7 @@ namespace TEAM
         internal bool StartUpIndicator = true;
 
         // In-memory object representing the connection. Is always updated first and then refreshed to the form.
-        private TeamWorkingEnvironment _localEnvironment;
+        private TeamEnvironment _localEnvironment;
 
         private string _environmentFileName = FormBase.GlobalParameters.CorePath + FormBase.GlobalParameters.JsonEnvironmentFileName + FormBase.GlobalParameters.JsonExtension;
 
@@ -33,7 +33,7 @@ namespace TEAM
         /// </summary>
         public TabPageEnvironments(object input)
         {
-            _localEnvironment = (TeamWorkingEnvironment) input;
+            _localEnvironment = (TeamEnvironment) input;
 
             var connectionKey = _localEnvironment.environmentKey;
             var connectionName = _localEnvironment.environmentName;
@@ -67,8 +67,8 @@ namespace TEAM
             groupBoxEnvironment.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             groupBoxEnvironment.Location = new Point(6, 6);
             groupBoxEnvironment.Size = new Size(502, 175);
-            groupBoxEnvironment.Name = $"groupBoxEnvironment";
-            groupBoxEnvironment.Text = $"Working environment";
+            groupBoxEnvironment.Name = "groupBoxEnvironment";
+            groupBoxEnvironment.Text = @"Working environment";
             groupBoxEnvironment.TabStop = false;
 
             // Add Environment Key Label
@@ -77,8 +77,8 @@ namespace TEAM
             labelEnvironmentKey.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             labelEnvironmentKey.Location = new Point(6, 19);
             labelEnvironmentKey.Size = new Size(160, 13);
-            labelEnvironmentKey.Name = $"labelEnvironmentKey";
-            labelEnvironmentKey.Text = $"Environment key";
+            labelEnvironmentKey.Name = "labelEnvironmentKey";
+            labelEnvironmentKey.Text = @"Environment key";
             labelEnvironmentKey.TabStop = false;
 
             // Add Environment Name Label
@@ -87,8 +87,8 @@ namespace TEAM
             labelEnvironmentName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             labelEnvironmentName.Location = new Point(6, 44);
             labelEnvironmentName.Size = new Size(160, 13);
-            labelEnvironmentName.Name = $"labelEnvironmentName";
-            labelEnvironmentName.Text = $"Environment name";
+            labelEnvironmentName.Name = "labelEnvironmentName";
+            labelEnvironmentName.Text = @"Environment name";
             labelEnvironmentName.TabStop = false;
 
             // Add Environment Notes Label
@@ -97,8 +97,8 @@ namespace TEAM
             labelEnvironmentNotes.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             labelEnvironmentNotes.Location = new Point(6, 70);
             labelEnvironmentNotes.Size = new Size(160, 13);
-            labelEnvironmentNotes.Name = $"labelEnvironmentNotes";
-            labelEnvironmentNotes.Text = $"Environment notes";
+            labelEnvironmentNotes.Name = "labelEnvironmentNotes";
+            labelEnvironmentNotes.Text = @"Environment notes";
             labelEnvironmentNotes.TabStop = false;
 
             // Add Environment Key TextBox
@@ -107,7 +107,7 @@ namespace TEAM
             _textBoxEnvironmentKey.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxEnvironmentKey.Location = new Point(172, 16);
             _textBoxEnvironmentKey.Size = new Size(317, 20);
-            _textBoxEnvironmentKey.Name = $"_textBoxEnvironmentKey";
+            _textBoxEnvironmentKey.Name = "_textBoxEnvironmentKey";
             _textBoxEnvironmentKey.TextChanged += (UpdateKey);
             _textBoxEnvironmentKey.Text = _localEnvironment.environmentKey;
             _textBoxEnvironmentKey.TabIndex = 1;
@@ -118,7 +118,7 @@ namespace TEAM
             _textBoxEnvironmentName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _textBoxEnvironmentName.Location = new Point(172, 41);
             _textBoxEnvironmentName.Size = new Size(317, 20);
-            _textBoxEnvironmentName.Name = $"_textBoxEnvironmentName";
+            _textBoxEnvironmentName.Name = "_textBoxEnvironmentName";
             _textBoxEnvironmentName.TextChanged += (UpdateName);
             _textBoxEnvironmentName.Text = _localEnvironment.environmentName;
             _textBoxEnvironmentKey.TabIndex = 2;
@@ -126,10 +126,9 @@ namespace TEAM
             // Add Notes Panel
             var panelNotes = new Panel();
             groupBoxEnvironment.Controls.Add(panelNotes);
-            //panelConnectionNotes.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             panelNotes.Location = new Point(172, 67);
             panelNotes.Size = new Size(317, 96);
-            panelNotes.Name = $"panelNotes";
+            panelNotes.Name = "panelNotes";
             panelNotes.BorderStyle = BorderStyle.FixedSingle;
             panelNotes.TabIndex = 52;
 
@@ -142,9 +141,7 @@ namespace TEAM
             _richTextBoxNotes.Dock = DockStyle.Fill;
             _richTextBoxNotes.Text = _localEnvironment.environmentNotes;
             _richTextBoxNotes.TextChanged += (UpdateNotes);
-            toolTipEnvironment.SetToolTip(this._richTextBoxNotes,
-                "Free format notes to provide additional information about the environment.");
-
+            toolTipEnvironment.SetToolTip(this._richTextBoxNotes, "Free format notes to provide additional information about the environment.");
 
             // Add Save Button
             Button saveButton = new Button();
@@ -152,8 +149,8 @@ namespace TEAM
             saveButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
             saveButton.Location = new Point(6, 555);
             saveButton.Size = new Size(120, 40);
-            saveButton.Name = $"saveButton";
-            saveButton.Text = $"Save Environment";
+            saveButton.Name = "saveButton";
+            saveButton.Text = @"Save Environment";
             saveButton.Click += (SaveEnvironment);
             saveButton.TabIndex = 60;
 
@@ -163,26 +160,15 @@ namespace TEAM
             deleteButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
             deleteButton.Location = new Point(132, 555);
             deleteButton.Size = new Size(120, 40);
-            deleteButton.Name = $"deleteButton";
-            deleteButton.Text = $"Delete Environment";
+            deleteButton.Name = "deleteButton";
+            deleteButton.Text = @"Delete Environment";
             deleteButton.Click += DeleteEnvironment;
             deleteButton.TabIndex = 70;
 
             #endregion
 
-            #region Constructor Methods
-
             // Prevention of double hitting of some event handlers
-            this.StartUpIndicator = false;
-
-            // Retrieve the values from memory
-            //bool localSSPI = _localEnvironment.databaseServer.integratedSecuritySelectionEvaluation();
-            //bool localNamed = _localEnvironment.databaseServer.namedUserSecuritySelectionEvaluation();
-
-            // Display the connection string results
-            //_textBoxConnectionString.Text = _localEnvironment.CreateConnectionString(true, localSSPI, localNamed);
-
-            #endregion
+            StartUpIndicator = false;
         }
 
         /// <summary>
@@ -211,9 +197,9 @@ namespace TEAM
                 }
 
                 // Check if the value already exists in the file
-                var jsonKeyLookup = new TeamWorkingEnvironment();
+                var jsonKeyLookup = new TeamEnvironment();
 
-                TeamWorkingEnvironment[] jsonArray = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(_environmentFileName));
+                TeamEnvironment[] jsonArray = JsonConvert.DeserializeObject<TeamEnvironment[]>(File.ReadAllText(_environmentFileName));
 
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
@@ -231,13 +217,11 @@ namespace TEAM
                 {
                     // Remove the Json segment.
                     var list = jsonArray.ToList();
-                    var itemToRemove =
-                        list.Single(r => r.environmentInternalId == _localEnvironment.environmentInternalId);
+                    var itemToRemove = list.Single(r => r.environmentInternalId == _localEnvironment.environmentInternalId);
                     list.Remove(itemToRemove);
                     jsonArray = list.ToArray();
 
-                    UpdateRichTextBoxInformation(
-                        $"The environment {_localEnvironment.environmentKey} was removed from {_environmentFileName}.\r\n");
+                    UpdateRichTextBoxInformation($"The environment {_localEnvironment.environmentKey} was removed from {_environmentFileName}.\r\n");
 
                     // Remove the value from the global parameter dictionary.
                     FormBase.TeamEnvironmentCollection.EnvironmentDictionary.Remove(_localEnvironment.environmentInternalId);
@@ -250,7 +234,6 @@ namespace TEAM
 
             // The name of the tab page is passed back to the original control (the tab control).
             OnDeleteEnvironment(this, new MyWorkingEnvironmentEventArgs(_localEnvironment));
-
         }
 
 
@@ -283,9 +266,9 @@ namespace TEAM
                 }
 
                 // Check if the value already exists in the file
-                var jsonKeyLookup = new TeamWorkingEnvironment();
+                var jsonKeyLookup = new TeamEnvironment();
 
-                TeamWorkingEnvironment[] jsonArray = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(_environmentFileName));
+                TeamEnvironment[] jsonArray = JsonConvert.DeserializeObject<TeamEnvironment[]>(File.ReadAllText(_environmentFileName));
 
                 // If the Json file already contains values (non-empty) then perform a key lookup.
                 if (jsonArray != null)
@@ -297,7 +280,7 @@ namespace TEAM
                 if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.environmentInternalId == "")
                 {
                     //  There was no key in the file for this connection, so it's new.
-                    var list = new List<TeamWorkingEnvironment>();
+                    var list = new List<TeamEnvironment>();
                     if (jsonArray != null)
                     {
                         list = jsonArray.ToList();
@@ -312,6 +295,8 @@ namespace TEAM
                     jsonKeyLookup.environmentInternalId = _localEnvironment.environmentInternalId;
                     jsonKeyLookup.environmentKey = _localEnvironment.environmentKey;
                     jsonKeyLookup.environmentName = _localEnvironment.environmentName;
+                    jsonKeyLookup.configurationPath = _localEnvironment.configurationPath;
+                    jsonKeyLookup.metadataPath = _localEnvironment.metadataPath;
                     jsonKeyLookup.environmentNotes = _localEnvironment.environmentNotes;
                 }
 
@@ -322,7 +307,6 @@ namespace TEAM
 
                 UpdateRichTextBoxInformation($"The environment {_localEnvironment.environmentKey} was saved to {_environmentFileName}. A backup was made in the Backups directory also.\r\n");
 
-
                 // The name of the tab page is passed back to the original control (the tab control).
                 OnSaveEnvironment(this, new MyStringEventArgs(this.Name));
             }
@@ -332,14 +316,13 @@ namespace TEAM
             }
         }
 
-
         public void UpdateName(object sender, EventArgs e)
         {
             var localNameObject = (TextBox) sender;
 
             // Update the name of the tab
-            this.Text = localNameObject.Text;
-            this.Name = localNameObject.Text;
+            Text = localNameObject.Text;
+            Name = localNameObject.Text;
 
             // Update the in-memory representation of the connection
             _localEnvironment.environmentName = localNameObject.Text;
@@ -360,6 +343,5 @@ namespace TEAM
             // Update the in-memory representation of the connection
             _localEnvironment.environmentNotes = localNameObject.Text;
         }
-
     }
 }

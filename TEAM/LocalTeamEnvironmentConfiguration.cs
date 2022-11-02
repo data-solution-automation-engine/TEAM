@@ -17,17 +17,15 @@ namespace TEAM
         /// </summary>
         internal static void InitialiseEnvironmentPaths()
         {
-            FileHandling.InitialisePath(FormBase.GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, FormBase.TeamEventLog);
             FileHandling.InitialisePath(FormBase.GlobalParameters.BackupPath, TeamPathTypes.BackupPath, FormBase.TeamEventLog);
             FileHandling.InitialisePath(FormBase.GlobalParameters.CorePath, TeamPathTypes.CorePath, FormBase.TeamEventLog);
-            FileHandling.InitialisePath(FormBase.GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, FormBase.TeamEventLog);
         }
 
         /// <summary>
         /// Retrieve the values of the application root path (where the paths to the configuration file is maintained).
         /// This is the hardcoded base path that always needs to be accessible, it has the main file which can locate the rest of the configuration.
         /// </summary 
-        public static void LoadRootPathFile(string fileName, string configurationPath, string metadataPath)
+        public static void LoadRootPathFile(string fileName, string corePath)
         {
             // Create root path file, with dummy values if it doesn't exist already
             try
@@ -36,10 +34,9 @@ namespace TEAM
                 {
                     var initialConfigurationFile = new StringBuilder();
 
-                    initialConfigurationFile.AppendLine("/* TEAM File Path Settings */");
-                    initialConfigurationFile.AppendLine("ConfigurationPath|" + configurationPath);
-                    initialConfigurationFile.AppendLine("MetadataPath|" + metadataPath);
-                    initialConfigurationFile.AppendLine("WorkingEnvironment|Development");
+                    initialConfigurationFile.AppendLine("/* TEAM Core Settings */");
+                    initialConfigurationFile.AppendLine("CorePath|" + corePath);
+                    initialConfigurationFile.AppendLine($"WorkingEnvironment|{Utility.CreateMd5(new[] { "Development" }, "%$@")}");
                     initialConfigurationFile.AppendLine("/* End of file */");
 
                     using (var outfile = new StreamWriter(fileName))
@@ -51,10 +48,9 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred while creation the default path file. The error message is " + ex, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"An error occurred while creation the default path file. The error message is {ex.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            
             var configList = new Dictionary<string, string>();
             var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs);
@@ -75,9 +71,7 @@ namespace TEAM
                 fs.Close();
 
                 // These variables are used as global variables throughout the application
-                FormBase.GlobalParameters.ConfigurationPath = configList["ConfigurationPath"];
-                FormBase.GlobalParameters.MetadataPath = configList["MetadataPath"];
-                FormBase.GlobalParameters.WorkingEnvironment = configList["WorkingEnvironment"];
+                FormBase.GlobalParameters.ActiveEnvironmentInternalId = configList["WorkingEnvironment"];
             }
             catch (Exception)
             {
@@ -88,7 +82,7 @@ namespace TEAM
         /// <summary>
         /// Retrieve the configuration information from memory and save this to disk.
         /// </summary>
-        internal static void SaveConfigurationFile()
+        internal static void SaveTeamConfigurationFile()
         {
             try
             {
@@ -132,7 +126,7 @@ namespace TEAM
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
 
-                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + FormBase.GlobalParameters.WorkingEnvironment + FormBase.GlobalParameters.FileExtension)) 
+                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension)) 
                 {
                     outfile.Write(configurationFile.ToString());
                     outfile.Flush();
@@ -160,9 +154,9 @@ namespace TEAM
     // Delegate to pass through a TEAM working environment.
     public class MyWorkingEnvironmentEventArgs : EventArgs
     {
-        public TeamWorkingEnvironment Value { get; set; }
+        public TeamEnvironment Value { get; set; }
 
-        public MyWorkingEnvironmentEventArgs(TeamWorkingEnvironment value)
+        public MyWorkingEnvironmentEventArgs(TeamEnvironment value)
         {
             Value = value;
         }

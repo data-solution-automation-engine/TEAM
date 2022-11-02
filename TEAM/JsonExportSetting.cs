@@ -164,9 +164,7 @@ namespace TEAM
                 // Closing off
                 validationFile.AppendLine("/* End of file */");
 
-                using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' + FormBase.GlobalParameters.WorkingEnvironment +
-                                     FormBase.GlobalParameters.FileExtension))
+                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();

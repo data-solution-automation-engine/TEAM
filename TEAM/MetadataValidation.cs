@@ -9,6 +9,11 @@ using static TEAM.FormBase;
 
 namespace TEAM
 {
+    internal static class MetadataValidations
+    {
+        public static int ValidationIssues { get; set; }
+        public static bool ValidationRunning { get; set; }
+    }
     internal class MetadataValidation 
     {
         internal static List<Tuple<string,string, bool>> BasicDataVaultValidation(string dataObjectName, TeamConnection teamConnection, MetadataHandling.DataObjectTypes tableType)

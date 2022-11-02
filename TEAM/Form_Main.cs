@@ -39,23 +39,28 @@ namespace TEAM
 
             #region Load the root path configuration settings (user defined paths and working environment)
 
-            // Load the root file, to be able to locate the (customisable) configuration file.
+            // Load the root file, to be able to locate the other configuration files.
             // This file contains the configuration directory, the output directory and the working environment.
             string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
 
             try
             {
-                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.ConfigurationPath, GlobalParameters.MetadataPath);
+                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.CorePath);
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
-                labelWorkingEnvironment.Text = GlobalParameters.WorkingEnvironment;
+                labelWorkingEnvironment.Text = GlobalParameters.ActiveEnvironmentKey;
             }
             catch
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The core configuration file {rootPathFileName} could not be loaded. Is there a Configuration directory in the TEAM installation location?"));
             }
 
+            #endregion
+
+            #region Environment file
+
             // Environments file
             string environmentFile = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
+
             try
             {
                 TeamEnvironmentCollection.LoadTeamEnvironmentCollection(environmentFile);
@@ -65,37 +70,52 @@ namespace TEAM
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The environment file {environmentFile} could not be loaded. Does the file exists in the designated (root) location?"));
             }
+
+            // Set the paths of the active environment
+            var activeEnvironment = TeamEnvironmentCollection.GetEnvironmentById(GlobalParameters.ActiveEnvironmentInternalId);
+            GlobalParameters.ActiveEnvironmentKey = activeEnvironment.environmentKey;
+            GlobalParameters.ConfigurationPath = activeEnvironment.configurationPath;
+            GlobalParameters.MetadataPath = activeEnvironment.metadataPath;
+
             #endregion
 
-            #region Check if user configured paths exists (now that they have been loaded from the root file), and create dummy Configuration and Validation files if necessary
+            #region Check if user configured paths exists (now that they have been loaded from the root file)
 
             // Configuration Path
             FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
             // Metadata Path
             FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
+            #endregion
+
+            #region Team configuration file
+
             // Create a dummy configuration file if it does not exist.
-            var configurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var teamConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
 
             try
             {
-                if (!File.Exists(configurationFileName))
+                if (!File.Exists(teamConfigurationFileName))
                 {
-                    TeamConfiguration.CreateDummyEnvironmentConfigurationFile(configurationFileName); 
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFileName} was created."));
+                    TeamConfiguration.CreateDummyTeamConfigurationFile(teamConfigurationFileName); 
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {teamConfigurationFileName} was created."));
                 }
                 else
                 {
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {configurationFileName} was detected."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {teamConfigurationFileName} was detected."));
                 }
             }
             catch
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {configurationFileName}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {teamConfigurationFileName}."));
             }
 
+            #endregion
+
+            #region Validation file
+
             // Create a default validation file if the file does not exist as expected.
-            var validationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var validationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -107,8 +127,11 @@ namespace TEAM
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {validationFileName}."));
             }
 
+            #endregion
+
+            #region JSON export configuration file
             // Create a default json configuration file if the file does not exist as expected.
-            var jsonConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var jsonConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
 
             try
             {
@@ -119,17 +142,22 @@ namespace TEAM
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {jsonConfigurationFileName}."));
             }
+
             #endregion
 
+            #region Connection file
+
             // Load the connections file for the respective environment.
-            var connectionFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.JsonExtension}";
+            var connectionFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.JsonExtension}";
 
             TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
+
+            #endregion
 
             #region Load configuration file
 
             // Load the available configuration file into memory.
-            var configurationFile = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.WorkingEnvironment}{GlobalParameters.FileExtension}";
+            var configurationFile = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
             try
             {
                 // Load the configuration file.

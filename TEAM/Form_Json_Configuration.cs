@@ -17,7 +17,7 @@ namespace TEAM
             // Make sure the configuration information is available in this form.
             try
             {
-                var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+                var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
 
                 // If the JSON export configuration file does not exist yet, create it.
                 if (!File.Exists(jsonExportConfigurationFileName))
@@ -142,7 +142,7 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs args)
         {
-            var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension;
+            var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
 
             try
             {

@@ -1,32 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using Newtonsoft.Json;
 
 namespace TEAM_Library
 {
     /// <summary>
-    /// An unique working environment (tenant) containing all TEAM settings.
+    /// An unique working environment (tenant) referring to TEAM settings.
     /// </summary>
-    public class TeamWorkingEnvironment
+    public class TeamEnvironment
     {
         public string environmentInternalId { get; set; }
         public string environmentName { get; set; }
         public string environmentKey { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string environmentNotes { get; set; }
+        public string configurationPath { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string metadataPath { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string environmentNotes { get; set; }
     }
 
-    public class TeamWorkingEnvironmentCollection
+    public class TeamEnvironmentCollection
     {
-        public Dictionary<string, TeamWorkingEnvironment> EnvironmentDictionary { get; set; }
+        public Dictionary<string, TeamEnvironment> EnvironmentDictionary { get; set; }
         public EventLog EventLog { get; set; }
 
-        public TeamWorkingEnvironmentCollection()
+        public TeamEnvironmentCollection()
         {
-            EnvironmentDictionary = new Dictionary<string, TeamWorkingEnvironment>();
+            EnvironmentDictionary = new Dictionary<string, TeamEnvironment>();
             EventLog = new EventLog();
         }
 
@@ -43,23 +49,27 @@ namespace TEAM_Library
 
                 // There was no key in the file for this environment, so it's new.
                 // Create two initial environments, development and production.
-                var list = new List<TeamWorkingEnvironment>();
+                var list = new List<TeamEnvironment>();
 
-                var developmentEnvironment = new TeamWorkingEnvironment
+                var developmentEnvironment = new TeamEnvironment
                 {
                     environmentInternalId = Utility.CreateMd5(new[] { "Development" }, "%$@"),
                     environmentKey = "Development",
                     environmentName = "Development environment",
+                    configurationPath = Application.StartupPath + @"\Configuration\",
+                    metadataPath = Application.StartupPath + @"\Metadata\",
                     environmentNotes = "Environment created as initial / starter environment."
                 };
 
                 list.Add(developmentEnvironment);
 
-                var productionEnvironment = new TeamWorkingEnvironment
+                var productionEnvironment = new TeamEnvironment
                 {
                     environmentInternalId = Utility.CreateMd5(new[] { "Production" }, "%$@"),
                     environmentKey = "Production",
                     environmentName = "Production environment",
+                    configurationPath = Application.StartupPath + @"\ConfigurationProduction\",
+                    metadataPath = Application.StartupPath + @"\MetadataProduction\",
                     environmentNotes = "Environment created as initial / starter environment."
                 };
 
@@ -69,25 +79,28 @@ namespace TEAM_Library
                 File.WriteAllText(fileName, output);
 
                 // Commit to memory also.
-                var localDictionary = new Dictionary<string, TeamWorkingEnvironment>();
+                var localDictionary = new Dictionary<string, TeamEnvironment>();
 
                 localDictionary.Add(developmentEnvironment.environmentInternalId, developmentEnvironment);
                 localDictionary.Add(productionEnvironment.environmentInternalId, productionEnvironment);
 
                 EnvironmentDictionary = localDictionary;
             }
+            // Load the file if it does exist.
             else
             {
                 EnvironmentDictionary.Clear();
-                TeamWorkingEnvironment[] environmentJson = JsonConvert.DeserializeObject<TeamWorkingEnvironment[]>(File.ReadAllText(fileName));
+
+                TeamEnvironment[] environmentJson = JsonConvert.DeserializeObject<TeamEnvironment[]>(File.ReadAllText(fileName));
 
                 if (environmentJson != null)
+                {
                     foreach (var environment in environmentJson)
                     {
                         EnvironmentDictionary.Add(environment.environmentInternalId, environment);
-                        EventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                            $"The environment '{environment.environmentName}'with identifier {environment.environmentInternalId} has been loaded."));
+                        EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment '{environment.environmentName}' with identifier '{environment.environmentInternalId}' has been loaded."));
                     }
+                }
             }
         }
 
@@ -96,24 +109,25 @@ namespace TEAM_Library
         /// </summary>
         /// <param name="environmentKey"></param>
         /// <returns></returns>
-        public TeamWorkingEnvironment GetEnvironmentByKey(string environmentKey)
+        public TeamEnvironment GetEnvironmentById(string environmentKey)
         {
-            TeamWorkingEnvironment localEnvironment = new TeamWorkingEnvironment();
+            TeamEnvironment localEnvironment = new TeamEnvironment();
 
-            if (environmentKey == null || environmentKey == "")
+            if (string.IsNullOrEmpty(environmentKey))
             {
-                EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The environment key was not provided, so no environment was attempted to be retrieved from the collection."));
+                EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "The environment key was not provided, so no environment was attempted to be retrieved from the collection."));
             }
             else
             {
                 try
                 {
                     localEnvironment = EnvironmentDictionary[environmentKey];
+                    
                     EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment '{localEnvironment.environmentName}' was retrieved using key {localEnvironment.environmentKey}."));
                 }
                 catch (Exception ex)
                 {
-                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered while trying to lookup the environment for key {localEnvironment.environmentKey}. The exception message is '{ex}'"));
+                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered while trying to lookup the environment for key {localEnvironment.environmentKey}. The exception message is '{ex.Message}'"));
 
                 }
             }

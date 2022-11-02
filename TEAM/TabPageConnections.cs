@@ -22,7 +22,7 @@ namespace TEAM
         // In-memory object representing the connection. Is always updated first and then refreshed to the form.
         private readonly TeamConnection _localConnection;
 
-        private readonly string _connectionFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonConnectionFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.JsonExtension;
+        private readonly string _connectionFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonConnectionFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.JsonExtension;
 
         // Objects on main Tab Page.
         private readonly GroupBox _groupBoxDatabase;

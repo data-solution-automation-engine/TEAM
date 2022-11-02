@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using TEAM_Library;
 
 namespace TEAM
@@ -41,17 +40,19 @@ namespace TEAM
         }
 
         #region Metadata objects in memory
+
         // In-memory representation of the Physical Model Metadata.
         public static TeamPhysicalModel PhysicalModel { get; set; } = new TeamPhysicalModel();
 
         // In-memory representation of the Attribute Mapping Metadata.
         public static  TeamDataItemMapping AttributeMapping { get; set; } = new TeamDataItemMapping();
+
         #endregion
 
         /// <summary>
         /// TEAM working environment collection.
         /// </summary>
-        public static TeamWorkingEnvironmentCollection TeamEnvironmentCollection { get; set; } = new TeamWorkingEnvironmentCollection();
+        public static TeamEnvironmentCollection TeamEnvironmentCollection { get; set; } = new TeamEnvironmentCollection();
 
         /// <summary>
         /// Instance of the export configuration for JSON files (options).
@@ -84,15 +85,13 @@ namespace TEAM
             public static string BackupPath { get; } = RootPath + @"Backup\";
             public static string ScriptPath { get; set; } = RootPath + @"Scripts\";
             public static string FilesPath { get; set; } = RootPath + @"Files\";
-            internal static string LoadPatternPath { get; set; } = RootPath + @"LoadPatterns\";
-
             public static string ConfigFileName { get; set; } = "TEAM_configuration";
             public static string PathFileName { get; set; } = "TEAM_Path_configuration";
             public static string ValidationFileName { get; set; } = "TEAM_validation";
             public static string JsonExportConfigurationFileName { get; set; } = "TEAM_jsonconfiguration";
             public static string FileExtension { get; set; } = ".txt";
-            internal static string WorkingEnvironment { get; set; } = "Development";
-            internal static string WorkingEnvironmentInternalId { get; set; }
+            internal static string ActiveEnvironmentInternalId { get; set; } = Utility.CreateMd5(new[] { "Development" }, "%$@");
+            internal static string ActiveEnvironmentKey { get; set; }
 
             // JSON file name parameters
             public static string JsonSchemaForDataWarehouseAutomationFileName { get; } = "interfaceDataWarehouseAutomationMetadata.json";

@@ -303,7 +303,7 @@ namespace TEAM
         {
             if (checkBoxConfigurationSettings.Checked)
             {
-                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
+                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
 
                 // Shared values (same for all samples)
                 var stagingAreaPrefix = "STG";
@@ -315,48 +315,27 @@ namespace TEAM
                 var linkSatTablePrefix = "LSAT_";
                 string psaKeyLocation = "PrimaryKey";
 
-                string keyIdentifier;
-                string sourceRowId;
-                string eventDateTime;
-                string loadDateTime;
-                string expiryDateTime;
-                string changeDataIndicator;
-                string recordSource;
-                string etlProcessId;
-                string etlUpdateProcessId;
-                string logicalDeleteAttribute;
-                string tableNamingLocation;
-                string keyNamingLocation;
-                string recordChecksum;
-                string currentRecordIndicator;
-                string alternativeRecordSource;
-                string alternativeHubLoadDateTime;
-                string alternativeSatelliteLoadDateTime;
-                string alternativeRecordSourceFunction;
-                string alternativeHubLoadDateTimeFunction;
-                string alternativeSatelliteLoadDateTimeFunction;
+                var keyIdentifier = "_SK";
 
-                keyIdentifier = "_SK";
-
-                sourceRowId = "SOURCE_ROW_ID";
-                eventDateTime = "EVENT_DATETIME";
-                loadDateTime = "LOAD_DATETIME";
-                expiryDateTime = "LOAD_END_DATETIME";
-                changeDataIndicator = "CDC_OPERATION";
-                recordSource = "RECORD_SOURCE";
-                etlProcessId = "MODULE_INSTANCE_ID";
-                etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
-                logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
-                tableNamingLocation = "Prefix";
-                keyNamingLocation = "Suffix";
-                recordChecksum = "HASH_FULL_RECORD";
-                currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
-                alternativeRecordSource = "N/A";
-                alternativeHubLoadDateTime = "N/A";
-                alternativeSatelliteLoadDateTime = "N/A";
-                alternativeRecordSourceFunction = "False";
-                alternativeHubLoadDateTimeFunction = "False";
-                alternativeSatelliteLoadDateTimeFunction = "False";
+                var sourceRowId = "SOURCE_ROW_ID";
+                var eventDateTime = "EVENT_DATETIME";
+                var loadDateTime = "LOAD_DATETIME";
+                var expiryDateTime = "LOAD_END_DATETIME";
+                var changeDataIndicator = "CDC_OPERATION";
+                var recordSource = "RECORD_SOURCE";
+                var etlProcessId = "MODULE_INSTANCE_ID";
+                var etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
+                var logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
+                var tableNamingLocation = "Prefix";
+                var keyNamingLocation = "Suffix";
+                var recordChecksum = "HASH_FULL_RECORD";
+                var currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
+                var alternativeRecordSource = "N/A";
+                var alternativeHubLoadDateTime = "N/A";
+                var alternativeSatelliteLoadDateTime = "N/A";
+                var alternativeRecordSourceFunction = "False";
+                var alternativeHubLoadDateTimeFunction = "False";
+                var alternativeSatelliteLoadDateTimeFunction = "False";
 
                 TeamConfiguration.StgTablePrefixValue = stagingAreaPrefix;
                 TeamConfiguration.PsaTablePrefixValue = persistentStagingAreaPrefix;
@@ -388,7 +367,7 @@ namespace TEAM
                 TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTimeFunction;
                 TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute = alternativeSatelliteLoadDateTime;
 
-                LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
+                LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
             }
         }
          
@@ -437,7 +416,7 @@ namespace TEAM
 
                         if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
                         {
-                            fileName = fileName.Replace("sample_", GlobalParameters.WorkingEnvironment + "_");
+                            fileName = fileName.Replace("sample_", GlobalParameters.ActiveEnvironmentKey + "_");
                         }
 
                         fileDictionary.Add(filePath, fileName);

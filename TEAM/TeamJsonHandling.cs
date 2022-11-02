@@ -16,7 +16,7 @@ namespace TEAM
             /// <returns></returns>
             public static string AttributeMappingJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.WorkingEnvironment + "_" + FormBase.GlobalParameters.JsonAttributeMappingFileName + FormBase.GlobalParameters.JsonExtension;
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.ActiveEnvironmentKey + "_" + FormBase.GlobalParameters.JsonAttributeMappingFileName + FormBase.GlobalParameters.JsonExtension;
                 return localJsonFileName;
             }
 
@@ -26,7 +26,7 @@ namespace TEAM
             /// <returns></returns>
             public static string PhysicalModelJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.WorkingEnvironment + "_" + FormBase.GlobalParameters.JsonModelMetadataFileName + FormBase.GlobalParameters.JsonExtension;
+                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.ActiveEnvironmentKey + "_" + FormBase.GlobalParameters.JsonModelMetadataFileName + FormBase.GlobalParameters.JsonExtension;
                 return localJsonFileName; }
 
             internal static string newFileTableMapping { get; set; }

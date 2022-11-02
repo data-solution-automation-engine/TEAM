@@ -36,16 +36,16 @@ namespace TEAM
                 tabControlEnvironments.SelectedIndex = 0;
 
                 // Adding items in the drop down list
-                comboBoxEnvironments.Items.Add(new KeyValuePair<TeamWorkingEnvironment, string>(environment.Value, environment.Value.environmentKey));
+                comboBoxEnvironments.Items.Add(new KeyValuePair<TeamEnvironment, string>(environment.Value, environment.Value.environmentKey));
                 comboBoxEnvironments.DisplayMember = "Value";
             }
 
-            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
+            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.ActiveEnvironmentKey);
 
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
             {
-                LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ namespace TEAM
         /// </summary>
         public event EventHandler<MyWorkingEnvironmentEventArgs> OnUpdateEnvironment = delegate { };
 
-        public void UpdateEnvironment(TeamWorkingEnvironment environment)
+        public void UpdateEnvironment(TeamEnvironment environment)
         {
             OnUpdateEnvironment(this, new MyWorkingEnvironmentEventArgs(environment));
         }
@@ -110,7 +110,7 @@ namespace TEAM
             // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
             if (!File.Exists(connectionFile))
             {
-                TeamConfiguration.CreateDummyEnvironmentConfigurationFile(connectionFile);
+                TeamConfiguration.CreateDummyTeamConfigurationFile(connectionFile);
             }
 
             // Open the configuration file
@@ -311,9 +311,9 @@ namespace TEAM
             GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
             GlobalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
 
-            var localEnvironment = (KeyValuePair<TeamWorkingEnvironment, string>) comboBoxEnvironments.SelectedItem;
-            GlobalParameters.WorkingEnvironment = localEnvironment.Key.environmentKey;
-            GlobalParameters.WorkingEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
+            var localEnvironment = (KeyValuePair<TeamEnvironment, string>) comboBoxEnvironments.SelectedItem;
+            GlobalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
+            GlobalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
 
             // Save the paths from memory to disk.
             UpdateRootPathFile();
@@ -324,14 +324,14 @@ namespace TEAM
             FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
             FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
-            TeamConfiguration.CreateDummyEnvironmentConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-            ValidationSetting.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
-            JsonExportSetting.CreateDummyJsonConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+            TeamConfiguration.CreateDummyTeamConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
+            ValidationSetting.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
+            JsonExportSetting.CreateDummyJsonConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
 
             // Create a file backup for the configuration file
             try
             {
-                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
+                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
                 richTextBoxInformation.Text = $@"A backup of the current configuration was made at {DateTime.Now} in {textBoxConfigurationPath.Text}.";
             }
             catch (Exception)
@@ -346,7 +346,7 @@ namespace TEAM
 
 
             // Save the information 
-            LocalTeamEnvironmentConfiguration.SaveConfigurationFile();
+            LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
             parentFormMain.RevalidateFlag = true;
         }
 
@@ -355,11 +355,11 @@ namespace TEAM
         {
             // Update the root path file, part of the core solution to be able to store the config and output path
             var rootPathConfigurationFile = new StringBuilder();
-            rootPathConfigurationFile.AppendLine("/* TEAM File Path Settings */");
+            rootPathConfigurationFile.AppendLine("/* TEAM Core Settings */");
             rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-            rootPathConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath + "");
-            rootPathConfigurationFile.AppendLine("MetadataPath|" + GlobalParameters.MetadataPath + "");
-            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.WorkingEnvironment + "");
+            //rootPathConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath + "");
+            //rootPathConfigurationFile.AppendLine("MetadataPath|" + GlobalParameters.MetadataPath + "");
+            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.ActiveEnvironmentInternalId + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
             try
@@ -654,7 +654,7 @@ namespace TEAM
             var localKey = e.Value.environmentName;
             tabControlEnvironments.TabPages.RemoveByKey(localKey);
 
-            comboBoxEnvironments.Items.Remove(new KeyValuePair<TeamWorkingEnvironment, string>(e.Value, e.Value.environmentKey));
+            comboBoxEnvironments.Items.Remove(new KeyValuePair<TeamEnvironment, string>(e.Value, e.Value.environmentKey));
         }
 
         private void SaveEnvironment(object o, MyStringEventArgs e)
@@ -663,11 +663,11 @@ namespace TEAM
 
             foreach (var environment in TeamEnvironmentCollection.EnvironmentDictionary)
             {
-                comboBoxEnvironments.Items.Add(new KeyValuePair<TeamWorkingEnvironment, string>(environment.Value, environment.Value.environmentKey));
+                comboBoxEnvironments.Items.Add(new KeyValuePair<TeamEnvironment, string>(environment.Value, environment.Value.environmentKey));
                 comboBoxEnvironments.DisplayMember = "Value";
             }
 
-            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.WorkingEnvironment);
+            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.ActiveEnvironmentKey);
         }
 
         private void SaveConnection(object o, MyStringEventArgs e)
@@ -720,7 +720,7 @@ namespace TEAM
 
             if (tabControlEnvironments.GetTabRect(lastIndex).Contains(e.Location))
             {
-                TeamWorkingEnvironment workingEnvironment = new TeamWorkingEnvironment();
+                TeamEnvironment workingEnvironment = new TeamEnvironment();
                 workingEnvironment.environmentInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100)}, " % $@");
                 workingEnvironment.environmentName = "New environment";
                 workingEnvironment.environmentKey = "New";
@@ -781,8 +781,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' +
-                              GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                Process.Start(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
 
             }
             catch (Exception ex)
@@ -803,7 +802,7 @@ namespace TEAM
                 // Retrieve the object from the event.
                 var localComboBox = (ComboBox)sender;
 
-                var localComboBoxSelection = (KeyValuePair<TeamWorkingEnvironment, string>) localComboBox.SelectedItem;
+                var localComboBoxSelection = (KeyValuePair<TeamEnvironment, string>) localComboBox.SelectedItem;
 
                 var selectedItem = localComboBoxSelection.Key;
 
@@ -811,8 +810,19 @@ namespace TEAM
                 var localEnvironment = TeamEnvironmentCollection.EnvironmentDictionary[selectedItem.environmentInternalId];
 
                 // Set the working environment in memory.
-                GlobalParameters.WorkingEnvironment = localEnvironment.environmentKey;
-                GlobalParameters.WorkingEnvironmentInternalId = localEnvironment.environmentInternalId;
+                GlobalParameters.ActiveEnvironmentInternalId = localEnvironment.environmentInternalId;
+                GlobalParameters.ActiveEnvironmentKey = localEnvironment.environmentKey;
+                GlobalParameters.ConfigurationPath = localEnvironment.configurationPath;
+                GlobalParameters.MetadataPath = localEnvironment.metadataPath;
+
+                // Configuration Path
+                FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+                // Metadata Path
+                FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
+
+                //Paths
+                textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
+                textBoxTeamMetadataPath.Text = GlobalParameters.MetadataPath;
 
                 // Update the root path file with the new working directory.
                 UpdateRootPathFile();
@@ -833,32 +843,23 @@ namespace TEAM
                     }
                 }
 
-                var connectionFileName =
-                    GlobalParameters.ConfigurationPath +
-                    GlobalParameters.JsonConnectionFileName + '_' +
-                    GlobalParameters.WorkingEnvironment +
-                    GlobalParameters.JsonExtension;
+                var connectionFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonConnectionFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.JsonExtension;
 
                 TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();
 
-                
                 try
                 {
-                    LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.WorkingEnvironment + GlobalParameters.FileExtension);
+                    LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
                 }
                 catch (Exception ex)
                 {
-                    richTextBoxInformation.AppendText("Errors occurred trying to load the configuration file, the message is " + ex + ". No default values were loaded. \r\n\r\n");
+                    richTextBoxInformation.AppendText($"Errors occurred trying to load the configuration file, the message is {ex.Message}. No default values were loaded.\r\n\r\n");
                 }
 
-
-
-                //var selectedItemComboBox = new KeyValuePair<TeamConnectionProfile, string>(TeamConfigurationSettings.MetadataConnection, TeamConfigurationSettings.MetadataConnection.ConnectionKey);
-
-                    if (TeamConfiguration.MetadataConnection is null)
+                if (TeamConfiguration.MetadataConnection is null)
                 {
                     TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"No metadata connection is set."));
                 }
