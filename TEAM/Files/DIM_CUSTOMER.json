@@ -355,7 +355,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "INSERT_MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_SK"
               }
             }
           ],

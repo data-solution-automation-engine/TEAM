@@ -829,8 +829,10 @@ namespace TEAM
         /// </summary>
         /// <param name="dataObjectMapping"></param>
         /// <param name="businessKeyDefinition"></param>
+        /// <param name="sourceDataObjectName"></param>
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="drivingKeyValue"></param>
         /// <returns></returns>
         internal static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, string drivingKeyValue)
         {
@@ -865,7 +867,21 @@ namespace TEAM
 
                 for (int i = 0; i < iterations; i++)
                 {
-                    var businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.targetComponentList[i], drivingKeyValue);
+                    // Exception for Presentation Layer TODO fix as reported issue to add excluded columns in configuration settings
+                    // https://github.com/RoelantVos/TEAM/issues/104
+
+                    DataItemMapping businessKeyDataItemMapping = new DataItemMapping();
+
+                    if (dataObjectMapping.mappingClassifications[0].classification == DataObjectTypes.Presentation.ToString())
+                    {
+                        // Map the key to itself (workaround as above).
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.sourceComponentList[i], drivingKeyValue);
+                    }
+                    else
+                    {
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.targetComponentList[i], drivingKeyValue);
+                    }
+
                     businessKeyComponentMapping.Add(businessKeyDataItemMapping);
                 }
 
@@ -918,8 +934,10 @@ namespace TEAM
             if (mappingType == DataObjectTypes.NaturalBusinessRelationship.ToString())
             {
                 // Add the full list straight away (the relationships).
-                var tempComponent = new BusinessKeyComponentList();
-                tempComponent.sourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition);
+                var tempComponent = new BusinessKeyComponentList
+                {
+                    sourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition)
+                };
                 businessKeyComponents.Add(tempComponent);
 
                 // This is the Link name.
@@ -942,9 +960,6 @@ namespace TEAM
                 {
                     var individualTempComponent = new BusinessKeyComponentList();
 
-                    var componentElementList = new List<string>();
-                    componentElementList.Add(componentElement);
-                    //individualTempComponent.sourceComponentList = componentElementList;
                     individualTempComponent.sourceComponentList = GetBusinessKeySourceComponentElements(componentElement);
 
                     // First, let's get the Hubs for the key. It's the one with the same source and business key definition.
@@ -965,6 +980,7 @@ namespace TEAM
                         var originalSourceDataObjectName = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString();
 
                         individualTempComponent.originalTargetDataObject = originalTargetDataObjectName;
+
                         // Get the target column(s) for the business key, based on the target data object.
                         var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, componentElement, originalSourceDataObjectName, teamConnection, teamConfiguration);
                         individualTempComponent.targetComponentList = individualTempTargetComponentList;
@@ -1033,6 +1049,15 @@ namespace TEAM
             return businessKeyComponents;
         }
 
+        /// <summary>
+        /// Get the target business key component elements in the context of the data item mapping for the business key.
+        /// </summary>
+        /// <param name="dataObject"></param>
+        /// <param name="businessKeyDefinition"></param>
+        /// <param name="sourceDataObjectName"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
         public static List<string> GetBusinessKeyTargetComponentElements(DataObject dataObject, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             List<string> targetBusinessKeyComponents = new List<string>();
@@ -1304,6 +1329,16 @@ namespace TEAM
             return surrogateKey;
         }
 
+        /// <summary>
+        /// Evaluation of a column whether it should be excluded when used in a business key definition.
+        /// </summary>
+        /// <param name="dataItemName"></param>
+        /// <param name="dataObjectType"></param>
+        /// <param name="surrogateKey"></param>
+        /// <param name="businessKeyDefinition"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
         public static bool IsExcludedBusinessKeyDataItem(this string dataItemName, DataObjectTypes dataObjectType, string surrogateKey, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             bool returnValue = false;
@@ -1335,6 +1370,10 @@ namespace TEAM
                 returnValue = true;
             }
             else if (dataItemName == teamConfiguration.EtlProcessAttribute)
+            {
+                returnValue = true;
+            }
+            else if (dataItemName == teamConfiguration.EtlProcessUpdateAttribute)
             {
                 returnValue = true;
             }
