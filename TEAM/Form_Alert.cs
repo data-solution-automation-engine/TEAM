@@ -15,7 +15,7 @@ namespace TEAM
         //Make the label and progressbar accessible from the main form for updates
         public string Message
         {
-            set { labelProgressMessageFormAlert.Text = value; }
+            set => labelProgressMessageFormAlert.Text = value;
         }
 
         #region Delegate & function for hiding the Progress Bar

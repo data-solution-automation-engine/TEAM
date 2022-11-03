@@ -11,7 +11,6 @@ namespace TEAM_Library
     /// </summary>
     public class PhysicalModelMetadataJson
     {
-        public string attributeHash { get; set; }
         public string databaseName { get; set; }
         public string schemaName { get; set; }
         public string tableName { get; set; }
@@ -30,18 +29,17 @@ namespace TEAM_Library
     /// </summary>
     public enum PhysicalModelMappingMetadataColumns
     {
-        Row_Checksum = 0,
-        Database_Name = 1,
-        Schema_Name = 2,
-        Table_Name = 3,
-        Column_Name = 4,
-        Data_Type = 5,
-        Character_Length = 6,
-        Numeric_Precision = 7,
-        Numeric_Scale = 8,
-        Ordinal_Position = 9,
-        Primary_Key_Indicator = 10,
-        Multi_Active_Indicator = 11
+        Database_Name = 0,
+        Schema_Name = 1,
+        Table_Name = 2,
+        Column_Name = 3,
+        Data_Type = 4,
+        Character_Length = 5,
+        Numeric_Precision = 6,
+        Numeric_Scale = 7,
+        Ordinal_Position = 8,
+        Primary_Key_Indicator = 9,
+        Multi_Active_Indicator = 10
     }
 
     /// <summary>
@@ -75,7 +73,6 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableColumns()
         {
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].ColumnName = PhysicalModelMappingMetadataColumns.Row_Checksum.ToString();
             DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Database_Name].ColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
             DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Schema_Name].ColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
             DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Table_Name].ColumnName = PhysicalModelMappingMetadataColumns.Table_Name.ToString();

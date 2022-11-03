@@ -343,6 +343,7 @@
             this.MaximumSize = new System.Drawing.Size(900, 750);
             this.MinimumSize = new System.Drawing.Size(900, 750);
             this.Name = "FormManageRepository";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Create / Rebuild Repository";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

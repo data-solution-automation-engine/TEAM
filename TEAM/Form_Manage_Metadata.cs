@@ -740,8 +740,6 @@ namespace TEAM
             }
         }
 
-
-
         /// <summary>
         /// Convenience method to wrap the creation of the data object mappings and addition of VDW specific context as well as writing to disk in one call.
         /// </summary>
@@ -822,6 +820,10 @@ namespace TEAM
             //Grabbing the generic settings from the main forms
             if (dataTableChanges != null && dataTableChanges.Rows.Count > 0) //Check if there are any changes made at all
             {
+                // Retrieve the physical model snapshot file.
+                var inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName)).ToList();
+
                 foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes
                 {
                     #region Changed rows
@@ -830,7 +832,6 @@ namespace TEAM
                     if ((row.RowState & DataRowState.Modified) != 0)
                     {
                         //Grab the attributes into local variables
-                        string hashKey = (string) row[PhysicalModelMappingMetadataColumns.Row_Checksum.ToString()];
                         var databaseName = "";
                         var schemaName = "";
                         var tableName = "";
@@ -845,8 +846,7 @@ namespace TEAM
 
                         if (row[PhysicalModelMappingMetadataColumns.Database_Name.ToString()] != DBNull.Value)
                         {
-                            databaseName =
-                                (string) row[PhysicalModelMappingMetadataColumns.Database_Name.ToString()];
+                            databaseName = (string) row[PhysicalModelMappingMetadataColumns.Database_Name.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.Schema_Name.ToString()] != DBNull.Value)
@@ -871,84 +871,72 @@ namespace TEAM
 
                         if (row[PhysicalModelMappingMetadataColumns.Character_Length.ToString()] != DBNull.Value)
                         {
-                            characterLength =
-                                (string) row[PhysicalModelMappingMetadataColumns.Character_Length.ToString()];
+                            characterLength = (string) row[PhysicalModelMappingMetadataColumns.Character_Length.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString()] != DBNull.Value)
                         {
-                            numericPrecision =
-                                (string) row[PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString()];
+                            numericPrecision = (string) row[PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString()] != DBNull.Value)
                         {
-                            numericScale =
-                                (string) row[PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString()];
+                            numericScale = (string) row[PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()] != DBNull.Value)
                         {
-                            ordinalPosition =
-                                (string) row[PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()];
+                            ordinalPosition = (string) row[PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString()] != DBNull.Value)
                         {
-                            primaryKeyIndicator =
-                                (string) row[PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString()];
+                            primaryKeyIndicator = (string) row[PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString()] !=
-                            DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString()] != DBNull.Value)
                         {
-                            multiActiveIndicator =
-                                (string) row[PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString()];
+                            multiActiveIndicator = (string) row[PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString()];
                         }
 
                         try
                         {
-                            var inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                            PhysicalModelMetadataJson[] jsonArray =
-                                JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(
-                                    File.ReadAllText(inputFileName));
+                            var databaseNameOld = (string)row[PhysicalModelMappingMetadataColumns.Database_Name.ToString(), DataRowVersion.Original];
+                            var schemaNameOld = (string)row[PhysicalModelMappingMetadataColumns.Schema_Name.ToString(), DataRowVersion.Original];
+                            var tableNameOld = (string)row[PhysicalModelMappingMetadataColumns.Table_Name.ToString(), DataRowVersion.Original];
+                            var columnNameOld = (string)row[PhysicalModelMappingMetadataColumns.Column_Name.ToString(), DataRowVersion.Original];
 
-                            var jsonHash =
-                                jsonArray.FirstOrDefault(obj =>
-                                    obj.attributeHash ==
-                                    hashKey); //Retrieves the json segment in the file for the given hash returns value or NULL
+                            //Checks if a matching 'old' JSON segment already exists.
+                            var jsonSegmentForDelete = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseNameOld && obj.schemaName == schemaNameOld && obj.tableName == tableNameOld && obj.columnName == columnNameOld);
 
-                            if (jsonHash.attributeHash == "")
+                            if (jsonSegmentForDelete != null && !string.IsNullOrEmpty(jsonSegmentForDelete.columnName))
                             {
-                                richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
-                            }
-                            else
-                            {
-                                // Update the values in the JSON segment
-                                jsonHash.databaseName = databaseName;
-                                jsonHash.schemaName = schemaName;
-                                jsonHash.tableName = tableName;
-                                jsonHash.columnName = columnName;
-                                jsonHash.dataType = dataType;
-                                jsonHash.characterLength = characterLength;
-                                jsonHash.numericPrecision = numericPrecision;
-                                jsonHash.numericScale = numericScale;
-                                jsonHash.ordinalPosition = ordinalPosition;
-                                jsonHash.primaryKeyIndicator = primaryKeyIndicator;
-                                jsonHash.multiActiveIndicator = multiActiveIndicator;
+                                // Delete it first.
+                                jsonArray.Remove(jsonSegmentForDelete);
                             }
 
-                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                            string outputFileName =
-                                TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            // Add the values in the JSON segment
+                            var jsonSegment = new PhysicalModelMetadataJson
+                            {
+                                databaseName = databaseName,
+                                schemaName = schemaName,
+                                tableName = tableName,
+                                columnName = columnName,
+                                dataType = dataType,
+                                characterLength = characterLength,
+                                numericPrecision = numericPrecision,
+                                numericScale = numericScale,
+                                ordinalPosition = ordinalPosition,
+                                primaryKeyIndicator = primaryKeyIndicator,
+                                multiActiveIndicator = multiActiveIndicator
+                            };
 
-                            File.WriteAllText(outputFileName, output);
+                            jsonArray.Add(jsonSegment);
                         }
                         catch (JsonReaderException ex)
                         {
                             richTextBoxInformation.Text += $"There were issues applying the JSON update.\r\n{ex.Message}";
                         }
-
                     }
 
                     #endregion
@@ -963,7 +951,7 @@ namespace TEAM
                         string tableName = "";
                         string columnName = "";
                         string dataType = "";
-                        string maxLength = "0";
+                        string characterLength= "0";
                         string numericPrecision = "0";
                         string numericScale = "0";
                         string ordinalPosition = "0";
@@ -997,13 +985,12 @@ namespace TEAM
 
                         if (row[(int) PhysicalModelMappingMetadataColumns.Character_Length] != DBNull.Value)
                         {
-                            maxLength = (string) row[(int) PhysicalModelMappingMetadataColumns.Character_Length];
+                            characterLength = (string) row[(int) PhysicalModelMappingMetadataColumns.Character_Length];
                         }
 
                         if (row[(int) PhysicalModelMappingMetadataColumns.Numeric_Precision] != DBNull.Value)
                         {
-                            numericPrecision =
-                                (string) row[(int) PhysicalModelMappingMetadataColumns.Numeric_Precision];
+                            numericPrecision = (string) row[(int) PhysicalModelMappingMetadataColumns.Numeric_Precision];
                         }
 
                         if (row[(int) PhysicalModelMappingMetadataColumns.Numeric_Scale] != DBNull.Value)
@@ -1013,72 +1000,52 @@ namespace TEAM
 
                         if (row[(int) PhysicalModelMappingMetadataColumns.Ordinal_Position] != DBNull.Value)
                         {
-                            ordinalPosition =
-                                (string) row[(int) PhysicalModelMappingMetadataColumns.Ordinal_Position];
+                            ordinalPosition = (string) row[(int) PhysicalModelMappingMetadataColumns.Ordinal_Position];
                         }
 
                         if (row[(int) PhysicalModelMappingMetadataColumns.Primary_Key_Indicator] != DBNull.Value)
                         {
-                            primaryKeyIndicator =
-                                (string) row[(int) PhysicalModelMappingMetadataColumns.Primary_Key_Indicator];
+                            primaryKeyIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.Primary_Key_Indicator];
                         }
 
                         if (row[(int) PhysicalModelMappingMetadataColumns.Multi_Active_Indicator] != DBNull.Value)
                         {
-                            multiActiveIndicator =
-                                (string) row[(int) PhysicalModelMappingMetadataColumns.Multi_Active_Indicator];
+                            multiActiveIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.Multi_Active_Indicator];
                         }
 
                         try
                         {
-                            var jsonPhysicalModelMappingFull = new JArray();
+                            //Checks if a matching JSON segment already exists.
+                            var jsonSegmentForDelete = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseName && obj.schemaName == schemaName && obj.tableName == tableName && obj.columnName == columnName);
 
-                            // Load the file, if existing information needs to be merged
-                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                            PhysicalModelMetadataJson[] jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName));
-
-                            // Convert it into a JArray so segments can be added easily
-                            if (jsonArray != null)
+                            if (jsonSegmentForDelete != null && !string.IsNullOrEmpty(jsonSegmentForDelete.columnName))
                             {
-                                jsonPhysicalModelMappingFull = JArray.FromObject(jsonArray);
+                                // Delete it first.
+                                jsonArray.Remove(jsonSegmentForDelete);
                             }
-                            //Generate a unique key using a hash
 
-                            string[] inputHashValue = new string[] {tableName, columnName};
-                            var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
+                            // Add the values in the JSON segment
+                            var jsonSegment = new PhysicalModelMetadataJson
+                            {
+                                databaseName = databaseName,
+                                schemaName = schemaName,
+                                tableName = tableName,
+                                columnName = columnName,
+                                dataType = dataType,
+                                characterLength = characterLength,
+                                numericPrecision = numericPrecision,
+                                numericScale = numericScale,
+                                ordinalPosition = ordinalPosition,
+                                primaryKeyIndicator = primaryKeyIndicator,
+                                multiActiveIndicator = multiActiveIndicator
+                            };
 
-                            JObject newJsonSegment = new JObject(
-                                new JProperty("attributeHash", hashKey),
-                                new JProperty("databaseName", databaseName),
-                                new JProperty("schemaName", schemaName),
-                                new JProperty("tableName", tableName),
-                                new JProperty("columnName", columnName),
-                                new JProperty("dataType", dataType),
-                                new JProperty("characterLength", maxLength),
-                                new JProperty("numericPrecision", numericPrecision),
-                                new JProperty("numericScale", numericScale),
-                                new JProperty("ordinalPosition", ordinalPosition),
-                                new JProperty("primaryKeyIndicator", primaryKeyIndicator),
-                                new JProperty("multiActiveIndicator", multiActiveIndicator)
-                            );
-
-                            jsonPhysicalModelMappingFull.Add(newJsonSegment);
-
-                            string output = JsonConvert.SerializeObject(jsonPhysicalModelMappingFull,
-                                Formatting.Indented);
-                            string outputFileName =
-                                TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                            File.WriteAllText(outputFileName, output);
-
-                            //Making sure the hash key value is added to the datatable as well
-                            row[(int) PhysicalModelMappingMetadataColumns.Row_Checksum] = hashKey;
-
+                            jsonArray.Add(jsonSegment);
                         }
                         catch (JsonReaderException ex)
                         {
-                            richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex;
+                            richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex.Message;
                         }
-
                     }
 
                     #endregion
@@ -1088,19 +1055,22 @@ namespace TEAM
                     //Deleted rows
                     if ((row.RowState & DataRowState.Deleted) != 0)
                     {
-                        var hashKey = row[PhysicalModelMappingMetadataColumns.Row_Checksum.ToString(), DataRowVersion.Original].ToString();
+                        var databaseName = row[PhysicalModelMappingMetadataColumns.Database_Name.ToString(), DataRowVersion.Original].ToString();
+                        var schemaName = row[PhysicalModelMappingMetadataColumns.Schema_Name.ToString(), DataRowVersion.Original].ToString();
+                        var tableName = row[PhysicalModelMappingMetadataColumns.Table_Name.ToString(), DataRowVersion.Original].ToString();
+                        var columnName = row[PhysicalModelMappingMetadataColumns.Column_Name.ToString(), DataRowVersion.Original].ToString();
 
                         try
                         {
-                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                            var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName)).ToList();
+                            //string inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            //var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName)).ToList();
 
-                            //Retrieves the json segment in the file for the given hash returns value or NULL
-                            var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeHash == hashKey);
+                            //Retrieves the json segment in the file.
+                            var jsonSegment = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseName && obj.schemaName == schemaName && obj.tableName == tableName && obj.columnName == columnName);
 
                             jsonArray.Remove(jsonSegment);
 
-                            if (jsonSegment.attributeHash == "")
+                            if (jsonSegment.columnName == "")
                             {
                                 richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
                             }
@@ -1110,9 +1080,9 @@ namespace TEAM
                                 jsonArray.Remove(jsonSegment);
                             }
 
-                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                            File.WriteAllText(outputFileName, output);
+                            //string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                            //string outputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+                            //File.WriteAllText(outputFileName, output);
 
                         }
                         catch (JsonReaderException ex)
@@ -1121,17 +1091,22 @@ namespace TEAM
                         }
                     }
                     #endregion
-
-                } 
+                }
                 // All changes have been processed.
 
                 #region Statement execution
+
+                // Write the result.
+                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                string outputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+
+                File.WriteAllText(outputFileName, output);
 
                 //Committing the changes to the data table
                 dataTableChanges.AcceptChanges();
                 ((DataTable) BindingSourcePhysicalModel.DataSource).AcceptChanges();
 
-                richTextBoxInformation.AppendText("The (physical) model metadata has been saved.\r\n");
+                richTextBoxInformation.AppendText("The (physical) model metadata snapshot has been saved.\r\n");
 
                 #endregion
             }
@@ -1146,210 +1121,215 @@ namespace TEAM
                 TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping = "false";
             }
 
+            //Check if there are any changes made at all.
             if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0))
-                //Check if there are any changes made at all
+            {
+                // Loop through the changes captured in the data table
+                foreach (DataRow row in dataTableChanges.Rows)
                 {
-                    // Loop through the changes captured in the data table
-                    foreach (DataRow row in dataTableChanges.Rows)
+                    #region Updates in Attribute Mapping
+
+                    // Updates
+                    if ((row.RowState & DataRowState.Modified) != 0)
                     {
-                        #region Updates in Attribute Mapping
+                        //Grab the attributes into local variables
+                        var hashKey = (string)row[DataItemMappingGridColumns.HashKey.ToString()];
+                        var stagingTable = "";
+                        var stagingColumn = "";
+                        var integrationTable = "";
+                        var integrationColumn = "";
+                        var notes = "";
 
-                        // Updates
-                        if ((row.RowState & DataRowState.Modified) != 0)
+                        if (row[DataItemMappingGridColumns.SourceDataObject.ToString()] != DBNull.Value)
                         {
-                            //Grab the attributes into local variables
-                            var hashKey = (string) row[DataItemMappingGridColumns.HashKey.ToString()];
-                            var stagingTable = "";
-                            var stagingColumn = "";
-                            var integrationTable = "";
-                            var integrationColumn = "";
-                            var notes = "";
-
-                            if (row[DataItemMappingGridColumns.SourceDataObject.ToString()] != DBNull.Value)
-                            {
-                                stagingTable = (string) row[DataItemMappingGridColumns.SourceDataObject.ToString()];
-                            }
-
-                            if (row[DataItemMappingGridColumns.SourceDataItem.ToString()] != DBNull.Value)
-                            {
-                                stagingColumn = (string) row[DataItemMappingGridColumns.SourceDataItem.ToString()];
-                            }
-
-                            if (row[DataItemMappingGridColumns.TargetDataObject.ToString()] != DBNull.Value)
-                            {
-                                integrationTable = (string) row[DataItemMappingGridColumns.TargetDataObject.ToString()];
-                            }
-
-                            if (row[DataItemMappingGridColumns.TargetDataItem.ToString()] != DBNull.Value)
-                            {
-                                integrationColumn = (string) row[DataItemMappingGridColumns.TargetDataItem.ToString()];
-                            }
-
-                            if (row[DataItemMappingGridColumns.Notes.ToString()] != DBNull.Value)
-                            {
-                                notes = (string) row[DataItemMappingGridColumns.Notes.ToString()];
-                            }
-
-                            try
-                            {
-                                var inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                                AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
-
-                                //Retrieves the json segment in the file for the given hash returns value or NULL
-                                var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
-
-                                if (jsonHash.attributeMappingHash == "")
-                                {
-                                    richTextBoxInformation.Text += $"The correct segment in the JSON file was not found.\r\n";
-                                }
-                                else
-                                {
-                                    // Update the values in the JSON segment
-                                    jsonHash.sourceTable = stagingTable;
-                                    jsonHash.sourceAttribute = stagingColumn;
-                                    jsonHash.targetTable = integrationTable;
-                                    jsonHash.targetAttribute = integrationColumn;
-                                    jsonHash.notes = notes;
-                                }
-
-                                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                                File.WriteAllText(outputFileName, output);
-                            }
-                            catch (JsonReaderException ex)
-                            {
-                                richTextBoxInformation.Text += $"There were issues applying the JSON update.\r\n{ex.Message}";
-                            }
+                            stagingTable = (string)row[DataItemMappingGridColumns.SourceDataObject.ToString()];
                         }
-                        #endregion
 
-                        #region Inserts in Attribute Mapping
-
-                        // Inserts
-                        if ((row.RowState & DataRowState.Added) != 0)
+                        if (row[DataItemMappingGridColumns.SourceDataItem.ToString()] != DBNull.Value)
                         {
-                            var sourceTable = "";
-                            var sourceColumn = "";
-                            var targetTable = "";
-                            var targetColumn = "";
-                            var notes = "";
-
-                            if (row[(int) DataItemMappingGridColumns.SourceDataObject] != DBNull.Value)
-                            {
-                                sourceTable = (string) row[(int) DataItemMappingGridColumns.SourceDataObject];
-                            }
-
-                            if (row[(int) DataItemMappingGridColumns.SourceDataItem] != DBNull.Value)
-                            {
-                                sourceColumn = (string) row[(int) DataItemMappingGridColumns.SourceDataItem];
-                            }
-
-                            if (row[(int) DataItemMappingGridColumns.TargetDataObject] != DBNull.Value)
-                            {
-                                targetTable = (string) row[(int) DataItemMappingGridColumns.TargetDataObject];
-                            }
-
-                            if (row[(int) DataItemMappingGridColumns.TargetDataItem] != DBNull.Value)
-                            {
-                                targetColumn = (string) row[(int) DataItemMappingGridColumns.TargetDataItem];
-                            }
-
-                            if (row[(int) DataItemMappingGridColumns.Notes] != DBNull.Value)
-                            {
-                                notes = (string) row[(int) DataItemMappingGridColumns.Notes];
-                            }
-
-                            try
-                            {
-                                var jsonAttributeMappingFull = new JArray();
-
-                                // Load the file, if existing information needs to be merged
-                                string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                                AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
-
-                                // Convert it into a JArray so segments can be added easily
-                                if (jsonArray != null)
-                                {
-                                    jsonAttributeMappingFull = JArray.FromObject(jsonArray);
-                                }
-
-                                string[] inputHashValue = new string[] {sourceTable, sourceColumn, targetTable, targetColumn, notes};
-                                var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
-
-                                JObject newJsonSegment = new JObject(
-                                    new JProperty("attributeMappingHash", hashKey),
-                                    new JProperty("sourceTable", sourceTable),
-                                    new JProperty("sourceAttribute", sourceColumn),
-                                    new JProperty("targetTable", targetTable),
-                                    new JProperty("targetAttribute", targetColumn),
-                                    new JProperty("notes", notes)
-                                );
-
-                                jsonAttributeMappingFull.Add(newJsonSegment);
-
-                                string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
-                                string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                                File.WriteAllText(outputFileName, output);
-
-                                //Making sure the hash key value is added to the data table as well
-                                row[(int) DataItemMappingGridColumns.HashKey] = hashKey;
-
-                            }
-                            catch (JsonReaderException ex)
-                            {
-                                richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex.Message;
-                            }
+                            stagingColumn = (string)row[DataItemMappingGridColumns.SourceDataItem.ToString()];
                         }
-                        #endregion
 
-                        #region Deletes in Attribute Mapping
-
-                        // Deletes
-                        if ((row.RowState & DataRowState.Deleted) != 0)
+                        if (row[DataItemMappingGridColumns.TargetDataObject.ToString()] != DBNull.Value)
                         {
-                            var hashKey = row[DataItemMappingGridColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
-
-                            try
-                            {
-                                string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                                var jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName)).ToList();
-
-                                //Retrieves the json segment in the file for the given hash returns value or NULL
-                                var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
-
-                                jsonArray.Remove(jsonSegment);
-
-                                if (jsonSegment.attributeMappingHash == "")
-                                {
-                                    richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
-                                }
-                                else
-                                {
-                                    //Remove the segment from the JSON
-                                    jsonArray.Remove(jsonSegment);
-                                }
-
-                                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                                string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                                File.WriteAllText(outputFileName, output);
-
-                            }
-                            catch (JsonReaderException ex)
-                            {
-                                richTextBoxInformation.Text += $"There were issues applying the JSON update.\r\n{ex.Message}";
-                            }
+                            integrationTable = (string)row[DataItemMappingGridColumns.TargetDataObject.ToString()];
                         }
-                        #endregion
+
+                        if (row[DataItemMappingGridColumns.TargetDataItem.ToString()] != DBNull.Value)
+                        {
+                            integrationColumn = (string)row[DataItemMappingGridColumns.TargetDataItem.ToString()];
+                        }
+
+                        if (row[DataItemMappingGridColumns.Notes.ToString()] != DBNull.Value)
+                        {
+                            notes = (string)row[DataItemMappingGridColumns.Notes.ToString()];
+                        }
+
+                        try
+                        {
+                            var inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+                            AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
+
+                            //Retrieves the json segment in the file.
+                            var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
+
+                            if (jsonHash.attributeMappingHash == "")
+                            {
+                                richTextBoxInformation.Text += $"The correct segment in the JSON file was not found.\r\n";
+                            }
+                            else
+                            {
+                                // Update the values in the JSON segment
+                                jsonHash.sourceTable = stagingTable;
+                                jsonHash.sourceAttribute = stagingColumn;
+                                jsonHash.targetTable = integrationTable;
+                                jsonHash.targetAttribute = integrationColumn;
+                                jsonHash.notes = notes;
+                            }
+
+                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+                            File.WriteAllText(outputFileName, output);
+                        }
+                        catch (JsonReaderException ex)
+                        {
+                            richTextBoxInformation.Text += $"There were issues applying the JSON update.\r\n{ex.Message}";
+                        }
                     }
 
-                    #region Statement execution
-                    //Committing the changes to the data table
-                    dataTableChanges.AcceptChanges();
-                    ((DataTable) BindingSourceDataItemMappings.DataSource).AcceptChanges();
+                    #endregion
 
-                    richTextBoxInformation.AppendText($"The Data Item Mapping metadata has been saved.\r\n");
+                    #region Inserts in Attribute Mapping
+
+                    // Inserts
+                    if ((row.RowState & DataRowState.Added) != 0)
+                    {
+                        var sourceTable = "";
+                        var sourceColumn = "";
+                        var targetTable = "";
+                        var targetColumn = "";
+                        var notes = "";
+
+                        if (row[(int)DataItemMappingGridColumns.SourceDataObject] != DBNull.Value)
+                        {
+                            sourceTable = (string)row[(int)DataItemMappingGridColumns.SourceDataObject];
+                        }
+
+                        if (row[(int)DataItemMappingGridColumns.SourceDataItem] != DBNull.Value)
+                        {
+                            sourceColumn = (string)row[(int)DataItemMappingGridColumns.SourceDataItem];
+                        }
+
+                        if (row[(int)DataItemMappingGridColumns.TargetDataObject] != DBNull.Value)
+                        {
+                            targetTable = (string)row[(int)DataItemMappingGridColumns.TargetDataObject];
+                        }
+
+                        if (row[(int)DataItemMappingGridColumns.TargetDataItem] != DBNull.Value)
+                        {
+                            targetColumn = (string)row[(int)DataItemMappingGridColumns.TargetDataItem];
+                        }
+
+                        if (row[(int)DataItemMappingGridColumns.Notes] != DBNull.Value)
+                        {
+                            notes = (string)row[(int)DataItemMappingGridColumns.Notes];
+                        }
+
+                        try
+                        {
+                            var jsonAttributeMappingFull = new JArray();
+
+                            // Load the file, if existing information needs to be merged
+                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+                            AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
+
+                            // Convert it into a JArray so segments can be added easily
+                            if (jsonArray != null)
+                            {
+                                jsonAttributeMappingFull = JArray.FromObject(jsonArray);
+                            }
+
+                            string[] inputHashValue = new string[] { sourceTable, sourceColumn, targetTable, targetColumn, notes };
+                            var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
+
+                            JObject newJsonSegment = new JObject(
+                                new JProperty("attributeMappingHash", hashKey),
+                                new JProperty("sourceTable", sourceTable),
+                                new JProperty("sourceAttribute", sourceColumn),
+                                new JProperty("targetTable", targetTable),
+                                new JProperty("targetAttribute", targetColumn),
+                                new JProperty("notes", notes)
+                            );
+
+                            jsonAttributeMappingFull.Add(newJsonSegment);
+
+                            string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
+                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+                            File.WriteAllText(outputFileName, output);
+
+                            //Making sure the hash key value is added to the data table as well
+                            row[(int)DataItemMappingGridColumns.HashKey] = hashKey;
+
+                        }
+                        catch (JsonReaderException ex)
+                        {
+                            richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex.Message;
+                        }
+                    }
+
+                    #endregion
+
+                    #region Deletes in Attribute Mapping
+
+                    // Deletes
+                    if ((row.RowState & DataRowState.Deleted) != 0)
+                    {
+                        var hashKey = row[DataItemMappingGridColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
+
+                        try
+                        {
+                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+                            var jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName)).ToList();
+
+                            //Retrieves the json segment in the file for the given hash returns value or NULL
+                            var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
+
+                            jsonArray.Remove(jsonSegment);
+
+                            if (jsonSegment.attributeMappingHash == "")
+                            {
+                                richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                            }
+                            else
+                            {
+                                //Remove the segment from the JSON
+                                jsonArray.Remove(jsonSegment);
+                            }
+
+                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+                            File.WriteAllText(outputFileName, output);
+
+                        }
+                        catch (JsonReaderException ex)
+                        {
+                            richTextBoxInformation.Text += $"There were issues applying the JSON update.\r\n{ex.Message}";
+                        }
+                    }
+
                     #endregion
                 }
+
+                #region Statement execution
+
+                //Committing the changes to the data table
+                dataTableChanges.AcceptChanges();
+                ((DataTable)BindingSourceDataItemMappings.DataSource).AcceptChanges();
+
+                richTextBoxInformation.AppendText($"The Data Item Mapping metadata has been saved.\r\n");
+
+                #endregion
+            }
         }
 
         /// <summary>
@@ -2101,7 +2081,7 @@ namespace TEAM
         }
 
         /// <summary>
-        ///   Method called when clicking the Reverse Engineer button
+        ///   Method called when clicking the Reverse Engineer button.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -2111,60 +2091,66 @@ namespace TEAM
             tabControlDataMappings.SelectedTab = tabPagePhysicalModel;
 
             richTextBoxInformation.Clear();
-            richTextBoxInformation.Text += "Commencing reverse-engineering the model metadata from the database.\r\n";
+            richTextBoxInformation.Text = @"Commencing reverse-engineering the model metadata from the database. This may take a few minutes depending on the complexity of the database.";
 
-            var completeDataTable = new DataTable();
+            // The temporary merge data table.
+            var interimDataTable = new DataTable();
 
-            foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
+            // The full data table.
+            DataTable completeDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
+
+            foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
-                var localConnectionObject = (KeyValuePair<TeamConnection, string>) item;
+                var localConnectionObject = (KeyValuePair<TeamConnection, string>) checkedItem;
 
                 var localSqlConnection = new SqlConnection {ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false)};
                 var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName);
 
                 if (reverseEngineerResults != null)
                 {
-                    completeDataTable.Merge(reverseEngineerResults);
+                    interimDataTable.Merge(reverseEngineerResults);
                 }
             }
 
-            DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
+            interimDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
 
-            distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-
-            // Display the results on the datagrid
-            BindingSourcePhysicalModel.DataSource = distinctTable;
-
-            _dataGridViewPhysicalModel.ColumnHeadersVisible = true;
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].Visible = false;
-
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].HeaderText = "Hash Key"; //Key column
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Database_Name].HeaderText = "Database Name"; //Key column
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Schema_Name].HeaderText = "Schema Name"; //Key column
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Table_Name].HeaderText = "Table Name"; //Key column
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Column_Name].HeaderText = "Column Name"; //Key column
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Data_Type].HeaderText = "Data Type";
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Character_Length].HeaderText = "Length";
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].HeaderText = "Precision";
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].HeaderText = "Scale";
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].HeaderText = "Position";
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].HeaderText = "Primary Key";
-            _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Multi_Active_Indicator].HeaderText = "Multi-Active";
-
-            _dataGridViewPhysicalModel.DataSource = BindingSourcePhysicalModel;
-
-            foreach (DataRow row in completeDataTable.Rows) // Flag as new row so it's detected by the save button.
+            // Flag as new row so it's detected by the save button.
+            foreach (DataRow row in interimDataTable.Rows)
             {
                 row.SetAdded();
             }
 
+            completeDataTable.Merge(interimDataTable);
+
+            DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
+
+            // Display the results on the data grid.
+            BindingSourcePhysicalModel.DataSource = distinctTable;
+
+            //_dataGridViewPhysicalModel.ColumnHeadersVisible = true;
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].Visible = false;
+
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].HeaderText = "Hash Key"; //Key column
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Database_Name].HeaderText = "Database Name"; //Key column
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Schema_Name].HeaderText = "Schema Name"; //Key column
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Table_Name].HeaderText = "Table Name"; //Key column
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Column_Name].HeaderText = "Column Name"; //Key column
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Data_Type].HeaderText = "Data Type";
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Character_Length].HeaderText = "Length";
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].HeaderText = "Precision";
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].HeaderText = "Scale";
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].HeaderText = "Position";
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].HeaderText = "Primary Key";
+            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Multi_Active_Indicator].HeaderText = "Multi-Active";
+
+            //_dataGridViewPhysicalModel.DataSource = BindingSourcePhysicalModel;
+
             // Resize the grid
             GridAutoLayout(_dataGridViewPhysicalModel);
         }
-
-
+        
         /// <summary>
-        ///   Connect to a given database and return the data dictionary (catalog) information in the datagrid.
+        ///   Connect to a given database and return the data dictionary (catalog) information in the data grid.
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="databaseName"></param>
@@ -2181,8 +2167,9 @@ namespace TEAM
 
             var sqlStatementForDataItems = SqlStatementForDataItems(databaseName);
 
-            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems.ToString());
+            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
             conn.Close();
+
             return reverseEngineerResults;
         }
 
@@ -2200,7 +2187,6 @@ namespace TEAM
             // Create the attribute selection statement for the array
             var sqlStatementForDataItems = new StringBuilder();
 
-            string hashColumnName = PhysicalModelMappingMetadataColumns.Row_Checksum.ToString();
             string databaseColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
             string schemaColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
             string tableColumnName = PhysicalModelMappingMetadataColumns.Table_Name.ToString();
@@ -2215,7 +2201,6 @@ namespace TEAM
 
             if (isJson)
             {
-                hashColumnName = "attributeHash";
                 databaseColumnName = "databaseName";
                 schemaColumnName = "schemaName";
                 tableColumnName = "tableName";
@@ -2232,7 +2217,6 @@ namespace TEAM
 
             sqlStatementForDataItems.AppendLine("SELECT ");
 
-            sqlStatementForDataItems.AppendLine($"  CONVERT(CHAR(32),HASHBYTES('MD5',CONVERT(NVARCHAR(100), 0) + '|' + OBJECT_NAME(main.OBJECT_ID) + '|' + main.[name]),2) AS {hashColumnName},");
             sqlStatementForDataItems.AppendLine($"  DB_NAME(DB_ID('{databaseName}')) AS [{databaseColumnName}],");
             sqlStatementForDataItems.AppendLine($"  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [{schemaColumnName}],");
             sqlStatementForDataItems.AppendLine($"  OBJECT_NAME(main.OBJECT_ID) AS [{tableColumnName}], ");
@@ -3433,21 +3417,6 @@ namespace TEAM
                     }
                     else if (fileExtension == ".json")
                     {
-                        // Create a backup file, if enabled
-                        //if (checkBoxBackupFiles.Checked)
-                        //{
-                        //    try
-                        //    {
-                        //        var backupFile = new TeamJsonHandling();
-                        //        var targetFileName = backupFile.BackupJsonFile(GlobalParameters.JsonAttributeMappingFileName + ".json", GlobalParameters.ConfigurationPath);
-                        //        richTextBoxInformation.Text = "A backup of the in-use JSON file was created as " + targetFileName + ".\r\n\r\n";
-                        //    }
-                        //    catch (Exception exception)
-                        //    {
-                        //        richTextBoxInformation.Text = "An issue occurred when trying to make a backup of the in-use JSON file. The error message was " + exception + ".";
-                        //    }
-                        //}
-
                         // Load the file, convert it to a DataTable and bind it to the source
                         List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
                         DataTable dt = Utility.ConvertToDataTable(jsonArray);
@@ -3916,6 +3885,11 @@ namespace TEAM
             }
         }
 
+        /// <summary>
+        /// Menu item option to display the query that produces the physical model JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void generatePhysicalModelGridQueryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _physicalModelQuery = new Form_Alert();

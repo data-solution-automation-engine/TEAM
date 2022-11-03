@@ -40,17 +40,6 @@ namespace TEAM
 
             #region Columns
 
-            // Hash Key
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Row_Checksum.ToString()))
-            {
-                DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Row_Checksum.ToString();
-                column.HeaderText = PhysicalModelMappingMetadataColumns.Row_Checksum.ToString();
-                column.DataPropertyName = "ROW_CHECKSUM";
-                column.Visible = false;
-                Columns.Add(column);
-            }
-
             // Database Name
             if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Database_Name.ToString()))
             {
