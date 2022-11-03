@@ -2093,60 +2093,10 @@ namespace TEAM
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text = @"Commencing reverse-engineering the model metadata from the database. This may take a few minutes depending on the complexity of the database.";
 
-            // The temporary merge data table.
-            var interimDataTable = new DataTable();
+            if (backgroundWorkerValidationOnly.IsBusy) 
+                return;
 
-            // The full data table.
-            DataTable completeDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
-
-            foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
-            {
-                var localConnectionObject = (KeyValuePair<TeamConnection, string>) checkedItem;
-
-                var localSqlConnection = new SqlConnection {ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false)};
-                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName);
-
-                if (reverseEngineerResults != null)
-                {
-                    interimDataTable.Merge(reverseEngineerResults);
-                }
-            }
-
-            interimDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-
-            // Flag as new row so it's detected by the save button.
-            foreach (DataRow row in interimDataTable.Rows)
-            {
-                row.SetAdded();
-            }
-
-            completeDataTable.Merge(interimDataTable);
-
-            DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
-
-            // Display the results on the data grid.
-            BindingSourcePhysicalModel.DataSource = distinctTable;
-
-            //_dataGridViewPhysicalModel.ColumnHeadersVisible = true;
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].Visible = false;
-
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Row_Checksum].HeaderText = "Hash Key"; //Key column
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Database_Name].HeaderText = "Database Name"; //Key column
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Schema_Name].HeaderText = "Schema Name"; //Key column
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Table_Name].HeaderText = "Table Name"; //Key column
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Column_Name].HeaderText = "Column Name"; //Key column
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Data_Type].HeaderText = "Data Type";
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Character_Length].HeaderText = "Length";
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].HeaderText = "Precision";
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].HeaderText = "Scale";
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].HeaderText = "Position";
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].HeaderText = "Primary Key";
-            //_dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.Multi_Active_Indicator].HeaderText = "Multi-Active";
-
-            //_dataGridViewPhysicalModel.DataSource = BindingSourcePhysicalModel;
-
-            // Resize the grid
-            GridAutoLayout(_dataGridViewPhysicalModel);
+            backgroundWorkerReverseEngineering.RunWorkerAsync();
         }
         
         /// <summary>
@@ -3912,6 +3862,88 @@ namespace TEAM
             foreach (var query in resultQueryList)
             {
                 _physicalModelQuery.SetTextLogging(query);
+            }
+        }
+
+        private void backgroundWorkerReverseEngineering_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // The temporary merge data table.
+            var interimDataTable = new DataTable();
+
+            // The full data table.
+            DataTable completeDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
+
+            foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
+            {
+                var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
+
+                var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false) };
+                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName);
+
+                if (reverseEngineerResults != null)
+                {
+                    interimDataTable.Merge(reverseEngineerResults);
+                }
+            }
+
+            interimDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
+            // Flag as new row so it's detected by the save button.
+            foreach (DataRow row in interimDataTable.Rows)
+            {
+                row.SetAdded();
+            }
+
+            completeDataTable.Merge(interimDataTable);
+
+            DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
+
+            // Display the results on the data grid.
+
+            //BindingSourcePhysicalModel.In.Invoke((MethodInvoker)delegate {
+            //    // Running on the UI thread
+            //    form.Label.Text = newText;
+            //});
+
+            //BindingSourcePhysicalModel.DataSource = distinctTable;
+
+            _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
+
+            //SetDGVValue(distinctTable);
+
+
+        }
+
+        //private delegate void SetDGVValueDelegate(BindingList<PhysicalModelMetadataJson> items);
+
+        //private void SetDGVValue(DataTable dt)
+        //{
+        //    if (_dataGridViewPhysicalModel.InvokeRequired)
+        //    {
+        //        _dataGridViewPhysicalModel.Invoke(new SetDGVValueDelegate(SetDGVValue), dt);
+        //    }
+        //    else
+        //    {
+        //        _dataGridViewPhysicalModel.DataSource = dt;
+        //    }
+        //}
+
+        private void backgroundWorkerReverseEngineering_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                labelResult.Text = "Cancelled!";
+            }
+            else if (e.Error != null)
+            {
+                labelResult.Text = "Error: " + e.Error.Message;
+            }
+            else
+            {
+                labelResult.Text = "Done!";
+                richTextBoxInformation.Text += "\r\nThe phyiscal model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+                // Resize the grid
+                GridAutoLayout(_dataGridViewPhysicalModel);
             }
         }
     }

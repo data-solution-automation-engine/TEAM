@@ -511,6 +511,11 @@ namespace TEAM
             this.labelConnections.TabIndex = 24;
             this.labelConnections.Text = "Connections";
             // 
+            // backgroundWorkerReverseEngineering
+            // 
+            this.backgroundWorkerReverseEngineering.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerReverseEngineering_DoWork);
+            this.backgroundWorkerReverseEngineering.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerReverseEngineering_RunWorkerCompleted);
+            // 
             // FormManageMetadata
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);

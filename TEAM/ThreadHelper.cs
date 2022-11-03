@@ -1,10 +1,11 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace TEAM
 {
     public static class ThreadHelper
     {
-        delegate void SetTextCallback(Form form, Control control, string text);
+        delegate void SetControlCallback(Form form, Control control, string text);
 
         /// <summary>
         /// Set text property of various controls.
@@ -18,7 +19,7 @@ namespace TEAM
             // If these threads are different, it returns true. 
             if (control.InvokeRequired)
             {
-                SetTextCallback callBack = SetText;
+                SetControlCallback callBack = SetText;
                 form.Invoke(callBack, form, control, text);
             }
             else
