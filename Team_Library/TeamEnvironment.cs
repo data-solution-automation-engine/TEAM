@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
@@ -23,6 +24,55 @@ namespace TEAM_Library
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string environmentNotes { get; set; }
+
+        public void SaveTeamEnvironment(string fileName)
+        {
+            // GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension
+            // Update the environment on disk
+            if (!File.Exists(fileName))
+            {
+                File.Create(fileName).Close();
+            }
+
+            // Check if the value already exists in the file
+            var jsonKeyLookup = new TeamEnvironment();
+
+            TeamEnvironment[] jsonArray = JsonConvert.DeserializeObject<TeamEnvironment[]>(File.ReadAllText(fileName));
+
+            // If the Json file already contains values (non-empty) then perform a key lookup.
+            if (jsonArray != null)
+            {
+                jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.environmentInternalId == environmentInternalId);
+            }
+
+            // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
+            if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.environmentInternalId == "")
+            {
+                //  There was no key in the file for this connection, so it's new.
+                var list = new List<TeamEnvironment>();
+                if (jsonArray != null)
+                {
+                    list = jsonArray.ToList();
+                }
+
+                list.Add(this);
+                jsonArray = list.ToArray();
+            }
+            else
+            {
+                // Update the values in an existing JSON segment
+                jsonKeyLookup.environmentInternalId = environmentInternalId;
+                jsonKeyLookup.environmentKey = environmentKey;
+                jsonKeyLookup.environmentName = environmentName;
+                jsonKeyLookup.configurationPath = configurationPath;
+                jsonKeyLookup.metadataPath = metadataPath;
+                jsonKeyLookup.environmentNotes = environmentNotes;
+            }
+
+            // Save the updated file to disk.
+            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+            File.WriteAllText(fileName, output);
+        }
     }
 
     public class TeamEnvironmentCollection

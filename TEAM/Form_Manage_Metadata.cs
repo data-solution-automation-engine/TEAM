@@ -1036,12 +1036,15 @@ namespace TEAM
                         try
                         {
                             //Checks if a matching JSON segment already exists.
-                            var jsonSegmentForDelete = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseName && obj.schemaName == schemaName && obj.tableName == tableName && obj.columnName == columnName);
+                            var jsonSegmentListForDelete = jsonArray.Where(obj => obj.databaseName == databaseName && obj.schemaName == schemaName && obj.tableName == tableName && obj.columnName == columnName).ToList();
 
-                            if (jsonSegmentForDelete != null && !string.IsNullOrEmpty(jsonSegmentForDelete.columnName))
+                            if (jsonSegmentListForDelete != null && jsonSegmentListForDelete.Any())
                             {
-                                // Delete it first.
-                                jsonArray.Remove(jsonSegmentForDelete);
+                                foreach (var jsonSegmentForDelete in jsonSegmentListForDelete)
+                                {
+                                    // Delete it first.
+                                    jsonArray.Remove(jsonSegmentForDelete);
+                                }
                             }
 
                             // Add the values in the JSON segment
@@ -3912,8 +3915,9 @@ namespace TEAM
 
             // Deduplication.
             var distinctTable = completeDataTable.AsEnumerable()
-                .GroupBy(row => new 
-                { databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
+                .GroupBy(row => new
+                {
+                    databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
                     schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()),
                     tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()),
                     columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.Column_Name.ToString()),

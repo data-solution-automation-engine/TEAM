@@ -338,12 +338,16 @@ namespace TEAM
             {
                 richTextBoxInformation.Text = @"TEAM was unable to create a backup of the configuration file.";
             }
-
             
             // Update the in-memory variables for use throughout the application, to commit the saved changes for runtime use. 
             // This is needed before saving to disk, as the EnvironmentConfiguration Class retrieves the values from memory.
             UpdateConfigurationInMemory();
 
+            // Also updating the environments for paths etc.
+            // TODO
+            localEnvironment.Key.metadataPath = GlobalParameters.MetadataPath;
+            localEnvironment.Key.configurationPath = GlobalParameters.ConfigurationPath;
+            localEnvironment.Key.SaveTeamEnvironment(GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension);
 
             // Save the information 
             LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();

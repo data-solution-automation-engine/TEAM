@@ -21,7 +21,7 @@ namespace TEAM
         // In-memory object representing the connection. Is always updated first and then refreshed to the form.
         private TeamEnvironment _localEnvironment;
 
-        private string _environmentFileName = FormBase.GlobalParameters.CorePath + FormBase.GlobalParameters.JsonEnvironmentFileName + FormBase.GlobalParameters.JsonExtension;
+        private readonly string _environmentFileName = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
 
         // Objects on main Tab Page
         private TextBox _textBoxEnvironmentName;
@@ -259,51 +259,7 @@ namespace TEAM
                     FormBase.TeamEnvironmentCollection.EnvironmentDictionary.Add(_localEnvironment.environmentInternalId, _localEnvironment);
                 }
 
-                // Update the environment on disk
-                if (!File.Exists(_environmentFileName))
-                {
-                    File.Create(_environmentFileName).Close();
-                }
-
-                // Check if the value already exists in the file
-                var jsonKeyLookup = new TeamEnvironment();
-
-                TeamEnvironment[] jsonArray = JsonConvert.DeserializeObject<TeamEnvironment[]>(File.ReadAllText(_environmentFileName));
-
-                // If the Json file already contains values (non-empty) then perform a key lookup.
-                if (jsonArray != null)
-                {
-                    jsonKeyLookup = jsonArray.FirstOrDefault(obj => obj.environmentInternalId == _localEnvironment.environmentInternalId);
-                }
-
-                // If nothing yet exists in the file, the key lookup is NULL or "" then the record in question does not exist in the Json file and should be added.
-                if (jsonArray == null || jsonKeyLookup == null || jsonKeyLookup.environmentInternalId == "")
-                {
-                    //  There was no key in the file for this connection, so it's new.
-                    var list = new List<TeamEnvironment>();
-                    if (jsonArray != null)
-                    {
-                        list = jsonArray.ToList();
-                    }
-
-                    list.Add(_localEnvironment);
-                    jsonArray = list.ToArray();
-                }
-                else
-                {
-                    // Update the values in an existing JSON segment
-                    jsonKeyLookup.environmentInternalId = _localEnvironment.environmentInternalId;
-                    jsonKeyLookup.environmentKey = _localEnvironment.environmentKey;
-                    jsonKeyLookup.environmentName = _localEnvironment.environmentName;
-                    jsonKeyLookup.configurationPath = _localEnvironment.configurationPath;
-                    jsonKeyLookup.metadataPath = _localEnvironment.metadataPath;
-                    jsonKeyLookup.environmentNotes = _localEnvironment.environmentNotes;
-                }
-
-                // Save the updated file to disk.
-                FileHandling.CreateFileBackup(_environmentFileName, GlobalParameters.BackupPath);
-                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                File.WriteAllText(_environmentFileName, output);
+                _localEnvironment.SaveTeamEnvironment(_environmentFileName);
 
                 UpdateRichTextBoxInformation($"The environment {_localEnvironment.environmentKey} was saved to {_environmentFileName}. A backup was made in the Backups directory also.\r\n");
 
