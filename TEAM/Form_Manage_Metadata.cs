@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -416,7 +417,7 @@ namespace TEAM
         {
             GridAutoLayout(_dataGridViewDataObjects);
             GridAutoLayout(_dataGridViewDataItems);
-            //GridAutoLayout(_dataGridViewPhysicalModel);
+            GridAutoLayout(_dataGridViewPhysicalModel);
         }
 
         private void GridAutoLayout(DataGridView dataGridView)
@@ -3878,8 +3879,6 @@ namespace TEAM
 
         private void backgroundWorkerReverseEngineering_DoWork(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
-
             // The temporary merge data table.
             var interimDataTable = new DataTable();
 
@@ -3898,24 +3897,41 @@ namespace TEAM
                     interimDataTable.Merge(reverseEngineerResults);
                 }
 
-                ThreadHelper.SetText(this, richTextBoxInformation,$"\r\n - Completed {localConnectionObject.Key.ConnectionKey}");
+                ThreadHelper.SetText(this, richTextBoxInformation,$"\r\n - Completed {localConnectionObject.Key.ConnectionKey} at {DateTime.Now}.");
                // worker.ReportProgress($" - Completed {localConnectionObject.Key.ConnectionKey}");
             }
 
-            interimDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-
+            //interimDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+            //ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - Sorting Completed at {DateTime.Now.ToString("HH:mm:ss tt")}.");
+            
             // Flag as new row so it's detected by the save button.
             foreach (DataRow row in interimDataTable.Rows)
             {
                 row.SetAdded();
             }
+            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Added new records completed at {DateTime.Now:HH:mm:ss tt}.");
 
             completeDataTable.Merge(interimDataTable);
+            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Merge of data tables completed at {DateTime.Now:HH:mm:ss tt}.");
 
-            DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
+            //DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
+
+            var distinctTable = completeDataTable.AsEnumerable()
+                .GroupBy(row => new 
+                { databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
+                    schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()),
+                    tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()),
+                    columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.Column_Name.ToString()),
+                })
+                .Select(y => y.First())
+                .CopyToDataTable();
+
+            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
 
             // Display the results on the data grid.
-            //BindingSourcePhysicalModel.DataSource = distinctTable;
+
+            distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+
             _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
         }
 
@@ -3941,7 +3957,7 @@ namespace TEAM
 
         private void backgroundWorkerReverseEngineering_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            //richTextBoxInformation.Text += "\r\nThe phyiscal model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+            //richTextBoxInformation.Text += "\r\nThe physical model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
         }
     }
 }
