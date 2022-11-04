@@ -3897,13 +3897,9 @@ namespace TEAM
                     interimDataTable.Merge(reverseEngineerResults);
                 }
 
-                ThreadHelper.SetText(this, richTextBoxInformation,$"\r\n - Completed {localConnectionObject.Key.ConnectionKey} at {DateTime.Now}.");
-               // worker.ReportProgress($" - Completed {localConnectionObject.Key.ConnectionKey}");
+                ThreadHelper.SetText(this, richTextBoxInformation,$"\r\n - Completed {localConnectionObject.Key.ConnectionKey} at {DateTime.Now:HH:mm:ss tt}.");
             }
 
-            //interimDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-            //ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - Sorting Completed at {DateTime.Now.ToString("HH:mm:ss tt")}.");
-            
             // Flag as new row so it's detected by the save button.
             foreach (DataRow row in interimDataTable.Rows)
             {
@@ -3916,6 +3912,7 @@ namespace TEAM
 
             //DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
 
+            // Deduplication.
             var distinctTable = completeDataTable.AsEnumerable()
                 .GroupBy(row => new 
                 { databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
@@ -3928,10 +3925,8 @@ namespace TEAM
 
             ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
 
-            // Display the results on the data grid.
-
+            // Sort and display the results on the data grid.
             distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-
             _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
         }
 
@@ -3939,7 +3934,7 @@ namespace TEAM
         {
             if (e.Cancelled)
             {
-                richTextBoxInformation.Text = "Cancelled!";
+                richTextBoxInformation.Text = @"Cancelled!";
             }
             else if (e.Error != null)
             {
@@ -3947,7 +3942,7 @@ namespace TEAM
             }
             else
             {
-                labelResult.Text = "Done!";
+                labelResult.Text = @"Done!";
                 richTextBoxInformation.Text += "\r\nThe phyiscal model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
 
                 // Resize the grid
@@ -3957,7 +3952,7 @@ namespace TEAM
 
         private void backgroundWorkerReverseEngineering_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            //richTextBoxInformation.Text += "\r\nThe physical model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+           
         }
     }
 }
