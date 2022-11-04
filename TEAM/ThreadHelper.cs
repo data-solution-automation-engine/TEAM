@@ -24,7 +24,7 @@ namespace TEAM
             }
             else
             {
-                control.Text = text;
+                control.Text += text;
             }
         }
     }

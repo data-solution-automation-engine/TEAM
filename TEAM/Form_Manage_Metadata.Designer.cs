@@ -514,6 +514,7 @@ namespace TEAM
             // backgroundWorkerReverseEngineering
             // 
             this.backgroundWorkerReverseEngineering.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerReverseEngineering_DoWork);
+            this.backgroundWorkerReverseEngineering.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerReverseEngineering_ProgressChanged);
             this.backgroundWorkerReverseEngineering.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerReverseEngineering_RunWorkerCompleted);
             // 
             // FormManageMetadata

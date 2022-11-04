@@ -416,7 +416,7 @@ namespace TEAM
         {
             GridAutoLayout(_dataGridViewDataObjects);
             GridAutoLayout(_dataGridViewDataItems);
-            GridAutoLayout(_dataGridViewPhysicalModel);
+            //GridAutoLayout(_dataGridViewPhysicalModel);
         }
 
         private void GridAutoLayout(DataGridView dataGridView)
@@ -3878,6 +3878,8 @@ namespace TEAM
 
         private void backgroundWorkerReverseEngineering_DoWork(object sender, DoWorkEventArgs e)
         {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
             // The temporary merge data table.
             var interimDataTable = new DataTable();
 
@@ -3895,6 +3897,9 @@ namespace TEAM
                 {
                     interimDataTable.Merge(reverseEngineerResults);
                 }
+
+                ThreadHelper.SetText(this, richTextBoxInformation,$"\r\n - Completed {localConnectionObject.Key.ConnectionKey}");
+               // worker.ReportProgress($" - Completed {localConnectionObject.Key.ConnectionKey}");
             }
 
             interimDataTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
@@ -3932,6 +3937,11 @@ namespace TEAM
                 // Resize the grid
                 GridAutoLayout(_dataGridViewPhysicalModel);
             }
+        }
+
+        private void backgroundWorkerReverseEngineering_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            //richTextBoxInformation.Text += "\r\nThe phyiscal model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
         }
     }
 }
