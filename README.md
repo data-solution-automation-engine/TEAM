@@ -4,6 +4,7 @@ The Taxonomy for ETL Automation Metadata (TEAM) is a tool for design metadata ma
 
 * Additional information about the 'engine': https://roelantvos.com/blog/the-engine/
 * Links to more information on the data warehouse automation ecosystem: https://roelantvos.com/blog/collaboration/
+* The TEAM blog: https://roelantvos.com/blog/team/
 
 ## Way of working
 
