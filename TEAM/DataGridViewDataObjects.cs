@@ -12,6 +12,7 @@ using TEAM_Library;
 using static TEAM.FormBase;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Event = TEAM_Library.Event;
+using static TEAM_Library.MetadataHandling;
 
 namespace TEAM
 {
@@ -1255,6 +1256,8 @@ namespace TEAM
                 List<DataItemMapping> dataItemMappings = new List<DataItemMapping>();
                 List<string> targetDataItemNames = new List<string>();
 
+                #region Manual map
+
                 // Manually mapped data items (from the grid).
                 foreach (DataGridViewRow dataItemMappingRow in _dataGridViewDataItems.Rows)
                 {
@@ -1360,91 +1363,101 @@ namespace TEAM
                     }
                 }
 
-                // Auto-map any data items that are not yet manually mapped, but exist in source and target.
-                var physicalModelDataGridViewRows = _dataGridViewPhysicalModel.Rows
-                    .Cast<DataGridViewRow>()
-                    .Where(r => !r.IsNewRow)
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(targetDataObject.name))
-                    .ToList();
+                #endregion
 
-                foreach (var row in physicalModelDataGridViewRows)
+                #region Auto map
+
+                // For presentation layer, only manual mappings are supported.
+                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString())
                 {
-                    try
+
+                    // Auto-map any data items that are not yet manually mapped, but exist in source and target.
+                    var physicalModelDataGridViewRows = _dataGridViewPhysicalModel.Rows
+                        .Cast<DataGridViewRow>()
+                        .Where(r => !r.IsNewRow)
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(targetDataObject.name))
+                        .ToList();
+
+                    foreach (var row in physicalModelDataGridViewRows)
                     {
-                        dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
-
-                        var autoMappedTargetDataItemName = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
-
-                        // If already exists as a target mapping it can be ignored.
-                        if (targetDataItemNames.Contains(autoMappedTargetDataItemName))
-                            continue;
-
-                        // If there is no source data item to be found in the physical model, it can be ignored.
-                        var physicalModelSourceDataItemLookup = _dataGridViewPhysicalModel.Rows
-                            .Cast<DataGridViewRow>()
-                            .Where(r => !r.IsNewRow)
-                            .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(sourceDataObject.name))
-                            .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(autoMappedTargetDataItemName))
-                            .FirstOrDefault();
-
-                        if (physicalModelSourceDataItemLookup == null)
-                            continue;
-
-                        // If the data item is not on an exception list, it can also be ignored.
-                        var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
-                        var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
-
-                        var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
-                        var targetDataItemConnection = GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId);
-
-
-                        var dataObjectType = MetadataHandling.GetDataObjectType(targetDataObject.name, "", FormBase.TeamConfiguration);
-                        var surrogateKey = JsonOutputHandling.GetSurrogateKey(targetDataObject.name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration);
-
-                        if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
-                            continue;
-
-                        // Otherwise, create a data item for both source and target, and add it.
-                        List<dynamic> sourceDataItems = new List<dynamic>();
-                        var autoMappedSourceDataItem = new DataItem();
-                        sourceDataItems.Add(autoMappedSourceDataItem);
-
-                        var autoMappedTargetDataItem = new DataItem();
-
-                        // One to one mapping.
-                        autoMappedSourceDataItem.name = autoMappedTargetDataItemName;
-                        autoMappedTargetDataItem.name = autoMappedTargetDataItemName;
-
-                        // Add data types to Data Item that are part of a data item mapping.
-                        var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                        var sourceDataItemConnection = GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId);
-                        JsonOutputHandling.SetDataItemMappingDataType(autoMappedSourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting);
-
-                        JsonOutputHandling.SetDataItemMappingDataType(autoMappedTargetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting);
-
-                        // Add parent Data Object to the Data Item.
-                        JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedSourceDataItem, sourceDataObject, JsonExportSetting);
-                        JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
-
-                        // Create a Data Item Mapping.
-                        DataItemMapping dataItemMapping = new DataItemMapping
+                        try
                         {
-                            sourceDataItems = sourceDataItems,
-                            targetDataItem = autoMappedTargetDataItem
-                        };
+                            dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
-                        // Add to a list that is more easily searched.
-                        targetDataItemNames.Add(autoMappedTargetDataItem.name);
+                            var autoMappedTargetDataItemName = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
 
-                        // Add the Data Items Mapping to the list of mappings.
-                        dataItemMappings.Add(dataItemMapping);
+                            // If already exists as a target mapping it can be ignored.
+                            if (targetDataItemNames.Contains(autoMappedTargetDataItemName))
+                                continue;
 
-                    }
-                    catch (Exception exception)
-                    {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {exception.Message}."));
+                            // If there is no source data item to be found in the physical model, it can be ignored.
+                            var physicalModelSourceDataItemLookup = _dataGridViewPhysicalModel.Rows
+                                .Cast<DataGridViewRow>()
+                                .Where(r => !r.IsNewRow)
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(sourceDataObject.name))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(autoMappedTargetDataItemName))
+                                .FirstOrDefault();
+
+                            if (physicalModelSourceDataItemLookup == null)
+                                continue;
+
+                            // If the data item is not on an exception list, it can also be ignored.
+                            var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
+                            var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
+
+                            var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
+                            var targetDataItemConnection = GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId);
+
+                            var dataObjectType = MetadataHandling.GetDataObjectType(targetDataObject.name, "", FormBase.TeamConfiguration);
+                            var surrogateKey = JsonOutputHandling.GetSurrogateKey(targetDataObject.name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration);
+
+                            if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
+                                continue;
+
+                            // Otherwise, create a data item for both source and target, and add it.
+                            List<dynamic> sourceDataItems = new List<dynamic>();
+                            var autoMappedSourceDataItem = new DataItem();
+                            sourceDataItems.Add(autoMappedSourceDataItem);
+
+                            var autoMappedTargetDataItem = new DataItem();
+
+                            // One to one mapping.
+                            autoMappedSourceDataItem.name = autoMappedTargetDataItemName;
+                            autoMappedTargetDataItem.name = autoMappedTargetDataItemName;
+
+                            // Add data types to Data Item that are part of a data item mapping.
+                            var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                            var sourceDataItemConnection = GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId);
+
+                            JsonOutputHandling.SetDataItemMappingDataType(autoMappedSourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting);
+                            JsonOutputHandling.SetDataItemMappingDataType(autoMappedTargetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting);
+
+                            // Add parent Data Object to the Data Item.
+                            JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedSourceDataItem, sourceDataObject, JsonExportSetting);
+                            JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
+
+                            // Create a Data Item Mapping.
+                            DataItemMapping dataItemMapping = new DataItemMapping
+                            {
+                                sourceDataItems = sourceDataItems,
+                                targetDataItem = autoMappedTargetDataItem
+                            };
+
+                            // Add to a list that is more easily searched.
+                            targetDataItemNames.Add(autoMappedTargetDataItem.name);
+
+                            // Add the Data Items Mapping to the list of mappings.
+                            dataItemMappings.Add(dataItemMapping);
+
+                        }
+                        catch (Exception exception)
+                        {
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {exception.Message}."));
+                        }
                     }
                 }
+
+                #endregion
 
                 // Add the data item mappings to the data object mapping.
                 if (dataItemMappings.Count > 0)

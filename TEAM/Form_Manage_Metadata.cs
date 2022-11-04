@@ -3899,49 +3899,25 @@ namespace TEAM
             DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
 
             // Display the results on the data grid.
-
-            //BindingSourcePhysicalModel.In.Invoke((MethodInvoker)delegate {
-            //    // Running on the UI thread
-            //    form.Label.Text = newText;
-            //});
-
             //BindingSourcePhysicalModel.DataSource = distinctTable;
-
             _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
-
-            //SetDGVValue(distinctTable);
-
-
         }
-
-        //private delegate void SetDGVValueDelegate(BindingList<PhysicalModelMetadataJson> items);
-
-        //private void SetDGVValue(DataTable dt)
-        //{
-        //    if (_dataGridViewPhysicalModel.InvokeRequired)
-        //    {
-        //        _dataGridViewPhysicalModel.Invoke(new SetDGVValueDelegate(SetDGVValue), dt);
-        //    }
-        //    else
-        //    {
-        //        _dataGridViewPhysicalModel.DataSource = dt;
-        //    }
-        //}
 
         private void backgroundWorkerReverseEngineering_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
-                labelResult.Text = "Cancelled!";
+                richTextBoxInformation.Text = "Cancelled!";
             }
             else if (e.Error != null)
             {
-                labelResult.Text = "Error: " + e.Error.Message;
+                richTextBoxInformation.Text = $@"There was an error detected while reverse-engineering. The error is {e.Error.Message}";
             }
             else
             {
                 labelResult.Text = "Done!";
                 richTextBoxInformation.Text += "\r\nThe phyiscal model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+
                 // Resize the grid
                 GridAutoLayout(_dataGridViewPhysicalModel);
             }
