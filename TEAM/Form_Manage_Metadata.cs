@@ -238,11 +238,22 @@ namespace TEAM
             checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
             checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
 
-            // Load the checkboxes for the reverse-engineering tab
+            var sourceConnections = _dataGridViewDataObjects.Rows
+                .Cast<DataGridViewRow>()
+                .Where(r => !r.IsNewRow)
+                .Where(r => MetadataHandling.GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", TeamConfiguration) == MetadataHandling.DataObjectTypes.StagingArea)
+                .Select(row => row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString())
+                .Distinct()
+                .ToList();
+
+            // Load the checkboxes for the reverse-engineering tab.
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
-                if (connection.Value != TeamConfiguration.MetadataConnection)
+                // Only if it's not the metadata connection and not on the 'source' list as derived above.
+                if (connection.Value != TeamConfiguration.MetadataConnection && !sourceConnections.Contains(connection.Value.ConnectionInternalId))
                 {
+
+
                     var item = new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey);
                     checkedListBoxReverseEngineeringAreas.Items.Add(item);
                 }
