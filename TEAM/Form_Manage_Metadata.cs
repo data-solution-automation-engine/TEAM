@@ -597,58 +597,66 @@ namespace TEAM
         /// <param name="e"></param>
         private void buttonSaveMetadata_Click(object sender, EventArgs e)
         {
-            richTextBoxInformation.Clear();
-
-            // Create a data table containing the changes, to check if there are changes made to begin with
-            var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
-            var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
-            var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
-
-            // Check if there are any rows available in the grid view, and if changes have been detected at all.
-            if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
-                _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
-                _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+            if (backgroundWorkerReverseEngineering.IsBusy)
             {
-                // Perform the saving of the metadata, one for each grid.
-                try
-                {
-                    SaveDataObjectMappingJson(dataTableTableMappingChanges);
-                }
-                catch (Exception exception)
-                {
-                    richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                }
-
-                try
-                {
-                    SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
-                }
-                catch (Exception exception)
-                {
-                    richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                }
-
-                try
-                {
-                    SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
-                }
-                catch (Exception exception)
-                {
-                    richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
-                }
-
-                // Get the JSON files and load these into memory.
-                TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-                TeamDataObjectMappingFileCombinations.GetMetadata();
-
-                //Load the grids from the repository after being updated.This resets everything.
-                PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
-                PopulateDataItemMappingGrid();
-                PopulatePhysicalModelGrid();
+                MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before saving metadata.", @"Process is running", MessageBoxButtons.OK);
             }
             else
             {
-                richTextBoxInformation.Text += @"There is no metadata to save!";
+
+                richTextBoxInformation.Clear();
+
+                // Create a data table containing the changes, to check if there are changes made to begin with
+                var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
+                var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
+                var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+
+                // Check if there are any rows available in the grid view, and if changes have been detected at all.
+                if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
+                    _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
+                    _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                {
+                    // Perform the saving of the metadata, one for each grid.
+                    try
+                    {
+                        SaveDataObjectMappingJson(dataTableTableMappingChanges);
+                    }
+                    catch (Exception exception)
+                    {
+                        richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                    }
+
+                    try
+                    {
+                        SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
+                    }
+                    catch (Exception exception)
+                    {
+                        richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                    }
+
+                    try
+                    {
+                        SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
+                    }
+                    catch (Exception exception)
+                    {
+                        richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                    }
+
+                    // Get the JSON files and load these into memory.
+                    TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
+                    TeamDataObjectMappingFileCombinations.GetMetadata();
+
+                    //Load the grids from the repository after being updated.This resets everything.
+                    PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                    PopulateDataItemMappingGrid();
+                    PopulatePhysicalModelGrid();
+                }
+                else
+                {
+                    richTextBoxInformation.Text += @"There is no metadata to save!";
+                }
             }
         }
 
