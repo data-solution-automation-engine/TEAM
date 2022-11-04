@@ -136,8 +136,7 @@ namespace TEAM
             }
         }
         #endregion
-
-
+        
         public int ProgressValue
         {
             set { progressBarFormAlert.Value = value; }

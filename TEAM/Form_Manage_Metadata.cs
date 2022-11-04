@@ -349,9 +349,6 @@ namespace TEAM
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             AttributeMapping.DataTable.AcceptChanges();
 
-            //AttributeMapping.SetDataTableColumns();
-            //AttributeMapping.SetDataTableSorting();
-
             BindingSourceDataItemMappings.DataSource = AttributeMapping.DataTable;
 
             // Set the column header names.
@@ -1150,9 +1147,8 @@ namespace TEAM
                 // Loop through the changes captured in the data table
                 foreach (DataRow row in dataTableChanges.Rows)
                 {
-                    #region Updates in Attribute Mapping
+                    #region Changes
 
-                    // Updates
                     if ((row.RowState & DataRowState.Modified) != 0)
                     {
                         //Grab the attributes into local variables
@@ -1213,6 +1209,9 @@ namespace TEAM
                             string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                             string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
                             File.WriteAllText(outputFileName, output);
+
+                            // Update the data object mapping.
+                            WriteDataObjectMappingsToFile(integrationTable);
                         }
                         catch (JsonReaderException ex)
                         {
@@ -1222,7 +1221,7 @@ namespace TEAM
 
                     #endregion
 
-                    #region Inserts in Attribute Mapping
+                    #region Inserts
 
                     // Inserts
                     if ((row.RowState & DataRowState.Added) != 0)
@@ -1290,6 +1289,9 @@ namespace TEAM
                             string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
                             File.WriteAllText(outputFileName, output);
 
+                            // Update the data object mapping.
+                            WriteDataObjectMappingsToFile(targetTable);
+
                             //Making sure the hash key value is added to the data table as well
                             row[(int)DataItemMappingGridColumns.HashKey] = hashKey;
 
@@ -1302,12 +1304,13 @@ namespace TEAM
 
                     #endregion
 
-                    #region Deletes in Attribute Mapping
+                    #region Deletes
 
                     // Deletes
                     if ((row.RowState & DataRowState.Deleted) != 0)
                     {
                         var hashKey = row[DataItemMappingGridColumns.HashKey.ToString(), DataRowVersion.Original].ToString();
+                        var targetDataObject = row[DataItemMappingGridColumns.TargetDataObject.ToString(), DataRowVersion.Original].ToString();
 
                         try
                         {
@@ -1332,6 +1335,9 @@ namespace TEAM
                             string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
                             string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
                             File.WriteAllText(outputFileName, output);
+
+                            // Update the data object mapping.
+                            WriteDataObjectMappingsToFile(targetDataObject);
 
                         }
                         catch (JsonReaderException ex)

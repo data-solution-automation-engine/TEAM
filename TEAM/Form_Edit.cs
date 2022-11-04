@@ -28,6 +28,7 @@ namespace TEAM
         }
         
         #region Save button delegate
+
         delegate void ShowSaveButtonCallBack(bool showSaveButton);
         public void ShowSaveButton(bool showSaveButton)
         {
@@ -55,6 +56,7 @@ namespace TEAM
                 }
             }
         }
+
         #endregion
         
         #region Form name delegate
