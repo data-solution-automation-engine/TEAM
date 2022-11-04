@@ -13,7 +13,11 @@ Once tested, the branch is merged and a new development branch is started for th
 
 ## Getting started
 
-TEAM is packaged with a set of sample mappings, both in date warehouse automation JSON compliant format as well as tabular JSON. To test this out, simply install the application, navigate to the Configuration menu and select 'Deploy Examples'. For a really quick way to review the files and conventions, click the 'Generate Sample Mapping Metadata' button and open the Design Metadata grid. 
+TEAM is packaged with a set of sample mappings, both in date warehouse automation JSON compliant format as well as tabular JSON.
+
+For a really quick way to review the files and conventions, simply install the application, navigate to the Configuration menu and select 'Deploy Examples'. From here, click the 'Generate Sample Mapping Metadata' button.
+
+This will copy the example file to the metadata directory, and code can be viewed and generated (in VDW) straight away. Open the Design Metadata grid to view the results, for example by right-clicking on a full row and select 'display'. Direct VDW to read these samples for further code generation.
 
 ## Troubleshooting
 
