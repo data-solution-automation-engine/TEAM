@@ -75,6 +75,7 @@ namespace TEAM
             DefaultValuesNeeded += DataGridViewDataObjectMapping_DefaultValuesNeeded;
             Sorted += TextBoxFilterCriterion_OnDelayedTextChanged;
             CellValueChanged += OnCheckBoxValueChanged;
+            DataBindingComplete += OnBindingComplete;
 
             #endregion
 
@@ -252,6 +253,11 @@ namespace TEAM
             contextMenuStripDataObjectMappingSingleCell.ResumeLayout(false);
 
             #endregion
+        }
+
+        private void OnBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            FormManageMetadata.GridAutoLayout();
         }
 
         public class ParseEventArgs : EventArgs

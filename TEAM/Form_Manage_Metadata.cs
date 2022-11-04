@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -42,6 +41,8 @@ namespace TEAM
         private readonly BindingSource BindingSourceDataObjectMappings = new BindingSource();
         private readonly BindingSource BindingSourceDataItemMappings = new BindingSource();
         private readonly BindingSource BindingSourcePhysicalModel = new BindingSource();
+
+        private Size formSize;
 
         public FormManageMetadata()
         {
@@ -413,14 +414,14 @@ namespace TEAM
             }
         }
 
-        private void GridAutoLayout()
+        public static void GridAutoLayout()
         {
             GridAutoLayout(_dataGridViewDataObjects);
             GridAutoLayout(_dataGridViewDataItems);
             GridAutoLayout(_dataGridViewPhysicalModel);
         }
 
-        private void GridAutoLayout(DataGridView dataGridView)
+        private static void GridAutoLayout(DataGridView dataGridView)
         {
             dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridView.Columns[dataGridView.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -603,7 +604,6 @@ namespace TEAM
             }
             else
             {
-
                 richTextBoxInformation.Clear();
 
                 // Create a data table containing the changes, to check if there are changes made to begin with
@@ -1605,11 +1605,6 @@ namespace TEAM
         {
             TeamEventLog.Add(Event.CreateNewEvent(eventType, eventMessage));
             _alert.SetTextLogging("\r\n" + eventMessage);
-        }
-
-        private void FormManageMetadata_SizeChanged(object sender, EventArgs e)
-        {
-            GridAutoLayout();
         }
 
         public DateTime ActivationMetadata()
@@ -3246,12 +3241,7 @@ namespace TEAM
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
             }
         }
-
-        private void FormManageMetadata_Shown(object sender, EventArgs e)
-        {
-            GridAutoLayout();
-        }
-
+        
         private void displayTableScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Retrieve the index of the selected row
@@ -3958,9 +3948,17 @@ namespace TEAM
             }
         }
 
-        private void backgroundWorkerReverseEngineering_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void FormManageMetadata_ResizeEnd(object sender, EventArgs e)
         {
-           
+            if (Size != formSize)
+            {
+                GridAutoLayout();
+            }
+        }
+
+        private void FormManageMetadata_ResizeBegin(object sender, EventArgs e)
+        {
+            formSize = Size;
         }
     }
 }

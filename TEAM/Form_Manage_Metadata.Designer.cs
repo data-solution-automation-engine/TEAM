@@ -514,7 +514,6 @@ namespace TEAM
             // backgroundWorkerReverseEngineering
             // 
             this.backgroundWorkerReverseEngineering.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerReverseEngineering_DoWork);
-            this.backgroundWorkerReverseEngineering.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerReverseEngineering_ProgressChanged);
             this.backgroundWorkerReverseEngineering.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerReverseEngineering_RunWorkerCompleted);
             // 
             // FormManageMetadata
@@ -537,8 +536,8 @@ namespace TEAM
             this.Name = "FormManageMetadata";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the automation metadata";
-            this.Shown += new System.EventHandler(this.FormManageMetadata_Shown);
-            this.ResizeEnd += new System.EventHandler(this.FormManageMetadata_SizeChanged);
+            this.ResizeBegin += new System.EventHandler(this.FormManageMetadata_ResizeBegin);
+            this.ResizeEnd += new System.EventHandler(this.FormManageMetadata_ResizeEnd);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBoxMetadataCounts.ResumeLayout(false);
