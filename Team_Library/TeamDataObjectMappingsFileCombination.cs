@@ -96,7 +96,11 @@ namespace TEAM_Library
                 {
                     foreach (string fileName in jsonFiles)
                     {
-                        if (!Array.Exists(excludedFiles, x => x == Path.GetFileName(fileName)))
+                        if (!Array.Exists(excludedFiles, x => x == Path.GetFileName(fileName)) &&
+                            !fileName.EndsWith("TEAM_Table_Mapping.json") &&
+                            !fileName.EndsWith("TEAM_Attribute_Mapping.json") &&
+                            !fileName.EndsWith("TEAM_Model_Metadata.json")
+                            )
                         {
                             try
                             {
@@ -107,12 +111,12 @@ namespace TEAM_Library
 
                                     foreach (var error in result.Errors)
                                     {
-                                        EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered validating the contents {fileName}.{error.Message}. This occurs at line {error.LineNumber}."));
+                                        EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered validating the contents {fileName} against the Data Warehouse Automation schema. The error is {error.Message}"));
                                     }
                                 }
                                 else
                                 {
-                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred while validating the file against the Data Warehouse Automation schema. Does the schema file exist?"));
+                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred locating the Data Warehouse Automation schema. Does the schema file exist?"));
                                 }
 
                                 // Add the deserialised file to the list of mappings.
