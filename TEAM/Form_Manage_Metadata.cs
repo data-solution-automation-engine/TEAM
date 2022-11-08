@@ -2322,58 +2322,71 @@ namespace TEAM
 
         private void ApplyDataGridViewFiltering(string filterCriterion)
         {
-            foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
+            if (tabControlDataMappings.SelectedIndex == 0)
             {
-                row.Visible = true;
-
-                if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
+                foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
                 {
-                    if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) && !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
+                    row.Visible = true;
+
+                    if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
                     {
-                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
-                        currencyManager.SuspendBinding();
-                        row.Visible = false;
-                        currencyManager.ResumeBinding();
+                        if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
+                        {
+                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
+                            currencyManager.SuspendBinding();
+                            row.Visible = false;
+                            currencyManager.ResumeBinding();
+                        }
                     }
                 }
             }
-
-            foreach (DataGridViewRow row in _dataGridViewDataItems.Rows)
+            else if (tabControlDataMappings.SelectedIndex == 1)
             {
-                row.Visible = true;
-
-                if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
+                foreach (DataGridViewRow row in _dataGridViewDataItems.Rows)
                 {
-                    if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion))
+                    row.Visible = true;
+
+                    if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
                     {
-                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
-                        currencyManager.SuspendBinding();
-                        row.Visible = false;
-                        currencyManager.ResumeBinding();
+                        if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion))
+                        {
+                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
+                            currencyManager.SuspendBinding();
+                            row.Visible = false;
+                            currencyManager.ResumeBinding();
+                        }
                     }
                 }
             }
-
-            foreach (DataGridViewRow row in _dataGridViewPhysicalModel.Rows)
+            else if (tabControlDataMappings.SelectedIndex == 2)
             {
-                row.Visible = true;
-
-                if (row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value != null)
+                foreach (DataGridViewRow row in _dataGridViewPhysicalModel.Rows)
                 {
-                    if (!row.Cells[(int)PhysicalModelMappingMetadataColumns.Database_Name].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.Schema_Name].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Contains(filterCriterion))
+                    row.Visible = true;
+
+                    if (row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value != null)
                     {
-                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewPhysicalModel.DataSource];
-                        currencyManager.SuspendBinding();
-                        row.Visible = false;
-                        currencyManager.ResumeBinding();
+                        if (!row.Cells[(int)PhysicalModelMappingMetadataColumns.Database_Name].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)PhysicalModelMappingMetadataColumns.Schema_Name].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Contains(filterCriterion))
+                        {
+                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewPhysicalModel.DataSource];
+                            currencyManager.SuspendBinding();
+                            row.Visible = false;
+                            currencyManager.ResumeBinding();
+                        }
                     }
                 }
+            }
+            else
+            {
+                // Exception - cannot happen.
+                richTextBoxInformation.Text = $@"An incorrect data grid view was provided: '{tabControlDataMappings.TabPages[tabControlDataMappings.SelectedIndex]}'. This is a bug, please raise a Github issue.";
             }
         }
 
@@ -3969,6 +3982,15 @@ namespace TEAM
         private void FormManageMetadata_ResizeBegin(object sender, EventArgs e)
         {
             formSize = Size;
+        }
+
+        private void tabControlDataMappings_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Check if any filters require to be applied.
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                ApplyDataGridViewFiltering(textBoxFilterCriterion.Text);
+            }
         }
     }
 }

@@ -209,6 +209,7 @@ namespace TEAM
             this.tabControlDataMappings.SelectedIndex = 4;
             this.tabControlDataMappings.Size = new System.Drawing.Size(1364, 706);
             this.tabControlDataMappings.TabIndex = 15;
+            this.tabControlDataMappings.SelectedIndexChanged += new System.EventHandler(this.tabControlDataMappings_SelectedIndexChanged);
             // 
             // groupBox4
             // 
