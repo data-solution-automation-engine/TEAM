@@ -211,27 +211,34 @@ namespace TEAM
                 // Query the dependent information
                 foreach (DataRow row in inputDataTable.Rows)
                 {
-                    var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
-                    var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                    //var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
-
-                    var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
-                    var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
-                    var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-                    //var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
-
-                    if (
-                         row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
-                         sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
-                         (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
-                         targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
-                         targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion)
-                       )
+                    try
                     {
-                        numberOfDependents++;
+                        var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
+                        var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
+                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
+                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
+                        //var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
+
+                        var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
+                        var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
+                        var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                        //var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
+
+                        if (
+                            row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
+                            sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
+                            (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
+                            targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
+                            targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion)
+                        )
+                        {
+                            numberOfDependents++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //
                     }
                 }
             }

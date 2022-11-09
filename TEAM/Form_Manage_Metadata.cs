@@ -613,42 +613,60 @@ namespace TEAM
                     _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
                     _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
                 {
+
                     // Perform the saving of the metadata, one for each grid.
-                    try
+
+                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
                     {
-                        SaveDataObjectMappingJson(dataTableTableMappingChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        try
+                        {
+                            SaveDataObjectMappingJson(dataTableTableMappingChanges);
+
+                            // Load the grids from the repository after being updated.This resets everything.
+                            PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
                     }
 
-                    try
+                    if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
                     {
-                        SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        try
+                        {
+                            SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
+                            
+                            // Load the grids from the repository after being updated.This resets everything.
+                            PopulateDataItemMappingGrid();
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
                     }
 
-                    try
+                    if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
                     {
-                        SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                        try
+                        {
+                            SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
+
+                            // Load the grids from the repository after being updated.This resets everything.
+                            PopulatePhysicalModelGrid();
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
                     }
 
                     // Get the JSON files and load these into memory.
                     TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
                     TeamDataObjectMappingFileCombinations.GetMetadata();
 
-                    //Load the grids from the repository after being updated.This resets everything.
-                    PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
-                    PopulateDataItemMappingGrid();
-                    PopulatePhysicalModelGrid();
+                    // Re-apply any filtering, if required.
+                    ApplyDataGridViewFiltering();
                 }
                 else
                 {
@@ -2317,11 +2335,14 @@ namespace TEAM
 
         private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
         {
-            ApplyDataGridViewFiltering(textBoxFilterCriterion.Text);
+            ApplyDataGridViewFiltering();
         }
 
-        private void ApplyDataGridViewFiltering(string filterCriterion)
+        private void ApplyDataGridViewFiltering()
         {
+            var filterCriterion = textBoxFilterCriterion.Text;
+
+            // Only update the grid view on the visible tab.
             if (tabControlDataMappings.SelectedIndex == 0)
             {
                 foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
@@ -3986,11 +4007,7 @@ namespace TEAM
 
         private void tabControlDataMappings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Check if any filters require to be applied.
-            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
-            {
-                ApplyDataGridViewFiltering(textBoxFilterCriterion.Text);
-            }
+            ApplyDataGridViewFiltering();
         }
     }
 }
