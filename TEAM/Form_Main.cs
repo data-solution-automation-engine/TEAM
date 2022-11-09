@@ -316,6 +316,7 @@ namespace TEAM
 
         // Form_Manage_Metadata form
         private FormManageMetadata _myMetadataForm;
+
         [STAThread]
         public void ThreadProcMetadata()
         {
@@ -328,12 +329,14 @@ namespace TEAM
             {
                 if (_myMetadataForm.InvokeRequired)
                 {
-                    // Thread Error
-                    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Close(); });
-                    _myMetadataForm.FormClosed += CloseMetadataForm;
+                    // Do nothing.
 
-                    _myMetadataForm = new FormManageMetadata(this);
-                    Application.Run(_myMetadataForm);
+                    //    // Thread Error
+                    //    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Close(); });
+                    //    _myMetadataForm.FormClosed += CloseMetadataForm;
+
+                    //    _myMetadataForm = new FormManageMetadata(this);
+                    //    Application.Run(_myMetadataForm);
                 }
                 else
                 {

@@ -50,7 +50,7 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Default constructor
+        /// Default constructor.
         /// </summary>
         /// <param name="parent"></param>
         public FormManageMetadata(FormMain parent) : base(parent)
