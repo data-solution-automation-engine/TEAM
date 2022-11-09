@@ -1599,7 +1599,35 @@ namespace TEAM
             List<string> targetNameList = new List<string>();
 
             int counter = 0;
-            foreach (DataGridViewRow dataObjectMappingGridViewRow in _dataGridViewDataObjects.Rows)
+
+            var filteredRowSet = new List<DataGridViewRow>();
+        
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
+                    .Where(row => !row.IsNewRow && 
+                                  (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
+                                  row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text)))
+                    .ToList();
+            }
+            else
+            {
+                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
+            }
+
+            //if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
+            //{
+            //    if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) &&
+            //        !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
+            //    {
+            //        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
+            //        currencyManager.SuspendBinding();
+            //        row.Visible = false;
+            //        currencyManager.ResumeBinding();
+            //    }
+            //}
+
+            foreach (DataGridViewRow dataObjectMappingGridViewRow in filteredRowSet)
             {
                 // Manage cancellation.
                 if (worker.CancellationPending)
@@ -1631,7 +1659,7 @@ namespace TEAM
                         }
 
                         // Normalize all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.
-                        var normalizedValue = 1 + (counter - 0) * (100 - 1) / (_dataGridViewDataObjects.Rows.Count - 0);
+                        var normalizedValue = 1 + (counter - 0) * (100 - 1) / (filteredRowSet.Count - 0);
                         worker?.ReportProgress(normalizedValue);
                         counter++;
                     }

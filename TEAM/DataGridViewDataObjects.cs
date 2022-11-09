@@ -571,10 +571,6 @@ namespace TEAM
                     // Evaluate which cell is clicked.
                     var cell = this[hitTestInfo.ColumnIndex, hitTestInfo.RowIndex];
 
-                    //if (cell.ReadOnly)
-                    //{
-                    //    // Do nothing / ignore.
-                    //}
                     if (hitTestInfo.ColumnIndex == (int)DataObjectMappingGridColumns.SourceDataObject || hitTestInfo.ColumnIndex == (int)DataObjectMappingGridColumns.TargetDataObject)
                     {
                         CurrentCell = cell;
