@@ -48,7 +48,7 @@ namespace TEAM
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
 
             EditMode = DataGridViewEditMode.EditOnEnter;
-
+            
             var mySize = new Size(1100, 540);
             MinimumSize = mySize;
             Size = mySize;

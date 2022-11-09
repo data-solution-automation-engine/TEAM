@@ -35,7 +35,7 @@ namespace TEAM
         private TabPage tabPagePhysicalModel;
 
         // Keeping track of which files contain which data object mappings
-        private TeamDataObjectMappingsFileCombinations TeamDataObjectMappingFileCombinations;
+        //private TeamDataObjectMappingsFileCombinations TeamDataObjectMappingFileCombinations;
 
         // Preparing the Data Table to bind to something.
         private readonly BindingSource BindingSourceDataObjectMappings = new BindingSource();
@@ -76,11 +76,7 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             // Load the data grids
-            // Get the JSON files and load these into memory.
-            TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-            TeamDataObjectMappingFileCombinations.GetMetadata();
-
-            PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+            PopulateDataObjectMappingGrid();
             PopulateDataItemMappingGrid();
             PopulatePhysicalModelGrid();
 
@@ -113,6 +109,7 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewDataObjects)).BeginInit();
 
             _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
+            _dataGridViewDataObjects.DoubleBuffered(true);
 
             // Add tab page.
             tabPageDataObjectMapping = new TabPage();
@@ -145,6 +142,7 @@ namespace TEAM
         {
             _dataGridViewDataItems = new DataGridViewDataItems(TeamConfiguration);
             ((ISupportInitialize)(_dataGridViewDataItems)).BeginInit();
+            _dataGridViewDataItems.DoubleBuffered(true);
 
             // Add tab page.
             tabPageDataItemMapping = new TabPage();
@@ -172,6 +170,7 @@ namespace TEAM
         {
             _dataGridViewPhysicalModel = new DataGridViewPhysicalModel();
             ((ISupportInitialize)(_dataGridViewPhysicalModel)).BeginInit();
+            _dataGridViewPhysicalModel.DoubleBuffered(true);
 
             // Add tab page.
             tabPagePhysicalModel = new TabPage();
@@ -271,13 +270,17 @@ namespace TEAM
         /// <summary>
         /// Populate the Table Mapping DataGrid from an existing JSON file, through an underlying data table.
         /// </summary>
-        private void PopulateDataObjectMappingGrid(TeamDataObjectMappingsFileCombinations teamDataObjectMappingsFileCombinations)
+        private void PopulateDataObjectMappingGrid()
         {
+            // Get the JSON files and load these into memory.
+            var teamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
+            teamDataObjectMappingFileCombinations.GetMetadata();
+
             // Parse the JSON files into a data table that supports the grid view.
-            var teamDataObjectMappings = new TeamDataObjectMappings(teamDataObjectMappingsFileCombinations);
+            var teamDataObjectMappings = new TeamDataObjectMappings(teamDataObjectMappingFileCombinations);
 
             // Merge events
-            TeamEventLog.AddRange(teamDataObjectMappingsFileCombinations.EventLog);
+            TeamEventLog.AddRange(teamDataObjectMappingFileCombinations.EventLog);
 
             teamDataObjectMappings.SetDataTable(TeamConfiguration);
 
@@ -623,7 +626,7 @@ namespace TEAM
                             SaveDataObjectMappingJson(dataTableTableMappingChanges);
 
                             // Load the grids from the repository after being updated.This resets everything.
-                            PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                            PopulateDataObjectMappingGrid();
                         }
                         catch (Exception exception)
                         {
@@ -660,10 +663,6 @@ namespace TEAM
                             richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
                         }
                     }
-
-                    // Get the JSON files and load these into memory.
-                    TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-                    TeamDataObjectMappingFileCombinations.GetMetadata();
 
                     // Re-apply any filtering, if required.
                     ApplyDataGridViewFiltering();
@@ -1552,13 +1551,8 @@ namespace TEAM
             }
             else
             {
-                // Reload the data grids.
-                // Get the JSON files and load these into memory.
-                TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-                TeamDataObjectMappingFileCombinations.GetMetadata();
-
                 //Load the grids from the repository after being updated.This resets everything.
-                PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                PopulateDataObjectMappingGrid();
                 PopulateDataItemMappingGrid();
                 PopulatePhysicalModelGrid();
 
@@ -3589,12 +3583,8 @@ namespace TEAM
                     #endregion
 
                     #region Reload the full Data Grid
-                    // Get the JSON files and load these into memory.
-                    TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-                    TeamDataObjectMappingFileCombinations.GetMetadata();
-
                     //Load the grids from the repository after being updated.This resets everything.
-                    PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                    PopulateDataObjectMappingGrid();
 
                     // Notify the user of any errors that were detected.
                     var errors = TeamEventLog.ReportErrors(TeamEventLog);
@@ -3678,7 +3668,7 @@ namespace TEAM
             {
                 // create a new instance of the alert form
                 _alertEventLog = new Form_Alert();
-                _alertEventLog.Text = "Event Log";
+                _alertEventLog.Text = @"Event Log";
                 _alertEventLog.ShowLogButton(false);
                 _alertEventLog.ShowCancelButton(false);
                 _alertEventLog.ShowProgressBar(false);
