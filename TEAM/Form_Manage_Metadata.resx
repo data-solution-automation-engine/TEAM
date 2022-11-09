@@ -117,12 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="backgroundWorkerMetadata.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>132, 17</value>
+  <metadata name="backgroundWorkerParse.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>107, 17</value>
   </metadata>
   <metadata name="toolTipMetadata.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>329, 20</value>
   </metadata>
+  <data name="buttonStart.ToolTip" xml:space="preserve">
+    <value>Parsing the metadata will re-build the data object mapping as JSON files, applying any setting or convention defined in TEAM. 
+This can be used to bulk-apply changes in settings, for example the JSON output conventions or Surrogate Key definitions. 
+The parse will apply to filtered objects only, if a filter has been set.</value>
+  </data>
+  <data name="buttonReverseEngineer.ToolTip" xml:space="preserve">
+    <value>The reverse engineering process will use the selected connections to add physical model objects into the phyical model grid.
+The process will add any missing objects to the grid, but the grid still needs to be saved afterwards to commit any changes to TEAM.
+</value>
+  </data>
   <metadata name="contextMenuStripModel.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1600, 14</value>
   </metadata>

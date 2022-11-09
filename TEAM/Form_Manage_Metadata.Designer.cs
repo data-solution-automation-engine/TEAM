@@ -32,12 +32,12 @@ namespace TEAM
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageMetadata));
-            this.backgroundWorkerMetadata = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorkerParse = new System.ComponentModel.BackgroundWorker();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBoxFilterCriterion = new TEAM.TimedTextBox();
             this.labelResult = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
-            this.buttonSaveMetadataChanges = new System.Windows.Forms.Button();
+            this.buttonSaveMetadata = new System.Windows.Forms.Button();
             this.groupBoxMetadataCounts = new System.Windows.Forms.GroupBox();
             this.labelLsatCount = new System.Windows.Forms.Label();
             this.labelLnkCount = new System.Windows.Forms.Label();
@@ -46,7 +46,7 @@ namespace TEAM
             this.tabControlDataMappings = new System.Windows.Forms.TabControl();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.buttonReverseEngineer = new System.Windows.Forms.Button();
             this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
@@ -86,13 +86,13 @@ namespace TEAM
             this.groupBoxPhysicalModel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // backgroundWorkerMetadata
+            // backgroundWorkerParse
             // 
-            this.backgroundWorkerMetadata.WorkerReportsProgress = true;
-            this.backgroundWorkerMetadata.WorkerSupportsCancellation = true;
-            this.backgroundWorkerMetadata.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerMetadata_DoWorkMetadataActivation);
-            this.backgroundWorkerMetadata.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerMetadata_ProgressChanged);
-            this.backgroundWorkerMetadata.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerMetadata_RunWorkerCompleted);
+            this.backgroundWorkerParse.WorkerReportsProgress = true;
+            this.backgroundWorkerParse.WorkerSupportsCancellation = true;
+            this.backgroundWorkerParse.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerParse_DoWork);
+            this.backgroundWorkerParse.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerParse_ProgressChanged);
+            this.backgroundWorkerParse.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerParse_RunWorkerCompleted);
             // 
             // groupBox2
             // 
@@ -131,23 +131,23 @@ namespace TEAM
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(120, 40);
             this.buttonStart.TabIndex = 22;
-            this.buttonStart.Text = "&Parse All Metadata";
-            this.toolTipMetadata.SetToolTip(this.buttonStart, "Activation of the metadata will process the available metadata and update the out" +
-        "put JSON files.");
+            this.buttonStart.Text = "&Parse Metadata";
+            this.toolTipMetadata.SetToolTip(this.buttonStart, resources.GetString("buttonStart.ToolTip"));
             this.buttonStart.UseVisualStyleBackColor = true;
-            this.buttonStart.Click += new System.EventHandler(this.ButtonActivate_Click);
+            this.buttonStart.Click += new System.EventHandler(this.ButtonParse_Click);
             // 
-            // buttonSaveMetadataChanges
+            // buttonSaveMetadata
             // 
-            this.buttonSaveMetadataChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSaveMetadataChanges.Location = new System.Drawing.Point(8, 45);
-            this.buttonSaveMetadataChanges.Name = "buttonSaveMetadataChanges";
-            this.buttonSaveMetadataChanges.Size = new System.Drawing.Size(120, 40);
-            this.buttonSaveMetadataChanges.TabIndex = 1;
-            this.buttonSaveMetadataChanges.Text = "&Save Metadata Changes";
-            this.toolTipMetadata.SetToolTip(this.buttonSaveMetadataChanges, "Save the metadata (changes) to file.");
-            this.buttonSaveMetadataChanges.UseVisualStyleBackColor = true;
-            this.buttonSaveMetadataChanges.Click += new System.EventHandler(this.buttonSaveMetadata_Click);
+            this.buttonSaveMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSaveMetadata.Location = new System.Drawing.Point(8, 45);
+            this.buttonSaveMetadata.Name = "buttonSaveMetadata";
+            this.buttonSaveMetadata.Size = new System.Drawing.Size(120, 40);
+            this.buttonSaveMetadata.TabIndex = 1;
+            this.buttonSaveMetadata.Text = "&Save Metadata";
+            this.toolTipMetadata.SetToolTip(this.buttonSaveMetadata, "Save the metadata changes to file. This will directly \r\nupdate the JSON files in " +
+        "the metadata directory.");
+            this.buttonSaveMetadata.UseVisualStyleBackColor = true;
+            this.buttonSaveMetadata.Click += new System.EventHandler(this.ButtonSaveMetadata_Click);
             // 
             // groupBoxMetadataCounts
             // 
@@ -229,16 +229,17 @@ namespace TEAM
             this.checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(120, 420);
             this.checkedListBoxReverseEngineeringAreas.TabIndex = 0;
             // 
-            // button2
+            // buttonReverseEngineer
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(7, 19);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(120, 40);
-            this.button2.TabIndex = 20;
-            this.button2.Text = "Reverse Engineer";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.ReverseEngineerMetadataButtonClick);
+            this.buttonReverseEngineer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonReverseEngineer.Location = new System.Drawing.Point(7, 19);
+            this.buttonReverseEngineer.Name = "buttonReverseEngineer";
+            this.buttonReverseEngineer.Size = new System.Drawing.Size(120, 40);
+            this.buttonReverseEngineer.TabIndex = 20;
+            this.buttonReverseEngineer.Text = "&Reverse Engineer";
+            this.toolTipMetadata.SetToolTip(this.buttonReverseEngineer, resources.GetString("buttonReverseEngineer.ToolTip"));
+            this.buttonReverseEngineer.UseVisualStyleBackColor = true;
+            this.buttonReverseEngineer.Click += new System.EventHandler(this.ButtonReverseEngineerMetadataClick);
             // 
             // contextMenuStripModel
             // 
@@ -256,7 +257,7 @@ namespace TEAM
             // 
             this.MetadataGenerationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
-            this.MetadataGenerationGroupBox.Controls.Add(this.buttonSaveMetadataChanges);
+            this.MetadataGenerationGroupBox.Controls.Add(this.buttonSaveMetadata);
             this.MetadataGenerationGroupBox.Controls.Add(this.buttonStart);
             this.MetadataGenerationGroupBox.Controls.Add(this.labelResult);
             this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1383, 49);
@@ -494,7 +495,7 @@ namespace TEAM
             this.groupBoxPhysicalModel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxPhysicalModel.Controls.Add(this.labelConnections);
             this.groupBoxPhysicalModel.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
-            this.groupBoxPhysicalModel.Controls.Add(this.button2);
+            this.groupBoxPhysicalModel.Controls.Add(this.buttonReverseEngineer);
             this.groupBoxPhysicalModel.Location = new System.Drawing.Point(1383, 216);
             this.groupBoxPhysicalModel.Name = "groupBoxPhysicalModel";
             this.groupBoxPhysicalModel.Size = new System.Drawing.Size(140, 517);
@@ -573,18 +574,18 @@ namespace TEAM
         private System.Windows.Forms.Label labelLsatCount;
         private System.Windows.Forms.Label labelLnkCount;
         private System.Windows.Forms.Label labelSatCount;
-        private System.Windows.Forms.Button buttonSaveMetadataChanges;
+        private System.Windows.Forms.Button buttonSaveMetadata;
         private System.Windows.Forms.ToolStripMenuItem businessKeyMetadataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openMetadataFileToolStripMenuItem;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Label labelResult;
-        private System.ComponentModel.BackgroundWorker backgroundWorkerMetadata;
+        private System.ComponentModel.BackgroundWorker backgroundWorkerParse;
         private System.Windows.Forms.ToolStripMenuItem saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
         private TimedTextBox textBoxFilterCriterion;
 
 
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button buttonReverseEngineer;
 
         
         private System.Windows.Forms.ToolTip toolTipMetadata;

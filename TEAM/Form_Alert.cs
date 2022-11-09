@@ -79,7 +79,9 @@ namespace TEAM
         #endregion
 
         #region Delegate & function for hiding the Cancel button
+
         delegate void ShowCancelButtonCallBack(bool showCancelButton);
+
         public void ShowCancelButton(bool showCancelButton)
         {
             if (buttonCancelFormAlert.InvokeRequired)
@@ -98,7 +100,14 @@ namespace TEAM
             {
                 try
                 {
-                    buttonCancelFormAlert.Visible = false;
+                    if (showCancelButton)
+                    {
+                        buttonCancelFormAlert.Visible = true;
+                    }
+                    else
+                    {
+                        buttonCancelFormAlert.Visible = false;
+                    }
                 }
                 catch
                 {
@@ -106,6 +115,7 @@ namespace TEAM
                 }
             }
         }
+
         #endregion
 
         #region Delegate & function for hiding the Progress Label
@@ -147,7 +157,7 @@ namespace TEAM
 
         public void SetFormName(string text)
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 var d = new SetFormNameCallBack(SetFormName);
                 try
@@ -163,7 +173,7 @@ namespace TEAM
             {
                 try
                 {
-                    this.Text = text;
+                    Text = text;
                 }
                 catch
                 {

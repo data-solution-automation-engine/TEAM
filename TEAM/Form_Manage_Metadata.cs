@@ -22,7 +22,7 @@ namespace TEAM
     public partial class FormManageMetadata : FormBase
     {
         // Initialise various instances of the status/alert form.
-        private Form_Alert _alert;
+        private Form_Alert _alertParse;
         private Form_Alert _alertValidation;
         private Form_Alert _generatedScripts;
         private static Form_Alert _generatedJsonInterface;
@@ -596,7 +596,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonSaveMetadata_Click(object sender, EventArgs e)
+        private void ButtonSaveMetadata_Click(object sender, EventArgs e)
         {
             if (backgroundWorkerReverseEngineering.IsBusy)
             {
@@ -1437,10 +1437,13 @@ namespace TEAM
             return returnTuple;
         }
 
-        # region Background worker
-        private void ButtonActivate_Click(object sender, EventArgs e)
+        # region Parse process
+
+        private void ButtonParse_Click(object sender, EventArgs e)
         {
             richTextBoxInformation.Clear();
+
+            #region Preparation
 
             // Local boolean to manage whether activation is OK to go ahead.
             bool activationContinue = true;
@@ -1450,7 +1453,6 @@ namespace TEAM
             var dataTableAttributeMappingChanges = ((DataTable) BindingSourceDataItemMappings.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable) BindingSourcePhysicalModel.DataSource).GetChanges();
             
-
             if (
                 (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
                 (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) ||
@@ -1464,14 +1466,16 @@ namespace TEAM
                 activationContinue = false;
             }
 
+            #endregion
+
             #region Validation
 
-            // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
+            // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes).
             if (checkBoxValidation.Checked && activationContinue)
             {
                 if (BindingSourcePhysicalModel.Count == 0)
                 {
-                    richTextBoxInformation.Text += "There is no physical model metadata available, please make sure the physical model grid contains data.\r\n ";
+                    richTextBoxInformation.Text = @"There is no physical model metadata available, please make sure the physical model grid contains data.";
                     activationContinue = false;
                 }
                 else
@@ -1481,8 +1485,8 @@ namespace TEAM
                     _alertValidation = new Form_Alert();
                     _alertValidation.SetFormName("Validating the metadata");
                     _alertValidation.ShowLogButton(false);
-                    _alertValidation.ShowCancelButton(false);
-                    _alertValidation.Canceled += buttonCancel_Click;
+                    _alertValidation.ShowCancelButton(true);
+                    _alertValidation.Canceled += buttonCancelParse_Click;
                     _alertValidation.Show();
 
                     // Start the asynchronous operation.
@@ -1497,26 +1501,31 @@ namespace TEAM
 
             #endregion
 
-            // After validation finishes, the activation thread / process should start.
+            // After validation finishes, the parse thread / process should start.
             // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
 
-            #region Activation
+            #region Parse Thread
 
             if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataValidations.ValidationIssues == 0) && activationContinue)
             {
-                if (backgroundWorkerMetadata.IsBusy) return;
+                if (backgroundWorkerParse.IsBusy) return;
                 // create a new instance of the alert form
-                _alert = new Form_Alert();
-                _alert.Canceled += buttonCancel_Click;
-                _alert.ShowLogButton(false);
-                _alert.ShowCancelButton(false);
-                _alert.Show();
+                _alertParse = new Form_Alert();
+                _alertParse.SetFormName("Parsing the data object mappings");
+                _alertParse.Canceled += buttonCancelParse_Click;
+                _alertParse.ShowLogButton(false);
+                _alertParse.ShowCancelButton(true);
+                _alertParse.Show();
+
+                // Temporarily disable event handling on binding source to avoid cross-thread issues.
+                BindingSourceDataObjectMappings.SuspendBinding();
+
                 // Start the asynchronous operation.
-                backgroundWorkerMetadata.RunWorkerAsync();
+                backgroundWorkerParse.RunWorkerAsync();
             }
             else
             {
-                richTextBoxInformation.AppendText("Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and parse the metadata again.\r\n");
+                richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
             }
 
             #endregion
@@ -1527,19 +1536,22 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>        
-        private void buttonCancel_Click(object sender, EventArgs e)
+        private void buttonCancelParse_Click(object sender, EventArgs e)
         {
-            if (backgroundWorkerMetadata.WorkerSupportsCancellation)
+            if (backgroundWorkerParse.WorkerSupportsCancellation)
             {
                 // Cancel the asynchronous operation.
-                backgroundWorkerMetadata.CancelAsync();
+                backgroundWorkerParse.CancelAsync();
+
+                BindingSourceDataObjectMappings.ResumeBinding();
+
                 // Close the AlertForm
-                _alertValidation.Close();
+                //_alertParse.Close();
             }
         }
 
         // This event handler deals with the results of the background operation.
-        private void backgroundWorkerMetadata_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void backgroundWorkerParse_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
@@ -1551,44 +1563,50 @@ namespace TEAM
             }
             else
             {
+                BindingSourceDataObjectMappings.ResumeBinding();
+
                 //Load the grids from the repository after being updated.This resets everything.
                 PopulateDataObjectMappingGrid();
                 PopulateDataItemMappingGrid();
                 PopulatePhysicalModelGrid();
 
                 labelResult.Text = @"Done!";
-                richTextBoxInformation.Text = "The metadata was processed successfully!\r\n";
+                richTextBoxInformation.Text = @"The metadata was processed successfully!";
             }
         }
 
         // This event handler updates the progress.
-        private void backgroundWorkerMetadata_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void backgroundWorkerParse_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form
             labelResult.Text = (e.ProgressPercentage + "%");
 
             // Pass the progress to AlertForm label and progress bar
-            _alert.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alert.ProgressValue = e.ProgressPercentage;
+            _alertParse.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertParse.ProgressValue = e.ProgressPercentage;
         }
 
-        # endregion
-
         /// <summary>
-        /// The background worker where the heavy lift work is done for the activation process.
+        /// The background worker where the heavy lift work is done for the parse process.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void backgroundWorkerMetadata_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
+        private void backgroundWorkerParse_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            LogMetadataEvent("Starting an end-to-end parse of all metadata.\r\n", EventTypes.Information);
+            LogMetadataEvent("Starting a parse of selected data object mappings.\r\n", EventTypes.Information);
 
             List<string> targetNameList = new List<string>();
 
             int counter = 0;
             foreach (DataGridViewRow dataObjectMappingGridViewRow in _dataGridViewDataObjects.Rows)
             {
+                // Manage cancellation.
+                if (worker.CancellationPending)
+                {
+                    continue;
+                }
+
                 if (!dataObjectMappingGridViewRow.IsNewRow)
                 {
                     var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
@@ -1619,13 +1637,22 @@ namespace TEAM
                     }
                 }
             }
+
+            // Manage cancellation.
+            if (worker.CancellationPending)
+            {
+                LogMetadataEvent($"The parsing was cancelled.", EventTypes.Warning);
+            }
+
             worker?.ReportProgress(100);
         }
-        
+
+        #endregion
+
         private void LogMetadataEvent(string eventMessage, EventTypes eventType)
         {
             TeamEventLog.Add(Event.CreateNewEvent(eventType, eventMessage));
-            _alert.SetTextLogging("\r\n" + eventMessage);
+            _alertParse.SetTextLogging("\r\n" + eventMessage);
         }
 
         public DateTime ActivationMetadata()
@@ -2121,7 +2148,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReverseEngineerMetadataButtonClick(object sender, EventArgs e)
+        private void ButtonReverseEngineerMetadataClick(object sender, EventArgs e)
         {
             // Select the physical model grid view.
             tabControlDataMappings.SelectedTab = tabPagePhysicalModel;
@@ -3318,7 +3345,7 @@ namespace TEAM
 
             _generatedScripts = new Form_Alert();
             _generatedScripts.SetFormName("Display model metadata");
-            _generatedScripts.Canceled += buttonCancel_Click;
+            _generatedScripts.Canceled += buttonCancelParse_Click;
             _generatedScripts.Show();
 
             results.AppendLine("IF OBJECT_ID('[" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value +
@@ -3705,7 +3732,7 @@ namespace TEAM
 
                 _alertValidation = new Form_Alert();
 
-                _alertValidation.Canceled += buttonCancel_Click;
+                _alertValidation.Canceled += buttonCancelParse_Click;
                 _alertValidation.Show();
                 _alertValidation.ShowLogButton(false);
                 _alertValidation.ShowCancelButton(false);
@@ -3893,7 +3920,7 @@ namespace TEAM
             _physicalModelQuery.ShowCancelButton(false);
             _physicalModelQuery.ShowProgressBar(false);
             _physicalModelQuery.ShowProgressLabel(false);
-            _physicalModelQuery.Canceled += buttonCancel_Click;
+            _physicalModelQuery.Canceled += buttonCancelParse_Click;
             _physicalModelQuery.Show();
 
             List<string> resultQueryList = new List<string>();

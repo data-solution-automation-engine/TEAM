@@ -1105,7 +1105,10 @@ namespace TEAM
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) == DataObjectTypes.CoreBusinessConcept)
                         .FirstOrDefault();
 
-                    lookupDataObjects.Add((DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value);
+                    if (dataObjectGridViewRow != null)
+                    {
+                        lookupDataObjects.Add((DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value);
+                    }
                 }
             }
             else // Staging, PSA, Hub, other.
