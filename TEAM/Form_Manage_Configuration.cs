@@ -285,7 +285,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show($@"Error: Could not read file from disk. Original error: {ex.Message}", @"An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"Error: Could not read file from disk. Original error: {ex.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         

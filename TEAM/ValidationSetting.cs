@@ -29,6 +29,9 @@ namespace TEAM
         // Data Vault Modelling.
         public string BasicDataVaultValidation { get; set; }
 
+        // Generic
+        public string DuplicateDataObjectMappings { get; set; }
+
         /// <summary>
         /// Retrieve the validation information from disk and save this to memory.
         /// </summary>
@@ -64,6 +67,8 @@ namespace TEAM
                 LinkCompletion = configList["LinkCompletion"];
 
                 BasicDataVaultValidation = configList["BasicDataVaultValidation"];
+
+                DuplicateDataObjectMappings = configList["DuplicateDataObjectMappings"];
             }
             catch (Exception)
             {
@@ -90,6 +95,7 @@ namespace TEAM
                 validationFile.AppendLine("BusinessKeySyntax|" + BusinessKeySyntax + "");
                 validationFile.AppendLine("LinkCompletion|" + BusinessKeySyntax + "");
                 validationFile.AppendLine("BasicDataVaultValidation|" + BasicDataVaultValidation + "");
+                validationFile.AppendLine("DuplicateDataObjectMappings|" + DuplicateDataObjectMappings + "");
 
                 // Closing off.
                 validationFile.AppendLine("/* End of file */");
@@ -132,6 +138,8 @@ namespace TEAM
                 validationFile.AppendLine("LinkCompletion|True");
 
                 validationFile.AppendLine("BasicDataVaultValidation|True");
+
+                validationFile.AppendLine("DuplicateDataObjectMappings|True");
 
                 validationFile.AppendLine("/* End of file */");
 

@@ -521,7 +521,7 @@ namespace TEAM
         {
             if (_myValidationForm == null)
             {
-                _myValidationForm = new FormManageValidation(this);
+                _myValidationForm = new FormManageValidation();
                 _myValidationForm.Show();
 
                 Application.Run();
@@ -535,7 +535,7 @@ namespace TEAM
                     _myValidationForm.Invoke((MethodInvoker) delegate { _myValidationForm.Close(); });
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormManageValidation(this);
+                    _myValidationForm = new FormManageValidation();
                     _myValidationForm.Show();
                     Application.Run();
                 }
@@ -544,7 +544,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormManageValidation(this);
+                    _myValidationForm = new FormManageValidation();
                     _myValidationForm.Show();
                     Application.Run();
                 }
@@ -2416,7 +2416,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
+        private void BackgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -2487,7 +2487,13 @@ namespace TEAM
                     ValidateBasicDataVaultAttributeExistence();
                 }
 
-                
+                worker?.ReportProgress(90);
+
+                // Check for duplicate data object mappings.
+                if (ValidationSetting.DuplicateDataObjectMappings == "True")
+                {
+                    ValidateDuplicateDataObjectMappings();
+                }
 
                 worker?.ReportProgress(100);
 
@@ -2748,52 +2754,21 @@ namespace TEAM
                     if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
                     {
                         string objectValidated;
-                        //if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
-                        //{
-                        //    try
-                        //    {
-                        //        objectValidated = MetadataValidation.ValidateObjectExistencePhysical(fullyQualifiedValidationObjectSource, sourceConnection);
 
-                        //        // Add negative results to dictionary
-                        //        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
-                        //        {
-                        //            resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); 
-                        //        }
-                                
-                        //        objectValidated = MetadataValidation.ValidateObjectExistencePhysical(fullyQualifiedValidationObjectTarget, targetConnection);
+                        objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
 
-                        //        // Add negative results to dictionary
-                        //        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
-                        //        {
-                        //            resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); 
-                        //        }
-                        //    }
-                        //    catch (Exception ex)
-                        //    {
-                        //        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,$"An issue occurred connecting to the database: \r\n\r\n {ex}."));
-                        //    }
-                        //}
+                        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
+                        {
+                            resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
+                        }
 
-                        //if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
-                        //{
-                            objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
+                        objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
 
-                            if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
-                            {
-                                resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
-                            }
+                        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
+                        {
+                            resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); // Add objects that did not pass the test
+                        }
 
-                            objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                            if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
-                            {
-                                resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); // Add objects that did not pass the test
-                            }
-                        //}
-                        //else
-                        //{
-                        //    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,$"The validation approach (physical/virtual) could not be asserted."));
-                        //}
                     }
                 }
             }
@@ -2806,14 +2781,13 @@ namespace TEAM
                     _alertValidation.SetTextLogging($"     {objectValidationResult.Key} is tested with outcome {objectValidationResult.Value}. This may be because the schema is defined differently in the connection, or because it simply does not exist.\r\n");
                 }
 
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count;
+                MetadataValidations.ValidationIssues = resultList.Count;
                 _alertValidation.SetTextLogging("\r\n");
             }
             else
             {
                 _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model.\r\n\r\n");
             }
-
         }
 
         /// <summary>
@@ -2821,8 +2795,7 @@ namespace TEAM
         /// </summary>
         internal void ValidateHardcodedFields()
         {
-            _alertValidation.SetTextLogging(
-                $"--> Commencing the validation to see if any hard-coded fields are not correctly set in enabled mappings.\r\n");
+            _alertValidation.SetTextLogging("--> Commencing the validation to see if any hard-coded fields are not correctly set in enabled mappings.\r\n");
 
             int issueCounter = 0;
             var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
@@ -2839,8 +2812,7 @@ namespace TEAM
                     if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
                     {
                         issueCounter++;
-                        _alertValidation.SetTextLogging(
-                            $"     Data Object {(string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
+                        _alertValidation.SetTextLogging($"     Data Object {(string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
                     }
                 }
             }
@@ -2927,7 +2899,7 @@ namespace TEAM
                 _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of Data Objects related to defined Data Item Mappings.\r\n\r\n");
             }
 
-            MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + issueCounter;
+            MetadataValidations.ValidationIssues = issueCounter;
         }
 
         /// <summary>
@@ -3007,12 +2979,10 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key +
-                                                    " is tested with this outcome: " + sourceObjectResult.Value +
-                                                    "\r\n");
+                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
                 }
 
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
+                MetadataValidations.ValidationIssues = resultList.Count();
                 _alertValidation.SetTextLogging("\r\n");
             }
             else
@@ -3020,6 +2990,39 @@ namespace TEAM
                 _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
             }
         }
+
+        internal void ValidateDuplicateDataObjectMappings()
+        {
+            // Informing the user.
+            _alertValidation.SetTextLogging("--> Commencing the validation to check if any duplicate data object mappings are present.\r\n");
+
+            var rows = _dataGridViewDataObjects.Rows.OfType<DataGridViewRow>().Reverse().Skip(1);
+
+            var duplicateRows = rows.GroupBy(r => 
+                    new {
+                    sourceDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString(),
+                    TargetDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(),
+                    BusinessKeyDefinition = r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString(),
+                    })
+                .Where(g => g.Count() > 1);
+
+            var duplicateDeduplicatedRows = duplicateRows.Distinct().ToList();
+
+            // Evaluate the results
+            int resultsCounter = 0;
+
+            foreach (var result in duplicateDeduplicatedRows)
+            {
+                _alertValidation.SetTextLogging($"     The data object mapping from {result.Key.sourceDataObjectName} to {result.Key.TargetDataObjectName} with {result.Key.BusinessKeyDefinition} is duplicate.\r\n");
+                resultsCounter++;
+            }
+
+            if (resultsCounter == 0)
+            {
+                _alertValidation.SetTextLogging("     There were no full row duplicates found in the data object mapping.\r\n\r\n");
+            }
+        }
+
         internal void ValidateBasicDataVaultAttributeExistence()
         {
             // Informing the user.
@@ -3696,7 +3699,6 @@ namespace TEAM
             internal string targetDataObjectName { get; set; }
             internal string targetDataObjectConnectionId { get; set; }
             internal string targetDataItemName { get; set; }
-
         }
 
         private void validateMetadataToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3705,7 +3707,7 @@ namespace TEAM
 
             if (BindingSourcePhysicalModel.Count == 0)
             {
-                richTextBoxInformation.Text += "There is no physical model metadata available.\r\n ";
+                richTextBoxInformation.Text += @"There is no physical model metadata available. Validations cannot be done without a physical model snapshot.";
             }
             else
             {

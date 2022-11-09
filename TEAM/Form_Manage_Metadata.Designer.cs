@@ -479,7 +479,7 @@ namespace TEAM
             // 
             this.backgroundWorkerValidationOnly.WorkerReportsProgress = true;
             this.backgroundWorkerValidationOnly.WorkerSupportsCancellation = true;
-            this.backgroundWorkerValidationOnly.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerValidation_DoWork);
+            this.backgroundWorkerValidationOnly.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorkerValidation_DoWork);
             this.backgroundWorkerValidationOnly.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerValidationOnly_ProgressChanged);
             this.backgroundWorkerValidationOnly.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerValidationOnly_RunWorkerCompleted);
             // 

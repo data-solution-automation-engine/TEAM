@@ -207,7 +207,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show(@"Error: Could not write values to memory and disk. Original error: " + ex.Message, @"An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Error: Could not write values to memory and disk. Original error: " + ex.Message, @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

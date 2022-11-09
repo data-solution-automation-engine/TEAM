@@ -7,11 +7,8 @@ namespace TEAM
 {
     public partial class FormManageValidation : FormBase
     {
-        private readonly FormManageMetadata _myParent;
-
-        public FormManageValidation(FormManageMetadata parent)
+        public FormManageValidation()
         {            
-            _myParent = parent;
             InitializeComponent();
 
             // Make sure the validation information is available in this form.
@@ -37,7 +34,6 @@ namespace TEAM
             {
                 // Do nothing
             }
-
         }
 
         /// <summary>
@@ -55,7 +51,7 @@ namespace TEAM
                     checkBoxDataObjectExistence.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the source object validation values, only true and false are allowed but this was encountered: " + ValidationSetting.DataObjectExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($@"There is something wrong with the source object validation values, only true and false are allowed but this was encountered: {ValidationSetting.DataObjectExistence}. Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
@@ -69,7 +65,7 @@ namespace TEAM
                     checkBoxDataItemExistence.Checked = false;
                     break;
                 default:
-                    MessageBox.Show("There is something wrong with the source attribute validation values, only true and false are allowed but this was encountered: " + ValidationSetting.DataItemExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($@"There is something wrong with the source attribute validation values, only true and false are allowed but this was encountered: {ValidationSetting.DataItemExistence}. Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
 
@@ -84,8 +80,7 @@ namespace TEAM
             else
             {
                 // Raise exception
-                MessageBox.Show("There is something wrong with the business key validation values, only true and false are allowed but this was encountered: " +
-                                ValidationSetting.SourceBusinessKeyExistence + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"There is something wrong with the business key validation values, only true and false are allowed but this was encountered: {ValidationSetting.SourceBusinessKeyExistence}. Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 
@@ -163,10 +158,23 @@ namespace TEAM
             else
             {
                 // Raise exception
-                MessageBox.Show("There is something wrong with the business key syntax validation values, only true and false are allowed but this was encountered: " + ValidationSetting.BasicDataVaultValidation + ". Please check the validation file (TEAM_<environment>_validation.txt)", "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"There is something wrong with the business key syntax validation values, only true and false are allowed but this was encountered: {ValidationSetting.BasicDataVaultValidation}. Please check the validation file (TEAM_<environment>_validation.txt)", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-
+            // Duplicate data object mapping checks
+            if (ValidationSetting.DuplicateDataObjectMappings == "True")
+            {
+                checkBoxDuplicateDataObjectMappings.Checked = true;
+            }
+            else if (ValidationSetting.DuplicateDataObjectMappings == "False")
+            {
+                checkBoxDuplicateDataObjectMappings.Checked = false;
+            }
+            else
+            {
+                // Raise exception
+                MessageBox.Show($@"There is something wrong with the validation value to detect duplicate data object mappings, only true and false are allowed but this was encountered: {ValidationSetting.BasicDataVaultValidation}. Please check the validation file (TEAM_<environment>_validation.txt)", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -189,57 +197,45 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        private void toolStripSaveValidationSettings_Click(object sender, EventArgs e)
         {
             try
             {
                 // Source object existence check
-                var dataObjectExistence = "";
-                dataObjectExistence = checkBoxDataObjectExistence.Checked ? "True" : "False";
+                var dataObjectExistence = checkBoxDataObjectExistence.Checked ? "True" : "False";
                 ValidationSetting.DataObjectExistence = dataObjectExistence;
 
-
                 // Source business key existence check
-                var stringBusinessKeyExistence = "";
-                stringBusinessKeyExistence = checkBoxSourceBusinessKeyExistence.Checked ? "True" : "False";
+                var stringBusinessKeyExistence = checkBoxSourceBusinessKeyExistence.Checked ? "True" : "False";
                 ValidationSetting.SourceBusinessKeyExistence = stringBusinessKeyExistence;
 
-
                 // Source attribute existence check
-                var stringSourceAttributeExistence = "";
-                stringSourceAttributeExistence = checkBoxDataItemExistence.Checked ? "True" : "False";
+                var stringSourceAttributeExistence = checkBoxDataItemExistence.Checked ? "True" : "False";
                 ValidationSetting.DataItemExistence = stringSourceAttributeExistence;
 
-
                 // Logical Group Validation
-                var stringLogicalGroup = "";
-                stringLogicalGroup = checkBoxLogicalGroup.Checked ? "True" : "False";
+                var stringLogicalGroup = checkBoxLogicalGroup.Checked ? "True" : "False";
                 ValidationSetting.LogicalGroup = stringLogicalGroup;
 
-
                 // Link Key Order Validation
-                var stringLinkKeyOrder = "";
-                stringLinkKeyOrder = checkBoxLinkKeyOrder.Checked ? "True" : "False";
+                var stringLinkKeyOrder = checkBoxLinkKeyOrder.Checked ? "True" : "False";
                 ValidationSetting.LinkKeyOrder = stringLinkKeyOrder;
-
                 
                 // Business key syntax check
-                var linkCompletion = "";
-                linkCompletion = checkBoxLinkCompletion.Checked ? "True" : "False";
+                var linkCompletion = checkBoxLinkCompletion.Checked ? "True" : "False";
                 ValidationSetting.LinkCompletion = linkCompletion;
-
-
+                
                 // Business key syntax check
-                var businessKeySyntax = "";
-                businessKeySyntax = checkBoxBusinessKeySyntaxValidation.Checked ? "True" : "False";
+                var businessKeySyntax = checkBoxBusinessKeySyntaxValidation.Checked ? "True" : "False";
                 ValidationSetting.BusinessKeySyntax = businessKeySyntax;
-
-
+                
                 // Data Vault model syntax check
-                var dataVaultBasicCheck = "";
-                dataVaultBasicCheck = checkBoxBasicDataVaultValidation.Checked ? "True" : "False";
+                var dataVaultBasicCheck = checkBoxBasicDataVaultValidation.Checked ? "True" : "False";
                 ValidationSetting.BasicDataVaultValidation = dataVaultBasicCheck;
 
+                // Data Vault model syntax check
+                var duplicateDataObjectMappingCheck = checkBoxDuplicateDataObjectMappings.Checked ? "True" : "False";
+                ValidationSetting.DuplicateDataObjectMappings = duplicateDataObjectMappingCheck;
 
                 // Write to disk
                 ValidationSetting.SaveValidationFile();
@@ -248,7 +244,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: Could not write values to memory and disk. Original error: " + ex.Message, "An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"Error: Could not write values to memory and disk. Original error: {ex.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -260,7 +256,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                richTextBoxInformation.Text = "An error has occurred while attempting to open the configuration directory. The error message is: " + ex;
+                richTextBoxInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: {ex.Message}";
             }
         }
 
