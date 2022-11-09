@@ -13,7 +13,6 @@ using static TEAM.FormBase;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Event = TEAM_Library.Event;
 using static TEAM_Library.MetadataHandling;
-using Windows.UI.Xaml.Controls;
 using ComboBox = System.Windows.Forms.ComboBox;
 
 namespace TEAM
@@ -79,6 +78,7 @@ namespace TEAM
             Sorted += TextBoxFilterCriterion_OnDelayedTextChanged;
             CellValueChanged += OnCheckBoxValueChanged;
             DataBindingComplete += OnBindingComplete;
+            RowPostPaint += OnRowPostPaint;
 
             #endregion
 
@@ -284,6 +284,31 @@ namespace TEAM
             #endregion
         }
 
+        private void OnRowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var rowIndex = (e.RowIndex + 1).ToString();
+
+            var centerFormat = new StringFormat()
+            {
+                // Right-align the number value.
+                Alignment = StringAlignment.Center,
+
+                LineAlignment = StringAlignment.Center
+            };
+
+            Size textSize = TextRenderer.MeasureText(rowIndex, Font);
+
+            // Resize iff the header width is smaller than the string width.
+            if (grid.RowHeadersWidth < textSize.Width + 40)
+            {
+                grid.RowHeadersWidth = textSize.Width + 40;
+            }
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+            e.Graphics.DrawString(rowIndex, Font, SystemBrushes.ControlText, headerBounds, centerFormat);
+        }
+
         private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
         {
 
@@ -313,7 +338,7 @@ namespace TEAM
             {
                 if (!row.IsNewRow)
                 {
-                    Rows.Remove(row);
+                    Rows.RemoveAt(row.Index);
                 }
             }
         }
