@@ -13,6 +13,8 @@ using static TEAM.FormBase;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Event = TEAM_Library.Event;
 using static TEAM_Library.MetadataHandling;
+using Windows.UI.Xaml.Controls;
+using ComboBox = System.Windows.Forms.ComboBox;
 
 namespace TEAM
 {
@@ -24,6 +26,7 @@ namespace TEAM
         private Form_Edit _modifyJson;
 
         private readonly ContextMenuStrip contextMenuStripDataObjectMappingFullRow;
+        private readonly ContextMenuStrip contextMenuStripDataObjectMappingMultipleRows;
         private readonly ContextMenuStrip contextMenuStripDataObjectMappingSingleCell;
 
         public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
@@ -111,14 +114,12 @@ namespace TEAM
             sourceConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             sourceConnection.DisplayMember = "ConnectionKey";
             sourceConnection.ValueMember = "ConnectionId";
-            //sourceConnection.ValueType = typeof(string);
             Columns.Add(sourceConnection);
             
             // Source Data Object.
             DataGridViewTextBoxColumn sourceDataObject = new DataGridViewTextBoxColumn();
             sourceDataObject.Name = DataObjectMappingGridColumns.SourceDataObject.ToString();
             sourceDataObject.DataPropertyName = DataObjectMappingGridColumns.SourceDataObject.ToString();
-            //sourceDataObject.ValueType = typeof(dynamic);
             sourceDataObject.HeaderText = @"Source Data Object";
             sourceDataObject.SortMode = DataGridViewColumnSortMode.Programmatic;
             Columns.Add(sourceDataObject);
@@ -132,14 +133,12 @@ namespace TEAM
             targetConnection.DataSource = LocalTeamConnection.GetConnections(FormBase.TeamConfiguration.ConnectionDictionary);
             targetConnection.DisplayMember = "ConnectionKey";
             targetConnection.ValueMember = "ConnectionId";
-            //targetConnection.ValueType = typeof(string);
             Columns.Add(targetConnection);
 
             // Target Data Object.
             DataGridViewTextBoxColumn targetDataObject = new DataGridViewTextBoxColumn();
             targetDataObject.Name = DataObjectMappingGridColumns.TargetDataObject.ToString();
             targetDataObject.DataPropertyName = DataObjectMappingGridColumns.TargetDataObject.ToString();
-            //targetDataObject.ValueType = typeof(DataObject);
             targetDataObject.HeaderText = @"Target Data Object";
             targetDataObject.SortMode = DataGridViewColumnSortMode.Programmatic;
             Columns.Add(targetDataObject);
@@ -190,6 +189,8 @@ namespace TEAM
 
             #region Context menu
 
+            #region Full row context menu
+
             // Full row context menu
             contextMenuStripDataObjectMappingFullRow = new ContextMenuStrip();
             contextMenuStripDataObjectMappingFullRow.SuspendLayout();
@@ -234,6 +235,32 @@ namespace TEAM
             contextMenuStripDataObjectMappingFullRow.Size = new Size(340, 48);
             contextMenuStripDataObjectMappingFullRow.ResumeLayout(false);
 
+            #endregion
+
+            #region Multiple rows context menu
+
+            // Single cell context menu
+            contextMenuStripDataObjectMappingMultipleRows = new ContextMenuStrip();
+            contextMenuStripDataObjectMappingMultipleRows.SuspendLayout();
+
+            // Modify JSON menu item
+            var toolStripMenuItemDeleteMultipleRows = new ToolStripMenuItem();
+            toolStripMenuItemDeleteMultipleRows.Name = "toolStripMenuItemDeleteMultipleRows";
+            toolStripMenuItemDeleteMultipleRows.Size = new Size(143, 22);
+            toolStripMenuItemDeleteMultipleRows.Text = @"Delete selected rows";
+            toolStripMenuItemDeleteMultipleRows.Click += toolStripMenuItemDeleteMultipleRows_Click;
+
+            contextMenuStripDataObjectMappingMultipleRows.Items.AddRange(new ToolStripItem[] {
+                toolStripMenuItemDeleteMultipleRows
+            });
+            contextMenuStripDataObjectMappingMultipleRows.Name = "contextMenuStripDataObjectMappingMultipleRows";
+            contextMenuStripDataObjectMappingMultipleRows.Size = new Size(144, 26);
+            contextMenuStripDataObjectMappingMultipleRows.ResumeLayout(false);
+
+            #endregion
+
+            #region Single cell context menu
+
             // Single cell context menu
             contextMenuStripDataObjectMappingSingleCell = new ContextMenuStrip();
             contextMenuStripDataObjectMappingSingleCell.SuspendLayout();
@@ -253,6 +280,42 @@ namespace TEAM
             contextMenuStripDataObjectMappingSingleCell.ResumeLayout(false);
 
             #endregion
+
+            #endregion
+        }
+
+        private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
+        {
+
+            foreach (DataGridViewColumn column in Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            }
+
+            foreach (DataGridViewRow row in SelectedRows)
+            {
+                if (!row.IsNewRow)
+                {
+                    Rows.RemoveAt(row.Index);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It deletes the row from the grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteThisRowFromTableDataGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in SelectedRows)
+            {
+                if (!row.IsNewRow)
+                {
+                    Rows.Remove(row);
+                }
+            }
         }
 
         private void OnBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
@@ -399,8 +462,7 @@ namespace TEAM
                 }
             }
         }
-
-
+        
         private void toolStripMenuItemModifyJson_Click(object sender, EventArgs e)
         {
             _modifyJson = new Form_Edit(CurrentCell);
@@ -443,6 +505,7 @@ namespace TEAM
         {
             ApplyDataGridViewFiltering();
         }
+
         public void ApplyDataGridViewFiltering()
         {
             foreach (DataGridViewRow dr in Rows)
@@ -524,28 +587,7 @@ namespace TEAM
             FormManageMetadata.ManageFormJsonInteraction(output);
         }
 
-        /// <summary>
-        /// This method is called from the context menu on the data grid. It deletes the row from the grid.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteThisRowFromTableDataGridToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var selectedRows = SelectedRows;
 
-            foreach (DataGridViewRow row in selectedRows)
-            {
-                if (row.IsNewRow)
-                {
-
-                }
-                else
-                {
-                    int rowToDelete = Rows.GetFirstRow(DataGridViewElementStates.Selected);
-                    Rows.RemoveAt(rowToDelete);
-                }
-            }
-        }
 
         private void DataGridViewDataObjects_MouseDown(object sender, MouseEventArgs e)
         {
@@ -557,17 +599,24 @@ namespace TEAM
                 if (hitTestInfo.RowIndex == -1)
                     return;
 
-                // Clear existing selection.
-                ClearSelection();
-
                 if (hitTestInfo.ColumnIndex == -1)
                 {
                     // Select the full row when the default column is right-clicked.
-                    Rows[hitTestInfo.RowIndex].Selected = true;
-                    ContextMenuStrip = contextMenuStripDataObjectMappingFullRow;
+                    if (SelectedRows.Count == 1)
+                    {
+                        ClearSelection();
+                        Rows[hitTestInfo.RowIndex].Selected = true;
+                        ContextMenuStrip = contextMenuStripDataObjectMappingFullRow;
+                    }
+                    else
+                    {
+                        ContextMenuStrip = contextMenuStripDataObjectMappingMultipleRows;
+                    }
                 }
                 else
                 {
+                    ClearSelection();
+
                     // Evaluate which cell is clicked.
                     var cell = this[hitTestInfo.ColumnIndex, hitTestInfo.RowIndex];
 
