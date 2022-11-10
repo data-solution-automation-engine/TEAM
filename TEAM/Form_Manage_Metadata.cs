@@ -44,11 +44,6 @@ namespace TEAM
 
         private Size formSize;
 
-        public FormManageMetadata()
-        {
-            InitializeComponent();
-        }
-
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -81,7 +76,7 @@ namespace TEAM
             PopulatePhysicalModelGrid();
 
             // Inform the user
-            string userFeedback = $"The metadata has been loaded.";
+            var userFeedback = $"The metadata has been loaded.";
             richTextBoxInformation.AppendText($"{userFeedback}\r\n");
             TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
 
@@ -97,6 +92,16 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
             }
+
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 40;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 90;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 250;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 90;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 250;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 125;
+
+            //_dataGridViewDataObjects.AutoResizeColumns();
+            //GridAutoLayout();
         }
 
         /// <summary>
@@ -285,6 +290,7 @@ namespace TEAM
             teamDataObjectMappings.SetDataTable(TeamConfiguration);
 
             #region Assert combo box values
+
             // Handle unknown combo box values, by setting them to empty in the data table.
             var localConnectionKeyList = LocalTeamConnection.TeamConnectionKeyList(TeamConfiguration.ConnectionDictionary);
             List<string> userFeedbackList = new List<string>();
@@ -314,6 +320,7 @@ namespace TEAM
                     row[(int) DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
                 }
             }
+
             #endregion
 
             // Provide user feedback is any of the connections have been invalidated.
@@ -359,8 +366,6 @@ namespace TEAM
 
             _dataGridViewDataItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             _dataGridViewDataItems.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
-
-            //richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()} was loaded.\r\n");
 
             // Resize the grid
             GridAutoLayout(_dataGridViewDataItems);
@@ -1399,12 +1404,9 @@ namespace TEAM
                 );
 
             // Find the corresponding row in the Data Object Mapping grid
-            DataRow[] DataObjectMappings = tableMappingDataTable.Select("[" + DataObjectMappingGridColumns.SourceDataObjectName +
-                                                                        "] = '" + sourceTable + "' AND" +
-                                                                        "[" + DataObjectMappingGridColumns.TargetDataObjectName +
-                                                                        "] = '" + targetTable + "'");
+            DataRow[] DataObjectMappings = tableMappingDataTable.Select("[" + DataObjectMappingGridColumns.SourceDataObjectName + "] = '" + sourceTable + "' AND" + "[" + DataObjectMappingGridColumns.TargetDataObjectName + "] = '" + targetTable + "'");
 
-            if (DataObjectMappings is null || DataObjectMappings.Length == 0)
+            if (DataObjectMappings.Length == 0)
             {
                 // There is no matching row found in the Data Object Mapping grid. Validation should pick this up!
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, no matching Data Object mapping was found."));
@@ -4059,15 +4061,24 @@ namespace TEAM
 
         private void checkBoxShowStaging_CheckedChanged(object sender, EventArgs e)
         {
+            // Everything should be shown - no filters.
             if (checkBoxShowStaging.Checked)
             {
                 var inputTableMapping = (DataTable)BindingSourceDataObjectMappings.DataSource;
                 inputTableMapping.DefaultView.RowFilter = string.Empty;
+                ApplyDataGridViewFiltering();
             }
+            // Everything BUT staging layer objects should be shown.
             else
             {
                 var inputTableMapping = (DataTable)BindingSourceDataObjectMappings.DataSource;
-                inputTableMapping.DefaultView.RowFilter = $"[SourceDataObjectName] LIKE '{"STG"}_%'";
+                var filterCriterion = "";
+
+                // The target is not a STG process and not a PSA process.
+                filterCriterion = $"[TargetDataObjectName] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}_%' AND [TargetDataObjectName] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}_%'";
+
+                inputTableMapping.DefaultView.RowFilter = filterCriterion;
+                ApplyDataGridViewFiltering();
             }
         }
     }

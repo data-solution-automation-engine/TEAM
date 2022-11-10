@@ -48,6 +48,7 @@ namespace TEAM
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
             EditMode = DataGridViewEditMode.EditOnEnter;
             
@@ -77,7 +78,6 @@ namespace TEAM
             DefaultValuesNeeded += DataGridViewDataObjectMapping_DefaultValuesNeeded;
             Sorted += TextBoxFilterCriterion_OnDelayedTextChanged;
             CellValueChanged += OnCheckBoxValueChanged;
-            DataBindingComplete += OnBindingComplete;
             RowPostPaint += OnRowPostPaint;
 
             #endregion
@@ -300,13 +300,16 @@ namespace TEAM
             Size textSize = TextRenderer.MeasureText(rowIndex, Font);
 
             // Resize iff the header width is smaller than the string width.
-            if (grid.RowHeadersWidth < textSize.Width + 40)
+            if (grid != null && grid.RowHeadersWidth < textSize.Width + 40)
             {
                 grid.RowHeadersWidth = textSize.Width + 40;
             }
 
-            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
-            e.Graphics.DrawString(rowIndex, Font, SystemBrushes.ControlText, headerBounds, centerFormat);
+            if (grid != null)
+            {
+                var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+                e.Graphics.DrawString(rowIndex, Font, SystemBrushes.ControlText, headerBounds, centerFormat);
+            }
         }
 
         private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
@@ -340,11 +343,6 @@ namespace TEAM
                     Rows.RemoveAt(row.Index);
                 }
             }
-        }
-
-        private void OnBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
-        {
-            FormManageMetadata.GridAutoLayout();
         }
 
         public class ParseEventArgs : EventArgs
@@ -610,9 +608,7 @@ namespace TEAM
 
             FormManageMetadata.ManageFormJsonInteraction(output);
         }
-
-
-
+        
         private void DataGridViewDataObjects_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
