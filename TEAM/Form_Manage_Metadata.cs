@@ -244,22 +244,20 @@ namespace TEAM
             checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
             checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
 
-            var sourceConnections = _dataGridViewDataObjects.Rows
-                .Cast<DataGridViewRow>()
-                .Where(r => !r.IsNewRow)
-                .Where(r => MetadataHandling.GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", TeamConfiguration) == MetadataHandling.DataObjectTypes.StagingArea)
-                .Select(row => row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString())
-                .Distinct()
-                .ToList();
+            //var sourceConnections = _dataGridViewDataObjects.Rows
+            //    .Cast<DataGridViewRow>()
+            //    .Where(r => !r.IsNewRow)
+            //    .Where(r => MetadataHandling.GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", TeamConfiguration) == MetadataHandling.DataObjectTypes.StagingArea)
+            //    .Select(row => row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString())
+            //    .Distinct()
+            //    .ToList();
 
             // Load the checkboxes for the reverse-engineering tab.
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
                 // Only if it's not the metadata connection and not on the 'source' list as derived above.
-                if (connection.Value != TeamConfiguration.MetadataConnection && !sourceConnections.Contains(connection.Value.ConnectionInternalId))
+                if (connection.Value != TeamConfiguration.MetadataConnection)
                 {
-
-
                     var item = new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey);
                     checkedListBoxReverseEngineeringAreas.Items.Add(item);
                 }
@@ -3296,17 +3294,13 @@ namespace TEAM
             {
                 foreach (var sourceObjectResult in resultList)
                 {
-                    _alertValidation.SetTextLogging("     Table " + sourceObjectResult.Key.Item1 +
-                                                    " does not contain Business Key attribute " +
-                                                    sourceObjectResult.Key.Item2 + ".\r\n");
+                    _alertValidation.SetTextLogging("     Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + ".\r\n");
+                    MetadataValidations.ValidationIssues++;
                 }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
             }
             else
             {
-                _alertValidation.SetTextLogging(
-                    "     There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
+                _alertValidation.SetTextLogging("     There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
             }
 
             _alertValidation.SetTextLogging("\r\n");
@@ -3378,13 +3372,10 @@ namespace TEAM
             _generatedScripts.Canceled += buttonCancelParse_Click;
             _generatedScripts.Show();
 
-            results.AppendLine("IF OBJECT_ID('[" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value +
-                               "]', 'U') IS NOT NULL");
-            results.AppendLine(
-                "DROP TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]");
+            results.AppendLine("IF OBJECT_ID('[" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]', 'U') IS NOT NULL");
+            results.AppendLine("DROP TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]");
             results.AppendLine();
-            results.AppendLine("CREATE TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value +
-                               "]");
+            results.AppendLine("CREATE TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]");
             results.AppendLine("(");
 
             int counter = 1;
@@ -3445,12 +3436,12 @@ namespace TEAM
                 richTextBoxInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: {ex.Message}";
             }
         }
-        private void openAttributeMappingFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openDataItemMappingFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var theDialog = new OpenFileDialog
             {
-                Title = @"Open Attribute Mapping Metadata File",
-                Filter = @"Attribute Mapping files|*.xml;*.json",
+                Title = @"Open Data Item Mapping Metadata File",
+                Filter = @"Attribute Mapping files|*.json",
                 InitialDirectory = GlobalParameters.MetadataPath
             };
 
@@ -3461,53 +3452,36 @@ namespace TEAM
                 try
                 {
                     var chosenFile = theDialog.FileName;
-                    var dataSet = new DataSet();
+                    
+                    // Load the file, convert it to a DataTable and bind it to the source
+                    List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
 
-                    string fileExtension = Path.GetExtension(theDialog.FileName);
+                    DataTable dt = Utility.ConvertToDataTable(jsonArray);
 
-                    if (fileExtension == ".xml")
+                    // Clear out the existing data from the grid
+                    BindingSourceDataItemMappings.DataSource = null;
+                    BindingSourceDataItemMappings.Clear();
+                    _dataGridViewDataItems.DataSource = null;
+
+                    // Bind the datatable to the gridview
+                    BindingSourceDataItemMappings.DataSource = dt;
+
+                    if (jsonArray != null)
                     {
-                        dataSet.ReadXml(chosenFile);
+                        // Set the column header names.
+                        _dataGridViewDataItems.DataSource = BindingSourceDataItemMappings;
+                        _dataGridViewDataItems.ColumnHeadersVisible = true;
+                        _dataGridViewDataItems.Columns[0].Visible = false;
+                        _dataGridViewDataItems.Columns[1].Visible = false;
+                        _dataGridViewDataItems.Columns[6].ReadOnly = false;
 
-                        _dataGridViewDataItems.DataSource = dataSet.Tables[0];
-                        BindingSourceDataItemMappings.DataSource = _dataGridViewDataItems.DataSource;
-                    }
-                    else if (fileExtension == ".json")
-                    {
-                        // Load the file, convert it to a DataTable and bind it to the source
-                        List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
-                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
-
-                        // Set the column names in the datatable.
-                        //SetTeamDataTableProperties.SetAttributeDataTableColumns(dt);
-                        // Sort the columns in the datatable.
-                        //SetTeamDataTableProperties.SetAttributeDatTableSorting(dt);
-
-                        // Clear out the existing data from the grid
-                        BindingSourceDataItemMappings.DataSource = null;
-                        BindingSourceDataItemMappings.Clear();
-                        _dataGridViewDataItems.DataSource = null;
-
-                        // Bind the datatable to the gridview
-                        BindingSourceDataItemMappings.DataSource = dt;
-
-                        if (jsonArray != null)
-                        {
-                            // Set the column header names.
-                            _dataGridViewDataItems.DataSource = BindingSourceDataItemMappings;
-                            _dataGridViewDataItems.ColumnHeadersVisible = true;
-                            _dataGridViewDataItems.Columns[0].Visible = false;
-                            _dataGridViewDataItems.Columns[1].Visible = false;
-                            _dataGridViewDataItems.Columns[6].ReadOnly = false;
-
-                            _dataGridViewDataItems.Columns[0].HeaderText = "Hash Key";
-                            _dataGridViewDataItems.Columns[1].HeaderText = "Version ID";
-                            _dataGridViewDataItems.Columns[2].HeaderText = "Source Table";
-                            _dataGridViewDataItems.Columns[3].HeaderText = "Source Column";
-                            _dataGridViewDataItems.Columns[4].HeaderText = "Target Table";
-                            _dataGridViewDataItems.Columns[5].HeaderText = "Target Column";
-                            _dataGridViewDataItems.Columns[6].HeaderText = "Notes";
-                        }
+                        _dataGridViewDataItems.Columns[0].HeaderText = "Hash Key";
+                        _dataGridViewDataItems.Columns[1].HeaderText = "Version ID";
+                        _dataGridViewDataItems.Columns[2].HeaderText = "Source Table";
+                        _dataGridViewDataItems.Columns[3].HeaderText = "Source Column";
+                        _dataGridViewDataItems.Columns[4].HeaderText = "Target Table";
+                        _dataGridViewDataItems.Columns[5].HeaderText = "Target Column";
+                        _dataGridViewDataItems.Columns[6].HeaderText = "Notes";
                     }
 
                     GridAutoLayout(_dataGridViewDataItems);
@@ -3544,10 +3518,10 @@ namespace TEAM
 
                 try
                 {
-                    #region Build the Data Table
-                    var fileName = dialog.FileName;
+                    // Get the selected file in tabular JSON format.
+                    List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(dialog.FileName));
 
-                    List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(fileName));
+                    #region Build the Data Table
 
                     var localDataTable = new DataTable();
 
@@ -3619,7 +3593,7 @@ namespace TEAM
                     GridAutoLayout(_dataGridViewDataObjects);
                     ContentCounter();
 
-                    richTextBoxInformation.AppendText($"The file '{fileName}' was loaded.\r\n");
+                    richTextBoxInformation.AppendText($"The file '{dialog.FileName}' was loaded.\r\n");
                     #endregion
 
                     #region Generate the JSON files

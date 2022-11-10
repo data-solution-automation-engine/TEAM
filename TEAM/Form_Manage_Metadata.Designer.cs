@@ -409,7 +409,7 @@ namespace TEAM
             this.openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
             this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             this.openAttributeMappingFileToolStripMenuItem.Text = "Import Data Item Mapping Grid File";
-            this.openAttributeMappingFileToolStripMenuItem.Click += new System.EventHandler(this.openAttributeMappingFileToolStripMenuItem_Click);
+            this.openAttributeMappingFileToolStripMenuItem.Click += new System.EventHandler(this.openDataItemMappingFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 

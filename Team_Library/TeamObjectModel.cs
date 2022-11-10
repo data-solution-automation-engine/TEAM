@@ -24,7 +24,7 @@ namespace TEAM
     public class GenerationSpecificMetadata
     {
         public DataObject selectedDataObject { get; set; }
-        public DateTime generationDateTime { get; } = DateTime.Now;
+        //public DateTime generationDateTime { get; } = DateTime.Now;
 
         public GenerationSpecificMetadata(DataObject dataObject)
         {

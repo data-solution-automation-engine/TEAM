@@ -243,9 +243,9 @@ namespace TEAM
             _groupBoxAuthentication.Controls.Add(_radioButtonUniversalMfa);
             _radioButtonUniversalMfa.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             _radioButtonUniversalMfa.Location = new Point(6, 65);
-            _radioButtonUniversalMfa.Size = new Size(84, 17);
+            _radioButtonUniversalMfa.Size = new Size(100, 17);
             _radioButtonUniversalMfa.Name = "radioButtonUniversalMfa";
-            _radioButtonUniversalMfa.Text = @"Active Directory - Universal with MFA";
+            _radioButtonUniversalMfa.Text = @"Universal MFA";
             _radioButtonUniversalMfa.Checked = _localConnection.DatabaseServer.IsMfa();
             _radioButtonUniversalMfa.CheckedChanged += RadioButtonMfaCheckedChanged;
             _radioButtonUniversalMfa.TabIndex = 7;
@@ -629,13 +629,11 @@ namespace TEAM
                 {
                     // Remove the Json segment.
                     var list = jsonArray.ToList();
-                    var itemToRemove =
-                        list.Single(r => r.ConnectionInternalId == _localConnection.ConnectionInternalId);
+                    var itemToRemove = list.Single(r => r.ConnectionInternalId == _localConnection.ConnectionInternalId);
                     list.Remove(itemToRemove);
                     jsonArray = list.ToArray();
 
-                    UpdateRichTextBoxInformation(
-                        $"The connection {_localConnection.ConnectionKey} was removed from {_connectionFileName}.\r\n");
+                    UpdateRichTextBoxInformation($"The connection {_localConnection.ConnectionKey} was removed from {_connectionFileName}.\r\n");
 
                     // Remove the connection from the global dictionary
                     FormBase.TeamConfiguration.ConnectionDictionary.Remove(_localConnection.ConnectionInternalId);
