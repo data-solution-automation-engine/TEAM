@@ -2481,6 +2481,8 @@ namespace TEAM
             else
             {
                 _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+
+                // Set the validation issue counter to 0 to start a new validation round.
                 MetadataValidations.ValidationIssues = 0;
 
                 if (ValidationSetting.DataObjectExistence == "True")
@@ -2687,9 +2689,8 @@ namespace TEAM
                 foreach (var sourceObjectResult in resultList)
                 {
                     _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + ". This means there is an issue with the Link definition, and in particular the Business Key. Are two Hubs assigned?\r\n");
+                    MetadataValidations.ValidationIssues++;
                 }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
                 _alertValidation.SetTextLogging("\r\n");
             }
             else
@@ -2758,10 +2759,8 @@ namespace TEAM
                 foreach (var objectValidationResult in resultList)
                 {
                     _alertValidation.SetTextLogging($"     {objectValidationResult.Key} belonging to {objectValidationResult.Value} does not exist in the physical model.\r\n");
+                    MetadataValidations.ValidationIssues++;
                 }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count;
-
                 _alertValidation.SetTextLogging("\r\n");
             }
             else
@@ -2830,9 +2829,9 @@ namespace TEAM
                 foreach (var objectValidationResult in resultList)
                 {
                     _alertValidation.SetTextLogging($"     {objectValidationResult.Key} is tested with outcome {objectValidationResult.Value}. This may be because the schema is defined differently in the connection, or because it simply does not exist.\r\n");
+                    MetadataValidations.ValidationIssues++;
                 }
 
-                MetadataValidations.ValidationIssues = resultList.Count;
                 _alertValidation.SetTextLogging("\r\n");
             }
             else
@@ -2848,7 +2847,7 @@ namespace TEAM
         {
             _alertValidation.SetTextLogging("--> Commencing the validation to see if any hard-coded fields are not correctly set in enabled mappings.\r\n");
 
-            int issueCounter = 0;
+            int localValidationIssues = 0;
             var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
             foreach (DataRow row in localDataTable.Rows)
             {
@@ -2862,24 +2861,23 @@ namespace TEAM
                 {
                     if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
                     {
-                        issueCounter++;
+                        localValidationIssues++;
+                        MetadataValidations.ValidationIssues++;
                         _alertValidation.SetTextLogging($"     Data Object {(string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
                     }
                 }
             }
 
-            if (issueCounter == 0)
+            if (localValidationIssues == 0)
             {
                 _alertValidation.SetTextLogging($"     There were no validation issues related to the definition of hard-coded Business Key components.\r\n\r\n");
             }
-
-            MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + issueCounter;
         }
 
         internal void ValidateAttributeDataObjectsForTableMappings()
         {
             _alertValidation.SetTextLogging($"--> Commencing the validation to see if all data item (attribute) mappings exist as data object (table) mapping also (if enabled in the grid).\r\n");
-            int issueCounter = 0;
+            int localValidationIssues = 0;
 
             var localDataTableTableMappings = (DataTable) BindingSourceDataObjectMappings.DataSource;
             var localDataTableAttributeMappings = (DataTable) BindingSourceDataItemMappings.DataSource;
@@ -2927,7 +2925,8 @@ namespace TEAM
                 else 
                 {
                     _alertValidation.SetTextLogging($"     Data Object {localSource} in the attribute mappings (source) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
-                    issueCounter++;
+                    MetadataValidations.ValidationIssues++;
+                    localValidationIssues++;
                 }
 
                 if (targetDataObjectListTableMapping.Contains(new Tuple<string, string>(localTarget, "False")))
@@ -2941,16 +2940,15 @@ namespace TEAM
                 else
                 {
                     _alertValidation.SetTextLogging($"     Data Object {localTarget} in the attribute mappings (target) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
-                    issueCounter++;
+                    MetadataValidations.ValidationIssues++;
+                    localValidationIssues++;
                 }
             }
 
-            if (issueCounter == 0)
+            if (localValidationIssues == 0)
             {
                 _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of Data Objects related to defined Data Item Mappings.\r\n\r\n");
             }
-
-            MetadataValidations.ValidationIssues = issueCounter;
         }
 
         /// <summary>
@@ -3031,9 +3029,12 @@ namespace TEAM
                 foreach (var sourceObjectResult in resultList)
                 {
                     _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
-                }
 
-                MetadataValidations.ValidationIssues = resultList.Count();
+                    if (sourceObjectResult.Value == false)
+                    {
+                        MetadataValidations.ValidationIssues++;
+                    }
+                }
                 _alertValidation.SetTextLogging("\r\n");
             }
             else
@@ -3057,18 +3058,20 @@ namespace TEAM
                     })
                 .Where(g => g.Count() > 1);
 
-            var duplicateDeduplicatedRows = duplicateRows.Distinct().ToList();
+            var distinctDeduplicatedRows = duplicateRows.Distinct().ToList();
 
             // Evaluate the results
-            int resultsCounter = 0;
+            int localValidationIssues = 0;
 
-            foreach (var result in duplicateDeduplicatedRows)
+            foreach (var result in distinctDeduplicatedRows)
             {
                 _alertValidation.SetTextLogging($"     The data object mapping from {result.Key.sourceDataObjectName} to {result.Key.TargetDataObjectName} with {result.Key.BusinessKeyDefinition} is duplicate.\r\n");
-                resultsCounter++;
+
+                localValidationIssues++;
+                MetadataValidations.ValidationIssues++;
             }
 
-            if (resultsCounter == 0)
+            if (localValidationIssues == 0)
             {
                 _alertValidation.SetTextLogging("     There were no full row duplicates found in the data object mapping.\r\n\r\n");
             }
@@ -3109,7 +3112,6 @@ namespace TEAM
                     {
                         var result = MetadataValidation.BasicDataVaultValidation(localDataObjectSourceName, localDataObjectSourceConnection, localDataObjectSourceTableType);
                         masterResultList.AddRange(result);
-                        
                     }
 
                     // Target
@@ -3121,13 +3123,12 @@ namespace TEAM
                     {
                         var result = MetadataValidation.BasicDataVaultValidation(localDataObjectTargetName, localDataObjectTargetConnection, localDataObjectTargetTableType);
                         masterResultList.AddRange(result);
-
                     }
                 }
             }
             
             // Evaluate the results
-            int resultsCounter = 0;
+            int localValidationIssues = 0;
 
             // Deduplicate
             List<Tuple<string,string,bool>> deduplicatedResultList = masterResultList.Distinct().ToList();
@@ -3137,16 +3138,15 @@ namespace TEAM
                 if (result.Item3 == false)
                 {
                     _alertValidation.SetTextLogging($"     Warning - {result.Item1} was evaluated as a Data Vault object but the expected attribute {result.Item2} was not found in the table.\r\n");
-                    resultsCounter++;
+                    MetadataValidations.ValidationIssues++;
+                    localValidationIssues++;
                 }
             }
 
-            if (resultsCounter == 0)
+            if (localValidationIssues == 0)
             {
                 _alertValidation.SetTextLogging("     There were no validation issues related Data Vault attribute existence.\r\n\r\n");
             }
-
-
         }
 
         /// <summary>
