@@ -1207,7 +1207,7 @@ namespace TEAM
                         try
                         {
                             var inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
+                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName));
 
                             //Retrieves the json segment in the file.
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
@@ -1283,7 +1283,7 @@ namespace TEAM
 
                             // Load the file, if existing information needs to be merged
                             string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
+                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName));
 
                             // Convert it into a JArray so segments can be added easily
                             if (jsonArray != null)
@@ -1335,7 +1335,7 @@ namespace TEAM
                         try
                         {
                             string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            var jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName)).ToList();
+                            var jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName)).ToList();
 
                             //Retrieves the json segment in the file for the given hash returns value or NULL
                             var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
@@ -3441,7 +3441,7 @@ namespace TEAM
             var theDialog = new OpenFileDialog
             {
                 Title = @"Open Data Item Mapping Metadata File",
-                Filter = @"Attribute Mapping files|*.json",
+                Filter = @"Data Item Mapping files|*.json",
                 InitialDirectory = GlobalParameters.MetadataPath
             };
 
@@ -3454,44 +3454,47 @@ namespace TEAM
                     var chosenFile = theDialog.FileName;
                     
                     // Load the file, convert it to a DataTable and bind it to the source
-                    List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
-
-                    DataTable dt = Utility.ConvertToDataTable(jsonArray);
-
-                    // Clear out the existing data from the grid
-                    BindingSourceDataItemMappings.DataSource = null;
-                    BindingSourceDataItemMappings.Clear();
-                    _dataGridViewDataItems.DataSource = null;
-
-                    // Bind the datatable to the gridview
-                    BindingSourceDataItemMappings.DataSource = dt;
+                    List<DataItemMappingJson> jsonArray = JsonConvert.DeserializeObject<List<DataItemMappingJson>>(File.ReadAllText(chosenFile));
 
                     if (jsonArray != null)
                     {
-                        // Set the column header names.
-                        _dataGridViewDataItems.DataSource = BindingSourceDataItemMappings;
-                        _dataGridViewDataItems.ColumnHeadersVisible = true;
-                        _dataGridViewDataItems.Columns[0].Visible = false;
-                        _dataGridViewDataItems.Columns[1].Visible = false;
-                        _dataGridViewDataItems.Columns[6].ReadOnly = false;
+                        foreach (DataItemMappingJson dataItemMappingJson in jsonArray)
+                        {
+                            // Check if the row does not already exist.
+                            var lookupRow = _dataGridViewDataItems.Rows
+                                .Cast<DataGridViewRow>()
+                                .FirstOrDefault(row => !row.IsNewRow && row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString() == dataItemMappingJson.sourceTable && 
+                                                       row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString() == dataItemMappingJson.targetTable &&
+                                                       row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString() == dataItemMappingJson.sourceAttribute &&
+                                                       row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString() == dataItemMappingJson.targetAttribute);
 
-                        _dataGridViewDataItems.Columns[0].HeaderText = "Hash Key";
-                        _dataGridViewDataItems.Columns[1].HeaderText = "Version ID";
-                        _dataGridViewDataItems.Columns[2].HeaderText = "Source Table";
-                        _dataGridViewDataItems.Columns[3].HeaderText = "Source Column";
-                        _dataGridViewDataItems.Columns[4].HeaderText = "Target Table";
-                        _dataGridViewDataItems.Columns[5].HeaderText = "Target Column";
-                        _dataGridViewDataItems.Columns[6].HeaderText = "Notes";
+                            // Add if it does not exist yet.
+                            if (lookupRow == null)
+                            {
+                                DataTable dataTable = (DataTable)BindingSourceDataItemMappings.DataSource;
+
+                                DataRow dataRow = dataTable.NewRow();
+
+                                dataRow[(int)DataItemMappingGridColumns.HashKey] = dataItemMappingJson.attributeMappingHash;
+                                dataRow[(int)DataItemMappingGridColumns.SourceDataObject] = dataItemMappingJson.sourceTable;
+                                dataRow[(int)DataItemMappingGridColumns.SourceDataItem] = dataItemMappingJson.sourceAttribute;
+                                dataRow[(int)DataItemMappingGridColumns.TargetDataObject] = dataItemMappingJson.targetTable;
+                                dataRow[(int)DataItemMappingGridColumns.TargetDataItem] = dataItemMappingJson.targetAttribute;
+                                dataRow[(int)DataItemMappingGridColumns.Notes] = dataItemMappingJson.notes;
+
+                                dataTable.Rows.Add(dataRow);
+                            }
+                        }
                     }
 
                     GridAutoLayout(_dataGridViewDataItems);
-                    richTextBoxInformation.AppendText("The metadata has been loaded from file.\r\n");
+                    richTextBoxInformation.AppendText($"The data item metadata has been loaded from file '{chosenFile}'.\r\n");
                     ContentCounter();
                 }
                 catch (Exception ex)
                 {
                     richTextBoxInformation.AppendText("An error has been encountered. Please check the Event Log for more details.\r\n");
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex}."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
                 }
             }
         }
@@ -3576,6 +3579,7 @@ namespace TEAM
                     }
 
                     //Make sure the changes are seen as committed, so that changes can be detected later on.
+
                     localDataTable.AcceptChanges();
 
                     // Clear out the existing data from the grid
@@ -3594,6 +3598,7 @@ namespace TEAM
                     ContentCounter();
 
                     richTextBoxInformation.AppendText($"The file '{dialog.FileName}' was loaded.\r\n");
+
                     #endregion
 
                     #region Generate the JSON files
@@ -3614,7 +3619,8 @@ namespace TEAM
                     #endregion
 
                     #region Reload the full Data Grid
-                    //Load the grids from the repository after being updated.This resets everything.
+
+                    //Load the grids from the repository after being updated. This resets everything.
                     PopulateDataObjectMappingGrid();
 
                     // Notify the user of any errors that were detected.
