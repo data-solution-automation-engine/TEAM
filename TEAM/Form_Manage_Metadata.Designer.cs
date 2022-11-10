@@ -50,6 +50,7 @@ namespace TEAM
             this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
+            this.checkBoxShowStaging = new System.Windows.Forms.CheckBox();
             this.checkBoxValidation = new System.Windows.Forms.CheckBox();
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
@@ -97,10 +98,11 @@ namespace TEAM
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox2.Controls.Add(this.checkBoxShowStaging);
             this.groupBox2.Controls.Add(this.textBoxFilterCriterion);
             this.groupBox2.Location = new System.Drawing.Point(16, 739);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(225, 46);
+            this.groupBox2.Size = new System.Drawing.Size(225, 85);
             this.groupBox2.TabIndex = 25;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Filter Criterion";
@@ -118,7 +120,7 @@ namespace TEAM
             // 
             this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(6, 136);
+            this.labelResult.Location = new System.Drawing.Point(6, 134);
             this.labelResult.Name = "labelResult";
             this.labelResult.Size = new System.Drawing.Size(38, 13);
             this.labelResult.TabIndex = 23;
@@ -127,7 +129,7 @@ namespace TEAM
             // buttonStart
             // 
             this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStart.Location = new System.Drawing.Point(9, 91);
+            this.buttonStart.Location = new System.Drawing.Point(7, 91);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(120, 40);
             this.buttonStart.TabIndex = 22;
@@ -139,7 +141,7 @@ namespace TEAM
             // buttonSaveMetadata
             // 
             this.buttonSaveMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSaveMetadata.Location = new System.Drawing.Point(8, 45);
+            this.buttonSaveMetadata.Location = new System.Drawing.Point(6, 45);
             this.buttonSaveMetadata.Name = "buttonSaveMetadata";
             this.buttonSaveMetadata.Size = new System.Drawing.Size(120, 40);
             this.buttonSaveMetadata.TabIndex = 1;
@@ -262,10 +264,25 @@ namespace TEAM
             this.MetadataGenerationGroupBox.Controls.Add(this.labelResult);
             this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1383, 49);
             this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
-            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(140, 161);
+            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(140, 158);
             this.MetadataGenerationGroupBox.TabIndex = 3;
             this.MetadataGenerationGroupBox.TabStop = false;
             this.MetadataGenerationGroupBox.Text = "Processing";
+            // 
+            // checkBoxShowStaging
+            // 
+            this.checkBoxShowStaging.AutoSize = true;
+            this.checkBoxShowStaging.Checked = true;
+            this.checkBoxShowStaging.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxShowStaging.Location = new System.Drawing.Point(6, 45);
+            this.checkBoxShowStaging.Name = "checkBoxShowStaging";
+            this.checkBoxShowStaging.Size = new System.Drawing.Size(169, 17);
+            this.checkBoxShowStaging.TabIndex = 24;
+            this.checkBoxShowStaging.Text = "Show Staging Layer mappings";
+            this.toolTipMetadata.SetToolTip(this.checkBoxShowStaging, "Show (or hide) Staging Layer mappings is a broad filter that hides all source-to-" +
+        "staging and staging-to-persistent-staging data object mappings.");
+            this.checkBoxShowStaging.UseVisualStyleBackColor = true;
+            this.checkBoxShowStaging.CheckedChanged += new System.EventHandler(this.checkBoxShowStaging_CheckedChanged);
             // 
             // checkBoxValidation
             // 
@@ -496,9 +513,9 @@ namespace TEAM
             this.groupBoxPhysicalModel.Controls.Add(this.labelConnections);
             this.groupBoxPhysicalModel.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
             this.groupBoxPhysicalModel.Controls.Add(this.buttonReverseEngineer);
-            this.groupBoxPhysicalModel.Location = new System.Drawing.Point(1383, 216);
+            this.groupBoxPhysicalModel.Location = new System.Drawing.Point(1383, 213);
             this.groupBoxPhysicalModel.Name = "groupBoxPhysicalModel";
-            this.groupBoxPhysicalModel.Size = new System.Drawing.Size(140, 517);
+            this.groupBoxPhysicalModel.Size = new System.Drawing.Size(140, 520);
             this.groupBoxPhysicalModel.TabIndex = 1;
             this.groupBoxPhysicalModel.TabStop = false;
             this.groupBoxPhysicalModel.Text = "Physical Model";
@@ -616,5 +633,6 @@ namespace TEAM
         private System.Windows.Forms.Label labelConnections;
         private System.Windows.Forms.ToolStripMenuItem generatePhysicalModelGridQueryToolStripMenuItem;
         private BackgroundWorker backgroundWorkerReverseEngineering;
+        private System.Windows.Forms.CheckBox checkBoxShowStaging;
     }
 }

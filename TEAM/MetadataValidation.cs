@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using TEAM_Library;
 using static TEAM.FormBase;
 
@@ -236,9 +235,9 @@ namespace TEAM
                             numberOfDependents++;
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        //
+                        // Ignore for now.
                     }
                 }
             }
@@ -318,7 +317,6 @@ namespace TEAM
                 try
                 {
                     // Derive the Hub surrogate key name, as this can be compared against the Link
-                    string hubTableName = selectionRows[0][DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString();
                     string hubTableConnectionId = selectionRows[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var hubTableConnection = GetTeamConnectionByConnectionId(hubTableConnectionId);
 
@@ -427,7 +425,8 @@ namespace TEAM
         /// Validate the Business Key definition against the physical model, taking the source object and business key definition as input parameters, together with a connection string to validate against.
         /// </summary>
         /// <param name="validationObject"></param>
-        /// <param name="connectionString"></param>
+        /// <param name="businessKeyDefinition"></param>
+        /// <param name="teamConnection"></param>
         /// <returns></returns>
         internal static Dictionary<Tuple<string,string>, bool> ValidateSourceBusinessKeyExistencePhysical(string validationObject, string businessKeyDefinition, TeamConnection teamConnection)
         {

@@ -13,6 +13,7 @@ namespace TEAM
         private TeamConfiguration TeamConfiguration { get; }
 
         private readonly ContextMenuStrip contextMenuStrip;
+        private readonly ContextMenuStrip contextMenuStripMultipleRows;
 
         public DataGridViewDataItems(TeamConfiguration teamConfiguration)
         {
@@ -50,6 +51,7 @@ namespace TEAM
             MouseDown += DataGridView_MouseDown;
             CellFormatting += DataGridViewDataItems_CellFormatting;
             Sorted += DataGridViewDataItems_Sorted;
+            RowPostPaint += OnRowPostPaint;
 
             #endregion
 
@@ -122,6 +124,31 @@ namespace TEAM
             #endregion
 
             #region Context menu
+
+            #region Multiple rows context menu
+
+            // Single cell context menu
+            contextMenuStripMultipleRows = new ContextMenuStrip();
+            contextMenuStripMultipleRows.SuspendLayout();
+
+            // Modify JSON menu item
+            var toolStripMenuItemDeleteMultipleRows = new ToolStripMenuItem();
+            toolStripMenuItemDeleteMultipleRows.Name = "toolStripMenuItemDeleteMultipleRows";
+            toolStripMenuItemDeleteMultipleRows.Size = new Size(143, 22);
+            toolStripMenuItemDeleteMultipleRows.Text = @"Delete selected rows";
+            toolStripMenuItemDeleteMultipleRows.Click += toolStripMenuItemDeleteMultipleRows_Click;
+
+            contextMenuStripMultipleRows.Items.AddRange(new ToolStripItem[] {
+                toolStripMenuItemDeleteMultipleRows
+            });
+            contextMenuStripMultipleRows.Name = $"{contextMenuStripMultipleRows.Name}";
+            contextMenuStripMultipleRows.Size = new Size(144, 26);
+            contextMenuStripMultipleRows.ResumeLayout(false);
+
+            #endregion
+
+            #region Single Row
+
             contextMenuStrip = new ContextMenuStrip();
             contextMenuStrip.SuspendLayout();
 
@@ -141,7 +168,51 @@ namespace TEAM
             contextMenuStrip.Size = new Size(340, 48);
 
             contextMenuStrip.ResumeLayout(false);
+
             #endregion
+
+            #endregion
+        }
+        private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
+        {
+
+            foreach (DataGridViewColumn column in Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            }
+
+            foreach (DataGridViewRow row in SelectedRows)
+            {
+                if (!row.IsNewRow)
+                {
+                    Rows.RemoveAt(row.Index);
+                }
+            }
+        }
+
+        private void OnRowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var rowIndex = (e.RowIndex + 1).ToString();
+
+            var centerFormat = new StringFormat()
+            {
+                // Right-align the number value.
+                Alignment = StringAlignment.Center,
+
+                LineAlignment = StringAlignment.Center
+            };
+
+            Size textSize = TextRenderer.MeasureText(rowIndex, Font);
+
+            // Resize iff the header width is smaller than the string width.
+            if (grid.RowHeadersWidth < textSize.Width + 40)
+            {
+                grid.RowHeadersWidth = textSize.Width + 40;
+            }
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+            e.Graphics.DrawString(rowIndex, Font, SystemBrushes.ControlText, headerBounds, centerFormat);
         }
 
         /// <summary>
@@ -407,37 +478,23 @@ namespace TEAM
 
                 // For now, do nothing when any of the column headers are right-clicked.
                 if (hitTestInfo.RowIndex == -1)
+                {
                     return;
+                }
 
-                // Clear existing selection.
-                ClearSelection();
+                // Select the full row when the default column is right-clicked.
+                if (SelectedRows.Count == 1)
+                {
 
-                //if (hitTestInfo.ColumnIndex == -1)
-                //{
-                    // Select the full row when the default column is right-clicked.
+                    ClearSelection();
+
                     Rows[hitTestInfo.RowIndex].Selected = true;
                     ContextMenuStrip = contextMenuStrip;
-                //}
-                //else
-                //{
-                //    // Evaluate which cell is clicked.
-                //    var cell = this[hitTestInfo.ColumnIndex, hitTestInfo.RowIndex];
-
-                //    //if (cell.ReadOnly)
-                //    //{
-                //    //    // Do nothing / ignore.
-                //    //}
-                //    if (hitTestInfo.ColumnIndex == (int)DataObjectMappingGridColumns.SourceDataObject || hitTestInfo.ColumnIndex == (int)DataObjectMappingGridColumns.TargetDataObject)
-                //    {
-                //        CurrentCell = cell;
-                //        ContextMenuStrip = contextMenuStripDataObjectMappingSingleCell;
-                //    }
-                //    else
-                //    {
-                //        Rows[hitTestInfo.RowIndex].Selected = true;
-                //        ContextMenuStrip = contextMenuStripDataObjectMappingFullRow;
-                //    }
-                //}
+                }
+                else
+                {
+                    ContextMenuStrip = contextMenuStripMultipleRows;
+                }
             }
         }
 

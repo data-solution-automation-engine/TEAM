@@ -24,9 +24,9 @@ namespace TEAM
 
         private Form_Edit _modifyJson;
 
-        private readonly ContextMenuStrip contextMenuStripDataObjectMappingFullRow;
-        private readonly ContextMenuStrip contextMenuStripDataObjectMappingMultipleRows;
-        private readonly ContextMenuStrip contextMenuStripDataObjectMappingSingleCell;
+        private readonly ContextMenuStrip contextMenuStripFullRow;
+        private readonly ContextMenuStrip contextMenuStripMultipleRows;
+        private readonly ContextMenuStrip contextMenuStripSingleCell;
 
         public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
         public event DataObjectParseHandler OnDataObjectParse;
@@ -192,8 +192,8 @@ namespace TEAM
             #region Full row context menu
 
             // Full row context menu
-            contextMenuStripDataObjectMappingFullRow = new ContextMenuStrip();
-            contextMenuStripDataObjectMappingFullRow.SuspendLayout();
+            contextMenuStripFullRow = new ContextMenuStrip();
+            contextMenuStripFullRow.SuspendLayout();
 
             // Parse as DataObjectMappings JSON (collection) menu item
             var parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem = new ToolStripMenuItem();
@@ -223,25 +223,25 @@ namespace TEAM
             deleteThisRowFromTheGridToolStripMenuItem.Text = @"Delete this row from the grid";
             deleteThisRowFromTheGridToolStripMenuItem.Click += DeleteThisRowFromTableDataGridToolStripMenuItem_Click;
 
-            contextMenuStripDataObjectMappingFullRow.ImageScalingSize = new Size(24, 24);
-            contextMenuStripDataObjectMappingFullRow.Items.AddRange(new ToolStripItem[] {
+            contextMenuStripFullRow.ImageScalingSize = new Size(24, 24);
+            contextMenuStripFullRow.Items.AddRange(new ToolStripItem[] {
                 parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
                 exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem,
                 exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
                 deleteThisRowFromTheGridToolStripMenuItem
              });
 
-            contextMenuStripDataObjectMappingFullRow.Name = "contextMenuStripTableMapping";
-            contextMenuStripDataObjectMappingFullRow.Size = new Size(340, 48);
-            contextMenuStripDataObjectMappingFullRow.ResumeLayout(false);
+            contextMenuStripFullRow.Name = "contextMenuStripTableMapping";
+            contextMenuStripFullRow.Size = new Size(340, 48);
+            contextMenuStripFullRow.ResumeLayout(false);
 
             #endregion
 
             #region Multiple rows context menu
 
             // Single cell context menu
-            contextMenuStripDataObjectMappingMultipleRows = new ContextMenuStrip();
-            contextMenuStripDataObjectMappingMultipleRows.SuspendLayout();
+            contextMenuStripMultipleRows = new ContextMenuStrip();
+            contextMenuStripMultipleRows.SuspendLayout();
 
             // Modify JSON menu item
             var toolStripMenuItemDeleteMultipleRows = new ToolStripMenuItem();
@@ -250,20 +250,20 @@ namespace TEAM
             toolStripMenuItemDeleteMultipleRows.Text = @"Delete selected rows";
             toolStripMenuItemDeleteMultipleRows.Click += toolStripMenuItemDeleteMultipleRows_Click;
 
-            contextMenuStripDataObjectMappingMultipleRows.Items.AddRange(new ToolStripItem[] {
+            contextMenuStripMultipleRows.Items.AddRange(new ToolStripItem[] {
                 toolStripMenuItemDeleteMultipleRows
             });
-            contextMenuStripDataObjectMappingMultipleRows.Name = "contextMenuStripDataObjectMappingMultipleRows";
-            contextMenuStripDataObjectMappingMultipleRows.Size = new Size(144, 26);
-            contextMenuStripDataObjectMappingMultipleRows.ResumeLayout(false);
+            contextMenuStripMultipleRows.Name = "contextMenuStripDataObjectMappingMultipleRows";
+            contextMenuStripMultipleRows.Size = new Size(144, 26);
+            contextMenuStripMultipleRows.ResumeLayout(false);
 
             #endregion
 
             #region Single cell context menu
 
             // Single cell context menu
-            contextMenuStripDataObjectMappingSingleCell = new ContextMenuStrip();
-            contextMenuStripDataObjectMappingSingleCell.SuspendLayout();
+            contextMenuStripSingleCell = new ContextMenuStrip();
+            contextMenuStripSingleCell.SuspendLayout();
 
             // Modify JSON menu item
             var toolStripMenuItemModifyJson = new ToolStripMenuItem();
@@ -272,12 +272,12 @@ namespace TEAM
             toolStripMenuItemModifyJson.Text = @"Modify JSON";
             toolStripMenuItemModifyJson.Click += toolStripMenuItemModifyJson_Click;
 
-            contextMenuStripDataObjectMappingSingleCell.Items.AddRange(new ToolStripItem[] {
+            contextMenuStripSingleCell.Items.AddRange(new ToolStripItem[] {
                 toolStripMenuItemModifyJson
             });
-            contextMenuStripDataObjectMappingSingleCell.Name = "contextMenuStripDataObjectMappingSingleCell";
-            contextMenuStripDataObjectMappingSingleCell.Size = new Size(144, 26);
-            contextMenuStripDataObjectMappingSingleCell.ResumeLayout(false);
+            contextMenuStripSingleCell.Name = "contextMenuStripDataObjectMappingSingleCell";
+            contextMenuStripSingleCell.Size = new Size(144, 26);
+            contextMenuStripSingleCell.ResumeLayout(false);
 
             #endregion
 
@@ -324,7 +324,6 @@ namespace TEAM
                     Rows.RemoveAt(row.Index);
                 }
             }
-
         }
 
         /// <summary>
@@ -631,11 +630,11 @@ namespace TEAM
                     {
                         ClearSelection();
                         Rows[hitTestInfo.RowIndex].Selected = true;
-                        ContextMenuStrip = contextMenuStripDataObjectMappingFullRow;
+                        ContextMenuStrip = contextMenuStripFullRow;
                     }
                     else
                     {
-                        ContextMenuStrip = contextMenuStripDataObjectMappingMultipleRows;
+                        ContextMenuStrip = contextMenuStripMultipleRows;
                     }
                 }
                 else
@@ -648,12 +647,12 @@ namespace TEAM
                     if (hitTestInfo.ColumnIndex == (int)DataObjectMappingGridColumns.SourceDataObject || hitTestInfo.ColumnIndex == (int)DataObjectMappingGridColumns.TargetDataObject)
                     {
                         CurrentCell = cell;
-                        ContextMenuStrip = contextMenuStripDataObjectMappingSingleCell;
+                        ContextMenuStrip = contextMenuStripSingleCell;
                     }
                     else
                     {
                         Rows[hitTestInfo.RowIndex].Selected = true;
-                        ContextMenuStrip = contextMenuStripDataObjectMappingFullRow;
+                        ContextMenuStrip = contextMenuStripFullRow;
                     }
                 }
             }
@@ -720,7 +719,7 @@ namespace TEAM
             }
             catch (FormatException ex)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"A cell formatting exception has been encountered: {ex.Message}."));
             }
         }
 
@@ -872,6 +871,7 @@ namespace TEAM
                 return;
 
             #region Source Data Objects
+
             // Format the name of the data object, for a source data object
             if (Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.SourceDataObject.ToString()))
             {
@@ -1061,7 +1061,6 @@ namespace TEAM
             }
             
             #endregion
-            
         }
 
         private void DataGridViewDataObjects_CellParsing(object sender, DataGridViewCellParsingEventArgs e)

@@ -4056,5 +4056,19 @@ namespace TEAM
         {
             ApplyDataGridViewFiltering();
         }
+
+        private void checkBoxShowStaging_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxShowStaging.Checked)
+            {
+                var inputTableMapping = (DataTable)BindingSourceDataObjectMappings.DataSource;
+                inputTableMapping.DefaultView.RowFilter = string.Empty;
+            }
+            else
+            {
+                var inputTableMapping = (DataTable)BindingSourceDataObjectMappings.DataSource;
+                inputTableMapping.DefaultView.RowFilter = $"[SourceDataObjectName] LIKE '{"STG"}_%'";
+            }
+        }
     }
 }

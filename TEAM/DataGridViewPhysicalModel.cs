@@ -9,6 +9,7 @@ namespace TEAM
     internal sealed class DataGridViewPhysicalModel : DataGridView
     {
         private readonly ContextMenuStrip contextMenuStrip;
+        private readonly ContextMenuStrip contextMenuStripMultipleRows;
 
         public DataGridViewPhysicalModel()
         {
@@ -166,10 +167,36 @@ namespace TEAM
 
             KeyDown += DataGridView_KeyDown;
             MouseDown += DataGridView_MouseDown;
+            RowPostPaint += OnRowPostPaint;
 
             #endregion
 
             #region Context menu
+
+            #region Multiple rows context menu
+
+            // Single cell context menu
+            contextMenuStripMultipleRows = new ContextMenuStrip();
+            contextMenuStripMultipleRows.SuspendLayout();
+
+            // Modify JSON menu item
+            var toolStripMenuItemDeleteMultipleRows = new ToolStripMenuItem();
+            toolStripMenuItemDeleteMultipleRows.Name = "toolStripMenuItemDeleteMultipleRows";
+            toolStripMenuItemDeleteMultipleRows.Size = new Size(143, 22);
+            toolStripMenuItemDeleteMultipleRows.Text = @"Delete selected rows";
+            toolStripMenuItemDeleteMultipleRows.Click += toolStripMenuItemDeleteMultipleRows_Click;
+
+            contextMenuStripMultipleRows.Items.AddRange(new ToolStripItem[] {
+                toolStripMenuItemDeleteMultipleRows
+            });
+            contextMenuStripMultipleRows.Name = $"{contextMenuStripMultipleRows.Name}";
+            contextMenuStripMultipleRows.Size = new Size(144, 26);
+            contextMenuStripMultipleRows.ResumeLayout(false);
+
+            #endregion
+
+            #region Single row context menu
+
             contextMenuStrip = new ContextMenuStrip();
             contextMenuStrip.SuspendLayout();
 
@@ -189,7 +216,52 @@ namespace TEAM
             contextMenuStrip.Size = new Size(340, 48);
 
             contextMenuStrip.ResumeLayout(false);
+
             #endregion
+
+            #endregion
+        }
+
+        private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
+        {
+
+            foreach (DataGridViewColumn column in Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            }
+
+            foreach (DataGridViewRow row in SelectedRows)
+            {
+                if (!row.IsNewRow)
+                {
+                    Rows.RemoveAt(row.Index);
+                }
+            }
+        }
+
+        private void OnRowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            var rowIndex = (e.RowIndex + 1).ToString();
+
+            var centerFormat = new StringFormat()
+            {
+                // Right-align the number value.
+                Alignment = StringAlignment.Center,
+
+                LineAlignment = StringAlignment.Center
+            };
+
+            Size textSize = TextRenderer.MeasureText(rowIndex, Font);
+
+            // Resize iff the header width is smaller than the string width.
+            if (grid.RowHeadersWidth < textSize.Width + 40)
+            {
+                grid.RowHeadersWidth = textSize.Width + 40;
+            }
+
+            var headerBounds = new Rectangle(e.RowBounds.Left, e.RowBounds.Top, grid.RowHeadersWidth, e.RowBounds.Height);
+            e.Graphics.DrawString(rowIndex, Font, SystemBrushes.ControlText, headerBounds, centerFormat);
         }
 
         /// <summary>
@@ -223,14 +295,25 @@ namespace TEAM
 
                 // For now, do nothing when any of the column headers are right-clicked.
                 if (hitTestInfo.RowIndex == -1)
+                {
                     return;
+                }
 
-                // Clear existing selection.
-                ClearSelection();
 
                 // Select the full row when the default column is right-clicked.
-                Rows[hitTestInfo.RowIndex].Selected = true;
-                ContextMenuStrip = contextMenuStrip;
+                if (SelectedRows.Count == 1)
+                {
+                    // Clear existing selection.
+                    ClearSelection();
+
+                    // Select the full row when the default column is right-clicked.
+                    Rows[hitTestInfo.RowIndex].Selected = true;
+                    ContextMenuStrip = contextMenuStrip;
+                }
+                else
+                {
+                    ContextMenuStrip = contextMenuStripMultipleRows;
+                }
             }
         }
 
