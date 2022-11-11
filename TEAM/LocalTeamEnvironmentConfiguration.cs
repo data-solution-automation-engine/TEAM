@@ -88,7 +88,6 @@ namespace TEAM
             {
                 var configurationFile = new StringBuilder();
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
-                configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
                 configurationFile.AppendLine("MetadataConnectionId|" + FormBase.TeamConfiguration.MetadataConnection.ConnectionInternalId + "");
 

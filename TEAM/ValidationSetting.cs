@@ -86,7 +86,6 @@ namespace TEAM
                 // Creating the file.
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM Validation Settings */");
-                validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
                 validationFile.AppendLine("DataObjectExistence|" + DataObjectExistence + "");
                 validationFile.AppendLine("BusinessKeyExistence|" + SourceBusinessKeyExistence + "");
                 validationFile.AppendLine("DataItemExistence|" + DataItemExistence + "");
