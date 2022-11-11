@@ -1,4 +1,5 @@
 ﻿using DataWarehouseAutomation;
+using Microsoft.SqlServer.Management.Assessment;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -2147,13 +2148,14 @@ namespace TEAM
 
             backgroundWorkerReverseEngineering.RunWorkerAsync();
         }
-        
+
         /// <summary>
         ///   Connect to a given database and return the data dictionary (catalog) information in the data grid.
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="databaseName"></param>
-        private DataTable ReverseEngineerModelMetadata(SqlConnection conn, string databaseName)
+        /// <param name="filteredDataObjectMappingDataRows"></param>
+        private DataTable ReverseEngineerModelMetadata(SqlConnection conn, string databaseName, List<DataRow> filteredDataObjectMappingDataRows)
         {
             try
             {
@@ -2161,10 +2163,10 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                richTextBoxInformation.Text += $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.";
+                ThreadHelper.SetText(this, richTextBoxInformation, $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.");
             }
 
-            var sqlStatementForDataItems = SqlStatementForDataItems(databaseName);
+            var sqlStatementForDataItems = SqlStatementForDataItems(databaseName, GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows));
 
             var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
             conn.Close();
@@ -2172,7 +2174,30 @@ namespace TEAM
             return reverseEngineerResults;
         }
 
-        private string SqlStatementForDataItems(string databaseName, bool isJson = false)
+        private List<DataRow> GetDistinctFilteredDataObjects(List<DataRow> filteredDataObjectMappingDataRows)
+        {
+            var tempFilterDataObjects = new List<DataRow>();
+
+            if (filteredDataObjectMappingDataRows.Any())
+            {
+                tempFilterDataObjects.AddRange(filteredDataObjectMappingDataRows
+                    .Distinct()
+                    .ToList());
+            }
+            else
+            {
+                DataTable localDataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
+
+                tempFilterDataObjects.AddRange(localDataTable.AsEnumerable()
+                    .Distinct()
+                    .ToList());
+            }
+
+            var filterDataObjects = tempFilterDataObjects.Distinct().ToList();
+            return filterDataObjects;
+        }
+
+        private string SqlStatementForDataItems(string databaseName, List<DataRow> filterDataObjects, bool isJson = false)
         {
             // Get everything as local variables to reduce multi-threading issues
             var effectiveDateTimeAttribute =
@@ -2212,7 +2237,6 @@ namespace TEAM
                 primaryKeyColumnName = "primaryKeyIndicator";
                 multiActiveKeyColumnName = "multiActiveIndicator";
             }
-
 
             sqlStatementForDataItems.AppendLine("SELECT ");
 
@@ -2286,12 +2310,14 @@ namespace TEAM
             sqlStatementForDataItems.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
             sqlStatementForDataItems.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
             sqlStatementForDataItems.AppendLine("WHERE 1=1");
-
+            
             sqlStatementForDataItems.AppendLine("  AND (");
+
+            // Add the filtered objects.
 
             var filterList = new List<Tuple<string, TeamConnection>>();
 
-            foreach (DataRow row in ((DataTable)BindingSourceDataObjectMappings.DataSource).Rows)
+            foreach (DataRow row in filterDataObjects)
             {
                 // Skip deleted rows.
                 if (row.RowState == DataRowState.Deleted)
@@ -3151,10 +3177,12 @@ namespace TEAM
 
             List<string> resultQueryList = new List<string>();
 
+            var filteredDataObjectMappingDataRows = GetFilteredDataObjectMappingDataTableRows();
+
             foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
-                resultQueryList.Add(SqlStatementForDataItems(localConnectionObject.Key.DatabaseServer.DatabaseName, true));
+                resultQueryList.Add(SqlStatementForDataItems(localConnectionObject.Key.DatabaseServer.DatabaseName, GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), true));
             }
 
             foreach (var query in resultQueryList)
@@ -3176,7 +3204,7 @@ namespace TEAM
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
 
                 var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false) };
-                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName);
+                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName, GetFilteredDataObjectMappingDataTableRows());
 
                 if (reverseEngineerResults != null)
                 {
