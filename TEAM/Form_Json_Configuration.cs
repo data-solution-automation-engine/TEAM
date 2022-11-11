@@ -17,12 +17,12 @@ namespace TEAM
             // Make sure the configuration information is available in this form.
             try
             {
-                var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+                var jsonExportConfigurationFileName = globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
                 // If the JSON export configuration file does not exist yet, create it.
                 if (!File.Exists(jsonExportConfigurationFileName))
                 {
-                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonExportConfigurationFileName);
+                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonExportConfigurationFileName, TeamEventLog);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
@@ -142,7 +142,7 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs args)
         {
-            var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+            var jsonExportConfigurationFileName = globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
             try
             {
@@ -201,9 +201,9 @@ namespace TEAM
                 JsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
 
                 // Write to disk
-                JsonExportSetting.SaveJsonConfigurationFile();
+                JsonExportSetting.SaveJsonConfigurationFile(globalParameters);
 
-                richTextBoxJsonExportInformation.Text += "The values have been successfully saved.\r\n";
+                richTextBoxJsonExportInformation.Text += "The values have been saved successfully.\r\n";
             }
             catch (Exception ex)
             {
@@ -215,7 +215,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(GlobalParameters.ConfigurationPath);
+                Process.Start(globalParameters.ConfigurationPath);
             }
             catch (Exception ex)
             {

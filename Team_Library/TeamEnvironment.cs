@@ -27,7 +27,7 @@ namespace TEAM_Library
 
         public void SaveTeamEnvironment(string fileName)
         {
-            // GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension
+            // globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension
             // Update the environment on disk
             if (!File.Exists(fileName))
             {

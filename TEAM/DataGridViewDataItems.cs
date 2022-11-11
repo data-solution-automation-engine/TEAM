@@ -379,7 +379,7 @@ namespace TEAM
                     if (dataObjectGridViewRow != null)
                     {
                         var targetConnectionId = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
                         KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair =
                             MetadataHandling.GetFullyQualifiedDataObjectName(targetdataObjectName, targetConnection).FirstOrDefault();

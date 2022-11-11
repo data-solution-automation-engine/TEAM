@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using TEAM_Library;
 
-namespace TEAM
+namespace TEAM_Library
 {
     /// <summary>
     /// Configuration settings related to the export of JSON files. This class manages the settings (true/false) that dictate whether certain objects are generated or not.
@@ -95,7 +94,7 @@ namespace TEAM
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="applyChecks"></param>
-        internal void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
+        public void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
         {
             try
             {
@@ -140,7 +139,7 @@ namespace TEAM
         /// <summary>
         /// Save the JSON export settings to disk.
         /// </summary>
-        internal void SaveJsonConfigurationFile()
+        public void SaveJsonConfigurationFile(GlobalParameters globalParameters)
         {
             try
             {
@@ -164,7 +163,7 @@ namespace TEAM
                 // Closing off
                 validationFile.AppendLine("/* End of file */");
 
-                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension))
+                using (var outfile = new StreamWriter(globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();
@@ -179,7 +178,7 @@ namespace TEAM
         /// <summary>
         /// Method to create a new validation file with default values, at the default location. Checks if the file already exists. If it does, nothing will happen.
         /// </summary>
-        internal static void CreateDummyJsonConfigurationFile(string fileName)
+        public void CreateDummyJsonConfigurationFile(string fileName, EventLog eventLog)
         {
             if (!File.Exists(fileName))
             {
@@ -211,11 +210,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
             }
             else
             {
-                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
             }
         }
     }

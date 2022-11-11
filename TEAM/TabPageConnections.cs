@@ -22,7 +22,7 @@ namespace TEAM
         // In-memory object representing the connection. Is always updated first and then refreshed to the form.
         private readonly TeamConnection _localConnection;
 
-        private readonly string _connectionFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonConnectionFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.JsonExtension;
+        private readonly string _connectionFileName = globalParameters.ConfigurationPath + globalParameters.JsonConnectionFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.JsonExtension;
 
         // Objects on main Tab Page.
         private readonly GroupBox _groupBoxDatabase;
@@ -716,7 +716,7 @@ namespace TEAM
                 try
                 {
                     // Save the updated file to disk.
-                    FileHandling.CreateFileBackup(_connectionFileName, GlobalParameters.BackupPath);
+                    FileHandling.CreateFileBackup(_connectionFileName, globalParameters.BackupPath);
                     string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
 
                     File.WriteAllText(_connectionFileName, output);

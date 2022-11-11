@@ -17,27 +17,16 @@ namespace TEAM
             MyParent = myParent;
             InitializeComponent();
         }
-        
+
+        /// <summary>
+        /// Reusable global parameters. Accessed throughout the app.
+        /// </summary>
+        public static GlobalParameters globalParameters { get; set; } = new GlobalParameters();
+
         /// <summary>
         /// TEAM configurations (e.g. conventions, prefixes, attribute names).
         /// </summary>
         public static TeamConfiguration TeamConfiguration { get; set; } = new TeamConfiguration();
-
-        /// <summary>
-        /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <returns></returns>
-        public static TeamConnection GetTeamConnectionByConnectionId(string connectionId)
-        {
-            if (!TeamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
-            {
-                // The key isn't in the dictionary.
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
-            }
-
-            return teamConnection;
-        }
 
         #region Metadata objects in memory
 
@@ -70,37 +59,5 @@ namespace TEAM
         internal static DataGridViewPhysicalModel _dataGridViewPhysicalModel;
 
         internal static EventLog TeamEventLog { get; set; } = new EventLog();
-
-        /// <summary>
-        /// These parameters are used as global constants throughout the application.
-        /// </summary>
-        internal static class GlobalParameters
-        {
-            // TEAM core path parameters
-            public static string RootPath { get; } = Application.StartupPath + @"\";
-            public static string ConfigurationPath { get; set; } = RootPath + @"Configuration\";
-            public static string MetadataPath { get; set; } = RootPath + @"Metadata\";
-            public static string CorePath { get; } = RootPath + @"Core\";
-
-            public static string BackupPath { get; } = RootPath + @"Backup\";
-            public static string ScriptPath { get; set; } = RootPath + @"Scripts\";
-            public static string FilesPath { get; set; } = RootPath + @"Files\";
-            public static string ConfigFileName { get; set; } = "TEAM_configuration";
-            public static string PathFileName { get; set; } = "TEAM_Path_configuration";
-            public static string ValidationFileName { get; set; } = "TEAM_validation";
-            public static string JsonExportConfigurationFileName { get; set; } = "TEAM_jsonconfiguration";
-            public static string FileExtension { get; set; } = ".txt";
-            internal static string ActiveEnvironmentInternalId { get; set; } = Utility.CreateMd5(new[] { "Development" }, "%$@");
-            internal static string ActiveEnvironmentKey { get; set; }
-
-            // JSON file name parameters
-            public static string JsonSchemaForDataWarehouseAutomationFileName { get; } = "interfaceDataWarehouseAutomationMetadata.json";
-            public static string JsonTableMappingFileName { get; } = "TEAM_Table_Mapping";
-            public static string JsonAttributeMappingFileName { get; } = "TEAM_Attribute_Mapping";
-            public static string JsonModelMetadataFileName { get; } = "TEAM_Model_Metadata";
-            public static string JsonConnectionFileName { get; } = "TEAM_connections";
-            public static string JsonEnvironmentFileName { get; } = "TEAM_environments";
-            public static string JsonExtension { get;  } = ".json";
-        }
     }
 }

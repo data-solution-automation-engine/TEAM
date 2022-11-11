@@ -113,7 +113,6 @@
     <Compile Include="Form_Edit.Designer.cs">
       <DependentUpon>Form_Edit.cs</DependentUpon>
     </Compile>
-    <Compile Include="JsonExportSetting.cs" />
     <Compile Include="TabPageEnvironments.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -186,8 +185,6 @@
     <Compile Include="Form_Validation.Designer.cs">
       <DependentUpon>Form_Validation.cs</DependentUpon>
     </Compile>
-    <Compile Include="MetadataValidation.cs" />
-    <Compile Include="JsonOutputHandling.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

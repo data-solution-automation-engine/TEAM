@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace TEAM_Library
@@ -42,6 +41,22 @@ namespace TEAM_Library
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TeamFileConnection FileConnection { get; set; }
+
+        /// <summary>
+        /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public static TeamConnection GetTeamConnectionByConnectionId(string connectionId, TeamConfiguration teamConfiguration, EventLog eventLog)
+        {
+            if (!teamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
+            {
+                // The key isn't in the dictionary.
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
+            }
+
+            return teamConnection;
+        }
 
         /// <summary>
         /// Generate a SQL Server connection string from available information.

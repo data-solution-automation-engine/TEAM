@@ -101,7 +101,7 @@ namespace TEAM
                 validationFile.AppendLine("/* End of file */");
 
                 using (var outfile =
-                    new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ValidationFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension))
+                    new StreamWriter(FormBase.globalParameters.ConfigurationPath + FormBase.globalParameters.ValidationFileName + '_' + FormBase.globalParameters.ActiveEnvironmentKey + FormBase.globalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();

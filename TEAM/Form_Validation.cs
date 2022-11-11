@@ -14,7 +14,7 @@ namespace TEAM
             // Make sure the validation information is available in this form.
             try
             {
-                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+                var validationFile = globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class
                 if (!File.Exists(validationFile))
@@ -179,7 +179,7 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+            var validationFile = globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
             try
             {
@@ -252,7 +252,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(GlobalParameters.ConfigurationPath);
+                Process.Start(globalParameters.ConfigurationPath);
             }
             catch (Exception ex)
             {

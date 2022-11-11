@@ -16,7 +16,7 @@ namespace TEAM
             /// <returns></returns>
             public static string AttributeMappingJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.ActiveEnvironmentKey + "_" + FormBase.GlobalParameters.JsonAttributeMappingFileName + FormBase.GlobalParameters.JsonExtension;
+                string localJsonFileName = FormBase.globalParameters.MetadataPath + FormBase.globalParameters.ActiveEnvironmentKey + "_" + FormBase.globalParameters.JsonAttributeMappingFileName + FormBase.globalParameters.JsonExtension;
                 return localJsonFileName;
             }
 
@@ -26,7 +26,7 @@ namespace TEAM
             /// <returns></returns>
             public static string PhysicalModelJsonFileName()
             {
-                string localJsonFileName = FormBase.GlobalParameters.MetadataPath + FormBase.GlobalParameters.ActiveEnvironmentKey + "_" + FormBase.GlobalParameters.JsonModelMetadataFileName + FormBase.GlobalParameters.JsonExtension;
+                string localJsonFileName = FormBase.globalParameters.MetadataPath + FormBase.globalParameters.ActiveEnvironmentKey + "_" + FormBase.globalParameters.JsonModelMetadataFileName + FormBase.globalParameters.JsonExtension;
                 return localJsonFileName; }
 
             internal static string newFileTableMapping { get; set; }
@@ -40,7 +40,7 @@ namespace TEAM
         /// <param name="fileType"></param>
         internal static void CreatePlaceholderJsonFile(string fileType)
         {
-            File.WriteAllText(FormBase.GlobalParameters.ConfigurationPath + fileType + FormBase.GlobalParameters.JsonExtension, "");
+            File.WriteAllText(FormBase.globalParameters.ConfigurationPath + fileType + FormBase.globalParameters.JsonExtension, "");
         }
 
 
@@ -66,7 +66,7 @@ namespace TEAM
         /// </summary>
         internal static void RemoveExistingJsonFile(string inputFileName)
         {
-            File.Delete(FormBase.GlobalParameters.ConfigurationPath + inputFileName);
+            File.Delete(FormBase.globalParameters.ConfigurationPath + inputFileName);
         }
     }
 }

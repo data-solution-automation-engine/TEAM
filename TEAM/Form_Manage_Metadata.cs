@@ -44,6 +44,8 @@ namespace TEAM
 
         private Size formSize;
 
+        private MetadataValidations metadataValidations;
+
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -58,9 +60,8 @@ namespace TEAM
             SetDataItemGridView();
             SetPhysicalModelGridView();
 
-            // Default setting and start setting of counters etc.
-            MetadataValidations.ValidationIssues = 0;
-            MetadataValidations.ValidationRunning = false;
+            // Default setting and start setting of validation counters etc.
+            metadataValidations = new MetadataValidations();
 
             labelHubCount.Text = @"0 Core Business Concepts";
             labelSatCount.Text = @"0 Context entities";
@@ -201,7 +202,7 @@ namespace TEAM
             // Make sure the validation information is available for this form.
             try
             {
-                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+                var validationFile = globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
                 if (!File.Exists(validationFile))
@@ -222,12 +223,12 @@ namespace TEAM
             // Make sure the json configuration information is available for this form.
             try
             {
-                var jsonConfigurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+                var jsonConfigurationFile = globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it.
                 if (!File.Exists(jsonConfigurationFile))
                 {
-                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFile);
+                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFile, TeamEventLog);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
@@ -276,8 +277,8 @@ namespace TEAM
         private void PopulateDataObjectMappingGrid()
         {
             // Get the JSON files and load these into memory.
-            var teamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-            teamDataObjectMappingFileCombinations.GetMetadata();
+            var teamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(globalParameters.MetadataPath);
+            teamDataObjectMappingFileCombinations.GetMetadata(globalParameters);
 
             // Parse the JSON files into a data table that supports the grid view.
             var teamDataObjectMappings = new TeamDataObjectMappings(teamDataObjectMappingFileCombinations);
@@ -790,7 +791,7 @@ namespace TEAM
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(targetDataObject.name.GetMetadataFilePath(), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
 
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
@@ -798,7 +799,7 @@ namespace TEAM
             }
             else
             {
-                var fileToDelete = targetDataObject.name.GetMetadataFilePath();
+                var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.name);
                 File.Delete(fileToDelete);
             }
         }
@@ -817,7 +818,7 @@ namespace TEAM
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(targetDataObject.name.GetMetadataFilePath(), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
 
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
@@ -825,7 +826,7 @@ namespace TEAM
             }
             else
             {
-                var fileToDelete = targetDataObjectName.GetMetadataFilePath();
+                var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObjectName);
                 File.Delete(fileToDelete);
             }
         }
@@ -849,8 +850,8 @@ namespace TEAM
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel == "true")
             {
-                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + ".json");
-                TeamJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                TeamJsonHandling.RemoveExistingJsonFile(globalParameters.JsonModelMetadataFileName + ".json");
+                TeamJsonHandling.CreatePlaceholderJsonFile(globalParameters.JsonModelMetadataFileName);
                 TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel = "false";
             }
 
@@ -1156,8 +1157,8 @@ namespace TEAM
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping == "true")
             {
-                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + ".json");
-                TeamJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                TeamJsonHandling.RemoveExistingJsonFile(globalParameters.JsonAttributeMappingFileName + ".json");
+                TeamJsonHandling.CreatePlaceholderJsonFile(globalParameters.JsonAttributeMappingFileName);
                 TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping = "false";
             }
 
@@ -1380,63 +1381,7 @@ namespace TEAM
                 #endregion
             }
         }
-
-        /// <summary>
-        /// Returns the source, and target connection for a given input source and target mapping.
-        /// Item 1 is the enabled flag, item 2 is the source, item 3 the source connection, item 4 the target and Item 5 is the target connection.
-        /// </summary>
-        /// <param name="tableMappingDataTable"></param>
-        /// <param name="sourceTable"></param>
-        /// <param name="targetTable"></param>
-        /// <returns></returns>
-        private static Tuple<string, string, TeamConnection, string, TeamConnection> GetDataObjectMappingFromDataItemMapping(DataTable tableMappingDataTable, string sourceTable, string targetTable)
-        {
-            // Default return value
-            Tuple<string, string, TeamConnection, string, TeamConnection> returnTuple = new Tuple<string, string, TeamConnection, string, TeamConnection>
-                (
-                    "False",
-                    sourceTable,
-                    null,
-                    targetTable,
-                    null
-                );
-
-            // Find the corresponding row in the Data Object Mapping grid
-            DataRow[] DataObjectMappings = tableMappingDataTable.Select("[" + DataObjectMappingGridColumns.SourceDataObjectName + "] = '" + sourceTable + "' AND" + "[" + DataObjectMappingGridColumns.TargetDataObjectName + "] = '" + targetTable + "'");
-
-            if (DataObjectMappings.Length == 0)
-            {
-                // There is no matching row found in the Data Object Mapping grid. Validation should pick this up!
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, no matching Data Object mapping was found."));
-
-            }
-            else if (DataObjectMappings.Length > 1)
-            {
-                // There are too many entries! There should be only a single mapping from source to target
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found."));
-            }
-            else
-            {
-                var connectionInternalIdSource = DataObjectMappings[0][DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                var connectionInternalIdTarget = DataObjectMappings[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                TeamConnection sourceConnection = GetTeamConnectionByConnectionId(connectionInternalIdSource);
-                TeamConnection targetConnection = GetTeamConnectionByConnectionId(connectionInternalIdTarget);
-
-                // Set the right values
-                returnTuple = new Tuple<string, string, TeamConnection, string, TeamConnection>
-                (
-                    DataObjectMappings[0][DataObjectMappingGridColumns.Enabled.ToString()].ToString(),
-                    sourceTable,
-                    sourceConnection,
-                    targetTable,
-                    targetConnection
-                );
-
-            }
-
-            return returnTuple;
-        }
-
+        
         # region Parse process
 
         private void ButtonParse_Click(object sender, EventArgs e)
@@ -1506,7 +1451,7 @@ namespace TEAM
 
             #region Parse Thread
 
-            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataValidations.ValidationIssues == 0) && activationContinue)
+            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && metadataValidations.ValidationIssues == 0) && activationContinue)
             {
                 if (backgroundWorkerParse.IsBusy) return;
                 // create a new instance of the alert form
@@ -1600,32 +1545,7 @@ namespace TEAM
 
             int counter = 0;
 
-            var filteredRowSet = new List<DataGridViewRow>();
-        
-            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
-            {
-                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
-                    .Where(row => !row.IsNewRow && 
-                                  (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
-                                  row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text)))
-                    .ToList();
-            }
-            else
-            {
-                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
-            }
-
-            //if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
-            //{
-            //    if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) &&
-            //        !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
-            //    {
-            //        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
-            //        currencyManager.SuspendBinding();
-            //        row.Visible = false;
-            //        currencyManager.ResumeBinding();
-            //    }
-            //}
+            var filteredRowSet = GetFilteredDataObjectMappingDataGridViewRows();
 
             foreach (DataGridViewRow dataObjectMappingGridViewRow in filteredRowSet)
             {
@@ -1649,7 +1569,7 @@ namespace TEAM
 
                             WriteDataObjectMappingsToFile(targetDataObject);
 
-                            LogMetadataEvent($"  --> Saved as '{targetDataObject.name.GetMetadataFilePath()}'.", EventTypes.Information);
+                            LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.name)}'.", EventTypes.Information);
 
                             targetNameList.Add(targetDataObjectName);
                         }
@@ -1683,48 +1603,88 @@ namespace TEAM
             _alertParse.SetTextLogging("\r\n" + eventMessage);
         }
 
-        public DateTime ActivationMetadata()
+        internal List<DataGridViewRow> GetFilteredDataObjectMappingDataGridViewRows()
         {
-            DateTime mostRecentActivationDateTime = DateTime.MinValue;
+            var filteredRowSet = new List<DataGridViewRow>();
 
-            var connOmd = new SqlConnection
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
             {
-                ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
-            };
-
-            var sqlStatementForActivationMetadata = new StringBuilder();
-            sqlStatementForActivationMetadata.AppendLine("SELECT [VERSION_NAME], MAX([ACTIVATION_DATETIME]) AS [ACTIVATION_DATETIME]");
-            sqlStatementForActivationMetadata.AppendLine("FROM [dbo].[MD_MODEL_METADATA]");
-            sqlStatementForActivationMetadata.AppendLine("GROUP BY [VERSION_NAME]");
-
-            var activationMetadata = Utility.GetDataTable(ref connOmd, sqlStatementForActivationMetadata.ToString());
-
-            if (activationMetadata != null)
-            {
-                foreach (DataRow row in activationMetadata.Rows)
-                {
-                    mostRecentActivationDateTime = (DateTime) row["ACTIVATION_DATETIME"];
-                }
-            }
-
-            return mostRecentActivationDateTime;
-        }
-
-
-        private void saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            DateTime activationDateTime = ActivationMetadata();
-
-            if (activationDateTime == DateTime.MinValue)
-            {
-                richTextBoxInformation.Text = "The metadata was not activated, so the graph is constructed only from the raw mappings.";
+                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
+                    .Where(row => !row.IsNewRow &&
+                                  (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
+                                   row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text)))
+                    .ToList();
             }
             else
             {
-                richTextBoxInformation.Text =
-                    $"DGML will be generated following the most recent activation metadata, as per ({activationDateTime}).";
+                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
             }
 
+            return filteredRowSet;
+        }
+
+        internal List<DataGridViewRow> GetFilteredDataItemMappingDataGridViewRows()
+        {
+            var filteredRowSet = new List<DataGridViewRow>();
+
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                filteredRowSet = _dataGridViewDataItems.Rows.Cast<DataGridViewRow>()
+                    .Where(row => !row.IsNewRow &&
+                                  (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
+                                   row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text)))
+                    .ToList();
+            }
+            else
+            {
+                filteredRowSet = _dataGridViewDataItems.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
+            }
+
+            return filteredRowSet;
+        }
+
+        internal List<DataRow> GetFilteredDataObjectMappingDataTableRows()
+        {
+            var filteredRowSet = new List<DataRow>();
+
+            DataTable dataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
+
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString().Contains(textBoxFilterCriterion.Text) ||
+                                                                       row[(int)DataObjectMappingGridColumns.SourceDataObjectName].ToString().Contains(textBoxFilterCriterion.Text))
+                    .ToList();
+            }
+            else
+            {
+                filteredRowSet = dataTable.AsEnumerable().ToList();
+            }
+
+            return filteredRowSet;
+        }
+
+        internal List<DataRow> GetFilteredDataItemMappingDataTableRows()
+        {
+            var filteredRowSet = new List<DataRow>();
+
+            DataTable dataTable = (DataTable)BindingSourceDataItemMappings.DataSource;
+
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataItemMappingGridColumns.TargetDataObject].ToString().Contains(textBoxFilterCriterion.Text) ||
+                                                                       row[(int)DataItemMappingGridColumns.SourceDataObject].ToString().Contains(textBoxFilterCriterion.Text))
+                    .ToList();
+            }
+            else
+            {
+                filteredRowSet = dataTable.AsEnumerable().ToList();
+            }
+
+            return filteredRowSet;
+        }
+
+        private void saveAsDirectionalGraphMarkupLanguageDgmlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             var theDialog = new SaveFileDialog
             {
                 Title = @"Save Metadata As Directional Graph File",
@@ -1733,8 +1693,7 @@ namespace TEAM
             };
 
             var ret = STAShowDialog(theDialog);
-
-
+            
             if (ret == DialogResult.OK)
             {
                 var chosenFile = theDialog.FileName;
@@ -1763,13 +1722,13 @@ namespace TEAM
                         DataGridViewRow row = _dataGridViewDataObjects.Rows[i];
                         string sourceNode = row.Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
                         var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
 
                         string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
                         var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
 
@@ -2035,16 +1994,15 @@ namespace TEAM
                         
                         string sourceNode = row.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
                         var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
                         string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
                         var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
                         var businessKey = row.Cells[(int) DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString();
-
 
                         dgmlExtract.AppendLine("     <Link Source=\"" + fullyQualifiedObjectSource.Key+'.'+ fullyQualifiedObjectSource.Value + "\" Target=\"" + fullyQualifiedObjectTarget.Key+'.'+fullyQualifiedObjectTarget.Value  + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
                     }
@@ -2340,10 +2298,10 @@ namespace TEAM
                     continue;
 
                 string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                TeamConnection localConnectionSource = GetTeamConnectionByConnectionId(localInternalConnectionIdSource);
+                TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
 
                 string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                TeamConnection localConnectionTarget = GetTeamConnectionByConnectionId(localInternalConnectionIdTarget);
+                TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
 
                 var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
 
@@ -2469,7 +2427,22 @@ namespace TEAM
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            DataTable dataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
+            // Data Object Mapping filtered rows (starting point for validation).
+            var filteredDataObjectMappingDataRows = GetFilteredDataObjectMappingDataTableRows();
+            var filteredDataObjectMappingDataGridViewRows = GetFilteredDataObjectMappingDataGridViewRows();
+
+            var dataObjectMappingDataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
+            var dataObjectMappingDataRows = dataObjectMappingDataTable.AsEnumerable().ToList();
+
+            // Data Item Mapping filtered rows (starting point for validation).
+            var filteredDataItemDataRows = GetFilteredDataItemMappingDataTableRows();
+
+            // Physical model snapshot.
+            var dataObjectMappingGridViewRows = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
+                .Where(row => !row.IsNewRow)
+                .ToList();
+
+            var physicalModelDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
 
             // Handling multi-threading
             if (worker != null && worker.CancellationPending)
@@ -2478,838 +2451,80 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
+                _alertValidation.SetTextLogging("Commencing validation on available metadata, according to settings in the validation screen.\r\n\r\n");
 
                 // Set the validation issue counter to 0 to start a new validation round.
-                MetadataValidations.ValidationIssues = 0;
+                metadataValidations.ValidationIssues = 0;
 
                 if (ValidationSetting.DataObjectExistence == "True")
                 {
-                    ValidateObjectExistence(dataTable);
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateObjectExistence(filteredDataObjectMappingDataRows, physicalModelDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
-
                 worker?.ReportProgress(10);
-
 
                 if (ValidationSetting.SourceBusinessKeyExistence == "True")
                 {
-                    ValidateBusinessKeyObject();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateBusinessKeyObject(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, physicalModelDataTable, ref metadataValidations));
                 }
-
                 worker?.ReportProgress(20);
-
 
                 if (ValidationSetting.DataItemExistence == "True")
                 {
-                    ValidateDataItemExistence();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDataItemExistence(filteredDataItemDataRows, dataObjectMappingDataTable, physicalModelDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(30);
-
-
+                
                 if (ValidationSetting.LogicalGroup == "True")
                 {
-                    ValidateLogicalGroup();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLogicalGroup(filteredDataObjectMappingDataRows, dataObjectMappingDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(40);
 
-
                 if (ValidationSetting.LinkKeyOrder == "True")
                 {
-                    ValidateLinkKeyOrder();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLinkKeyOrder(filteredDataObjectMappingDataRows, dataObjectMappingDataTable, physicalModelDataTable, dataObjectMappingGridViewRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(45);
 
                 if (ValidationSetting.LinkCompletion == "True")
                 {
-                    ValidateLinkCompletion();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLinkCompletion(filteredDataObjectMappingDataRows, TeamConfiguration, ref metadataValidations));
                 }
                 worker?.ReportProgress(50);
 
-                ValidateHardcodedFields();
+                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateHardcodedFields(filteredDataObjectMappingDataRows, TeamConfiguration, ref metadataValidations));
+                worker?.ReportProgress(60);
 
-                ValidateAttributeDataObjectsForTableMappings();
 
-                ValidateSchemaConfiguration();
+                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateAttributeDataObjectsForTableMappings(filteredDataItemDataRows, dataObjectMappingDataRows, ref metadataValidations));
+                worker?.ReportProgress(70);
 
+                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateSchemaConfiguration(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 worker?.ReportProgress(80);
 
+                // Validate basic Data Vault settings
                 if (ValidationSetting.BasicDataVaultValidation == "True")
                 {
-                    ValidateBasicDataVaultAttributeExistence();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateBasicDataVaultAttributeExistence(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
-
                 worker?.ReportProgress(90);
 
                 // Check for duplicate data object mappings.
                 if (ValidationSetting.DuplicateDataObjectMappings == "True")
                 {
-                    ValidateDuplicateDataObjectMappings();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDuplicateDataObjectMappings(filteredDataObjectMappingDataGridViewRows, ref metadataValidations));
                 }
-
                 worker?.ReportProgress(100);
 
                 // Informing the user.
-                _alertValidation.SetTextLogging("\r\n\r\nIn total " + MetadataValidations.ValidationIssues + " validation issues have been found.");
+                _alertValidation.SetTextLogging("\r\n\r\nIn total " + metadataValidations.ValidationIssues + " validation issues have been found.");
             }
         }
-
-
-        /// <summary>
-        /// This method runs a check against the Column Mappings DataGrid to assert if model metadata is available for the attributes. The column needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
-        /// </summary>
-        private void ValidateSchemaConfiguration()
-        {
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to check if connection settings align with schemas entered in the Data Object mapping grid.\r\n");
-
-            int resultCounter = 0;
-            
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True") // If row is enabled
-                {
-                    string localSourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    string localTargetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-
-                    TeamConnection sourceConnection = GetTeamConnectionByConnectionId(localSourceConnectionInternalId);
-                    TeamConnection targetConnection = GetTeamConnectionByConnectionId(localTargetConnectionInternalId);
-
-                    // The values in the data grid, fully qualified. This means the default schema is added if necessary.
-                    var sourceDataObject = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString(), sourceConnection)
-                        .FirstOrDefault();
-                    var targetDataObject = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(
-                            row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString(), targetConnection)
-                        .FirstOrDefault();
-
-                    // The values as defined in the associated connections
-                    var sourceSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localSourceConnectionInternalId, TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "").Replace("]", "");
-
-                    var targetSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localTargetConnectionInternalId, TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "").Replace("]", "");
-
-
-                    if (sourceDataObject.Key.Replace("[", "").Replace("]", "") != sourceSchemaNameForConnection)
-                    {
-                        _alertValidation.SetTextLogging($"--> Inconsistency detected for '{sourceDataObject.Key}.{sourceDataObject.Value}' between the schema definition in the table grid '{sourceDataObject.Key}' and its assigned connection '{sourceConnection.ConnectionName}' which has been configured as '{sourceSchemaNameForConnection}'.\r\n");
-                        resultCounter++;
-                    }
-
-                    if (targetDataObject.Key.Replace("[", "").Replace("]", "") != targetSchemaNameForConnection)
-                    {
-                        _alertValidation.SetTextLogging($"--> Inconsistency for '{sourceDataObject.Key}.{sourceDataObject.Value}' detected between the schema definition in the table grid {targetDataObject.Key} and its assigned connection ''{targetConnection.ConnectionName}'' which has been configured as '{targetSchemaNameForConnection}'.\r\n");
-                        resultCounter++;
-                    }
-                }
-            }
-
-            if (resultCounter == 0)
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to schema configuration.\r\n\r\n");
-            }
-
-        }
-
-        private void ValidateLinkCompletion()
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if Link concept is correctly defined.\r\n");
-
-            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
-
-            // Creating a list of unique Link business key combinations from the data grid / data table
-            var localDataTableTableMappings = (DataTable)BindingSourceDataObjectMappings.DataSource;
-            var objectList = new List<Tuple<string, string, string, string>>(); // Source, Target, Business Key, Target Connection
-
-            foreach (DataRow row in localDataTableTableMappings.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                // Only process enabled mappings.
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() != "True") continue;
-
-                // Only select the lines that relate to a Link target.
-                if (row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
-                {
-                    // Derive the business key.
-                    var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
-
-                    // Derive the connection
-                    localConnectionDictionary.TryGetValue(row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString(), out var targetConnectionValue);
-
-                    var newValidationObject = new Tuple<string, string, string, string>
-                    (
-                        row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString(),
-                        row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString(),
-                        businessKey,
-                        targetConnectionValue
-                    );
-
-                    if (!objectList.Contains(newValidationObject))
-                    {
-                        objectList.Add(newValidationObject);
-                    }
-                }
-            }
-            
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, bool>();
-
-            foreach (var linkObject in objectList)
-            {
-                 // The validation check returns a Dictionary
-                var validatedObject = MetadataValidation.ValidateLinkBusinessKeyForCompletion(linkObject);
-
-                // Looping through the dictionary to evaluate results.
-                foreach (var pair in validatedObject)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + ". This means there is an issue with the Link definition, and in particular the Business Key. Are two Hubs assigned?\r\n");
-                    MetadataValidations.ValidationIssues++;
-                }
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to the definition of Link tables.\r\n\r\n");
-            }
-
-
-        }
-
-        /// <summary>
-        /// This method runs a check against the Attribute Mappings DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
-        /// </summary>
-        private void ValidateDataItemExistence()
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the data items (columns) in the metadata exists in the model.\r\n");
-
-            var resultList = new Dictionary<string, string>();
-
-            var localDataItemTable = (DataTable) BindingSourceDataItemMappings.DataSource;
-            var localDataObjectTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-
-            foreach (DataRow row in localDataItemTable.Rows)
-            {
-                // Look for the corresponding Data Object Mapping row.
-                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable, row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString(), row[DataItemMappingGridColumns.TargetDataObject.ToString()].ToString());
-
-                if (dataObjectRow.Item1 == "True") //If the corresponding Data Object is enabled
-                {
-                    var validationObjectSource = row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString();
-                    TeamConnection sourceConnection = dataObjectRow.Item3;
-                    var validationAttributeSource = row[DataItemMappingGridColumns.SourceDataItem.ToString()].ToString();
-
-                    var validationObjectTarget = row[DataItemMappingGridColumns.TargetDataObject.ToString()].ToString();
-                    TeamConnection targetConnection = dataObjectRow.Item5;
-                    var validationAttributeTarget = row[DataItemMappingGridColumns.TargetDataItem.ToString()].ToString();
-
-                    var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString();
-
-                    // No need to evaluate the operational system (real sources), or if the source is a data query (logic).
-                    if (sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString() && !validationAttributeSource.IsDataQuery()) 
-                    {
-                        var objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                        // Add negative results to dictionary
-                        if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
-                        {
-                            resultList.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
-                        }
-
-                        objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectTarget, validationAttributeTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                        // Add negative results to dictionary
-                        if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeTarget))
-                        {
-                            resultList.Add(validationAttributeTarget, validationObjectTarget); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var objectValidationResult in resultList)
-                {
-                    _alertValidation.SetTextLogging($"     {objectValidationResult.Key} belonging to {objectValidationResult.Value} does not exist in the physical model.\r\n");
-                    MetadataValidations.ValidationIssues++;
-                }
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of the attribute(s).\r\n\r\n");
-            }
-        }
-
-        /// <summary>
-        /// This method runs a check against the DataGrid to assert if model metadata is available for the object. The object needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run succesfully.
-        /// </summary>
-        private void ValidateObjectExistence(DataTable dataTable)
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the defined Data Objects exists in the model.\r\n");
-
-            var resultList = new Dictionary<string, string>();
-
-            // Iterating over the grid
-            foreach (DataRow row in dataTable.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if ((string)row[(int)DataObjectMappingGridColumns.Enabled] == "True")
-                {
-                    // Sources
-                    var validationObjectSource = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
-                    var validationObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var sourceConnection = GetTeamConnectionByConnectionId(validationObjectSourceConnectionId);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
-
-                    // Targets
-                    var validationObjectTarget = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
-                    var validationObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = GetTeamConnectionByConnectionId(validationObjectTargetConnectionId);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
-
-                    // No need to evaluate the operational system (real sources))
-                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
-                    {
-                        string objectValidated;
-
-                        objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
-                        {
-                            resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
-                        }
-
-                        objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
-                        {
-                            resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); // Add objects that did not pass the test
-                        }
-
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var objectValidationResult in resultList)
-                {
-                    _alertValidation.SetTextLogging($"     {objectValidationResult.Key} is tested with outcome {objectValidationResult.Value}. This may be because the schema is defined differently in the connection, or because it simply does not exist.\r\n");
-                    MetadataValidations.ValidationIssues++;
-                }
-
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model.\r\n\r\n");
-            }
-        }
-
-        /// <summary>
-        /// Hard-coded fields in Staging Layer data objects are not supported. Instead, an attribute mapping should be created.
-        /// </summary>
-        internal void ValidateHardcodedFields()
-        {
-            _alertValidation.SetTextLogging("--> Commencing the validation to see if any hard-coded fields are not correctly set in enabled mappings.\r\n");
-
-            int localValidationIssues = 0;
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                // If enabled and is a Staging Layer object
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && 
-                    MetadataHandling.GetDataObjectType((string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], "", TeamConfiguration).In(MetadataHandling.DataObjectTypes.StagingArea, MetadataHandling.DataObjectTypes.PersistentStagingArea))
-                {
-                    if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
-                    {
-                        localValidationIssues++;
-                        MetadataValidations.ValidationIssues++;
-                        _alertValidation.SetTextLogging($"     Data Object {(string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
-                    }
-                }
-            }
-
-            if (localValidationIssues == 0)
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the definition of hard-coded Business Key components.\r\n\r\n");
-            }
-        }
-
-        internal void ValidateAttributeDataObjectsForTableMappings()
-        {
-            _alertValidation.SetTextLogging($"--> Commencing the validation to see if all data item (attribute) mappings exist as data object (table) mapping also (if enabled in the grid).\r\n");
-            int localValidationIssues = 0;
-
-            var localDataTableTableMappings = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            var localDataTableAttributeMappings = (DataTable) BindingSourceDataItemMappings.DataSource;
-
-            // Create a list of all sources and targets for the Data Object mappings
-            List<Tuple<string,string>> sourceDataObjectListTableMapping = new List<Tuple<string, string>>();
-            List<Tuple<string, string>> targetDataObjectListTableMapping = new List<Tuple<string, string>>();
-
-            foreach (DataRow row in localDataTableTableMappings.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                var sourceDataObjectTuple = new Tuple<string, string>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], row[DataObjectMappingGridColumns.Enabled.ToString()].ToString());
-                var targetDataObjectTuple = new Tuple<string, string>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], row[DataObjectMappingGridColumns.Enabled.ToString()].ToString());
-
-                if (!sourceDataObjectListTableMapping.Contains(sourceDataObjectTuple))
-                {
-                    sourceDataObjectListTableMapping.Add(sourceDataObjectTuple);
-                }
-
-                if (!targetDataObjectListTableMapping.Contains(targetDataObjectTuple))
-                {
-                    targetDataObjectListTableMapping.Add(targetDataObjectTuple);
-                }
-            }
-
-            foreach (DataRow row in localDataTableAttributeMappings.Rows)
-            {
-                var localSource = (string) row[DataItemMappingGridColumns.SourceDataObject.ToString()];
-                var localTarget = (string) row[DataItemMappingGridColumns.TargetDataObject.ToString()];
-
-                // If the value exists, but is disabled just a warning is sufficient.
-                // If the value does not exist for an enabled mapping or at all, then it's an error.
-                
-                if (sourceDataObjectListTableMapping.Contains(new Tuple<string, string>(localSource, "False")))
-                {
-                    //_alertValidation.SetTextLogging($"     Data Object {localSource} in the attribute mappings exists in the table mappings for an disabled mapping. This can be disregarded.\r\n");
-                }
-                else if (sourceDataObjectListTableMapping.Contains(new Tuple<string, string>(localSource, "True")))
-                {
-                    // No problem, it's found
-                }
-                else 
-                {
-                    _alertValidation.SetTextLogging($"     Data Object {localSource} in the attribute mappings (source) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
-                    MetadataValidations.ValidationIssues++;
-                    localValidationIssues++;
-                }
-
-                if (targetDataObjectListTableMapping.Contains(new Tuple<string, string>(localTarget, "False")))
-                {
-                    //_alertValidation.SetTextLogging($"     Data Object {localTarget} in the attribute mappings exists in the table mappings for an disabled mapping. This can be disregarded.\r\n");
-                }
-                else if (targetDataObjectListTableMapping.Contains(new Tuple<string, string>(localTarget, "True")))
-                {
-                    // No problem, it's found
-                }
-                else
-                {
-                    _alertValidation.SetTextLogging($"     Data Object {localTarget} in the attribute mappings (target) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
-                    MetadataValidations.ValidationIssues++;
-                    localValidationIssues++;
-                }
-            }
-
-            if (localValidationIssues == 0)
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of Data Objects related to defined Data Item Mappings.\r\n\r\n");
-            }
-        }
-
-        /// <summary>
-        /// This method will check if the order of the keys in the Link is consistent with the physical table structures.
-        /// </summary>
-        internal void ValidateLinkKeyOrder()
-        {
-            #region Retrieving the Links
-
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
-
-            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
-
-            // Creating a list of unique Link business key combinations from the data grid / data table
-            var localDataTableTableMappings = (DataTable)BindingSourceDataObjectMappings.DataSource;
-            var objectList = new List<Tuple<string, string, string, string>>();
-            
-            foreach (DataRow row in localDataTableTableMappings.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
-                {
-                    // Only select the lines that relate to a Link target.
-                    if (row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
-                    {
-                        // Derive the business key.
-                        var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
-
-                        // Derive the connection
-                        localConnectionDictionary.TryGetValue(row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString(), out var connectionValue);
-                        
-                        var newValidationObject = new Tuple<string, string, string, string>
-                        (
-                            row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString(),
-                            row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString(),
-                            businessKey,
-                            connectionValue
-                        );
-
-                        if (!objectList.Contains(newValidationObject))
-                        {
-                            objectList.Add(newValidationObject);
-                        }
-                    }
-                }
-            }
-
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, bool>();
-
-            foreach (var sourceObject in objectList)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject, (DataTable) BindingSourceDataObjectMappings.DataSource, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "\r\n");
-
-                    if (sourceObjectResult.Value == false)
-                    {
-                        MetadataValidations.ValidationIssues++;
-                    }
-                }
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
-            }
-        }
-
-        internal void ValidateDuplicateDataObjectMappings()
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to check if any duplicate data object mappings are present.\r\n");
-
-            var rows = _dataGridViewDataObjects.Rows.OfType<DataGridViewRow>().Reverse().Skip(1);
-
-            var duplicateRows = rows.GroupBy(r => 
-                    new {
-                    sourceDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString(),
-                    TargetDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(),
-                    BusinessKeyDefinition = r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString(),
-                    })
-                .Where(g => g.Count() > 1);
-
-            var distinctDeduplicatedRows = duplicateRows.Distinct().ToList();
-
-            // Evaluate the results
-            int localValidationIssues = 0;
-
-            foreach (var result in distinctDeduplicatedRows)
-            {
-                _alertValidation.SetTextLogging($"     The data object mapping from {result.Key.sourceDataObjectName} to {result.Key.TargetDataObjectName} with {result.Key.BusinessKeyDefinition} is duplicate.\r\n");
-
-                localValidationIssues++;
-                MetadataValidations.ValidationIssues++;
-            }
-
-            if (localValidationIssues == 0)
-            {
-                _alertValidation.SetTextLogging("     There were no full row duplicates found in the data object mapping.\r\n\r\n");
-            }
-        }
-
-        internal void ValidateBasicDataVaultAttributeExistence()
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to check if basic Data Vault attributes are present.\r\n");
-
-            List<Tuple<string,string,bool>> masterResultList = new List<Tuple<string, string, bool>>();
-            
-            var localDataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
-            foreach (DataRow row in localDataTable.Rows)
-            {               
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
-                {
-                    var localDataObjectSourceName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
-                    var localDataObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var localDataObjectSourceConnection = GetTeamConnectionByConnectionId(localDataObjectSourceConnectionId);
-                    var localDataObjectSourceTableType = MetadataHandling.GetDataObjectType(localDataObjectSourceName, "", TeamConfiguration);
-                    
-                    var localDataObjectTargetName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
-                    var localDataObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var localDataObjectTargetConnection = GetTeamConnectionByConnectionId(localDataObjectTargetConnectionId);
-                    var localDataObjectTargetTableType = MetadataHandling.GetDataObjectType(localDataObjectTargetName, "", TeamConfiguration);
-
-                    // Source
-                    if (localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.CoreBusinessConcept ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.Context ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
-                    {
-                        var result = MetadataValidation.BasicDataVaultValidation(localDataObjectSourceName, localDataObjectSourceConnection, localDataObjectSourceTableType);
-                        masterResultList.AddRange(result);
-                    }
-
-                    // Target
-                    if (localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.CoreBusinessConcept ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.Context ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
-                    {
-                        var result = MetadataValidation.BasicDataVaultValidation(localDataObjectTargetName, localDataObjectTargetConnection, localDataObjectTargetTableType);
-                        masterResultList.AddRange(result);
-                    }
-                }
-            }
-            
-            // Evaluate the results
-            int localValidationIssues = 0;
-
-            // Deduplicate
-            List<Tuple<string,string,bool>> deduplicatedResultList = masterResultList.Distinct().ToList();
-
-            foreach (var result in deduplicatedResultList)
-            {
-                if (result.Item3 == false)
-                {
-                    _alertValidation.SetTextLogging($"     Warning - {result.Item1} was evaluated as a Data Vault object but the expected attribute {result.Item2} was not found in the table.\r\n");
-                    MetadataValidations.ValidationIssues++;
-                    localValidationIssues++;
-                }
-            }
-
-            if (localValidationIssues == 0)
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related Data Vault attribute existence.\r\n\r\n");
-            }
-        }
-
-        /// <summary>
-        /// Checks if all the supporting mappings are available (e.g. a Context table also needs a Core Business Concept present).
-        /// </summary>
-        internal void ValidateLogicalGroup()
-        {
-            #region Retrieving the Integration Layer tables
-
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
-
-            // Creating a list of tables which are dependent on other tables being present
-            var objectList = new List<Tuple<string, string, string, string>>(); // Source Name, Target Name, Business Key, FilterCriterion
-
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
-                {
-                    var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
-                    var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                    var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
-                    var targetFilterCriterion = row[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
-
-                    var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
-                    var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
-                    var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-
-
-                    if (targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship || targetTableType == MetadataHandling.DataObjectTypes.Context || targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
-                    {
-                        var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
-                        
-                        if (!objectList.Contains(new Tuple<string, string, string, string>
-                            (
-                            sourceFullyQualifiedName.Key+'.'+sourceFullyQualifiedName.Value, targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value, businessKey, targetFilterCriterion)
-                            )
-                        )
-                        {
-                            objectList.Add(new Tuple<string, string, string, string>
-                                (
-                                    sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value, targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value, businessKey, targetFilterCriterion)
-                            );
-                        }
-                    }
-                }
-            }
-
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, bool>();
-
-            foreach (var validationObject in objectList)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(validationObject, (DataTable) BindingSourceDataObjectMappings.DataSource);
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "." +
-                                                    "\r\n     This means there is a Link or Satellite without it's supporting Hub(s) defined." +
-                                                    "\r\n     If a source loads a Link or Satellite, this source should also load a Hub that relates to the Link or Satellite.\r\n");
-                }
-
-                _alertValidation.SetTextLogging("\r\n");
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
-            }
-            else
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to the logical grouping of objects.\r\n\r\n");
-            }
-        }
-
-        /// <summary>
-        ///   A validation check to make sure the Business Key is available in the source model.
-        /// </summary>
-        private void ValidateBusinessKeyObject()
-        {
-            var resultList = new Dictionary<Tuple<string, string>, bool>();
-
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n");
-
-
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True") // If row is enabled
-                {
-                    Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
-
-                    // Source table and business key definitions.
-                    string validationObject = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
-                    string validationConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    TeamConnection validationConnection = GetTeamConnectionByConnectionId(validationConnectionId);
-                    string businessKeyDefinition = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString();
-
-                    // Exclude a lookup to the source
-                    if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
-                    {
-                        objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, businessKeyDefinition, validationConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-                    }
-
-                    // Add negative results to dictionary
-                    foreach (var objectValidationTuple in objectValidated)
-                    {
-                        if (objectValidationTuple.Value == false && !resultList.ContainsKey(objectValidationTuple.Key))
-                        {
-                            resultList.Add(objectValidationTuple.Key, false); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     Table " + sourceObjectResult.Key.Item1 + " does not contain Business Key attribute " + sourceObjectResult.Key.Item2 + ".\r\n");
-                    MetadataValidations.ValidationIssues++;
-                }
-            }
-            else
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
-            }
-
-            _alertValidation.SetTextLogging("\r\n");
-        }
-
+     
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
+            labelResult.Text = (e.ProgressPercentage + @"%");
 
             // Pass the progress to AlertForm label and progressbar
             _alertValidation.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
@@ -3320,15 +2535,15 @@ namespace TEAM
         {
             if (e.Cancelled)
             {
-                labelResult.Text = "Cancelled!";
+                labelResult.Text = @"Cancelled!";
             }
             else if (e.Error != null)
             {
-                labelResult.Text = "Error: " + e.Error.Message;
+                labelResult.Text = $@"Error: {e.Error.Message}";
             }
             else
             {
-                labelResult.Text = "Done!";
+                labelResult.Text = @"Done!";
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
             }
         }
@@ -3381,7 +2596,7 @@ namespace TEAM
             int counter = 1;
             foreach (DataRow row in rows)
             {
-                var commaSnippet = "";
+                string commaSnippet;
                 if (counter == 1)
                 {
                     commaSnippet = "  ";
@@ -3422,9 +2637,9 @@ namespace TEAM
         {
             try
             {
-                if (GlobalParameters.ConfigurationPath != "")
+                if (globalParameters.ConfigurationPath != "")
                 {
-                    Process.Start(GlobalParameters.ConfigurationPath);
+                    Process.Start(globalParameters.ConfigurationPath);
                 }
                 else
                 {
@@ -3442,7 +2657,7 @@ namespace TEAM
             {
                 Title = @"Open Data Item Mapping Metadata File",
                 Filter = @"Data Item Mapping files|*.json",
-                InitialDirectory = GlobalParameters.MetadataPath
+                InitialDirectory = globalParameters.MetadataPath
             };
 
             var ret = STAShowDialog(theDialog);
@@ -3510,7 +2725,7 @@ namespace TEAM
             {
                 Title = @"Open Data Object Mapping Metadata File",
                 Filter = @"Data Object Mapping files|*.json",
-                InitialDirectory = GlobalParameters.MetadataPath
+                InitialDirectory = globalParameters.MetadataPath
             };
 
             var dialogResult = STAShowDialog(dialog);
@@ -3744,6 +2959,7 @@ namespace TEAM
 
                 _alertValidation.Canceled += buttonCancelParse_Click;
                 _alertValidation.Show();
+                _alertValidation.SetFormName("Validating the design metadata");
                 _alertValidation.ShowLogButton(false);
                 _alertValidation.ShowCancelButton(false);
 
@@ -3779,7 +2995,7 @@ namespace TEAM
                     DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
 
                     var sourceConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                    TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
 
                     var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.name, sourceConnection).FirstOrDefault();
 
@@ -3801,7 +3017,7 @@ namespace TEAM
                     DataObject targetDataObject = (DataObject)dataObjectRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
 
                     var targetConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                    TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
                     var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.name, targetConnection).FirstOrDefault();
 
@@ -3889,7 +3105,7 @@ namespace TEAM
 
                             DataRow newRow = localDataItemDataTable.NewRow();
 
-                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new string[] {Utility.GetRandomString(100)}, "#");
+                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new[] {Utility.GetRandomString(100)}, "#");
                             newRow[DataItemMappingGridColumns.SourceDataObject.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
                             newRow[DataItemMappingGridColumns.SourceDataItem.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
                             newRow[DataItemMappingGridColumns.TargetDataObject.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
@@ -3908,7 +3124,7 @@ namespace TEAM
             {
                 try
                 {
-                    Process.Start(GlobalParameters.MetadataPath);
+                    Process.Start(globalParameters.MetadataPath);
                 }
                 catch (Exception ex)
                 {
@@ -4014,7 +3230,7 @@ namespace TEAM
             else
             {
                 labelResult.Text = @"Done!";
-                richTextBoxInformation.Text += "\r\nThe phyiscal model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+                richTextBoxInformation.Text += "\r\nThe physical model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
 
                 // Resize the grid
                 GridAutoLayout(_dataGridViewPhysicalModel);
