@@ -646,7 +646,6 @@ namespace TEAM
 
             // The name of the tab page is passed back to the original control (the tab control).
             OnDeleteConnection(this, new MyConnectionProfileEventArgs(_localConnection));
-
         }
 
         /// <summary>

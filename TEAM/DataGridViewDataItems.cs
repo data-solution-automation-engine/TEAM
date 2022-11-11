@@ -327,8 +327,7 @@ namespace TEAM
             }
 
             #endregion
-
-
+            
             #region Target Data Items
 
             // Format the name of the data object, for a source data object

@@ -1394,6 +1394,15 @@ namespace TEAM_Library
             return returnValue;
         }
 
+        /// <summary>
+        /// Evaluates if a column / data item should be included as part of a data item mapping
+        /// </summary>
+        /// <param name="dataItemName"></param>
+        /// <param name="dataObjectType"></param>
+        /// <param name="surrogateKey"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
         public static bool IsIncludedDataItem(this string dataItemName, DataObjectTypes dataObjectType, string surrogateKey, TeamConnection teamConnection, TeamConfiguration teamConfiguration)
         {
             bool returnValue = true;
@@ -1402,7 +1411,15 @@ namespace TEAM_Library
             {
                 returnValue = false;
             }
+            else if (dataItemName == teamConfiguration.AlternativeRecordSourceAttribute)
+            {
+                returnValue = false;
+            }
             else if (dataItemName == teamConfiguration.AlternativeLoadDateTimeAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.AlternativeSatelliteLoadDateTimeAttribute)
             {
                 returnValue = false;
             }
@@ -1410,7 +1427,7 @@ namespace TEAM_Library
             {
                 returnValue = false;
             }
-            else if (dataItemName == teamConfiguration.AlternativeRecordSourceAttribute)
+            else if (dataItemName == teamConfiguration.ExpiryDateTimeAttribute)
             {
                 returnValue = false;
             }
@@ -1419,6 +1436,10 @@ namespace TEAM_Library
                 returnValue = false;
             }
             else if (dataItemName == teamConfiguration.EtlProcessAttribute)
+            {
+                returnValue = false;
+            }
+            else if (dataItemName == teamConfiguration.EtlProcessUpdateAttribute)
             {
                 returnValue = false;
             }
@@ -1438,6 +1459,11 @@ namespace TEAM_Library
             {
                 returnValue = false;
             }
+            else if (dataItemName == teamConfiguration.CurrentRowAttribute)
+            {
+                returnValue = false;
+            }
+
             else if (!new[] { DataObjectTypes.StagingArea, DataObjectTypes.PersistentStagingArea }.Contains(dataObjectType) && dataItemName == surrogateKey) 
             {
                 returnValue = false;
