@@ -3261,6 +3261,7 @@ namespace TEAM
                 richTextBoxInformation.Text += "\r\nThe physical model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
 
                 // Resize the grid
+                ApplyDataGridViewFiltering();
                 GridAutoLayout(_dataGridViewPhysicalModel);
             }
         }
