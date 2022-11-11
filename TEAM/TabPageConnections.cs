@@ -751,9 +751,9 @@ namespace TEAM
                     connection.Open();
                     UpdateRichTextBoxInformation("The database connection could be successfully established.\r\n");
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-                    UpdateRichTextBoxInformation("The database connection could not be established.\r\n");
+                    UpdateRichTextBoxInformation($"The database connection could not be established. The error message is {exception.Message} \r\n");
                 }
             }
 

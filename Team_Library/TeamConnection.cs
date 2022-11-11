@@ -79,14 +79,15 @@ namespace TEAM_Library
                     outputConnectionString += ("," + localDatabaseConnection.PortNumber);
                 }
 
-
                 if (DatabaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
                 {
+                    outputConnectionString += ";TrustServerCertificate=true";
                     outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
                     outputConnectionString += ";Integrated Security=SSPI";
                 }
                 else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
                 {
+                    outputConnectionString += ";TrustServerCertificate=true";
                     outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
                     outputConnectionString += ";user id=" + localDatabaseConnection.NamedUserName;
                     outputConnectionString += ";password=" + localDatabaseConnection.NamedUserPassword;
