@@ -2296,8 +2296,8 @@ namespace TEAM
             sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1");
             sqlStatementForDataItems.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
 
-            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
-            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
+            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "%'");
+            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '%" + dwhKeyIdentifier + "'");
 
             sqlStatementForDataItems.AppendLine("	) ma");
             sqlStatementForDataItems.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
