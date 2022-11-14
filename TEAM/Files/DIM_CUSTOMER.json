@@ -26,9 +26,13 @@
             "description": "schema name"
           }
         ]
-      }
-    },
-    "generationDateTime": "2022-11-02T11:23:07.9940129+10:00"
+      },
+      "dataObjectClassifications": [
+        {
+          "classification": "Presentation"
+        }
+      ]
+    }
   },
   "dataObjectMappings": [
     {
@@ -55,7 +59,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -74,7 +83,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "Presentation"
+          }
+        ]
       },
       "dataItemMappings": [
         {
@@ -85,16 +99,6 @@
           ],
           "targetDataItem": {
             "name": "CUSTOMER_ID"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "CUSTOMER_SK"
-            }
-          ],
-          "targetDataItem": {
-            "name": "CUSTOMER_SK"
           }
         }
       ],
@@ -109,7 +113,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "INSERT_MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_SK"
               }
             }
           ],
@@ -143,7 +147,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Context"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -162,7 +171,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "Presentation"
+          }
+        ]
       },
       "dataItemMappings": [
         {
@@ -194,56 +208,6 @@
           "targetDataItem": {
             "name": "SUBURB"
           }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "SURNAME"
-            }
-          ],
-          "targetDataItem": {
-            "name": "SURNAME"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "GENDER"
-            }
-          ],
-          "targetDataItem": {
-            "name": "GENDER"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "POSTCODE"
-            }
-          ],
-          "targetDataItem": {
-            "name": "POSTCODE"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "COUNTRY"
-            }
-          ],
-          "targetDataItem": {
-            "name": "COUNTRY"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "CUSTOMER_SK"
-            }
-          ],
-          "targetDataItem": {
-            "name": "CUSTOMER_SK"
-          }
         }
       ],
       "businessKeys": [
@@ -257,7 +221,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "INSERT_MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_SK"
               }
             }
           ],
@@ -291,7 +255,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Context"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -310,7 +279,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "Presentation"
+          }
+        ]
       },
       "dataItemMappings": [
         {
@@ -321,26 +295,6 @@
           ],
           "targetDataItem": {
             "name": "CONTACT_NUMBER"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "STATE"
-            }
-          ],
-          "targetDataItem": {
-            "name": "STATE"
-          }
-        },
-        {
-          "sourceDataItems": [
-            {
-              "name": "CUSTOMER_SK"
-            }
-          ],
-          "targetDataItem": {
-            "name": "CUSTOMER_SK"
           }
         }
       ],

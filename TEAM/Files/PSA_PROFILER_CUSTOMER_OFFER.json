@@ -26,9 +26,13 @@
             "description": "schema name"
           }
         ]
-      }
-    },
-    "generationDateTime": "2022-11-02T11:23:08.0838278+10:00"
+      },
+      "dataObjectClassifications": [
+        {
+          "classification": "PersistentStagingArea"
+        }
+      ]
+    }
   },
   "dataObjectMappings": [
     {
@@ -55,7 +59,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "StagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -74,7 +83,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "PersistentStagingArea"
+          }
+        ]
       },
       "relatedDataObjects": [
         {
@@ -93,7 +107,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
         },
         {
           "name": "HUB_INCENTIVE_OFFER",
@@ -111,7 +130,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
         },
         {
           "name": "LNK_CUSTOMER_OFFER",
@@ -129,7 +153,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "NaturalBusinessRelationship"
+            }
+          ]
         },
         {
           "name": "LSAT_CUSTOMER_OFFER",
@@ -147,7 +176,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "NaturalBusinessRelationshipContext"
+            }
+          ]
         }
       ],
       "dataItemMappings": [
@@ -198,7 +232,7 @@
               }
             }
           ],
-          "surrogateKey": "PSA_PROFILER_CUSTOMER_OFFER_SK"
+          "surrogateKey": "PROFILER_CUSTOMER_OFFER_SK"
         }
       ],
       "filterCriterion": "",

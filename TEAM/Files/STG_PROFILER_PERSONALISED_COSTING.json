@@ -26,9 +26,13 @@
             "description": "schema name"
           }
         ]
-      }
-    },
-    "generationDateTime": "2022-11-02T11:23:08.2287911+10:00"
+      },
+      "dataObjectClassifications": [
+        {
+          "classification": "StagingArea"
+        }
+      ]
+    }
   },
   "dataObjectMappings": [
     {
@@ -55,7 +59,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Source"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -74,7 +83,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "StagingArea"
+          }
+        ]
       },
       "relatedDataObjects": [
         {
@@ -93,7 +107,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "PersistentStagingArea"
+            }
+          ]
         }
       ],
       "dataItemMappings": [
@@ -196,7 +215,7 @@
               }
             }
           ],
-          "surrogateKey": "STG_PROFILER_PERSONALISED_COSTING_SK"
+          "surrogateKey": "PROFILER_PERSONALISED_COSTING_SK"
         }
       ],
       "filterCriterion": "",
