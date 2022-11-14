@@ -20,8 +20,8 @@ namespace TEAM_Library
     /// </summary>
     public enum ConnectionTypes
     {
-        Database,
-        File
+        Catalog,
+        Custom
     }
     
     public class TeamConnection
@@ -38,9 +38,6 @@ namespace TEAM_Library
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TeamDatabaseConnection DatabaseServer { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public TeamFileConnection FileConnection { get; set; }
 
         /// <summary>
         /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
@@ -126,12 +123,6 @@ namespace TEAM_Library
 
             return returnTeamConnection;
         }
-    }
-
-    public class TeamFileConnection
-    {
-        public string FilePath { get; set; }
-        public string FileName { get; set; }
     }
 
     /// <summary>
@@ -291,7 +282,7 @@ namespace TEAM_Library
                 ConnectionInternalId = "MetadataConnectionInternalId",
                 ConnectionKey = "Metadata",
                 ConnectionName = "Metadata Repository",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = "Default metadata repository connection."
             };
 
@@ -314,7 +305,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "SourceConnectionInternalId",
                 ConnectionKey = "Source",
                 ConnectionName = "Source System",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = "Sample source system connection."
             };
 
@@ -337,7 +328,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "StagingConnectionInternalId",
                 ConnectionKey = "Staging",
                 ConnectionName = "Staging / Landing Area",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
@@ -360,7 +351,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "PsaConnectionInternalId",
                 ConnectionKey = "PSA",
                 ConnectionName = "Persistent Staging Area",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
@@ -383,7 +374,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "IntegrationConnectionInternalId",
                 ConnectionKey = "Integration",
                 ConnectionName = "Integration Layer",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
@@ -406,7 +397,7 @@ namespace TEAM_Library
                 ConnectionInternalId = "PresentationConnectionInternalId",
                 ConnectionKey = "Presentation",
                 ConnectionName = "Presentation Layer",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 

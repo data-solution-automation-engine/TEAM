@@ -549,7 +549,7 @@ namespace TEAM
                 connectionProfile.ConnectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
                 connectionProfile.ConnectionName = "New connection";
                 connectionProfile.ConnectionKey = "New";
-                connectionProfile.ConnectionType = ConnectionTypes.Database;
+                connectionProfile.ConnectionType = ConnectionTypes.Catalog;
 
                 TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
                 connectionDatabase.SchemaName = "<Schema Name>";
@@ -559,12 +559,7 @@ namespace TEAM
                 connectionDatabase.NamedUserPassword = "<Password>";
                 connectionDatabase.authenticationType = ServerAuthenticationTypes.NamedUser;
 
-                TeamFileConnection connectionFile = new TeamFileConnection();
-                connectionFile.FilePath = @"<File Path>";
-                connectionFile.FileName = @"<File Name>";
-
                 connectionProfile.DatabaseServer = connectionDatabase;
-                connectionProfile.FileConnection = connectionFile;
 
                 bool newTabExists = false;
                 foreach (TabPage customTabPage in tabControlConnections.TabPages)
