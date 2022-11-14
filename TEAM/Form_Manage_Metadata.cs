@@ -2205,8 +2205,7 @@ namespace TEAM
                     ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
                     : TeamConfiguration.LoadDateTimeAttribute;
 
-            var dwhKeyIdentifier = TeamConfiguration.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
-            var keyIdentifierLocation = TeamConfiguration.KeyNamingLocation;
+            var dwhKeyIdentifier = TeamConfiguration.KeyIdentifier; //Indicates _HSH, _SK etc.
 
             // Create the attribute selection statement for the array
             var sqlStatementForDataItems = new StringBuilder();
@@ -2297,14 +2296,8 @@ namespace TEAM
             sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1");
             sqlStatementForDataItems.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
 
-            if (keyIdentifierLocation == "Prefix")
-            {
-                sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
-            }
-            else
-            {
-                sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
-            }
+            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
+            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
 
             sqlStatementForDataItems.AppendLine("	) ma");
             sqlStatementForDataItems.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");

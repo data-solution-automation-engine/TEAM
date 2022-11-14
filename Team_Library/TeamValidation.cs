@@ -469,7 +469,7 @@ namespace TEAM_Library
                     string hubTableConnectionId = selectionRows[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var hubTableConnection = TeamConnection.GetTeamConnectionByConnectionId(hubTableConnectionId, teamConfiguration, eventLog);
 
-                    string hubSurrogateKeyName = JsonOutputHandling.GetSurrogateKey(validationObject.Item2, validationObject.Item1, validationObject.Item3, hubTableConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                    string hubSurrogateKeyName = JsonOutputHandling.DeriveSurrogateKey(validationObject.Item2, validationObject.Item1, validationObject.Item3, hubTableConnection, teamConfiguration, dataGridViewRowsDataObjects);
 
                     // Add to the dictionary that contains the keys in order.
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -508,8 +508,7 @@ namespace TEAM_Library
                 {
                     var linkHubSurrogateKeyName = row[PhysicalModelMappingMetadataColumns.Column_Name.ToString()].ToString();
 
-                    if (linkHubSurrogateKeyName.Contains(teamConfiguration.DwhKeyIdentifier)
-                       ) // Exclude degenerate attributes from the order
+                    if (linkHubSurrogateKeyName.Contains(teamConfiguration.KeyIdentifier)) // Exclude degenerate attributes from the order
                     {
                         linkKeyOrder.Add(linkHubSurrogateKeyPosition, linkHubSurrogateKeyName);
                         linkHubSurrogateKeyPosition++;

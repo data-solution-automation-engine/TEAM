@@ -622,7 +622,7 @@ namespace TEAM
                 if (hitTestInfo.ColumnIndex == -1)
                 {
                     // Select the full row when the default column is right-clicked.
-                    if (SelectedRows.Count == 1)
+                    if (SelectedRows.Count <= 1)
                     {
                         ClearSelection();
                         Rows[hitTestInfo.RowIndex].Selected = true;
@@ -1345,8 +1345,7 @@ namespace TEAM
                     {
                         dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
-                        var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
-                        var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
+                        var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString(); var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
 
                         if (localSourceDataObject == sourceDataObject.name && localTargetDataObject == targetDataObject.name)
                         {
@@ -1445,12 +1444,15 @@ namespace TEAM
 
                 #endregion
 
+                var bla = "";
+
                 #region Auto map
 
-                // For presentation layer, only manual mappings are supported.
-                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString())
+                // For presentation layer, Hubs and Links, only manual mappings are supported.
+                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString() &&
+                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.CoreBusinessConcept.ToString() &&
+                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
                 {
-
                     // Auto-map any data items that are not yet manually mapped, but exist in source and target.
                     var physicalModelDataGridViewRows = _dataGridViewPhysicalModel.Rows
                         .Cast<DataGridViewRow>()
@@ -1490,8 +1492,7 @@ namespace TEAM
 
                             var dataObjectType = GetDataObjectType(targetDataObject.name, "", FormBase.TeamConfiguration);
 
-
-                            var surrogateKey = JsonOutputHandling.GetSurrogateKey(targetDataObject.name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects);
+                            var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject.name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects);
 
                             if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
                                 continue;

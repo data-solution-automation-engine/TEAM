@@ -22,6 +22,7 @@ namespace TEAM_Library
         /// <param name="teamConnection"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
         /// <param name="sourceOrTarget"></param>
         /// <returns></returns>
         public static DataObject CreateDataObject(string dataObjectName, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsPhysicalModel, string sourceOrTarget = "Source")
@@ -59,6 +60,7 @@ namespace TEAM_Library
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
         /// <param name="jsonExportSetting"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
         public static DataObject SetDataObjectDataItems(DataObject dataObject, TeamConnection teamConnection, TeamConfiguration teamConfiguration, JsonExportSetting jsonExportSetting, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
             // Remove the list if the setting is disabled.
@@ -160,6 +162,7 @@ namespace TEAM_Library
         /// <param name="teamConnection"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="dataObject"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
         /// <returns></returns>
         public static DataItem SetDataItemMappingDataType(DataItem dataItem, DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
@@ -946,7 +949,7 @@ namespace TEAM_Library
                 tempComponent.ordinal = ordinal;
 
                 // Link surrogate key
-                var surrogateKey = GetSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
                 tempComponent.surrogateKey = surrogateKey;
 
                 // Add individual key parts (the individual keys) as well.
@@ -982,7 +985,7 @@ namespace TEAM_Library
                         individualTempComponent.ordinal = ordinal;
 
                         // Hub surrogate keys, needs to manage SAl and HAL
-                        // This can ONLY be derived from the physical model. To be improved.
+                        // This can ONLY be derived from the physical model to cater for same-as scenarios. To be improved.
                         var physicalModelDataGridViewRowList = dataGridViewRowsPhysicalModel
                             .Where(r => !r.IsNewRow)
                             .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(tempComponent.originalTargetDataObject))
@@ -990,6 +993,9 @@ namespace TEAM_Library
                             .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.LoadDateTimeAttribute))
                             .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.EtlProcessAttribute))
                             .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.RecordSourceAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.AlternativeSatelliteLoadDateTimeAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.AlternativeLoadDateTimeAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.AlternativeRecordSourceAttribute))
                             .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(tempComponent.surrogateKey))
                             .ToList();
 
@@ -1000,7 +1006,6 @@ namespace TEAM_Library
                             if (ordinal == counter)
                             {
                                 individualTempComponent.surrogateKey = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
-
                             }
                             counter++;
                         }
@@ -1034,7 +1039,7 @@ namespace TEAM_Library
 
                 tempComponent.ordinal = ordinal;
 
-                var surrogateKey = GetSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
                 tempComponent.surrogateKey = surrogateKey;
 
                 businessKeyComponents.Add(tempComponent);
@@ -1130,7 +1135,7 @@ namespace TEAM_Library
                     var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
 
                     // Add if it's not a standard element.
-                    var surrogateKey = GetSurrogateKey(lookupDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                    var surrogateKey = DeriveSurrogateKey(lookupDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
 
                     if (!column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration))
                     {
@@ -1252,74 +1257,128 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Return the Surrogate Key for a given table using the TEAM settings (i.e. prefix/suffix settings etc.).
+        /// Evaluate which data object to find the surrogate key for, and then get it.
         /// </summary>
         /// <param name="targetDataObjectName"></param>
+        /// <param name="businessKeyDefinition"></param>
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="sourceDataObjectName"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
         /// <returns>surrogateKey</returns>
-        public static string GetSurrogateKey(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects)
+        public static string DeriveSurrogateKey(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects)
         {
             // Get the type
             var dataObjectType = GetDataObjectType(targetDataObjectName, "", teamConfiguration);
 
-            // If a Sat or Lsat, replace with parent Hub or Link.
+            // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
             {
                 targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects);
             }
 
-            // Get the fully qualified name
-            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(targetDataObjectName, teamConnection).FirstOrDefault();
+            var surrogateKey = GetSurrogateKey(targetDataObjectName, teamConfiguration, teamConnection);
 
-            // Initialise the return value
-            string surrogateKey = "";
-            string newDataObjectName = fullyQualifiedName.Value;
-            string keyLocation = teamConfiguration.DwhKeyIdentifier;
+            return surrogateKey;
+        }
 
-            string[] prefixSuffixArray = {
-                teamConfiguration.HubTablePrefixValue,
-                teamConfiguration.SatTablePrefixValue,
-                teamConfiguration.LinkTablePrefixValue,
-                teamConfiguration.LsatTablePrefixValue
-            };
+        /// <summary>
+        /// Return the Surrogate Key for a given table using the TEAM settings (key pattern).
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="teamConnection"></param>
+        /// <returns></returns>
+        private static string GetSurrogateKey(string dataObjectName, TeamConfiguration teamConfiguration, TeamConnection teamConnection)
+        {
+            string returnValue = teamConfiguration.KeyPattern;
 
-            if (newDataObjectName != "Not applicable")
+            // Get the fully qualified name.
+            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
+
+            dataObjectName = fullyQualifiedName.Value;
+
+            var dataObjectType = GetDataObjectType(dataObjectName, "", teamConfiguration);
+
+            if (returnValue.Contains("{dataObjectType}"))
             {
-                // Removing the table pre- or suffixes from the table name based on the TEAM configuration settings.
-                if (teamConfiguration.TableNamingLocation == "Prefix")
+                if (dataObjectType == DataObjectTypes.StagingArea)
                 {
-                    foreach (string prefixValue in prefixSuffixArray)
-                    {
-                        if (newDataObjectName.StartsWith(prefixValue))
-                        {
-                            newDataObjectName = newDataObjectName.Replace(prefixValue, "");
-                        }
-                    }
+                    returnValue = returnValue.Replace("{dataObjectType}", teamConfiguration.StgTablePrefixValue);
+                }
+                else if (dataObjectType == DataObjectTypes.PersistentStagingArea)
+                {
+                    returnValue = returnValue.Replace("{dataObjectType}", teamConfiguration.PsaTablePrefixValue);
+                }
+                else if (dataObjectType == DataObjectTypes.CoreBusinessConcept)
+                {
+                    returnValue = returnValue.Replace("{dataObjectType}", teamConfiguration.HubTablePrefixValue);
+                }
+                else if (dataObjectType == DataObjectTypes.Context)
+                {
+                    returnValue = returnValue.Replace("{dataObjectType}", teamConfiguration.SatTablePrefixValue);
+                }
+                else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationship)
+                {
+                    returnValue = returnValue.Replace("{dataObjectType}", teamConfiguration.LinkTablePrefixValue);
+                }
+                else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationshipContext)
+                {
+                    returnValue = returnValue.Replace("{dataObjectType}", teamConfiguration.LsatTablePrefixValue);
+                }
+                else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                {
+                    returnValue = returnValue.Replace("{dataObjectType}", teamConfiguration.LsatTablePrefixValue);
                 }
                 else
                 {
-                    foreach (string suffixValue in prefixSuffixArray)
-                    {
-                        if (newDataObjectName.EndsWith(suffixValue))
-                        {
-                            newDataObjectName = newDataObjectName.Replace(suffixValue, "");
-                        }
-                    }
-                }
-
-                // Define the surrogate key using the table name and key prefix/suffix settings.
-                if (teamConfiguration.KeyNamingLocation == "Prefix")
-                {
-                    surrogateKey = keyLocation + newDataObjectName;
-                }
-                else
-                {
-                    surrogateKey = newDataObjectName + keyLocation;
+                    returnValue = returnValue.Replace("{dataObjectType}", "");
                 }
             }
 
-            return surrogateKey;
+            if (returnValue.Contains("{dataObject.baseName}"))
+            {
+                if (dataObjectType == DataObjectTypes.StagingArea)
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.StgTablePrefixValue,""));
+                }
+                else if (dataObjectType == DataObjectTypes.PersistentStagingArea)
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.PsaTablePrefixValue, ""));
+                }
+                else if (dataObjectType == DataObjectTypes.CoreBusinessConcept)
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.HubTablePrefixValue,""));
+                }
+                else if (dataObjectType == DataObjectTypes.Context)
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.SatTablePrefixValue,""));
+                }
+                else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationship)
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.LinkTablePrefixValue, ""));
+                }
+                else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationshipContext)
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.LsatTablePrefixValue,""));
+                }
+                else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.LsatTablePrefixValue,""));
+                }
+                else
+                {
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName);
+                }
+            }
+
+            if (returnValue.Contains("{keyIdentifier}"))
+            {
+
+                returnValue = returnValue.Replace("{keyIdentifier}", teamConfiguration.KeyIdentifier);
+            }
+
+            return returnValue;
         }
 
         /// <summary>
@@ -1339,22 +1398,6 @@ namespace TEAM_Library
             var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition);
 
             if (dataItemName == surrogateKey)
-            {
-                returnValue = true;
-            }
-            else if (dataItemName == teamConfiguration.LoadDateTimeAttribute)
-            {
-                returnValue = true;
-            }
-            else if (dataItemName == teamConfiguration.AlternativeLoadDateTimeAttribute)
-            {
-                returnValue = true;
-            }
-            else if (dataItemName == teamConfiguration.RecordSourceAttribute)
-            {
-                returnValue = true;
-            }
-            else if (dataItemName == teamConfiguration.AlternativeRecordSourceAttribute)
             {
                 returnValue = true;
             }
@@ -1378,6 +1421,10 @@ namespace TEAM_Library
             {
                 returnValue = true;
             }
+            else if (dataItemName == teamConfiguration.CurrentRowAttribute)
+            {
+                returnValue = true;
+            }
             else if (dataItemName == teamConfiguration.LogicalDeleteAttribute)
             {
                 returnValue = true;
@@ -1386,6 +1433,31 @@ namespace TEAM_Library
             {
                 returnValue = true;
             }
+            else if (dataItemName == teamConfiguration.LoadDateTimeAttribute)
+            {
+                returnValue = true;
+            }
+            else if (dataItemName == teamConfiguration.ExpiryDateTimeAttribute)
+            {
+                returnValue = true;
+            }
+            else if (dataItemName == teamConfiguration.RecordSourceAttribute)
+            {
+                returnValue = true;
+            }
+            // Alternative columns.
+            else if (dataItemName == teamConfiguration.AlternativeRecordSourceAttribute)
+            { returnValue = true;
+            }
+            else if (dataItemName == teamConfiguration.AlternativeLoadDateTimeAttribute)
+            {
+                returnValue = true;
+            }
+            else if (dataItemName == teamConfiguration.AlternativeSatelliteLoadDateTimeAttribute)
+            {
+                returnValue = true;
+            }
+            // Other.
             else if (new[] { DataObjectTypes.StagingArea, DataObjectTypes.PersistentStagingArea }.Contains(dataObjectType) && !businessKeyComponentElements.Contains(dataItemName))
             {
                 returnValue = true;
@@ -1395,7 +1467,7 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Evaluates if a column / data item should be included as part of a data item mapping
+        /// Evaluates if a column / data item should be included as part of a data item mapping.
         /// </summary>
         /// <param name="dataItemName"></param>
         /// <param name="dataObjectType"></param>

@@ -306,8 +306,8 @@ namespace TEAM
                 FileHandling.CreateFileBackup(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, globalParameters.BackupPath);
 
                 // Shared values (same for all samples)
-                var stagingAreaPrefix = "STG";
-                var persistentStagingAreaPrefix = "PSA";
+                var stagingAreaPrefix = "STG_";
+                var persistentStagingAreaPrefix = "PSA_";
                 
                 var hubTablePrefix = "HUB_";
                 var satTablePrefix = "SAT_";
@@ -315,7 +315,8 @@ namespace TEAM
                 var linkSatTablePrefix = "LSAT_";
                 string psaKeyLocation = "PrimaryKey";
 
-                var keyIdentifier = "_SK";
+                var keyIdentifier = "SK";
+                var keyPattern = "{dataObject.baseName}_{keyIdentifier}";
 
                 var sourceRowId = "SOURCE_ROW_ID";
                 var eventDateTime = "EVENT_DATETIME";
@@ -327,7 +328,6 @@ namespace TEAM
                 var etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
                 var logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
                 var tableNamingLocation = "Prefix";
-                var keyNamingLocation = "Suffix";
                 var recordChecksum = "HASH_FULL_RECORD";
                 var currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
                 var alternativeRecordSource = "N/A";
@@ -344,10 +344,10 @@ namespace TEAM
                 TeamConfiguration.SatTablePrefixValue = satTablePrefix;
                 TeamConfiguration.LinkTablePrefixValue = linkTablePrefix;
                 TeamConfiguration.LsatTablePrefixValue = linkSatTablePrefix;
-                TeamConfiguration.DwhKeyIdentifier = keyIdentifier;
+                TeamConfiguration.KeyIdentifier = keyIdentifier;
+                TeamConfiguration.KeyPattern = keyPattern;
                 TeamConfiguration.PsaKeyLocation = psaKeyLocation;
                 TeamConfiguration.TableNamingLocation = tableNamingLocation;
-                TeamConfiguration.KeyNamingLocation = keyNamingLocation;
 
                 TeamConfiguration.EventDateTimeAttribute = eventDateTime;
                 TeamConfiguration.LoadDateTimeAttribute = loadDateTime;

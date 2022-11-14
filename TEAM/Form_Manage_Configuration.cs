@@ -145,7 +145,8 @@ namespace TEAM
                 textBoxSatPrefix.Text = configList["SatTablePrefix"];
                 textBoxLinkTablePrefix.Text = configList["LinkTablePrefix"];
                 textBoxLinkSatPrefix.Text = configList["LinkSatTablePrefix"];
-                textBoxDWHKeyIdentifier.Text = configList["KeyIdentifier"];
+                textBoxKeyIdentifier.Text = configList["KeyIdentifier"];
+                textBoxKeyPattern.Text = configList["KeyPattern"];
                 textBoxEventDateTime.Text = configList["EventDateTimeStamp"];
                 textBoxLDST.Text = configList["LoadDateTimeStamp"];
                 textBoxExpiryDateTimeName.Text = configList["ExpiryDateTimeStamp"];
@@ -217,21 +218,7 @@ namespace TEAM
                     myTableRadioButton = tableSuffixRadiobutton;
                     myTableRadioButton.Checked = true;
                 }
-
-                //Radiobutton settings for on key location
-                RadioButton myKeyRadioButton;
-
-                if (configList["KeyNamingLocation"] == "Prefix")
-                {
-                    myKeyRadioButton = keyPrefixRadiobutton;
-                    myKeyRadioButton.Checked = true;
-                }
-                else
-                {
-                    myKeyRadioButton = keySuffixRadiobutton;
-                    myKeyRadioButton.Checked = true;
-                }
-
+                
                 //Radiobutton settings for PSA Natural Key determination
                 RadioButton myPsaBusinessKeyLocation;
 
@@ -406,20 +393,8 @@ namespace TEAM
             TeamConfiguration.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
             TeamConfiguration.LsatTablePrefixValue = textBoxLinkSatPrefix.Text;
 
-            if (keyPrefixRadiobutton.Checked)
-            {
-                TeamConfiguration.KeyNamingLocation = "Prefix";
-            }
-            else if (keySuffixRadiobutton.Checked)
-            {
-                TeamConfiguration.KeyNamingLocation = "Suffix";
-            }
-            else
-            {
-                richTextBoxInformation.AppendText("Issues storing the key location (prefix/suffix). Is one of the radio buttons checked?");
-            }
-
-            TeamConfiguration.DwhKeyIdentifier = textBoxDWHKeyIdentifier.Text;
+            TeamConfiguration.KeyIdentifier = textBoxKeyIdentifier.Text;
+            TeamConfiguration.KeyPattern = textBoxKeyPattern.Text;
             TeamConfiguration.RowIdAttribute = textBoxSourceRowId.Text;
             TeamConfiguration.EventDateTimeAttribute = textBoxEventDateTime.Text;
             TeamConfiguration.LoadDateTimeAttribute = textBoxLDST.Text;

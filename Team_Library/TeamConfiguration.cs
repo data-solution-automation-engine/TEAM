@@ -52,7 +52,8 @@ namespace TEAM_Library
         public string TransformationLabels { get; set; }
         #endregion
 
-        public string DwhKeyIdentifier { get; set; }
+        public string KeyIdentifier { get; set; }
+        public string KeyPattern { get; set; }
         public string PsaKeyLocation { get; set; }
         public string SchemaName { get; set; }
 
@@ -74,7 +75,6 @@ namespace TEAM_Library
         
         // Prefixes and suffixes
         public string TableNamingLocation { get; set; } // The location if the table classification (i.e. HUB OR SAT) is a prefix (HUB_CUSTOMER) or suffix (CUSTOMER_HUB).
-        public string KeyNamingLocation { get; set; } // The location if the key (i.e. HSH or SK), whether it is a prefix (SK_CUSTOMER) or a suffix (CUSTOMER_SK).
 
         public string EnableAlternativeSatelliteLoadDateTimeAttribute { get; set; }
         public string EnableAlternativeRecordSourceAttribute { get; set; }
@@ -90,6 +90,7 @@ namespace TEAM_Library
         /// <summary>
         /// Load the information from the TEAM configuration file into memory.
         /// </summary>
+        /// <param name="fileName"></param>
         public void LoadTeamConfigurationFile(string fileName)
         {
             // Load the rest of the (TEAM) configurations, from wherever they may be according to the VDW settings (the TEAM configuration file).
@@ -104,7 +105,7 @@ namespace TEAM_Library
                     ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No lines detected in file {fileName}. Is it empty?"));
                 }
 
-                string[] configurationArray = new[]
+                string[] configurationArray =
                 {
                     "StagingAreaPrefix", 
                     "PersistentStagingAreaPrefix", 
@@ -115,8 +116,8 @@ namespace TEAM_Library
                     "LinkTablePrefix",
                     "LinkSatTablePrefix",
                     "TableNamingLocation",
-                    "KeyNamingLocation",
                     "KeyIdentifier",
+                    "KeyPattern",
                     "PSAKeyLocation",
                     "SchemaName",
                     "RowID",
@@ -171,11 +172,11 @@ namespace TEAM_Library
                             case "LinkSatTablePrefix":
                                 LsatTablePrefixValue = configList[configuration];
                                 break;
-                            case "KeyNamingLocation":
-                                KeyNamingLocation = configList[configuration];
-                                break;
                             case "KeyIdentifier":
-                                DwhKeyIdentifier = configList[configuration];
+                                KeyIdentifier = configList[configuration];
+                                break;
+                            case "KeyPattern":
+                                KeyPattern = configList[configuration];
                                 break;
                             case "PSAKeyLocation":
                                 PsaKeyLocation = configList[configuration];
@@ -240,12 +241,16 @@ namespace TEAM_Library
                         }
 
                         ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The entry '{configuration}' was loaded from the configuration file with value '{configList[configuration]}'."));
-
                     }
                     else
                     {
                         ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"* The entry '{configuration}' was not found in the configuration file. Please make sure an entry exists ({configuration}|<value>)."));
-                        break;
+
+                        if (configuration == "KeyPattern")
+                        {
+                            KeyPattern = "";
+                            ConfigurationSettingsEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"* The entry '{configuration}' was defaulted to empty."));
+                        }
                     }
                 }
 
@@ -298,15 +303,16 @@ namespace TEAM_Library
 
                 initialConfigurationFile.AppendLine("MetadataConnectionId|MetadataConnectionInternalId");
 
-                initialConfigurationFile.AppendLine("StagingAreaPrefix|STG");
-                initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA");
-                initialConfigurationFile.AppendLine("PresentationLayerLabels|DIM, FACT");
+                initialConfigurationFile.AppendLine("StagingAreaPrefix|STG_");
+                initialConfigurationFile.AppendLine("PersistentStagingAreaPrefix|PSA_");
+                initialConfigurationFile.AppendLine("PresentationLayerLabels|DIM_, FACT_");
                 initialConfigurationFile.AppendLine("TransformationLabels|BDV");
                 initialConfigurationFile.AppendLine("HubTablePrefix|HUB_");
                 initialConfigurationFile.AppendLine("SatTablePrefix|SAT_");
                 initialConfigurationFile.AppendLine("LinkTablePrefix|LNK_");
                 initialConfigurationFile.AppendLine("LinkSatTablePrefix|LSAT_");
-                initialConfigurationFile.AppendLine("KeyIdentifier|_SK");
+                initialConfigurationFile.AppendLine("KeyIdentifier|SK");
+                initialConfigurationFile.AppendLine("KeyPattern|{dataObject.baseName}_{keyIdentifier}");
                 initialConfigurationFile.AppendLine("SchemaName|dbo");
                 initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
                 initialConfigurationFile.AppendLine("EventDateTimeStamp|EVENT_DATETIME");
@@ -318,7 +324,6 @@ namespace TEAM_Library
                 initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
                 initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
                 initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
-                initialConfigurationFile.AppendLine("KeyNamingLocation|Suffix");
                 initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
                 initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");
                 initialConfigurationFile.AppendLine("AlternativeRecordSource|N/A");

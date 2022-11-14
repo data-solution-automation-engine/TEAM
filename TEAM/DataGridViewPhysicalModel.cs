@@ -301,7 +301,7 @@ namespace TEAM
 
 
                 // Select the full row when the default column is right-clicked.
-                if (SelectedRows.Count == 1)
+                if (SelectedRows.Count <= 1)
                 {
                     // Clear existing selection.
                     ClearSelection();

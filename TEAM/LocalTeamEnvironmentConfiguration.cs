@@ -99,7 +99,8 @@ namespace TEAM
                 configurationFile.AppendLine("SatTablePrefix|" + FormBase.TeamConfiguration.SatTablePrefixValue + "");
                 configurationFile.AppendLine("LinkTablePrefix|" + FormBase.TeamConfiguration.LinkTablePrefixValue +"");
                 configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.TeamConfiguration.LsatTablePrefixValue + "");
-                configurationFile.AppendLine("KeyIdentifier|" + FormBase.TeamConfiguration.DwhKeyIdentifier + "");
+                configurationFile.AppendLine("KeyIdentifier|" + FormBase.TeamConfiguration.KeyIdentifier + "");
+                configurationFile.AppendLine("KeyPattern|" + FormBase.TeamConfiguration.KeyPattern + "");
                 configurationFile.AppendLine("SchemaName|" + FormBase.TeamConfiguration.SchemaName + "");
                 configurationFile.AppendLine("RowID|" + FormBase.TeamConfiguration.RowIdAttribute + "");
                 configurationFile.AppendLine("EventDateTimeStamp|" + FormBase.TeamConfiguration.EventDateTimeAttribute + "");
@@ -111,7 +112,6 @@ namespace TEAM
                 configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.TeamConfiguration.EtlProcessUpdateAttribute +"");
                 configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.TeamConfiguration.LogicalDeleteAttribute +"");
                 configurationFile.AppendLine("TableNamingLocation|" + FormBase.TeamConfiguration.TableNamingLocation + "");
-                configurationFile.AppendLine("KeyNamingLocation|" + FormBase.TeamConfiguration.KeyNamingLocation +"");
                 configurationFile.AppendLine("RecordChecksum|" +FormBase.TeamConfiguration.RecordChecksumAttribute + "");
                 configurationFile.AppendLine("CurrentRecordAttribute|" +FormBase.TeamConfiguration.CurrentRowAttribute +"");
                 configurationFile.AppendLine("AlternativeRecordSource|" +FormBase.TeamConfiguration.AlternativeRecordSourceAttribute + "");

@@ -89,30 +89,6 @@ namespace TEAM
 
             #endregion
 
-            #region Team configuration file
-
-            // Create a dummy configuration file if it does not exist.
-            var teamConfigurationFileName = $"{globalParameters.ConfigurationPath}{globalParameters.ConfigFileName}{'_'}{globalParameters.ActiveEnvironmentKey}{globalParameters.FileExtension}";
-
-            try
-            {
-                if (!File.Exists(teamConfigurationFileName))
-                {
-                    TeamConfiguration.CreateDummyTeamConfigurationFile(teamConfigurationFileName); 
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {teamConfigurationFileName} was created."));
-                }
-                else
-                {
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {teamConfigurationFileName} was detected."));
-                }
-            }
-            catch
-            {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {teamConfigurationFileName}."));
-            }
-
-            #endregion
-
             #region Validation file
 
             // Create a default validation file if the file does not exist as expected.
@@ -155,10 +131,28 @@ namespace TEAM
 
             #endregion
 
-            #region Load configuration file
+            #region Team configuration file
 
-            // Load the available configuration file into memory.
+            // Create a dummy configuration file if it does not exist.
             var configurationFile = $"{globalParameters.ConfigurationPath}{globalParameters.ConfigFileName}{'_'}{globalParameters.ActiveEnvironmentKey}{globalParameters.FileExtension}";
+
+            try
+            {
+                if (!File.Exists(configurationFile))
+                {
+                    TeamConfiguration.CreateDummyTeamConfigurationFile(configurationFile);
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFile} was created."));
+                }
+                else
+                {
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {configurationFile} was detected."));
+                }
+            }
+            catch
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {configurationFile}."));
+            }
+
             try
             {
                 // Load the configuration file.
@@ -172,6 +166,7 @@ namespace TEAM
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
             }
+
             #endregion
 
             // Notify the user of any errors that were detected.
