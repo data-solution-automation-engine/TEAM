@@ -851,17 +851,25 @@ namespace TEAM_Library
                 int iterations = businessKeyComponentList.sourceComponentList.Count;
 
                 // Exception handling. Source and Target component lists must match.
-                if (businessKeyComponentList.sourceComponentList.Count > businessKeyComponentList.targetComponentList.Count)
+                if (businessKeyComponentList.targetComponentList != null)
                 {
-                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The source business key has more components than the target business key. This is for {sourceDataObjectName} with definition {businessKeyDefinition}. A default value was substituted."));
-
-                    int diff = businessKeyComponentList.sourceComponentList.Count - businessKeyComponentList.targetComponentList.Count;
-
-                    for (int i = 0; i < diff; i++)
+                    if (businessKeyComponentList.sourceComponentList.Count > businessKeyComponentList.targetComponentList.Count)
                     {
-                        businessKeyComponentList.targetComponentList.Add("Placeholder");
-                    }
+                        eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The source business key has more components than the target business key. This is for {sourceDataObjectName} with definition {businessKeyDefinition}. A default value was substituted."));
 
+                        int diff = businessKeyComponentList.sourceComponentList.Count - businessKeyComponentList.targetComponentList.Count;
+
+                        for (int i = 0; i < diff; i++)
+                        {
+                            businessKeyComponentList.targetComponentList.Add("Placeholder");
+                        }
+
+                    }
+                }
+                else
+                {
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The target data item for the business key could not be determined. This is for {sourceDataObjectName} with definition {businessKeyDefinition}. A default value was substituted."));
+                    businessKeyComponentList.targetComponentList = businessKeyComponentList.sourceComponentList;
                 }
 
                 for (int i = 0; i < iterations; i++)
