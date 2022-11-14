@@ -3279,23 +3279,34 @@ namespace TEAM
 
         private void checkBoxShowStaging_CheckedChanged(object sender, EventArgs e)
         {
+            var inputTableMappingDataObjectMappings = (DataTable)BindingSourceDataObjectMappings.DataSource;
+            var inputTableMappingDataItemMappings = (DataTable)BindingSourceDataItemMappings.DataSource;
+            var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+
             // Everything should be shown - no filters.
             if (checkBoxShowStaging.Checked)
             {
-                var inputTableMapping = (DataTable)BindingSourceDataObjectMappings.DataSource;
-                inputTableMapping.DefaultView.RowFilter = string.Empty;
+                inputTableMappingDataObjectMappings.DefaultView.RowFilter = string.Empty;
+                inputTableMappingDataItemMappings.DefaultView.RowFilter = string.Empty;
+                inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+
                 ApplyDataGridViewFiltering();
             }
             // Everything BUT staging layer objects should be shown.
             else
             {
-                var inputTableMapping = (DataTable)BindingSourceDataObjectMappings.DataSource;
-                var filterCriterion = "";
+
 
                 // The target is not a STG process and not a PSA process.
-                filterCriterion = $"[TargetDataObjectName] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}_%' AND [TargetDataObjectName] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}_%'";
+                var filterCriterionDataObjectMappings = $"[TargetDataObjectName] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObjectName] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+                var filterCriterionDataItemMappings = $"[TargetDataObject] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObject] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+                var filterCriterionPhysicalModel = $"[Table_Name] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [Table_Name] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
 
-                inputTableMapping.DefaultView.RowFilter = filterCriterion;
+
+                inputTableMappingDataObjectMappings.DefaultView.RowFilter = filterCriterionDataObjectMappings;
+                inputTableMappingDataItemMappings.DefaultView.RowFilter = filterCriterionDataItemMappings;
+                inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+
                 ApplyDataGridViewFiltering();
             }
         }

@@ -34,6 +34,7 @@ namespace TEAM
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageMetadata));
             this.backgroundWorkerParse = new System.ComponentModel.BackgroundWorker();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBoxShowStaging = new System.Windows.Forms.CheckBox();
             this.textBoxFilterCriterion = new TEAM.TimedTextBox();
             this.labelResult = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
@@ -50,7 +51,6 @@ namespace TEAM
             this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
-            this.checkBoxShowStaging = new System.Windows.Forms.CheckBox();
             this.checkBoxValidation = new System.Windows.Forms.CheckBox();
             this.labelInformation = new System.Windows.Forms.Label();
             this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
@@ -106,6 +106,21 @@ namespace TEAM
             this.groupBox2.TabIndex = 25;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Filter Criterion";
+            // 
+            // checkBoxShowStaging
+            // 
+            this.checkBoxShowStaging.AutoSize = true;
+            this.checkBoxShowStaging.Checked = true;
+            this.checkBoxShowStaging.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxShowStaging.Location = new System.Drawing.Point(6, 45);
+            this.checkBoxShowStaging.Name = "checkBoxShowStaging";
+            this.checkBoxShowStaging.Size = new System.Drawing.Size(154, 17);
+            this.checkBoxShowStaging.TabIndex = 24;
+            this.checkBoxShowStaging.Text = "Show Staging Layer details";
+            this.toolTipMetadata.SetToolTip(this.checkBoxShowStaging, "Show (or hide) Staging Layer mappings is a broad filter that hides all source-to-" +
+        "staging and staging-to-persistent-staging data object mappings.");
+            this.checkBoxShowStaging.UseVisualStyleBackColor = true;
+            this.checkBoxShowStaging.CheckedChanged += new System.EventHandler(this.checkBoxShowStaging_CheckedChanged);
             // 
             // textBoxFilterCriterion
             // 
@@ -268,21 +283,6 @@ namespace TEAM
             this.MetadataGenerationGroupBox.TabIndex = 3;
             this.MetadataGenerationGroupBox.TabStop = false;
             this.MetadataGenerationGroupBox.Text = "Processing";
-            // 
-            // checkBoxShowStaging
-            // 
-            this.checkBoxShowStaging.AutoSize = true;
-            this.checkBoxShowStaging.Checked = true;
-            this.checkBoxShowStaging.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxShowStaging.Location = new System.Drawing.Point(6, 45);
-            this.checkBoxShowStaging.Name = "checkBoxShowStaging";
-            this.checkBoxShowStaging.Size = new System.Drawing.Size(169, 17);
-            this.checkBoxShowStaging.TabIndex = 24;
-            this.checkBoxShowStaging.Text = "Show Staging Layer mappings";
-            this.toolTipMetadata.SetToolTip(this.checkBoxShowStaging, "Show (or hide) Staging Layer mappings is a broad filter that hides all source-to-" +
-        "staging and staging-to-persistent-staging data object mappings.");
-            this.checkBoxShowStaging.UseVisualStyleBackColor = true;
-            this.checkBoxShowStaging.CheckedChanged += new System.EventHandler(this.checkBoxShowStaging_CheckedChanged);
             // 
             // checkBoxValidation
             // 
