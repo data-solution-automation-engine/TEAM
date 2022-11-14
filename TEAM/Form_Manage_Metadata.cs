@@ -2411,22 +2411,34 @@ namespace TEAM
             }
             else if (tabControlDataMappings.SelectedIndex == 2)
             {
-                foreach (DataGridViewRow row in _dataGridViewPhysicalModel.Rows)
-                {
-                    row.Visible = true;
+                var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+                var currentFilter = inputTableMappingPhysicalModel.DefaultView.RowFilter;
 
-                    if (row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value != null)
+                // Build the filter.
+                if (string.IsNullOrEmpty(filterCriterion) && checkBoxShowStaging.Checked)
+                {
+                    // Don't worry about it. There's not filters to set, everything needs to be shown.
+                    // Reset the filter.
+                    inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+                }
+                else
+                {
+                    var filterCriterionPhysicalModel = "";
+
+                    if (!string.IsNullOrEmpty(filterCriterion) && string.IsNullOrEmpty(currentFilter))
                     {
-                        if (!row.Cells[(int)PhysicalModelMappingMetadataColumns.Database_Name].Value.ToString().Contains(filterCriterion) &&
-                            !row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Contains(filterCriterion) &&
-                            !row.Cells[(int)PhysicalModelMappingMetadataColumns.Schema_Name].Value.ToString().Contains(filterCriterion) &&
-                            !row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Contains(filterCriterion))
-                        {
-                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewPhysicalModel.DataSource];
-                            currencyManager.SuspendBinding();
-                            row.Visible = false;
-                            currencyManager.ResumeBinding();
-                        }
+                        // There is no broad filter, but a user filter has been set.
+                        // Apply text box filter to support user filtering.
+                        filterCriterionPhysicalModel = $"[Database_Name] LIKE '{filterCriterion}%' OR [Table_Name] LIKE '{filterCriterion}%' OR [Column_Name] LIKE '{filterCriterion}%' OR [Schema_Name] LIKE '{filterCriterion}%'";
+                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                    }
+                    else if (!string.IsNullOrEmpty(currentFilter) && !string.IsNullOrEmpty(filterCriterion))
+                    {
+                        // There is already a broad filter, and a user filter has also been set.
+                        // Merge with existing filter.
+                        filterCriterionPhysicalModel = currentFilter +
+                                                       $"AND [Database_Name] LIKE '{filterCriterion}%' OR [Table_Name] LIKE '{filterCriterion}%' OR [Column_Name] LIKE '{filterCriterion}%' OR [Schema_Name] LIKE '{filterCriterion}%'";
+                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
                     }
                 }
             }
@@ -3295,13 +3307,10 @@ namespace TEAM
             // Everything BUT staging layer objects should be shown.
             else
             {
-
-
                 // The target is not a STG process and not a PSA process.
                 var filterCriterionDataObjectMappings = $"[TargetDataObjectName] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObjectName] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
                 var filterCriterionDataItemMappings = $"[TargetDataObject] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObject] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
                 var filterCriterionPhysicalModel = $"[Table_Name] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [Table_Name] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
-
 
                 inputTableMappingDataObjectMappings.DefaultView.RowFilter = filterCriterionDataObjectMappings;
                 inputTableMappingDataItemMappings.DefaultView.RowFilter = filterCriterionDataItemMappings;
