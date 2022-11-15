@@ -371,59 +371,35 @@ namespace TEAM_Library
         /// <returns></returns>
         public static DataObject SetDataObjectConnection(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            // Remove an existing connection, if existing.
-            if (!jsonExportSetting.IsAddDataObjectConnection())
+            // Store the extensions that may be there, if any.
+            var tempExtensions = new List<Extension>();
+
+            if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
             {
-                if (dataObject.dataObjectConnection != null)
-                {
-                    dataObject.dataObjectConnection = null;
-                }
+                tempExtensions = dataObject.dataObjectConnection.extensions;
             }
-            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDataObjectConnection())
+
+            var dataObjectConnection = new DataConnection
             {
-                // Store the extensions that may be there, if any.
-                var tempExtensions = new List<Extension>();
+                dataConnectionString = teamConnection.ConnectionKey
+            };
 
-                if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
-                {
-                    tempExtensions = dataObject.dataObjectConnection.extensions;
-                }
-
-                var dataObjectConnection = new DataConnection
-                {
-                    dataConnectionString = teamConnection.ConnectionKey
-                };
-
-                // Re-add extensions, if available.
-                if (tempExtensions != null)
-                {
-                    dataObjectConnection.extensions = tempExtensions;
-                }
-
-                dataObject.dataObjectConnection = dataObjectConnection;
+            // Re-add extensions, if available.
+            if (tempExtensions != null)
+            {
+                dataObjectConnection.extensions = tempExtensions;
             }
+
+            dataObject.dataObjectConnection = dataObjectConnection;
 
             return dataObject;
         }
 
         public static DataQuery SetDataQueryConnection(DataQuery dataQuery, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            // Remove an existing connection, if existing.
-            if (!jsonExportSetting.IsAddDataObjectConnection())
-            {
-                if (dataQuery.dataQueryConnection != null)
-                {
-                    dataQuery.dataQueryConnection = null;
-                }
-            }
-            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDataObjectConnection())
-            {
-                var dataObjectConnection = new DataConnection { dataConnectionString = teamConnection.ConnectionKey };
+            var dataObjectConnection = new DataConnection { dataConnectionString = teamConnection.ConnectionKey };
 
-                dataQuery.dataQueryConnection = dataObjectConnection;
-            }
+            dataQuery.dataQueryConnection = dataObjectConnection;
 
             return dataQuery;
         }
@@ -465,10 +441,11 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtension() && dataObject.dataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
-                
+                List<Extension> returnExtensions = new List<Extension>();
+
                 // Copy any existing classifications already in place, if any.
                 if (dataObject.dataObjectConnection.extensions != null)
                 {
@@ -476,28 +453,25 @@ namespace TEAM_Library
                 }
 
                 // Check if this particular classification already exists before adding.
-                bool extensionExists = false;
-                foreach (var extension  in localExtensions)
+                // Preserve the others.
+                foreach (var extension in localExtensions)
                 {
-                    if (extension.key == "database")
+                    if (extension.key != "database")
                     {
-                        extensionExists = true;
+                        returnExtensions.Add(extension);
                     }
                 }
 
-                if (extensionExists == false)
+                var localExtension = new Extension
                 {
-                    var localExtension = new Extension
-                    {
-                        key = "database",
-                        value = teamConnection.DatabaseServer.DatabaseName,
-                        description = "database name"
-                    };
+                    key = "database",
+                    value = teamConnection.DatabaseServer.DatabaseName,
+                    description = "database name"
+                };
 
-                    localExtensions.Add(localExtension);
-                }
+                returnExtensions.Add(localExtension);
 
-                dataObject.dataObjectConnection.extensions = localExtensions;
+                dataObject.dataObjectConnection.extensions = returnExtensions;
             }
 
             return dataObject;
@@ -533,9 +507,10 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtension() && dataQuery.dataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
+                List<Extension> returnExtensions = new List<Extension>();
 
                 // Copy any existing classifications already in place, if any.
                 if (dataQuery.dataQueryConnection.extensions != null)
@@ -544,33 +519,28 @@ namespace TEAM_Library
                 }
 
                 // Check if this particular classification already exists before adding.
-                bool extensionExists = false;
                 foreach (var extension in localExtensions)
                 {
-                    if (extension.key == "database")
+                    if (extension.key != "database")
                     {
-                        extensionExists = true;
+                        returnExtensions.Add(extension);
                     }
                 }
 
-                if (extensionExists == false)
+                var localExtension = new Extension
                 {
-                    var localExtension = new Extension
-                    {
-                        key = "database",
-                        value = teamConnection.DatabaseServer.DatabaseName,
-                        description = "database name"
-                    };
+                    key = "database",
+                    value = teamConnection.DatabaseServer.DatabaseName,
+                    description = "database name"
+                };
 
-                    localExtensions.Add(localExtension);
-                }
+                returnExtensions.Add(localExtension);
 
-                dataQuery.dataQueryConnection.extensions = localExtensions;
+                dataQuery.dataQueryConnection.extensions = returnExtensions;
             }
 
             return dataQuery;
         }
-
 
         /// <summary>
         /// Updates a DataObject Connection with a Schema extension (key/value pair) based on its connection properties (TeamConnection object).
@@ -581,11 +551,11 @@ namespace TEAM_Library
         /// <returns></returns>
         public static DataObject SetDataObjectConnectionSchemaExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            // Remove an existing classification, if indeed existing.
-            // If no classifications exists, do nothing. Otherwise check if one needs removal.
+            // Remove an existing extension, if indeed existing.
+            // If no extensions exists, do nothing. Otherwise check if one needs removal.
             if (!jsonExportSetting.IsAddSchemaAsExtension())
             {
-                if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
+                if (dataObject.dataObjectConnection?.extensions != null)
                 {
                     List<Extension> localExtensions = new List<Extension>();
 
@@ -609,39 +579,39 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtension() && dataObject.dataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
+                List<Extension> returnExtensions = new List<Extension>();
 
-                // Copy any existing classifications already in place, if any.
+                // Copy any existing extensions that are already in place, if any.
                 if (dataObject.dataObjectConnection.extensions != null)
                 {
                     localExtensions = dataObject.dataObjectConnection.extensions;
                 }
 
                 // Check if this particular classification already exists before adding.
-                bool extensionExists = false;
+                // Preserve the others.
                 foreach (var extension in localExtensions)
                 {
-                    if (extension.key == "schema")
+                    if (extension.key != "schema")
                     {
-                        extensionExists = true;
+                        returnExtensions.Add(extension);
                     }
                 }
 
-                if (extensionExists == false)
+                // Re-create the schema extension.
+                var localExtension = new Extension
                 {
-                    var localExtension = new Extension
-                    {
-                        key = "schema",
-                        value = teamConnection.DatabaseServer.SchemaName,
-                        description = "schema name"
-                    };
+                    key = "schema",
+                    value = teamConnection.DatabaseServer.SchemaName,
+                    description = "schema name"
+                };
 
-                    localExtensions.Add(localExtension);
-                }
+                returnExtensions.Add(localExtension);
 
-                dataObject.dataObjectConnection.extensions = localExtensions;
+                // Apply all the extensions back to the connection object.
+                dataObject.dataObjectConnection.extensions = returnExtensions;
             }
 
             return dataObject;
@@ -677,9 +647,10 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtension() && jsonExportSetting.IsAddDataObjectConnection() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtension() && dataQuery.dataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
+                List<Extension> returnExtensions = new List<Extension>();
 
                 // Copy any existing classifications already in place, if any.
                 if (dataQuery.dataQueryConnection.extensions != null)
@@ -688,28 +659,26 @@ namespace TEAM_Library
                 }
 
                 // Check if this particular classification already exists before adding.
-                bool extensionExists = false;
+                // Preserve the others.
                 foreach (var extension in localExtensions)
                 {
-                    if (extension.key == "schema")
+                    if (extension.key != "schema")
                     {
-                        extensionExists = true;
+                        returnExtensions.Add(extension);
                     }
                 }
 
-                if (extensionExists == false)
+                var localExtension = new Extension
                 {
-                    var localExtension = new Extension
-                    {
-                        key = "schema",
-                        value = teamConnection.DatabaseServer.SchemaName,
-                        description = "schema name"
-                    };
+                    key = "schema",
+                    value = teamConnection.DatabaseServer.SchemaName,
+                    description = "schema name"
+                };
 
-                    localExtensions.Add(localExtension);
-                }
+                returnExtensions.Add(localExtension);
 
-                dataQuery.dataQueryConnection.extensions = localExtensions;
+
+                dataQuery.dataQueryConnection.extensions = returnExtensions;
             }
 
             return dataQuery;

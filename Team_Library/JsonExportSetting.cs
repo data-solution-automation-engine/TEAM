@@ -12,7 +12,6 @@ namespace TEAM_Library
     public class JsonExportSetting
     {
         // Data Objects
-        public string AddDataObjectConnection { get; set; }
         public string AddDatabaseAsExtension { get; set; }
         public string AddSchemaAsExtension { get; set; }
         public string AddTypeAsClassification { get; set; }
@@ -25,13 +24,6 @@ namespace TEAM_Library
         // Related Data Objects
         public string AddMetadataAsRelatedDataObject { get; set; }
         public string AddRelatedDataObjectsAsRelatedDataObject { get; set; }
-
-        public bool IsAddDataObjectConnection()
-        {
-            bool returnValue = AddDataObjectConnection == "True";
-
-            return returnValue;
-        }
 
         public bool IsAddDatabaseAsExtension()
         {
@@ -115,7 +107,6 @@ namespace TEAM_Library
                 streamReader.Close();
                 fileStream.Close();
 
-                AddDataObjectConnection = configList["GenerateDataObjectConnection"];
                 AddDataObjectDataItems = configList["GenerateDataObjectDataItems"];
                 AddDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
                 AddSchemaAsExtension = configList["GenerateSchemaAsExtension"];
@@ -146,9 +137,7 @@ namespace TEAM_Library
                 // Creating the file
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM JSON Export Configuration Settings */");
-                validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                validationFile.AppendLine("GenerateDataObjectConnection|" + AddDataObjectConnection + "");
                 validationFile.AppendLine("GenerateDataObjectDataItems|" + AddDataObjectDataItems + "");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|" + AddDatabaseAsExtension + "");
                 validationFile.AppendLine("GenerateSchemaAsExtension|" + AddSchemaAsExtension + "");
@@ -187,7 +176,6 @@ namespace TEAM_Library
                 validationFile.AppendLine("/* TEAM JSON Export File Settings */");
 
                 // Data Object group.
-                validationFile.AppendLine("GenerateDataObjectConnection|True");
                 validationFile.AppendLine("GenerateDataObjectDataItems|True");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|True");
                 validationFile.AppendLine("GenerateSchemaAsExtension|True");

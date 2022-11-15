@@ -1,5 +1,4 @@
 ﻿using DataWarehouseAutomation;
-using Microsoft.SqlServer.Management.Assessment;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -566,7 +565,7 @@ namespace TEAM
         {
             if (_myJsonForm == null)
             {
-                _myJsonForm = new FormJsonConfiguration(this);
+                _myJsonForm = new FormJsonConfiguration();
                 _myJsonForm.Show();
 
                 Application.Run();
@@ -580,7 +579,7 @@ namespace TEAM
                     _myJsonForm.Invoke((MethodInvoker) delegate { _myJsonForm.Close(); });
                     _myJsonForm.FormClosed += CloseJsonForm;
 
-                    _myJsonForm = new FormJsonConfiguration(this);
+                    _myJsonForm = new FormJsonConfiguration();
                     _myJsonForm.Show();
                     Application.Run();
                 }
@@ -589,7 +588,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myJsonForm.FormClosed += CloseJsonForm;
 
-                    _myJsonForm = new FormJsonConfiguration(this);
+                    _myJsonForm = new FormJsonConfiguration();
                     _myJsonForm.Show();
                     Application.Run();
                 }
