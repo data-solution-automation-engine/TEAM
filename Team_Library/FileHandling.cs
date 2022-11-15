@@ -20,7 +20,11 @@ namespace TEAM_Library
         [Display(Name = "Core Path")]
         CorePath,
         [Display(Name = "Backup Path")]
-        BackupPath
+        BackupPath,
+        [Display(Name = "Files Path")]
+        FilesPath,
+        [Display(Name = "Script Path")]
+        ScriptPath
     }
     /// <summary>
     /// The FileHandling class concerns the basic IO operations required to create directories and configuration files (without any specific content).

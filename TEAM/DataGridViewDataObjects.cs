@@ -1444,8 +1444,6 @@ namespace TEAM
 
                 #endregion
 
-                var bla = "";
-
                 #region Auto map
 
                 // For presentation layer, Hubs and Links, only manual mappings are supported.
